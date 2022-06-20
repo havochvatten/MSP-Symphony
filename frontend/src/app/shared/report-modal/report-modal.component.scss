@@ -1,0 +1,77 @@
+@import '../../../styles/constants';
+@import '../../../styles/hav-colors';
+@import '../../../styles/margins';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 90vw;
+  min-width: 210mm;
+  max-width: 230mm;
+  height: 99999999999rem;
+  max-height: 95vh;
+  overflow: hidden;
+  background-color: white;
+  border-radius: 4px;
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  nav {
+    display: flex;
+    //box-shadow: 0 5px 5px #eee;
+    background-color: white;
+    padding: 0.4rem 1.4rem;
+    border-bottom: 1px solid #999;
+
+    h1, h2, h3 {
+      margin: 0;
+    }
+
+    app-icon-button {
+      margin-left: auto;
+      font-size: 2.8rem;
+      margin-right: -0.4rem;
+    }
+  }
+
+  .toolbar {
+    border-top: 1px solid #999;
+    padding: 0 1.4rem;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 8rem;
+    justify-content: flex-end;
+
+    hav-button {
+      margin-left: 1rem;
+    }
+
+    #open-in-new-tab {
+      margin-right: auto;
+      margin-left: 0;
+    }
+  }
+
+  @media print {
+    max-width: 100vw;
+    max-height: none;
+
+    body *, app-icon-button, .toolbar {
+      visibility: hidden;
+    }
+    iframe, iframe * {
+      visibility: visible;
+    }
+    iframe {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  }
+}

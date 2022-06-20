@@ -1,0 +1,23 @@
+:host {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  h1 {
+    margin-right: 12px;
+    font-size: 1.6rem;
+    font-weight: bold;
+    line-height: 2.1rem;
+    text-align: right;
+    color: inherit;
+  }
+
+  app-icon {
+    font-size: 3rem;
+  }
+}

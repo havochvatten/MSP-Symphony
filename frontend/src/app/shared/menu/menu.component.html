@@ -1,0 +1,19 @@
+<nav *ngIf="menuItems" [attr.aria-label]="menuLabel">
+  <ul>
+    <li *ngFor="let item of menuItems">
+      <a
+        [routerLink]="item.url ? [{ outlets: { primary: item.url, overlay: null } }] : undefined"
+        (click)="item.click ? item.click() : onNavigate()"
+        (keydown.enter)="item.click ? item.click() : onNavigate()"
+        havFocusOutline
+        routerLinkActive
+        [routerLinkActiveOptions]="{ exact: true }"
+        #rla="routerLinkActive"
+        [attr.aria-current]="rla.isActive === true"
+      >
+        <fa-icon *ngIf="item.icon" [icon]="item.icon"></fa-icon>
+        {{ item.name | translate }}
+      </a>
+    </li>
+  </ul>
+</nav>

@@ -1,0 +1,46 @@
+@import '../../../styles/hav-colors';
+@import '../../../styles/margins';
+
+nav {
+  display: flex;
+
+  ul {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+
+    li {
+      background-color: $hav-lightturquoise;
+      list-style-type: none;
+      display: flex;
+      flex: 1 1 0%;
+      flex-wrap: nowrap;
+      align-items: center;
+
+      a {
+        align-items: center;
+        box-sizing: border-box;
+        color: white;
+        flex: 1 1 0%;
+        font-size: 1.6rem;
+        display: flex;
+        height: 4.4rem;
+        outline-offset: -2px;
+        padding-left: $xs-margin;
+        padding-right: $xs-margin;
+        text-decoration: none;
+
+        fa-icon {
+          padding-right: $xs-margin;
+          color: white;
+        }
+      }
+
+      &:not(:last-child) {
+        border-bottom: 1px solid $hav-coldgrey;
+      }
+    }
+  }
+}

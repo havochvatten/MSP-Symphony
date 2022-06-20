@@ -1,0 +1,85 @@
+@import '../../../styles/constants';
+@import '../../../styles/hav-colors';
+@import '../../../styles/margins';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  z-index: 10001;
+
+  .header-top {
+    align-items: center;
+    background-color: $hav-lightturquoise;
+    color: white;
+    display: flex;
+    height: $header-height;
+    padding: 0 $xs-margin;
+
+    > :not(.header-overlay) {
+      z-index: 1;
+    }
+
+    .header-overlay {
+      width: 100%;
+      height: 6rem;
+      opacity: 0.17;
+      position: absolute;
+      background-image: url('../../../assets/topography-white.svg');
+      background-size: auto 25rem;
+      background-position: right center;
+      background-repeat: no-repeat;
+    }
+
+    h1 {
+      align-items: center;
+      display: flex;
+      flex: 1 1 0%;
+      justify-content: space-between;
+      margin: 0;
+      font-size: 2rem;
+      line-height: 2.3rem;
+      margin-left: $xs-margin;
+      color: inherit;
+      flex: 0;
+    }
+
+    ::ng-deep app-icon {
+      font-size: 3rem;
+    }
+
+    app-icon-button::ng-deep app-icon {
+      font-size: 2.2rem;
+    }
+  }
+
+  .header-menu-container {
+    overflow-y: hidden;
+    display: flex;
+
+    &.is-open {
+      border-top: 1px solid white;
+    }
+
+    app-menu {
+      flex: 0 1 200px;
+    }
+  }
+
+  .flag {
+    width: auto;
+    height: 100%;
+    margin-left: auto;
+  }
+
+  .duck {
+    position: absolute;
+    top: $header-height + 2rem;
+    left: 6rem;
+    width: 12rem;
+    height: auto;
+  }
+
+  app-user-menu-toggle {
+    //margin-left: auto;
+  }
+}

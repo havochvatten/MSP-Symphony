@@ -1,0 +1,55 @@
+@import '../../../../styles/constants';
+@import '../../../../styles/hav-colors';
+@import '../../../../styles/margins';
+
+:host {
+  display: flex;
+  flex-direction: column;
+
+  app-toolbar-zoom-buttons,
+  app-toolbar-button {
+    margin-bottom: 1.4rem;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    &::ng-deep {
+      button {
+        border-radius: 50%;
+        border: none;
+        background-color: $hav-turquoise;
+      }
+    }
+  }
+
+  app-toolbar-zoom-buttons {
+    border-radius: 50%;
+    app-toolbar-button {
+      box-shadow: none;
+      margin: 0;
+      &::ng-deep {
+        app-toolbar-button, app-toolbar-button::ng-deep button {
+          border-radius: 50%;
+        }
+      }
+    }
+  }
+
+  .divider {
+    width: 3.6rem;
+    border-bottom: 1px solid #979797;
+  }
+
+  app-icon {
+    color: white;
+    font-size: 1rem;
+  }
+
+  app-map-opacity-slider {
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  ::ng-deep app-toolbar-button:nth-child(4) {
+    button {
+      font-size: 1.5rem;
+    }
+  }
+}

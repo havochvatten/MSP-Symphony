@@ -1,0 +1,20 @@
+:host {
+  box-sizing: border-box;
+  position: absolute;
+  top: -1rem;
+  left: -10.6rem;
+  width: 29rem;
+  background-color: #E5EFF3;
+  padding: 0.6rem 1rem 1.1rem 0.6rem;
+  border-radius: 2rem;
+  transform: rotate(-90deg) translateY(-50%) translateX(-50%);
+  span {
+    color: #494949;
+    font-size: 1.4rem;
+    line-height: 1.9rem;
+  }
+  ::ng-deep app-slider input {
+    height: 3px !important;
+    background: #aaa !important;
+  }
+}

@@ -1,0 +1,230 @@
+CREATE SCHEMA IF NOT EXISTS import
+    AUTHORIZATION postgres;
+
+COMMENT ON SCHEMA import
+    IS 'Schema for import of data to be used in Symphony';
+
+-- Table: import.sensitivityimport
+
+-- DROP TABLE IF EXISTS import.sensitivityimport;
+
+CREATE TABLE IF NOT EXISTS import.sensitivityimport
+(
+    senimp_c0 text COLLATE pg_catalog."default" NOT NULL,
+    senimp_c1 text COLLATE pg_catalog."default",
+    senimp_c2 text COLLATE pg_catalog."default",
+    senimp_c3 text COLLATE pg_catalog."default",
+    senimp_c4 text COLLATE pg_catalog."default",
+    senimp_c5 text COLLATE pg_catalog."default",
+    senimp_c6 text COLLATE pg_catalog."default",
+    senimp_c7 text COLLATE pg_catalog."default",
+    senimp_c8 text COLLATE pg_catalog."default",
+    senimp_c9 text COLLATE pg_catalog."default",
+    senimp_c10 text COLLATE pg_catalog."default",
+    senimp_c11 text COLLATE pg_catalog."default",
+    senimp_c12 text COLLATE pg_catalog."default",
+    senimp_c13 text COLLATE pg_catalog."default",
+    senimp_c14 text COLLATE pg_catalog."default",
+    senimp_c15 text COLLATE pg_catalog."default",
+    senimp_c16 text COLLATE pg_catalog."default",
+    senimp_c17 text COLLATE pg_catalog."default",
+    senimp_c18 text COLLATE pg_catalog."default",
+    senimp_c19 text COLLATE pg_catalog."default",
+    senimp_c20 text COLLATE pg_catalog."default",
+    senimp_c21 text COLLATE pg_catalog."default",
+    senimp_c22 text COLLATE pg_catalog."default",
+    senimp_c23 text COLLATE pg_catalog."default",
+    senimp_c24 text COLLATE pg_catalog."default",
+    senimp_c25 text COLLATE pg_catalog."default",
+    senimp_c26 text COLLATE pg_catalog."default",
+    senimp_c27 text COLLATE pg_catalog."default",
+    senimp_c28 text COLLATE pg_catalog."default",
+    senimp_c29 text COLLATE pg_catalog."default",
+    senimp_c30 text COLLATE pg_catalog."default",
+    senimp_c31 text COLLATE pg_catalog."default",
+    senimp_c32 text COLLATE pg_catalog."default",
+    senimp_c33 text COLLATE pg_catalog."default",
+    senimp_c34 text COLLATE pg_catalog."default",
+    senimp_c35 text COLLATE pg_catalog."default",
+    senimp_c36 text COLLATE pg_catalog."default",
+    senimp_c37 text COLLATE pg_catalog."default",
+    senimp_c38 text COLLATE pg_catalog."default",
+    senimp_c39 text COLLATE pg_catalog."default",
+    senimp_c40 text COLLATE pg_catalog."default",
+    senimp_c41 text COLLATE pg_catalog."default",
+    senimp_c42 text COLLATE pg_catalog."default",
+    senimp_c43 text COLLATE pg_catalog."default",
+    senimp_c44 text COLLATE pg_catalog."default",
+    senimp_c45 text COLLATE pg_catalog."default",
+    senimp_c46 text COLLATE pg_catalog."default",
+    senimp_c47 text COLLATE pg_catalog."default",
+    senimp_c48 text COLLATE pg_catalog."default",
+    senimp_c49 text COLLATE pg_catalog."default",
+    senimp_c50 text COLLATE pg_catalog."default"
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE symphony;
+
+ALTER TABLE IF EXISTS import.sensitivityimport
+    OWNER to postgres;
+
+COMMENT ON TABLE import.sensitivityimport
+    IS 'Import of sensitivity matrix for the combination of ecocomponent and pressure,';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c0
+    IS 'Column with pressures,';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c1
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c2
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c3
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c4
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c5
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c6
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c7
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c8
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c9
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c10
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c11
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c12
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c13
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c14
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c15
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c16
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c17
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c18
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c19
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c20
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c21
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c22
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c23
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c24
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c25
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c26
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c27
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c28
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c29
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c30
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c31
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c32
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c33
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c34
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c35
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c36
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c37
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c38
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c39
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c40
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c41
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c42
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c43
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c44
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c45
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c46
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c47
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c48
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c49
+    IS 'Sensitivity value (but first row eco component name).';
+
+COMMENT ON COLUMN import.sensitivityimport.senimp_c50
+    IS 'Sensitivity value (but first row eco component name).';
+	
+	
+	

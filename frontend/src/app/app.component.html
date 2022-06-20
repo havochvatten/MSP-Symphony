@@ -1,0 +1,8 @@
+<app-header *ngIf="headerTitle !== ''" [title]="headerTitle"></app-header>
+<div class="main-content">
+  <router-outlet></router-outlet>
+</div>
+<div class="overlay-content">
+  <router-outlet name="overlay"></router-outlet>
+</div>
+<app-popup-message></app-popup-message>

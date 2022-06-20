@@ -1,0 +1,13 @@
+<svg viewBox="0 0 200 30">
+  <rect
+    *ngFor="let color of colors; index as i"
+    width="20"
+    height="20"
+    y="10"
+    [attr.x]="i * 20"
+    [attr.fill]="color.color"
+  ></rect>
+  <text *ngFor="let color of colors; index as i" [attr.x]="i * 20" y="5" font-size="5">
+    {{ color.min }}%
+  </text>
+</svg>

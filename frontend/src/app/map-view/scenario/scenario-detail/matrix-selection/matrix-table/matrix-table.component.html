@@ -1,0 +1,63 @@
+<!--TODO add close app-icon button -->
+<header>
+  <div class="title">
+    <h2 *ngIf="!editName" (click)="editName = true">{{ matrixData.name }}</h2>
+    <input
+      *ngIf="editName"
+      [value]="matrixData.name"
+      (input)="onChangeName($event.target.value)"
+      (blur)="editName = false"
+    />
+    <button (click)="editName = !editName">
+      {{ 'map.editor.matrix.table.edit-name' | translate }}
+      <app-icon iconType="edit"></app-icon>
+    </button>
+  </div>
+  <span>{{ area }}</span>
+</header>
+<main>
+  <table>
+    <tbody>
+      <tr>
+        <th class="empty"></th>
+        <th *ngFor="let column of matrixData.sensMatrix.rows[0].columns" scope="col">
+          {{ getName(column) }}
+        </th>
+      </tr>
+      <tr *ngFor="let row of matrixData.sensMatrix.rows; index as i">
+        <th scope="row">{{ getName(row) }}</th>
+        <td *ngFor="let column of row.columns; index as j" [attr.data-pressure]="column.value > 0">
+          <input
+            type="number"
+            [value]="column.value"
+            min="0.0"
+            max="1.0"
+            step="0.1"
+            [title]="getName(row) + ' | ' + getName(column)"
+            [attr.data-row]="i"
+            [attr.data-column]="j"
+            (input)="
+              onChange($event.target.value, $event.target.dataset.row, $event.target.dataset.column)
+            "
+          />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+<section class="buttons">
+  <hav-button buttonType="secondary" stateType="alert" (click)="close()">{{
+    'map.editor.matrix.table.cancel' | translate
+    }}</hav-button>
+  <div class="right">
+    <hav-button [disabled]="immutable" stateType="alert" (click)="deleteMatrix()">{{
+      'map.editor.matrix.table.delete' | translate
+      }}</hav-button>
+    <hav-button [disabled]="immutable" (click)="save()">{{
+      'map.editor.matrix.table.save' | translate
+    }}</hav-button>
+    <hav-button [disabled]="!hasChangedName" (click)="saveAsNew()">{{
+      'map.editor.matrix.table.save-as' | translate
+    }}</hav-button>
+  </div>
+</section>

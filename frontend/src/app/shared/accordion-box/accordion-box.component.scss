@@ -1,0 +1,41 @@
+:host {
+  article {
+    box-sizing: border-box;
+    max-width: 40rem;
+    border: 1px solid #707070;
+
+    header {
+      box-sizing: border-box;
+      padding: 1rem 1.2rem;
+      display: grid;
+      grid-template-columns: 1fr min-content;
+      grid-template-areas: "title icon";
+      align-items: center;
+
+      ::ng-deep app-accordion-box-header {
+        grid-area: title;
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+      }
+
+      app-icon-button {
+        font-size: 2.2rem;
+        grid-area: icon;
+      }
+    }
+
+    section {
+      box-sizing: border-box;
+      padding: 0 1.2rem;
+      overflow: hidden;
+      max-height: 0;
+      transition: padding 0.3s cubic-bezier(0.0, 0.0, 0.2, 0.1) 0s;
+
+      &[data-open=true] {
+        max-height: initial;
+        padding: 1rem 1.2rem;
+      }
+    }
+  }
+}

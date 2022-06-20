@@ -1,0 +1,9 @@
+<article>
+  <header>
+    <ng-content select="app-accordion-box-header"></ng-content>
+    <app-icon-button [icon]="open ? 'chevron-up' : 'chevron-down'" label="Open/Close" (click)="onToggle()"></app-icon-button>
+  </header>
+  <section [attr.data-open]="open">
+    <ng-content select="app-accordion-box-content"></ng-content>
+  </section>
+</article>

@@ -1,0 +1,56 @@
+@import '../../../styles/hav-colors';
+@import '../../../styles/margins';
+
+nav {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: 100%;
+
+  a.tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    box-sizing: border-box;
+    height: 7rem;
+    max-width: 12rem;
+    padding: $xxs-margin $xs-margin;
+    color: #004371;
+    font-size: 1.4rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    border: 1px solid #004371;
+    cursor: pointer;
+
+    app-icon {
+      font-size: 3.6rem;
+    }
+
+    &.active {
+      color: white;
+      border: 1px solid #004371;
+      background-color: #004371;
+      cursor: default;
+    }
+
+    &:not(.active):hover {
+      color: white;
+      background-color: #00639B;
+    }
+
+    &:first-child {
+      border-radius: 4px 0 0 4px;
+    }
+
+    &:last-child {
+      border-radius: 0 4px 4px 0;
+
+      app-icon {
+        font-size: 2.6rem;
+        margin-bottom: 0.3rem;
+      }
+    }
+  }
+}

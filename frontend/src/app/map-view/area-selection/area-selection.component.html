@@ -1,0 +1,36 @@
+<app-selection-layout
+  [title]="'map.areas' | translate"
+  [searchLabel]="'map.area.search.label' | translate"
+  [searchValue]="search"
+  [onSearch]="onSearch"
+  [searchPlaceholder]="'map.area.search.placeholder' | translate"
+>
+  <div *ngIf="search.length > 0">
+    <div class="search-header">
+      <h3>{{ 'map.area.search.label' | translate }} ({{ matchingResults }})</h3>
+      <button (click)="onSearch('')">{{ 'map.area.search.clear' | translate }}</button>
+    </div>
+    <div class="divider"></div>
+  </div>
+  <app-area-group
+    *ngFor="let nationalArea of filteredNationalAreas"
+    [areas]="nationalArea.groups"
+    [title]="nationalArea.displayName"
+    [searching]="search.length > 0"
+    [selectedArea]="selectedArea$ | async"
+    [updateVisible]="toggleVisibleArea"
+    [selectArea]="selectArea"
+  ></app-area-group>
+  <app-area-group
+    [areas]="filteredUserAreas"
+    [title]="'map.area.user-created' | translate"
+    [searching]="search.length > 0"
+    [selectedArea]="selectedArea$ | async"
+    [updateVisible]="toggleVisibleArea"
+    [selectArea]="selectArea"
+    [drawUserArea]="drawUserArea"
+    [renameUserArea]="renameUserArea"
+    [deleteUserArea]="deleteUserArea"
+    [importArea]="importUserArea"
+  ></app-area-group>
+</app-selection-layout>

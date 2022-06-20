@@ -1,0 +1,16 @@
+<h3>{{ 'map.user-area.rename.modal.title' | translate }}</h3>
+<input
+  [value]="areaName"
+  (input)="onChange($event.target.value)"
+  [placeholder]="'map.user-area.rename.modal.placeholder' | translate"
+/>
+<div>
+  <hav-button stateType="alert" buttonType="secondary" (click)="close()">{{
+    'map.user-area.rename.modal.close' | translate
+  }}</hav-button>
+  <hav-button
+    (click)="save()"
+    [disabled]="areaName.length === 0 || !hasChanged"
+    >{{ 'map.user-area.rename.modal.save' | translate }}</hav-button
+  >
+</div>

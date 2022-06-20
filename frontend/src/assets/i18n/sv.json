@@ -1,0 +1,294 @@
+{
+    "login": {
+        "username": "Användarnamn",
+        "password": "Lösenord",
+        "login": "Logga in",
+        "forgot-password": "Glömt lösenord?",
+        "request-password": "Begär nytt",
+        "no-account": "Är du en extern användare och saknar loginuppgifter?",
+        "request-account": "Ansök om konto",
+        "error": {
+            "invalid-credentials": "Fel användarnamn eller lösenord.",
+            "system-unavailable": "Systemet ligger nere för stunden. Försök igen senare."
+        }
+    },
+    "map": {
+        "background-transparency": "Bakgrundskartans synlighet",
+        "click-area": "Klicka för att markera området.",
+        "location-outside-scenario": "Platsen är utanför aktivt scenario",
+        "areas": "Kartområden",
+        "ecosystems": "Naturvärden",
+        "pressures": "Belastningar",
+        "matrix": "Matris",
+        "no-selected-area": "Inget valt område",
+        "editor": {
+            "title": "Scenarion",
+            "band-pressures": {
+                "intensity": "Ändring av förekomst",
+                "opacity": "Genomskinlighet av lager",
+                "percentage": "Procentuell",
+                "constant-increase": "Konstant",
+                "intensity-label": "Visa/Dölj förekomst",
+                "opacity-label": "Visa/Dölj lageropacitet",
+                "note": "Om du har ändrat värdena i något kartlager kan du spara den/de justerade lagren, för att sedan använda dem i andra beräkningar.",
+                "no-scenario-selected": "Välj ett scenario för att ändra förekomster"
+            },
+            "matrix": {
+                "sensitivity-matrix": "Känslighetsmatris",
+                "default-matrix": "Standardmatris",
+                "user-matrix": "Egen matris",
+                "choose-area-type": "Välj områdestyp (valfritt)",
+                "choose-area-type-matrix": "Välj matris för områdestyp",
+                "edited-matrixes": "Tidigare justerade matriser",
+                "edit-matrix": "Justera matris",
+                "upload-file": "Ladda upp fil",
+                "note": "Här kan du ändra känslighetsmatrisen för valda havsområden. Du kan även välja att använda en uppladdad känslighetsmatris.",
+                "table": {
+                    "edit-name": "Redigera",
+                    "delete": "Radera matris",
+                    "cancel": "Avbryt",
+                    "save": "Spara matris",
+                    "save-as": "Spara som ny matris"
+                }
+            },
+            "normalization": {
+                "title": "Normalisering",
+                "description": "Normalisera resultat med avseende på",
+                "area": "Maximalt värde i valt område",
+                "domain": "95-percentilvärde i havsplaneområde",
+                "custom": "Egendefinierat värde",
+                "custom-value": "Värde"
+            },
+            "changes": {
+                "no-changes": "Inga scenarioändringar",
+                "make-changes-hint": "Välj ett område och gör ändringar i Ekosystemkomponenter eller Belastnings-tabbarna.",
+                "clear-change": "Rensa ändring",
+                "units": "enheter"
+            },
+            "select-area-message": "För att beräkna krävs det att ett område har markerats. Börja med att välja område och eventuella naturvärden och belastningar i vänster panel.",
+            "fetching-matrices": "Hämtar information om områdets känslighetsmatriser...",
+            "map-layer": "Kartlager",
+            "list": {
+                "user-scenarios": "Mina scenarion",
+                "add-scenario-label": "Skapa ett nytt scenario för {{area}}",
+                "scenario-name-template": "Scenario {{area}}",
+                "select-area-first-label": "Börja med att välja ett område för scenariot.",
+                "no-scenarios": "Inga scenarion",
+                "add-scenarios-hint": "Skapa ett scenario genom att trycka på + ovan."
+            },
+            "clear": "Rensa",
+            "close": "❮",
+            "delete": {
+                "label": "Radera",
+                "modal": {
+                    "title": "Är du säker på att du vill radera",
+                    "delete": "Radera",
+                    "cancel": "Avbryt"
+                }
+            },
+            "include-coast": "Inkludera kustområde",
+            "calculate": "Beräkna"
+        },
+        "toolbar": {
+            "zoom-in": "Zooma in",
+            "zoom-out": "Zooma ut",
+            "search-area": "Sök område",
+            "draw-area": "Rita eget område",
+            "open-area": "Öppna sparat område",
+            "save-area": "Spara ritat område"
+        },
+        "arrange-layers": "Ordna lager",
+        "area": {
+            "sea-plan": "Havsplanområden",
+            "county": "Kommuner och län",
+            "protected": "Skyddade områden",
+            "surface-water": "Vattendirektivets ytvattenförekomst i Sverige",
+            "user-created": "Mina områden",
+            "search": {
+                "label": "Sökresultat",
+                "placeholder": "Sök område",
+                "clear": "Rensa sökning"
+            }
+        },
+        "eco-component": {
+            "search": {
+                "label": "Sök naturvärde",
+                "placeholder": "Sök naturvärde",
+                "no-matches": "Inga matchningar"
+            }
+        },
+        "pressure": {
+            "search": {
+                "label": "Sök belastning",
+                "placeholder": "Sök belastning"
+            }
+        },
+        "history": {
+            "title": "Beräkningslogg",
+            "loading": "Laddar beräkningar...",
+            "baseline-calculations": "Nuvärdesanalys",
+            "previous-calculations": "Tidigare beräkningar",
+            "placeholder": "Inga tidigare beräkningar"
+        },
+        "compare": {
+            "title": "Jämför scenario",
+            "compare": "Jämför beräkningar",
+            "base-scenario": "Grundscenario",
+            "what-if-scenario": "What-if scenario",
+            "choose-scenario": "Välj scenario",
+            "choose-base-scenario-first": "Välj grundscenario först"
+        },
+        "user-area": {
+            "create": {
+                "label": "Rita nytt område",
+                "modal": {
+                    "title": "Namnge ditt nya område",
+                    "placeholder": "Mitt område 1",
+                    "save": "Spara",
+                    "close": "Avbryt"
+                }
+            },
+            "rename": {
+                "label": "Ändra namn",
+                "modal": {
+                    "title": "Ändra namn på ditt område",
+                    "placeholder": "Mitt område 1",
+                    "save": "Spara",
+                    "close": "Avbryt"
+                }
+            },
+            "edit": {
+                "label": "Redigera område"
+            },
+            "delete": {
+                "label": "Radera",
+                "modal": {
+                    "title": "Är du säker på att du vill radera",
+                    "delete": "Radera",
+                    "close": "Avbryt"
+                }
+            },
+            "share": {
+                "label": "Dela"
+            },
+            "upload": {
+                "label": "Importera områdespolygon",
+                "modal": {
+                    "title": "Importera område",
+                    "fileformat-note": "Filer i <a href='https://www.geopackage.org/' target='_blank'>OGC GeoPackage</a>-format stöds.",
+                    "notice": {
+                        "WGS84-reprojection": "Områdets koordinater kommer att projiceras om till <em>EPSG:4326 (WGS 84)",
+                        "first-area-only": "GeoPackage-arkivet innehåller flera lager. Endast <em>{{ firstFeature }}</em> kommer att importeras!"
+                    },
+                    "import": "Bekräfta import",
+                    "cancel": "Avbryt"
+                },
+                "error": {
+                    "NOT_A_GEOPACKAGE": "Filen är inte ett GeoPackage-arkiv!",
+                    "GEOPACKAGE_NO_FEATURES": "GeoPackage-arkivet innehåller inga områden.",
+                    "USER_DEF_AREA_NAME_EXISTS": "Ett område med detta namn finns redan."
+                }
+            }
+        },
+        "color-scale": {
+            "result": "Kumulativ belastning",
+            "ecosystem": "Naturvärden",
+            "pressure": "Belastningsintensitet"
+        }
+    },
+    "main-menu": {
+        "projects": "Projekt",
+        "calculations": "Beräkningar",
+        "files": "Filer"
+    },
+    "user-menu": {
+        "help": "Hjälp",
+        "about": "Om",
+        "profile": "Min profil",
+        "logout": "Logga ut"
+    },
+    "about-dialog": {
+        "system-name": "Symphony Sverige",
+        "build": "Byggnummer",
+        "third-party-software": "Byggt med följande tredjepartsmjukvara:",
+        "close": "Tack"
+    },
+    "popup-message": {
+        "INFO": "Infomation",
+        "SUCCESS": "Processen lyckades",
+        "ERROR": "Ett fel inträffade",
+        "WARNING": "Långsam process"
+    },
+    "report": {
+        "calculation": {
+            "title": "Scenariorapport"
+        },
+        "comparison": {
+            "title": "Scenariojämförelserapport",
+            "vs": "kontra"
+        },
+        "cumulative-effect-etc": {
+            "baseline": "Basdataversion",
+            "title": "Kumulativ effekt",
+            "total": "Summa",
+            "average": "Genomsnitt",
+            "min": "Minimalt värde",
+            "max": "Maximalt värde",
+            "std-dev": "Standardavvikelse",
+            "calculated-area": "Beräknad area",
+            "km2": "km²",
+            "normalization": {
+                "domain": "95-percentil",
+                "area": "Maximalt värde i område",
+                "custom": "Egendefinerat värde",
+                "domain-desc": "Resultatet är normaliserat med avseende på det värde som 95% av datapunkterna i tillhörande havsplaneområdet ligger inom (inklusive värden för kustområden)."
+            },
+            "sensitivity-matrices": {
+                "title": "Känslighetsmatrisval",
+                "area-type-matrices": "Matriser per områdestyp"
+            },
+            "comparison": {
+                "legend-desc": "Bilden visar den relativa skillnaden i total kumulativ belastning mellan grund- och what-if-scenario."
+            }
+        },
+        "highest-impact": {
+            "ecocomponent": "Naturvärden med högst påverkan",
+            "pressure": "Belastningar med högst påverkan"
+        },
+        "sankey": {
+            "title": "Sankey-diagram",
+            "description": "Detta Sankey-diagram visar samabanden mellan belastningar och naturvärden. Flödespilarnas bredd är propotionella mot belastningarnas storlek och deras påverkan på olika naturvärden. Detta gör det möjligt att visa alla data översiktligt i en enda bild. Endast värden på över 1% inkluderas i diagrammet."
+        },
+        "scenario-changes": {
+            "title": "Scenarioparametrar",
+            "percent-change-with": "Procentuell förändring med <strong>{{percent}}%</strong>",
+            "constant-offset-with": "Konstant förändring med <strong>{{offset}}</strong> enheter",
+            "and": "och",
+            "no-changes": "Inga förändringar"
+        },
+        "impact-table": {
+            "ecoComponent": "Påverkan per naturvärde",
+            "pressure": "Påverkan per belastning",
+            "cumulative": "Kumulativt",
+            "percentage-of-total": "Av totalsumman",
+            "relative-diff": "Relativ förändring"
+        },
+        "toolbar": {
+            "export-csv": "Ladda ner CSV",
+            "export-geotiff": "Ladda ner GeoTIFF",
+            "open-in-new-tab": "Öppna i ny flik",
+            "print": "Skriv ut"
+        },
+        "description": "Beräkningar av kumulativ miljöpåverkan är utförda med Havs- och vattenmyndighetens system Symphony.",
+        "more-info": "För mer information om Symphony se",
+        "link": "https://www.havochvatten.se/hav/samordning--fakta/havsplanering/om-havsplanering/vad-ar-havsplanering/symphony---ett-planeringsverktyg-for-havsplanering.html",
+        "fetching-report": "Hämtar rapport...",
+        "error-message": "Ett fel inträffade. Det finns ingen rapport att visa för tillfället – var god testa att göra en ny beräkning."
+    },
+    "hav-components": {
+        "select": {
+            "search": "Sök"
+        }
+    },
+    "footer": "Havs och Vattenmyndigheten"
+}

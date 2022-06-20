@@ -1,0 +1,7 @@
+<app-slider
+  [title]="'map.background-transparency' | translate"
+  [min]="0"
+  [max]="1"
+  [step]="0.01"
+  (input)="onChange($event.target.value)"
+></app-slider>

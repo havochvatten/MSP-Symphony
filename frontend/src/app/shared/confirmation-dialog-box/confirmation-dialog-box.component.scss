@@ -1,0 +1,23 @@
+@import '../../../styles/margins';
+
+:host {
+  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  max-width: 30rem;
+  padding: $xs-margin;
+
+  app-icon-button {
+    align-self: flex-end;
+  }
+
+  .confirmation-dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: $xxs-margin;
+
+    .confirmation-dialog-undo-button {
+      margin-right: $xxs-margin;
+    }
+  }
+}

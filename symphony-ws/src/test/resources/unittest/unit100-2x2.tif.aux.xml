@@ -1,0 +1,26 @@
+<PAMDataset>
+  <Metadata domain="xml:XMP" format="xml">
+    <?xpacket begin="&#xFEFF;" id="W5M0MpCehiHzreSzNTczkc9d"?>
+    <x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="XMP Core 4.4.0-Exiv2">
+      <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+        <rdf:Description rdf:about="" xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/" xmlns:stEvt="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#" xmlns:GIMP="http://www.gimp.org/xmp/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:tiff="http://ns.adobe.com/tiff/1.0/" xmlns:xmp="http://ns.adobe.com/xap/1.0/" xmpMM:DocumentID="gimp:docid:gimp:e3081b35-f064-4556-8b4c-6cdec2034c22" xmpMM:InstanceID="xmp.iid:0043ec3e-1a71-4e61-af5e-065c398f5539" xmpMM:OriginalDocumentID="xmp.did:0d706f10-7799-4f17-b4e5-198bddc8c584" GIMP:API="2.0" GIMP:Platform="Windows" GIMP:TimeStamp="1641556218814032" GIMP:Version="2.10.30" dc:Format="image/tiff" tiff:DateTime="2022:01:07 12:50:18" tiff:ImageLength="2" tiff:ImageWidth="2" tiff:Orientation="1" xmp:CreatorTool="GIMP 2.10">
+          <xmpMM:History>
+            <rdf:Seq>
+              <rdf:li stEvt:action="saved" stEvt:changed="/" stEvt:instanceID="xmp.iid:de104e49-2413-41ee-a59d-1a8eba8b9e2a" stEvt:softwareAgent="Gimp 2.10 (Windows)" stEvt:when="2022-01-07T12:50:18" />
+            </rdf:Seq>
+          </xmpMM:History>
+        </rdf:Description>
+      </rdf:RDF>
+    </x:xmpmeta>
+    <?xpacket end="w"?>
+  </Metadata>
+  <PAMRasterBand band="1">
+    <Metadata>
+      <MDI key="STATISTICS_MAXIMUM">100</MDI>
+      <MDI key="STATISTICS_MEAN">50</MDI>
+      <MDI key="STATISTICS_MINIMUM">0</MDI>
+      <MDI key="STATISTICS_STDDEV">50</MDI>
+      <MDI key="STATISTICS_VALID_PERCENT">100</MDI>
+    </Metadata>
+  </PAMRasterBand>
+</PAMDataset>

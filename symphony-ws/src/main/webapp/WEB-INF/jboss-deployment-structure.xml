@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- jboss-deployment-structure.xml is a JBoss specific deployment descriptor that can be used to control class loading in a fine grained manner.
+     It should be placed in the top level deployment, in META-INF (or WEB-INF for web deployments). -->
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
+   <deployment>
+      <dependencies>
+         <module name="org.hibernate.commons-annotations"/>
+      </dependencies>
+      <exclude-subsystems>
+         <subsystem name="logging"/>
+      </exclude-subsystems>
+   </deployment>
+</jboss-deployment-structure>

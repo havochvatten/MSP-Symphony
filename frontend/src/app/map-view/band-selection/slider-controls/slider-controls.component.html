@@ -1,0 +1,37 @@
+<li *ngIf="band">
+  <div class="controls">
+    <hav-checkbox
+      [label]="band.displayName"
+      [checked]="band.selected"
+      [disabled]="!selectedArea"
+      (check)="onSelect($event, band.statePath)"
+      checkboxSize="small"
+    ></hav-checkbox>
+    <div class="editing">
+      <button
+        (click)="toggleOpen()"
+        [disabled]="!selectedArea || !scenario"
+        [attr.data-active]="open"
+        [attr.aria-label]="'map.editor.band-pressures.intensity-label' | translate"
+        [title]="!scenario ?( 'map.editor.band-pressures.no-scenario-selected' | translate) : ''"
+      >
+        <app-icon iconType="sliders"></app-icon>
+      </button>
+      <app-icon
+        class="toggle-visibility-icon"
+        [attr.data-visible]="band.visible"
+        [iconType]="band.visible ? 'eye' : 'eye-slash'"
+        (click)="onChangeVisible(!band.visible, band.statePath)"
+      ></app-icon>
+    </div>
+  </div>
+  <app-eco-slider
+    *ngIf="open && (selectedArea || band.visible)"
+    [band]="band"
+    [multiplier]="multiplier"
+    [offset]="offset"
+    [statePath]="band.statePath"
+    [selectedArea]="selectedArea"
+    [areaIsVisible]="band.visible"
+  ></app-eco-slider>
+</li>

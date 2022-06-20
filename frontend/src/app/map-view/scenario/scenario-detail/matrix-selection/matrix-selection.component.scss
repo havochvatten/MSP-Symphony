@@ -1,0 +1,58 @@
+:host {
+  display: grid;
+  row-gap: 0.6rem;
+  padding-bottom: 1.5rem;
+
+  section {
+    display: grid;
+    row-gap: 0.6rem;
+
+    h5 {
+      margin-top: 0;
+      margin-bottom: 1.6rem;
+    }
+
+    &::ng-deep {
+      label {
+        padding-left: 0.4rem;
+        font-size: 1.6rem;
+      }
+    }
+
+    article {
+      padding-left: 3.2rem;
+      display: grid;
+      row-gap: 1rem;
+
+      hav-button {
+        width: 100%;
+      }
+
+      ::ng-deep hav-button button {
+        position: relative;
+        hav-spinner {
+          position: absolute;
+          right: 1rem;
+          top: 1px;
+        }
+      }
+    }
+  }
+
+  .loading {
+    margin: auto;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    ::ng-deep hav-spinner {
+      display: flex;
+      justify-content: center;
+    }
+
+    h4 {
+      text-align: center;
+    }
+  }
+}

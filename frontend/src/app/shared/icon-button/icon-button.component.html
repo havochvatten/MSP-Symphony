@@ -1,0 +1,13 @@
+<button
+  [class.on-dark-background]="onDarkBackground"
+  [attr.aria-disabled]="disabled"
+  (click)="!disabled && onClick($event)"
+  (keydown.enter)="!disabled && onEnterKeyDown($event)"
+  (keyup.enter)="!disabled && onEnterKeyUp($event)"
+  ngClass="{{ disabled ? 'disabled' : '' }}"
+  havFocusOutline
+  [addFocusOutlineOnTabKeyboardEvent]="true"
+  [attr.aria-label]="label"
+>
+  <app-icon [iconType]="icon"></app-icon>
+</button>

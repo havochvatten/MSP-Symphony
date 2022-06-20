@@ -1,0 +1,140 @@
+@import 'src/styles/hav-colors';
+@import 'src/styles/margins';
+
+:host {
+  display: block;
+  background-color: white;
+  border-radius: 4px;
+  padding: 3rem 2rem;
+  box-sizing: border-box;
+  width: 90rem;
+  max-width: calc(100vw - 4rem);
+  max-height: calc(100vh - 9rem);
+
+  header {
+    height: 9rem;
+
+    .title {
+      display: flex;
+      flex-wrap: nowrap;
+      margin-bottom: 1rem;
+
+      input {
+        border-radius: 4px;
+        border: 1px solid $hav-darkcoldgrey;
+        padding: 0.4rem 0.8rem;
+        font-size: 2rem;
+      }
+
+      button {
+        margin-left: 1rem;
+        color: $hav-turquoise;
+        background: none;
+        outline: none;
+        border: none;
+        font-weight: 500;
+        font-size: 1.4rem;
+
+        &:hover {
+          cursor: pointer;
+        }
+
+        app-icon {
+          display: inline;
+          font-size: 1.2rem;
+          margin-left: 0.4rem;
+        }
+      }
+    }
+  }
+
+  h2 {
+    font-size: 2rem;
+    margin: 0;
+  }
+  span {
+    display: block;
+    font-size: 1.6rem;
+    margin-bottom: 2rem;
+  }
+
+  main {
+    overflow: auto;
+    max-height: calc(100vh - 9rem - 23rem);
+  }
+  table {
+    border-spacing: unset;
+    border-collapse: collapse;
+
+    tr {
+      &:nth-child(even) {
+        background-color: $hav-coldgrey;
+      }
+
+      th {
+        font-size: 1.4rem;
+        line-height: 1.9rem;
+        font-weight: bold;
+        color: #494949;
+        padding: 0.5rem 0.6rem;
+
+        &[scope='row'], &.empty {
+          text-align: right;
+          padding-left: 3rem;
+          white-space: nowrap;
+          border-right: 1px solid #707070;
+        }
+
+        &[scope='col'], &.empty {
+          border-bottom: 1px solid #707070;
+        }
+      }
+
+      td {
+        padding: 0;
+      }
+
+      th,
+      td {
+        box-sizing: border-box;
+        width: 9rem;
+        min-width: 7rem;
+        vertical-align: middle;
+        text-align: center;
+        border: 1px solid #adadad;
+
+        input {
+          display: flex;
+          font-size: 1.6rem;
+          line-height: 2.1rem;
+          text-align: center;
+          box-sizing: border-box;
+          height: 100%;
+          width: 100%;
+          border: none;
+          background: none;
+        }
+
+        &[data-pressure='true'] {
+          * {
+            font-weight: bold;
+          }
+        }
+      }
+    }
+  }
+
+  .buttons {
+    padding-top: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    .right {
+      display: flex;
+      justify-content: flex-end;
+      & > * {
+        margin-left: 1.2rem;
+      }
+    }
+  }
+}

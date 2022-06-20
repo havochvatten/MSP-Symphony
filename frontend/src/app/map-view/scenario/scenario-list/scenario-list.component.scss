@@ -1,0 +1,158 @@
+@import '../../../../styles/constants';
+@import '../../../../styles/hav-colors';
+@import '../../../../styles/margins';
+@import 'src/styles/paddings';
+
+$button-height: 6rem;
+$buttons-row-gap: 1rem;
+
+:host {
+  section {
+    width: 100%;
+    height: calc(100vh - #{$header-height} - 0.8rem);
+
+    display: flex;
+    flex-direction: column;
+
+    h2 {
+      margin: 0;
+    }
+
+    .area-name {
+      color: #818181;
+    }
+
+    .title-container {
+      display: flex;
+      justify-content: space-between;
+
+      h3 {
+        margin: 0;
+        margin-bottom: 1rem;
+      }
+
+      app-icon-button {
+        font-size: 2.6rem;
+        margin-right: 1rem;
+        margin-bottom: 1rem;
+      }
+    }
+
+    .divider {
+      height: 1px;
+      width: 100%;
+      background-color: #ddd;
+    }
+
+    main {
+      flex: 1 1;
+      margin: 2rem 0 2rem 0;
+      box-sizing: border-box;
+
+      display: grid;
+      grid-template-columns: 100%;
+      row-gap: $buttons-row-gap;
+      grid-auto-rows: min-content;
+      overflow-x: hidden;
+      overflow-y: auto;
+
+      .scenario {
+        box-sizing: border-box;
+        background: none;
+        border: 1px solid #707070;
+        padding: 0.4rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: nowrap;
+        height: $button-height;
+        max-width: 100%;
+
+        &:hover {
+          cursor: pointer;
+          background-color: $hav-turquoise;
+
+          .scenario-info h4, .scenario-info span, app-icon {
+            color: white;
+          }
+        }
+
+        .scenario-info {
+          display: flex;
+          flex-direction: column;
+          box-sizing: border-box;
+          padding: 0 1rem;
+          max-width: calc(100% - 4rem);
+
+          h4 {
+            margin: 0;
+            text-align: left;
+            font: Medium 1.4rem/1.3rem;
+            line-height: 1.9rem;
+            color: #232323;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            display: inline-block;
+          }
+
+          .name {
+            display: flex;
+            flex-direction: row;
+
+            app-icon {
+              display: none;
+              font-size: 1.2rem;
+              margin-left: 0.4rem;
+            }
+
+            input { // TODO grow to 100%
+              border-radius: 4px;
+              border: 1px solid $hav-darkcoldgrey;
+              margin-left: -3px;
+              font-size: 1.6rem;
+              flex: 1;
+            }
+          }
+
+          span {
+            text-align: left;
+            font: Medium 1rem/1.3rem;
+            letter-spacing: 0;
+            color: #919191;
+          }
+        }
+
+        app-icon {
+          color: $hav-turquoise;
+          font-size: 4rem;
+        }
+
+        ::ng-deep app-status-icon svg {
+          height: 3rem;
+          width: 3rem;
+          margin-right: 0.5rem;
+        }
+      }
+    }
+
+    #no-scenarios {
+      text-align: center;
+      span {
+        display: inline-block;
+        box-sizing: border-box;
+        height: 2.8rem;
+        font-size: 1.6rem;
+        letter-spacing: 0;
+        font-weight: 400;
+        color: #818181;
+        padding: 5rem 0;
+
+        app-icon {
+          color: $hav-turquoise;
+          font-size: 4.2rem;
+        }
+      }
+    }
+  }
+}

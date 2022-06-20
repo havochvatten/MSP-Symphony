@@ -1,0 +1,14 @@
+<script src="../../../data/area/area.service.ts"></script><h3>{{ 'map.user-area.create.modal.title' | translate }}</h3>
+<input
+  [value]="areaName"
+  (input)="onChange($event.target.value)"
+  [placeholder]="'map.user-area.create.modal.placeholder' | translate"
+/>
+<div>
+  <hav-button stateType="alert" buttonType="secondary" (click)="close()">{{
+    'map.user-area.create.modal.close' | translate
+  }}</hav-button>
+  <hav-button (click)="save()" [disabled]="areaName.length === 0">{{
+    'map.user-area.create.modal.save' | translate
+  }}</hav-button>
+</div>

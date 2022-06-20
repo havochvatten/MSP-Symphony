@@ -1,0 +1,103 @@
+@import '../../../styles/constants';
+@import '../../../styles/hav-colors';
+@import '../../../styles/margins';
+
+$border: 1px solid 1px solid #979797;
+$icon-margin: 1rem;
+$shadow: rgba(0, 0, 0, 0.5);
+
+:host {
+  overflow: visible;
+  height: 100%;
+  .slide-view {
+    height: 100%;
+    box-sizing: border-box;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: visible;
+
+    .icon-bar {
+      box-sizing: border-box;
+      height: 2rem;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      color: #828282;
+      position: relative;
+
+      app-icon {
+        position: absolute;
+        right: 0;
+        top: 0;
+        font-size: 3.6rem;
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+
+    .nav-tabs {
+      position: absolute;
+      top: 2rem;
+      width: 4rem;
+      a {
+        //z-index: -1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 4rem;
+        height: 4.4rem;
+        font-size: 2.3rem;
+        color: white;
+        background-color: $hav-turquoise;
+        transition: width ease-in-out 200ms;
+        &.active, &:hover {
+          width: 4.4rem;
+          background-color: white;
+          color: $hav-turquoise;
+        }
+        &:not(:last-child) {
+          margin-bottom: 0.8rem;
+        }
+        &:not(.active) {
+          cursor: pointer;
+        }
+      }
+    }
+
+    &[data-position='left'] {
+      border-right: $border;
+      //box-shadow: -2px 0 4px 0 $shadow;
+      .nav-tabs {
+        right: -4rem;
+        a {
+          //box-shadow: 2px 0 4px 0 $shadow;
+          border-radius: 0 4px 4px 0;
+        }
+      }
+      .icon-bar {
+        justify-content: flex-end;
+        padding-right: $icon-margin;
+      }
+    }
+
+    &[data-position='right'] {
+      border-left: $border;
+      //box-shadow: 2px 0 4px 0 $shadow;
+
+      .nav-tabs {
+        left: -4rem;
+        direction: rtl;
+        a {
+          border-radius: 4px 0 0 4px;
+        }
+      }
+      .icon-bar {
+        padding-left: $icon-margin;
+      }
+    }
+  }
+}

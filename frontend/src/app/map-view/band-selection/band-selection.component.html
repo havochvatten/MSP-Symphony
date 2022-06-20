@@ -1,0 +1,23 @@
+<app-selection-layout
+  [title]="title"
+  [selectedAreaName]="
+    (selectedArea | async)
+      ? (selectedArea | async)?.displayName
+      : ('map.no-selected-area' | translate)
+  "
+  [searchLabel]="label | translate"
+  [searchValue]="search"
+  [onSearch]="onSearch"
+  [searchPlaceholder]="placeholder | translate"
+>
+  <app-checkbox-accordion
+    *ngFor="let group of filteredGroups; trackBy: displayName"
+    [title]="group.displayName"
+    [bands]="group.properties"
+    [searching]="search.length > 0"
+    [change]="onChange"
+    [changeVisible]="onChangeVisible"
+    [selectedArea]="selectedArea | async"
+  ></app-checkbox-accordion>
+  <p *ngIf="filteredGroups.length === 0">{{ 'map.eco-component.search.no-matches' | translate}}</p>
+</app-selection-layout>

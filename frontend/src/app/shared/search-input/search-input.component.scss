@@ -1,0 +1,42 @@
+:host {
+  label {
+    display: flex;
+    flex-direction: column;
+    font-size: 1.4rem;
+    line-height: 1.9rem;
+    color: #494949;
+    margin-bottom: 0.8rem;
+  }
+
+  div {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    max-width: 40rem;
+    height: 4.4rem;
+    padding-left: 1.6rem;
+    padding-right: 1rem;
+    border-radius: 0.4rem;
+    border: 1px solid rgba(9, 45, 75, 0.3);
+    font-size: 1.6rem;
+
+    input {
+      border: none;
+      flex: 1;
+      padding-right: 1rem;
+      color: #505050;
+      font-size: inherit;
+      line-height: 2.1rem;
+
+      &:focus {
+        outline: none;
+      }
+    }
+
+    app-icon {
+      font-size: 1.6rem;
+    }
+  }
+}

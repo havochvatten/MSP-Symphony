@@ -1,0 +1,34 @@
+@import '../../../styles/constants';
+@import '../../../styles/hav-colors';
+@import '../../../styles/margins';
+
+:host {
+  position: relative;
+  padding-left: 6px;
+
+  select {
+    box-sizing: border-box;
+    appearance: none;
+    min-width: 20rem;
+    height: 4.5rem;
+    border: 1px solid #707070;
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: #232323;
+    padding: 0 0.6rem;
+    margin: 0.6rem 0;
+    width: calc(100% - #{$s-margin});
+
+    option {
+      font-size: 1.4rem;
+    }
+  }
+
+  app-icon {
+    position: absolute;
+    right: 0.6rem;
+    top: -0.8rem;
+    font-size: 2.2rem;
+  }
+}

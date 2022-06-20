@@ -1,0 +1,68 @@
+<div *ngIf="messages.length > 0" class="container">
+  <article>
+    <div>
+      <ng-container [ngSwitch]="messages[0].type">
+        <ng-container *ngSwitchCase="'INFO'">
+          <ng-container *ngTemplateOutlet="INFO"></ng-container>
+        </ng-container>
+        <ng-container *ngSwitchCase="'SUCCESS'">
+          <ng-container *ngTemplateOutlet="SUCCESS"></ng-container>
+        </ng-container>
+        <ng-container *ngSwitchCase="'ERROR'">
+          <ng-container *ngTemplateOutlet="ERROR"></ng-container>
+        </ng-container>
+        <ng-container *ngSwitchCase="'WARNING'">
+          <ng-container *ngTemplateOutlet="WARNING"></ng-container>
+        </ng-container>
+      </ng-container>
+      <h3>{{ messages[0].title || ('popup-message.'+messages[0].type | translate)}}</h3>
+      <p [innerHTML]="messages[0].message"></p>
+    </div>
+    <hav-button (click)="removeMessage(messages[0].uuid)">Ok</hav-button>
+  </article>
+</div>
+
+<ng-template #INFO>
+  <svg width="42" height="42" viewBox="0 0 42 42">
+    <title>icon-message-info</title>
+    <path d="M21.69,28H19.31V17.43h2.38Zm0-13.15H19.31V12.77h2.38Z" fill="#005f88" />
+    <circle cx="21" cy="21" r="21" fill="none" />
+    <circle cx="21" cy="21" r="20.5" fill="none" stroke="#005f88" />
+  </svg>
+</ng-template>
+
+<ng-template #SUCCESS>
+  <svg width="42" height="42" viewBox="0 0 42 42">
+    <title>icon-message-success</title>
+    <circle cx="21" cy="21" r="21" fill="none" />
+    <circle cx="21" cy="21" r="20.5" fill="none" stroke="#227e00" />
+    <rect x="9" y="9" width="24" height="24" fill="none" />
+    <path
+      d="M19,26.42l-5-5L15.41,20,19,23.59,26.59,16,28,17.42Z"
+      fill="#227e00"
+      fill-rule="evenodd"
+    />
+  </svg>
+</ng-template>
+
+<ng-template #ERROR>
+  <svg width="42" height="42" viewBox="0 0 42 42">
+    <title>icon-message-error</title>
+    <path d="M9,9H33V33H9Z" fill="none" />
+    <path
+      d="M26,17.46,22.41,21,26,24.54A1,1,0,0,1,24.54,26L21,22.41,17.46,26a1,1,0,0,1-1.41-1.41L19.59,21l-3.54-3.54a1,1,0,0,1,1.41-1.41L21,19.59l3.54-3.54A1,1,0,0,1,26,17.46Z"
+      fill="#f7220b"
+    />
+    <circle cx="21" cy="21" r="21" fill="none" />
+    <circle cx="21" cy="21" r="20.5" fill="none" stroke="#f7220b" />
+  </svg>
+</ng-template>
+
+<ng-template #WARNING>
+  <svg width="42" height="42" viewBox="0 0 42 42">
+    <title>icon-message-warning</title>
+    <path d="M21.7,23.2H19.33V13.78H21.7Zm0,4.8H19.33V25.72H21.7Z" fill="#eb7d32" />
+    <circle cx="21" cy="21" r="21" fill="none" />
+    <circle cx="21" cy="21" r="20.5" fill="none" stroke="#eb7d32" />
+  </svg>
+</ng-template>

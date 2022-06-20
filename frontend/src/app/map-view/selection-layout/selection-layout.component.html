@@ -1,0 +1,15 @@
+<section>
+  <div>
+    <h2>{{ title }}</h2>
+    <span *ngIf="selectedAreaName">{{ selectedAreaName }}</span>
+  </div>
+  <app-search-input
+    [label]="searchLabel"
+    [value]="searchValue"
+    [onChange]="onSearch"
+    [placeholder]="searchPlaceholder"
+  ></app-search-input>
+  <main>
+    <ng-content></ng-content>
+  </main>
+</section>

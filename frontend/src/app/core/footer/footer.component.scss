@@ -1,0 +1,22 @@
+@import '../../../styles/constants';
+@import '../../../styles/hav-colors';
+@import '../../../styles/margins';
+
+footer {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.6rem;
+  user-select: none;
+  padding-bottom: 1.2rem;
+}

@@ -1,0 +1,59 @@
+<div class="loading" *ngIf="!loaded">
+  <hav-spinner spinnerSize="medium"></hav-spinner>
+  <h4>{{ 'map.editor.fetching-matrices' | translate}}</h4>
+</div>
+
+<section *ngIf="loaded">
+  <hav-radio-button
+    radioButtonSize="medium"
+    [label]="standardLabel"
+    [checked]="matrixOption === 'STANDARD'"
+    (check)="check('STANDARD')"
+  >
+  </hav-radio-button>
+  <article *ngIf="hasAreaTypes()">
+    <hav-select [disabled]="matrixOption !== 'STANDARD'"
+                noItemSelectedLabel="{{ 'map.editor.matrix.choose-area-type' | translate }}"
+                (selectedChanged)="areaTypeSelect($event)">
+      <hav-select-item *ngFor="let areaType of areaTypes" [value]="areaType">
+        {{ areaType.name }}
+      </hav-select-item>
+    </hav-select>
+
+    <hav-select *ngIf="hasAreaTypes()" [disabled]="matrixOption !== 'STANDARD' || !selectedAreaType"
+                noItemSelectedLabel="{{ 'map.editor.matrix.choose-area-type-matrix' | translate }}"
+                (selectedChanged)="areaTypeMatrixSelect($event)">
+      <hav-select-item *ngFor="let matrix of areaTypeMatrixOptions" [value]="matrix">
+        {{ matrix.name }}
+      </hav-select-item>
+    </hav-select>
+  </article>
+</section>
+
+<section *ngIf="loaded">
+  <hav-radio-button
+    radioButtonSize="medium"
+    label="{{'map.editor.matrix.user-matrix' | translate}}"
+    [checked]="matrixOption === 'CUSTOM'"
+    (check)="check('CUSTOM')"
+  >
+  </hav-radio-button>
+  <article>
+    <hav-select [disabled]="matrixOption !== 'CUSTOM'"
+                (selectedChanged)="customSelect($event)"
+                noItemSelectedLabel="Välj matris">
+      <hav-select-item *ngFor="let matrix of matrixOptions" [value]="matrix">
+        {{ matrix.name }}
+      </hav-select-item>
+    </hav-select>
+    <hav-button
+      buttonType="secondary"
+      [disabled]="matrixOption !== 'CUSTOM'"
+      (click)="editMatrix()"
+    >
+      {{'map.editor.matrix.edit-matrix' | translate}}
+      <hav-spinner *ngIf="loadingMatrix" spinnerSize="small"></hav-spinner>
+    </hav-button>
+  </article>
+</section>
+

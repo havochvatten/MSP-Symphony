@@ -1,0 +1,123 @@
+<section class="padded-container">
+  <div class="title">
+    <h2 *ngIf="!editName" (click)="editTheName()">{{ scenario.name }}</h2>
+    <input *ngIf="editName" #name type="text" [value]="scenario.name"
+           (keydown.enter)="onChangeName($event.target.value)"
+           (blur)="onChangeName($event.target.value)">
+    <button (click)="editTheName()">
+      <app-icon iconType="edit"></app-icon>
+    </button>
+  </div>
+
+  <main>
+    <section class="scenario-changes">
+      <h3>Scenario Changes</h3>
+      <!--    TODO show reset button on hover, like user-defined areas-->
+      <ng-container *ngIf="hasChanges(); else noChanges">
+        <div id="areas-list">
+          <app-accordion-box *ngFor="let feature of scenario.changes.features; index as featureIndex; trackBy: featureId">
+                             <!--open="{{ featureHasChanges(feature) }}">-->
+            <!--TODO flash/shade area on map on hover here -->
+            <app-accordion-box-header>
+              <div class="area-title">{{ feature.properties['title'] }}</div>
+              <app-icon *ngIf="env.map.colorCodeIntensityChanges" class="toggle-visibility-icon"
+                        [iconType]="feature.properties['visible'] ? 'eye' : 'eye-slash'"
+                        (click)="toggleFeatureVisibility(feature, featureIndex)">
+              </app-icon>
+            </app-accordion-box-header>
+            <!-- And select scenario area on click and move to tab? -->
+            <app-accordion-box-content>
+              <div *ngFor="let change of feature.properties['changes'] | keyvalue" class="change">
+                <div class="band-name">{{ change.key }}</div>
+                <div class="spec">
+                      <span *ngIf="change.value['multiplier']" class="multiplier">
+                        {{ change.value.multiplier - 1 > 0 ? '+' : '' }}{{
+                        convertMultiplierToPercent(change.value.multiplier) | percent: '.0' }}
+                      </span>
+                  <span *ngIf="change.value['offset']" class="offset">
+                        {{ change.value.offset > 0 ? '+' : '' }}{{ change.value.offset | number: '.0' }}
+                      </span>
+                </div>
+                <div class="icons">
+                  <app-icon class="delete-change-icon" iconType="times"
+                            [title]="'map.editor.changes.clear-change' | translate"
+                            (click)="deleteChange(featureIndex, change.key)">
+                  </app-icon>
+                </div>
+              </div>
+            </app-accordion-box-content>
+          </app-accordion-box>
+        </div>
+      </ng-container>
+      <ng-template #noChanges>
+        <div id="no-changes">
+          <span style="font-style: italic">
+            <app-icon iconType="info-circle"></app-icon>
+            {{ 'map.editor.changes.no-changes' | translate }}
+          </span>
+          <!-- Todo links to jump to respective tabs? -->
+          <p>{{ 'map.editor.changes.make-changes-hint' | translate }}</p>
+        </div>
+      </ng-template>
+    </section>
+
+    <section class="sensitivity-matrix">
+      <h3>{{ 'map.editor.matrix.sensitivity-matrix' | translate }}</h3>
+      <app-matrix-selection
+        (areaTypeSelected)="onAreaTypeSelection($event)"
+        (matrixOverridden)="onMatrixOverride($event)"
+      >
+      </app-matrix-selection>
+    </section>
+
+    <section class="normalization"> <!--Wrap in accordion-box?-->
+      <h3>{{ 'map.editor.normalization.title' | translate }}</h3>
+      <app-normalization-selection [options]="scenario.normalization"
+        (modeSelectionEvent)="setNormalizationOptions($event)">
+      </app-normalization-selection>
+    </section>
+
+    <section class="coastal-area" *ngIf="associatedCoastalArea">
+      <h3>Coastal Area</h3>
+      <hav-checkbox id="coast-checkbox" checkboxSize="small"
+                    [checked]="this.areaCoastMatrices !== undefined"
+                    [label]="'map.editor.include-coast' | translate" (check)="onCheckIncludeCoast($event)">
+      </hav-checkbox>
+    </section>
+  </main>
+
+  <!-- Temporary button for debugging.-->
+<!--
+  <hav-button *ngIf="!env.production"
+              id="save" buttonType="secondary" (click)="save()">
+    Save
+  </hav-button>
+-->
+</section>
+
+<div class="toolbar">
+
+  <hav-button id="exit" buttonType="tertiary" (click)="close()">
+    {{ 'map.editor.close' | translate }}
+  </hav-button>
+
+  <hav-button id="delete" buttonType="secondary" stateType="alert" (click)="delete()">
+    {{ 'map.editor.delete.label' | translate }}
+  </hav-button>
+
+  <!-- TODO disable if no parameter changes made since last calculation? -->
+  <hav-button id="calculate"
+              buttonType="primary"
+              [disabled]="!scenario.matrix || (calculating$ | async)"
+              (click)="calculate()"
+  >
+    {{ 'map.editor.calculate' | translate }}
+  </hav-button>
+
+  <hav-button class="report-button" stateType="success"
+              (click)="showReport(scenario.latestCalculation)"
+              [disabled]="!scenario.latestCalculation">
+    <hav-spinner *ngIf="calculating$ | async" spinnerSize="small" spinnerColor="#22bb00"></hav-spinner>
+    <app-icon *ngIf="!(calculating$ | async)" iconType="report"></app-icon>
+  </hav-button>
+</div>

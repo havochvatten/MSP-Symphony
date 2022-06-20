@@ -1,0 +1,7 @@
+<ng-container *ngIf="activeScenario !== undefined; then scenarioDetail else scenarioList"></ng-container>
+<ng-template #scenarioList>
+  <app-scenario-list></app-scenario-list>
+</ng-template>
+<ng-template #scenarioDetail>
+  <app-scenario-detail [scenario]="activeScenario"></app-scenario-detail>
+</ng-template>

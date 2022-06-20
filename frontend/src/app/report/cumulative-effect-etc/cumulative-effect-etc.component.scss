@@ -1,0 +1,71 @@
+:host {
+  display: block;
+  max-width: 300px;
+
+  h4 {
+    margin-bottom: 2mm;
+    font-weight: 600;
+  }
+
+  h4:first-child {
+    margin-top: 0;
+  }
+
+  h5 {
+    margin-top: 3mm;
+    margin-bottom: 2mm;
+    font-weight: 600;
+  }
+
+  table {
+    tr {
+      font-size: 12px;
+      line-height: 17px;
+
+      th {
+        font-weight: 500;
+        text-align: left;
+        padding-left: 0;
+        margin-right: 25px;
+        width: 10em;
+      }
+      th:not(:first-child) {
+        text-align: center;
+      }
+    }
+    tr.ruled>* {
+      border-top: 1px solid;
+    }
+  }
+
+  table.totals {
+    border-collapse: collapse;
+    tr {
+      line-height: 20px; /* compensate for collapsed borders */
+    }
+  }
+
+  p {
+    font-size: 14px;
+  }
+
+  fn {
+    display: block;
+    position: relative;
+
+    margin-top: 2rem;
+    font-size: 12px;
+    line-height: 18px;
+    hyphens: auto;
+
+    .star {
+      position: absolute;
+      top: 0;
+      left: -1rem;
+    }
+  }
+
+  @media print {
+    color-adjust: exact;
+  }
+}

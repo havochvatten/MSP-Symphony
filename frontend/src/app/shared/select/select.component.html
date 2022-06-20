@@ -1,0 +1,9 @@
+<select>
+  <option
+    *ngFor="let option of options"
+    [selected]="option.selected"
+  >
+    {{ option.label }}
+  </option>
+</select>
+<app-icon iconType="chevron-down"></app-icon>

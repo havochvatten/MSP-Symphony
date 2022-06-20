@@ -1,0 +1,64 @@
+<div class="result-info-panel"></div>
+<!--TODO Migrate to use routerLinks instead-->
+<app-slide-view position="left" [open]="leftSidebarIsOpen" (toggle)="toggleLeftSidebar()">
+  <app-slide-view-tab [title]="'map.areas' | translate" icon="globe">
+    <app-area-selection
+      [areas]="areas | async"
+      [drawUserArea]="toggleDrawArea"
+      [zoomToArea]="zoomToArea"
+    ></app-area-selection>
+  </app-slide-view-tab>
+  <app-slide-view-tab [title]="'map.ecosystems' | translate" icon="fish">
+    <app-band-selection
+      bandType="ecoComponents"
+      [title]="'map.ecosystems' | translate"
+      [bandGroups]="$any(metadata | async).ecoComponent"
+    ></app-band-selection>
+  </app-slide-view-tab>
+  <app-slide-view-tab [title]="'map.pressures' | translate" icon="human">
+    <app-band-selection
+      bandType="pressures"
+      [title]="'map.pressures' | translate"
+      [bandGroups]="$any(metadata | async).pressureComponent"
+    ></app-band-selection>
+  </app-slide-view-tab>
+  <app-slide-view-tab [title]="'map.editor.title' | translate" icon="calculate">
+<!--    <router-outlet></router-outlet>-->
+    <app-scenario-editor></app-scenario-editor> <!-- Add [named?] router-outlet?-->
+  </app-slide-view-tab>
+  <app-slide-view-tab [title]="'map.history.title' | translate" icon="report">
+    <app-history></app-history>
+  </app-slide-view-tab>
+  <app-slide-view-tab [title]="'map.compare.title' | translate" icon="compare">
+    <app-comparison></app-comparison>
+  </app-slide-view-tab>
+  <div id="map-overlay">
+    <div
+      *ngIf="
+        (legends$ | async).result || (legends$ | async).ecosystem || (legends$ | async).pressure
+      "
+      class="color-scale-container"
+    >
+      <app-result-color-scale
+        *ngIf="(legends$ | async).result"
+        [title]="'map.color-scale.result' | translate"
+        [colors]="(legends$ | async).result.colorMap"
+        [unit]="(legends$ | async).result.unit"
+      ></app-result-color-scale>
+      <app-result-color-scale
+        *ngIf="(legends$ | async).ecosystem"
+        [title]="'map.color-scale.ecosystem' | translate"
+        [colors]="(legends$ | async).ecosystem.colorMap"
+        [unit]="(legends$ | async).ecosystem.unit"
+      ></app-result-color-scale>
+      <app-result-color-scale
+        *ngIf="(legends$ | async).pressure"
+        [title]="'map.color-scale.pressure' | translate"
+        [colors]="(legends$ | async).pressure.colorMap"
+        [unit]="(legends$ | async).pressure.unit"
+      ></app-result-color-scale>
+    </div>
+    <div id="scale-container"></div>
+  </div>
+</app-slide-view>
+<app-map [mapCenter]="[14.94, 60.57]"></app-map>

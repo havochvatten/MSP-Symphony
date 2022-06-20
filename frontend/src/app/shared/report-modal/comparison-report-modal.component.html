@@ -1,0 +1,14 @@
+<nav>
+  <h2>{{ 'report.comparison.title' | translate}}</h2>
+  <app-icon-button icon="times" label="close" (click)="close()"></app-icon-button>
+</nav>
+<iframe #frame [src]="getSafeUrl()"></iframe>
+<div class="toolbar">
+  <hav-button id="open-in-new-tab" buttonType="tertiary" (click)="open()">
+    {{ 'report.toolbar.open-in-new-tab' | translate }}
+  </hav-button>
+  <!--Add geotiff download? (Store last diff image in user session) -->
+  <hav-button (click)="print()">
+    {{ 'report.toolbar.print' | translate }}
+  </hav-button>
+</div>

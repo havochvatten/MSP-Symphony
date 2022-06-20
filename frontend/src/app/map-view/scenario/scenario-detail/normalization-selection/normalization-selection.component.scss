@@ -1,0 +1,41 @@
+:host {
+
+  section {
+    display: flex;
+    flex-direction: column;
+
+    p {
+      margin-top: 0;
+    }
+
+    hav-radio-button {
+      margin: 0.4rem 0;
+    }
+
+    &::ng-deep {
+      label {
+        padding-left: 1rem;
+        font-size: 1.6rem;
+      }
+    }
+
+    .user-defined {
+      margin-top: 1.6rem;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      label {
+        flex: 0;
+        margin-right: 1rem;
+      }
+
+      input {
+        flex: 1;
+        font-size: 1.6rem;
+        line-height: 3.1rem;
+        padding-left: 1rem;
+      }
+    }
+  }
+}

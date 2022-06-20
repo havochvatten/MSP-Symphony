@@ -1,0 +1,44 @@
+<ng-container *ngIf="!searching">
+  <div class="title-container">
+    <h3>{{ title }}</h3>
+    <fa-icon *ngIf="importArea"
+             [icon]="faCloudUpload"
+             [title]="'map.user-area.upload.label' | translate"
+             (click)="importArea()"
+    ></fa-icon>
+  </div>
+  <div class="divider"></div>
+</ng-container>
+<ul *ngIf="areas.length > 0; else noAreas">
+  <li
+    *ngFor="let group of areas"
+    [attr.data-visible]="group.visible"
+    (click)="updateVisible(group.statePath)"
+  >
+    <div class="group-title">
+      <span>
+        <app-icon [iconType]="group.visible ? 'eye' : 'eye-slash'"></app-icon>
+        {{ group.name }}
+      </span>
+      <app-edit-area
+        *ngIf="drawUserArea"
+        [renameUserArea]="onRenameUserArea(group)"
+        [deleteUserArea]="onDeleteUserArea(group.id, group.name)"
+      ></app-edit-area>
+    </div>
+    <ul *ngIf="searching" class="area-list">
+      <li
+        *ngFor="let area of group.areas"
+        [attr.data-selected]="area.statePath === selectedArea"
+        (click)="onSelectArea(area.statePath, group.visible, group.statePath); $event.stopPropagation()"
+      >
+        <app-icon iconType="enter-arrow"></app-icon>
+        {{ area.displayName }}
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<ng-template #noAreas>
+  <p>{{ 'map.area.no-areas' | translate }}</p>
+</ng-template>

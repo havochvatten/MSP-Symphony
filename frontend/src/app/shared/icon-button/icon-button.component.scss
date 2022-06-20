@@ -1,0 +1,45 @@
+@import '../../../styles/hav-colors';
+
+$primary-disabled-bg-grey: darken(#d4d4d4, 10);
+
+:host {
+  font-size: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+    color: $dark-blue;
+    min-height: 3rem;
+    outline: none;
+    padding: 0;
+    transition: color 100ms ease-in-out;
+    min-width: 3rem;
+    font-size: inherit;
+
+    fa-icon {
+      font-size: inherit;
+    }
+
+    &:not(.disabled):hover {
+      cursor: pointer;
+
+      &:not(.on-dark-background) {
+        color: lighten($dark-blue, 5);
+      }
+    }
+
+    &.on-dark-background {
+      color: white;
+    }
+
+    &.disabled {
+      color: $primary-disabled-bg-grey;
+    }
+  }
+}
+

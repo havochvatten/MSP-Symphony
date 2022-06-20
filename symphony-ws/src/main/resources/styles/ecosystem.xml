@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld
+http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd" version="1.0.0">
+  <NamedLayer>
+	<Name></Name>
+	<UserStyle>
+	  <Title>Symphony ecosystem services style</Title>
+	  <FeatureTypeStyle>
+		<Rule>
+		  <RasterSymbolizer>
+			<ColorMap type="intervals">
+			  <ColorMapEntry color="#cbff02" quantity="1" opacity="0"/>
+			  <ColorMapEntry color="#cbff02" quantity="5"/>
+			  <ColorMapEntry color="#b6f005" quantity="10"/>
+			  <ColorMapEntry color="#a2e704" quantity="15"/>
+			  <ColorMapEntry color="#8edc03" quantity="20"/>
+			  <ColorMapEntry color="#78d102" quantity="25"/>
+			  <ColorMapEntry color="#63c702" quantity="30"/>
+			  <ColorMapEntry color="#4bbb01" quantity="35"/>
+			  <ColorMapEntry color="#39b302" quantity="70"/>
+			  <ColorMapEntry color="#22a700" quantity="90"/>
+			  <ColorMapEntry color="#039800" quantity="100"/>
+			</ColorMap>
+		  </RasterSymbolizer>
+		</Rule>
+	  </FeatureTypeStyle>
+	</UserStyle>
+  </NamedLayer>
+</StyledLayerDescriptor>

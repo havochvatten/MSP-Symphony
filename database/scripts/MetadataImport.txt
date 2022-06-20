@@ -1,0 +1,24 @@
+#Import Metadata Belastningar
+psql -U symphony -d symphony -h localhost -p 5432 -c "copy symphony.metadata(meta_bandnumber, meta_multifname, meta_metadatafilename, meta_rasterfilename, meta_symphonycategory, meta_symphonyteam, meta_symphonyteamlocal, meta_symphonydatatype, meta_marineplanearea, meta_title, meta_titlelocal, meta_datecreated, meta_datepublished, meta_resourcetype, meta_format, meta_summary, meta_summarylocal, meta_limitationsforsymphony, meta_recommendations, meta_lineage, meta_status, meta_authororganisation, meta_authoremail, meta_dataowner, meta_dataownerlocal, meta_owneremail, meta_topiccategory, meta_descriptivekeywords, meta_theme, meta_temporalperiod, meta_uselimitations, meta_accessuserestrictions, meta_otherrestrictions, meta_mapacknowledgement, meta_securityclassification, meta_maintenanceinformation, meta_spatialrepresentation, meta_rasterspatialreferencesystem, meta_metadatadate, meta_metadataorganisation, meta_metadataorganisationlocal, meta_metadataemail, meta_metadatalanguage) FROM '/home/user/Belastningar.csv' encoding 'UTF8' DELIMITER ';' CSV HEADER";
+
+
+#Import Metadata Ekokomponenter
+psql -U symphony -d symphony -h localhost -p 5432 -c "copy symphony.metadata(meta_bandnumber, meta_multifname, meta_metadatafilename, meta_rasterfilename, meta_symphonycategory, meta_symphonyteam, meta_symphonyteamlocal, meta_symphonydatatype, meta_marineplanearea, meta_title, meta_titlelocal, meta_datecreated, meta_datepublished, meta_resourcetype, meta_format, meta_summary, meta_summarylocal, meta_limitationsforsymphony, meta_recommendations, meta_lineage, meta_status, meta_authororganisation, meta_authoremail, meta_dataowner, meta_dataownerlocal, meta_owneremail, meta_topiccategory, meta_descriptivekeywords, meta_theme, meta_temporalperiod, meta_uselimitations, meta_accessuserestrictions, meta_otherrestrictions, meta_mapacknowledgement, meta_securityclassification, meta_maintenanceinformation, meta_spatialrepresentation, meta_rasterspatialreferencesystem, meta_metadatadate, meta_metadataorganisation, meta_metadataorganisationlocal, meta_metadataemail, meta_metadatalanguage) FROM '/home/user/Ekokomponenter.csv' encoding 'UTF8' DELIMITER ';' CSV HEADER";
+
+
+# IMPORTANT update bandnumber after import
+update symphony.metadata set meta_bandnumber = meta_bandnumber -1;
+
+--
+-- set baseLineVersionId (change variable first)
+--
+do
+$$
+declare
+	--Change to new version
+	baseLineVersionId integer := 1;  
+begin
+	UPDATE symphony.metadata set meta_sver_id = baseLineVersionId where meta_sver_id is null;
+	UPDATE symphony.metadata set meta_defaultselected= false WHERE meta_symphonycategory = 'Pressure' AND meta_symphonyteam = 'Climate Change';
+end $$ LANGUAGE plpgsql;
+

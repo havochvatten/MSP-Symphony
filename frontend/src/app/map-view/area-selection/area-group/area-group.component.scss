@@ -1,0 +1,126 @@
+@import '../../../../styles/constants';
+@import '../../../../styles/hav-colors';
+@import '../../../../styles/margins';
+
+:host {
+  .title-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+
+    h3 {
+      margin: 0;
+      margin-bottom: 1rem;
+    }
+
+    fa-icon {
+      font-size: 1.6rem;
+      margin-right: 1rem;
+      color: $hav-turquoise;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+  .divider {
+    height: 1px;
+    width: 100%;
+    background-color: #ddd;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    li {
+      user-select: none;
+      .group-title {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.6rem 1rem;
+        font-size: 1.6rem;
+        height: 2rem;
+        app-icon {
+          margin-right: 1rem;
+          width: 2rem;
+        }
+        span {
+          display: flex;
+          flex-wrap: nowrap;
+          align-items: center;
+        }
+        &:hover > app-edit-area {
+          display: block;
+        }
+        app-edit-area {
+          display: none;
+          position: relative;
+        }
+      }
+
+      &[data-visible='true'] .group-title {
+        color: $hav-turquoise;
+      }
+
+      &:hover {
+        cursor: pointer;
+      }
+
+      ul.area-list {
+        padding-left: 3rem;
+
+        li {
+          display: flex;
+          flex-wrap: nowrap;
+          align-items: center;
+          font-size: 1.4rem;
+
+          &[data-selected='true'] {
+            color: $hav-turquoise;
+          }
+
+          app-icon {
+            transform: rotateY(180deg);
+            margin-right: 1rem;
+          }
+        }
+      }
+    }
+  }
+
+  .edit-icon {
+    font-size: 1.4rem;
+    &[data-active='true'] {
+      box-shadow: 0 0 3px #999;
+      background-color: $hav-turquoise;
+      ::ng-deep app-icon {
+        color: white;
+      }
+    }
+  }
+
+  .edit-options {
+    position: absolute;
+    right: 3rem;
+    bottom: 0;
+    background-color: white;
+    width: 16rem;
+    box-shadow: 0 0 3px #999;
+    overflow: hidden;
+
+    li {
+      padding: 1rem;
+      &:not(:last-child) {
+        border-bottom: 1px solid #ddd;
+      }
+      &:hover {
+        background-color: $hav-turquoise;
+        color: white;
+        &.delete {
+          background-color: $hav-warning;
+        }
+      }
+    }
+  }
+}

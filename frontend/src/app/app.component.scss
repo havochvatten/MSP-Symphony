@@ -1,0 +1,38 @@
+@import '../styles/constants';
+
+:host {
+  display: flex;
+  flex-direction: column;
+
+  app-header {
+    left: 0;
+    position: absolute;
+    right: 0;
+    z-index: 9999;
+  }
+
+  .overlay-content {
+    position: absolute;
+    z-index: 10000;
+
+    @media screen and (max-width: 800px) {
+      bottom: 0;
+      left: 0;
+      margin-top: 0;
+      max-height: calc(100% - #{$header-height});
+      right: 0;
+    }
+  }
+
+  .main-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    z-index: 1;
+  }
+
+  app-header ~ .main-content,
+  app-header ~ .overlay-content {
+    margin-top: $header-height;
+  }
+}

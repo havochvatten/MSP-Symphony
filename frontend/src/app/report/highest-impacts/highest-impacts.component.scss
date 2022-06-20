@@ -1,0 +1,42 @@
+:host {
+  break-inside: avoid-page;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-width: 500px;
+  h4 {
+    margin: 0;
+    margin-bottom: 5mm;
+    font-weight: 600;
+  }
+
+  table {
+    width: 100%;
+    td {
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 6mm;
+      span.impact-color {
+        display: inline-block;
+        margin-right: 2mm;
+        height: 4.5mm;
+        width: 4.5mm;
+        border-radius: 2px;
+        vertical-align: middle;
+      }
+      &:first-child {
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+      }
+      &:last-child {
+        text-align: right;
+        width: 5mm;
+      }
+    }
+  }
+
+  @media print {
+    color-adjust: exact;
+  }
+}

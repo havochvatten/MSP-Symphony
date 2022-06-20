@@ -1,0 +1,58 @@
+@import '../../../../styles/constants';
+@import '../../../../styles/hav-colors';
+@import '../../../../styles/margins';
+
+:host {
+  li {
+    display: grid;
+    row-gap: 1rem;
+    padding: 0.4rem 0;
+  }
+  .controls {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+
+    .editing {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: flex-end;
+      align-items: center;
+
+      button {
+        height: 24px;
+        width: 24px;
+        background: none;
+        border: none;
+        padding: 0;
+        outline: none;
+        margin-right: 0.4rem;
+        cursor: pointer;
+
+        app-icon {
+          font-size: 2.4rem;
+          color: rgba(0,0,0,0.87);
+        }
+
+        &[data-active='true'] {
+          app-icon {
+            color: $hav-turquoise;
+          }
+        }
+
+        &:disabled {
+          opacity: 0.5;
+        }
+      }
+      .toggle-visibility-icon {
+        font-size: 1.8rem;
+        width: 1.8rem;
+        &[data-visible='true'] {
+          color: $hav-turquoise;
+        }
+        cursor: pointer;
+      }
+    }
+  }
+}

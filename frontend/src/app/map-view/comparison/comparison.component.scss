@@ -1,0 +1,51 @@
+@import '../../../styles/constants';
+@import '../../../styles/hav-colors';
+@import '../../../styles/margins';
+
+:host {
+  height: calc(100vh - #{$header-height} - 3rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .toolbar, .padded-container {
+    box-sizing: border-box;
+    padding: 0 2.2rem;
+  }
+
+  section {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 0 2.2rem;
+
+    .container {
+      flex: 1;
+    }
+
+    h2 {
+      margin: 0;
+    }
+
+    & ::ng-deep hav-select {
+      font-size: 1.5rem;
+    }
+  }
+
+  article {
+    h3>hav-spinner {
+      float: right;
+    }
+
+  }
+
+  .toolbar {
+    padding-top: 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    border-top: 1px solid #dfe0e4;
+  }
+}
+

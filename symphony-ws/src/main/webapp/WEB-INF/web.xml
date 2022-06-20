@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <session-config>
+        <session-timeout>43200</session-timeout> <!-- one month -->
+    </session-config>
+
+    <context-param>
+        <param-name>resteasy.media.type.param.mapping</param-name>
+        <param-value>format</param-value>
+    </context-param>
+
+    <login-config>
+        <auth-method>BASIC</auth-method>
+    </login-config>
+
+    <security-role>
+        <description>Group Symphony</description>
+        <role-name>GRP_SYMPHONY</role-name>
+    </security-role>
+        <security-role>
+        <description>Group Symphony Admin</description>
+        <role-name>GRP_SYMPHONY_ADMIN</role-name>
+    </security-role>
+</web-app>

@@ -1,0 +1,102 @@
+/* You can add global styles to this file, and also import other style files */
+html {
+  box-sizing: border-box;
+  height: 100%;
+  font-size: 62.5%;
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    height: 100%;
+    margin: 0;
+    overflow-x: hidden;
+
+    .main-content > :not(router-outlet) {
+      flex: 1 1 auto;
+    }
+    button {
+      font-family: 'Roboto', sans-serif;
+    }
+  }
+
+  body.no-vertical-scrollbar {
+    overflow-y: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    color: rgba(0, 0, 0, 0.87);
+    font-weight: normal;
+  }
+
+  h1.big-title {
+    font-size: 4.2rem;
+    line-height: 6.5rem;
+  }
+
+  h1 {
+    font-size: 3.3rem;
+    line-height: 5.2rem;
+  }
+
+  h2 {
+    font-size: 2.6rem;
+    line-height: 4.2rem;
+  }
+
+  h3 {
+    font-size: 2rem;
+    line-height: 3.3rem;
+  }
+
+  h4 {
+    font-size: 1.6rem;
+    line-height: 2.7rem;
+  }
+
+  h5 {
+    font-size: 1.3rem;
+    line-height: 2.3rem;
+  }
+
+  h6 {
+    font-size: 1rem;
+    line-height: normal;
+  }
+
+  p {
+    font-size: 1.6rem;
+    line-height: 2.4rem;
+  }
+
+  body * {
+    &::-webkit-scrollbar {
+      width: 12px;
+      background-color: #e9edee;
+      border-radius: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 6px;
+      background-color: #005f88;
+    }
+  }
+
+  .ol-attribution {
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.2rem 0.5rem;
+    height: 1.8rem !important;
+
+    li {
+      font-size: 1.2rem;
+      line-height: 1.3rem;
+    }
+  }
+}

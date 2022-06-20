@@ -1,0 +1,19 @@
+<nav>
+  <h2>{{ 'report.calculation.title' | translate }}</h2>
+  <app-icon-button icon="times" label="close" (click)="close()"></app-icon-button>
+</nav>
+<iframe #frame [src]="getSafeUrl()"></iframe>
+<div class="toolbar">
+  <hav-button id="open-in-new-tab" buttonType="tertiary" (click)="open()">
+    {{ 'report.toolbar.open-in-new-tab' | translate }}
+  </hav-button>
+  <hav-button buttonType="secondary" (click)="downloadCSV()">
+    {{ 'report.toolbar.export-csv' | translate }}
+  </hav-button>
+  <hav-button buttonType="secondary" (click)="downloadGeotiff()">
+    {{ 'report.toolbar.export-geotiff' | translate }}
+  </hav-button>
+  <hav-button (click)="print()">
+    {{ 'report.toolbar.print' | translate }}
+  </hav-button>
+</div>

@@ -1,0 +1,15 @@
+<app-icon-button
+  [icon]="closeIcon"
+  label="Stäng dialogruta"
+  (click)="onClose($event)"
+></app-icon-button>
+<ng-content select="app-confirmation-dialog-text"></ng-content>
+<div class="confirmation-dialog-buttons">
+  <hav-button
+    buttonType="secondary"
+    class="confirmation-dialog-undo-button"
+    (click)="onCancel($event)"
+    >{{ cancelButtonText }}</hav-button
+  >
+  <hav-button (click)="onConfirm($event)">{{ confirmButtonText }}</hav-button>
+</div>

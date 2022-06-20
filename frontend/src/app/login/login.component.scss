@@ -1,0 +1,145 @@
+@import '../../styles/margins';
+@import '../../styles/hav-colors';
+@import '../../styles/constants';
+
+:host {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  background-color: $hav-coldgrey;
+  min-height: 100vh;
+
+  img,
+  h1,
+  .login-form,
+  .login-options {
+    z-index: 100;
+  }
+
+  img {
+    margin: $l-margin 0 $l-margin 0;
+    width: 18.5rem;
+
+    &.duck {
+      margin-top: 14.2rem;
+    }
+
+    &.logo {
+      margin-top: 7.5rem;
+      margin-bottom: 13rem;
+    }
+  }
+
+  h1 {
+    margin-top: 0;
+    margin-bottom: $m-margin;
+    height: 92px;
+    width: 300px;
+    color: #0b2d4b;
+    font-size: 3.3rem;
+    letter-spacing: 0.29rem;
+    line-height: 3.8rem;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .login-form {
+    align-items: flex-end;
+    display: flex;
+    flex-direction: column;
+
+    hav-form-field {
+      margin-bottom: $s-margin;
+
+      label {
+        color: #ffffff;
+      }
+
+      input {
+        height: 32px;
+        width: 300px;
+        border: 1px solid #e6e8ed;
+        border-radius: 4px;
+        background-color: #ffffff;
+      }
+    }
+
+    & ::ng-deep hav-form-field {
+      min-width: 16rem;
+    }
+
+    hav-button {
+      margin-top: calc(#{$s-margin} + #{$xs-margin});
+    }
+  }
+
+  .login-options {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    margin-top: $l-margin;
+
+    nav {
+      display: flex;
+      flex-direction: column;
+
+      p {
+        color: rgba(0, 0, 0, 0.87);
+      }
+
+      a {
+        align-items: center;
+        text-decoration: none;
+        color: $hav-turquoise;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .topography {
+    background-image: url('../../assets/topography-white.svg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: 1;
+    position: fixed;
+    opacity: 0.4;
+    max-width: 100%;
+
+    &[data-position='bottom-left'] {
+      background-position: bottom right;
+      height: 53rem;
+      width: 70rem;
+      bottom: 0;
+      left: 0;
+    }
+
+    &[data-position='top-right'] {
+      background-position: bottom left;
+      height: 37rem;
+      width: 50rem;
+      top: 0;
+      right: 0;
+      transform: rotate(180deg);
+    }
+  }
+
+  p.error {
+    color: $hav-warning;
+    font-size: 1.6rem;
+    line-height: 2.4rem;
+    max-width: 200px;
+  }
+
+  .loading-overlay {
+    z-index: 10000;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.40);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}

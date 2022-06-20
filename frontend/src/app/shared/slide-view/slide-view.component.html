@@ -1,0 +1,23 @@
+<aside
+  class="slide-view"
+  [attr.data-open]="open"
+  [attr.data-position]="position"
+  [@openClose]="open ? 'open' : 'closed'"
+>
+  <nav class="nav-tabs">
+    <a
+      *ngFor="let tab of tabs"
+      class="tab"
+      [class.active]="tab.active"
+      [title]="tab.title"
+      (click)="selectTab(tab.id)"
+    >
+      <app-icon [iconType]="tab.icon"></app-icon>
+    </a>
+  </nav>
+  <div *ngIf="open" class="icon-bar">
+    <app-icon iconType="minus" (click)="onClick(); $event.stopPropagation()"></app-icon>
+  </div>
+  <ng-content *ngIf="open" select="app-slide-view-tab"></ng-content>
+  <ng-content></ng-content>
+</aside>

@@ -1,0 +1,17 @@
+<app-toolbar-zoom-buttons
+  (zoomIn)="onClickZoomIn()"
+  (zoomOut)="onClickZoomOut()"
+></app-toolbar-zoom-buttons>
+<app-toolbar-button
+  icon="delete"
+  [label]="'map.toolbar.clear-results' | translate"
+  [active]="hasResults"
+  (click)="onClearResult()"></app-toolbar-button>
+<app-toolbar-button
+  icon="polygon"
+  [label]="'map.toolbar.draw-area' | translate"
+  [active]="drawIsActive"
+  (click)="onToggleDraw()"></app-toolbar-button>
+<div style="position: relative;">
+  <app-map-opacity-slider (change)="onClickSetMapOpacity($event)"></app-map-opacity-slider>
+</div>

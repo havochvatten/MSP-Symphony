@@ -1,0 +1,63 @@
+# MATRIX IMPORT
+#Delete data in table import.sensitivityimport
+#Make sure that the csv-file is appended with delimiter (total 50 ; for each row i.e. 51 columns)
+#Change path to the csv-file to import
+#Set matrix_name in and baseLineVersionId in the PL/pgSQL script and run
+#Run the PL/pgSQL script in pgsql-prommpt or pgadmin
+
+
+#Delete all data in table import.sensitivityimport
+psql -U symphony -d symphony -h localhost -p 5432 -c "delete from import.sensitivityimport"
+
+
+psql -U symphony -d symphony -h localhost -p 5432 -c "copy import.sensitivityimport(senimp_c0,\
+senimp_c1,senimp_c2,senimp_c3,senimp_c4,senimp_c5,senimp_c6,senimp_c7,senimp_c8,senimp_c9,senimp_c10,\
+senimp_c11,senimp_c12,senimp_c13,senimp_c14,senimp_c15,senimp_c16,senimp_c17,senimp_c18,senimp_c19,senimp_c20,\
+senimp_c21,senimp_c22,senimp_c23,senimp_c24,senimp_c25,senimp_c26,senimp_c27,senimp_c28,senimp_c29,senimp_c30,\
+senimp_c31,senimp_c32,senimp_c33,senimp_c34,senimp_c35,senimp_c36,senimp_c37,senimp_c38,senimp_c39,senimp_c40,\
+senimp_c41,senimp_c42,senimp_c43,senimp_c44,senimp_c45,senimp_c46,senimp_c47,senimp_c48,senimp_c49,senimp_c50\
+)\
+FROM '/home/user/matrices/mymatrix.csv' encoding 'UTF8' DELIMITER ';'";
+
+
+do
+$$
+declare
+	--Change to new version
+	baseLineVersionId integer := 1;
+	matrix_name text := 'My Matrix';
+
+	c_rows cursor for
+      select senimp_c0 AS pressure from import.sensitivityimport where senimp_c0 != 'SENSITIVITY';
+  
+	sensitivity text;
+	tmpcol text;
+	eco_comp text;
+	eco_id integer;
+	pres_id integer;
+	nsensm_id integer;
+
+begin
+  EXECUTE 'SELECT sensm_id FROM symphony.sensitivitymatrix WHERE sensm_name='''||matrix_name||'''' INTO nsensm_id;
+  if nsensm_id is null then
+    select nextval('symphony.sensm_seq') into nsensm_id;
+    insert into symphony.sensitivitymatrix(sensm_id, sensm_name, sensm_bver_id) values (nsensm_id, matrix_name, baseLineVersionId);
+  end if;
+  for r_rows in c_rows loop
+		for cnt in 1..50 loop
+			tmpcol := 'senimp_c' || cnt;
+			EXECUTE 'SELECT '|| tmpcol || ' FROM import.sensitivityimport WHERE senimp_c0=''SENSITIVITY''' INTO eco_comp;
+			if eco_comp != '' then
+		  	  EXECUTE 'SELECT '|| tmpcol || ' FROM import.sensitivityimport WHERE senimp_c0='''||r_rows.pressure||'''' INTO sensitivity;
+			  EXECUTE 'SELECT meta_id FROM symphony.metadata WHERE meta_title='''||eco_comp||''' AND meta_symphonycategory=''Ecosystem''' INTO eco_id;
+			  EXECUTE 'SELECT meta_id FROM symphony.metadata WHERE meta_title='''||r_rows.pressure||''' AND meta_symphonycategory=''Pressure''' INTO pres_id;
+			  if eco_id is not null and pres_id is not null then
+			    insert into symphony.sensitivity (sens_id, sens_sensm_id, sens_pres_meta_id, sens_eco_meta_id, sens_value) 
+				values (nextval('symphony.sens_seq'), nsensm_id, pres_id, eco_id, sensitivity::numeric);
+			  else
+			    raise notice 'No metadata found for: %', r_rows.pressure||', '||eco_comp||',' ||sensitivity;
+			  end if;		  	  
+			end if;
+		end loop;
+  end loop;
+end $$ LANGUAGE plpgsql;

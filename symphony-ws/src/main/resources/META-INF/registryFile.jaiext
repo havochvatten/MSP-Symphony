@@ -1,0 +1,11 @@
+#
+# Image descriptors
+#
+descriptor  se.havochvatten.symphony.calculation.jai.rescale2.Rescale2Descriptor
+descriptor  se.havochvatten.symphony.calculation.jai.CIA.CumulativeImpactDescriptor
+
+#
+# RenderedImageFactories
+#
+rendered  se.havochvatten.symphony.calculation.jai.rescale2.Rescale2CRIF  it.geosolutions.jaiext  se.havochvatten.Rescale HaVRescale
+rendered  se.havochvatten.symphony.calculation.jai.CIA.CumulativeImpactDescriptor it.geosolutions.jaiext se.havochvatten.CumulativeImpact HaVCumulativeImpact

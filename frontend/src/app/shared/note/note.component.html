@@ -1,0 +1,4 @@
+<aside *ngIf="active">
+  <app-icon [iconType]="icon" (click)="close.emit()"></app-icon>
+  <ng-content></ng-content>
+</aside>

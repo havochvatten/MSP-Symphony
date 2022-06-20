@@ -1,0 +1,46 @@
+<ng-container *ngIf="selectedArea">
+  <h4>{{ 'map.editor.band-pressures.intensity' | translate }}</h4>
+  <div class="knobs">
+    <div class="slider">
+      <div class="row">
+        <span>{{ 'map.editor.band-pressures.percentage' | translate }}</span>
+        <span>
+          {{ multiplier-1>0 ? '+' : '' }}{{ convertMultiplierToPercent(multiplier) | percent: '.0' }}
+        </span>
+      </div>
+      <app-slider
+        [value]="multiplier"
+        min="0"
+        max="3"
+        step="0.01"
+        (input)="updateMultiplier($event.target.value)"
+      >
+      </app-slider>
+    </div>
+    <div class="column">
+      <span>{{ 'map.editor.band-pressures.constant-increase' | translate }}</span>
+      <input #constant
+        type="number"
+        value="0"
+        step="1"
+        [value]="offset"
+      />
+    </div>
+  </div>
+</ng-container>
+<ng-container *ngIf="areaIsVisible">
+  <h4>{{ 'map.editor.band-pressures.opacity' | translate }}</h4>
+  <div class="knobs opacity">
+    <div class="slider">
+      <app-slider
+        [value]="band.layerOpacity"
+        min="0"
+        max="100"
+        step="1"
+        (input)="updateLayerOpacity($event.target.value)"
+      >
+      </app-slider>
+    </div>
+    <span>{{ band.layerOpacity }}%</span>
+  </div>
+</ng-container>

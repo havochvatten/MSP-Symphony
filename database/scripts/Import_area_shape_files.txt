@@ -1,0 +1,29 @@
+# Projections
+# Bakground map 3857 WGS84
+# Geotiff 3035 ETRS89
+# HaV marine planning areas 3006 (transformed to 4326)
+
+# --
+# -- Import of areas
+# -- Use -c instead of -d if the import table does not exist
+# --
+./shp2pgsql -s 3006:4326 -d /home/HAV/runblo/shapefiles/omraden/omraden.shp import.omraden -W "UTF8" -I | psql -U postgres -d symphony -h localhost -p 5432
+./shp2pgsql -s 3006:4326 -d /home/HAV/runblo/shapefiles/omraden/havsomraden.shp import.havsomraden -W "UTF8" -I | psql -U postgres -d symphony -h localhost -p 5432
+./shp2pgsql -s 3006:4326 -d /home/HAV/runblo/shapefiles/omraden/havsplaneomraden.shp import.havsplaneomraden -W "UTF8" -I | psql -U postgres -d symphony -h localhost -p 5432
+
+./shp2pgsql -s 3006:4326 -d /home/HAV/runblo/shapefiles/omraden/N2000SCI.shp import.n2000sci -W "UTF8" -I | psql -U postgres -d symphony -h localhost -p 5432
+./shp2pgsql -s 3006:4326 -d /home/HAV/runblo/shapefiles/omraden/N2000SPA.shp import.n2000spa -W "UTF8" -I | psql -U postgres -d symphony -h localhost -p 5432
+./shp2pgsql -s 3006:4326 -d /home/HAV/runblo/shapefiles/omraden/Nationalparker.shp import.nationalparker -W "UTF8" -I | psql -U postgres -d symphony -h localhost -p 5432
+./shp2pgsql -s 3006:4326 -d /home/HAV/runblo/shapefiles/omraden/Naturreservat.shp import.naturreservat -W "UTF8" -I | psql -U postgres -d symphony -h localhost -p 5432
+
+./shp2pgsql -s 3006:4326 -d /home/HAV/runblo/shapefiles/omraden/lansytor.shp import.lansytor -W "UTF8" -I | psql -U postgres -d symphony -h localhost -p 5432
+./shp2pgsql -s 3006:4326 -d /home/HAV/runblo/shapefiles/omraden/kommunytor.shp import.kommunytor -W "UTF8" -I | psql -U postgres -d symphony -h localhost -p 5432
+
+# Kustområden är enbart CalculationArea
+./shp2pgsql -s 3006:4326 -d /home/HAV/runblo/shapefiles/omraden/kust-innanfor-mpa.shp import.kustomraden -W "UTF8" -I | psql -U postgres -d symphony -h localhost -p 5432
+
+
+#
+# THEN RUN post_fix_county_and_city.sql 
+# to remove counties and cities not located by the coasts
+#

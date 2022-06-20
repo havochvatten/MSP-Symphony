@@ -1,0 +1,50 @@
+<h4>{{ 'report.scenario-changes.title' | translate:{ 'name': name } }}</h4>
+<div *ngIf="scenarioChanges?.features.length>0; else noChanges">
+  <!--TODO make this span two columns. Multicol?-->
+  <table *ngFor="let area of scenarioChanges.features">
+    <tr class="title-row"><th colspan="2">{{ area.properties['title'] }}</th></tr>
+    <tr *ngFor="let change of area.properties['changes'] | keyvalue">
+      <th>{{ change.key }}</th>
+      <td>
+        <ng-container
+          [ngTemplateOutlet]="change.value['multiplier'] && change.value['multiplier'] !== 1 &&
+          change.value['offset'] && change.value['offset'] !== 0 ?
+          compoundChange :
+           singleChange"
+          [ngTemplateOutletContext]="{change: change.value}">
+        </ng-container>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<ng-template #compoundChange let-change='change'>
+  <span
+      [innerHTML]="'report.scenario-changes.percent-change-with' | translate:{
+          'percent': (change['multiplier'] < 1 ? '' : '+')+((100*(change['multiplier']-1)) | number:'.0')
+         }">
+  </span>
+  {{ 'report.scenario-changes.and' | translate }}
+  <span
+    [innerHTML]="'report.scenario-changes.constant-offset-with' | translate:{
+        'offset': (change['offset'] < 0 ? '-' : '+')+(change['offset'] | number)
+      } | lowercase">
+    </span>
+</ng-template>
+
+<ng-template #singleChange let-change='change'>
+  <span *ngIf="change['multiplier'] && change['multiplier'] !== 1"
+     [innerHTML]="'report.scenario-changes.percent-change-with' | translate:{
+        'percent': (change['multiplier'] < 1 ? '' : '+')+((100*(change['multiplier']-1)) | number:'.0')
+       }">
+  </span>
+  <span *ngIf="change['offset'] && change['offset'] !== 0"
+     [innerHTML]="'report.scenario-changes.constant-offset-with' | translate:{
+        'offset': (change['offset'] < 0 ? '-' : '+')+(change['offset'] | number)
+        }">
+  </span>
+</ng-template>
+
+<ng-template #noChanges>
+  <p class="no-changes">{{'report.scenario-changes.no-changes' | translate }}</p>
+</ng-template>

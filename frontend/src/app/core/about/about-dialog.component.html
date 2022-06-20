@@ -1,0 +1,18 @@
+<h2>{{ 'about-dialog.system-name' | translate }} {{ buildInfo.version }}</h2>
+
+<p>{{ 'about-dialog.build' | translate }} {{ buildInfo.buildNumber }}
+<span *ngIf="buildInfo.gitSha"> ({{ buildInfo.gitSha }})</span>
+</p>
+
+<div id="third-party-container"> <!--Extract this to a separate dialog? -->
+  <p>{{ 'about-dialog.third-party-software' | translate }}</p>
+  <div class="scrollable">
+    <p *ngFor="let lib of thirdPartyLibraries">
+      <a href="{{ lib[1] }}" target="_blank">{{ lib[0] }}</a> {{ lib[2] }}
+    </p>
+  </div>
+</div>
+
+<div class="toolbar">
+  <hav-button (click)="close()">{{ 'about-dialog.close' | translate }}</hav-button>
+</div>

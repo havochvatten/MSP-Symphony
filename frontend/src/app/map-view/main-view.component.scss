@@ -1,0 +1,46 @@
+@import '../../styles/hav-colors';
+
+hav-accordion-panel {
+  hav-accordion-panel-header {
+    white-space: nowrap;
+  }
+}
+
+:host {
+  height: calc(100vh - 6rem);
+  position: relative;
+  width: 100vw;
+  display: grid;
+  grid-template-columns: min-content 1fr;
+  grid-template-areas: "sidebar-left map";
+
+  app-slide-view {
+    grid-area: sidebar-left;
+    z-index: 99999;
+  }
+
+  app-map {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
+
+  #map-overlay {
+    position: absolute;
+    right: -31rem;
+    bottom: 0;
+    width: 300px;
+
+    .color-scale-container {
+      background-color: #ffffffee;
+      padding: 1rem;
+      border-radius: 2px;
+    }
+
+    #scale-container {
+      height: 50px;
+    }
+  }
+}

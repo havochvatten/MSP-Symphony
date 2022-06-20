@@ -1,0 +1,40 @@
+<img class="duck" src="assets/long-tailed-duck.svg" alt="Alfågel" />
+<h1>Symphony</h1>
+<form class="login-form" [formGroup]="loginForm">
+  <hav-form-field
+    formControlName="username"
+    [label]="'login.username' | translate"
+    autocomplete="on"
+  ></hav-form-field>
+  <hav-form-field
+    formControlName="password"
+    [label]="'login.password' | translate"
+    type="password"
+    autocomplete="current-password"
+  ></hav-form-field>
+  <p *ngIf="errorMessage" class="error">{{ errorMessage | translate }}</p>
+  <hav-button
+    [isSubmitButton]="true"
+    (click)="loginForm.valid ? login(loginForm.value.username, loginForm.value.password) : ''"
+    [disabled]="!loginForm.valid"
+    >{{ 'login.login' | translate }}</hav-button
+  >
+</form>
+<div class="login-options">
+  <nav>
+    <p>
+      {{ 'login.forgot-password' | translate }}
+      <a [href]="env.login.forgotPasswordUrl">{{ 'login.request-password' | translate }}</a>
+    </p>
+    <p>
+      {{ 'login.no-account' | translate }}
+      <a [href]="env.login.noAccountUrl">{{ 'login.request-account' | translate }}</a>
+    </p>
+  </nav>
+</div>
+<img class="logo" src="assets/hav-logo-orange.svg" alt="Havs och Vattenmyndigheten" />
+<div class="topography" data-position="bottom-left"></div>
+<div class="topography" data-position="top-right"></div>
+<div *ngIf="loading | async" class="loading-overlay">
+  <app-hav-loader></app-hav-loader>
+</div>

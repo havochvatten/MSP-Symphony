@@ -1,0 +1,22 @@
+<h5 *ngIf="title">{{ title }}</h5>
+<svg *ngIf="colors" [attr.viewBox]="'0 0 ' + 20 * colors.length + ' 30'">
+  <rect
+    *ngFor="let color of colors; index as i"
+    width="20"
+    height="20"
+    y="10"
+    [attr.x]="i * 20"
+    [attr.fill]="color.color"
+  >
+    <title>{{ color.quantity | number:'1.0':locale }}{{ unit }}</title>
+  </rect>
+  <text
+    *ngFor="let color of colors; index as i"
+    [attr.x]="i * 20 + 20"
+    y="6"
+    font-size="6"
+    text-anchor="end"
+  >
+    {{ color.quantity | number:'1.0':locale }}{{ unit }}
+  </text>
+</svg>

@@ -1,0 +1,45 @@
+<section>
+  <h2>{{ 'map.compare.title' | translate }}</h2>
+
+  <div class="container">
+    <form [formGroup]="compareForm" (ngSubmit)="submit()">
+      <article>
+        <h3>{{'map.compare.base-scenario' | translate }}</h3>
+        <hav-select [noItemSelectedLabel]="'map.compare.choose-scenario' | translate" formControlName="a"
+                    selectSize="large" (selectedChanged)="changeBase($event)" required
+                    [placeholderSearchText]="'hav-components.select.search' | translate">
+          <hav-select-item *ngFor="let c of calculations$ | async" [value]="c.id" selectItemSize="large">{{ c.name }}</hav-select-item>
+        </hav-select>
+      </article>
+
+      <article>
+        <h3>
+          {{'map.compare.what-if-scenario' | translate }}
+          <hav-spinner *ngIf="loadingCandidates" spinnerSize="small"></hav-spinner>
+        </h3>
+        <hav-select #candidates formControlName="b" selectSize="large" required
+                    noItemSelectedLabel="{{'map.compare.choose-base-scenario-first' | translate}}"
+                    [placeholderSearchText]="'hav-components.select.search' | translate">
+          <hav-select-item *ngFor="let c of candidates$ | async" [value]="c.id">{{ c.name }}</hav-select-item>
+        </hav-select>
+      </article>
+    </form>
+<!--
+   <div *ngIf="compareForm.errors?.identicalCalculations && (compareForm.touched || compareForm.dirty)"
+         class="cross-validation-error-message alert alert-danger">
+      A calculation cannot be compared with the same calculation.
+    </div>
+-->
+  </div>
+</section>
+
+<!--TODO: show some calculation metadata?-->
+<div class="toolbar">
+  <hav-button id="compare" buttonType="primary" stateType="base" (click)="submit()" isSubmitButton="true"
+              [disabled]="compareForm.invalid">
+    {{ 'map.compare.compare' | translate }}
+  </hav-button>
+</div>
+
+
+

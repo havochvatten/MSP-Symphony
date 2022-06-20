@@ -1,0 +1,182 @@
+:host {
+  box-sizing: border-box;
+  padding: 2rem;
+  margin: auto;
+  width: 100%;
+  max-width: 210mm;
+  min-height: 100vh;
+  box-shadow: 0 0 15px grey;
+  display: flex;
+  flex-direction: column;
+
+  tbody {
+    display: grid;
+    grid-template-columns: 1fr 1fr 12mm 1fr 1fr;
+    grid-template-rows: 20mm 50mm 50mm 15mm auto;
+    row-gap: 6mm;
+
+    .title {
+      grid-column-start: 1;
+      grid-column-end: 5;
+      grid-row-start: 1;
+      grid-row-end: 2;
+      h1, h3 {
+        margin: 0;
+      }
+      h3 {
+        //white-space: nowrap;
+      }
+    }
+
+    .logo {
+      grid-column-start: 5;
+      grid-column-end: 6;
+      grid-row-start: 1;
+      grid-row-end: 2;
+      display: flex;
+      align-items: baseline;
+      justify-content: flex-end;
+
+      img {
+        height: 15mm;
+        width: 37.5mm;
+      }
+    }
+
+    app-calculation-image {
+      grid-column-start: 1;
+      grid-column-end: 3;
+      grid-row-start: 2;
+      grid-row-end: 4;
+      display: table-cell;
+    }
+
+    app-cumulative-effect-etc {
+      grid-column-start: 4;
+      grid-column-end: 6;
+      grid-row-start: 2;
+      grid-row-end: 4;
+
+      p {
+        font-size: 13px;
+      }
+    }
+
+    app-result-color-scale {
+      grid-column-start: 1;
+      grid-column-end: 3;
+      grid-row-start: 4;
+      grid-row-end: 5;
+      align-self: end;
+    }
+
+    app-highest-impacts {
+      &.ecocomponent-impacts {
+        grid-column-start: 4;
+        grid-column-end: 6;
+        grid-row-start: 5;
+      }
+
+      &.pressure-impacts {
+        grid-column-start: 1;
+        grid-column-end: 3;
+        grid-row-start: 5;
+      }
+    }
+
+    app-pressure-chart {
+      grid-column-start: 1;
+      grid-column-end: 6;
+    }
+
+    app-scenario-changes, app-scenario-changes.left {
+      grid-column-start: 1;
+      grid-column-end: 3;
+    }
+
+    app-scenario-changes.right {
+      grid-column-start: 4;
+      grid-column-end: 6;
+    }
+
+    app-impact-table {
+      &.ecocomponent-impacts {
+        grid-column-start: 4;
+        grid-column-end: 6;
+      }
+
+      &.pressure-impacts {
+        grid-column-start: 1;
+        grid-column-end: 3;
+      }
+    }
+  }
+
+  .closing-matter {
+    grid-column-start: 1;
+    grid-column-end: 6;
+    font-size: 13px;
+    text-align: center;
+    margin: 0 3rem;
+  }
+
+  .date {
+    grid-column-start: 1;
+    grid-column-end: 6;
+    display: flex;
+    justify-content: center;
+    font-size: 12px;
+  }
+
+  .error-page {
+    margin: auto;
+    max-width: 34rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    ::ng-deep app-status-icon svg {
+      width: 6rem;
+      height: 6rem;
+    }
+
+    h3 {
+      font-weight: 700;
+      text-align: center;
+    }
+
+    img {
+      width: 34rem;
+      height: auto;
+    }
+  }
+
+  .loading-report {
+    margin: auto;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    ::ng-deep hav-spinner {
+      display: flex;
+      justify-content: center;
+    }
+
+    h4 {
+      text-align: center;
+    }
+  }
+
+  @media print {
+    padding: 0;
+    box-shadow: none;
+    width: 210mm;
+    height: 297mm;
+  }
+}
+
+@page {
+  size: A4;
+  margin: 11mm 17mm 60mm 17mm;
+}

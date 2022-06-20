@@ -1,0 +1,69 @@
+// HAV colors
+$hav-darkturquoise: #005073;
+$hav-turquoise: #005f88;
+$hav-lightturquoise: #2280a6;
+$hav-darkblue: #0b2d4b;
+$hav-blue: #004370;
+$hav-lightgreen: #3b847b;
+$hav-green: #00594f;
+$hav-darkgreen: #004038;
+$hav-darkorange: #cc340d;
+$hav-orange: #e84e0f;
+$hav-lightorange: #f3914e;
+$hav-darkyellow: #af981b;
+$hav-yellow: #d1b738;
+$hav-lightyellow: #e8d186;
+$hav-darkcoldgrey: #dae4e6;
+$hav-coldgrey: #e9edee;
+$hav-darkwarmgrey: #e3dcd5;
+$hav-warmgrey: #f0ede7;
+$hav-darkgrey: #979797;
+$hav-black: #0A2D4A;
+$hav-warning: #b70000;
+$hav-success: #01763b;
+
+// Old HAV colors
+$hav-lightblue: #c8effe;
+$hav-cyan: #52cbf3;
+$hav-midblue: #089fd7;
+$hav-midgreen: #6fc474;
+$hav-grey: #c2c9cc;
+$hav-web-lightgrey: #f0f0f0;
+$hav-web-neutralgrey: #dae0e3;
+
+// Map greyscale colors
+$hav-map-white: #ffffff;
+$hav-map-lightgrey: $hav-web-lightgrey;
+$hav-map-neutralgrey: $hav-web-neutralgrey;
+$hav-map-grey: #c8ced1;
+$hav-map-midgrey: $hav-grey;
+$hav-map-darkgrey: $hav-darkgrey;
+$hav-map-graphitegrey: #555f5f;
+$hav-map-black: #000000;
+
+// Map colors
+$hav-map-darkgreen: $hav-darkgreen;
+$hav-map-midgreen: $hav-midgreen;
+$hav-map-lightgreen: $hav-lightgreen;
+$hav-map-lightblue: $hav-lightblue;
+$hav-map-cyan: $hav-cyan;
+$hav-map-midblue: $hav-midblue;
+$hav-map-darkblue: $hav-darkblue;
+$hav-map-aubergine: #6f4a74;
+$hav-map-maroon: #914646;
+$hav-map-red: #c34b41;
+$hav-map-orange: #eb7d32;
+$hav-map-yellow: $hav-yellow;
+
+// Extended color palette
+$hav-ext-minty-lightgreen: #d4eed5;
+$hav-ext-emerald: #006f4c;
+$hav-ext-lightpale-salmon: #fbdcdc;
+$hav-ext-lightorange: #fad6a7;
+$hav-ext-midorange: #f2ae43;
+$hav-ext-orange: #ef8e0f;
+$hav-ext-scarlet-red: #df1f26;
+
+// Custom colors
+$dark-blue: #154a91;
+$red: #b60000;

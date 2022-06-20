@@ -1,0 +1,30 @@
+<div class="header-top">
+  <div class="header-overlay"></div>
+  <h1 (click)="showDuck()">
+    {{ title }}
+  </h1>
+  <img class="flag" src="assets/Sweden-SwAM-white-horizontal-no-borders.svg" />
+  <img @openCloseMenu *ngIf="displayDuck" class="duck" src="assets/long-tailed-duck.svg" />
+  <app-user-menu-toggle [user]="user$ | async" (click)="toggleOpenMenu('USER')"></app-user-menu-toggle>
+</div>
+<div
+  class="header-menu-container"
+  [class.is-open]="openState !== 'NONE'"
+  [style.justifyContent]="
+    bothAnimationsAreInProgress
+      ? 'space-between'
+      : animationState.get('user') || openState === 'USER'
+      ? 'flex-end'
+      : 'flex-start'
+  "
+>
+  <app-menu
+    *ngIf="openState === 'USER'"
+    @openCloseMenu
+    (@openCloseMenu.start)="onAnimationStateChange('user')"
+    (@openCloseMenu.done)="onAnimationStateChange('user')"
+    (navigate)="onMenuNavigation()"
+    [menuItems]="userMenuItems"
+    menuLabel="Användarmeny"
+  ></app-menu>
+</div>

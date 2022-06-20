@@ -1,0 +1,46 @@
+<div>
+  <h4>{{ title }}</h4>
+  <table>
+    <tr *ngFor="let impact of highestImpacts">
+      <td>
+        <span
+          class="impact-color"
+          [style.background-color]="getColor(getImpact(impact.bandNumber))"
+        ></span>
+        {{ impact.displayName }}
+      </td>
+      <td>{{ getImpact(impact.bandNumber) | number: '1.1-2':locale }}%</td>
+    </tr>
+  </table>
+</div>
+
+<svg viewBox="0 0 240 240">
+  <line
+    *ngFor="let value of [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]"
+    [attr.y1]="220 - value * 2"
+    [attr.y2]="220 - value * 2"
+    x1="20"
+    x2="240"
+    stroke="rgba(190,190,190,0.4)"
+    stroke-width="1"
+  ></line>
+  <path
+    *ngFor="let impact of highestImpacts; index as i"
+    [attr.d]="bar(40 + i * 40, 220, 20, getImpact(impact.bandNumber) * 2, 2)"
+    [attr.fill]="getColor(getImpact(impact.bandNumber))"
+  >
+    <title>
+      {{ impact.displayName }} ({{ getImpact(impact.bandNumber) | number: '1.1-2':locale }}%)
+    </title>
+  </path>
+  <text
+    *ngFor="let value of [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]"
+    x="15"
+    text-anchor="end"
+    [attr.y]="220 - value * 2 + 2"
+    font-size="6"
+    font-weight="600"
+  >
+    {{ value }}
+  </text>
+</svg>

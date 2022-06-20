@@ -1,0 +1,37 @@
+<h3>{{ 'map.user-area.upload.modal.title' | translate}}</h3>
+<p [innerHTML]="'map.user-area.upload.modal.fileformat-note' | translate"></p>
+
+<!--FIXME replace with custom "polygon" icon -->
+<input type="file" [accept]="requiredFileType" (change)="onFileSelect($event)" #fileUpload/>
+
+<div class="loading" *ngIf="loading">
+  <hav-spinner></hav-spinner>
+</div>
+
+<ng-container>
+  <div *ngIf="hasWGS84SRID" class="notice">
+    <app-icon iconType="info-circle"></app-icon>
+    <p [innerHTML]="'map.user-area.upload.modal.notice.WGS84-reprojection' | translate"></p>
+  </div>
+
+  <div *ngIf="packageHasMultipleFeatures" class="notice">
+    <app-icon iconType="info-circle"></app-icon>
+    <p [innerHTML]="'map.user-area.upload.modal.notice.first-area-only' | translate: {
+    firstFeature: firstFeatureId
+    }"></p>
+  </div>
+
+  <div *ngIf="inspectionError" class="notice error">
+    <app-icon iconType="info-circle"></app-icon>
+    <p>{{ 'map.user-area.upload.error.'+inspectionError.errorCode | translate }}</p>
+  </div>
+</ng-container>
+
+<div id="toolbar">
+  <hav-button stateType="alert" buttonType="tertiary" (click)="cancel()">{{
+    'map.user-area.upload.modal.cancel' | translate
+  }}</hav-button>
+  <hav-button (click)="confirmImport()" [disabled]="!uploadedArea">{{
+    'map.user-area.upload.modal.import' | translate
+  }}</hav-button>
+</div>

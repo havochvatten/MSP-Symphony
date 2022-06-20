@@ -1,0 +1,22 @@
+<section>
+  <p>{{ 'map.editor.normalization.description' | translate }}:</p>
+
+  <div class="normalization-form">
+    <hav-radio-button
+      *ngFor="let button of radioButtons"
+      radioButtonSize="medium"
+      label="{{ button.label | translate }}"
+      [value]="button.value"
+      [checked]="button.value == options.type"
+      (check)="check(button.value)"
+    >
+    </hav-radio-button>
+
+    <div *ngIf="showUserDefinedValueField()" class="user-defined">
+      <label for="user-defined-value">{{ 'map.editor.normalization.custom-value' | translate }}</label>
+      <input #userDefinedValue type="number" id="user-defined-value"
+        [value]="options.userDefinedValue" (input)="onChangeUserDefinedValue(userDefinedValue.value)"
+      />
+    </div>
+  </div>
+</section>

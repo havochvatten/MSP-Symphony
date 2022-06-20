@@ -1,0 +1,62 @@
+<section>
+
+  <div *ngIf="environment.showBaseCalculations">
+    <h3>{{ 'map.history.baseline-calculations' | translate }}</h3>
+    <div class="baseline-name" [title]="baseline?.description">{{baseline?.name}}</div>
+    <main class="baseline">
+      <button *ngFor="let calculation of baselineCalculations$ | async" class="calculation"
+              (click)="load(calculation)">
+        <div class="calculation-info">
+          <h4 class="baseline" [title]="calculation.name">{{ calculation.name }}</h4>
+          <!--TODO: show calc param summary instead of [from user's point of view arbitrary] time -->
+          <span>{{ calculation.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
+        </div>
+        <app-icon *ngIf="!calculation.loading" iconType="report" (click)="showReport(calculation.id)">
+        </app-icon>
+      </button>
+      <ng-container *ngIf="!$any(baselineCalculations$ | async)?.length" [ngTemplateOutlet]="noCalculations">
+      </ng-container>
+    </main>
+  </div>
+
+  <h3>{{ 'map.history.previous-calculations' | translate }}</h3>
+  <main *ngIf="!(loading$ | async) else loading" >
+    <button *ngFor="let calculation of calculations$ | async; index as i" class="calculation"
+            (click)="load(calculation)">
+      <div class="calculation-info">
+        <div class="name">
+          <h4 *ngIf="editingName !== calculation.id" [title]="calculation.name">{{ calculation.name }}</h4>
+<!--
+          <input #name *ngIf="editingName === calculation.id" [value]="calculation.name"
+                 (keydown.enter)="saveName($event, calculation, i)" (blur)="cancelEdit($event)"
+                 (click)="$event.stopPropagation()"/>
+-->
+          <app-icon iconType="edit" (click)="editName($event, calculation.id)"></app-icon>
+        </div>
+        <span>{{ calculation.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
+      </div>
+      <app-icon *ngIf="!calculation.loading" iconType="report" (click)="showReport(calculation.id)">
+      </app-icon>
+      <hav-spinner *ngIf="calculation.loading" spinnerSize="small"></hav-spinner>
+    </button>
+    <ng-container *ngIf="!$any(calculations$ | async).length" [ngTemplateOutlet]="noCalculations">
+    </ng-container>
+  </main>
+  <!--TODO Add useful hover info such as normalization, band selection etc?-->
+</section>
+
+<ng-template #loading>
+  <div class="loading">
+    <hav-spinner spinnerSize="medium"></hav-spinner>
+    <h4>{{ 'map.history.loading' | translate }}</h4>
+  </div>
+</ng-template>
+
+<ng-template #noCalculations>
+  <div class="no-calculations">
+    <span>
+      <app-icon iconType="info-circle"></app-icon>
+        {{ 'map.history.placeholder' | translate }}
+    </span>
+  </div>
+</ng-template>

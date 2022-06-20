@@ -1,0 +1,54 @@
+<section class="padded-container">
+  <div>
+    <h2>{{ 'map.editor.title' | translate }}</h2>
+    <p *ngIf="selectedArea; else noAreaSelected" class="area-name">{{ selectedArea.displayName }}</p>
+    <!--TODO Add more prominent button to create new scenario? -->
+    <div class="title-container">
+      <!--Perhaps system-global scenario will be available later? -->
+      <h3>{{ 'map.editor.list.user-scenarios' | translate }}</h3>
+      <app-icon-button
+        icon="plus" [disabled]="!selectedArea || !baseline"
+        [title]="selectedArea
+         ? ('map.editor.list.add-scenario-label' | translate: { area: selectedArea?.name })
+         : 'map.editor.list.select-area-first-label' | translate"
+        [label]="'map.editor.list.add-scenario-label' | translate: { area: selectedArea?.name }"
+        (click)="createScenario(selectedArea!)"
+      ></app-icon-button>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <main *ngIf="(scenarios$ | async)?.length">
+    <button *ngFor="let scenario of scenarios$ | async; index as scenarioIndex" class="scenario"
+            (click)="open(scenario, scenarioIndex)" [title]="scenario.name">
+      <div class="scenario-info">
+        <div class="name">
+          <h4>{{ scenario.name }}</h4>
+        </div>
+        <span>{{ scenario.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
+      </div>
+      <app-icon *ngIf="scenario.latestCalculation" iconType="report"
+                (click)="showReport(scenario.latestCalculation); $event.stopPropagation()">
+      </app-icon>
+    </button>
+  </main>
+
+  <div *ngIf="!(scenarios$ | async)?.length" id="no-scenarios">
+    <span style="font-style: italic">
+      <app-icon iconType="info-circle"></app-icon>
+      {{ 'map.editor.list.no-scenarios' | translate }}
+    </span>
+    <p *ngIf="selectedArea">
+      {{ 'map.editor.list.add-scenarios-hint' | translate }}
+    </p>
+    <p *ngIf="!selectedArea">
+      {{ 'map.editor.list.select-area-first-label' | translate }}
+    </p>
+    <!-- TODO Add animation around plus button? -->
+  </div>
+</section>
+
+<ng-template #noAreaSelected>
+  <p class="area-name">{{ 'map.no-selected-area' | translate }}</p>
+</ng-template>
