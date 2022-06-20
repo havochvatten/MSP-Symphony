@@ -3,9 +3,13 @@
 
 name: Node.js CI
 
+defaults:
+  run:
+    working-directory: ./frontend
+
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "feature/setup-ci" ]
   pull_request:
     branches: [ "develop" ]
 
@@ -26,7 +30,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - name: Build with Angular CLI
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm run test-headless
+    - name: Install dependencies
+      working-directory: ./frontend
+      run: npm ci
+    - name: Build
+      run: npm run build --if-present
+    - name: Run tests
+      run: npm run test-headless
