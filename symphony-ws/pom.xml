@@ -24,7 +24,7 @@
         <version.junit>4.12</version.junit>
         <version.javax.xml.bind>2.2.11</version.javax.xml.bind>
         <version.javax.activation>1.1.1</version.javax.activation>
-        <version.jackson>2.9.9</version.jackson>
+        <version.jackson>2.12.6</version.jackson>
         <version.slf4j>1.7.35</version.slf4j>
         <version.javax.json.api>1.1.4</version.javax.json.api>
         <version.resteasy.jackson2.provider>4.4.2.Final</version.resteasy.jackson2.provider>
