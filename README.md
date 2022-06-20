@@ -102,7 +102,7 @@ example of a simple setup relying only on a separate filesystem user database se
 #### 2. Populate the database
 
 In order for the system to work the database need to be populated with data. Separate instructions for this 
-procedure is provided in [DataImportREADME](database/DataImportREADME.txt).
+procedure is provided in [DataImportREADME](database/DataImportREADME.md).
 
 #### 3. (Optional) Override the application runtime configuration properties
 
