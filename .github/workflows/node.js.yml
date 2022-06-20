@@ -3,13 +3,9 @@
 
 name: Node.js CI
 
-defaults:
-  run:
-    working-directory: ./frontend
-
 on:
   push:
-    branches: [ "feature/setup-ci" ]
+    branches: [ "feature/ci" ]
   pull_request:
     branches: [ "develop" ]
 
@@ -17,6 +13,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./frontend
 
     strategy:
       matrix:
