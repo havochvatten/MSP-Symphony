@@ -13,8 +13,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-      with:
-        lfs: 'true'
+# LFS disabled until billing is sorted out    
+#      with:
+#        lfs: 'true'
     - name: Set up JDK 11
       uses: actions/setup-java@v3
       with:
@@ -23,4 +24,4 @@ jobs:
         cache: maven
     - name: Build with Maven
       working-directory: ./symphony-ws
-      run: mvn -B package --file pom.xml -Pskip-apitests
+      run: mvn -B package --file pom.xml -DskipTests # Tests require LFS objects at the moment
