@@ -35,7 +35,7 @@ class Link {
 }
 
 public class SankeyChart {
-    static double SANKEY_LINK_WEIGHT_TOLERANCE = 0.01;
+    static double SANKEY_LINK_WEIGHT_TOLERANCE = 0.001;
 
     private final Map<String, List> chartData;
 
