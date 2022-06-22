@@ -49,8 +49,8 @@ begin
 			EXECUTE 'SELECT '|| tmpcol || ' FROM import.sensitivityimport WHERE senimp_c0=''SENSITIVITY''' INTO eco_comp;
 			if eco_comp != '' then
 		  	  EXECUTE 'SELECT '|| tmpcol || ' FROM import.sensitivityimport WHERE senimp_c0='''||r_rows.pressure||'''' INTO sensitivity;
-			  EXECUTE 'SELECT meta_id FROM symphony.metadata WHERE meta_title='''||eco_comp||''' AND meta_symphonycategory=''Ecosystem''' INTO eco_id;
-			  EXECUTE 'SELECT meta_id FROM symphony.metadata WHERE meta_title='''||r_rows.pressure||''' AND meta_symphonycategory=''Pressure''' INTO pres_id;
+			  EXECUTE 'SELECT meta_id FROM symphony.metadata WHERE meta_title='''||eco_comp||''' AND meta_bver_id =' || baseLineVersionId || 'AND meta_symphonycategory=''Ecosystem''' INTO eco_id;
+			  EXECUTE 'SELECT meta_id FROM symphony.metadata WHERE meta_title='''||r_rows.pressure||''' AND meta_bver_id =' || baseLineVersionId || ' AND meta_symphonycategory=''Pressure''' INTO pres_id;
 			  if eco_id is not null and pres_id is not null then
 			    insert into symphony.sensitivity (sens_id, sens_sensm_id, sens_pres_meta_id, sens_eco_meta_id, sens_value) 
 				values (nextval('symphony.sens_seq'), nsensm_id, pres_id, eco_id, sensitivity::numeric);

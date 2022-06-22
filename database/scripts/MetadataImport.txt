@@ -18,7 +18,7 @@ declare
 	--Change to new version
 	baseLineVersionId integer := 1;  
 begin
-	UPDATE symphony.metadata set meta_sver_id = baseLineVersionId where meta_sver_id is null;
-	UPDATE symphony.metadata set meta_defaultselected= false WHERE meta_symphonycategory = 'Pressure' AND meta_symphonyteam = 'Climate Change';
+	UPDATE symphony.metadata set meta_bver_id = baseLineVersionId where meta_bver_id is null;
+	UPDATE symphony.metadata set meta_defaultselected= false WHERE meta_symphonycategory = 'Pressure' AND meta_bver_id = baseLineVersionId AND meta_symphonyteam = 'Climate Change';
 end $$ LANGUAGE plpgsql;
 
