@@ -3,6 +3,7 @@ package se.havochvatten.symphony.scenario;
 import it.geosolutions.jaiext.JAIExt;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.geojson.GeoJSONReader;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.gce.geotiff.GeoTiffReader;
@@ -36,7 +37,7 @@ public class ScenarioServiceTest {
     private static GridCoverage2D coverage;
 
     private static MathTransform transform;
-    private static FeatureCollection changes;
+    private static SimpleFeatureCollection changes;
 
     private final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
 
@@ -51,7 +52,7 @@ public class ScenarioServiceTest {
 
         Hints hints = null; //new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
         coverage = new GeoTiffReader(new File(ScenarioServiceTest.class.getClassLoader().
-                getResource("SGU-2019-multiband/ecocomponents-packbits.tif").getFile()), hints).read(null);
+                getResource("SGU-2019-multiband/ecocomponents-tiled-packbits.tif").getFile()), hints).read(null);
 
         var crs = CRS.getAuthorityFactory(true).createCoordinateReferenceSystem("EPSG:3035"); // TODO get from
         transform = CRS.findMathTransform(DefaultGeographicCRS.WGS84, /*coverage
@@ -67,12 +68,12 @@ public class ScenarioServiceTest {
         service = new ScenarioService(new SymphonyCoverageProcessor());
     }
 
-    private GridCoverage2D applyChanges(FeatureCollection changes) {
+    private GridCoverage2D applyChanges(SimpleFeatureCollection changes) {
         return service.apply(coverage, coverage.getGridGeometry(), changes, LayerType.PRESSURE, transform);
     }
 
     @Test
-    public void applyChange() throws IOException {
+    public void applyChange() {
         final int BAND = 12;
         // TODO fix the library to be able to use more creative feature ids
         var simpleChange = changes.subCollection(ff.id(ff.featureId("features.0")));

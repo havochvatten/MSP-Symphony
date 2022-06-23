@@ -88,12 +88,10 @@ public class CalcEngineBenchmark {
                 System.err.println("Error creating output directory " + f);
         }
 
-        File ecoFile = new File("/app/data/symphony/Ekokomponenter-512-none.tif");
-        //File(getClass().getClassLoader().getResource
-        // ("SGU-2019-multiband/ecocomponents-packbits.tif").getFile());
-        File presFile = new File("/app/data/symphony/Belastningar-512-none.tif");
-//                File(getClass().getClassLoader().getResource("SGU-2019-multiband" +
-//                "/pressures-packbits.tif").getFile());
+        File ecoFile = new File(getClass().getClassLoader().getResource(
+            "SGU-2019-multiband/ecocomponents-tiled-packbits.tif").getFile());
+        File presFile = new File(getClass().getClassLoader().getResource(
+            "SGU-2019-multiband/pressures-tiled-packbits.tif").getFile());
 
         Hints hints = new Hints(
                 Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE,
@@ -117,6 +115,7 @@ public class CalcEngineBenchmark {
         var envelope = new ReferencedEnvelope(ecosystems.getEnvelope());
         var t = CRS.findMathTransform(ecosystems.getCoordinateReferenceSystem2D(),
                 DefaultGeographicCRS.WGS84);
+        // FIXME geometry to big?
         var WGS84envelope = JTS.transform(envelope, t);
         sum(JTS.toGeometry(WGS84envelope), "all-of-it");
     }
@@ -259,7 +258,7 @@ public class CalcEngineBenchmark {
         final int numTileY = result.getNumYTiles();
         final int minTileX = result.getMinTileX();
         final int minTileY = result.getMinTileY();
-        final List<Point> tiles = new ArrayList<Point>(numTileX * numTileY);
+        final List<Point> tiles = new ArrayList<>(numTileX * numTileY);
         for (int i = minTileX; i < minTileX + numTileX; i++) {
             for (int j = minTileY; j < minTileY + numTileY; j++) {
                 tiles.add(new Point(i, j));
