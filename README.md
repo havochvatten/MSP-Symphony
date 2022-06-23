@@ -26,11 +26,12 @@ developed using Wildfly 18, PostgreSQL 10 and PostGIS v2.4, but more recent vers
 
 ## Getting the source
 
-The repository contains raster files in GeoTIFF format used by some tests. These have been configured to be stored 
-using [Git LFS](https://git-lfs.github.com/). See the Git LFS website for installation instructions, but typically 
-you need to enable LFS support for account prior to cloning the repository like so:
+There are some test and benchmark code which relies on test resources. For practical reasons these are stored in a 
+separate [repository](https://github.com/havochvatten/MSP-Symphony-Testdata.git) and added as a Git submodule. 
+Therefore, if you would like to run said tests and benchmark code you need to do a recursive clone of this 
+repository, like so:
 ```
-git lfs install
+git clone --recurse-submodules https://github.com/havochvatten/MSP-Symphony.git
 ```
 
 ## Building

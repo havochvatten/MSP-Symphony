@@ -42,7 +42,8 @@ public class ReportService {
     private static final Logger logger = Logger.getLogger(ReportService.class.getName());
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private static final char CSV_FIELD_SEPARATOR = '\t'; // MS Excel default
+    // The CSV standard (RFC 4180) actually says to use comma, but tab is MS Excel default. Or use TSV?
+    private static final char CSV_FIELD_SEPARATOR = '\t';
 
     @Inject
     MetaDataService metaDataService;
@@ -227,9 +228,9 @@ public class ReportService {
             });
 
             writer.print("TOTAL");
-            IntStream.range(0, featuredEcosystems.length).forEach(j -> {
-                writer.format(locale, "%c%.4f", CSV_FIELD_SEPARATOR, esTotal[j]);
-            });
+            IntStream.range(0, featuredEcosystems.length).forEach(j ->
+                writer.format(locale, "%c%.4f", CSV_FIELD_SEPARATOR, esTotal[j])
+            );
             writer.format(locale, "%c%.4f", CSV_FIELD_SEPARATOR, total);
             writer.println();
             writer.println();

@@ -1,0 +1,3 @@
+[submodule "symphony-ws/src/test/resources"]
+	path = symphony-ws/src/test/resources
+	url = https://github.com/havochvatten/MSP-Symphony-Testdata.git
