@@ -13,9 +13,9 @@ declare
 	careaid integer;
 	
 	-- k-matrix names NOTE: Change when when new baseline with other matrices
-	k_matrix_name_vasterhavet text := 'k_Matrix_West_Dec_2018';
-	k_matrix_name_ostersjon text := 'k_Matrix_East_Dec_2018';
-	k_matrix_name_bottniska_viken text := 'k_Matrix_North_Dec_2018';
+	k_matrix_name_vasterhavet text := 'k_matris_WEST_2019_CM';
+	k_matrix_name_ostersjon text := 'k_matris_EAST_2019_CM';
+	k_matrix_name_bottniska_viken text := 'k_matris_NORTH_2019_CM';
 	
 	-- FOR NORMALIZATION
 	max_vasterhavet double precision := 51897.5745;
@@ -36,13 +36,22 @@ declare
 		  WHEN namn = 'Östersjön'  THEN k_matrix_name_ostersjon
 		  WHEN namn= 'Bottniska viken' THEN k_matrix_name_bottniska_viken
 		  ELSE null
-	  END matrix_name
+	  END matrix_name,
+	  CASE 
+		  WHEN namn = 'Västerhavet' THEN 
+			(select sensm_id from sensitivitymatrix where sensm_name = k_matrix_name_vasterhavet)
+		  WHEN namn = 'Östersjön'  THEN 
+			(select sensm_id from sensitivitymatrix where sensm_name = k_matrix_name_ostersjon)
+		  WHEN namn= 'Bottniska viken' THEN
+			(select sensm_id from sensitivitymatrix where sensm_name = k_matrix_name_bottniska_viken)
+		  ELSE null
+	  END sensmid
 	from import.havsplaneomraden;
 
 begin
   for r_msp in c_msp loop
   		careaid := nextval('carea_seq');
-		insert into calculationarea (carea_id, carea_name, carea_default, carea_maxvalue, carea_atype_id) values (careaid, r_msp.namn, true, r_msp.norm_maxvalue, null);
+		insert into calculationarea (carea_id, carea_name, carea_default, carea_default_sensm_id, carea_maxvalue, carea_atype_id) values (careaid, r_msp.namn, true, r_msp.sensmid ,r_msp.norm_maxvalue, null);
 		insert into capolygon (cap_id, cap_carea_id, cap_polygon) values (nextval('cap_seq'), careaid, r_msp.jsonPoly);
 		
 		update symphony.calculationarea set carea_default_sensm_id = (
@@ -64,9 +73,9 @@ do
 $$
 declare
 	-- n-matrix names NOTE: Change when when new baseline with other matrices
-	n_matrix_name_vasterhavet text := 'n_Matrix_West_Dec_2018';
-	n_matrix_name_ostersjon text := 'n_Matrix_East_Dec_2018';
-	n_matrix_name_bottniska_viken text := 'n_Matrix_North_Dec_2018';
+	n_matrix_name_vasterhavet text := 'n_matris_WEST_2019_CM';
+	n_matrix_name_ostersjon text := 'n_matris_EAST_2019_CM';
+	n_matrix_name_bottniska_viken text := 'n_matris_NORTH_2019_CM';
 
 	careaid integer;
 	natypeid integer;
@@ -78,7 +87,16 @@ declare
 			  WHEN hplanomr = 'Östersjön'  THEN n_matrix_name_ostersjon
 			  WHEN hplanomr = 'Bottniska viken' THEN n_matrix_name_bottniska_viken
 			  ELSE null
-			END matrix_name
+			END matrix_name,
+			CASE 
+			  WHEN hplanomr = 'Västerhavet' THEN 
+				(select sensm_id from sensitivitymatrix where sensm_name = n_matrix_name_vasterhavet)
+			  WHEN hplanomr = 'Östersjön'  THEN 
+				(select sensm_id from sensitivitymatrix where sensm_name = n_matrix_name_ostersjon)
+			  WHEN hplanomr= 'Bottniska viken' THEN
+				(select sensm_id from sensitivitymatrix where sensm_name = n_matrix_name_bottniska_viken)
+			  ELSE null
+			END sensmid
 	    from import.omraden
 		where right(karttext, 1) = 'n'
         order by omrade;
@@ -92,19 +110,18 @@ begin
   -- Insert into calculationarea/capolygon
   for r_omr in c_omr loop
   		careaid := nextval('carea_seq');
-		insert into calculationarea (carea_id, carea_name, carea_default, carea_maxvalue, carea_atype_id) values (careaid, r_omr.namn, false, null, natypeid);
+		insert into calculationarea (carea_id, carea_name, carea_default, carea_default_sensm_id, carea_maxvalue, carea_atype_id) values (careaid, r_omr.namn, false, r_omr.sensmid, null, natypeid);
 		insert into capolygon (cap_id, cap_carea_id, cap_polygon) values (nextval('cap_seq'), careaid, r_omr.jsonPoly);
-		update symphony.calculationarea set carea_default_sensm_id = (
-			select sensm_id from symphony.sensitivitymatrix where sensm_name = r_omr.matrix_name
-		)
-		where carea_id = careaid;
   end loop;
 end $$ LANGUAGE plpgsql;
+
 
 
 --
 -- Kustområden
 --
+SET search_path TO symphony, public;
+
 do
 $$
 declare
@@ -117,12 +134,12 @@ declare
 		select namn, komrademsp, sensm_id, ST_AsGeoJSON(ST_Buffer("geom", -0.0001)) as polygon
 		from import.kustomraden,
 		(select sensm_id, sensm_name, CASE 
-		WHEN sensm_name='k_Matrix_East_Dec_2018' THEN 'Östersjön' 
-		WHEN sensm_name='k_Matrix_West_Dec_2018' THEN 'Västerhavet' 
-		WHEN sensm_name='k_Matrix_North_Dec_2018' THEN 'Bottniska viken' 
+		WHEN sensm_name='k_matris_EAST_2019_CM' THEN 'Östersjön' 
+		WHEN sensm_name='k_matris_WEST_2019_CM' THEN 'Västerhavet' 
+		WHEN sensm_name='k_matris_NORTH_2019_CM' THEN 'Bottniska viken' 
 		END as komrademsp
 		from symphony.sensitivitymatrix
-		where sensm_name in ('k_Matrix_East_Dec_2018','k_Matrix_North_Dec_2018','k_Matrix_West_Dec_2018')
+		where sensm_name in ('k_matris_EAST_2019_CM','k_matris_NORTH_2019_CM','k_matris_WEST_2019_CM')
 		) sensm
 		where namn=komrademsp
 	  ) x;
