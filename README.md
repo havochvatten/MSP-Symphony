@@ -46,9 +46,7 @@ after doing a regular (non-recursive) clone.
 ### Backend
 
 The backend is located in the `symphony-ws` directory and is standard single-module Maven project. Building 
-should 
-be a 
-matter of:
+should be a matter of:
 ```
 cd symphony-ws
 mvn package -DskipTests
@@ -133,19 +131,17 @@ separate frontend server. In the case of Wildfly, see
 
 ## Testing
 
-For the backend there are unit tests and tests exercising the REST API. They are both handled using the Maven 
-Surefire plugin, and since it is often desirable to run either of the test suites there are two maven profiles to 
-control this.
+For the backend there are unit tests and tests exercising the REST API. Which one to run is controlled through a 
+pair of Maven profiles.
 
-To run only the *unit tests* make the _skip-apitests_ profile active, for instance like so:
+The _skip-apitests_ is active by default, and so running it is matter of:
 ```
-mvn surefire:test -Ponly-apitests
+mvn test
 ```
 To run only the API tests activate the _only-apitests_ profile:
 ```
-mvn surefire:test -Pskip-apitests
+mvn test -Pskip-apitests
 ```
-If no profile is specified both test suites will be run.
 
 ### REST API tests credentials
 

@@ -299,6 +299,9 @@
     <profiles>
         <profile>
             <id>skip-apitests</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
