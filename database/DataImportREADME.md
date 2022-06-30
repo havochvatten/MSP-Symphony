@@ -29,12 +29,11 @@ The input data is packaged in a so-called _baseline_. A baseline consists of:
 
 Fields are separated using semicolon.
 
-*TODO* Link to example data
+[//]: # (*TODO* Link to example data)
 
 ## Create new baseline
 - Run [createNewBaseLineVersion.sql](scripts/CreateNewBaseLineVersion.sql) in your SQL client of choice. Make sure to 
-  change 
-  the parameters at the top of the file.
+  change the parameters at the top of the file.
 
 ## Import metadata
 - Run commands in [MetadataImport.txt](scripts/MetadataImport.txt). Make sure to change the filenames following the _FROM_ 
