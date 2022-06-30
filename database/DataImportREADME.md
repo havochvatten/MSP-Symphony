@@ -25,6 +25,7 @@ The input data is packaged in a so-called _baseline_. A baseline consists of:
   Most fields should be self-explanatory. Notably:
   - The _Bandnumber_ column maps to the (zero-based) band number in the GeoTIFF file.
   - The _Title_ column should map exactly to the corresponding row or column in matrix table file(s).
+  - The contents of the _Multiband .tif name_ and _Metadata filename_ columns are ignored.
 
 Fields are separated using semicolon.
 
