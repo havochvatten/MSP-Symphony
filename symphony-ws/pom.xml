@@ -15,7 +15,7 @@
         <java.version>11</java.version>
         <version.jakartaee-api>8.0.0</version.jakartaee-api>
         <version.mockito>2.0.2-beta</version.mockito>
-        <version.geotools>26.1</version.geotools>
+        <version.geotools>26.5</version.geotools>
         <version.rest.assured>4.2.0</version.rest.assured>
         <version.swagger>1.5.13</version.swagger>
         <version.postgresql-jdbc-driver>42.3.6</version.postgresql-jdbc-driver>
