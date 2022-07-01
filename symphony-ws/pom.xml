@@ -135,7 +135,7 @@
         <dependency> <!-- Consider use of Apache SIS in the future -->
             <groupId>org.geotools</groupId>
             <artifactId>gt-coverage</artifactId>
-            <version>${version.geotools}</version>
+            <version>26-SNAPSHOT-WIOSYM1</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
