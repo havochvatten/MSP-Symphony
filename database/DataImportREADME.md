@@ -64,3 +64,57 @@ Make sure you have [GDAL](https://gdal.org/) command line utilities installed (i
 The script will optimize the rasters for production use by tiling them and converting them to 8-bit values (which is 
 sufficient for the integer 0-100 data value range). This will decrease memory usage and increase performance, and is 
 thus highly recommended.
+
+## Precalculate normalization parameters
+
+The default normalization method relies on having calculated the percentile values
+of the calculation domains.
+
+Having a dedicated REST endpoint for calculating these values is planned but for the time being the administrator
+need to perform calculations manually (for instance using Swagger), and then set these values in the database manually.
+
+The API call need to have, like so:
+TODO: Create scenario first in GUI. Then calc from swagger?
+
+```json
+{
+  "id": 742,
+  "owner": "sympho1",
+  "timestamp": 1656661997655,
+  "baselineId": 1,
+  "name": "Scenario Utsjöområde Storgrund till Södra Kvarken",
+  "feature": {
+    "type": "Feature",
+    "properties": {
+      "name": "Utsjöområde Storgrund till Södra Kvarken",
+      "id": "Utsjöområde Storgrund till Södra Kvarken",
+      "displayName": "Utsjöområde Storgrund till Södra Kvarken (B140G)",
+      "statePath": ["area", "MSP", "groups", "Areas", "areas", "Utsjöområde Storgrund till Södra Kvarken"],
+      "code": "B140G"
+    },
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [[[...]]]
+    }
+  },
+  "changes": {
+    "type": "FeatureCollection",
+    "features": []
+  },
+  "ecosystemsToInclude": [0, 1, ...],
+  "pressuresToInclude": [0, 1, ...],
+  "matrix": {
+    "areaTypes": []
+  },
+  "normalization": {
+    "type": "PERCENTILE",
+    "userDefinedValue": 0
+  },
+  "latestCalculation": null
+}
+```
+
+The server logs will contain the calculated value. The resulting value should be inserted into the _carea_maxvalue_
+column of the corresponding default area row in the _calculationarea_ table.
+
+[//]: # (TODO: describe how te set other percentile in props file)
