@@ -10,19 +10,38 @@ This repository contains a specific implementation conceived as an application f
 of Symphony scenarios, initially developed at the agency in-house during the years 2019-2022. For more details on 
 the science behind the Symphony method see the [project web page at the Swedish Agency for Marine and Water Management](https://www.havochvatten.se/en/eu-and-international/marine-spatial-planning/swedish-marine-spatial-planning/the-marine-spatial-planning-process/development-of-plan-proposals/symphony---a-tool-for-ecosystem-based-marine-spatial-planning.html).
 
+## Features overview
+
+The system is designed to make it as easy and convenient as possible to carry out sophisticated cumulative impact 
+analysis,
+with special emphasis on the building and comparison of different scenarios. The main features include:
+
+- Perform baseline scenario analysis over an arbitrary geographical region
+- View (and export) graphical and statistical measures of analysis results, including Sankey 
+  charts of the impact relationship between components, and cumulative impact of individual components
+- Apply, view, select, and edit sensitivity matrices used for analysis 
+- Choose among different result normalization methods, including the ability to specify a user-defined custom 
+  normalization value
+- Apply linear transformations over arbitrary regions in a scenario ($x' = A x + B$, where $x$ is the component 
+  intensity at the data point and $x'$ the actual value used in the cumulative impact analysis)
+- Create persistent scenarios consisting of arbitrary numbers of transformed subareas
+- Compare two scenario analyses result side-by-side, including relative differences in graphical and tabular form 
+- Ability to make use of user-drawn custom polygons, or upload a polygon definition created in another GIS tool
+
 ## Architectural overview
 
-The system has been conceived according to SWaM development standards. In concrete terms this implies a standard web 
-architecture with a Jakarta EE-based backend coupled with a frontend built as an SPA 
+The system has been conceived according to SWaM development standards. In concrete terms this implies a web 
+architecture with a Jakarta EE-based backend and a frontend built as an SPA 
 using Angular. Persistent data is managed using JPA and stored in a PostgreSQL database (with spatial extensions) and 
-raster data on a filesystem.    
+raster data on a filesystem. Authentication is delegated to the application server and can thus be tailored to 
+organizational needs.
 
 ### Implementation recommendations
 
 While any Jakarta EE 8.0-compliant application should be OK, during development [Wildfly](https://www.wildfly.org/)
 has been used and is thus the recommended choice. At SwAM the frontend is served separately using Apache, 
-although any web server capable of serving static content should do (see [Frontend](#frontend) below). The system has been 
-developed using Wildfly 18, PostgreSQL 10 and PostGIS v2.4, but more recent versions should be fine.
+although any web server capable of serving static content should do (see [Frontend](#frontend-1) below). The system 
+has been developed using Wildfly 18, PostgreSQL 10 and PostGIS v2.4, but more recent versions should be fine.
 
 ## Getting the source
 
