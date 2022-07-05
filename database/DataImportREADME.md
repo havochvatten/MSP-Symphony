@@ -10,8 +10,9 @@ The input data is packaged in a so-called _baseline_. A baseline consists of:
 
    The CSV file should contain a matrix of dimensions $N \times M$, where $N$ is the number of pressure components and 
    $M$ is the number of ecosystem components. The first row and column contains the actual component names, hence 
-   the CSV file should have $N+1$ rows and $M+1$ columns. The matrix coefficients are should be decimal values 
-   between 0 and 1, using a period as decimal separator. Fields should be separated with a semicolon.  
+   the CSV file should have $N+1$ rows and $M+1$ columns. The first field of the first row should contain the string `SENSITIVITY`.
+   
+   The matrix coefficients should be decimal values between 0 and 1, using a period as decimal separator. Fields should be separated with a semicolon.  
 
 4. Two CSV files containing metadata for ecosystem components and pressures components:
    
