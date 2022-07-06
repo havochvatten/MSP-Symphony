@@ -14,9 +14,11 @@ the science behind the Symphony method see the [project web page at the Swedish 
 
 The system is designed to make it as easy and convenient as possible to carry out sophisticated cumulative impact 
 analysis,
-with special emphasis on the building and comparison of different scenarios. The main features include:
+with special emphasis on the building and comparison of different scenarios. This way, marine planners and managers can get an overview of current environmental impact across geagraphy and also get an estimate on environmental consequences of different planning decisions (scenarios). The main features include:
 
-- Perform baseline scenario analysis over an arbitrary geographical region
+- View individual data layers (ecosystem component maps and human pressure maps)
+- Create polygons for further analysis
+- Perform baseline scenario analysis over an arbitrary geographical region (uploded or drawn polygons, single or grouped)
 - View (and export) graphical and statistical measures of analysis results, including Sankey 
   charts of the impact relationship between components, and cumulative impact of individual components
 - Apply, view, select, and edit sensitivity matrices used for analysis 
