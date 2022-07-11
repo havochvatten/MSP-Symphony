@@ -18,7 +18,8 @@ with special emphasis on the building and comparison of different scenarios. Thi
 
 - View individual data layers (ecosystem component maps and human pressure maps)
 - Create polygons for further analysis
-- Perform baseline scenario analysis over an arbitrary geographical region (uploded or drawn polygons, single or grouped)
+- Perform baseline scenario analysis over an arbitrary geographical region (uploaded or drawn polygons, single or 
+  grouped)
 - View (and export) graphical and statistical measures of analysis results, including Sankey 
   charts of the impact relationship between components, and cumulative impact of individual components
 - Apply, view, select, and edit sensitivity matrices used for analysis 
