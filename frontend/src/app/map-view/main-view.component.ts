@@ -15,6 +15,7 @@ import { AllAreas, StatePath } from '@data/area/area.interfaces';
 import { BandGroup } from '@data/metadata/metadata.interfaces';
 import { LegendState } from '@data/calculation/calculation.interfaces';
 import { CalculationSelectors } from '@data/calculation';
+import { environment } from "@src/environments/environment";
 
 @Component({
   selector: 'app-main-view',
@@ -27,6 +28,7 @@ export class MainViewComponent implements OnInit, AfterViewInit {
   metadata?: Observable<Record<string, BandGroup[]>>;
   areas?: Observable<AllAreas>;
   legends$?: Observable<LegendState>;
+  center = environment.map.center;
 
   constructor(private store: Store<State>, private cd: ChangeDetectorRef) {}
 

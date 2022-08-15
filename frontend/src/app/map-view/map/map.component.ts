@@ -27,6 +27,7 @@ import { ResultLayerGroup } from "@src/app/map-view/map/layers/result-layer-grou
 import { ScenarioLayer } from "@src/app/map-view/map/layers/scenario-layer";
 import AreaLayer from "@src/app/map-view/map/layers/area-layer";
 import { Extent } from "ol/extent";
+import { HttpClient } from "@angular/common/http";
 
 @Component({
   selector: 'app-map',
@@ -59,20 +60,21 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     private scenarioService: ScenarioService,
     private dialogService: DialogService,
     private translateService: TranslateService,
+    private http: HttpClient,
     private moduleRef: NgModuleRef<any>
   ) {
     this.userSubscription = this.store        /* TOOD: Just get from static environment?*/
       .select(UserSelectors.selectBaseline).pipe(isNotNullOrUndefined())
       .subscribe((baseline) => {
-        this.bandLayer = new BandLayer(baseline.name);
+        this.bandLayer = new BandLayer(baseline.name, http);
         this.map!.getLayers().insertAt(1, this.bandLayer); // on top of background layer
       });
 
     this.storeSubscription = this.store
       .select(MetadataSelectors.selectVisibleBands)
-      .subscribe(components => {
-        this.bandLayer?.updateLayers('ECOSYSTEM', components.ecoComponent);
-        this.bandLayer?.updateLayers('PRESSURE', components.pressureComponent);
+      .subscribe(components => { // FIXME
+        this.bandLayer?.setVisibleBands('ECOSYSTEM', components.ecoComponent);
+        this.bandLayer?.setVisibleBands('PRESSURE', components.pressureComponent);
       });
 
     this.areaSubscription = this.store
