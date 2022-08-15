@@ -55,7 +55,9 @@ public class DataLayerREST {
 
     @PostConstruct
     void setup() {
-        cache = new ImageCache(props.getProperty("data.cache_dir"));
+        var cacheDir = props.getProperty("data.cache_dir");
+        if (cacheDir != null)
+            cache = new ImageCache(cacheDir);
     }
 
     @GET
@@ -75,7 +77,7 @@ public class DataLayerREST {
         var layerType = LayerType.valueOf(type.toUpperCase());
 
         java.nio.file.Path cacheKey = java.nio.file.Path.of(baselineName, type).resolve(bandNo + ".png");
-        if (cache.containsKey(cacheKey)) { // TODO: check CRS
+        if (cache != null && cache.containsKey(cacheKey)) { // TODO: check CRS
             byte[] bytes = cache.get(cacheKey);
             String extent = readMetaData(bytes, "extent");
             return ok(cache.get(cacheKey), "image/png")
@@ -89,7 +91,7 @@ public class DataLayerREST {
 
             GridGeometry2D gridGeometry = coverage.getGridGeometry();
             Envelope dataEnvelope = new ReferencedEnvelope(gridGeometry.getEnvelope());
-
+            logger.finer(coverage.getCoordinateReferenceSystem2D().toWKT());
             MathTransform transform = CRS.findMathTransform(gridGeometry.getCoordinateReferenceSystem(),
                     targetCRS);
             Envelope targetEnvelope = JTS.transform(dataEnvelope, null, transform, 10);
@@ -109,10 +111,11 @@ public class DataLayerREST {
             ColorModel cm = img.getColorModel();
             var raster = Raster.createWritableRaster(sm, buf, null);
             var image = new BufferedImage(cm, raster, false, null);
-            JsonArray extent = WebUtil.createExtent(targetEnvelope);
+            JsonArray extent = WebUtil.createExtent(targetEnvelope); // TODO: Make sure is in EPSG:3857 crs
 
             byte[] bs = addMetaData(image, cm, sm, "extent", extent.toString());
-            cache.put(cacheKey, bs);
+            if (cache != null)
+                cache.put(cacheKey, bs);
 
             var cc = new CacheControl();
             cc.setMaxAge(WebUtil.ONE_YEAR_IN_SECONDS);
