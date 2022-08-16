@@ -27,7 +27,7 @@ import { ResultLayerGroup } from "@src/app/map-view/map/layers/result-layer-grou
 import { ScenarioLayer } from "@src/app/map-view/map/layers/scenario-layer";
 import AreaLayer from "@src/app/map-view/map/layers/area-layer";
 import { Extent } from "ol/extent";
-import { HttpClient } from "@angular/common/http";
+import { DataLayerService } from "@src/app/map-view/map/layers/data-layer.service";
 
 @Component({
   selector: 'app-map',
@@ -60,13 +60,13 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     private scenarioService: ScenarioService,
     private dialogService: DialogService,
     private translateService: TranslateService,
-    private http: HttpClient,
+    private dataLayerService: DataLayerService,
     private moduleRef: NgModuleRef<any>
   ) {
     this.userSubscription = this.store        /* TOOD: Just get from static environment?*/
       .select(UserSelectors.selectBaseline).pipe(isNotNullOrUndefined())
       .subscribe((baseline) => {
-        this.bandLayer = new BandLayer(baseline.name, http);
+        this.bandLayer = new BandLayer(baseline.name, dataLayerService);
         this.map!.getLayers().insertAt(1, this.bandLayer); // on top of background layer
       });
 

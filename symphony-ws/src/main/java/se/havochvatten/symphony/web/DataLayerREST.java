@@ -68,7 +68,7 @@ public class DataLayerREST {
     public Response getLayerData(@PathParam("type") String type,
                                  @PathParam("id") int bandNo,
                                  @PathParam("baselineName") String baselineName,
-                                 @DefaultValue("EPSG:3857") @QueryParam("crs") String crs)
+                                 @QueryParam("crs") String crs)
             throws Exception {
         logger.info("Getting layer data of type " + type + " for bandNo=" + bandNo);
 
@@ -86,15 +86,21 @@ public class DataLayerREST {
         } else {
             GridCoverage2D coverage = data.getDataLayer(layerType, baselineVersion.getId(), bandNo);
 
-            CRSAuthorityFactory factory = CRS.getAuthorityFactory(true);
-            CoordinateReferenceSystem targetCRS = factory.createCoordinateReferenceSystem(crs);
-
-            GridGeometry2D gridGeometry = coverage.getGridGeometry();
-            Envelope dataEnvelope = new ReferencedEnvelope(gridGeometry.getEnvelope());
-            logger.finer(coverage.getCoordinateReferenceSystem2D().toWKT());
-            MathTransform transform = CRS.findMathTransform(gridGeometry.getCoordinateReferenceSystem(),
+            Envelope dataEnvelope = new ReferencedEnvelope(coverage.getEnvelope());
+            CoordinateReferenceSystem targetCRS;
+            Envelope targetEnvelope;
+            if (crs == null) {
+                targetCRS = coverage.getCoordinateReferenceSystem2D();
+                targetEnvelope = dataEnvelope;
+            } else {
+                CRSAuthorityFactory factory = CRS.getAuthorityFactory(true);
+                targetCRS = factory.createCoordinateReferenceSystem(crs);
+                logger.finer(coverage.getCoordinateReferenceSystem2D().toWKT());
+                GridGeometry2D gridGeometry = coverage.getGridGeometry();
+                MathTransform transform = CRS.findMathTransform(gridGeometry.getCoordinateReferenceSystem(),
                     targetCRS);
-            Envelope targetEnvelope = JTS.transform(dataEnvelope, null, transform, 10);
+                targetEnvelope = JTS.transform(dataEnvelope, null, transform, 10);
+            }
 
             // TODO create indexed image if not already indexed
             RenderedImage img = WebUtil.render(coverage, targetCRS, targetEnvelope,
@@ -111,7 +117,7 @@ public class DataLayerREST {
             ColorModel cm = img.getColorModel();
             var raster = Raster.createWritableRaster(sm, buf, null);
             var image = new BufferedImage(cm, raster, false, null);
-            JsonArray extent = WebUtil.createExtent(targetEnvelope); // TODO: Make sure is in EPSG:3857 crs
+            JsonArray extent = WebUtil.createExtent(targetEnvelope);
 
             byte[] bs = addMetaData(image, cm, sm, "extent", extent.toString());
             if (cache != null)

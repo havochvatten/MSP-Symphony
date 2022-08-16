@@ -159,7 +159,8 @@ public class CalculationREST {
     @RolesAllowed("GRP_SYMPHONY")
     @ApiOperation(value = "Returns calculation result image", response = byte[].class)
     public Response getResultImage(@Context HttpServletRequest req,
-                                   @PathParam("id") int id, @QueryParam("crs") String crs)
+                                   @PathParam("id") int id,
+                                   @QueryParam("crs") String crs)
             throws Exception {
         var lastResult = (CalculationResult) req.getSession().getAttribute("last-calculation");
 

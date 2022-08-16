@@ -25,9 +25,6 @@ export interface NormalizationOptions {
   userDefinedValue?: number;
 }
 
-/** Setting this to true causes result rasters to be reprojected to the map CRS on the frontend */
-const CLIENT_SIDE_REPROJECTION = false;
-
 @Injectable({
   providedIn: 'root'
 })
@@ -38,8 +35,10 @@ export class CalculationService implements OnDestroy {
   private bandNumbersSubscription$: Subscription;
 
   constructor(private http: HttpClient, private store: Store<State>) {
-    if (CLIENT_SIDE_REPROJECTION) {
+    if (AppSettings.CLIENT_SIDE_PROJECTION) {
       proj4.defs('EPSG:3035', '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs');
+      proj4.defs('ESRI:54034', '+proj=cea +lat_ts=-12 +lon_0=12 +x_0=0 +y_0=0 +datum=WGS84 +units=m' +
+        ' +no_defs');
       register(proj4);
     }
 
@@ -83,7 +82,7 @@ export class CalculationService implements OnDestroy {
   }
 
   public getStaticImage(url:string) {
-    const params = CLIENT_SIDE_REPROJECTION ?
+    const params = AppSettings.CLIENT_SIDE_PROJECTION ?
       undefined :
       new HttpParams().set('crs', AppSettings.MAP_PROJECTION);
     return this.http.get(url, {
@@ -103,7 +102,7 @@ export class CalculationService implements OnDestroy {
             that.resultReady$.emit({
               url: URL.createObjectURL(response.body),
               imageExtent: JSON.parse(extentHeader),
-              projection: CLIENT_SIDE_REPROJECTION ? 'EPSG:3035' : 'EPSG:3857'
+              projection: AppSettings.CLIENT_SIDE_PROJECTION ? AppSettings.DATALAYER_RASTER_CRS : AppSettings.MAP_PROJECTION
             });
             resolve();
           } else {
