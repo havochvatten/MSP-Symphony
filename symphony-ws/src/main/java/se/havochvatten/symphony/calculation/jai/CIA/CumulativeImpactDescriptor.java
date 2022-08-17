@@ -114,13 +114,11 @@ public class CumulativeImpactDescriptor extends OperationDescriptorImpl implemen
             }
         }
 
-        if (args.getNumParameters()>4) {
-            var commonnessIndices = (double[]) args.getObjectParameter(4);
-            if (commonnessIndices.length != ecoservices.getSampleModel().getNumBands()) {
-                message.append(getName() + ": " + "number of commonness indices does not match number of " +
-                    "ecosystems services");
-                return false;
-            }
+        var commonnessIndices = (double[]) args.getObjectParameter(4);
+        if (commonnessIndices != null && commonnessIndices.length != ecoservices.getSampleModel().getNumBands()) {
+            message.append(getName() + ": " + "number of commonness indices does not match number of " +
+                "ecosystems services");
+            return false;
         }
 
         // TODO verify mask? (right image layout etc)

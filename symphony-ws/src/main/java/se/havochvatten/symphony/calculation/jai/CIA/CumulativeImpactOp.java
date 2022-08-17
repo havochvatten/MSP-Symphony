@@ -20,7 +20,7 @@ public class CumulativeImpactOp extends PointOpImage {
 
     public final static int TRANSPARENT_VALUE = 0;
     public final static String IMPACT_MATRIX_PROPERTY_NAME = "se.havochvatten.symphony.impact_matrix";
-    public final static int RARITY_INDEX_SCALE_CONSTANT = 1_000_000;
+    public final static double RARITY_INDEX_SCALE_CONSTANT = 1e6;
 
     /** Sensitivity matrix */
     private double[][][] ks;

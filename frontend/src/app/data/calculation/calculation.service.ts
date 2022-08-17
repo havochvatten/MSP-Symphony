@@ -56,33 +56,32 @@ export class CalculationService implements OnDestroy {
     // TODO make NgRx effect?
     this.http.post<CalculationSlice>(env.apiBaseUrl + '/calculation/sum', scenario, {
       headers: new HttpHeaders({
-        'SYM-Operation': "CumulativeImpact" // TODO: Get from scenario tob
+        'SYM-Operation': "RarityAdjustedCumulativeImpact" // TODO: Get from scenario tob
       })
-    })
-      .subscribe({
-        next(response) {
-          that.addResult(response.id).then(() => {
-            that.store.dispatch(CalculationActions.calculationSucceeded({
-              calculation: response
-            }));
-            // TODO hide areas
-          });
-        },
-        error(err) {
-          // FIXME set calculating to false for the correct area after areas rework
-          that.store.dispatch(CalculationActions.calculationFailed());
-          that.store.dispatch(
-            MessageActions.addPopupMessage({
-              message: {
-                type: 'ERROR',
-                message: `${scenario.name} could not be calculated!`,
-                uuid: scenario.name
-              }
-            })
-          );
-        }
-        // stop spinner in complete-callback?
-      });
+    }).subscribe({
+      next(response) {
+        that.addResult(response.id).then(() => {
+          that.store.dispatch(CalculationActions.calculationSucceeded({
+            calculation: response
+          }));
+          // TODO hide areas
+        });
+      },
+      error(err) {
+        // FIXME set calculating to false for the correct area after areas rework
+        that.store.dispatch(CalculationActions.calculationFailed());
+        that.store.dispatch(
+          MessageActions.addPopupMessage({
+            message: {
+              type: 'ERROR',
+              message: `${scenario.name} could not be calculated!`,
+              uuid: scenario.name
+            }
+          })
+        );
+      }
+      // stop spinner in complete-callback?
+    });
   }
 
   public getStaticImage(url:string) {

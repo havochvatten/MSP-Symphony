@@ -92,6 +92,8 @@ public class CalcService {
     @Inject
     private CalculationAreaService calculationAreaService;
 
+    @Inject
+    private CalibrationService calibrationService;
 
     @PostConstruct
     void setup() {
@@ -287,11 +289,11 @@ public class CalcService {
             throw new RuntimeException("Unsupported operation: "+requestOperation);
         }
 
-        if (requestOperation.equals("RarityAdjustedCumulativeImpact"))
-            ; // FIXME get commonness indices here
-
-        GridCoverage2D coverage = invokeCumulativeImpactOperation(scenario, requestOperation,
-            ecoComponents, pressures, matrices, layout, mask, null);
+        GridCoverage2D coverage = invokeCumulativeImpactOperation(scenario, /*requestOperation*/"CumulativeImpact",
+            ecoComponents, pressures, matrices, layout, mask,
+            requestOperation.equals("RarityAdjustedCumulativeImpact")
+                ? calibrationService.calculateGlobalCommonnessIndices(ecoComponents)
+                : null);
 
         var calculation = persistCalculation(coverage, matrixResponse.normalizationValue,
                 scenario, baseline);

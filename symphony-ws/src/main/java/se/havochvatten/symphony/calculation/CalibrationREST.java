@@ -2,16 +2,9 @@ package se.havochvatten.symphony.calculation;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import it.geosolutions.jaiext.stats.MeanSum;
-import it.geosolutions.jaiext.stats.Statistics;
-import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.processing.CoverageProcessor;
-import org.geotools.coverage.processing.Operations;
-import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.service.BaselineVersionService;
-import se.havochvatten.symphony.service.DataLayerService;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -22,8 +15,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.stream.IntStream;
 
 /**
  * Calibration REST API
@@ -39,40 +30,23 @@ public class CalibrationREST {
     @EJB
     BaselineVersionService baselineVersionService;
 
-    @EJB
-    DataLayerService dataLayerService;
+    @Inject
+    private CalibrationService calibrationService;
 
-    @EJB
-    SymphonyCoverageProcessor processor;
-
-    @POST
-    @Path("/rarity-indices")
+    @GET
+    @Path("/rarity-indices/{baseline}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Calculates baseline-global rarity indices (or actually its inverse, i.e. " +
+    @ApiOperation(value = "Gets baseline-global rarity indices (or actually its inverse, i.e. " +
         "commonness)")
-    public Response calcGlobalCommonnessIndices(@Context HttpServletRequest req, String baselineName)
+    public Response calcGlobalCommonnessIndices(@Context HttpServletRequest req,
+                                                @PathParam("baseline") String baselineName)
         throws SymphonyStandardAppException, IOException {
         BaselineVersion baseline = baselineVersionService.getVersionByName(baselineName);
 
-        var ecoComponents = dataLayerService.getCoverage(LayerType.ECOSYSTEM, baseline.getId());
+        var sums = calibrationService.getGlobalCommonnessIndicesIndexedByTitle(baseline);
 
-        // FIXME move to a "CalibrationService"
-        final var statsOp = processor.getOperation("Stats");
-
-        var params = statsOp.getParameters();
-        params.parameter("source").setValue(ecoComponents);
-        var bands = IntStream.range(0, ecoComponents.getNumSampleDimensions()).toArray();
-        params.parameter("bands").setValue(bands);
-        params.parameter("stats").setValue(new Statistics.StatsType[]{Statistics.StatsType.SUM});
-        var result = (GridCoverage2D) processor.doOperation(params);
-        var bandStats = (Statistics[][]) result.getProperty("JAI-EXT.stats");
-
-        var sums = Arrays.stream(bandStats)
-            .mapToDouble(stats -> (double)stats[0].getResult())
-            .toArray();
-
-        // TODO: Store in database as well?
+        // Store in table in database? (indexed by meta_id?)
         return Response.ok(sums).build();
     }
 }
