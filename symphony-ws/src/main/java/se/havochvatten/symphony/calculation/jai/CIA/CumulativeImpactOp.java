@@ -20,21 +20,22 @@ public class CumulativeImpactOp extends PointOpImage {
 
     public final static int TRANSPARENT_VALUE = 0;
     public final static String IMPACT_MATRIX_PROPERTY_NAME = "se.havochvatten.symphony.impact_matrix";
+    public final static int RARITY_INDEX_SCALE_CONSTANT = 1_000_000;
 
-    /**
-     * Sensitivity matrix
-     */
+    /** Sensitivity matrix */
     private double[][][] ks;
-    private Raster mask;
 
-    private long[][] impactMatrix;
-    private int[] ecosystemBands;
-    private int[] pressureBands;
+    private final Raster mask;
+
+    private final long[][] impactMatrix;
+    private final int[] ecosystemBands;
+    private final int[] pressureBands;
+    private final double[] commonnessIndices;
 
     public CumulativeImpactOp(RenderedImage ecosystemsData, RenderedImage pressuresData,
                               ImageLayout layout, Map config,
                               double[][][] matrices, Raster mask,
-                              int[] ecosystems, int[] pressures) {
+                              int[] ecosystems, int[] pressures, double[] rarityIndices) {
         super(ecosystemsData, pressuresData, layout, config, true); // source cobbling -- do we need it?
 
         LOG.info("CulumativeImpactOp: tile scheduler parallelism=" + JAI.getDefaultInstance().getTileScheduler().getParallelism());
@@ -45,6 +46,7 @@ public class CumulativeImpactOp extends PointOpImage {
         this.mask = mask;
         this.ecosystemBands = ecosystems;
         this.pressureBands = pressures;
+        this.commonnessIndices = rarityIndices;
 
         this.impactMatrix = new long[pressureBands.length][ecosystemBands.length];
 //        setProperty(IMPACT_MATRIX_PROPERTY_NAME, new double[] {0});
@@ -128,7 +130,12 @@ public class CumulativeImpactOp extends PointOpImage {
                         for (int j = 0; j < numEcosystems; j++) {
                             double K = ks[maskValue][pressureBands[i]][ecosystemBands[j]];
                             int E = ecoData[ecosystemBands[j]][ecoPixelOffset + ecoBandOffsets[ecosystemBands[j]]];
-                            int impact = (int) (B * E * K); // use 1-10 matrix values => eliminate cast and faster mul?
+                            int impact;
+                            if (commonnessIndices == null) {
+                                impact = (int) (B*E*K); // use 1-10 matrix values => eliminate cast and faster mul?
+                            } else {
+                                impact = (int) (RARITY_INDEX_SCALE_CONSTANT*B*E*K/commonnessIndices[j]);
+                            }
                             rectImpactMatrix[i][j] += impact;
                             rowSum += impact;
                         }

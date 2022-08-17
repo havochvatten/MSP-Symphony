@@ -14,10 +14,8 @@ public class ScenarioDto {
 
     public Integer id;
 
-    //    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public String owner; // only to be set from backend
 
-    //    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public Date timestamp; // only to be set from backend
 
     /////////////// Supplied by frontend

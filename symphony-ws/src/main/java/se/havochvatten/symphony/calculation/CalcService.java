@@ -281,8 +281,17 @@ public class CalcService {
 //        Map<String, Object> props = new HashMap<>();
 //        CoverageUtilities.setNoDataProperty(props, new NoDataContainer(CalcEngine.NO_DATA)); // TODO remove?
 
-        GridCoverage2D coverage = invokeCumulativeImpactOperation(scenario, ecoComponents, pressures,
-                matrices, layout, mask);
+        String requestOperation = req.getHeader("SYM-Operation");
+        if (!(requestOperation.equals("RarityAdjustedCumulativeImpact") || requestOperation.equals(
+            "CumulativeImpact"))) {
+            throw new RuntimeException("Unsupported operation: "+requestOperation);
+        }
+
+        if (requestOperation.equals("RarityAdjustedCumulativeImpact"))
+            ; // FIXME get commonness indices here
+
+        GridCoverage2D coverage = invokeCumulativeImpactOperation(scenario, requestOperation,
+            ecoComponents, pressures, matrices, layout, mask, null);
 
         var calculation = persistCalculation(coverage, matrixResponse.normalizationValue,
                 scenario, baseline);
@@ -292,10 +301,15 @@ public class CalcService {
         return calculation;
     }
 
-    private GridCoverage2D invokeCumulativeImpactOperation(Scenario scenario, GridCoverage2D ecoComponents,
+    private GridCoverage2D invokeCumulativeImpactOperation(Scenario scenario, String operationName,
+                                                           GridCoverage2D ecoComponents,
                                                            GridCoverage2D pressures, List<SensitivityMatrix> matrices,
-                                                           ImageLayout layout, MatrixMask mask) {
-        var op = processor.getOperation("se.havochvatten.CumulativeImpact");
+                                                           ImageLayout layout, MatrixMask mask,
+                                                           double[] commonness) {
+        final var OPERATION_PREFIX = "se.havochvatten.symphony";
+        var qualifiedOpName = String.join(".", OPERATION_PREFIX, operationName);
+
+        var op = processor.getOperation(qualifiedOpName);
 
         var params = op.getParameters();
         params.parameter("Source0").setValue(ecoComponents);
@@ -304,6 +318,8 @@ public class CalcService {
         params.parameter("mask").setValue(mask.getRaster());
         params.parameter("ecosystemBands").setValue(scenario.getEcosystemsToInclude());
         params.parameter("pressureBands").setValue(scenario.getPressuresToInclude());
+        if (commonness != null)
+            params.parameter("commonnessIndices").setValue(commonness);
 
         var coverage = (GridCoverage2D) processor.doOperation(params, new Hints(JAI.KEY_IMAGE_LAYOUT, layout));
         triggerActualCalculation(coverage.getRenderedImage());

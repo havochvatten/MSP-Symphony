@@ -19,8 +19,10 @@ public class SymphonyCoverageProcessor extends CoverageProcessor {
         super();
         addOperation(new OperationJAI(new Rescale2Descriptor()));
         addOperation(new OperationJAI(new CumulativeImpactDescriptor()));
+//        addOperation(new OperationJAI(new RarityAdjustedCumulativeImpactDescriptor()));
         addOperation(new OperationJAI("Subtract"));
         addOperation(new OperationJAI("Divide"));
+        addOperation(new OperationJAI("Stats"));
     }
 
     /**
@@ -29,7 +31,7 @@ public class SymphonyCoverageProcessor extends CoverageProcessor {
     public GridCoverage2D rescaleCoverage(GridCoverage2D source, double[] constants, double[] offsets,
                                           ROI roi) {
         // Pass in ImageLayout?
-        final var rescale = this.getOperation("se.havochvatten.Rescale");
+        final var rescale = this.getOperation("se.havochvatten.symphony.Rescale");
 
         var params = rescale.getParameters();
         params.parameter("Source").setValue(source);

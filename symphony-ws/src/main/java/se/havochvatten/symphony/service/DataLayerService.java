@@ -25,7 +25,7 @@ public class DataLayerService {
     @EJB
     PropertiesService props;
 
-    // TODO catch instances of layer type and baselineVersionId?
+    // TODO cache instances of layer type and baselineVersionId?
     public GridCoverage2D getCoverage(LayerType type, int baselineVersionId) throws IOException,
 			SymphonyStandardAppException {
         String filename = getComponentFilePath(type, baselineVersionId);

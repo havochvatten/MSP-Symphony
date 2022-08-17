@@ -18,38 +18,41 @@ public class CumulativeImpactDescriptor extends OperationDescriptorImpl implemen
      * The resource strings that specify the parameter list for this operation.
      */
     private static final String[][] resources = {
-            {"GlobalName", "se.havochvatten.CumulativeImpact"},
+            {"GlobalName", "se.havochvatten.symphony.CumulativeImpact"},
             {"LocalName", "CumulativeImpact"},
-            {"Vendor", "it.geosolutions.jaiext"},
-            {"Description", "Symphony Cumulative Impact Assessment Sum"},
+            {"Vendor", "it.geosolutions.jaiext"}, // N.B: Connot be "se.havochvatten.symphony" since not
+        // included in some JAI "AUTHORITIES" object somewhere
+            {"Description", "Symphony Cumulative Impact Assessment Calculation"},
             {"DocURL", ""},
             {"Version", "1.0"},
             {"arg0Desc", "sensitivity matrices array"},
             {"arg1Desc", "matrix mask"},
             {"arg2Desc", "ecosystem services bands to include"},
             {"arg3Desc", "pressure bands to include"},
+            {"arg4Desc", "per-band commonness indices array"}
     };
 
     /**
      * The parameter class list
      */
     protected static final Class[] paramClasses = {
-            double[][][].class, // FIXME use floats instead
-            Raster.class,
-            int[].class,
-            int[].class
+        double[][][].class, // FIXME use floats instead
+        Raster.class,
+        int[].class,
+        int[].class,
+        double[].class
     };
 
     /**
      * The parameter name list
      */
-    protected static final String[] paramNames = {"matrix", "mask", "ecosystemBands", "pressureBands"};
+    protected static final String[] paramNames = {"matrix", "mask", "ecosystemBands", "pressureBands", "commonnessIndices"};
 
     /**
      * The parameter default value list for this operation.
      */
     protected static final Object[] paramDefaults = {
-            NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT,
+            NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT, null
     };
 
     protected static final String[] supportedModes = {RenderedRegistryMode.MODE_NAME};
@@ -78,9 +81,10 @@ public class CumulativeImpactDescriptor extends OperationDescriptorImpl implemen
         var mask = (Raster) pb.getObjectParameter(1);
         int[] ecosystems = (int[]) pb.getObjectParameter(2);
         int[] pressures = (int[]) pb.getObjectParameter(3);
+        double[] commonnessIndices = pb.getNumParameters()>4 ? (double[]) pb.getObjectParameter(4) : null;
 
         return new CumulativeImpactOp(source0, source1, layout, hints,
-                matrices, mask, ecosystems, pressures);
+                matrices, mask, ecosystems, pressures, commonnessIndices);
     }
 
     /**
@@ -106,6 +110,15 @@ public class CumulativeImpactDescriptor extends OperationDescriptorImpl implemen
         for (int i = 0; i < matrix.length; i++) {
             if (matrix[i].length != ecoservices.getSampleModel().getNumBands()) {
                 message.append(getName() + ": " + "numbers of columns in matrix does not match number of ecosystem services in row " + i);
+                return false;
+            }
+        }
+
+        if (args.getNumParameters()>4) {
+            var commonnessIndices = (double[]) args.getObjectParameter(4);
+            if (commonnessIndices.length != ecoservices.getSampleModel().getNumBands()) {
+                message.append(getName() + ": " + "number of commonness indices does not match number of " +
+                    "ecosystems services");
                 return false;
             }
         }

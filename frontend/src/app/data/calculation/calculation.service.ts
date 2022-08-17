@@ -54,7 +54,11 @@ export class CalculationService implements OnDestroy {
     const that = this;
     // TODO Consider making it a simple request (not subject to CORS)
     // TODO make NgRx effect?
-    this.http.post<CalculationSlice>(env.apiBaseUrl + '/calculation/sum', scenario)
+    this.http.post<CalculationSlice>(env.apiBaseUrl + '/calculation/sum', scenario, {
+      headers: new HttpHeaders({
+        'SYM-Operation': "CumulativeImpact" // TODO: Get from scenario tob
+      })
+    })
       .subscribe({
         next(response) {
           that.addResult(response.id).then(() => {
