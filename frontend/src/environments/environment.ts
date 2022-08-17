@@ -8,6 +8,9 @@ export const environment = {
   showIncludeCoastCheckbox: true,
   apiBaseUrl: "/symphony-ws/service",
   baseline: 'BASELINE2019',
+  areas: {
+    countryCode: "SWE",
+  },
   map: {
     center: [11.40, 57.61], // Kattegatt
     maxZoom: 10,
