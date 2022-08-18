@@ -1,7 +1,6 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { NormalizationOptions, NormalizationType } from "@data/calculation/calculation.service";
 
-// TODO move to environment?
 export const DEFAULT_OPTIONS: NormalizationOptions = {
   type: NormalizationType.Domain
 }
@@ -11,9 +10,12 @@ export const DEFAULT_OPTIONS: NormalizationOptions = {
   templateUrl: './normalization-selection.component.html',
   styleUrls: ['./normalization-selection.component.scss']
 })
-export class NormalizationSelectionComponent {
+export class NormalizationSelectionComponent implements OnChanges {
   @Input() options: NormalizationOptions = DEFAULT_OPTIONS;
+  @Input() algorithm = '';
+
   @Output() modeSelectionEvent = new EventEmitter<NormalizationOptions>();
+  readonly NormalizationType = NormalizationType;
 
   radioButtons = [
     {
@@ -30,7 +32,7 @@ export class NormalizationSelectionComponent {
     }
   ];
 
-  showUserDefinedValueField = () => this.options.type == NormalizationType.UserDefined;
+  showUserDefinedValueField = () => this.options.type === NormalizationType.UserDefined;
 
   check(target: NormalizationType) {
     this.modeSelectionEvent.emit({
@@ -44,5 +46,15 @@ export class NormalizationSelectionComponent {
       type: this.options.type,
       userDefinedValue: value
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.algorithm?.currentValue === 'RarityAdjustedCumulativeImpact' &&
+      this.options.type === NormalizationType.Domain) {
+      this.modeSelectionEvent.emit({
+        type: NormalizationType.Area,
+        userDefinedValue: this.options.userDefinedValue
+      });
+    }
   }
 }

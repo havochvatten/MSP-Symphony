@@ -1,4 +1,13 @@
-import { Component, ElementRef, Input, NgModuleRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterContentInit,
+  Component,
+  ElementRef,
+  Input,
+  NgModuleRef,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import { Scenario } from "@data/scenario/scenario.interfaces";
 import { ScenarioActions, ScenarioSelectors } from "@data/scenario";
 import { CalculationReportModalComponent } from "@shared/report-modal/calculation-report-modal.component";
@@ -27,7 +36,7 @@ import {
   DeleteScenarioConfirmationDialogComponent
 } from "@src/app/map-view/scenario/scenario-detail/delete-scenario-confirmation-dialog/delete-scenario-confirmation-dialog.component";
 import { Feature } from "geojson";
-import { setIn, updateIn } from "immutable";
+import { FormControl, Validators } from "@angular/forms";
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 
@@ -37,21 +46,23 @@ const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
   styleUrls: ['./scenario-detail.component.scss']
 })
 export class ScenarioDetailComponent implements OnInit, OnDestroy {
+  env = environment;
   autoSaveSubscription$?: Subscription;
-  @Input() scenario!: Scenario;
 
+  @Input() scenario!: Scenario;
   @ViewChild('name') nameElement!: ElementRef;
   editName = false;
+
   calculating$?: Observable<boolean>;
+  // Ambitiously we would query the backend for these
+  availableOperations = ['CumulativeImpact', 'RarityAdjustedCumulativeImpact'];
+  operation = new FormControl('', Validators.required);
 
   showIncludeCoastCheckbox = environment.showIncludeCoastCheckbox;
   associatedCoastalArea?: AreaTypeMatrixMapping;
+
   areaCoastMatrices?: AreaTypeRef; // AreaMatrixMapping[] = [];
-
   normalizationOpts = Normalization.DEFAULT_OPTIONS;
-
-  env = environment;
-  convertMultiplierToPercent = convertMultiplierToPercent;
 
   constructor(
     private store: Store<State>,
@@ -78,7 +89,18 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     });
 
     this.calculating$ = this.store.select(CalculationSelectors.selectCalculating);
+
+    this.operation.valueChanges.subscribe(op => {
+      console.log(op);
+      if (op === 'RarityAdjustedCumulativeImpact') {
+
+      }
+    }
+
+  );
   }
+
+  convertMultiplierToPercent = convertMultiplierToPercent;
 
   ngOnInit() {
     if (!this.scenario)
@@ -94,7 +116,15 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
       this.calcService.addResult(this.scenario.latestCalculation);
     }
     // });
+
+    setTimeout(() => {
+      this.operation.setValue(this.availableOperations[0]);
+    });
   }
+
+  // selectOperation($event: any) {
+  //   // this.operation =
+  // }
 
   calculate() {
     this.store.dispatch(CalculationActions.startCalculation());

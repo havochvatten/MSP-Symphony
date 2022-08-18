@@ -71,11 +71,13 @@ $buttons-row-gap: 1rem;
     main {
       flex: 1;
 
-      .scenario-changes {
-        h3 {
-          margin: 0 0 1rem;
+      .algorithm {
+        & ::ng-deep hav-select {
+          font-size: 1.5rem;
         }
+      }
 
+      .scenario-changes {
         #areas-list {
           box-sizing: border-box;
           display: grid;
@@ -155,7 +157,7 @@ $buttons-row-gap: 1rem;
 
       #coast-checkbox {
         ::ng-deep .checkbox-wrapper {
-          padding: 1rem 0;
+          padding-bottom: 1rem;
         }
       }
     }
