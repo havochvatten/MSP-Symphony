@@ -42,7 +42,8 @@ public class CalibrationService {
      * Calculate baseline-global rarity indices (or actually its inverse, i.e.
      * commonness.
      * */
-    public double[] calculateGlobalCommonnessIndices(GridCoverage2D ecoComponents) throws SymphonyStandardAppException,
+    public double[] calculateGlobalCommonnessIndices(GridCoverage2D ecoComponents, int[] ecosystemBands)
+        throws SymphonyStandardAppException,
         IOException {
 
         logger.info("Calculating global rarity indices for {}", ecoComponents);
@@ -51,8 +52,7 @@ public class CalibrationService {
 
         var params = statsOp.getParameters();
         params.parameter("source").setValue(ecoComponents);
-        var bands = IntStream.range(0, ecoComponents.getNumSampleDimensions()).toArray();
-        params.parameter("bands").setValue(bands);
+        params.parameter("bands").setValue(ecosystemBands);
         params.parameter("stats").setValue(new Statistics.StatsType[]{Statistics.StatsType.SUM});
         watch.start();
         var result = (GridCoverage2D) processor.doOperation(params);
@@ -71,15 +71,17 @@ public class CalibrationService {
     public Map<String, Double> getGlobalCommonnessIndicesIndexedByTitle(BaselineVersion baseline) throws SymphonyStandardAppException, IOException {
         var ecoComponents = dataLayerService.getCoverage(LayerType.ECOSYSTEM, baseline.getId());
 
-        // Get titles index by band number
+        // Get component titles in band number order
         List<String> bandTitles = em.createQuery("select c.title from Metadata c where c.baselineVersion.id = " +
             ":baselineVersionId and c.symphonyCategory = 'Ecosystem' order by c.bandNumber")
             .setParameter("baselineVersionId", baseline.getId())
             .getResultList();
 
-        var values = calculateGlobalCommonnessIndices(ecoComponents);
+//        var bandNumbers = new int[] {0, 1, 2};
+        var bandNumbers = IntStream.range(0, ecoComponents.getNumSampleDimensions()).toArray();
+        var values = calculateGlobalCommonnessIndices(ecoComponents, bandNumbers);
 
-        return IntStream.range(0, bandTitles.size()).boxed()
+        return IntStream.range(0, values.length).boxed()
             .collect(Collectors.toMap(bandTitles::get, i -> Double.valueOf(values[i])));
     }
 }

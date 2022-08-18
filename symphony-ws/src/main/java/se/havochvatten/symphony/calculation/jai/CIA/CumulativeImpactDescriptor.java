@@ -115,9 +115,9 @@ public class CumulativeImpactDescriptor extends OperationDescriptorImpl implemen
         }
 
         var commonnessIndices = (double[]) args.getObjectParameter(4);
-        if (commonnessIndices != null && commonnessIndices.length != ecoservices.getSampleModel().getNumBands()) {
-            message.append(getName() + ": " + "number of commonness indices does not match number of " +
-                "ecosystems services");
+        int[] ecosystems = (int[]) args.getObjectParameter(2);
+        if (commonnessIndices != null && commonnessIndices.length != ecosystems.length) {
+            message.append(getName() + ": " + "number of commonness indices does not match number of ecosystems services");
             return false;
         }
 
