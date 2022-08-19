@@ -25,7 +25,7 @@ with special emphasis on the building and comparison of different scenarios. Thi
 - Apply, view, select, and edit sensitivity matrices used for analysis 
 - Choose among different result normalization methods, including the ability to specify a user-defined custom 
   normalization value
-- Apply linear transformations over arbitrary regions in a scenario ($x' = A x + B$, where $x$ is the component 
+- Apply linear transformations over arbitrary regions in a scenario ( $x' = A x + B$, where $x$ is the component 
   intensity at the data point and $x'$ the actual value used in the cumulative impact analysis)
 - Create persistent scenarios consisting of arbitrary numbers of transformed subareas
 - Compare two scenario analyses result side-by-side, including relative differences in graphical and tabular form 
