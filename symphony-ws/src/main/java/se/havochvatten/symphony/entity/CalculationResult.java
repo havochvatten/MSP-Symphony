@@ -65,7 +65,7 @@ public class CalculationResult implements Serializable {
     @NotNull
     @Size(min = 1, max = 255)
     @Column(name = "cares_op")
-    private String operation;
+    private String operationName;
 
     @Basic(optional = false)
     @NotNull
@@ -215,7 +215,9 @@ public class CalculationResult implements Serializable {
         return scenarioSnapshot;
     }
 
-    public void setOperation(String operation) { this.operation = operation; }
+    public void setOperationName(String operation) { this.operationName = operation; }
+
+    public String getOperationName() { return operationName; }
 
     @JsonIgnore
     public SimpleFeature getFeature() {

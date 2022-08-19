@@ -233,6 +233,7 @@
         },
         "cumulative-effect-etc": {
             "baseline": "Basdataversion",
+            "operation": "Algoritm",
             "title": "Kumulativ effekt",
             "total": "Summa",
             "average": "Genomsnitt",

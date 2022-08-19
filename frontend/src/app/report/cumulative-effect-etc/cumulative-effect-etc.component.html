@@ -4,6 +4,10 @@
       <th>{{ 'report.cumulative-effect-etc.baseline' | translate }}:</th>
       <td>{{ reports[0].baselineName }}</td>
     </tr>
+    <tr>
+      <th>{{ 'report.cumulative-effect-etc.operation' | translate }}:</th>
+      <td>{{ 'map.editor.operation.'+reports[0].operationName | translate }}</td>
+    </tr>
     <!-- TODO Add relative diff of total impact in header -->
     <tr *ngIf="normalization">
       <th>{{ 'map.editor.normalization.title' | translate }}:</th>

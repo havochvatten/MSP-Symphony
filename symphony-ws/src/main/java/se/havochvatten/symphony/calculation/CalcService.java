@@ -404,7 +404,7 @@ public class CalcService {
         calculation.setImpactMatrix(impactMatrix);
         calculation.setCoverage(result);
         calculation.setBaselineVersion(baselineVersion);
-        calculation.setOperation(operation);
+        calculation.setOperationName(operation);
         em.persist(calculation);
         em.flush(); // to have id generated
 

@@ -115,6 +115,7 @@ public class ReportService {
         ReportResponseDto report = new ReportResponseDto();
 
         report.baselineName = calc.getBaselineVersion().getName();
+        report.operationName = calc.getOperationName();
         report.name = calc.getCalculationName();
         // Does not sum to exactly 100% for some reason? I.e. assert(getComponentTotals(...) == stats
         // .getSum()) not always true. Tolerance?
