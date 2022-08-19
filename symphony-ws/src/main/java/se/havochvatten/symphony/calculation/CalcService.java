@@ -296,7 +296,7 @@ public class CalcService {
                 : null);
 
         var calculation = persistCalculation(coverage, matrixResponse.normalizationValue,
-                scenario, baseline);
+                scenario, requestOperation, baseline);
         // Cache last calculation in session to speed up subsequent REST call to retrieve result image
         req.getSession().setAttribute("last-calculation", calculation);
 
@@ -383,6 +383,7 @@ public class CalcService {
     public CalculationResult persistCalculation(GridCoverage2D result,
                                                 double normalizationValue,
                                                 Scenario scenario,
+                                                String operation,
                                                 BaselineVersion baselineVersion) throws IOException, SymphonyStandardAppException, CloneNotSupportedException {
         var calculation = new CalculationResult();
 
@@ -403,6 +404,7 @@ public class CalcService {
         calculation.setImpactMatrix(impactMatrix);
         calculation.setCoverage(result);
         calculation.setBaselineVersion(baselineVersion);
+        calculation.setOperation(operation);
         em.persist(calculation);
         em.flush(); // to have id generated
 

@@ -50,13 +50,13 @@ export class CalculationService implements OnDestroy {
       });
   }
 
-  public calculate(scenario: Scenario) {
+  public calculate(scenario: Scenario, operation: string) {
     const that = this;
     // TODO Consider making it a simple request (not subject to CORS)
     // TODO make NgRx effect?
     this.http.post<CalculationSlice>(env.apiBaseUrl + '/calculation/sum', scenario, {
-      headers: new HttpHeaders({
-        'SYM-Operation': "RarityAdjustedCumulativeImpact" // TODO: Get from scenario tob
+      headers: new HttpHeaders({       // op perhaps as query param...
+        'SYM-Operation': operation
       })
     }).subscribe({
       next(response) {
@@ -64,7 +64,7 @@ export class CalculationService implements OnDestroy {
           that.store.dispatch(CalculationActions.calculationSucceeded({
             calculation: response
           }));
-          // TODO hide areas
+          // TODO hide areas?
         });
       },
       error(err) {

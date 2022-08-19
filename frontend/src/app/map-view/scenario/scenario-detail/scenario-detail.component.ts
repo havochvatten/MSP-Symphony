@@ -1,13 +1,4 @@
-import {
-  AfterContentInit,
-  Component,
-  ElementRef,
-  Input,
-  NgModuleRef,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import { Component, ElementRef, Input, NgModuleRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Scenario } from "@data/scenario/scenario.interfaces";
 import { ScenarioActions, ScenarioSelectors } from "@data/scenario";
 import { CalculationReportModalComponent } from "@shared/report-modal/calculation-report-modal.component";
@@ -89,15 +80,6 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     });
 
     this.calculating$ = this.store.select(CalculationSelectors.selectCalculating);
-
-    this.operation.valueChanges.subscribe(op => {
-      console.log(op);
-      if (op === 'RarityAdjustedCumulativeImpact') {
-
-      }
-    }
-
-  );
   }
 
   convertMultiplierToPercent = convertMultiplierToPercent;
@@ -122,10 +104,6 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  // selectOperation($event: any) {
-  //   // this.operation =
-  // }
-
   calculate() {
     this.store.dispatch(CalculationActions.startCalculation());
     this.store.select(MetadataSelectors.selectSelectedComponents).pipe(
@@ -133,18 +111,19 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     ).subscribe((selectedComponents) => {
       const getSortedBandNumbers = (bands: Band[]) => bands
         .map(band => band.bandNumber)
-        .sort((a, b) => a-b);
+        .sort((a, b) => a - b);
       this.calcService.calculate({
-        ...this.scenario,
-        ecosystemsToInclude: getSortedBandNumbers(selectedComponents.ecoComponent),
-        pressuresToInclude: getSortedBandNumbers(selectedComponents.pressureComponent),
-        matrix: {
-          ...this.scenario.matrix,
-          areaTypes: this.areaCoastMatrices ?
-            [...(this.scenario.matrix!.areaTypes ?? []), this.areaCoastMatrices] :
-            (this.scenario.matrix!.areaTypes ?? [])
-        }
-      });
+          ...this.scenario,
+          ecosystemsToInclude: getSortedBandNumbers(selectedComponents.ecoComponent),
+          pressuresToInclude: getSortedBandNumbers(selectedComponents.pressureComponent),
+          matrix: {
+            ...this.scenario.matrix,
+            areaTypes: this.areaCoastMatrices ?
+              [...(this.scenario.matrix!.areaTypes ?? []), this.areaCoastMatrices] :
+              (this.scenario.matrix!.areaTypes ?? [])
+          }
+        },
+        this.operation.value);
     });
   }
 

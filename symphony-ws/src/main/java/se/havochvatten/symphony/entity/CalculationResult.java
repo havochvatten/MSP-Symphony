@@ -64,6 +64,12 @@ public class CalculationResult implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
+    @Column(name = "cares_op")
+    private String operation;
+
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
     @Column(name = "cares_owner")
     private String owner;
 
@@ -208,6 +214,8 @@ public class CalculationResult implements Serializable {
     public Scenario getScenarioSnapshot() {
         return scenarioSnapshot;
     }
+
+    public void setOperation(String operation) { this.operation = operation; }
 
     @JsonIgnore
     public SimpleFeature getFeature() {
