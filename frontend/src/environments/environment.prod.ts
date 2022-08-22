@@ -9,7 +9,9 @@ export const environment = {
   },
   map: {
     center: [14.94, 60.57], // Modified center of Sweden with focus on seas
+    initialZoom: 6,
     maxZoom: 10,
+    minZoom: 3,
     zoomPadding: 20,
     disableBackgroundMap: false,
     colorCodeIntensityChanges: false

@@ -12,8 +12,10 @@ export const environment = {
     countryCode: "SWE",
   },
   map: {
-    center: [11.40, 57.61], // Kattegatt
+    center: [10, -10],
+    initialZoom: 4,
     maxZoom: 10,
+    minZoom: 3,
     zoomPadding: 20,
     disableBackgroundMap: false,
     colorCodeIntensityChanges: false
