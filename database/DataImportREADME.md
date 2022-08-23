@@ -60,13 +60,12 @@ Fields are separated using semicolon.
 ## Import raster data
 Make sure you have [GDAL](https://gdal.org/) command line utilities installed (in particular`gdal-translate`).
 
-### Optional (but highly recommended)
+### Preprocess input raster layers
 - Run [scripts/preprocess-input.sh](/scripts/preprocess-input.sh) with your multiband GeoTIFF file as argument (once 
   for the ecoomponents and once for the pressures).
 
-The script will optimize the rasters for production use by tiling them and converting them to 8-bit values (which is 
-sufficient for the integer 0-100 data value range). This will decrease memory usage and increase performance, and is 
-thus highly recommended.
+The script will convert the rasters for production use by tiling them and converting them to 8-bit values (which is 
+sufficient for the integer 0-100 data value range).
 
 ## Precalculate normalization parameters
 
