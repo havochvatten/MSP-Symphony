@@ -38,7 +38,7 @@ public class CumulativeImpactOp extends PointOpImage {
                               int[] ecosystems, int[] pressures, double[] rarityIndices) {
         super(ecosystemsData, pressuresData, layout, config, true); // source cobbling -- do we need it?
 
-        LOG.info("CulumativeImpactOp: tile scheduler parallelism=" + JAI.getDefaultInstance().getTileScheduler().getParallelism());
+        LOG.fine("CulumativeImpactOp: tile scheduler parallelism=" + JAI.getDefaultInstance().getTileScheduler().getParallelism());
 
 //        permitInPlaceOperation();
         // Setting matrix

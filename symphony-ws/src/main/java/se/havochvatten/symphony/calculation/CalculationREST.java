@@ -2,6 +2,7 @@ package se.havochvatten.symphony.calculation;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.time.StopWatch;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -80,8 +81,12 @@ public class CalculationREST {
         if (!persistedScenario.getOwner().equals(req.getUserPrincipal().getName()))
             throw new ForbiddenException("User not owner of scenario");
 
+        var watch = new StopWatch();
+        watch.start();
         logger.info("Performing SUM calculation for " + dto.name + " ...");
         CalculationResult result = calcService.calculateImpact(req, new Scenario(dto, calcService));
+        watch.stop();
+        logger.log(Level.INFO, "DONE ({0} ms)", watch.getTime());
 
         return new CalculationResultSlice(result);
     }

@@ -46,7 +46,7 @@ public class CalibrationREST {
 
         var sums = calibrationService.getGlobalCommonnessIndicesIndexedByTitle(baseline);
 
-        // Store in table in database? (indexed by meta_id?)
+        // TODO: Store in table in database? (indexed by meta_id?)
         return Response.ok(sums).build();
     }
 }

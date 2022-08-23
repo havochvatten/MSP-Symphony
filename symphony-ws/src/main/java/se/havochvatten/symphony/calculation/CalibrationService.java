@@ -46,7 +46,7 @@ public class CalibrationService {
         throws SymphonyStandardAppException,
         IOException {
 
-        logger.info("Calculating global rarity indices for {}", ecoComponents);
+        logger.info("Calculating global rarity indices for coverage {}", ecoComponents.getName());
         var watch = new StopWatch();
         final var statsOp = processor.getOperation("Stats");
 
@@ -77,7 +77,6 @@ public class CalibrationService {
             .setParameter("baselineVersionId", baseline.getId())
             .getResultList();
 
-//        var bandNumbers = new int[] {0, 1, 2};
         var bandNumbers = IntStream.range(0, ecoComponents.getNumSampleDimensions()).toArray();
         var values = calculateGlobalCommonnessIndices(ecoComponents, bandNumbers);
 
