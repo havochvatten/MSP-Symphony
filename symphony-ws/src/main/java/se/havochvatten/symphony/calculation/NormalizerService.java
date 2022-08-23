@@ -38,7 +38,7 @@ public class NormalizerService {
 }
 
 abstract class RasterNormalizer implements BiFunction<GridCoverage2D, Double, GridCoverage2D> {
-    private static final Logger LOG = LoggerFactory.getLogger(RasterNormalizer.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(RasterNormalizer.class);
 
     /**
      * Default normalization, just use supplied value
@@ -73,6 +73,7 @@ class DomainNormalizer extends RasterNormalizer {}
 class UserDefinedValueNormalizer extends RasterNormalizer {}
 
 class PercentileNormalizer extends RasterNormalizer {
+
     final static int NUM_BINS = 100; // More bins yields more accurate result
 
     private final int percentile;
@@ -88,6 +89,7 @@ class PercentileNormalizer extends RasterNormalizer {
                 ((double[]) extrema.getProperty("maximum"))[0]);
 
         normalizationValue = getValueBelowPercentile(histogram);
+        LOG.info("### Computed PERCENTILE normalization value={} ###", normalizationValue);
 
         return normalize(coverage, normalizationValue);
     }
