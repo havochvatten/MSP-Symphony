@@ -83,15 +83,17 @@ class PercentileNormalizer extends RasterNormalizer {
     }
 
     @Override
-    public GridCoverage2D apply(GridCoverage2D coverage, Double normalizationValue) {
+    public GridCoverage2D apply(GridCoverage2D coverage, Double ignored) {
+        var normalizationValue = computeNthPercentileNormalizationValue(coverage);
+        return super.apply(coverage, normalizationValue);
+    }
+
+    public double computeNthPercentileNormalizationValue(GridCoverage2D coverage) {
         var extrema = (GridCoverage2D) Operations.DEFAULT.extrema(coverage);
         var histogram = getHistogram(coverage, ((double[]) extrema.getProperty("minimum"))[0],
-                ((double[]) extrema.getProperty("maximum"))[0]);
-
-        normalizationValue = getValueBelowPercentile(histogram);
-        LOG.info("### Computed PERCENTILE normalization value={} ###", normalizationValue);
-
-        return normalize(coverage, normalizationValue);
+            ((double[]) extrema.getProperty("maximum"))[0]);
+        var normalizationValue = getValueBelowPercentile(histogram);
+        return normalizationValue;
     }
 
     private double getValueBelowPercentile(Histogram histogram) {

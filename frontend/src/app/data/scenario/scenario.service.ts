@@ -29,8 +29,8 @@ export class ScenarioService {
     return this.http.get<Scenario[]>(this.scenarioApiBaseUrl);
   }
 
-  create(baseline: Baseline, name: string,
-         feature: Feature, normalization: NormalizationOptions) {
+  create(baseline: Baseline, name: string, feature: Feature, normalization: NormalizationOptions,
+         ecosystemsToInclude: number[], pressuresToInclude: number[]) {
     const geoJson = new GeoJSON();
 
     return this.http.post<Scenario>(this.scenarioApiBaseUrl, {
@@ -38,7 +38,9 @@ export class ScenarioService {
       name,
       feature,
       changes: geoJson.writeFeaturesObject([]), // empty collection
-      normalization
+      normalization,
+      ecosystemsToInclude,
+      pressuresToInclude
     });
   }
 

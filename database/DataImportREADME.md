@@ -71,6 +71,12 @@ sufficient for the integer 0-100 data value range).
 
 The default normalization method relies on having calculated the percentile values of the calculation domains.
 
+
+1. Create scenario with desired params (ecosystem and pressure components to be included, matrix options). Make note 
+   of the scenario id (i.e. with your browser's web inspector panels)
+2. Make a POST request to XXX using [Swagger](http://localhost:8080/symphony-ws/swagger/#/calibration/calcPercentileNormalizationValue)
+3. (or your REST client of choice). Make sure you are first authenticated 
+
 Having a dedicated REST endpoint for calculating these values is planned but for the time being the administrator
 need to make a couple of REST requests and set the values in the database manually.
 
