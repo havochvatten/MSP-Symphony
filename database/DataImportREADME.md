@@ -72,25 +72,40 @@ sufficient for the integer 0-100 data value range).
 The default normalization method relies on having calculated the percentile values of the calculation domains.
 
 Having a dedicated REST endpoint for calculating these values is planned but for the time being the administrator
-need to make a POST request manually to `/symphony-ws/calculation/sum`, and then set these 
-values in the database manually.
+need to make a couple of REST requests and set the values in the database manually.
 
-The defining point is to set `normalization.type` to `"PERCENTILE"` , like so:
+to `/symphony-ws/calculation/sum`
+
+First authenticate yourself to the backend through a call to `/symphony-ws/service/login` in order to receive a 
+session cookie. 
+
+Having established the session perform a normal calculation of a previously created scenario using 
+`/symphony-ws/calculation/sum`, but with `normalization.type` set to `"PERCENTILE"`, like so:
 
 [//]: # (Create scenario first in GUI. Then calc from swagger?)
 
 ```json
 {
-  "id": X,
+  "id": X, // scenario id
   "owner": "...",
   "baselineId": Y,
   ...
   "ecosystemsToInclude": [0, 1, ...],
   "pressuresToInclude": [0, 1, ...],
   "matrix": { ... },
-  "normalization": { "type": "PERCENTILE" },
+  "normalization": { "type": "PERCENTILE" }
 }
 ```
+The server response will contain the calculation result id _Z_ like so:
+```json
+{
+"id": Z, // resulting calculation id
+"name": "My Scenario",
+"timestamp": ...
+}
+```
+Normalization is performed when the result image is rendered. It can be fetched by making use of the 
+calculation id _Z_ and issuing a GET request to <code>/symphony-ws/calculation/<em><b>Z</b></em>/image</code>.
 
 The server logs will contain the calculated value. The resulting value should be inserted into the _carea_maxvalue_
 column of the corresponding default area row in the _calculationarea_ table.
