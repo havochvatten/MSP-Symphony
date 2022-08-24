@@ -5,7 +5,6 @@ import { AreaInterfaces } from './';
 import { UserArea, NationalArea } from './area.interfaces';
 
 const BASE_URL = env.apiBaseUrl;
-const COUNTRY_CODE = env.areas.countryCode;
 
 @Injectable({
   providedIn: 'root'
@@ -14,11 +13,11 @@ export default class AreaService {
   constructor(private http: HttpClient) {}
 
   getNationalAreaTypes() {
-    return this.http.get<string[]>(`${BASE_URL}/nationalarea/${COUNTRY_CODE}`);
+    return this.http.get<string[]>(`${BASE_URL}/areas`);
   }
 
   getNationalAreasData(areaType: string) {
-    return this.http.get<NationalArea>(`${BASE_URL}/nationalarea/${COUNTRY_CODE}/${areaType}`);
+    return this.http.get<NationalArea>(`${BASE_URL}/areas/${areaType}`);
   }
 
   getUserAreas() {
@@ -52,7 +51,7 @@ export default class AreaService {
 
   getBoundaries() {
     return this.http.get<{ areas: AreaInterfaces.Boundary[] }>(
-      `${BASE_URL}/nationalarea/boundary/${COUNTRY_CODE}`
+      `${BASE_URL}/areas/boundary`
     );
   }
 }

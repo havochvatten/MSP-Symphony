@@ -4,9 +4,6 @@ export const environment = {
   showIncludeCoastCheckbox: true,
   apiBaseUrl: "/symphony-ws/service",
   baseline: false, // Set to some false value to get "latest" baseline
-  areas: {
-    countryCode: "SWE", // Used for selecting which area definitions to fetch
-  },
   map: {
     center: [14.94, 60.57], // Modified center of Sweden with focus on seas
     initialZoom: 6,

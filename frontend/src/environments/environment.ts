@@ -8,9 +8,6 @@ export const environment = {
   showIncludeCoastCheckbox: true,
   apiBaseUrl: "/symphony-ws/service",
   baseline: 'WIO-TEST-BASELINE',
-  areas: {
-    countryCode: "WIO"
-  },
   map: {
     center: [10, -10],
     initialZoom: 4,

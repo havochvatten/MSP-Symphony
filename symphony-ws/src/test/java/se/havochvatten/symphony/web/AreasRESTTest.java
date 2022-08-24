@@ -15,21 +15,18 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class NationalAreaRESTTest extends RESTTest {
-    public static final String COUNTRYCODE_ISO3 = "SWE";
-
+public class AreasRESTTest extends RESTTest {
     @Test
-    public void testGetAreasForCountry() throws IOException {
+    public void testGetAreas() throws IOException {
         String type = "MSP";
 
         Response res = given().
             auth().
             preemptive().
             basic(getUsername(), getPassword()).
-            pathParam("countrycodeiso3", COUNTRYCODE_ISO3).
             pathParam("type", type).
             when().
-            get(endpoint("/nationalarea/{countrycodeiso3}/{type}"));
+            get(endpoint("/areas/{type}"));
 
         if (res.getStatusCode() == 500) {
             return; // probably out of memory -> big result set
@@ -49,14 +46,13 @@ public class NationalAreaRESTTest extends RESTTest {
     }
 
     @Test
-    public void testGetAreasTypesForCountry() throws IOException {
+    public void testGetAreasTypes() throws IOException {
         Response res = given().
             auth().
             preemptive().
             basic(getUsername(), getPassword()).
-            pathParam("countrycodeiso3", COUNTRYCODE_ISO3).
             when().
-            get(endpoint("/nationalarea/{countrycodeiso3}"));
+            get(endpoint("/areas"));
 
         if (res.getStatusCode() == 500) {
             return; // probably out of memory -> big result set
@@ -78,14 +74,13 @@ public class NationalAreaRESTTest extends RESTTest {
     }
 
     @Test
-    public void testGetBoundaryAreasForCountry() throws IOException {
+    public void testGetBoundaryAreas() throws IOException {
         Response res = given().
             auth().
             preemptive().
             basic(getUsername(), getPassword()).
-            pathParam("countrycodeiso3", COUNTRYCODE_ISO3).
             when().
-            get(endpoint("/nationalarea/boundary/{countrycodeiso3}"));
+            get(endpoint("/areas/boundary"));
 
         if (res.getStatusCode() == 500) {
             return; // probably out of memory -> big result set
@@ -97,7 +92,6 @@ public class NationalAreaRESTTest extends RESTTest {
         JsonNode jsNode = mapper.readTree(res.getBody().asString());
 
         JsonNode areas = jsNode.path("areas");
-        assertThat(areas.size(), is(3));
         JsonNode areaName = areas.get(0).path("name");
         Assert.assertFalse(areaName.getClass().equals(MissingNode.class));
         JsonNode polygon = areas.get(0).path("polygon");
