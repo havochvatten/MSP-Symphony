@@ -82,10 +82,9 @@ public interface WebUtil {
         var symbolizer = getRasterSymbolizer(sld);
         ColorMap colorMap = symbolizer.getColorMap();
 
-        Arrays.stream(colorMap.getColorMapEntries()).forEach(entry -> {
-            Double q = (Double) entry.getQuantity().evaluate(null);
-            entry.setQuantity(ff.literal(maxValue*q));
-        });
+        Arrays.stream(colorMap.getColorMapEntries()).forEach(entry ->
+            entry.setQuantity(ff.multiply(ff.literal(maxValue), entry.getQuantity()))
+        );
 
         return symbolizer;
     }
