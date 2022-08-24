@@ -27,7 +27,6 @@ import {
   DeleteScenarioConfirmationDialogComponent
 } from "@src/app/map-view/scenario/scenario-detail/delete-scenario-confirmation-dialog/delete-scenario-confirmation-dialog.component";
 import { Feature } from "geojson";
-import { setIn, updateIn } from "immutable";
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 

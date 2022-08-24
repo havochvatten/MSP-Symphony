@@ -81,7 +81,7 @@ public class CalculationREST {
             throw new ForbiddenException("User not owner of scenario");
 
         logger.info("Performing SUM calculation for " + dto.name + " ...");
-        CalculationResult result = calcService.calculateImpact(req, new Scenario(dto, calcService));
+        CalculationResult result = calcService.calculateScenarioImpact(req, new Scenario(dto, calcService));
 
         return new CalculationResultSlice(result);
     }

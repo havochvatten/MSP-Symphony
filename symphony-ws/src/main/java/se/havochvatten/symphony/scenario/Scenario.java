@@ -207,6 +207,10 @@ public class Scenario implements Serializable {
 
     public NormalizationOptions getNormalization() { return normalization; }
 
+    public void setNormalization(NormalizationOptions opts) {
+        this.normalization = opts;
+    }
+
     public int[] getEcosystemsToInclude() {
         return ecosystemsToInclude;
     }

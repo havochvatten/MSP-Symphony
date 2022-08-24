@@ -222,8 +222,8 @@ public class CalcService {
      *
      * @return coverage in input coordinate system (EPSG 3035 in the Swedish case)
      */
-    public CalculationResult calculateImpact(HttpServletRequest req, Scenario scenario)
-            throws FactoryException, TransformException, IOException, SymphonyStandardAppException, CloneNotSupportedException {
+    public CalculationResult calculateScenarioImpact(HttpServletRequest req, Scenario scenario)
+            throws FactoryException, TransformException, IOException, SymphonyStandardAppException {
         MatrixResponse matrixResponse = calculationAreaService.getAreaCalcMatrices(scenario);
 
         BaselineVersion baseline = baselineVersionService.getBaselineVersionById(scenario.getBaselineId());
@@ -284,8 +284,12 @@ public class CalcService {
         GridCoverage2D coverage = invokeCumulativeImpactOperation(scenario, ecoComponents, pressures,
                 matrices, layout, mask);
 
-        var calculation = persistCalculation(coverage, matrixResponse.normalizationValue,
-                scenario, baseline);
+        CalculationResult calculation;
+        if (scenario.getNormalization().type == NormalizationType.PERCENTILE)
+            calculation = new CalculationResult(coverage);
+        else
+            calculation = persistCalculation(coverage, matrixResponse.normalizationValue, scenario, baseline);
+
         // Cache last calculation in session to speed up subsequent REST call to retrieve result image
         req.getSession().setAttribute("last-calculation", calculation);
 
@@ -365,8 +369,9 @@ public class CalcService {
     public CalculationResult persistCalculation(GridCoverage2D result,
                                                 double normalizationValue,
                                                 Scenario scenario,
-                                                BaselineVersion baselineVersion) throws IOException, SymphonyStandardAppException, CloneNotSupportedException {
-        var calculation = new CalculationResult();
+                                                BaselineVersion baselineVersion) throws IOException,
+        SymphonyStandardAppException {
+        var calculation = new CalculationResult(result);
 
         // TODO: Fill out some relevant TIFF metadata
         // Creator, NODATA?
@@ -383,8 +388,8 @@ public class CalcService {
         calculation.setTimestamp(new Date());
         var impactMatrix = (long[][]) result.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME);
         calculation.setImpactMatrix(impactMatrix);
-        calculation.setCoverage(result);
         calculation.setBaselineVersion(baselineVersion);
+
         em.persist(calculation);
         em.flush(); // to have id generated
 

@@ -7,9 +7,9 @@ export const environment = {
   showBaseCalculations: false,
   showIncludeCoastCheckbox: true,
   apiBaseUrl: "/symphony-ws/service",
-  baseline: 'BASELINE2019',
+  baseline: 'WIO-TEST-BASELINE',
   areas: {
-    countryCode: "SWE",
+    countryCode: "WIO"
   },
   map: {
     center: [10, -10],

@@ -6,7 +6,7 @@ import { StatePath } from "@data/area/area.interfaces";
 export const selectMetadataState = createFeatureSelector<AppState, State>('metadata');
 
 export const getComponentType = (bandPath: StatePath): BandType =>
-  bandPath[0] == 'ecoComponent' ? 'ECOSYSTEM' : 'PRESSURE';
+  bandPath[0] === 'ecoComponent' ? 'ECOSYSTEM' : 'PRESSURE';
 
 export const selectEcoComponents = createSelector(
   selectMetadataState,

@@ -107,7 +107,14 @@ public class CalculationResult implements Serializable {
     @Column(name = "cares_baselinecalculation")
     private boolean baselineCalculation;
 
+    @Transient
+    private GridCoverage2D coverage;
+
     public CalculationResult() {}
+
+    public CalculationResult(GridCoverage2D coverage) {
+        setCoverage(coverage);
+    }
 
     public Integer getId() {
         return id;
@@ -164,9 +171,6 @@ public class CalculationResult implements Serializable {
     public void setImpactMatrix(long[][] impactMatrix) {
         this.impactMatrix = impactMatrix;
     }
-
-    @Transient
-    private GridCoverage2D coverage;
 
     public void setCoverage(GridCoverage2D coverage) {
         this.coverage = coverage;
