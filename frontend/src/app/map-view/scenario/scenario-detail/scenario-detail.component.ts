@@ -172,7 +172,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   onChangeName(name: string) {
     this.editName = !this.editName;
-    this.store.dispatch(ScenarioActions.changeScenarioName({ name }));
+    setTimeout(() => this.store.dispatch(ScenarioActions.changeScenarioName({ name })));
   }
 
   setNormalizationOptions(opts: NormalizationOptions) {

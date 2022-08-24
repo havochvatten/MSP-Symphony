@@ -47,7 +47,7 @@ public class SankeyChart {
         return pLen + e; // TODO do something more clever?
     }
 
-    public SankeyChart(int[] ecosystemServices, int[] pressures, long[][] impactMatrix, double total)
+    public SankeyChart(int[] ecosystemServices, int[] pressures, double[][] impactMatrix, double total)
     {
         int pLen = impactMatrix.length, esLen = impactMatrix[0].length;
 

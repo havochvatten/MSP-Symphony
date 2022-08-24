@@ -24,7 +24,10 @@
         "editor": {
             "title": "Scenarion",
             "operation": {
-                "title": "Algoritm"
+                "title": "Algoritm",
+                "CumulativeImpact": "Kumulativ belastning",
+                "RarityAdjustedCumulativeImpact": "Raritets-justerad kumulativ belastning"
+
             },
             "band-pressures": {
                 "intensity": "Ändring av förekomst",

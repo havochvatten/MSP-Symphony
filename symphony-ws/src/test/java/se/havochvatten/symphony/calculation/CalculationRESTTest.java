@@ -30,6 +30,7 @@ public class CalculationRESTTest extends RESTTest {
     static ExtractableResponse makeSuccessfulCalcRequest(ScenarioDto scenario) throws JsonProcessingException {
         return given().
                     header("Content-Type", "application/json").
+                    header("SYM-Operation", "CumulativeImpact").
                     auth().
                     preemptive().
                     basic(getUsername(), getPassword()).
@@ -50,7 +51,7 @@ public class CalculationRESTTest extends RESTTest {
     }
 
     /* Make a simple calc request at start of test suite.
-     * Sets reportId as a side effect
+     * Sets testCalcId as a side effect
      */
     @BeforeClass
     public static void start() {
@@ -73,6 +74,20 @@ public class CalculationRESTTest extends RESTTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testGetImage() {
+        var resp = given().
+            pathParam("id", testCalcId).
+            auth().
+            preemptive().
+            basic(getUsername(), getPassword()).
+            when().
+            get(endpoint("/calculation/{id}/image"));
+        assertEquals(200, resp.getStatusCode());
+        assertEquals("image/png", resp.getContentType());
+        assertNotNull(resp.getHeader("SYM-Image-Extent"));
     }
 
     @Test

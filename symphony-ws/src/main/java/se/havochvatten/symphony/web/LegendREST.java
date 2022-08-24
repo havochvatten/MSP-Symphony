@@ -47,7 +47,7 @@ public class LegendREST {
 
             var legend = new LegendDto();
             switch (type) {
-                case RESULT:
+                case RESULT: // TODO show absolute values here instead of %
                 case COMPARISON:
                     legend.unit = "%";
                     break;

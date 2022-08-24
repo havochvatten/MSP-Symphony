@@ -3,9 +3,11 @@
 #
 descriptor  se.havochvatten.symphony.calculation.jai.rescale2.Rescale2Descriptor
 descriptor  se.havochvatten.symphony.calculation.jai.CIA.CumulativeImpactDescriptor
+descriptor  se.havochvatten.symphony.calculation.jai.CIA.RarityAdjustedCumulativeImpactDescriptor
 
 #
 # RenderedImageFactories
 #
 rendered  se.havochvatten.symphony.calculation.jai.rescale2.Rescale2CRIF  it.geosolutions.jaiext  se.havochvatten.symphony.Rescale HaVRescale
-rendered  se.havochvatten.symphony.calculation.jai.CIA.CumulativeImpactDescriptor it.geosolutions.jaiext se.havochvatten.symphony.CumulativeImpact HaVCumulativeImpact
+rendered  se.havochvatten.symphony.calculation.jai.CIA.CumulativeImpactDescriptor it.geosolutions.jaiext se.havochvatten.symphony.CumulativeImpact CumulativeImpact
+rendered  se.havochvatten.symphony.calculation.jai.CIA.RarityAdjustedCumulativeImpactDescriptor it.geosolutions.jaiext se.havochvatten.symphony.RarityAdjustedCumulativeImpact RarityAdjustedCumulativeImpact

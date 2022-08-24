@@ -12,23 +12,23 @@ import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.awt.image.renderable.RenderedImageFactory;
 
-public class CumulativeImpactDescriptor extends OperationDescriptorImpl implements RenderedImageFactory {
+public class RarityAdjustedCumulativeImpactDescriptor extends OperationDescriptorImpl implements RenderedImageFactory {
 
     /**
      * The resource strings that specify the parameter list for this operation.
      */
     private static final String[][] resources = {
-            {"GlobalName", "se.havochvatten.symphony.CumulativeImpact"},
-            {"LocalName", "CumulativeImpact"},
-            {"Vendor", "it.geosolutions.jaiext"}, // N.B: Connot be "se.havochvatten.symphony" since not
-        // included in some JAI "AUTHORITIES" object somewhere
-            {"Description", "Symphony Cumulative Impact Assessment Calculation"},
+            {"GlobalName", "se.havochvatten.symphony.RarityAdjustedCumulativeImpact"},
+            {"LocalName", "RarityAdjustedCumulativeImpact"},
+            {"Vendor", "it.geosolutions.jaiext"},
+            {"Description", "Symphony Rarity-adjusted Cumulative Impact Assessment Calculation"},
             {"DocURL", ""},
             {"Version", "1.0"},
             {"arg0Desc", "sensitivity matrices array"},
             {"arg1Desc", "matrix mask"},
             {"arg2Desc", "ecosystem services bands to include"},
-            {"arg3Desc", "pressure bands to include"}
+            {"arg3Desc", "pressure bands to include"},
+            {"arg4Desc", "per-band commonness indices array"}
     };
 
     /**
@@ -38,19 +38,20 @@ public class CumulativeImpactDescriptor extends OperationDescriptorImpl implemen
         double[][][].class, // FIXME use floats instead
         Raster.class,
         int[].class,
-        int[].class
+        int[].class,
+        double[].class
     };
 
     /**
      * The parameter name list
      */
-    protected static final String[] paramNames = {"matrix", "mask", "ecosystemBands", "pressureBands"};
+    protected static final String[] paramNames = {"matrix", "mask", "ecosystemBands", "pressureBands", "commonnessIndices"};
 
     /**
      * The parameter default value list for this operation.
      */
     protected static final Object[] paramDefaults = {
-            NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT
+            NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT
     };
 
     protected static final String[] supportedModes = {RenderedRegistryMode.MODE_NAME};
@@ -58,7 +59,7 @@ public class CumulativeImpactDescriptor extends OperationDescriptorImpl implemen
     /**
      * Constructor.
      */
-    public CumulativeImpactDescriptor() {
+    public RarityAdjustedCumulativeImpactDescriptor() {
         super(resources, supportedModes, 2, paramNames, paramClasses, paramDefaults, null);
     }
 
@@ -70,7 +71,7 @@ public class CumulativeImpactDescriptor extends OperationDescriptorImpl implemen
         // Just use new SampleModel??
         layout.setSampleModel(RasterFactory.createComponentSampleModel(
                 source0.getSampleModel(),
-                DataBuffer.TYPE_INT, layout.getWidth(null), layout.getHeight(null), 1));
+                DataBuffer.TYPE_DOUBLE, layout.getWidth(null), layout.getHeight(null), 1));
 
         RenderedImage source1 = pb.getRenderedSource(1);
 
@@ -79,9 +80,10 @@ public class CumulativeImpactDescriptor extends OperationDescriptorImpl implemen
         var mask = (Raster) pb.getObjectParameter(1);
         int[] ecosystems = (int[]) pb.getObjectParameter(2);
         int[] pressures = (int[]) pb.getObjectParameter(3);
+        var commonnessIndices = (double[]) pb.getObjectParameter(4);
 
-        return new CumulativeImpactOp(source0, source1, layout, hints,
-                matrices, mask, ecosystems, pressures);
+        return new RarityAdjustedCumulativeImpactOp(source0, source1, layout, hints,
+                matrices, mask, ecosystems, pressures, commonnessIndices);
     }
 
     /**
@@ -92,26 +94,13 @@ public class CumulativeImpactDescriptor extends OperationDescriptorImpl implemen
         if (!super.validateArguments(modeName, args, message))
             return false;
 
-        // Verify matrix dimensions
-        RenderedImage ecoservices = args.getRenderedSource(0);
-        RenderedImage pressures = args.getRenderedSource(1);
-
-        double[][][] matrices = (double[][][]) args.getObjectParameter(0);
-        var matrix = matrices[1]; // pick first non-empty matrix
-        // TODO check all matrices
-
-        if (pressures.getSampleModel().getNumBands() != matrix.length) {
-            message.append(getName() + ": " + "numbers of rows in matrix does not match number of pressures");
+        var commonnessIndices = (double[]) args.getObjectParameter(4);
+        int[] ecosystems = (int[]) args.getObjectParameter(2);
+        if (commonnessIndices != null && commonnessIndices.length != ecosystems.length) {
+            message.append(getName() + ": " + "number of commonness indices does not match number of ecosystems services");
             return false;
         }
-        for (int i = 0; i < matrix.length; i++) {
-            if (matrix[i].length != ecoservices.getSampleModel().getNumBands()) {
-                message.append(getName() + ": " + "numbers of columns in matrix does not match number of ecosystem services in row " + i);
-                return false;
-            }
-        }
 
-        // TODO verify mask? (right image layout etc)
         return true;
     }
 }

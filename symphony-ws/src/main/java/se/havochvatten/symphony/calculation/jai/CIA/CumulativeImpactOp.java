@@ -20,22 +20,20 @@ public class CumulativeImpactOp extends PointOpImage {
 
     public final static int TRANSPARENT_VALUE = 0;
     public final static String IMPACT_MATRIX_PROPERTY_NAME = "se.havochvatten.symphony.impact_matrix";
-    public final static double RARITY_INDEX_SCALE_CONSTANT = 1e6;
 
     /** Sensitivity matrix */
-    private double[][][] ks;
+    protected double[][][] ks;
 
-    private final Raster mask;
+    protected final Raster mask;
 
-    private final long[][] impactMatrix;
-    private final int[] ecosystemBands;
-    private final int[] pressureBands;
-    private final double[] commonnessIndices;
+    private final double[][] impactMatrix;
+    protected final int[] ecosystemBands;
+    protected final int[] pressureBands;
 
     public CumulativeImpactOp(RenderedImage ecosystemsData, RenderedImage pressuresData,
                               ImageLayout layout, Map config,
                               double[][][] matrices, Raster mask,
-                              int[] ecosystems, int[] pressures, double[] rarityIndices) {
+                              int[] ecosystems, int[] pressures) {
         super(ecosystemsData, pressuresData, layout, config, true); // source cobbling -- do we need it?
 
         LOG.fine("CulumativeImpactOp: tile scheduler parallelism=" + JAI.getDefaultInstance().getTileScheduler().getParallelism());
@@ -46,9 +44,8 @@ public class CumulativeImpactOp extends PointOpImage {
         this.mask = mask;
         this.ecosystemBands = ecosystems;
         this.pressureBands = pressures;
-        this.commonnessIndices = rarityIndices;
 
-        this.impactMatrix = new long[pressureBands.length][ecosystemBands.length];
+        this.impactMatrix = new double[pressureBands.length][ecosystemBands.length];
 //        setProperty(IMPACT_MATRIX_PROPERTY_NAME, new double[] {0});
     }
 
@@ -130,12 +127,7 @@ public class CumulativeImpactOp extends PointOpImage {
                         for (int j = 0; j < numEcosystems; j++) {
                             double K = ks[maskValue][pressureBands[i]][ecosystemBands[j]];
                             int E = ecoData[ecosystemBands[j]][ecoPixelOffset + ecoBandOffsets[ecosystemBands[j]]];
-                            int impact;
-                            if (commonnessIndices == null) {
-                                impact = (int) (B*E*K); // use 1-10 matrix values => eliminate cast and faster mul?
-                            } else {
-                                impact = (int) (RARITY_INDEX_SCALE_CONSTANT*B*E*K/commonnessIndices[j]);
-                            }
+                            int impact = (int) (B*E*K); // use 1-10 matrix values => eliminate cast and faster mul?
                             rectImpactMatrix[i][j] += impact;
                             rowSum += impact;
                         }
@@ -162,14 +154,18 @@ public class CumulativeImpactOp extends PointOpImage {
             dstAccessor.copyDataToRaster();
         }
 
-        // The below adds quite a lot of overhead (20%+) Optimize? Vectors?
-        // or store intermediate matrix results in an async queue and accumulate at end?
-        // or use separate "tile matrix cache"? (c.f. TileCache)
-        synchronized (impactMatrix) { // remove sync for benchmark
-            for (int i = 0; i < numPressures; i++)
-                for (int j = 0; j < numEcosystems; j++)
-                    impactMatrix[i][j] += rectImpactMatrix[i][j];
-        }
+        accumulateImpactMatrix(rectImpactMatrix);
+    }
+
+    // The below adds quite a lot of overhead (20%+) Optimize? Vectors?
+    // or store intermediate matrix results in an async queue and accumulate at end?
+    // or use separate "tile matrix cache"? (c.f. TileCache)
+    protected synchronized void accumulateImpactMatrix(int[][] rectImpactMatrix) {
+        int numPressures = pressureBands.length;
+        int numEcosystems = ecosystemBands.length;
+        for (int i = 0; i < numPressures; i++)
+            for (int j = 0; j < numEcosystems; j++)
+                impactMatrix[i][j] += rectImpactMatrix[i][j];
     }
 
     @Override
@@ -183,7 +179,7 @@ public class CumulativeImpactOp extends PointOpImage {
     @Override
     public Class getPropertyClass(String name) {
         if (name.equals(IMPACT_MATRIX_PROPERTY_NAME)) {
-            return long[][].class;
+            return double[][].class;
         } else
             return super.getPropertyClass(name);
     }

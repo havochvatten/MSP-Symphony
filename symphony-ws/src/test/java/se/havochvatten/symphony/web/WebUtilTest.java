@@ -14,7 +14,7 @@ public class WebUtilTest {
         var resultsSLD = WebUtil.getSLD(WebUtilTest.class.getClassLoader().getResourceAsStream(
             "styles/test-style.xml"));
         double maxValue = 242.0;
-        var symbolizer = WebUtil.getNormalizedRasterSymbolizer(resultsSLD, maxValue);
+        var symbolizer = WebUtil.getNormalizingdRasterSymbolizer(resultsSLD, maxValue);
         var firstEntry = symbolizer.getColorMap().getColorMapEntry(0);
         assertEquals(maxValue*1.0, firstEntry.getQuantity().evaluate(null));
     }

@@ -289,7 +289,7 @@ public class CalcService {
             throw new RuntimeException("Unsupported operation: "+requestOperation);
         }
 
-        GridCoverage2D coverage = invokeCumulativeImpactOperation(scenario, /*requestOperation*/"CumulativeImpact",
+        GridCoverage2D coverage = invokeCumulativeImpactOperation(scenario, requestOperation/*"CumulativeImpact"*/,
             ecoComponents, pressures, matrices, layout, mask,
             requestOperation.equals("RarityAdjustedCumulativeImpact")
                 ? calibrationService.calculateGlobalCommonnessIndices(ecoComponents, scenario.getEcosystemsToInclude())
@@ -400,7 +400,7 @@ public class CalcService {
         calculation.setCalculationName(makeCalculationName(scenario));
         calculation.setNormalizationValue(normalizationValue);
         calculation.setTimestamp(new Date());
-        var impactMatrix = (long[][]) result.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME);
+        var impactMatrix = (double[][]) result.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME);
         calculation.setImpactMatrix(impactMatrix);
         calculation.setCoverage(result);
         calculation.setBaselineVersion(baselineVersion);

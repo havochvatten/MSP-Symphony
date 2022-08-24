@@ -80,7 +80,7 @@ public class ReportService {
      * @param pTotal  output param containing pressure row total
      * @param esTotal output param containing ecosystem column total
      */
-    static double getComponentTotals(long[][] matrix, double[] pTotal, double[] esTotal) {
+    static double getComponentTotals(double[][] matrix, double[] pTotal, double[] esTotal) {
         double totalTotal = 0;
         for (int b = 0; b < matrix.length; b++) {
             for (int e = 0; e < matrix[b].length; e++) {

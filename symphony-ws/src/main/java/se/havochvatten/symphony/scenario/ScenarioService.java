@@ -11,6 +11,7 @@ import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.LiteShape2;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.util.factory.Hints;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
@@ -19,6 +20,7 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.havochvatten.symphony.calculation.CalcUtil;
 import se.havochvatten.symphony.calculation.SymphonyCoverageProcessor;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.ScenarioDto;
@@ -26,12 +28,15 @@ import se.havochvatten.symphony.util.Util;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.media.jai.ImageLayout;
+import javax.media.jai.JAI;
 import javax.media.jai.ROI;
 import javax.media.jai.ROIShape;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
+import java.awt.image.DataBuffer;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
@@ -156,8 +161,7 @@ public class ScenarioService {
                                     // No need to fill since array is initialized to zero by default
                                     offsets[bandChange.band] = bandChange.offset;
 
-                                    return processor.rescaleCoverage(innerState, multipliers, offsets,
-                                            gridROI);
+                                    return rescaleCoverage(innerState, multipliers, offsets, gridROI);
                                 });
                     } catch (TransformException | FactoryException e) {
                         LOG.error("Error transforming change ROI: " + e);
@@ -166,6 +170,26 @@ public class ScenarioService {
                 }
         );
     }
+
+    GridCoverage2D rescaleCoverage(GridCoverage2D source, double[] constants, double[] offsets,
+                                          ROI roi) {
+        // Pass in ImageLayout?
+        final var rescale = processor.getOperation("se.havochvatten.symphony.Rescale");
+
+        var params = rescale.getParameters();
+        params.parameter("Source").setValue(source);
+        params.parameter("constants").setValue(constants);
+        params.parameter("offsets").setValue(offsets);
+        params.parameter("ROI").setValue(roi);
+
+        ImageLayout destLayout = new ImageLayout();
+        destLayout.setSampleModel(CalcUtil.createSampleModel(DataBuffer.TYPE_USHORT,
+            source.getRenderedImage().getSampleModel()));
+
+        Hints hints = new Hints(JAI.KEY_IMAGE_LAYOUT, destLayout);
+        return (GridCoverage2D) processor.doOperation(params, hints);
+    }
+
 
     private static <U> U reduceFeatures(FeatureIterator iter, U identity,
                                         BiFunction<U, Feature, U> accumulator) {

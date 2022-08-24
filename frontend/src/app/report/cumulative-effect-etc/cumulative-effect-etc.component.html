@@ -19,8 +19,8 @@
           {{ 'report.cumulative-effect-etc.normalization.area' | translate }}
         </ng-container>
         <ng-container *ngSwitchCase="type.UserDefined">
-          {{ 'report.cumulative-effect-etc.normalization.custom' | translate }} ({{
-          normalization.userDefinedValue | number: '1.0-1':locale }})
+          {{ 'report.cumulative-effect-etc.normalization.custom' | translate }} = {{
+          normalization.userDefinedValue | number: '1.0-4':locale }}
         </ng-container>
       </td>
     </tr>
@@ -34,23 +34,23 @@
     </tr>
     <tr>
       <th>{{ 'report.cumulative-effect-etc.total' | translate }}:</th>
-      <td *ngFor="let r of reports">{{ r.total | number: '1.0-0':locale }}</td>
+      <td *ngFor="let r of reports">{{ r.total | number: '1.':locale }}</td>
     </tr>
     <tr>
       <th>{{ 'report.cumulative-effect-etc.average' | translate }}:</th>
-      <td *ngFor="let r of reports">{{ r.average | number: '1.0-1':locale }}</td>
+      <td *ngFor="let r of reports">{{ r.average | number: '1.0-4':locale }}</td>
     </tr>
     <tr>
       <th>{{ 'report.cumulative-effect-etc.min' | translate }}:</th>
-      <td *ngFor="let r of reports">{{ r.min | number: '1.0-0':locale }}</td>
+      <td *ngFor="let r of reports">{{ r.min | number: '1.0-4':locale }}</td>
     </tr>
     <tr>
       <th>{{ 'report.cumulative-effect-etc.max' | translate }}:</th>
-      <td *ngFor="let r of reports">{{ r.max | number: '1.0-0':locale }}</td>
+      <td *ngFor="let r of reports">{{ r.max | number: '1.0-4':locale }}</td>
     </tr>
     <tr>
       <th>{{ 'report.cumulative-effect-etc.std-dev' | translate }}:</th>
-      <td *ngFor="let r of reports">{{ r.stddev | number: '1.0-1':locale }}</td>
+      <td *ngFor="let r of reports">{{ r.stddev | number: '1.0-4':locale }}</td>
     </tr>
     <tr class="ruled">
       <th>{{ 'report.cumulative-effect-etc.calculated-area' | translate }}:</th>

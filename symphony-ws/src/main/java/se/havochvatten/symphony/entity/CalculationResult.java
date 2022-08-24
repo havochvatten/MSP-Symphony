@@ -3,7 +3,7 @@ package se.havochvatten.symphony.entity;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.vladmihalcea.hibernate.type.array.LongArrayType;
+import com.vladmihalcea.hibernate.type.array.DoubleArrayType;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.hibernate.annotations.Type;
@@ -45,8 +45,8 @@ import java.util.Date;
 })
 @TypeDefs({
         @TypeDef(
-                name = "long-matrix",
-                typeClass = LongArrayType.class
+                name = "double-matrix",
+                typeClass = DoubleArrayType.class
         )
 })
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -82,9 +82,9 @@ public class CalculationResult implements Serializable {
     // See https://vladmihalcea.com/multidimensional-array-jpa-hibernate/
     @Basic(optional = false)
     @NotNull
-    @Type(type = "long-matrix")
-    @Column(name = "cares_impactmatrix", columnDefinition = "bigint[][]")
-    private long[][] impactMatrix;
+    @Type(type = "double-matrix")
+    @Column(name = "cares_impactmatrix", columnDefinition = "double precision[][]")
+    private double[][] impactMatrix;
 
     @Basic(optional = true)
     @Column(name = "cares_geotiff", columnDefinition = "bytea")
@@ -163,11 +163,11 @@ public class CalculationResult implements Serializable {
         this.normalizationValue = value;
     }
 
-    public long[][] getImpactMatrix() {
+    public double[][] getImpactMatrix() {
         return impactMatrix;
     }
 
-    public void setImpactMatrix(long[][] impactMatrix) {
+    public void setImpactMatrix(double[][] impactMatrix) {
         this.impactMatrix = impactMatrix;
     }
 

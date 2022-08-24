@@ -83,7 +83,7 @@ public class CalculationREST {
 
         var watch = new StopWatch();
         watch.start();
-        logger.info("Performing SUM calculation for " + dto.name + " ...");
+        logger.info("Performing "+req.getHeader("SYM-Operation")+" calculation for " + dto.name + " ...");
         CalculationResult result = calcService.calculateImpact(req, new Scenario(dto, calcService));
         watch.stop();
         logger.log(Level.INFO, "DONE ({0} ms)", watch.getTime());
@@ -180,7 +180,7 @@ public class CalculationREST {
         var scenario = calc.getScenarioSnapshot();
 
         RasterNormalizer normalizer = normalizationFactory.getNormalizer(scenario.getNormalization().type);
-        GridCoverage2D normalized = normalizer.apply(coverage, calc.getNormalizationValue());
+        double normalizationValue = normalizer.apply(coverage, calc.getNormalizationValue());
 
         Envelope dataEnvelope = new ReferencedEnvelope(coverage.getEnvelope());
         CoordinateReferenceSystem targetCRS;
@@ -195,9 +195,9 @@ public class CalculationREST {
             targetEnvelope = JTS.transform(dataEnvelope, transform);
         }
 
-        RenderedImage image = WebUtil.render(normalized, targetCRS, targetEnvelope,
+        RenderedImage image = WebUtil.renderNormalized(coverage, targetCRS, targetEnvelope,
                 WebUtil.getSLD(CalculationREST.class.getClassLoader().getResourceAsStream(
-                        props.getProperty("data.styles.result"))));
+                        props.getProperty("data.styles.result"))), normalizationValue);
 
         logger.info("Encoding result in PNG format...");
         var baos = WebUtil.encode(image, "png");

@@ -4,7 +4,7 @@
     <jta-data-source>java:/SymphonyDS</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
-      <property name="hibernate.hbm2ddl.auto" value="validate"/> <!-- N.B: Don't use "update" in production -->
+      <property name="hibernate.hbm2ddl.auto" value="update"/> <!-- N.B: Use "validate" in production -->
       <property name="hibernate.implicit_naming_strategy" value="org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl" />
       <property name="hibernate.types.print.banner" value="false"/>
     </properties>

@@ -2,13 +2,11 @@ package se.havochvatten.symphony.web;
 
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.filter.LiteralExpressionImpl;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
 import org.geotools.sld.SLDConfiguration;
 import org.geotools.styling.*;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Parser;
-import org.hibernate.jpa.criteria.expression.LiteralExpression;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -58,6 +56,15 @@ public interface WebUtil {
                 0); // no tiles
     }
 
+    static RenderedImage renderNormalized(GridCoverage2D cov, CoordinateReferenceSystem crs, Envelope env,
+                                          StyledLayerDescriptor sld, double normalizationValue) throws Exception {
+        GridCoverageRenderer renderer = new GridCoverageRenderer(crs, env,
+            cov.getGridGeometry().getGridRange2D(), null);
+        RasterSymbolizer symbolizer = WebUtil.getNormalizingdRasterSymbolizer(sld, normalizationValue);
+        return renderer.renderImage(cov, symbolizer, new InterpolationNearest(), new Color(0, 0, 0, 0), 0,
+            0); // no tiles
+    }
+
     static ByteArrayOutputStream encode(RenderedImage image, String formatName) throws IOException {
         var baos = new ByteArrayOutputStream( // conservative estimate:
                 image.getHeight() * image.getWidth() * image.getSampleModel().getNumDataElements());
@@ -68,6 +75,7 @@ public interface WebUtil {
         return baos;
     }
 
+    // TODO use StyleVisitor instead (public void visit(ColorMapEntry colorMapEntry)
     static RasterSymbolizer getRasterSymbolizer(StyledLayerDescriptor sld) {
         List<Rule> rules = getRules(sld);
         //        assertEquals(1, rules.size());
@@ -77,8 +85,8 @@ public interface WebUtil {
         return (RasterSymbolizer)symbolizers.get(0);
     }
 
-    static RasterSymbolizer getNormalizedRasterSymbolizer(StyledLayerDescriptor sld,
-                                                          double maxValue) {
+    static RasterSymbolizer getNormalizingdRasterSymbolizer(StyledLayerDescriptor sld,
+                                                            double maxValue) {
         var symbolizer = getRasterSymbolizer(sld);
         ColorMap colorMap = symbolizer.getColorMap();
 
