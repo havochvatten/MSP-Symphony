@@ -27,6 +27,7 @@ import java.util.List;
 
 public interface WebUtil {
     int ONE_YEAR_IN_SECONDS = 31536000;
+    FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
     static JsonArray createExtent(Envelope targetEnvelope) {
         return Json.createArrayBuilder(List.of(targetEnvelope.getMinX(), targetEnvelope.getMinY(),
@@ -37,8 +38,7 @@ public interface WebUtil {
             IOException {
         Configuration config = new SLDConfiguration();
         Parser parser = new Parser(config);
-        StyledLayerDescriptor sld = (StyledLayerDescriptor) parser.parse(in);
-        return sld;
+        return (StyledLayerDescriptor) parser.parse(in);
     }
 
     static List<Rule> getRules(StyledLayerDescriptor sld) {
@@ -74,28 +74,20 @@ public interface WebUtil {
         List<Symbolizer> symbolizers = rules.get(0).symbolizers();
         //        assertEquals(1, symbolizers.size());
         //        assertThat(symbolizers.get(0), instanceOf(RasterSymbolizer.class));
-        var rasterSymbolizer = (RasterSymbolizer)symbolizers.get(0);
-//        ColorMap cm = rasterSymbolizer.getColorMap();
-//        var entries = cm.getColorMapEntries();
-//        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
-//        Arrays.stream(entries).forEach(entry -> entry.setQuantity(ff.literal(242.0)));
-        return rasterSymbolizer;
+        return (RasterSymbolizer)symbolizers.get(0);
     }
 
     static RasterSymbolizer getNormalizedRasterSymbolizer(StyledLayerDescriptor sld,
                                                           double maxValue) {
-        List<Rule> rules = getRules(sld);
-        List<Symbolizer> symbolizers = rules.get(0).symbolizers();
-        var rasterSymbolizer = (RasterSymbolizer)symbolizers.get(0);
-        ColorMap cm = rasterSymbolizer.getColorMap();
-        var entries = cm.getColorMapEntries();
-        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
-        Arrays.stream(entries).forEach(entry -> {
-            var expr = entry.getQuantity();
-            Double val = (Double)((LiteralExpressionImpl)expr).getValue();
-            entry.setQuantity(ff.literal(maxValue*val));
+        var symbolizer = getRasterSymbolizer(sld);
+        ColorMap colorMap = symbolizer.getColorMap();
+
+        Arrays.stream(colorMap.getColorMapEntries()).forEach(entry -> {
+            Double q = (Double) entry.getQuantity().evaluate(null);
+            entry.setQuantity(ff.literal(maxValue*q));
         });
-        return rasterSymbolizer;
+
+        return symbolizer;
     }
 
     static void writeFile(byte[] content, File file) throws IOException {
