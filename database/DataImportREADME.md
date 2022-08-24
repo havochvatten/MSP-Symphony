@@ -69,51 +69,18 @@ sufficient for the integer 0-100 data value range).
 
 ## Precalculate normalization parameters
 
-The default normalization method relies on having calculated the percentile values of the calculation domains.
+The default normalization method relies on having calculated a certain percentiles values of a base scenario of the 
+calculation domain(s).
 
+1. Create a scenario with desired parameters (ecosystem and pressure components to be included, choice of matrix etc.). 
+   Make note of the scenario id. (For instance by inspecting the value of of the _id_ property in the response to the 
+   request to `/symphony-ws/service/scenario` when creating a scenario.)    
+2. Make a PUT request to `/symphony-ws/service/percentile-normalization-values/<scenario id>/<calculation area 
+   id>` using [Swagger](http://localhost:8080/symphony-ws/swagger/#/calibration/calcPercentileNormalizationValue) or 
+   your REST client of choice. Make sure you are authenticated with a user having the GRP_SYMPHONY_ADMIN role prior 
+   to making the request (through a call to `/symphony-ws/service/login`)
 
-1. Create scenario with desired params (ecosystem and pressure components to be included, matrix options). Make note 
-   of the scenario id (i.e. with your browser's web inspector panels)
-2. Make a POST request to XXX using [Swagger](http://localhost:8080/symphony-ws/swagger/#/calibration/calcPercentileNormalizationValue)
-3. (or your REST client of choice). Make sure you are first authenticated 
-
-Having a dedicated REST endpoint for calculating these values is planned but for the time being the administrator
-need to make a couple of REST requests and set the values in the database manually.
-
-to `/symphony-ws/calculation/sum`
-
-First authenticate yourself to the backend through a call to `/symphony-ws/service/login` in order to receive a 
-session cookie. 
-
-Having established the session perform a normal calculation of a previously created scenario using 
-`/symphony-ws/calculation/sum`, but with `normalization.type` set to `"PERCENTILE"`, like so:
-
-[//]: # (Create scenario first in GUI. Then calc from swagger?)
-
-```json
-{
-  "id": X, // scenario id
-  "owner": "...",
-  "baselineId": Y,
-  ...
-  "ecosystemsToInclude": [0, 1, ...],
-  "pressuresToInclude": [0, 1, ...],
-  "matrix": { ... },
-  "normalization": { "type": "PERCENTILE" }
-}
-```
-The server response will contain the calculation result id _Z_ like so:
-```json
-{
-"id": Z, // resulting calculation id
-"name": "My Scenario",
-"timestamp": ...
-}
-```
-Normalization is performed when the result image is rendered. It can be fetched by making use of the 
-calculation id _Z_ and issuing a GET request to <code>/symphony-ws/calculation/<em><b>Z</b></em>/image</code>.
-
-The server logs will contain the calculated value. The resulting value should be inserted into the _carea_maxvalue_
-column of the corresponding default area row in the _calculationarea_ table.
+The actual percentile used can be controlled through the _calc.normalization.histogram.percentile_ property (default 
+to 95th).
 
 [//]: # (TODO: describe how te set other percentile in props file)

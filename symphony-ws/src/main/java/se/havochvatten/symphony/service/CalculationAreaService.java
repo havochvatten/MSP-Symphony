@@ -359,6 +359,12 @@ public class CalculationAreaService {
         return geoPolygons.stream().map(p -> selectedPolygon.intersection(p)).collect(Collectors.toList());
     }
 
+    public void updateMaximumValue(int areaId, double value) {
+        var area = em.find(CalculationArea.class, areaId);
+        area.setMaxValue(value);
+        em.merge(area);
+    }
+
     /**
      * Get distinct List<AreaType> from calculationareas
      *
@@ -423,3 +429,4 @@ public class CalculationAreaService {
         return geometries;
     }
 }
+

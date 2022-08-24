@@ -285,12 +285,10 @@ public class CalcService {
                 matrices, layout, mask);
 
         CalculationResult calculation;
-        if (scenario.getNormalization().type == NormalizationType.PERCENTILE) {
-            calculation = new CalculationResult();
-            calculation.setCoverage(coverage);
-        } else {
+        if (scenario.getNormalization().type == NormalizationType.PERCENTILE)
+            calculation = new CalculationResult(coverage);
+        else
             calculation = persistCalculation(coverage, matrixResponse.normalizationValue, scenario, baseline);
-        }
 
         // Cache last calculation in session to speed up subsequent REST call to retrieve result image
         req.getSession().setAttribute("last-calculation", calculation);
@@ -373,7 +371,7 @@ public class CalcService {
                                                 Scenario scenario,
                                                 BaselineVersion baselineVersion) throws IOException,
         SymphonyStandardAppException {
-        var calculation = new CalculationResult();
+        var calculation = new CalculationResult(result);
 
         // TODO: Fill out some relevant TIFF metadata
         // Creator, NODATA?
@@ -390,7 +388,6 @@ public class CalcService {
         calculation.setTimestamp(new Date());
         var impactMatrix = (long[][]) result.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME);
         calculation.setImpactMatrix(impactMatrix);
-        calculation.setCoverage(result);
         calculation.setBaselineVersion(baselineVersion);
 
         em.persist(calculation);
