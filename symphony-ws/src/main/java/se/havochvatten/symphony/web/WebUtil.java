@@ -1,12 +1,16 @@
 package se.havochvatten.symphony.web;
 
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.filter.LiteralExpressionImpl;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
 import org.geotools.sld.SLDConfiguration;
 import org.geotools.styling.*;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Parser;
+import org.hibernate.jpa.criteria.expression.LiteralExpression;
 import org.locationtech.jts.geom.Envelope;
+import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.SAXException;
 
@@ -18,6 +22,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.image.RenderedImage;
 import java.io.*;
+import java.util.Arrays;
 import java.util.List;
 
 public interface WebUtil {
@@ -69,7 +74,28 @@ public interface WebUtil {
         List<Symbolizer> symbolizers = rules.get(0).symbolizers();
         //        assertEquals(1, symbolizers.size());
         //        assertThat(symbolizers.get(0), instanceOf(RasterSymbolizer.class));
-        return (RasterSymbolizer) symbolizers.get(0);
+        var rasterSymbolizer = (RasterSymbolizer)symbolizers.get(0);
+//        ColorMap cm = rasterSymbolizer.getColorMap();
+//        var entries = cm.getColorMapEntries();
+//        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+//        Arrays.stream(entries).forEach(entry -> entry.setQuantity(ff.literal(242.0)));
+        return rasterSymbolizer;
+    }
+
+    static RasterSymbolizer getNormalizedRasterSymbolizer(StyledLayerDescriptor sld,
+                                                          double maxValue) {
+        List<Rule> rules = getRules(sld);
+        List<Symbolizer> symbolizers = rules.get(0).symbolizers();
+        var rasterSymbolizer = (RasterSymbolizer)symbolizers.get(0);
+        ColorMap cm = rasterSymbolizer.getColorMap();
+        var entries = cm.getColorMapEntries();
+        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+        Arrays.stream(entries).forEach(entry -> {
+            var expr = entry.getQuantity();
+            Double val = (Double)((LiteralExpressionImpl)expr).getValue();
+            entry.setQuantity(ff.literal(maxValue*val));
+        });
+        return rasterSymbolizer;
     }
 
     static void writeFile(byte[] content, File file) throws IOException {
