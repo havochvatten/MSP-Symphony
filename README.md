@@ -25,7 +25,7 @@ with special emphasis on the building and comparison of different scenarios. Thi
 - Apply, view, select, and edit sensitivity matrices used for analysis 
 - Choose among different result normalization methods, including the ability to specify a user-defined custom 
   normalization value
-- Apply linear transformations over arbitrary regions in a scenario ($x' = A x + B$, where $x$ is the component 
+- Apply linear transformations over arbitrary regions in a scenario ( $x' = A x + B$, where $x$ is the component 
   intensity at the data point and $x'$ the actual value used in the cumulative impact analysis)
 - Create persistent scenarios consisting of arbitrary numbers of transformed subareas
 - Compare two scenario analyses result side-by-side, including relative differences in graphical and tabular form 
@@ -43,8 +43,10 @@ organizational needs.
 
 While any Jakarta EE 8.0-compliant application should be OK, during development [Wildfly](https://www.wildfly.org/)
 has been used and is thus the recommended choice. At SwAM the frontend is served separately using Apache, 
-although any web server capable of serving static content should do (see [Frontend](#frontend-1) below). The system 
-has been developed using Wildfly 18, PostgreSQL 10 and PostGIS v2.4, but more recent versions should be fine.
+although any web server capable of serving static content should do (see [Frontend](#frontend-1) below). The backend 
+has been developed using Wildfly 18, PostgreSQL 10 and PostGIS v2.4, but more recent versions should be fine. The 
+frontend has been built with NodeJS v.16.14.2. More recent versions may cause problems with the specific version of 
+Angular currently employed.
 
 ## Getting the source
 
@@ -79,16 +81,17 @@ There are also tests which can be invoked by Maven, see the section on [Tests](#
 
 ### Frontend
 
-The frontend is managed by Angular CLI, and should thus behave like any other Angular CLI-project. There is 
-more extensive information in [frontend/README](frontend/README.md), but in 
-short a production build should be a matter of:
+The frontend is managed by Angular CLI, and should thus behave like any other Angular CLI-project. There is more 
+extensive information in [frontend/README](frontend/README.md), but in short a production build should 
+be a matter of:
 ```
 cd frontend
 npm install -g @angular/cli
 npm install
 ng build
 ```
-The build artifacts will end up in the `frontend/dist` directory.
+The build artifacts will end up in the `frontend/dist` directory. If you are on a more recent Node.js and `npm install` 
+fails you may experiment with its `--legacy-peer-deps` flag.
 
 For frontend development there is also the Angular CLI development server, see the frontend README for more details. 
 

@@ -7,10 +7,12 @@ export const environment = {
   showBaseCalculations: false,
   showIncludeCoastCheckbox: true,
   apiBaseUrl: "/symphony-ws/service",
-  baseline: 'BASELINE2019',
+  baseline: 'WIO-TEST-BASELINE',
   map: {
-    center: [11.40, 57.61], // Kattegatt
+    center: [10, -10],
+    initialZoom: 4,
     maxZoom: 10,
+    minZoom: 3,
     zoomPadding: 20,
     disableBackgroundMap: false,
     colorCodeIntensityChanges: false

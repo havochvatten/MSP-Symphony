@@ -84,7 +84,7 @@ public class CalculationREST {
         var watch = new StopWatch();
         watch.start();
         logger.info("Performing "+req.getHeader("SYM-Operation")+" calculation for " + dto.name + " ...");
-        CalculationResult result = calcService.calculateImpact(req, new Scenario(dto, calcService));
+        CalculationResult result = calcService.calculateScenarioImpact(req, new Scenario(dto, calcService));
         watch.stop();
         logger.log(Level.INFO, "DONE ({0} ms)", watch.getTime());
 

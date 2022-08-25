@@ -38,7 +38,7 @@ public class NormalizerService {
 }
 
 abstract class RasterNormalizer implements BiFunction<GridCoverage2D, Double, Double> {
-    private static final Logger LOG = LoggerFactory.getLogger(RasterNormalizer.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(RasterNormalizer.class);
 
     /**
      * Default normalization, just use supplied value
@@ -71,11 +71,19 @@ class PercentileNormalizer extends RasterNormalizer {
     }
 
     @Override
-    public Double apply(GridCoverage2D coverage, Double normalizationValue) {
+    public Double apply(GridCoverage2D coverage, Double ignored) {
         var extrema = (GridCoverage2D) Operations.DEFAULT.extrema(coverage);
         var histogram = getHistogram(coverage, ((double[]) extrema.getProperty("minimum"))[0],
                 ((double[]) extrema.getProperty("maximum"))[0]);
         return getValueBelowPercentile(histogram);
+    }
+
+    public double computeNthPercentileNormalizationValue(GridCoverage2D coverage) {
+        var extrema = (GridCoverage2D) Operations.DEFAULT.extrema(coverage);
+        var histogram = getHistogram(coverage, ((double[]) extrema.getProperty("minimum"))[0],
+            ((double[]) extrema.getProperty("maximum"))[0]);
+        var normalizationValue = getValueBelowPercentile(histogram);
+        return normalizationValue;
     }
 
     private double getValueBelowPercentile(Histogram histogram) {

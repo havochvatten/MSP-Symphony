@@ -21,7 +21,7 @@ public class RarityAdjustedCumulativeImpactDescriptor extends OperationDescripto
             {"GlobalName", "se.havochvatten.symphony.RarityAdjustedCumulativeImpact"},
             {"LocalName", "RarityAdjustedCumulativeImpact"},
             {"Vendor", "it.geosolutions.jaiext"},
-            {"Description", "Symphony Rarity-adjusted Cumulative Impact Assessment Calculation"},
+            {"Description", "Global rarity index-adjusted Cumulative Impact Assessment Calculation"},
             {"DocURL", ""},
             {"Version", "1.0"},
             {"arg0Desc", "sensitivity matrices array"},

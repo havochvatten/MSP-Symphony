@@ -141,9 +141,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       layers: this.background ? [this.background] : [],
       view: new View({
         center: proj.fromLonLat(this.mapCenter!),
-        zoom: 6,
+        zoom: env.map.initialZoom,
         maxZoom: env.map.maxZoom,
-        minZoom: 3,
+        minZoom: env.map.minZoom,
         // Web Mercator is Open Layers default (like OSM). Use EPSG:4326 instead?
         // projection: proj.get(AppSettings.MAP_PROJECTION),
       }),

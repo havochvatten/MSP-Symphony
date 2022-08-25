@@ -14,7 +14,7 @@ import java.io.Serializable;
         @NamedQuery(name = "NationalArea.findByCountryIso3AndType", query = "SELECT n FROM NationalArea n " +
 				"WHERE n.countryIso3 = :countryIso3 and n.type = :type")
 })
-public class NationalArea implements Serializable {
+public class NationalArea implements Serializable { // TODO Rename to Areas
 	private static final long serialVersionUID = 1L;
 
     @Id

@@ -15,6 +15,9 @@ import { Baseline } from "@data/user/user.interfaces";
 import * as Normalization
   from "@src/app/map-view/scenario/scenario-detail/normalization-selection/normalization-selection.component";
 import { TranslateService } from "@ngx-translate/core";
+import { selectSelectedComponents } from "@data/metadata/metadata.selectors";
+import { MetadataSelectors } from "@data/metadata";
+import { Band } from "@data/metadata/metadata.interfaces";
 
 @Component({
   selector: 'app-scenario-list',
@@ -24,6 +27,7 @@ import { TranslateService } from "@ngx-translate/core";
 export class ScenarioListComponent {
   selectedArea?: Area;
   baseline?: Baseline;
+  selectedComponents?: { ecoComponent: Band[]; pressureComponent: Band[] };
 
   scenarios$: Observable<Scenario[]>;
   activeScenarioIndex?: number;
@@ -41,6 +45,8 @@ export class ScenarioListComponent {
       .subscribe(area => this.selectedArea = area);
     this.store.select(UserSelectors.selectBaseline)
       .subscribe(baseline => this.baseline = baseline);
+    this.store.select(MetadataSelectors.selectSelectedComponents)
+      .subscribe(components => this.selectedComponents = components)
   }
 
   /* Create new scenario in selected area, and enter it */
@@ -52,7 +58,9 @@ export class ScenarioListComponent {
       this.baseline!,
       name,
       area.feature, // TODO create feature from geometry?
-      Normalization.DEFAULT_OPTIONS
+      Normalization.DEFAULT_OPTIONS,
+    this.selectedComponents?.ecoComponent.map(band => band.bandNumber) ?? [],
+      this.selectedComponents?.pressureComponent.map(band => band.bandNumber) ?? []
     ).pipe(
       catchError(error => of(error))
     ).subscribe((scenario: Scenario) =>

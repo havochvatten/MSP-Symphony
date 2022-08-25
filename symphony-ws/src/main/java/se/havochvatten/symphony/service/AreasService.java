@@ -10,7 +10,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 @Stateless
-public class NationalAreaService {
+public class AreasService {
     @PersistenceContext(unitName = "symphonyPU")
     EntityManager em;
 

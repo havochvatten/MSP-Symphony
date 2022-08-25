@@ -23,6 +23,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javax.servlet.http.HttpServletRequest;
+
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
+import se.havochvatten.symphony.dto.NormalizationType;
+import se.havochvatten.symphony.entity.CalculationResult;
+import se.havochvatten.symphony.scenario.Scenario;
 
 @Stateless
 @Startup
@@ -37,6 +44,12 @@ public class CalibrationService {
 
     @Inject
     private SymphonyCoverageProcessor processor;
+
+    @Inject
+    private CalcService calcService;
+
+    @Inject
+    private NormalizerService normalizationFactory;
 
     /**
      * Calculate baseline-global rarity indices (or actually its inverse, i.e.
@@ -82,5 +95,13 @@ public class CalibrationService {
 
         return IntStream.range(0, values.length).boxed()
             .collect(Collectors.toMap(bandTitles::get, i -> Double.valueOf(values[i])));
+    }
+
+    public double calcPercentileNormalizationValue(HttpServletRequest req, Scenario scenario) throws FactoryException, SymphonyStandardAppException, TransformException, IOException {
+        CalculationResult result = calcService.calculateScenarioImpact(req, scenario);
+        var coverage = result.getCoverage();
+
+        PercentileNormalizer normalizer = (PercentileNormalizer) normalizationFactory.getNormalizer(NormalizationType.PERCENTILE);
+        return normalizer.computeNthPercentileNormalizationValue(coverage);
     }
 }

@@ -3,10 +3,12 @@ export const environment = {
   showBaseCalculations: true,
   showIncludeCoastCheckbox: true,
   apiBaseUrl: "/symphony-ws/service",
-  baseline: 'BASELINE2019_CM', // set to some false value to use default
+  baseline: false, // Set to some false value to get "latest" baseline
   map: {
     center: [14.94, 60.57], // Modified center of Sweden with focus on seas
+    initialZoom: 6,
     maxZoom: 10,
+    minZoom: 3,
     zoomPadding: 20,
     disableBackgroundMap: false,
     colorCodeIntensityChanges: false
