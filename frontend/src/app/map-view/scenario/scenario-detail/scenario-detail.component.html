@@ -10,13 +10,25 @@
   </div>
 
   <main>
+    <section class="algorithm">
+      <h3>{{ 'map.editor.operation.title' | translate }}</h3>
+      <article>
+        <hav-select [formControl]="operation" selectSize="large">
+          <hav-select-item *ngFor="let op of availableOperations" [value]="op" selectItemSize="large">
+            {{ 'map.editor.operation.'+op | translate }}
+          </hav-select-item>
+        </hav-select>
+      </article>
+    </section>
+
     <section class="scenario-changes">
-      <h3>Scenario Changes</h3>
+      <h3>{{ 'map.editor.changes.title' | translate }}</h3>
       <!--    TODO show reset button on hover, like user-defined areas-->
       <ng-container *ngIf="hasChanges(); else noChanges">
         <div id="areas-list">
-          <app-accordion-box *ngFor="let feature of scenario.changes.features; index as featureIndex; trackBy: featureId">
-                             <!--open="{{ featureHasChanges(feature) }}">-->
+          <app-accordion-box
+            *ngFor="let feature of scenario.changes.features; index as featureIndex; trackBy: featureId">
+            <!--open="{{ featureHasChanges(feature) }}">-->
             <!--TODO flash/shade area on map on hover here -->
             <app-accordion-box-header>
               <div class="area-title">{{ feature.properties['title'] }}</div>
@@ -72,7 +84,7 @@
 
     <section class="normalization"> <!--Wrap in accordion-box?-->
       <h3>{{ 'map.editor.normalization.title' | translate }}</h3>
-      <app-normalization-selection [options]="scenario.normalization"
+      <app-normalization-selection [options]="scenario.normalization" [algorithm]="operation.value"
         (modeSelectionEvent)="setNormalizationOptions($event)">
       </app-normalization-selection>
     </section>

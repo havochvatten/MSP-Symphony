@@ -8,6 +8,7 @@
       label="{{ button.label | translate }}"
       [value]="button.value"
       [checked]="button.value == options.type"
+      [disabled]="button.value === NormalizationType.Domain && algorithm === 'RarityAdjustedCumulativeImpact'"
       (check)="check(button.value)"
     >
     </hav-radio-button>

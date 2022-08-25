@@ -2,6 +2,9 @@ package se.havochvatten.symphony.calculation;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import se.havochvatten.symphony.entity.BaselineVersion;
+import se.havochvatten.symphony.exception.SymphonyStandardAppException;
+import se.havochvatten.symphony.service.BaselineVersionService;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
@@ -19,6 +22,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 
@@ -46,6 +50,23 @@ public class CalibrationREST {
 
     @Inject
     private CalculationAreaService caService;
+
+    @GET
+    @Path("/rarity-indices/{baseline}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Gets baseline-global rarity indices (or actually its inverse, i.e. " +
+        "commonness)")
+    public Response calcGlobalCommonnessIndices(@Context HttpServletRequest req,
+                                                @PathParam("baseline") String baselineName)
+        throws SymphonyStandardAppException, IOException {
+        BaselineVersion baseline = baselineVersionService.getVersionByName(baselineName);
+
+        var sums = calibrationService.getGlobalCommonnessIndicesIndexedByTitle(baseline);
+
+        // TODO: Store in table in database? (indexed by meta_id?)
+        return Response.ok(sums).build();
+    }
 
     @PUT
     @Path("/percentile-normalization-values/{scenarioId}/{calcAreaId}")

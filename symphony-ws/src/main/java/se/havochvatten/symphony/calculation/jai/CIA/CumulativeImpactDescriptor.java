@@ -18,26 +18,27 @@ public class CumulativeImpactDescriptor extends OperationDescriptorImpl implemen
      * The resource strings that specify the parameter list for this operation.
      */
     private static final String[][] resources = {
-            {"GlobalName", "se.havochvatten.CumulativeImpact"},
+            {"GlobalName", "se.havochvatten.symphony.CumulativeImpact"},
             {"LocalName", "CumulativeImpact"},
-            {"Vendor", "it.geosolutions.jaiext"},
-            {"Description", "Symphony Cumulative Impact Assessment Sum"},
+            {"Vendor", "it.geosolutions.jaiext"}, // N.B: Connot be "se.havochvatten.symphony" since not
+        // included in some JAI "AUTHORITIES" object somewhere
+            {"Description", "Symphony Cumulative Impact Assessment Calculation"},
             {"DocURL", ""},
             {"Version", "1.0"},
             {"arg0Desc", "sensitivity matrices array"},
             {"arg1Desc", "matrix mask"},
             {"arg2Desc", "ecosystem services bands to include"},
-            {"arg3Desc", "pressure bands to include"},
+            {"arg3Desc", "pressure bands to include"}
     };
 
     /**
      * The parameter class list
      */
     protected static final Class[] paramClasses = {
-            double[][][].class, // FIXME use floats instead
-            Raster.class,
-            int[].class,
-            int[].class
+        double[][][].class, // FIXME use floats instead
+        Raster.class,
+        int[].class,
+        int[].class
     };
 
     /**
@@ -49,7 +50,7 @@ public class CumulativeImpactDescriptor extends OperationDescriptorImpl implemen
      * The parameter default value list for this operation.
      */
     protected static final Object[] paramDefaults = {
-            NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT,
+            NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT, NO_PARAMETER_DEFAULT
     };
 
     protected static final String[] supportedModes = {RenderedRegistryMode.MODE_NAME};

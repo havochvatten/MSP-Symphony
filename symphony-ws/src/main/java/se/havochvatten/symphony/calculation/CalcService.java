@@ -92,6 +92,8 @@ public class CalcService {
     @Inject
     private CalculationAreaService calculationAreaService;
 
+    @Inject
+    private CalibrationService calibrationService;
 
     @PostConstruct
     void setup() {
@@ -281,14 +283,24 @@ public class CalcService {
 //        Map<String, Object> props = new HashMap<>();
 //        CoverageUtilities.setNoDataProperty(props, new NoDataContainer(CalcEngine.NO_DATA)); // TODO remove?
 
-        GridCoverage2D coverage = invokeCumulativeImpactOperation(scenario, ecoComponents, pressures,
-                matrices, layout, mask);
+        String requestOperation = req.getHeader("SYM-Operation");
+        if (!(requestOperation.equals("RarityAdjustedCumulativeImpact") || requestOperation.equals(
+            "CumulativeImpact"))) {
+            throw new RuntimeException("Unsupported operation: "+requestOperation);
+        }
+
+        GridCoverage2D coverage = invokeCumulativeImpactOperation(scenario, requestOperation,
+            ecoComponents, pressures, matrices, layout, mask,
+            requestOperation.equals("RarityAdjustedCumulativeImpact")
+                ? calibrationService.calculateGlobalCommonnessIndices(ecoComponents, scenario.getEcosystemsToInclude())
+                : null);
 
         CalculationResult calculation;
         if (scenario.getNormalization().type == NormalizationType.PERCENTILE)
             calculation = new CalculationResult(coverage);
         else
-            calculation = persistCalculation(coverage, matrixResponse.normalizationValue, scenario, baseline);
+            calculation = persistCalculation(coverage, matrixResponse.normalizationValue,
+                scenario, requestOperation, baseline);
 
         // Cache last calculation in session to speed up subsequent REST call to retrieve result image
         req.getSession().setAttribute("last-calculation", calculation);
@@ -296,10 +308,15 @@ public class CalcService {
         return calculation;
     }
 
-    private GridCoverage2D invokeCumulativeImpactOperation(Scenario scenario, GridCoverage2D ecoComponents,
+    private GridCoverage2D invokeCumulativeImpactOperation(Scenario scenario, String operationName,
+                                                           GridCoverage2D ecoComponents,
                                                            GridCoverage2D pressures, List<SensitivityMatrix> matrices,
-                                                           ImageLayout layout, MatrixMask mask) {
-        var op = processor.getOperation("se.havochvatten.CumulativeImpact");
+                                                           ImageLayout layout, MatrixMask mask,
+                                                           double[] commonness) {
+        final var OPERATION_PREFIX = "se.havochvatten.symphony";
+        var qualifiedOpName = String.join(".", OPERATION_PREFIX, operationName);
+
+        var op = processor.getOperation(qualifiedOpName);
 
         var params = op.getParameters();
         params.parameter("Source0").setValue(ecoComponents);
@@ -308,6 +325,8 @@ public class CalcService {
         params.parameter("mask").setValue(mask.getRaster());
         params.parameter("ecosystemBands").setValue(scenario.getEcosystemsToInclude());
         params.parameter("pressureBands").setValue(scenario.getPressuresToInclude());
+        if (commonness != null)
+            params.parameter("commonnessIndices").setValue(commonness);
 
         var coverage = (GridCoverage2D) processor.doOperation(params, new Hints(JAI.KEY_IMAGE_LAYOUT, layout));
         triggerActualCalculation(coverage.getRenderedImage());
@@ -369,8 +388,9 @@ public class CalcService {
     public CalculationResult persistCalculation(GridCoverage2D result,
                                                 double normalizationValue,
                                                 Scenario scenario,
-                                                BaselineVersion baselineVersion) throws IOException,
-        SymphonyStandardAppException {
+                                                String operation,
+                                                BaselineVersion baselineVersion)
+        throws IOException, SymphonyStandardAppException {
         var calculation = new CalculationResult(result);
 
         // TODO: Fill out some relevant TIFF metadata
@@ -386,9 +406,10 @@ public class CalcService {
         calculation.setCalculationName(makeCalculationName(scenario));
         calculation.setNormalizationValue(normalizationValue);
         calculation.setTimestamp(new Date());
-        var impactMatrix = (long[][]) result.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME);
+        var impactMatrix = (double[][]) result.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME);
         calculation.setImpactMatrix(impactMatrix);
         calculation.setBaselineVersion(baselineVersion);
+        calculation.setOperationName(operation);
 
         em.persist(calculation);
         em.flush(); // to have id generated

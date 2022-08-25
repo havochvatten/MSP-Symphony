@@ -98,6 +98,7 @@ public class ScenarioRESTTest extends RESTTest {
         Response response =
                 given().
                         header("Content-Type", "application/json").
+                        header("SYM-Operation", "CumulativeImpact").
                         auth().
                         preemptive().
                         basic(getUsername(), getPassword()).

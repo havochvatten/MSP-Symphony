@@ -37,34 +37,23 @@ public class NormalizerService {
     }
 }
 
-abstract class RasterNormalizer implements BiFunction<GridCoverage2D, Double, GridCoverage2D> {
+abstract class RasterNormalizer implements BiFunction<GridCoverage2D, Double, Double> {
     protected static final Logger LOG = LoggerFactory.getLogger(RasterNormalizer.class);
 
     /**
      * Default normalization, just use supplied value
      **/
     @Override
-    public GridCoverage2D apply(GridCoverage2D coverage, Double normalizationValue) {
-        return normalize(coverage, normalizationValue);
-    }
-
-    /**
-     * The actual operation
-     */
-    protected GridCoverage2D normalize(GridCoverage2D coverage, double normalizationValue) {
-        LOG.info("Normalizing result using value=" + normalizationValue);
-        return (GridCoverage2D) Operations.DEFAULT.divideBy(coverage, new double[]{normalizationValue});
+    public Double apply(GridCoverage2D coverage, Double normalizationValue) {
+        return normalizationValue;
     }
 }
 
 class AreaNormalizer extends RasterNormalizer {
     @Override
-    public GridCoverage2D apply(GridCoverage2D coverage, Double normalizationValue) {
+    public Double apply(GridCoverage2D coverage, Double ignored) {
         var extrema = (GridCoverage2D) Operations.DEFAULT.extrema(coverage);
-
-        normalizationValue = ((double[]) extrema.getProperty("maximum"))[0]; // override
-
-        return normalize(coverage, normalizationValue);
+        return ((double[]) extrema.getProperty("maximum"))[0];
     }
 }
 
@@ -73,7 +62,6 @@ class DomainNormalizer extends RasterNormalizer {}
 class UserDefinedValueNormalizer extends RasterNormalizer {}
 
 class PercentileNormalizer extends RasterNormalizer {
-
     final static int NUM_BINS = 100; // More bins yields more accurate result
 
     private final int percentile;
@@ -83,9 +71,11 @@ class PercentileNormalizer extends RasterNormalizer {
     }
 
     @Override
-    public GridCoverage2D apply(GridCoverage2D coverage, Double ignored) {
-        var normalizationValue = computeNthPercentileNormalizationValue(coverage);
-        return super.apply(coverage, normalizationValue);
+    public Double apply(GridCoverage2D coverage, Double ignored) {
+        var extrema = (GridCoverage2D) Operations.DEFAULT.extrema(coverage);
+        var histogram = getHistogram(coverage, ((double[]) extrema.getProperty("minimum"))[0],
+                ((double[]) extrema.getProperty("maximum"))[0]);
+        return getValueBelowPercentile(histogram);
     }
 
     public double computeNthPercentileNormalizationValue(GridCoverage2D coverage) {

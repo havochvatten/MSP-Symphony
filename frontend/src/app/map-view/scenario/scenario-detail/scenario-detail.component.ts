@@ -27,6 +27,7 @@ import {
   DeleteScenarioConfirmationDialogComponent
 } from "@src/app/map-view/scenario/scenario-detail/delete-scenario-confirmation-dialog/delete-scenario-confirmation-dialog.component";
 import { Feature } from "geojson";
+import { FormControl, Validators } from "@angular/forms";
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 
@@ -36,21 +37,23 @@ const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
   styleUrls: ['./scenario-detail.component.scss']
 })
 export class ScenarioDetailComponent implements OnInit, OnDestroy {
+  env = environment;
   autoSaveSubscription$?: Subscription;
-  @Input() scenario!: Scenario;
 
+  @Input() scenario!: Scenario;
   @ViewChild('name') nameElement!: ElementRef;
   editName = false;
+
   calculating$?: Observable<boolean>;
+  // Ambitiously we would query the backend for these
+  availableOperations = ['CumulativeImpact', 'RarityAdjustedCumulativeImpact'];
+  operation = new FormControl('', Validators.required);
 
   showIncludeCoastCheckbox = environment.showIncludeCoastCheckbox;
   associatedCoastalArea?: AreaTypeMatrixMapping;
+
   areaCoastMatrices?: AreaTypeRef; // AreaMatrixMapping[] = [];
-
   normalizationOpts = Normalization.DEFAULT_OPTIONS;
-
-  env = environment;
-  convertMultiplierToPercent = convertMultiplierToPercent;
 
   constructor(
     private store: Store<State>,
@@ -79,6 +82,8 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     this.calculating$ = this.store.select(CalculationSelectors.selectCalculating);
   }
 
+  convertMultiplierToPercent = convertMultiplierToPercent;
+
   ngOnInit() {
     if (!this.scenario)
       throw new Error("Attribute 'scenario' is required");
@@ -93,6 +98,10 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
       this.calcService.addResult(this.scenario.latestCalculation);
     }
     // });
+
+    setTimeout(() => {
+      this.operation.setValue(this.availableOperations[0]);
+    });
   }
 
   calculate() {
@@ -102,18 +111,19 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     ).subscribe((selectedComponents) => {
       const getSortedBandNumbers = (bands: Band[]) => bands
         .map(band => band.bandNumber)
-        .sort((a, b) => a-b);
+        .sort((a, b) => a - b);
       this.calcService.calculate({
-        ...this.scenario,
-        ecosystemsToInclude: getSortedBandNumbers(selectedComponents.ecoComponent),
-        pressuresToInclude: getSortedBandNumbers(selectedComponents.pressureComponent),
-        matrix: {
-          ...this.scenario.matrix,
-          areaTypes: this.areaCoastMatrices ?
-            [...(this.scenario.matrix!.areaTypes ?? []), this.areaCoastMatrices] :
-            (this.scenario.matrix!.areaTypes ?? [])
-        }
-      });
+          ...this.scenario,
+          ecosystemsToInclude: getSortedBandNumbers(selectedComponents.ecoComponent),
+          pressuresToInclude: getSortedBandNumbers(selectedComponents.pressureComponent),
+          matrix: {
+            ...this.scenario.matrix,
+            areaTypes: this.areaCoastMatrices ?
+              [...(this.scenario.matrix!.areaTypes ?? []), this.areaCoastMatrices] :
+              (this.scenario.matrix!.areaTypes ?? [])
+          }
+        },
+        this.operation.value);
     });
   }
 
@@ -162,7 +172,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   onChangeName(name: string) {
     this.editName = !this.editName;
-    this.store.dispatch(ScenarioActions.changeScenarioName({ name }));
+    setTimeout(() => this.store.dispatch(ScenarioActions.changeScenarioName({ name })));
   }
 
   setNormalizationOptions(opts: NormalizationOptions) {

@@ -32,12 +32,6 @@ public class CumulativeImpactOpTest {
     static RenderedImage singleDataLayer;
     static RenderedImage twoBandLayers;
 
-    public void assertMatrixEquals(double[][] expected, double[][] actual, double tol) {
-        var flattenedExpectations = Arrays.stream(expected).flatMapToDouble(Arrays::stream).toArray();
-        var flattenedReality = Arrays.stream(actual).flatMapToDouble(Arrays::stream).toArray();
-        assertArrayEquals(flattenedExpectations, flattenedReality, tol);
-    }
-
     @BeforeClass
     public static void setup() throws IOException {
         var mask = new File(
@@ -84,14 +78,8 @@ public class CumulativeImpactOpTest {
                 0, 10000
         }, r.getSamples(0, 0, 2, 2, 0, new int[4]));
 
-        var matrix = (long[][]) out.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME);
+        var matrix = (double[][]) out.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME);
         assertEquals(20000.0, matrix[0][0], DELTA);
-    }
-
-    public void assertMatrixEquals(long[][] expected, long[][] actual) {
-        var flattenedExpectations = Arrays.stream(expected).flatMapToLong(Arrays::stream).toArray();
-        var flattenedReality = Arrays.stream(actual).flatMapToLong(Arrays::stream).toArray();
-        assertArrayEquals(flattenedExpectations, flattenedReality);
     }
 
     @Test
@@ -115,10 +103,16 @@ public class CumulativeImpactOpTest {
                 0, 20000
         }, r.getSamples(0, 0, 2, 2, 0, new int[4]));
 
-        var matrix = (long[][]) out.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME);
-        assertMatrixEquals(new long[][]{
+        var matrix = (double[][]) out.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME);
+        assertMatrixEquals(new double[][]{
                 {20000, 0},
                 {0, 20000}
         }, matrix);
+    }
+
+    void assertMatrixEquals(double[][] expected, double[][] actual) {
+        var flattenedExpectations = Arrays.stream(expected).flatMapToDouble(Arrays::stream).toArray();
+        var flattenedReality = Arrays.stream(actual).flatMapToDouble(Arrays::stream).toArray();
+        assertArrayEquals(flattenedExpectations, flattenedReality, DELTA);
     }
 }

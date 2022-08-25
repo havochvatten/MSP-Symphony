@@ -23,6 +23,11 @@
         "no-selected-area": "No area selected",
         "editor": {
             "title": "Scenarios",
+            "operation": {
+                "title": "Algorithm",
+                "CumulativeImpact": "Cumulative impact ",
+                "RarityAdjustedCumulativeImpact": "Rarity-adjusted cumulative impact"
+            },
             "band-pressures": {
                 "intensity": "Edit intensity",
                 "opacity": "Layer opacity",
@@ -60,6 +65,7 @@
                 "custom-value": "Value"
             },
             "changes": {
+                "title": "Scenario Changes",
                 "no-changes": "No scenario changes",
                 "make-changes-hint": "Select an area and make changes in the Ecosystems Components or Pressures tabs.",
                 "clear-change": "Clear change",
@@ -231,6 +237,7 @@
         },
         "cumulative-effect-etc": {
             "baseline": "Baseline version",
+            "operation": "Algorithm",
             "title": "Cumulative effect",
             "total": "Total",
             "average": "Average",

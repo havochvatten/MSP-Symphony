@@ -1,12 +1,16 @@
 package se.havochvatten.symphony.web;
 
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
+import org.geotools.renderer.lite.gridcoverage2d.RasterSymbolizerHelper;
+import org.geotools.renderer.lite.gridcoverage2d.StyleVisitorAdapter;
 import org.geotools.sld.SLDConfiguration;
 import org.geotools.styling.*;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Parser;
 import org.locationtech.jts.geom.Envelope;
+import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.SAXException;
 
@@ -18,10 +22,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.image.RenderedImage;
 import java.io.*;
+import java.util.Arrays;
 import java.util.List;
 
 public interface WebUtil {
     int ONE_YEAR_IN_SECONDS = 31536000;
+    FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
     static JsonArray createExtent(Envelope targetEnvelope) {
         return Json.createArrayBuilder(List.of(targetEnvelope.getMinX(), targetEnvelope.getMinY(),
@@ -32,8 +38,7 @@ public interface WebUtil {
             IOException {
         Configuration config = new SLDConfiguration();
         Parser parser = new Parser(config);
-        StyledLayerDescriptor sld = (StyledLayerDescriptor) parser.parse(in);
-        return sld;
+        return (StyledLayerDescriptor) parser.parse(in);
     }
 
     static List<Rule> getRules(StyledLayerDescriptor sld) {
@@ -53,6 +58,15 @@ public interface WebUtil {
                 0); // no tiles
     }
 
+    static RenderedImage renderNormalized(GridCoverage2D cov, CoordinateReferenceSystem crs, Envelope env,
+                                          StyledLayerDescriptor sld, double normalizationValue) throws Exception {
+        GridCoverageRenderer renderer = new GridCoverageRenderer(crs, env,
+            cov.getGridGeometry().getGridRange2D(), null);
+        RasterSymbolizer symbolizer = WebUtil.getNormalizingdRasterSymbolizer(sld, normalizationValue);
+        return renderer.renderImage(cov, symbolizer, new InterpolationNearest(), new Color(0, 0, 0, 0), 0,
+            0); // no tiles
+    }
+
     static ByteArrayOutputStream encode(RenderedImage image, String formatName) throws IOException {
         var baos = new ByteArrayOutputStream( // conservative estimate:
                 image.getHeight() * image.getWidth() * image.getSampleModel().getNumDataElements());
@@ -63,13 +77,24 @@ public interface WebUtil {
         return baos;
     }
 
+    // TODO This could maybe be simplified using a StyleVisitor instead
     static RasterSymbolizer getRasterSymbolizer(StyledLayerDescriptor sld) {
         List<Rule> rules = getRules(sld);
-        //        assertEquals(1, rules.size());
         List<Symbolizer> symbolizers = rules.get(0).symbolizers();
-        //        assertEquals(1, symbolizers.size());
-        //        assertThat(symbolizers.get(0), instanceOf(RasterSymbolizer.class));
-        return (RasterSymbolizer) symbolizers.get(0);
+        return (RasterSymbolizer)symbolizers.get(0);
+    }
+
+    // TODO This could maybe be simplified using a StyleVisitor instead
+    static RasterSymbolizer getNormalizingdRasterSymbolizer(StyledLayerDescriptor sld,
+                                                            double maxValue) {
+        var symbolizer = getRasterSymbolizer(sld);
+        ColorMap colorMap = symbolizer.getColorMap();
+
+        Arrays.stream(colorMap.getColorMapEntries()).forEach(entry ->
+            entry.setQuantity(ff.multiply(ff.literal(maxValue), entry.getQuantity()))
+        );
+
+        return symbolizer;
     }
 
     static void writeFile(byte[] content, File file) throws IOException {

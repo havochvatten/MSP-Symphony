@@ -205,7 +205,7 @@ public class Rescale2Descriptor extends OperationDescriptorImpl {
      * The resource strings that provide the general documentation and specify the parameter list for this operation.
      */
     private static final String[][] resources = {
-            { "GlobalName", "se.havochvatten.Rescale" },
+            { "GlobalName", "se.havochvatten.symphony.Rescale" },
             { "LocalName", "HaVRescale" },
             { "Vendor", "it.geosolutions.jaiext" },
             { "Description", "Operation which converts the image dynamic to a new dynamic" },

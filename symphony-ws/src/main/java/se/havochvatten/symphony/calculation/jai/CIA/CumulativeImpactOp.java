@@ -21,15 +21,14 @@ public class CumulativeImpactOp extends PointOpImage {
     public final static int TRANSPARENT_VALUE = 0;
     public final static String IMPACT_MATRIX_PROPERTY_NAME = "se.havochvatten.symphony.impact_matrix";
 
-    /**
-     * Sensitivity matrix
-     */
-    private double[][][] ks;
-    private Raster mask;
+    /** Sensitivity matrix */
+    protected double[][][] ks;
 
-    private long[][] impactMatrix;
-    private int[] ecosystemBands;
-    private int[] pressureBands;
+    protected final Raster mask;
+
+    private final double[][] impactMatrix;
+    protected final int[] ecosystemBands;
+    protected final int[] pressureBands;
 
     public CumulativeImpactOp(RenderedImage ecosystemsData, RenderedImage pressuresData,
                               ImageLayout layout, Map config,
@@ -37,7 +36,7 @@ public class CumulativeImpactOp extends PointOpImage {
                               int[] ecosystems, int[] pressures) {
         super(ecosystemsData, pressuresData, layout, config, true); // source cobbling -- do we need it?
 
-        LOG.info("CulumativeImpactOp: tile scheduler parallelism=" + JAI.getDefaultInstance().getTileScheduler().getParallelism());
+        LOG.fine("CulumativeImpactOp: tile scheduler parallelism=" + JAI.getDefaultInstance().getTileScheduler().getParallelism());
 
 //        permitInPlaceOperation();
         // Setting matrix
@@ -46,7 +45,7 @@ public class CumulativeImpactOp extends PointOpImage {
         this.ecosystemBands = ecosystems;
         this.pressureBands = pressures;
 
-        this.impactMatrix = new long[pressureBands.length][ecosystemBands.length];
+        this.impactMatrix = new double[pressureBands.length][ecosystemBands.length];
 //        setProperty(IMPACT_MATRIX_PROPERTY_NAME, new double[] {0});
     }
 
@@ -128,7 +127,7 @@ public class CumulativeImpactOp extends PointOpImage {
                         for (int j = 0; j < numEcosystems; j++) {
                             double K = ks[maskValue][pressureBands[i]][ecosystemBands[j]];
                             int E = ecoData[ecosystemBands[j]][ecoPixelOffset + ecoBandOffsets[ecosystemBands[j]]];
-                            int impact = (int) (B * E * K); // use 1-10 matrix values => eliminate cast and faster mul?
+                            int impact = (int) (B*E*K); // use 1-10 matrix values => eliminate cast and faster mul?
                             rectImpactMatrix[i][j] += impact;
                             rowSum += impact;
                         }
@@ -155,14 +154,18 @@ public class CumulativeImpactOp extends PointOpImage {
             dstAccessor.copyDataToRaster();
         }
 
-        // The below adds quite a lot of overhead (20%+) Optimize? Vectors?
-        // or store intermediate matrix results in an async queue and accumulate at end?
-        // or use separate "tile matrix cache"? (c.f. TileCache)
-        synchronized (impactMatrix) { // remove sync for benchmark
-            for (int i = 0; i < numPressures; i++)
-                for (int j = 0; j < numEcosystems; j++)
-                    impactMatrix[i][j] += rectImpactMatrix[i][j];
-        }
+        accumulateImpactMatrix(rectImpactMatrix);
+    }
+
+    // The below adds quite a lot of overhead (20%+) Optimize? Vectors?
+    // or store intermediate matrix results in an async queue and accumulate at end?
+    // or use separate "tile matrix cache"? (c.f. TileCache)
+    protected synchronized void accumulateImpactMatrix(int[][] rectImpactMatrix) {
+        int numPressures = pressureBands.length;
+        int numEcosystems = ecosystemBands.length;
+        for (int i = 0; i < numPressures; i++)
+            for (int j = 0; j < numEcosystems; j++)
+                impactMatrix[i][j] += rectImpactMatrix[i][j];
     }
 
     @Override
@@ -176,7 +179,7 @@ public class CumulativeImpactOp extends PointOpImage {
     @Override
     public Class getPropertyClass(String name) {
         if (name.equals(IMPACT_MATRIX_PROPERTY_NAME)) {
-            return long[][].class;
+            return double[][].class;
         } else
             return super.getPropertyClass(name);
     }

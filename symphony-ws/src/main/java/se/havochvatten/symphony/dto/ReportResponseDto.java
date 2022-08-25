@@ -19,6 +19,7 @@ public class ReportResponseDto {
 
     public String name;
     public String baselineName;
+    public String operationName;
     public double total;
     public double average;
     public double min;
