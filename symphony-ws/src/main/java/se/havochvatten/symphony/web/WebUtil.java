@@ -3,6 +3,8 @@ package se.havochvatten.symphony.web;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
+import org.geotools.renderer.lite.gridcoverage2d.RasterSymbolizerHelper;
+import org.geotools.renderer.lite.gridcoverage2d.StyleVisitorAdapter;
 import org.geotools.sld.SLDConfiguration;
 import org.geotools.styling.*;
 import org.geotools.xsd.Configuration;
@@ -75,16 +77,14 @@ public interface WebUtil {
         return baos;
     }
 
-    // TODO use StyleVisitor instead (public void visit(ColorMapEntry colorMapEntry)
+    // TODO This could maybe be simplified using a StyleVisitor instead
     static RasterSymbolizer getRasterSymbolizer(StyledLayerDescriptor sld) {
         List<Rule> rules = getRules(sld);
-        //        assertEquals(1, rules.size());
         List<Symbolizer> symbolizers = rules.get(0).symbolizers();
-        //        assertEquals(1, symbolizers.size());
-        //        assertThat(symbolizers.get(0), instanceOf(RasterSymbolizer.class));
         return (RasterSymbolizer)symbolizers.get(0);
     }
 
+    // TODO This could maybe be simplified using a StyleVisitor instead
     static RasterSymbolizer getNormalizingdRasterSymbolizer(StyledLayerDescriptor sld,
                                                             double maxValue) {
         var symbolizer = getRasterSymbolizer(sld);
