@@ -142,6 +142,14 @@ Windows) can be used to override the default application properties bundled in t
 [symphony-global.properties](symphony-ws/src/main/resources/symphony-global.properties). In particular, the 
 _api.base_url_ property may want to be overridden to point to a remote server when running the API tests. 
 
+#### 4. Java VM Runtime flags
+
+It is a very good idea to give the system ample heap space to work with, at least a few GBs. Example: `-Xmx10G`
+
+The system assumes that all strings related to area polygons are in UTF encoding. Current JVMs typically defaults to 
+the default native platform encoding. Notably, on Windows that is not UTF and so if running on Windows specifying
+`-Dfile.encoding=UTF-8` may be necessary (that setting is used also when reading data from the datbase).
+
 ### Frontend
 
 In the interest of efficiency the frontend is can be served by a separate frontend server. In the case of Apache 
