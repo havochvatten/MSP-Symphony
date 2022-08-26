@@ -34,22 +34,39 @@ Fields are separated using semicolon.
 
 [//]: # (*TODO* Link to example data)
 
-## Create new baseline
+## Database import
+The first time you import data, create an import schema table. (See [ImportTables.txt](scripts/ImportTables.txt)).
+
+### Create new baseline
 - Run [createNewBaseLineVersion.sql](scripts/CreateNewBaseLineVersion.sql) in your SQL client of choice. Make sure to 
   change the parameters at the top of the file.
 
-## Import metadata
+### Import metadata
 - Run commands in [MetadataImport.txt](scripts/MetadataImport.txt). Make sure to change the filenames following the _FROM_ 
   arguments, and possibly change the _baseLineVersionId_ SQL variable if there are previously imported baselines.
 
-## Import matrix/matrices
+### Import matrix/matrices
 1. See [MatrixImport.txt](scripts/MatrixImport.txt). Change the _FROM_ parameter filename, and perhaps _baseLineVersionId_ and 
    _matrix_name_ SQL variables. 
 
 **N.B**: The matrix import script currently expects that there is always 51 columns per row. If there are less than 50 ecosystem components the matrix files need to be semicolon-padded (yielding 50 semicolons in total per row).
 
 ## Import areas
-0. The first time you import data, create an import schema table. (See [ImportTables.txt](scripts/ImportTables.txt)).
+There are a few different types of areas (polygons) in the system:
+- calculation areas (mainly used to set the 
+geographical domain of a sensitivity matrix)
+- boundary areas (used for limiting the extent of user-defined areas)
+- other generic polygons used for creating scenarios such as marine spatial planning areas, regional 
+  delimitations, nature reserves etc.
+
+Calculation areas are stored in the _calculationarea_ table in database and the latter two in the _nationalareas_ 
+table. The generic areas are further grouped into arbitrary types (whose identifiers listed in a _narea_types_ 
+column).
+
+Areas are grouped together using an ISO3 country code identifer. Areas for several countries can coexist in
+the system, but the active one is selected through the _areas.countrycode_ system property.
+
+### Import procedure
 1. Run commands in Import_area_shape_files.txt for the .shp-files
 2. Run post_fix_county_and_city.sql to remove counties and cities not located by the coast
 3. Run CalculationAreas.sql (Change the matix names to the current n-matrices and k-matrices)
