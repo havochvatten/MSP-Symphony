@@ -90,8 +90,7 @@ npm install -g @angular/cli
 npm install
 ng build
 ```
-The build artifacts will end up in the `frontend/dist` directory. If you are on a more recent Node.js and `npm install` 
-fails you may experiment with its `--legacy-peer-deps` flag.
+The build artifacts will end up in the `frontend/dist` directory.
 
 For frontend development there is also the Angular CLI development server, see the frontend README for more details. 
 
