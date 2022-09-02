@@ -91,7 +91,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>4.3.1.Final</version> <!--We'll probably get whatever Wildfly ships with anyway-->
+            <version>4.3.1.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -234,11 +234,13 @@
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
             <version>${version.jackson}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
             <version>${version.resteasy}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
@@ -385,7 +387,6 @@
             </plugin>
         </plugins>
     </build>
-
     <repositories>
         <repository>
             <id>osgeo</id>
