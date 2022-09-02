@@ -4,7 +4,6 @@ import io.swagger.jaxrs.config.BeanConfig;
 import it.geosolutions.jaiext.JAIExt;
 
 import javax.ws.rs.core.Application;
-import java.util.Set;
 
 @javax.ws.rs.ApplicationPath("service")
 public class SymphonyApplication extends Application {
@@ -22,7 +21,6 @@ public class SymphonyApplication extends Application {
         beanConfig.setResourcePackage("se.havochvatten.symphony.web," +
                 "se.havochvatten.symphony.calculation," +
                 "se.havochvatten.symphony.scenario");
-        beanConfig.setScan(true);
+//        beanConfig.setScan(false);
     }
 }
-
