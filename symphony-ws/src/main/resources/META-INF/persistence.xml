@@ -7,6 +7,7 @@
       <property name="hibernate.hbm2ddl.auto" value="update"/> <!-- N.B: Use "validate" in production -->
       <property name="hibernate.implicit_naming_strategy" value="org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl" />
       <property name="hibernate.types.print.banner" value="false"/>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
     </properties>
   </persistence-unit>
 </persistence>
