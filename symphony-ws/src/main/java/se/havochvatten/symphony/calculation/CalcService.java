@@ -292,7 +292,8 @@ public class CalcService {
         GridCoverage2D coverage = invokeCumulativeImpactOperation(scenario, requestOperation,
             ecoComponents, pressures, matrices, layout, mask,
             requestOperation.equals("RarityAdjustedCumulativeImpact")
-                ? calibrationService.calculateGlobalCommonnessIndices(ecoComponents, scenario.getEcosystemsToInclude())
+                ? calibrationService.calculateGlobalCommonnessIndices(ecoComponents,
+                scenario.getEcosystemsToInclude(), scenario.getBaselineId())
                 : null);
 
         CalculationResult calculation;

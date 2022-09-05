@@ -4,9 +4,7 @@ import it.geosolutions.jaiext.stats.Statistics;
 import org.apache.commons.lang3.time.StopWatch;
 import org.geotools.coverage.grid.GridCoverage2D;
 
-import javax.ejb.EJB;
-import javax.ejb.Startup;
-import javax.ejb.Stateless;
+import javax.ejb.*;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,6 +19,8 @@ import se.havochvatten.symphony.service.DataLayerService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +31,10 @@ import se.havochvatten.symphony.dto.NormalizationType;
 import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.scenario.Scenario;
 
-@Stateless
+import static javax.ejb.ConcurrencyManagementType.BEAN;
+
+@ConcurrencyManagement(BEAN)
+@Singleton
 @Startup
 public class CalibrationService {
     private static final Logger logger = LoggerFactory.getLogger(CalibrationService.class);
@@ -42,8 +45,7 @@ public class CalibrationService {
     @EJB
     DataLayerService dataLayerService;
 
-    @Inject
-    private SymphonyCoverageProcessor processor;
+    private final SymphonyCoverageProcessor processor;
 
     @Inject
     private CalcService calcService;
@@ -51,31 +53,44 @@ public class CalibrationService {
     @Inject
     private NormalizerService normalizationFactory;
 
+    private ConcurrentMap<Integer, double[]> globalIndicesCache = new ConcurrentHashMap();
+
+    public CalibrationService() { this.processor = null; }
+
+    @Inject
+    public CalibrationService(SymphonyCoverageProcessor processor) {
+        this.processor = processor;
+    }
+
     /**
      * Calculate baseline-global rarity indices (or actually its inverse, i.e.
      * commonness.
      * */
-    public double[] calculateGlobalCommonnessIndices(GridCoverage2D ecoComponents, int[] ecosystemBands)
-        throws SymphonyStandardAppException,
-        IOException {
+    public double[] calculateGlobalCommonnessIndices(GridCoverage2D ecoComponents, int[] ecosystemBands,
+                                                     Integer baselineId) {
+        var allIndices = globalIndicesCache.computeIfAbsent(baselineId, id -> {
+            logger.info("Calculating global rarity indices for coverage {}", ecoComponents.getName());
+            var watch = new StopWatch();
+            final var statsOp = processor.getOperation("Stats");
 
-        logger.info("Calculating global rarity indices for coverage {}", ecoComponents.getName());
-        var watch = new StopWatch();
-        final var statsOp = processor.getOperation("Stats");
+            var params = statsOp.getParameters();
+            params.parameter("source").setValue(ecoComponents);
+            params.parameter("bands").setValue(
+                IntStream.range(0, ecoComponents.getNumSampleDimensions()).toArray());
+            params.parameter("stats").setValue(new Statistics.StatsType[]{Statistics.StatsType.SUM});
+            watch.start();
+            var result = (GridCoverage2D) processor.doOperation(params);
+            var bandsStats = (Statistics[][]) result.getProperty("JAI-EXT.stats");
+            watch.stop();
 
-        var params = statsOp.getParameters();
-        params.parameter("source").setValue(ecoComponents);
-        params.parameter("bands").setValue(ecosystemBands);
-        params.parameter("stats").setValue(new Statistics.StatsType[]{Statistics.StatsType.SUM});
-        watch.start();
-        var result = (GridCoverage2D) processor.doOperation(params);
-        var bandsStats = (Statistics[][]) result.getProperty("JAI-EXT.stats");
-        watch.stop();
+            logger.info("DONE. ({} ms)", watch.getTime());
+            return Arrays.stream(bandsStats)
+                .mapToDouble(stats -> (double)stats[0].getResult())
+                .toArray();
+        });
 
-        logger.info("DONE. ({} ms)", watch.getTime());
-        return Arrays.stream(bandsStats)
-            .mapToDouble(stats -> (double)stats[0].getResult())
-            .toArray();
+        return Arrays.stream(ecosystemBands).mapToDouble(bandIndex -> allIndices[bandIndex]).toArray();
+
     }
 
     /**
@@ -91,7 +106,7 @@ public class CalibrationService {
             .getResultList();
 
         var bandNumbers = IntStream.range(0, ecoComponents.getNumSampleDimensions()).toArray();
-        var values = calculateGlobalCommonnessIndices(ecoComponents, bandNumbers);
+        var values = calculateGlobalCommonnessIndices(ecoComponents, bandNumbers, baseline.getId());
 
         return IntStream.range(0, values.length).boxed()
             .collect(Collectors.toMap(bandTitles::get, i -> Double.valueOf(values[i])));
