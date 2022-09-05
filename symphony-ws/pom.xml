@@ -12,11 +12,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <version.jakartaee-api>8.0.0</version.jakartaee-api>
         <version.mockito>2.0.2-beta</version.mockito>
         <version.geotools>26.5</version.geotools>
-        <version.rest.assured>4.2.0</version.rest.assured>
+        <version.rest.assured>4.5.1</version.rest.assured>
         <version.swagger>1.5.13</version.swagger>
         <version.postgresql-jdbc-driver>42.5.0</version.postgresql-jdbc-driver>
         <version.hibernate>4.3.1.Final</version.hibernate>
@@ -73,15 +73,21 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>${version.mockito}</version>
+            <artifactId>mockito-core</artifactId>
+            <version>4.7.0</version>
             <scope>test</scope>
-            <exclusions>
+<!--            <exclusions>
                 <exclusion>
                     <groupId>org.hamcrest</groupId>
                     <artifactId>hamcrest-core</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions>-->
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <version>2.2</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -362,7 +368,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>
-                    <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+                    <argLine>-Xmx2G</argLine>
                     <!-- Run all tests by default -->
                 </configuration>
             </plugin>
@@ -371,8 +377,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
             </plugin>
             <plugin>
