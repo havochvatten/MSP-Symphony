@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.servlet.http.HttpServletRequest;
@@ -53,7 +54,7 @@ public class CalibrationService {
     @Inject
     private NormalizerService normalizationFactory;
 
-    private ConcurrentMap<Integer, double[]> globalIndicesCache = new ConcurrentHashMap();
+    private ConcurrentMap<Integer, double[]> globalIndicesCache = new ConcurrentSkipListMap<>();
 
     public CalibrationService() { this.processor = null; }
 

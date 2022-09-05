@@ -5,6 +5,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.util.factory.Hints;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -17,16 +18,16 @@ import static org.junit.Assert.assertEquals;
 
 public class CalibrationServiceTest {
 
-    CalibrationService service;
+    static CalibrationService service;
 
-    GridCoverage2D ecoComponents;
+    static GridCoverage2D ecoComponents;
 
     static {
         JAIExt.initJAIEXT();
     }
 
-    @Before
-    public void setup() throws IOException {
+    @BeforeClass
+    public static void setup() throws IOException {
         Hints hints = null;
         ecoComponents = new GeoTiffReader(new File(CalibrationServiceTest.class.getClassLoader().
             getResource("SGU-2019-multiband/ecocomponents-tiled-packbits.tif").getFile()), hints).read(null);
