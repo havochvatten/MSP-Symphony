@@ -48,6 +48,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   // Ambitiously we would query the backend for these
   availableOperations = ['CumulativeImpact', 'RarityAdjustedCumulativeImpact'];
   operation = new FormControl('', Validators.required);
+  operationParams = 'GLOBAL'; // TODO: Use FormGroup
 
   showIncludeCoastCheckbox = environment.showIncludeCoastCheckbox;
   associatedCoastalArea?: AreaTypeMatrixMapping;
@@ -123,8 +124,13 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
               (this.scenario.matrix!.areaTypes ?? [])
           }
         },
-        this.operation.value);
+        this.operation.value,
+        this.operationParams);
     });
+  }
+
+  onCheckRarityIndicesDomain(domain: string) {
+    this.operationParams = domain;
   }
 
   onCheckIncludeCoast(checked: boolean) {

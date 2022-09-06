@@ -75,6 +75,17 @@ $buttons-row-gap: 1rem;
         & ::ng-deep hav-select {
           font-size: 1.5rem;
         }
+
+        hav-radio-button {
+          margin: 0.4rem 0;
+        }
+
+        &::ng-deep hav-radio-button {
+          label {
+            padding-left: 1rem;
+            font-size: 1.6rem;
+          }
+        }
       }
 
       .scenario-changes {

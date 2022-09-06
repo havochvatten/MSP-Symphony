@@ -145,8 +145,9 @@ public class CalibrationService {
             .collect(Collectors.toMap(bandTitles::get, i -> Double.valueOf(values[i])));
     }
 
-    public double calcPercentileNormalizationValue(HttpServletRequest req, Scenario scenario) throws FactoryException, SymphonyStandardAppException, TransformException, IOException {
-        CalculationResult result = calcService.calculateScenarioImpact(req, scenario);
+    public double calcPercentileNormalizationValue(HttpServletRequest req, Scenario scenario, String operation)
+        throws FactoryException, SymphonyStandardAppException, TransformException, IOException {
+        CalculationResult result = calcService.calculateScenarioImpact(req, scenario, operation, null);
         var coverage = result.getCoverage();
 
         PercentileNormalizer normalizer = (PercentileNormalizer) normalizationFactory.getNormalizer(NormalizationType.PERCENTILE);

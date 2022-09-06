@@ -26,7 +26,12 @@
             "operation": {
                 "title": "Algorithm",
                 "CumulativeImpact": "Cumulative impact ",
-                "RarityAdjustedCumulativeImpact": "Rarity-adjusted cumulative impact"
+                "RarityAdjustedCumulativeImpact": "Rarity-adjusted cumulative impact",
+                "rarity-adjusted-options": {
+                    "description": "Calculate rarity indices based on:",
+                    "global": "Whole grid extent",
+                    "local": "Calculated area extent"
+                }
             },
             "band-pressures": {
                 "intensity": "Edit intensity",

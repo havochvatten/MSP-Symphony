@@ -87,7 +87,7 @@ public class CalibrationREST {
         scenario.setNormalization(new NormalizationOptions(NormalizationType.PERCENTILE));
 
         var percentileValue = calibrationService.calcPercentileNormalizationValue(req,
-            scenario);
+            scenario, "CumulativeImpact");
         LOG.info("### Computed PERCENTILE normalization value={}", percentileValue);
 
         caService.updateMaximumValue(calculationAreaId, percentileValue);

@@ -6,12 +6,14 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.processing.Operations;
 import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.image.ImageWorker;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.factory.Hints;
@@ -62,6 +64,13 @@ import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+//enum CumulativeImpactOperations {
+//            case "CumulativeImpact":
+//                case "LocalRarityAdjustedCumulativeImpact":
+//                case "GlobalRarityAdjustedCumulativeImpact":
+//
+//}
 
 /**
  * Calculation service
@@ -224,7 +233,8 @@ public class CalcService {
      *
      * @return coverage in input coordinate system (EPSG 3035 in the Swedish case)
      */
-    public CalculationResult calculateScenarioImpact(HttpServletRequest req, Scenario scenario)
+    public CalculationResult calculateScenarioImpact(HttpServletRequest req, Scenario scenario,
+                                                     String operationName, String operationOptions)
             throws FactoryException, TransformException, IOException, SymphonyStandardAppException {
         MatrixResponse matrixResponse = calculationAreaService.getAreaCalcMatrices(scenario);
 
@@ -283,25 +293,23 @@ public class CalcService {
 //        Map<String, Object> props = new HashMap<>();
 //        CoverageUtilities.setNoDataProperty(props, new NoDataContainer(CalcEngine.NO_DATA)); // TODO remove?
 
-        String requestOperation = req.getHeader("SYM-Operation");
-        if (!(requestOperation.equals("RarityAdjustedCumulativeImpact") || requestOperation.equals(
-            "CumulativeImpact"))) {
-            throw new RuntimeException("Unsupported operation: "+requestOperation);
-        }
-
-        GridCoverage2D coverage = invokeCumulativeImpactOperation(scenario, requestOperation,
+        GridCoverage2D coverage = invokeCumulativeImpactOperation(scenario, operationName,
             ecoComponents, pressures, matrices, layout, mask,
-            requestOperation.equals("RarityAdjustedCumulativeImpact")
-                ? calibrationService.calculateGlobalCommonnessIndices(ecoComponents,
-                scenario.getEcosystemsToInclude(), scenario.getBaselineId())
-                : null);
+            operationName.equals("RarityAdjustedCumulativeImpact") ?
+                switch (operationOptions) {
+                    case "GLOBAL" -> calibrationService.calculateGlobalCommonnessIndices(ecoComponents,
+                        scenario.getEcosystemsToInclude(), scenario.getBaselineId());
+                    case "LOCAL" -> calibrationService.calculateLocalCommonnessIndices(ecoComponents,
+                        scenario.getEcosystemsToInclude(), targetRoi);
+                    default -> null;
+                } :
+                null);
 
-        CalculationResult calculation;
-        if (scenario.getNormalization().type == NormalizationType.PERCENTILE)
-            calculation = new CalculationResult(coverage);
-        else
-            calculation = persistCalculation(coverage, matrixResponse.normalizationValue,
-                scenario, requestOperation, baseline);
+        CalculationResult calculation = switch (scenario.getNormalization().type) {
+            case PERCENTILE -> new CalculationResult(coverage);
+            default -> persistCalculation(coverage, matrixResponse.normalizationValue,
+                scenario, operationName, baseline);
+        };
 
         // Cache last calculation in session to speed up subsequent REST call to retrieve result image
         req.getSession().setAttribute("last-calculation", calculation);

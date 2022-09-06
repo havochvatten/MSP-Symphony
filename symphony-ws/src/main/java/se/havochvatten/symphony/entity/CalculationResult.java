@@ -67,6 +67,13 @@ public class CalculationResult implements Serializable {
     @Column(name = "cares_op")
     private String operationName;
 
+    // TODO: Do like Scenario.NormalizationOptions
+//    @Basic(optional = false)
+//    @NotNull
+//    @Size(min = 1, max = 255)
+//    @Column(name = "cares_op")
+//    private String operationOptions; // or perhaps as json object?
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)

@@ -26,8 +26,12 @@
             "operation": {
                 "title": "Algoritm",
                 "CumulativeImpact": "Kumulativ belastning",
-                "RarityAdjustedCumulativeImpact": "Raritets-justerad kumulativ belastning"
-
+                "RarityAdjustedCumulativeImpact": "Raritetsjusterad kumulativ belastning",
+                "rarity-adjusted-options": {
+                    "description": "Beräkna raritetsindex baserat på:",
+                    "global": "Hela datarastrets utsträckning",
+                    "local": "Valt områdes utsträckning"
+                }
             },
             "band-pressures": {
                 "intensity": "Ändring av förekomst",

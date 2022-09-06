@@ -65,12 +65,15 @@ public class CalculationREST {
     private ScenarioService scenarioService;
 
     @POST
-    @Path("/sum")
+    @Path("/sum/{operation}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
     @ApiOperation(value = "Computes cumulative impact sum")
-    public CalculationResultSlice sum(@Context HttpServletRequest req, ScenarioDto dto)
+    public CalculationResultSlice sum(@Context HttpServletRequest req,
+                                      @PathParam("operation") String operation,
+                                      @QueryParam("params") String params,
+                                      ScenarioDto dto)
             throws Exception {
         if (dto == null)
             throw new BadRequestException();
@@ -83,8 +86,9 @@ public class CalculationREST {
 
         var watch = new StopWatch();
         watch.start();
-        logger.info("Performing "+req.getHeader("SYM-Operation")+" calculation for " + dto.name + " ...");
-        CalculationResult result = calcService.calculateScenarioImpact(req, new Scenario(dto, calcService));
+        logger.info("Performing "+operation+" calculation for " + dto.name + "...");
+        CalculationResult result = calcService.calculateScenarioImpact(req, new Scenario(dto, calcService),
+            operation, params);
         watch.stop();
         logger.log(Level.INFO, "DONE ({0} ms)", watch.getTime());
 
