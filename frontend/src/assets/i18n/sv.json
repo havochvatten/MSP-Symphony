@@ -58,8 +58,8 @@
                 }
             },
             "normalization": {
-                "title": "Normalisering",
-                "description": "Normalisera resultat med avseende på",
+                "title": "Färgkodning av resultat",
+                "description": "Sätt maximalt värde baserat på",
                 "area": "Maximalt värde i valt område",
                 "domain": "95-percentilvärde i havsplaneområde",
                 "custom": "Egendefinierat värde",
