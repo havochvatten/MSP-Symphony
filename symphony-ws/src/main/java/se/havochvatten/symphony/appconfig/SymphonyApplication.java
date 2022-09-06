@@ -21,6 +21,6 @@ public class SymphonyApplication extends Application {
         beanConfig.setResourcePackage("se.havochvatten.symphony.web," +
                 "se.havochvatten.symphony.calculation," +
                 "se.havochvatten.symphony.scenario");
-//        beanConfig.setScan(false);
+//        beanConfig.setScan(true);
     }
 }

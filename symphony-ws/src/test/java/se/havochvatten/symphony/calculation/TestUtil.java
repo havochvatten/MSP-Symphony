@@ -14,18 +14,25 @@ import static org.junit.Assert.fail;
 
 public class TestUtil {
     /**
+     * @return JTS Geometry
+     */
+    public static Geometry makeROI(Coordinate[] coords) {
+        GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
+
+        // Use WKTReader reader = new WKTReader( geometryFactory )? (https://docs.geotools
+        // .org/stable/userguide/library/jts/geometry.html)
+        LinearRing ring = geometryFactory.createLinearRing(coords);
+        return geometryFactory.createPolygon(ring, null);
+    }
+
+    /**
+     * @param crs CRS of coords
      * @return Geometry in WGS84 format
      */
     public static Geometry makeROI(Coordinate[] coords, CoordinateReferenceSystem crs) {
         try {
-            GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
-
-            // Use WKTReader reader = new WKTReader( geometryFactory )? (https://docs.geotools
-            // .org/stable/userguide/library/jts/geometry.html)
-            LinearRing ring = geometryFactory.createLinearRing(coords);
-            var polygon = geometryFactory.createPolygon(ring, null);
             var transform = CRS.findMathTransform(crs, DefaultGeographicCRS.WGS84);
-
+            var polygon = makeROI(coords);
             return JTS.transform(polygon, transform);
         } catch (Exception e) {
             fail();
