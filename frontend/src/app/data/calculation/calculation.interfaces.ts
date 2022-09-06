@@ -17,6 +17,7 @@ export interface State {
 export interface Report {
   baselineName: string;
   operationName: string;
+  operationOptions: OperationParams;
   name: string;
   total: number;
   average: number;

@@ -12,8 +12,6 @@ import { MetadataSelectors } from "@data/metadata";
 import { Observable, OperatorFunction, Subscription } from "rxjs";
 import { Store } from "@ngrx/store";
 import { environment } from "@src/environments/environment";
-import * as Normalization
-  from "@src/app/map-view/scenario/scenario-detail/normalization-selection/normalization-selection.component";
 import { State } from "@src/app/app-reducer";
 import { CalculationService, NormalizationOptions } from "@data/calculation/calculation.service";
 import { Band } from "@data/metadata/metadata.interfaces";

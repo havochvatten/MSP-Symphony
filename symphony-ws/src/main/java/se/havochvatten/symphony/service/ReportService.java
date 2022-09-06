@@ -25,10 +25,7 @@ import java.awt.image.Raster;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.function.DoublePredicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -116,7 +113,8 @@ public class ReportService {
 
         report.baselineName = calc.getBaselineVersion().getName();
         report.operationName = calc.getOperationName();
-        report.operationOptions = calc.getOperationOptions();
+        report.operationOptions = calc.getOperationOptions() != null ?
+            calc.getOperationOptions() : Collections.emptyMap();
         report.name = calc.getCalculationName();
         // Does not sum to exactly 100% for some reason? I.e. assert(getComponentTotals(...) == stats
         // .getSum()) not always true. Tolerance?

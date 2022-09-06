@@ -25,12 +25,20 @@
             "title": "Scenarios",
             "operation": {
                 "title": "Algorithm",
-                "CumulativeImpact": "Cumulative impact ",
-                "RarityAdjustedCumulativeImpact": "Rarity-adjusted cumulative impact",
-                "rarity-adjusted-options": {
-                    "description": "Calculate rarity indices based on:",
-                    "global": "Whole grid extent",
-                    "local": "Calculated area extent"
+                "CumulativeImpact": {
+                    "title": "Cumulative impact"
+                },
+                "RarityAdjustedCumulativeImpact": {
+                    "title": "Rarity-adjusted cumulative impact",
+                    "options": {
+                        "domain": {
+                            "title": "Rarity index domain",
+                            "description": "Calculate rarity indices based on:",
+                            "GLOBAL": "Data grid extent",
+                            "LOCAL": "Calculated area extent"
+                        }
+
+                    }
                 }
             },
             "band-pressures": {
@@ -62,7 +70,7 @@
                 }
             },
             "normalization": {
-                "title": "Result Colormapping",
+                "title": "Result colormap",
                 "description": "Set maximum value based on",
                 "area": "Maximum value in computed area",
                 "domain": "Maximum value in MSP area",
@@ -70,7 +78,7 @@
                 "custom-value": "Value"
             },
             "changes": {
-                "title": "Scenario Changes",
+                "title": "Scenario changes",
                 "no-changes": "No scenario changes",
                 "make-changes-hint": "Select an area and make changes in the Ecosystems Components or Pressures tabs.",
                 "clear-change": "Clear change",
@@ -252,6 +260,7 @@
             "calculated-area": "Calculated area",
             "km2": "km²",
             "normalization": {
+                "title": "Colormap max value",
                 "domain": "95th percentile",
                 "area": "Maximum value in area",
                 "custom": "User-defined value",
@@ -296,7 +305,7 @@
         "description": "Calculations of the cumulative environmental impact is made using the Swedish Agency for Marine and Water Management's application Symphony.",
         "more-info": "For more information about Symphony please visit ",
         "link": "https://www.havochvatten.se/en/swam/eu--international/marine-spatial-planning/symphony---a-tool-for-ecosystem-based-marine-spatial-planning.html",
-        "fetching-report": "Fetching report...",
+        "fetching-report": "Fetching report",
         "error-message": "An error occurred. There is no report to show now. Please check options and try a calculation again."
     },
     "hav-components": {
