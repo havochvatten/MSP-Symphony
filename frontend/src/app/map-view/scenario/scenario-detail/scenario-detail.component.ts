@@ -28,6 +28,7 @@ import {
 } from "@src/app/map-view/scenario/scenario-detail/delete-scenario-confirmation-dialog/delete-scenario-confirmation-dialog.component";
 import { Feature } from "geojson";
 import { FormControl, Validators } from "@angular/forms";
+import { OperationParams } from "@data/calculation/calculation.interfaces";
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 
@@ -48,13 +49,14 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   // Ambitiously we would query the backend for these
   availableOperations = ['CumulativeImpact', 'RarityAdjustedCumulativeImpact'];
   operation = new FormControl('', Validators.required);
-  operationParams = 'GLOBAL'; // TODO: Use FormGroup
+  operationParams: OperationParams = {
+    domain: 'GLOBAL'
+  }; // TODO: Use FormGroup
 
   showIncludeCoastCheckbox = environment.showIncludeCoastCheckbox;
   associatedCoastalArea?: AreaTypeMatrixMapping;
 
   areaCoastMatrices?: AreaTypeRef; // AreaMatrixMapping[] = [];
-  normalizationOpts = Normalization.DEFAULT_OPTIONS;
 
   constructor(
     private store: Store<State>,
@@ -130,7 +132,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   }
 
   onCheckRarityIndicesDomain(domain: string) {
-    this.operationParams = domain;
+    this.operationParams = { domain };
   }
 
   onCheckIncludeCoast(checked: boolean) {

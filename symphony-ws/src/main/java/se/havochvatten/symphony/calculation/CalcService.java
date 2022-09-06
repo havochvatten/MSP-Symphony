@@ -6,14 +6,12 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.coverage.processing.Operations;
 import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.image.ImageWorker;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.factory.Hints;
@@ -57,10 +55,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -234,7 +230,7 @@ public class CalcService {
      * @return coverage in input coordinate system (EPSG 3035 in the Swedish case)
      */
     public CalculationResult calculateScenarioImpact(HttpServletRequest req, Scenario scenario,
-                                                     String operationName, String operationOptions)
+                                                     String operationName, Map<String, String> operationOptions)
             throws FactoryException, TransformException, IOException, SymphonyStandardAppException {
         MatrixResponse matrixResponse = calculationAreaService.getAreaCalcMatrices(scenario);
 
@@ -296,7 +292,7 @@ public class CalcService {
         GridCoverage2D coverage = invokeCumulativeImpactOperation(scenario, operationName,
             ecoComponents, pressures, matrices, layout, mask,
             operationName.equals("RarityAdjustedCumulativeImpact") ?
-                switch (operationOptions) {
+                switch (operationOptions.get("domain")) {
                     case "GLOBAL" -> calibrationService.calculateGlobalCommonnessIndices(ecoComponents,
                         scenario.getEcosystemsToInclude(), scenario.getBaselineId());
                     case "LOCAL" -> calibrationService.calculateLocalCommonnessIndices(ecoComponents,
@@ -308,7 +304,7 @@ public class CalcService {
         CalculationResult calculation = switch (scenario.getNormalization().type) {
             case PERCENTILE -> new CalculationResult(coverage);
             default -> persistCalculation(coverage, matrixResponse.normalizationValue,
-                scenario, operationName, baseline);
+                scenario, operationName, operationOptions, baseline);
         };
 
         // Cache last calculation in session to speed up subsequent REST call to retrieve result image
@@ -398,6 +394,7 @@ public class CalcService {
                                                 double normalizationValue,
                                                 Scenario scenario,
                                                 String operation,
+                                                Map<String, String> operationOptions,
                                                 BaselineVersion baselineVersion)
         throws IOException, SymphonyStandardAppException {
         var calculation = new CalculationResult(result);
@@ -419,6 +416,7 @@ public class CalcService {
         calculation.setImpactMatrix(impactMatrix);
         calculation.setBaselineVersion(baselineVersion);
         calculation.setOperationName(operation);
+        calculation.setOperationOptions(operationOptions);
 
         em.persist(calculation);
         em.flush(); // to have id generated
@@ -463,7 +461,7 @@ public class CalcService {
         if (!previousNames.contains(tentativeName))
             return tentativeName;
         else
-            return findSequentialUniqueName(scenarioName, previousNames, counter + 1);
+            return findSequentialUniqueName(scenarioName, previousNames, counter+1);
     }
 
     private String makeNumberedCalculationName(String name, int n) {

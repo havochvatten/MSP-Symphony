@@ -25,10 +25,7 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -40,6 +37,7 @@ import java.util.logging.Logger;
 
 import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.status;
+import static se.havochvatten.symphony.web.WebUtil.multiValuedToSingleValuedMap;
 
 /**
  * Calculation REST API
@@ -71,8 +69,8 @@ public class CalculationREST {
     @RolesAllowed("GRP_SYMPHONY")
     @ApiOperation(value = "Computes cumulative impact sum")
     public CalculationResultSlice sum(@Context HttpServletRequest req,
+                                      @Context UriInfo uriInfo,
                                       @PathParam("operation") String operation,
-                                      @QueryParam("params") String params,
                                       ScenarioDto dto)
             throws Exception {
         if (dto == null)
@@ -87,8 +85,9 @@ public class CalculationREST {
         var watch = new StopWatch();
         watch.start();
         logger.info("Performing "+operation+" calculation for " + dto.name + "...");
+        var operationParams = uriInfo.getQueryParameters();
         CalculationResult result = calcService.calculateScenarioImpact(req, new Scenario(dto, calcService),
-            operation, params);
+            operation, multiValuedToSingleValuedMap(operationParams));
         watch.stop();
         logger.log(Level.INFO, "DONE ({0} ms)", watch.getTime());
 

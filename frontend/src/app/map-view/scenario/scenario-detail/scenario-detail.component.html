@@ -22,11 +22,11 @@
       <article *ngIf="operation.value == 'RarityAdjustedCumulativeImpact'">
         <p>{{ 'map.editor.operation.rarity-adjusted-options.description' | translate}}</p>
         <hav-radio-button [label]="'map.editor.operation.rarity-adjusted-options.global' | translate"
-                          value="GLOBAL" [checked]="operationParams == 'GLOBAL'"
+                          value="GLOBAL" [checked]="operationParams.domain == 'GLOBAL'"
                           (check)="onCheckRarityIndicesDomain('GLOBAL')" radioButtonSize="medium">
         </hav-radio-button>
         <hav-radio-button [label]="'map.editor.operation.rarity-adjusted-options.local' | translate"
-                          value="LOCAL" [checked]="operationParams == 'LOCAL'"
+                          value="LOCAL" [checked]="operationParams.domain == 'LOCAL'"
                           (check)="onCheckRarityIndicesDomain('LOCAL')" radioButtonSize="medium">
         </hav-radio-button>
       </article>

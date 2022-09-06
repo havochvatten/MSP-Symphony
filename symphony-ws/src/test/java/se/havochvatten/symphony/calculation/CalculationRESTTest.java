@@ -30,13 +30,12 @@ public class CalculationRESTTest extends RESTTest {
     static ExtractableResponse makeSuccessfulCalcRequest(ScenarioDto scenario) throws JsonProcessingException {
         return given().
                     header("Content-Type", "application/json").
-                    header("SYM-Operation", "CumulativeImpact").
                     auth().
                     preemptive().
                     basic(getUsername(), getPassword()).
                 when().
                     body(getMapper().writeValueAsString(scenario)).
-                    post(endpoint("/calculation/sum")). // FIXME scenario id
+                    post(endpoint("/calculation/sum/CumulativeImpact")). // FIXME scenario id
                 then().
                     statusCode(200).
                     extract();
@@ -150,7 +149,7 @@ public class CalculationRESTTest extends RESTTest {
                 basic(getUsername(), getPassword()).
                 when().
                 // N.B: No post body!
-                post(endpoint("/calculation/sum"));
+                post(endpoint("/calculation/sum/MyBogusOp"));
         assertEquals(400, response.getStatusCode());
     }
 

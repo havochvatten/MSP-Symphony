@@ -97,7 +97,7 @@
         <dependency>
             <groupId>com.vladmihalcea</groupId>
             <artifactId>hibernate-types-52</artifactId><!-- Wildfly 19 ships with Hibernate 5.3-->
-            <version>2.9.5</version>
+            <version>2.19.0</version>
         </dependency>
         <!--<dependency>
             <groupId>org.hibernate</groupId>

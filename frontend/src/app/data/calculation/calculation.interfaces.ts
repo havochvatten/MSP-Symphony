@@ -88,3 +88,7 @@ export interface Legend {
 export type LegendState = {
   [key in LegendType]: Legend | undefined;
 };
+
+export interface OperationParams {
+  [param: string]: string;
+}

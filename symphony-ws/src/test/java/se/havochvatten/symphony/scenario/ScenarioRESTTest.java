@@ -98,13 +98,12 @@ public class ScenarioRESTTest extends RESTTest {
         Response response =
                 given().
                         header("Content-Type", "application/json").
-                        header("SYM-Operation", "CumulativeImpact").
                         auth().
                         preemptive().
                         basic(getUsername(), getPassword()).
                         when().
                         body(s).
-                        post(endpoint("/calculation/sum"));
+                        post(endpoint("/calculation/sum/CumulativeImpact"));
         assertEquals(200, response.statusCode());
         return response.as(CalculationResultSlice.class);
     }
