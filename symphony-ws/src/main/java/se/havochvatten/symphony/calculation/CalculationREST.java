@@ -3,7 +3,6 @@ package se.havochvatten.symphony.calculation;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.time.StopWatch;
-import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -20,14 +19,12 @@ import se.havochvatten.symphony.service.PropertiesService;
 import se.havochvatten.symphony.web.WebUtil;
 
 import javax.annotation.security.RolesAllowed;
-import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.awt.image.RenderedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
@@ -264,7 +261,7 @@ public class CalculationREST {
     @RolesAllowed("GRP_SYMPHONY")
     @ApiOperation(value = "Returns a list of calculation matching the ROI of specified calculation")
     public List<CalculationResultSlice> getMatchingCalculations(@Context HttpServletRequest req,
-                                                                @PathParam("id") int id) throws IOException {
+                                                                @PathParam("id") int id) {
         var base = calcService.getCalculation(id).orElseThrow(NotFoundException::new);
         verifyAccessToCalculation(base, req.getUserPrincipal());
 
@@ -276,16 +273,11 @@ public class CalculationREST {
     @Produces("image/png")
     @RolesAllowed("GRP_SYMPHONY_ADMIN")
     @ApiOperation(value = "Returns calculation mask for the last calculation (for debugging purposes)")
-    public Response getMask(@Context HttpServletRequest req) throws IOException {
+    public Response getMask(@Context HttpServletRequest req) {
         var session = req.getSession(false);
         if (session == null)
             return Response.status(Response.Status.NO_CONTENT).build();
-
-        var mask = (MatrixMask) session.getAttribute("mask");
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(mask.getImage(), "png", baos);
-
-        return ok(baos.toByteArray(), "image/png").build();
+        return ok(session.getAttribute("mask"), "image/png").build();
     }
 
     public static boolean hasAccess(CalculationResult calc, Principal user) {

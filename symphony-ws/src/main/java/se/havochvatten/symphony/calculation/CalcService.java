@@ -285,8 +285,9 @@ public class CalcService {
         var targetGridGeometry = getTargetGridGeometry(targetGridEnvelope, targetEnv);
         MatrixMask mask = new MatrixMask(targetGridGeometry.toCanonical(), layout,
                 matrixResponse.areaMatrixResponses, CalcUtil.createMapFromMatrixIdToIndex(matrices));
-        if (SAVE_MASK_IN_SESSION)
-            req.getSession().setAttribute("mask", mask); // Just store image instead?
+        if (SAVE_MASK_IN_SESSION) {
+            req.getSession().setAttribute("mask", mask.getAsPNG());
+        }
 
 //        Map<String, Object> props = new HashMap<>();
 //        CoverageUtilities.setNoDataProperty(props, new NoDataContainer(CalcEngine.NO_DATA)); // TODO remove?

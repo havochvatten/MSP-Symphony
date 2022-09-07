@@ -9,12 +9,14 @@ import org.locationtech.jts.geom.Geometry;
 import org.opengis.referencing.FactoryException;
 import se.havochvatten.symphony.dto.AreaMatrixResponse;
 
+import javax.imageio.ImageIO;
 import javax.media.jai.ImageLayout;
 import javax.persistence.Transient;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
-import java.awt.image.RenderedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -83,9 +85,11 @@ public class MatrixMask { // TODO: Make serializable for distributed session man
         });
     }
 
-    /** @return the mask as a bitmap, suitable for saving and visualization */
-    public RenderedImage getImage() {
-        return image; //new PlanarImage(layout, new Vector(List.of(image)), null);
+    /** @return the mask as a PNG, suitable for saving and visualization */
+    public byte[] getAsPNG() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(image, "png", baos);
+        return baos.toByteArray();
     }
 
     /** @return the mask as a raster, suitable for further calculation */

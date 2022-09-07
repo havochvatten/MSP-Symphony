@@ -181,7 +181,6 @@ public class CalculationRESTTest extends RESTTest {
     }
 
     @Test
-    @Ignore // Only passes if CalcService.SAVE_MASK_IN_SESSION == true
     public void testGetMask() {
         given().
                 cookie(SESSION_COOKIE_NAME, response.cookie(SESSION_COOKIE_NAME)).
