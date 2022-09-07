@@ -35,8 +35,6 @@ class Link {
 }
 
 public class SankeyChart {
-    static double SANKEY_LINK_WEIGHT_TOLERANCE = 0.001;
-
     private final Map<String, List> chartData;
 
     static int pressureNodeId(int b) {
@@ -47,7 +45,8 @@ public class SankeyChart {
         return pLen + e; // TODO do something more clever?
     }
 
-    public SankeyChart(int[] ecosystemServices, int[] pressures, double[][] impactMatrix, double total)
+    public SankeyChart(int[] ecosystemServices, int[] pressures, double[][] impactMatrix, double total,
+                       final double LINK_WEIGHT_TOLERANCE)
     {
         int pLen = impactMatrix.length, esLen = impactMatrix[0].length;
 
@@ -60,7 +59,7 @@ public class SankeyChart {
                 IntStream.range(0, esLen).mapToObj(e ->
                         new Link(pressureNodeId(b), ecocomponentNodeId(e, pLen), impactMatrix[b][e] / total)));
         List<Link> links = linksStream.flatMap(Function.identity()).
-                filter(link -> link.value > SANKEY_LINK_WEIGHT_TOLERANCE).
+                filter(link -> link.value > LINK_WEIGHT_TOLERANCE).
                 collect(Collectors.toList());
 
         chartData = Map.of(
