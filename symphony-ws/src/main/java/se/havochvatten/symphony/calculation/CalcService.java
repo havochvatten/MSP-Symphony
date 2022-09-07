@@ -256,8 +256,8 @@ public class CalcService {
                         pressures,
                         changeFeatures
                 );
-                ecoComponents = scenarioComponents.getLeft();
-                pressures = scenarioComponents.getRight();
+                ecoComponents = scenarioComponents.get(LayerType.ECOSYSTEM);
+                pressures = scenarioComponents.get(LayerType.PRESSURE);
             }
         }
 
@@ -314,6 +314,7 @@ public class CalcService {
                         LOG.warn("Removing band {} since value is below commonness threshold {}", i, COMMONNESS_THRESHOLD);
                     return keep;
                 }).toArray();
+            // TODO partition
             var nonZeroIndices = Arrays.stream(indices).filter(indexThresholdPredicate).toArray();
             // TODO report this information to the user and show in a dialog on frontend?
 

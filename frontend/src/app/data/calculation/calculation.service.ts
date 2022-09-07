@@ -64,6 +64,7 @@ export class CalculationService implements OnDestroy {
           }));
           // TODO hide areas?
         });
+        // TODO: Add popup about possible skipped layers in calculation?
       },
       error(err) {
         // FIXME set calculating to false for the correct area after areas rework

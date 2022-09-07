@@ -2,7 +2,6 @@ package se.havochvatten.symphony.scenario;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.tuple.Pair;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.feature.FeatureCollection;
@@ -104,17 +103,17 @@ public class ScenarioService {
      * Take a continuation function and pass params to it instead of returning pair since Java lack
      * destructuring?
      **/
-    public Pair<GridCoverage2D, GridCoverage2D> applyScenario(GridCoverage2D ecosystems,
-                                                              GridCoverage2D pressures,
-                                                              FeatureCollection changes) throws FactoryException {
+    public Map<LayerType, GridCoverage2D> applyScenario(GridCoverage2D ecosystems,
+                                                        GridCoverage2D pressures,
+                                                        FeatureCollection changes) throws FactoryException {
         // We assume GeoJSON is in WGS84 and that ecosystem and pressures coverages are of the same CRS
         assert (ecosystems.getCoordinateReferenceSystem().equals(pressures.getCoordinateReferenceSystem()));
         MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
                 ecosystems.getCoordinateReferenceSystem());
 
-        return Pair.of(
-                apply(ecosystems, ecosystems.getGridGeometry(), changes, LayerType.ECOSYSTEM, WGS84toTarget),
-                apply(pressures, pressures.getGridGeometry(), changes, LayerType.PRESSURE, WGS84toTarget)
+        return Map.of(
+            LayerType.ECOSYSTEM, apply(ecosystems, ecosystems.getGridGeometry(), changes, LayerType.ECOSYSTEM, WGS84toTarget),
+            LayerType.PRESSURE, apply(pressures, pressures.getGridGeometry(), changes, LayerType.PRESSURE, WGS84toTarget)
         );
     }
 

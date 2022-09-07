@@ -12,6 +12,7 @@ public class CalculationResultSlice {
     public int id;
     public String name; // params.areaName by default
     public long timestamp;
+//    public int[] skippedEcosystemBands;
     // add optional param?
 
     public CalculationResultSlice(CalculationResult res) {

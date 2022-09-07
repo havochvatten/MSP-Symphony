@@ -88,6 +88,10 @@ public class CalculationREST {
         watch.stop();
         logger.log(Level.INFO, "DONE ({0} ms)", watch.getTime());
 
+        // TODO: Check for asymmetric difference in ecosystem layers in scenariodto and result, and report as skipped
+        //  layers to
+        //  frontend
+
         return new CalculationResultSlice(result);
     }
 
