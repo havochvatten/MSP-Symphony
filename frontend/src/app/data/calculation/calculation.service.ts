@@ -112,6 +112,7 @@ export class CalculationService implements OnDestroy {
           }
         },
         error(err: HttpErrorResponse) {
+          that.store.dispatch(CalculationActions.calculationFailed());
           reject('Error fetching result image at ' +err.url);
         }
       });
