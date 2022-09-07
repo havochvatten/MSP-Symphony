@@ -25,6 +25,7 @@
             "title": "Scenarion",
             "operation": {
                 "title": "Algoritm",
+                "choose": "Välj algoritm",
                 "CumulativeImpact": {
                     "title": "Kumulativ belastning"
                 },

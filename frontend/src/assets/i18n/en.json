@@ -251,6 +251,7 @@
         "cumulative-effect-etc": {
             "baseline": "Baseline version",
             "operation": "Algorithm",
+            "choose": "Choose algorithm",
             "title": "Cumulative effect",
             "total": "Total",
             "average": "Average",

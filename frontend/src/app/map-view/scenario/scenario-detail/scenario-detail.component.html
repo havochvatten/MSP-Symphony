@@ -13,7 +13,8 @@
     <section class="algorithm">
       <h3>{{ 'map.editor.operation.title' | translate }}</h3>
       <article>
-        <hav-select [formControl]="operation" selectSize="large">
+        <hav-select [noItemSelectedLabel]="'map.editor.operation.choose' | translate"
+                    [formControl]="operation" selectSize="large">
           <hav-select-item *ngFor="let op of availableOperations" [value]="op" selectItemSize="large">
             {{ 'map.editor.operation.'+op+'.title' | translate }}
           </hav-select-item>
