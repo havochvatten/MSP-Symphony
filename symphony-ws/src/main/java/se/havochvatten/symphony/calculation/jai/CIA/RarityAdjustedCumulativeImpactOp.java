@@ -83,7 +83,6 @@ public class RarityAdjustedCumulativeImpactOp extends CumulativeImpactOp {
                             // is NaN -- why?
                             double E =
                                 ecoData[ecosystemBands[j]][ecoPixelOffset + ecoBandOffsets[ecosystemBands[j]]];
-                            // FIXME: Handle case where commonness is zero!
                             double impact = B*E*K/commonnessIndices[j];
                             if (!Double.isNaN(impact)) {
                                 rectImpactMatrix[i][j] += impact;

@@ -261,7 +261,8 @@
             "calculated-area": "Calculated area",
             "km2": "km²",
             "normalization": {
-                "title": "Colormap max value",
+                "title": "Result colorscale",
+                "description": "Set maximum value based on",
                 "domain": "95th percentile",
                 "area": "Maximum value in area",
                 "custom": "User-defined value",

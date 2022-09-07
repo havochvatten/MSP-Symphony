@@ -19,11 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /* Immutable */
-public class MatrixMask {
+public class MatrixMask { // TODO: Make serializable for distributed session management
     private static final Logger logger = Logger.getLogger(MatrixMask.class.getName());
 
     // should color zero be transparent instead?
@@ -34,9 +33,8 @@ public class MatrixMask {
             Color.red,
             Color.cyan
     };
-    private static final int EXCLUDE = palette.length;
 
-    private ImageLayout layout;
+    private final ImageLayout layout;
 
     @Transient
     private final BufferedImage image;
@@ -69,7 +67,7 @@ public class MatrixMask {
                 Stream.concat(
                         areas.stream().filter(AreaMatrixResponse::isDefaultArea),
                         areas.stream().filter(Predicate.not(AreaMatrixResponse::isDefaultArea))).
-                        collect(Collectors.toList());
+                        toList();
 
         orderedAreas.forEach(area -> {
             area.getPolygons().forEach((polygon) -> {

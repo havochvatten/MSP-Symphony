@@ -70,7 +70,7 @@
                 }
             },
             "normalization": {
-                "title": "Färgkodning av resultat",
+                "title": "Färgskala för resultat",
                 "description": "Sätt maximalt värde baserat på",
                 "area": "Maximalt värde i valt område",
                 "domain": "95-percentilvärde i havsplaneområde",
