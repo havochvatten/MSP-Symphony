@@ -24,6 +24,8 @@ import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.calculation.jai.CIA.CumulativeImpactOp;
 import se.havochvatten.symphony.dto.*;
 import se.havochvatten.symphony.entity.BaselineVersion;
@@ -55,13 +57,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
-import java.util.logging.Logger;
+import java.util.function.DoublePredicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static se.havochvatten.symphony.dto.NormalizationType.PERCENTILE;
 
 /**
  * Calculation service
@@ -71,9 +74,12 @@ import java.util.stream.Collectors;
 @Stateless // But some stuff is stored in user session!
 @Startup
 public class CalcService {
-    private static final Logger logger = Logger.getLogger(CalcService.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(CalcService.class);
 
-    private static ObjectMapper mapper = new ObjectMapper(); // TODO Inject instead
+    /* Can be useful for debugging, but breaks persistent sessions since not serializable atm */
+    static final boolean SAVE_MASK_IN_SESSION = false;
+
+    private static final ObjectMapper mapper = new ObjectMapper(); // TODO Inject instead
 
     @PersistenceContext(unitName = "symphonyPU")
     public EntityManager em;
@@ -191,7 +197,7 @@ public class CalcService {
             writer.write(coverage, pvg.values().toArray(new GeneralParameterValue[1]));
             writer.dispose();
         } catch (IOException e) {
-            logger.severe("Error making result GeoTIFF: " + e);
+            LOG.error("Error making result GeoTIFF: " + e);
             throw e;
         }
         return baos.toByteArray();
@@ -224,7 +230,8 @@ public class CalcService {
      *
      * @return coverage in input coordinate system (EPSG 3035 in the Swedish case)
      */
-    public CalculationResult calculateScenarioImpact(HttpServletRequest req, Scenario scenario)
+    public CalculationResult calculateScenarioImpact(HttpServletRequest req, Scenario scenario,
+                                                     String operationName, Map<String, String> operationOptions)
             throws FactoryException, TransformException, IOException, SymphonyStandardAppException {
         MatrixResponse matrixResponse = calculationAreaService.getAreaCalcMatrices(scenario);
 
@@ -278,30 +285,49 @@ public class CalcService {
         var targetGridGeometry = getTargetGridGeometry(targetGridEnvelope, targetEnv);
         MatrixMask mask = new MatrixMask(targetGridGeometry.toCanonical(), layout,
                 matrixResponse.areaMatrixResponses, CalcUtil.createMapFromMatrixIdToIndex(matrices));
-        req.getSession().setAttribute("mask", mask); // Just store image instead? Or make a Mask an a
+        if (SAVE_MASK_IN_SESSION) {
+            req.getSession().setAttribute("mask", mask.getAsPNG());
+        }
 
 //        Map<String, Object> props = new HashMap<>();
 //        CoverageUtilities.setNoDataProperty(props, new NoDataContainer(CalcEngine.NO_DATA)); // TODO remove?
 
-        String requestOperation = req.getHeader("SYM-Operation");
-        if (!(requestOperation.equals("RarityAdjustedCumulativeImpact") || requestOperation.equals(
-            "CumulativeImpact"))) {
-            throw new RuntimeException("Unsupported operation: "+requestOperation);
-        }
+        var ecosystemsToInclude = scenario.getEcosystemsToInclude();
+        GridCoverage2D coverage;
+        if (operationName.equals("RarityAdjustedCumulativeImpact")) {
+            var domain = operationOptions.get("domain");
+            var indices = switch (domain) {
+                case "GLOBAL" -> calibrationService.calculateGlobalCommonnessIndices(ecoComponents,
+                    ecosystemsToInclude, scenario.getBaselineId());
+                case "LOCAL" -> calibrationService.calculateLocalCommonnessIndices(ecoComponents,
+                    ecosystemsToInclude, targetRoi);
+                default -> throw new RuntimeException("Unknown rarity index calculation domain: "+domain);
+            };
 
-        GridCoverage2D coverage = invokeCumulativeImpactOperation(scenario, requestOperation,
-            ecoComponents, pressures, matrices, layout, mask,
-            requestOperation.equals("RarityAdjustedCumulativeImpact")
-                ? calibrationService.calculateGlobalCommonnessIndices(ecoComponents,
-                scenario.getEcosystemsToInclude(), scenario.getBaselineId())
-                : null);
+            // Filter out small layers that would cause division by zero, i.e. infinite impact.
+            final var COMMONNESS_THRESHOLD = props.getPropertyAsDouble("calc.rarity_index.threshold", 0);
+            DoublePredicate indexThresholdPredicate = (index) -> index > COMMONNESS_THRESHOLD;
+            ecosystemsToInclude = IntStream.range(0, ecosystemsToInclude.length)
+                .filter(i -> {
+                    var keep = indexThresholdPredicate.test(indices[i]);
+                    if (!keep)
+                        LOG.warn("Removing band {} since value is below commonness threshold {}", i, COMMONNESS_THRESHOLD);
+                    return keep;
+                }).toArray();
+            var nonZeroIndices = Arrays.stream(indices).filter(indexThresholdPredicate).toArray();
+            // TODO report this information to the user and show in a dialog on frontend?
 
-        CalculationResult calculation;
-        if (scenario.getNormalization().type == NormalizationType.PERCENTILE)
-            calculation = new CalculationResult(coverage);
-        else
-            calculation = persistCalculation(coverage, matrixResponse.normalizationValue,
-                scenario, requestOperation, baseline);
+            coverage = invokeCumulativeImpactOperation(scenario, operationName,
+                ecoComponents, pressures, ecosystemsToInclude,
+                matrices, layout, mask, nonZeroIndices);
+        } else
+            coverage = invokeCumulativeImpactOperation(scenario, operationName,
+                ecoComponents, pressures, ecosystemsToInclude, matrices, layout, mask, null);
+
+        CalculationResult calculation = scenario.getNormalization().type == PERCENTILE ?
+            new CalculationResult(coverage) :
+            persistCalculation(coverage, matrixResponse.normalizationValue,
+                scenario, ecosystemsToInclude, operationName, operationOptions, baseline);
 
         // Cache last calculation in session to speed up subsequent REST call to retrieve result image
         req.getSession().setAttribute("last-calculation", calculation);
@@ -311,7 +337,9 @@ public class CalcService {
 
     private GridCoverage2D invokeCumulativeImpactOperation(Scenario scenario, String operationName,
                                                            GridCoverage2D ecoComponents,
-                                                           GridCoverage2D pressures, List<SensitivityMatrix> matrices,
+                                                           GridCoverage2D pressures,
+                                                           int[] actualEcosystemsToBeIncluded,
+                                                           List<SensitivityMatrix> matrices,
                                                            ImageLayout layout, MatrixMask mask,
                                                            double[] commonness) {
         final var OPERATION_PREFIX = "se.havochvatten.symphony";
@@ -324,7 +352,7 @@ public class CalcService {
         params.parameter("Source1").setValue(pressures);
         params.parameter("matrix").setValue(preprocessMatrices(matrices));
         params.parameter("mask").setValue(mask.getRaster());
-        params.parameter("ecosystemBands").setValue(scenario.getEcosystemsToInclude());
+        params.parameter("ecosystemBands").setValue(actualEcosystemsToBeIncluded);
         params.parameter("pressureBands").setValue(scenario.getPressuresToInclude());
         if (commonness != null)
             params.parameter("commonnessIndices").setValue(commonness);
@@ -348,7 +376,7 @@ public class CalcService {
                 minTileX = renderedImage.getMinTileX(),
                 minTileY = renderedImage.getMinTileY();
 
-        final List<Point> tiles = new ArrayList<Point>(numTileX * numTileY);
+        final List<Point> tiles = new ArrayList<>(numTileX * numTileY);
         for (int i = minTileX; i < minTileX + numTileX; i++) {
             for (int j = minTileY; j < minTileY + numTileY; j++) {
                 tiles.add(new Point(i, j));
@@ -389,9 +417,11 @@ public class CalcService {
     public CalculationResult persistCalculation(GridCoverage2D result,
                                                 double normalizationValue,
                                                 Scenario scenario,
+                                                int[] ecosystemsThatWasIncluded,
                                                 String operation,
+                                                Map<String, String> operationOptions,
                                                 BaselineVersion baselineVersion)
-        throws IOException, SymphonyStandardAppException {
+        throws IOException {
         var calculation = new CalculationResult(result);
 
         // TODO: Fill out some relevant TIFF metadata
@@ -399,6 +429,7 @@ public class CalcService {
         byte[] tiff = writeGeoTiff(result, "LZW", 0.90f);      // N.B: raw result data, not normalized nor color-mapped
 
         var snapshot = ScenarioSnapshot.makeSnapshot(scenario);
+        snapshot.setEcosystemsToInclude(ecosystemsThatWasIncluded); // Override actually used only in snapshot
         em.persist(snapshot);
         calculation.setScenarioSnapshot(snapshot);
 
@@ -411,6 +442,7 @@ public class CalcService {
         calculation.setImpactMatrix(impactMatrix);
         calculation.setBaselineVersion(baselineVersion);
         calculation.setOperationName(operation);
+        calculation.setOperationOptions(operationOptions);
 
         em.persist(calculation);
         em.flush(); // to have id generated
@@ -430,7 +462,7 @@ public class CalcService {
             try (FileOutputStream stream = new FileOutputStream(file)) {
                 stream.write(tiff);
             } catch (IOException e) {
-                logger.warning("Error writing result GeoTIFF to disk: " + e);
+                LOG.warn("Error writing result GeoTIFF to disk: " + e);
             }
         }
         return calculation;
@@ -455,7 +487,7 @@ public class CalcService {
         if (!previousNames.contains(tentativeName))
             return tentativeName;
         else
-            return findSequentialUniqueName(scenarioName, previousNames, counter + 1);
+            return findSequentialUniqueName(scenarioName, previousNames, counter+1);
     }
 
     private String makeNumberedCalculationName(String name, int n) {

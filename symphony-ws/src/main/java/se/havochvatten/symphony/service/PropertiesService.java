@@ -18,7 +18,7 @@ public class PropertiesService {
     private static final String DEFAULTS_RESOURCE = "/symphony-global.properties";
     private static String GLOBAL_PROPERTIES = "/app/config/symphony/symphony-global.properties";
 
-    private java.util.Properties props = new Properties(); // java.util.Properties is thread-safe
+    private final java.util.Properties props = new Properties(); // java.util.Properties is thread-safe
 
     // Because we do not depend on any other injected services use constructor instead of
     // @PostConstruct. This also makes it possible to use the service in tests without resorting
@@ -52,13 +52,26 @@ public class PropertiesService {
 
     }
 
-    public boolean hasProperty(String name) {
-        return props.containsKey(name);
-    }
-
     public String getProperty(String name) {
         return props.getProperty(name);
     }
+
+    public int getPropertyAsInt(String name) {
+        return Integer.parseInt(getProperty(name));
+    }
+
+    public int getPropertyAsInt(String name, int fallback) {
+        return props.containsKey(name) ? getPropertyAsInt(name) : fallback;
+    }
+
+    public double getPropertyAsDouble(String name) {
+        return Double.parseDouble(getProperty(name));
+    }
+
+    public double getPropertyAsDouble(String name, double fallback) {
+        return props.containsKey(name) ? getPropertyAsDouble(name) : fallback;
+    }
+
 
     // TODO Add API using Optional instead?
     public String getProperty(String name, String fallback) {

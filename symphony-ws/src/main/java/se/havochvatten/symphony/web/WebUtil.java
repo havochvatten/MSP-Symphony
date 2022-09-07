@@ -1,5 +1,6 @@
 package se.havochvatten.symphony.web;
 
+import com.google.common.collect.Maps;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
@@ -9,6 +10,7 @@ import org.geotools.sld.SLDConfiguration;
 import org.geotools.styling.*;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Parser;
+import org.hibernate.mapping.Set;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -18,12 +20,17 @@ import javax.imageio.ImageIO;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.media.jai.InterpolationNearest;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.image.RenderedImage;
 import java.io.*;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.toMap;
 
 public interface WebUtil {
     int ONE_YEAR_IN_SECONDS = 31536000;
@@ -104,5 +111,19 @@ public interface WebUtil {
         FileOutputStream fop = new FileOutputStream(file);
         fop.write(content);
         fop.close();
+    }
+
+    static Map<String, String> multiValuedToSingleValuedMap(MultivaluedMap<String, String> multiValued) {
+        return multiValued.keySet()
+            .stream()
+            .collect(toMap(
+                key -> key,
+                key -> multiValued.getFirst(key)));
+//        Map<String, String> dest = new HashMap<>(multiValued.size());
+        // TODO collect
+//        multiValued.keySet().stream().forEach(key -> dest.put(key, multiValued.getFirst(key)));
+//        return dest;
+
+
     }
 }

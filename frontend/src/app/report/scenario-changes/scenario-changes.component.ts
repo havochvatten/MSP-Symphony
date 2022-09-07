@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { ScenarioChange } from '@data/calculation/calculation.interfaces';
 import { BandMap } from '../calculation-report.component';
 import { FeatureCollection } from "geojson";
 
@@ -10,7 +9,7 @@ import { FeatureCollection } from "geojson";
   styleUrls: ['./scenario-changes.component.scss']
 })
 export class ScenarioChangesComponent {
-  @Input() name: string = '';
+  @Input() name = '';
   @Input() scenarioChanges?: FeatureCollection;
   @Input() bandMap: BandMap = { b: {}, e: {} }; // Not used
 }

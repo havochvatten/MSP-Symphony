@@ -13,11 +13,20 @@
     <section class="algorithm">
       <h3>{{ 'map.editor.operation.title' | translate }}</h3>
       <article>
-        <hav-select [formControl]="operation" selectSize="large">
+        <hav-select [noItemSelectedLabel]="'map.editor.operation.choose' | translate"
+                    [formControl]="operation" selectSize="large">
           <hav-select-item *ngFor="let op of availableOperations" [value]="op" selectItemSize="large">
-            {{ 'map.editor.operation.'+op | translate }}
+            {{ 'map.editor.operation.'+op+'.title' | translate }}
           </hav-select-item>
         </hav-select>
+      </article>
+      <article *ngIf="operation.value == 'RarityAdjustedCumulativeImpact'">
+        <p>{{ 'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.description' | translate}}</p>
+        <hav-radio-button *ngFor="let paramValue of ['GLOBAL', 'LOCAL']"
+                          value="{{paramValue}}" [checked]="operationParams.domain == paramValue"
+                          [label]="'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.'+paramValue |
+                          translate" (check)="onCheckRarityIndicesDomain(paramValue)" radioButtonSize="medium">
+        </hav-radio-button>
       </article>
     </section>
 
@@ -90,10 +99,11 @@
     </section>
 
     <section class="coastal-area" *ngIf="associatedCoastalArea">
-      <h3>Coastal Area</h3>
+      <h3>{{ 'map.editor.coastal-areas.title' | translate }}</h3>
       <hav-checkbox id="coast-checkbox" checkboxSize="small"
                     [checked]="this.areaCoastMatrices !== undefined"
-                    [label]="'map.editor.include-coast' | translate" (check)="onCheckIncludeCoast($event)">
+                    [label]="'map.editor.coastal-areas.include-coast' | translate"
+                    (check)="onCheckIncludeCoast($event)">
       </hav-checkbox>
     </section>
   </main>

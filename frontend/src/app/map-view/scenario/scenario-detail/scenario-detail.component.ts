@@ -12,8 +12,6 @@ import { MetadataSelectors } from "@data/metadata";
 import { Observable, OperatorFunction, Subscription } from "rxjs";
 import { Store } from "@ngrx/store";
 import { environment } from "@src/environments/environment";
-import * as Normalization
-  from "@src/app/map-view/scenario/scenario-detail/normalization-selection/normalization-selection.component";
 import { State } from "@src/app/app-reducer";
 import { CalculationService, NormalizationOptions } from "@data/calculation/calculation.service";
 import { Band } from "@data/metadata/metadata.interfaces";
@@ -28,6 +26,7 @@ import {
 } from "@src/app/map-view/scenario/scenario-detail/delete-scenario-confirmation-dialog/delete-scenario-confirmation-dialog.component";
 import { Feature } from "geojson";
 import { FormControl, Validators } from "@angular/forms";
+import { OperationParams } from "@data/calculation/calculation.interfaces";
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 
@@ -48,12 +47,14 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   // Ambitiously we would query the backend for these
   availableOperations = ['CumulativeImpact', 'RarityAdjustedCumulativeImpact'];
   operation = new FormControl('', Validators.required);
+  operationParams: OperationParams = {
+    domain: 'GLOBAL'
+  }; // TODO: Use FormGroup
 
   showIncludeCoastCheckbox = environment.showIncludeCoastCheckbox;
   associatedCoastalArea?: AreaTypeMatrixMapping;
 
   areaCoastMatrices?: AreaTypeRef; // AreaMatrixMapping[] = [];
-  normalizationOpts = Normalization.DEFAULT_OPTIONS;
 
   constructor(
     private store: Store<State>,
@@ -123,8 +124,13 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
               (this.scenario.matrix!.areaTypes ?? [])
           }
         },
-        this.operation.value);
+        this.operation.value,
+        this.operationParams);
     });
+  }
+
+  onCheckRarityIndicesDomain(domain: string) {
+    this.operationParams = { domain };
   }
 
   onCheckIncludeCoast(checked: boolean) {

@@ -3,12 +3,10 @@ package se.havochvatten.symphony.calculation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.*;
 import se.havochvatten.symphony.dto.*;
-import se.havochvatten.symphony.scenario.Scenario;
 import se.havochvatten.symphony.scenario.ScenarioRESTTest;
 import se.havochvatten.symphony.web.RESTTest;
 
@@ -24,26 +22,25 @@ public class CalculationRESTTest extends RESTTest {
     private static ExtractableResponse response;
     private static int testCalcId;
 
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     /** Helper method to make a calc request */
     static ExtractableResponse makeSuccessfulCalcRequest(ScenarioDto scenario) throws JsonProcessingException {
         return given().
                     header("Content-Type", "application/json").
-                    header("SYM-Operation", "CumulativeImpact").
                     auth().
                     preemptive().
                     basic(getUsername(), getPassword()).
                 when().
                     body(getMapper().writeValueAsString(scenario)).
-                    post(endpoint("/calculation/sum")). // FIXME scenario id
+                    post(endpoint("/calculation/sum/CumulativeImpact")). // FIXME scenario id
                 then().
                     statusCode(200).
                     extract();
     }
 
     private static ScenarioDto makeSmallSum(ScenarioDto scenario) {
-        scenario.ecosystemsToInclude = new int[]{3}; ; // cod
+        scenario.ecosystemsToInclude = new int[]{3}; // cod
         scenario.pressuresToInclude = new int[]{0, 36}; // abrasion bottom trawling and temperature
         // increase
         scenario.matrix = new MatrixParameters(4); // exists for sympho1 user
@@ -150,7 +147,7 @@ public class CalculationRESTTest extends RESTTest {
                 basic(getUsername(), getPassword()).
                 when().
                 // N.B: No post body!
-                post(endpoint("/calculation/sum"));
+                post(endpoint("/calculation/sum/MyBogusOp"));
         assertEquals(400, response.getStatusCode());
     }
 

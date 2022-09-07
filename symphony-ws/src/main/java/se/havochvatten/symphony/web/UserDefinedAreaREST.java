@@ -34,7 +34,7 @@ import java.util.logging.Logger;
 @Path("userdefinedarea")
 public class UserDefinedAreaREST {
     private static final Logger LOG = Logger.getLogger(LegendREST.class.getName());
-    private static java.nio.file.Path TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
+    private static final java.nio.file.Path TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
 
     @EJB
     UserDefinedAreaService userDefinedAreaService;
@@ -102,7 +102,7 @@ public class UserDefinedAreaREST {
 
         var parts = map.get("package");
         InputPart part = parts.get(0);
-        LOG.info(() -> new String("Received file: "+getFilenameFromHeader(part.getHeaders())));
+        LOG.info(() -> "Received file: "+getFilenameFromHeader(part.getHeaders()));
         // TODO: verify content-type?
 
         // Write received file to a tempfile since GeoPackage constructor can only take file objects
@@ -115,14 +115,15 @@ public class UserDefinedAreaREST {
             packageFile = packagePath.toFile();
             WebUtil.writeFile(bytes, packageFile);
         } catch (IOException e) {
-            Files.deleteIfExists(packagePath);
+            if (packagePath != null)
+                Files.deleteIfExists(packagePath);
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.GEOPACKAGE_OPEN_ERROR);
         }
 
         try {
             var dto = userDefinedAreaService.inspectGeoPackage(req.getUserPrincipal(),
                 packageFile);
-            req.getSession().setAttribute(dto.key, packagePath);
+            req.getSession().setAttribute(dto.key, packagePath.toFile());
             return Response.ok(dto).build();
         } catch (SymphonyStandardAppException|java.lang.reflect.UndeclaredThrowableException e) {
             Files.delete(packagePath);
@@ -142,11 +143,11 @@ public class UserDefinedAreaREST {
                                                   @PathParam("key") String key,
                                                   String areaName)
         throws SymphonyStandardAppException {
-        var pkgPath = (java.nio.file.Path) req.getSession(false).getAttribute(key);
+        var pkgFile = (java.io.File) req.getSession(false).getAttribute(key);
 
         UserDefinedAreaDto dto;
-        try (var pkg = new GeoPackage(pkgPath.toFile())) {
-            LOG.info("Importing uploaded GeoPackage "+pkgPath+" for user "+req.getUserPrincipal().getName());
+        try (var pkg = new GeoPackage(pkgFile)) {
+            LOG.info("Importing uploaded GeoPackage "+pkgFile+" for user "+req.getUserPrincipal().getName());
             dto = userDefinedAreaService.importUserDefinedAreaFromPackage(req.getUserPrincipal(), pkg, areaName);
         } catch (IOException e) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.GEOPACKAGE_READ_FEATURE_FAILURE);
@@ -188,14 +189,12 @@ public class UserDefinedAreaREST {
     @RolesAllowed("GRP_SYMPHONY")
     public Response updateUserDefinedArea(@Context HttpServletRequest req, @PathParam("id") Integer id,
                                           UserDefinedAreaDto userDefinedAreaDto) throws SymphonyStandardAppException {
-        Response response = null;
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
 
         userDefinedAreaDto = userDefinedAreaService.updateUserDefinedArea(req.getUserPrincipal(),
                 userDefinedAreaDto);
-        response = Response.ok(userDefinedAreaDto).build();
-        return response;
+        return Response.ok(userDefinedAreaDto).build();
     }
 
     @DELETE

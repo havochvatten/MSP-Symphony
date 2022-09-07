@@ -19,6 +19,7 @@ export class CumulativeEffectEtcComponent {
   get areaKm2() {
     return this.area ? this.area / 1e6 : 0;
   }
+
   typeOf = (obj: any) => typeof obj;
   hasAreaTypes = (matrix: any) => typeof matrix === 'object' &&  Object.keys(matrix.areaTypes).length;
 }

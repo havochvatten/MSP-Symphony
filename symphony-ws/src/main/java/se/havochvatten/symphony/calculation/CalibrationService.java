@@ -1,6 +1,9 @@
 package se.havochvatten.symphony.calculation;
 
 import it.geosolutions.jaiext.stats.Statistics;
+import it.geosolutions.jaiext.stats.StatisticsDescriptor;
+import it.geosolutions.jaiext.zonal.ZonalStatsDescriptor;
+import it.geosolutions.jaiext.zonal.ZoneGeometry;
 import org.apache.commons.lang3.time.StopWatch;
 import org.geotools.coverage.grid.GridCoverage2D;
 
@@ -8,8 +11,12 @@ import javax.ejb.*;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.Arrays;
+
+import org.locationtech.jts.geom.Geometry;
+import org.opengis.feature.simple.SimpleFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.dto.LayerType;
@@ -68,7 +75,7 @@ public class CalibrationService {
      * commonness.
      * */
     public double[] calculateGlobalCommonnessIndices(GridCoverage2D ecoComponents, int[] ecosystemBands,
-                                                     Integer baselineId) {
+                                                     int baselineId) {
         var allIndices = globalIndicesCache.computeIfAbsent(baselineId, id -> {
             logger.info("Calculating global rarity indices for coverage {}", ecoComponents.getName());
             var watch = new StopWatch();
@@ -83,15 +90,40 @@ public class CalibrationService {
             var result = (GridCoverage2D) processor.doOperation(params);
             var bandsStats = (Statistics[][]) result.getProperty("JAI-EXT.stats");
             watch.stop();
-
             logger.info("DONE. ({} ms)", watch.getTime());
+
             return Arrays.stream(bandsStats)
                 .mapToDouble(stats -> (double)stats[0].getResult())
                 .toArray();
         });
 
         return Arrays.stream(ecosystemBands).mapToDouble(bandIndex -> allIndices[bandIndex]).toArray();
+    }
 
+    /**
+     * Calculate local rarity indices (or actually its inverse, i.e. commonness)
+     **/
+    public double[] calculateLocalCommonnessIndices(GridCoverage2D ecoComponents, int[] ecosystemBands,
+                                                    Geometry roi/*RenderedImage zones*/) {
+        logger.info("Calculating local rarity indices for coverage {}", ecoComponents.getName());
+        var watch = new StopWatch();
+        final var statsOp = processor.getOperation("Zonal");
+
+        var params = statsOp.getParameters();
+        params.parameter("source").setValue(ecoComponents);
+        params.parameter("bands").setValue(ecosystemBands);
+        params.parameter("stats").setValue(new Statistics.StatsType[]{Statistics.StatsType.SUM});
+        params.parameter("roi").setValue(roi); // JTS polygon geometry
+        watch.start();
+        var result = (GridCoverage2D) processor.doOperation(params);
+        var zoneStats = (List<ZoneGeometry>)result.getProperty(ZonalStatsDescriptor.ZS_PROPERTY);
+        var theZone = zoneStats.get(0);
+        watch.stop();
+        logger.info("DONE. ({} ms)", watch.getTime());
+
+        return Arrays.stream(ecosystemBands).mapToDouble(bandIndex ->
+                (double)theZone.getStatsPerBandNoClassifierNoRange(bandIndex)[0].getResult())
+                .toArray();
     }
 
     /**
@@ -113,8 +145,9 @@ public class CalibrationService {
             .collect(Collectors.toMap(bandTitles::get, i -> Double.valueOf(values[i])));
     }
 
-    public double calcPercentileNormalizationValue(HttpServletRequest req, Scenario scenario) throws FactoryException, SymphonyStandardAppException, TransformException, IOException {
-        CalculationResult result = calcService.calculateScenarioImpact(req, scenario);
+    public double calcPercentileNormalizationValue(HttpServletRequest req, Scenario scenario, String operation)
+        throws FactoryException, SymphonyStandardAppException, TransformException, IOException {
+        CalculationResult result = calcService.calculateScenarioImpact(req, scenario, operation, null);
         var coverage = result.getCoverage();
 
         PercentileNormalizer normalizer = (PercentileNormalizer) normalizationFactory.getNormalizer(NormalizationType.PERCENTILE);
