@@ -20,7 +20,7 @@ public class ReportResponseDto {
     public String name;
     public String baselineName;
     public String operationName;
-    public Map<String, String> operationOptions;
+    public Map<String, Object> operationOptions;
     public double total;
     public double average;
     public double min;

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import se.havochvatten.symphony.entity.CalculationResult;
 
 import java.util.Date;
+import java.util.List;
 
 // TODO: Do away with this one? Or at least include parameters
 // (when ROI has been replaced with an ID instead of the full polygon data)
@@ -12,7 +13,7 @@ public class CalculationResultSlice {
     public int id;
     public String name; // params.areaName by default
     public long timestamp;
-//    public int[] skippedEcosystemBands;
+    public List<Integer> skippedEcosystemBands;
     // add optional param?
 
     public CalculationResultSlice(CalculationResult res) {
@@ -20,6 +21,14 @@ public class CalculationResultSlice {
         name = res.getCalculationName();
         timestamp = res.getTimestamp().getTime();
     }
+
+    public CalculationResultSlice(CalculationResult res, List<Integer> skippedEcosystemBands) {
+        id = res.getId();
+        name = res.getCalculationName();
+        timestamp = res.getTimestamp().getTime();
+        this.skippedEcosystemBands = skippedEcosystemBands;
+    }
+
 
     @JsonCreator
     public CalculationResultSlice(@JsonProperty("id") int id, @JsonProperty("name") String name,

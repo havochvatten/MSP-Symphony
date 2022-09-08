@@ -22,5 +22,5 @@
         <role-name>GRP_SYMPHONY_ADMIN</role-name>
     </security-role>
 
-    <distributable/>
+    <distributable/> <!-- Enables persistent sessions also in standalone mode -->
 </web-app>

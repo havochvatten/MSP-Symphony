@@ -9,8 +9,10 @@
       <td>{{ 'map.editor.operation.'+reports[0].operationName+'.title' | translate }}</td>
     </tr>
     <tr *ngFor="let option of reports[0].operationOptions | keyvalue">
-      <th>{{ 'map.editor.operation.'+reports[0].operationName+'.options.'+option.key+'.title' | translate }}:</th>
-      <td>{{ 'map.editor.operation.'+reports[0].operationName+'.options.'+option.key+'.'+option.value | translate }}</td>
+      <ng-template *ngIf="option.key === 'domain'">
+        <th>{{ 'map.editor.operation.'+reports[0].operationName+'.options.'+option.key+'.title' | translate }}:</th>
+        <td>{{ 'map.editor.operation.'+reports[0].operationName+'.options.'+option.key+'.'+option.value | translate }}</td>
+      </ng-template>
     </tr>
     <!-- TODO Add relative diff of total impact in header -->
     <tr *ngIf="normalization">

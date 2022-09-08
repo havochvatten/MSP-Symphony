@@ -70,7 +70,7 @@ public class CalculationResult implements Serializable {
     @Basic
     @Type(type = "json")
     @Column(name = "cares_op_options", columnDefinition = "json")
-    private Map<String, String> operationOptions;
+    private Map<String, Object> operationOptions;
 
     @Basic(optional = false)
     @NotNull
@@ -228,11 +228,11 @@ public class CalculationResult implements Serializable {
 
     public String getOperationName() { return operationName; }
 
-    public void setOperationOptions(Map<String, String> opts) {
+    public void setOperationOptions(Map<String, Object> opts) {
         this.operationOptions = opts;
     }
 
-    public Map<String, String> getOperationOptions() { return operationOptions; }
+    public Map<String, Object> getOperationOptions() { return operationOptions; }
 
     @JsonIgnore
     public SimpleFeature getFeature() {

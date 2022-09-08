@@ -231,7 +231,7 @@ public class CalcService {
      * @return coverage in input coordinate system (EPSG 3035 in the Swedish case)
      */
     public CalculationResult calculateScenarioImpact(HttpServletRequest req, Scenario scenario,
-                                                     String operationName, Map<String, String> operationOptions)
+                                                     String operationName, Map<String, Object> operationOptions)
             throws FactoryException, TransformException, IOException, SymphonyStandardAppException {
         MatrixResponse matrixResponse = calculationAreaService.getAreaCalcMatrices(scenario);
 
@@ -295,7 +295,7 @@ public class CalcService {
         var ecosystemsToInclude = scenario.getEcosystemsToInclude();
         GridCoverage2D coverage;
         if (operationName.equals("RarityAdjustedCumulativeImpact")) {
-            var domain = operationOptions.get("domain");
+            var domain = (String)operationOptions.get("domain");
             var indices = switch (domain) {
                 case "GLOBAL" -> calibrationService.calculateGlobalCommonnessIndices(ecoComponents,
                     ecosystemsToInclude, scenario.getBaselineId());
@@ -305,22 +305,18 @@ public class CalcService {
             };
 
             // Filter out small layers that would cause division by zero, i.e. infinite impact.
-            final var COMMONNESS_THRESHOLD = props.getPropertyAsDouble("calc.rarity_index.threshold", 0);
-            DoublePredicate indexThresholdPredicate = (index) -> index > COMMONNESS_THRESHOLD;
-            ecosystemsToInclude = IntStream.range(0, ecosystemsToInclude.length)
-                .filter(i -> {
-                    var keep = indexThresholdPredicate.test(indices[i]);
-                    if (!keep)
-                        LOG.warn("Removing band {} since value is below commonness threshold {}", i, COMMONNESS_THRESHOLD);
-                    return keep;
-                }).toArray();
-            // TODO partition
-            var nonZeroIndices = Arrays.stream(indices).filter(indexThresholdPredicate).toArray();
-            // TODO report this information to the user and show in a dialog on frontend?
+            var filteredEcosystems = removeEcosystemLayersBelowCommonnessThreshold(ecosystemsToInclude,
+                indices);
+            ecosystemsToInclude = (int[])filteredEcosystems.get("filteredEcosystems");
+            indices = (double[])filteredEcosystems.get("filteredIndices");
+
+            var skippedBands = (List<Integer>)filteredEcosystems.get("skippedEcosystems");
+            if (!skippedBands.isEmpty())
+                operationOptions.put("skipped-bands", skippedBands);
 
             coverage = invokeCumulativeImpactOperation(scenario, operationName,
                 ecoComponents, pressures, ecosystemsToInclude,
-                matrices, layout, mask, nonZeroIndices);
+                matrices, layout, mask, indices);
         } else
             coverage = invokeCumulativeImpactOperation(scenario, operationName,
                 ecoComponents, pressures, ecosystemsToInclude, matrices, layout, mask, null);
@@ -334,6 +330,26 @@ public class CalcService {
         req.getSession().setAttribute("last-calculation", calculation);
 
         return calculation;
+    }
+
+    private Map<String, Object> removeEcosystemLayersBelowCommonnessThreshold(int[] ecosystemsToInclude,
+                                                                              double[] indices) {
+        final var COMMONNESS_THRESHOLD = props.getPropertyAsDouble("calc.rarity_index.threshold", 0);
+        final DoublePredicate indexThresholdPredicate = (index) -> index > COMMONNESS_THRESHOLD;
+
+        List<Integer> skippedEcosystemBands = new LinkedList<>();
+        var filteredEcosystems = IntStream.range(0, ecosystemsToInclude.length)
+            .filter(i -> {
+                var keep = indexThresholdPredicate.test(indices[i]);
+                if (!keep) {
+                    LOG.warn("Removing band {} since value is below commonness threshold {}", i, COMMONNESS_THRESHOLD);
+                    skippedEcosystemBands.add(i);
+                }
+                return keep;
+            }).toArray();
+
+        return Map.of("filteredEcosystems", filteredEcosystems, "skippedEcosystems", skippedEcosystemBands,
+            "filteredIndices", Arrays.stream(indices).filter(indexThresholdPredicate).toArray());
     }
 
     private GridCoverage2D invokeCumulativeImpactOperation(Scenario scenario, String operationName,
@@ -420,7 +436,7 @@ public class CalcService {
                                                 Scenario scenario,
                                                 int[] ecosystemsThatWasIncluded,
                                                 String operation,
-                                                Map<String, String> operationOptions,
+                                                Map<String, Object> operationOptions,
                                                 BaselineVersion baselineVersion)
         throws IOException {
         var calculation = new CalculationResult(result);

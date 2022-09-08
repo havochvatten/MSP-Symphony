@@ -27,10 +27,10 @@ import javax.ws.rs.core.*;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.status;
@@ -88,11 +88,11 @@ public class CalculationREST {
         watch.stop();
         logger.log(Level.INFO, "DONE ({0} ms)", watch.getTime());
 
-        // TODO: Check for asymmetric difference in ecosystem layers in scenariodto and result, and report as skipped
-        //  layers to
-        //  frontend
-
-        return new CalculationResultSlice(result);
+        if (result.getOperationOptions().containsKey("skipped-bands"))
+            return new CalculationResultSlice(result,
+                (List<Integer>)result.getOperationOptions().get("skipped-bands"));
+        else
+            return new CalculationResultSlice(result);
     }
 
     // TODO return full CalculationResult instead, use when loading calculation (or see below)

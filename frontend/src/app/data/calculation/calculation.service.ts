@@ -64,6 +64,17 @@ export class CalculationService implements OnDestroy {
           }));
           // TODO hide areas?
         });
+        if (response.skippedEcosystemBands) {
+          that.store.dispatch(
+            MessageActions.addPopupMessage({
+              message: {
+                type: 'INFO',
+                message: `Some ecosystem components were skipped during calculation since they were below the rarity index threshold.`,
+                uuid: scenario.name
+              }
+            })
+          );
+        }
         // TODO: Add popup about possible skipped layers in calculation?
       },
       error(err) {
@@ -73,7 +84,7 @@ export class CalculationService implements OnDestroy {
           MessageActions.addPopupMessage({
             message: {
               type: 'ERROR',
-              message: `${scenario.name} could not be calculated!`,
+              message: `${scenario.name} could not be calculated!`, // TODO: Localize
               uuid: scenario.name
             }
           })

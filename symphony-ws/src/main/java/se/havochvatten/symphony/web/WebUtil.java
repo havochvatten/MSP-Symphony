@@ -113,7 +113,7 @@ public interface WebUtil {
         fop.close();
     }
 
-    static Map<String, String> multiValuedToSingleValuedMap(MultivaluedMap<String, String> multiValued) {
+    static Map<String, Object> multiValuedToSingleValuedMap(MultivaluedMap<String, String> multiValued) {
         return multiValued.keySet()
             .stream()
             .collect(toMap(

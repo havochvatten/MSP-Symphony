@@ -70,6 +70,7 @@ export interface CalculationSlice {
   // The below are set upon calculation completion
   id: string;
   timestamp: number;
+  skippedEcosystemBands?: number[];
   loading?: boolean;
 }
 
@@ -91,5 +92,5 @@ export type LegendState = {
 };
 
 export interface OperationParams {
-  [param: string]: string;
+  [param: string]: any;
 }
