@@ -1,9 +1,9 @@
 import { Component, OnDestroy } from '@angular/core';
-import { Router, ActivatedRoute, Event, NavigationEnd } from '@angular/router';
+import { ActivatedRoute, Event, NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter, map, mergeMap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import { supportedLanguages } from "@src/app/app-translation-setup.module";
+import { findBestLanguageMatch, supportedLanguages } from "@src/app/app-translation-setup.module";
 
 @Component({
   selector: 'app-root',
@@ -34,22 +34,12 @@ export class AppComponent implements OnDestroy {
       .subscribe(data => {
         this.headerTitle = data.hasOwnProperty('headerTitle') ? data.headerTitle : '';
       });
-    this.setLanguage();
-  }
 
-  private setLanguage() {
-    let languageToUse;
-    for (const lang of navigator.languages) {
-      if (supportedLanguages.includes(lang)) {
-        languageToUse = lang;
-        break;
-      }
-    }
+    const languageToUse = findBestLanguageMatch(supportedLanguages);
     if (languageToUse) {
       this.translate.use(languageToUse);
     }
   }
-
   ngOnDestroy() {
     if (this.routeDataSubscription) {
       this.routeDataSubscription.unsubscribe();

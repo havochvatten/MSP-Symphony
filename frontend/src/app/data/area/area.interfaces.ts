@@ -35,7 +35,6 @@ export interface AreaGroup {
   statePath: StatePath;
   areas: Area[];
   [lang: string]: any;
-
 }
 
 export interface NationalArea {

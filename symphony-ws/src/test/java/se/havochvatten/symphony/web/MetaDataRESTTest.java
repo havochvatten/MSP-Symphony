@@ -14,6 +14,7 @@ import java.io.IOException;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class MetaDataRESTTest extends RESTTest {
@@ -68,6 +69,8 @@ public class MetaDataRESTTest extends RESTTest {
         ObjectMapper mapper = new ObjectMapper();
         MetadataComponentDto pressure = mapper.readValue(pressureComponentJSON, MetadataComponentDto.class);
         MetadataComponentDto eco = mapper.readValue(ecoComponentJSON, MetadataComponentDto.class);
+
+        assertEquals("sv", res.path("language").asText());
 
         Assert.assertNotNull(pressure);
         Assert.assertNotNull(eco);

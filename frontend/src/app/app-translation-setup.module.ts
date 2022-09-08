@@ -19,6 +19,15 @@ export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
+export function findBestLanguageMatch(candidateLanguages: string[]) {
+  for (const lang of navigator.languages) {
+    if (candidateLanguages.includes(lang)) {
+      return lang;
+    }
+  }
+  return false;
+}
+
 @NgModule({
   imports: [
     CommonModule,

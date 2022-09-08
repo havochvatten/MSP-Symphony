@@ -152,7 +152,7 @@
             "placeholder": "No calculations performed"
         },
         "compare": {
-            "title": "Compare calcucaltions",
+            "title": "Compare calculations",
             "compare": "Compare Calculations",
             "base-scenario": "Calculation A",
             "what-if-scenario": "Calculation B",

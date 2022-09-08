@@ -11,7 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { getIn } from "immutable";
 import { ScenarioActions } from "@data/scenario";
 import { getComponentType } from "@data/metadata/metadata.selectors";
-import { Language } from "@src/app/app-translation-setup.module";
+import { findBestLanguageMatch } from "@src/app/app-translation-setup.module";
 
 @Injectable()
 export class MetadataEffects {
@@ -28,11 +28,10 @@ export class MetadataEffects {
     mergeMap(({baseline}) =>
       this.metadataService.getMetaData(baseline).pipe(
         map(layerData => {
-          const language = this.translateService.currentLang as Language;
           const newLayerData = {
             ...layerData,
-            ecoComponent: formatComponentData(layerData, 'ecoComponent', language),
-            pressureComponent: formatComponentData(layerData, 'pressureComponent', language)
+            ecoComponent: this.formatComponentData(layerData, 'ecoComponent'),
+            pressureComponent: this.formatComponentData(layerData, 'pressureComponent'/*, language*/)
           };
           return MetadataActions.fetchMetadataSuccess({ metadata: newLayerData });
         }),
@@ -68,29 +67,29 @@ export class MetadataEffects {
         value,
       }))
   );
-}
 
-function formatComponentData(
-  layerData: APILayerData,
-  componentType: ComponentKey,
-  language: Language
-): Groups {
-  return layerData[componentType].symphonyTeams.reduce((teams: Groups, team: BandGroup) => {
-    teams[team.symphonyTeamName] = {
-      ...team,
-      displayName: language === 'sv' ? team.symphonyTeamNameLocal : team.symphonyTeamName,
-      properties: team.properties
-        .map((property: Band) => ({
-          ...property,
-          displayName: language === 'sv' ? property.titleLocal : property.title,
-          selected: property.defaultSelected,
-          statePath: [componentType, team.symphonyTeamName, 'properties', property.title]
-        }))
-        .reduce((properties: Components, property: Band) => {
-          properties[property.title] = property;
-          return properties;
-        }, {})
-    };
-    return teams;
-  }, {});
+  private formatComponentData(
+    layerData: APILayerData,
+    componentType: ComponentKey,
+  ): Groups {
+    const useMetadataLocalLang = findBestLanguageMatch([layerData.language]);
+    return layerData[componentType].symphonyTeams.reduce((teams: Groups, team: BandGroup) => {
+      teams[team.symphonyTeamName] = {
+        ...team,
+        displayName: useMetadataLocalLang ? team.symphonyTeamNameLocal : team.symphonyTeamName,
+        properties: team.properties
+          .map((property: Band) => ({
+            ...property,
+            displayName: useMetadataLocalLang ? property.titleLocal : property.title,
+            selected: property.defaultSelected,
+            statePath: [componentType, team.symphonyTeamName, 'properties', property.title]
+          }))
+          .reduce((properties: Components, property: Band) => {
+            properties[property.title] = property;
+            return properties;
+          }, {})
+      };
+      return teams;
+    }, {});
+  }
 }

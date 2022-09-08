@@ -18,7 +18,7 @@
         "location-outside-scenario": "Location is outside of active scenario",
         "areas": "Régions",
         "ecosystems": "Composants des écosystème",
-        "pressures": "Composants des Pression",
+        "pressures": "Composants des pressions",
         "matrix": "Matrice",
         "no-selected-area": "No area selected",
         "editor": {
@@ -37,7 +37,6 @@
                             "GLOBAL": "Data grid extent",
                             "LOCAL": "Calculated area extent"
                         }
-
                     }
                 }
             },
