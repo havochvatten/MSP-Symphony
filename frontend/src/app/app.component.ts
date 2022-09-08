@@ -37,7 +37,7 @@ export class AppComponent implements OnDestroy {
   }
 
   private setLanguage() {
-    const supportedLanguages = ['en', 'sv']; /* TODO: Generalize */
+    const supportedLanguages = ['en', 'sv', 'fr']; /* TODO: Generalize */
     const browserLanguages = navigator.languages
       .map(lang => lang.split('-')[0])
       .filter(lang => supportedLanguages.includes(lang));
