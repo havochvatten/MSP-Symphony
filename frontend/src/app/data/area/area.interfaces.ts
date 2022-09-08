@@ -29,20 +29,21 @@ export interface UserArea extends SelectableArea {
 }
 
 export interface AreaGroup {
-  sv: string;
   en: string;
   name: string;
   visible: boolean;
   statePath: StatePath;
   areas: Area[];
+  [lang: string]: any;
+
 }
 
 export interface NationalArea {
   type: string;
-  sv: string;
   en: string;
   displayName: string;
   groups: AreaGroup[];
+  [lang: string]: string|AreaGroup[];
 }
 
 export interface Boundary {
@@ -91,7 +92,6 @@ export interface Areas {
 }
 
 export interface AreaGroupState {
-  sv: string;
   en: string;
   name: string;
   visible: boolean;
@@ -103,7 +103,6 @@ export interface AreaGroupState {
 
 export interface NationalAreaState {
   type: string;
-  sv: string;
   en: string;
   displayName: string;
   groups: {

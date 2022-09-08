@@ -12,6 +12,9 @@ registerLocaleData(localeSv);
 registerLocaleData(localeEn);
 registerLocaleData(localeFr);
 
+export type Language = 'en' | 'sv' | 'fr';
+export const supportedLanguages = ['en', 'sv', 'fr'];
+
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }

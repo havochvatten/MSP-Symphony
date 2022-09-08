@@ -10,8 +10,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
 
-export type Language = 'en' | 'sv'; // TODO export, but better yet don't hardcode languages...
-
 @Injectable()
 export class AreaEffects {
   constructor(
@@ -47,7 +45,7 @@ export class AreaEffects {
     mergeMap(({ areaType }) =>
       this.areaService.getNationalAreasData(areaType).pipe(
         map(area => {
-          const language = this.translateService.currentLang as Language;
+          const language = this.translateService.currentLang;
           const nationalArea = {
             [area.type]: flattenAreaGroups(area, language)
           };
@@ -194,16 +192,16 @@ export class AreaEffects {
   // );
 }
 
-function flattenAreaGroups(nationalArea: NationalArea, language: Language): NationalAreaState {
+function flattenAreaGroups(nationalArea: NationalArea, language: string): NationalAreaState {
   return {
     ...nationalArea,
-    displayName: nationalArea[language === 'sv' ? 'sv' : 'en'],
+    displayName: nationalArea[language] as string ?? nationalArea['en'],
     groups: nationalArea.groups.reduce(
       (groupMap, group) => ({
         ...groupMap,
         [group.en]: {
           ...group,
-          name: group[language === 'sv' ? 'sv' : 'en'],
+          name: group[language] ?? group.en,
           visible: group.en === 'Areas',
           statePath: ['area', nationalArea.type, 'groups', group.en],
           areas: flattenAreas(group.areas, ['area', nationalArea.type, 'groups', group.en])

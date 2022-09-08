@@ -4,15 +4,14 @@ import { catchError, concatMap, debounceTime, map, mergeMap, withLatestFrom } fr
 import { of } from 'rxjs';
 import MetadataService from './metadata.service';
 import { MetadataActions, MetadataSelectors } from './';
-import { APILayerData, Band, BandGroup, ComponentKey, Components, Groups, StatePath } from './metadata.interfaces';
+import { APILayerData, Band, BandGroup, ComponentKey, Components, Groups } from './metadata.interfaces';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { TranslateService } from '@ngx-translate/core';
 import { getIn } from "immutable";
 import { ScenarioActions } from "@data/scenario";
 import { getComponentType } from "@data/metadata/metadata.selectors";
-
-type Language = 'sv' | 'en';
+import { Language } from "@src/app/app-translation-setup.module";
 
 @Injectable()
 export class MetadataEffects {

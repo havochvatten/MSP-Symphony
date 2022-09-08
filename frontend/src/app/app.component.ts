@@ -3,6 +3,7 @@ import { Router, ActivatedRoute, Event, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter, map, mergeMap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
+import { supportedLanguages } from "@src/app/app-translation-setup.module";
 
 @Component({
   selector: 'app-root',
@@ -37,16 +38,15 @@ export class AppComponent implements OnDestroy {
   }
 
   private setLanguage() {
-    const supportedLanguages = ['en', 'sv', 'fr']; /* TODO: Generalize */
-    let langToUse;
+    let languageToUse;
     for (const lang of navigator.languages) {
       if (supportedLanguages.includes(lang)) {
-        langToUse = lang;
+        languageToUse = lang;
         break;
       }
     }
-    if (langToUse) {
-      this.translate.use(langToUse);
+    if (languageToUse) {
+      this.translate.use(languageToUse);
     }
   }
 
