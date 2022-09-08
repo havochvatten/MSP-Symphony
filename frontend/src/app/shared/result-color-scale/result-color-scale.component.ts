@@ -8,7 +8,7 @@ import { Language } from "@src/app/app-translation-setup.module";
   styleUrls: ['./result-color-scale.component.scss']
 })
 export class ResultColorScaleComponent {
-  @Input() locale: Language = 'en';
+  @Input() locale = 'en';
   @Input() title?: string;
   @Input() unit?: string;
   @Input() colors: LegendColor[] = [

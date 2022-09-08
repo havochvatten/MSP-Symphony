@@ -7,7 +7,6 @@ import { MetadataActions, MetadataSelectors } from './';
 import { APILayerData, Band, BandGroup, ComponentKey, Components, Groups } from './metadata.interfaces';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
-import { TranslateService } from '@ngx-translate/core';
 import { getIn } from "immutable";
 import { ScenarioActions } from "@data/scenario";
 import { getComponentType } from "@data/metadata/metadata.selectors";
@@ -19,7 +18,6 @@ export class MetadataEffects {
     private actions$: Actions,
     private store: Store<State>,
     private metadataService: MetadataService,
-    private translateService: TranslateService
   ) {}
 
   @Effect()

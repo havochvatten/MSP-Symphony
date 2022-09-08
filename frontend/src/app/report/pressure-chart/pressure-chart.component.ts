@@ -30,7 +30,7 @@ export interface ChartData {
 })
 export class PressureChartComponent implements OnChanges {
   @Input() data?: ChartData;
-  @Input() locale: Language = 'en';
+  @Input() locale = 'en';
 
   constructor(private numberPipe: DecimalPipe) {}
 

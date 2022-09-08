@@ -241,7 +241,7 @@
     },
     "report": {
         "calculation": {
-            "title": "Calculation Report"
+            "title": "Rapport de Calcul"
         },
         "comparison": {
             "title": "Calculation Comparison Report",
@@ -303,8 +303,8 @@
             "open-in-new-tab": "Open in new tab",
             "print": "Print"
         },
-        "description": "Calculations of the cumulative environmental impact is made using the Swedish Agency for Marine and Water Management's application Symphony.",
-        "more-info": "For more information about Symphony please visit ",
+        "description": "Les calculs of the cumulative environmental impact is made using the Swedish Agency for Marine and Water Management's application Symphony.",
+        "more-info": "Pour plus d'information sur Symphony voir ",
         "link": "https://www.havochvatten.se/en/swam/eu--international/marine-spatial-planning/symphony---a-tool-for-ecosystem-based-marine-spatial-planning.html",
         "fetching-report": "Fetching report",
         "error-message": "An error occurred. There is no report to show now. Please check options and try a calculation again."
