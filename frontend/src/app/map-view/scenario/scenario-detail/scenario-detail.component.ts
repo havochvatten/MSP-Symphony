@@ -49,7 +49,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   operation = new FormControl('', Validators.required);
   operationParams: OperationParams = {
     domain: 'GLOBAL'
-  }; // TODO: Use FormGroup
+  }; // TODO: Use FormGroup and reactive form
 
   showIncludeCoastCheckbox = environment.showIncludeCoastCheckbox;
   associatedCoastalArea?: AreaTypeMatrixMapping;
@@ -109,7 +109,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(CalculationActions.startCalculation());
     this.store.select(MetadataSelectors.selectSelectedComponents).pipe(
       take(1)
-    ).subscribe((selectedComponents) => {
+    ).subscribe((selectedComponents: { ecoComponent: Band[]; pressureComponent: Band[]; }) => {
       const getSortedBandNumbers = (bands: Band[]) => bands
         .map(band => band.bandNumber)
         .sort((a, b) => a - b);
@@ -125,8 +125,10 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
           }
         },
         this.operation.value,
-        this.operationParams);
-    });
+        this.operation.value === 'RarityAdjustedCumulativeImpact' ?
+          this.operationParams : {}
+      );
+    })
   }
 
   onCheckRarityIndicesDomain(domain: string) {
