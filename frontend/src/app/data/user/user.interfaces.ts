@@ -15,5 +15,6 @@ export interface Baseline {
   id: number;
   name: string;
   description: string;
+  locale: string;
   validFrom: number; // datetime
 }

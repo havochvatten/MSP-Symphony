@@ -42,6 +42,12 @@ public class BaselineVersion implements Serializable {
 
     @Basic(optional = false)
     @NotNull
+    @Size(max = 10)
+    @Column(name = "bver_locale")
+    private String locale;
+
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "bver_validfrom")
     @Temporal(TemporalType.DATE)
     private Date validFrom;
@@ -143,4 +149,11 @@ public class BaselineVersion implements Serializable {
         this.pressuresFilePath = pressuresFilePath;
     }
 
+    public String getLocale() {
+        return locale;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
+    }
 }
