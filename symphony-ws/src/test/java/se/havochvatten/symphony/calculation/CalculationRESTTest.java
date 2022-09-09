@@ -17,7 +17,8 @@ import java.util.Map;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.*;
 
-public class CalculationRESTTest extends RESTTest {
+public class
+CalculationRESTTest extends RESTTest {
     private static int testScenarioId;
     private static ExtractableResponse response;
     private static int testCalcId;
@@ -33,7 +34,7 @@ public class CalculationRESTTest extends RESTTest {
                     basic(getUsername(), getPassword()).
                 when().
                     body(getMapper().writeValueAsString(scenario)).
-                    post(endpoint("/calculation/sum/CumulativeImpact")). // FIXME scenario id
+                    post(endpoint("/calculation/sum/CumulativeImpact")).
                 then().
                     statusCode(200).
                     extract();

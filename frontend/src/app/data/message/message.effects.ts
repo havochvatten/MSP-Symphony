@@ -19,6 +19,7 @@ export class MessageEffects {
     ofType(
       AreaActions.fetchNationalAreaFailure,
       AreaActions.fetchUserDefinedAreasFailure,
+      AreaActions.fetchBoundariesFailure,
       AreaActions.createUserDefinedAreaFailure,
       AreaActions.deleteUserDefinedAreaFailure,
       MetadataActions.fetchMetadataFailure,
@@ -29,7 +30,7 @@ export class MessageEffects {
     ),
     map(({ error: { status, message } }) => {
       if (status !== 401) {
-        const msg = typeof message == 'string' ? message : message['errorMessage']
+        const msg = typeof message === 'string' ? message : message['errorMessage']
         return [
           MessageActions.addPopupMessage({
             message: {

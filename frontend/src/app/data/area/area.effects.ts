@@ -168,10 +168,9 @@ export class AreaEffects {
         .getBoundaries()
         .pipe(
           map(
-            ({ areas: boundaries }) => AreaActions.fetchBoundariesSuccess({ boundaries }),
-            catchError(({ status, error: message }) =>
-              of(AreaActions.fetchBoundariesFailure({ error: { status, message } }))
-            )
+            ({areas: boundaries}) => AreaActions.fetchBoundariesSuccess({boundaries})),
+          catchError(({status, error: message}) =>
+            of(AreaActions.fetchBoundariesFailure({error: {status, message}}))
           )
         )
     )
