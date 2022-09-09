@@ -17,8 +17,8 @@
         "click-area": "Click to select area.",
         "location-outside-scenario": "Location is outside of active scenario",
         "areas": "Régions",
-        "ecosystems": "Composants des écosystème",
-        "pressures": "Composants des pressions",
+        "ecosystems": "Ecosystèmes",
+        "pressures": "Pressures",
         "matrix": "Matrice",
         "no-selected-area": "No area selected",
         "editor": {
@@ -234,7 +234,7 @@
         "close": "Thank you"
     },
     "popup-message": {
-        "INFO": "Infomation",
+        "INFO": "Information",
         "SUCCESS": "Process succeeded",
         "ERROR": "An Error Occurred",
         "WARNING": "Slow process"

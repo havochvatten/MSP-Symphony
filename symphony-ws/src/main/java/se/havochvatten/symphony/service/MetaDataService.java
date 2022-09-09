@@ -34,7 +34,7 @@ public class MetaDataService {
 
     private String getLanguageFromLocale(String locale) {
         // Resort to hackish way to get language instead of using the proper Locale class since we
-        // may want some leeway in using non national country codes
+        // may want some leeway in using non-national country codes
         return locale.substring(0,2).toLowerCase();
     }
 

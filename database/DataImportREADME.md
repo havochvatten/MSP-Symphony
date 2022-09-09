@@ -28,7 +28,14 @@ The input data is packaged in a so-called _baseline_. A baseline consists of:
   - The _Title_ column should map *exactly* (in an SQL string comparison sense) to the corresponding row or column in matrix table file(s)
   - The _Symphony Category_ column is either _Pressure_ or _Ecosystem_
   - Layers are grouped by the contents of the _Symphony Theme_ column
-  - The contents of the _Multiband .tif name_ and _Metadata filename_ columns are ignored
+  - The _Symphony Theme (localized)_ and _Title (localized)_ columns can contain localized names which are used 
+    in the UI if the user's browser is set to prefer this language. The actual locale is specified when importing 
+    the baseline (see [below](#create-new-baseline)).
+    
+    **N.B:** Not to be confused with the _Metadata Language_ column, 
+    which specifies the language used for the non-localized text in the metadata, which is assumed to be 
+    English.   
+  - The contents of the _Multiband .tif name_ and _Metadata filename_ columns are not used
 
 Fields are separated using semicolon.
 

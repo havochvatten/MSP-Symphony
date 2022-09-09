@@ -37,7 +37,6 @@
                             "GLOBAL": "Data grid extent",
                             "LOCAL": "Calculated area extent"
                         }
-
                     }
                 }
             },
@@ -235,7 +234,7 @@
         "close": "Thank you"
     },
     "popup-message": {
-        "INFO": "Infomation",
+        "INFO": "Information",
         "SUCCESS": "Process succeeded",
         "ERROR": "An Error Occurred",
         "WARNING": "Slow process"

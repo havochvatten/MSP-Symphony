@@ -13,9 +13,7 @@ import se.havochvatten.symphony.dto.UserLoginDto;
 import java.io.IOException;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 public class MetaDataRESTTest extends RESTTest {
     @Before
@@ -33,7 +31,7 @@ public class MetaDataRESTTest extends RESTTest {
             header("Content-Type", "application/json").
             body(userLogin).
             post(endpoint);
-        assertThat(response.getStatusCode(), is(200));
+        assertEquals(200, response.getStatusCode());
     }
 
     @Test

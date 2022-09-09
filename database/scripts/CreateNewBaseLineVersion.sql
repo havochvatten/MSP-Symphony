@@ -7,7 +7,7 @@ declare
 	--Change to new version
     baselineName text := 'BASELINE2019';
 	baselineDesc text := 'Levererad data för baseline 2019';
-    baselineLocale text := 'sv_SWE';
+    baselineLocale text := 'sv';
 	validFrom date := TO_DATE('2019-01-01', 'YYYY-MM-DD');
 	eco_file_path text := '/app/data/symphony/Ekokomponenter-prod.tif';
 	pres_file_path text := '/app/data/symphony/Belastningar-prod.tif';
