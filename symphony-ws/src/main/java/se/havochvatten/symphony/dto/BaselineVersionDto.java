@@ -6,6 +6,7 @@ public class BaselineVersionDto {
     private Integer id;
     private String name;
     private String description;
+    private String locale;
     private Date validFrom;
 
     public Integer getId() {
@@ -38,5 +39,13 @@ public class BaselineVersionDto {
 
     public void setValidFrom(Date validFrom) {
         this.validFrom = validFrom;
+    }
+
+    public String getLocale() {
+        return locale;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
     }
 }

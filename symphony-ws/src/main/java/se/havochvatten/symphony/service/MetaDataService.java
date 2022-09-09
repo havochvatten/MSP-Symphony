@@ -28,7 +28,14 @@ public class MetaDataService {
         MetadataDto metadataDto = new MetadataDto();
         metadataDto.setEcoComponent(getComponentDto("Ecosystem", baseline.getId()));
         metadataDto.setPressureComponent(getComponentDto("Pressure", baseline.getId()));
+        metadataDto.setLanguage(getLanguageFromLocale(baseline.getLocale()));
         return metadataDto;
+    }
+
+    private String getLanguageFromLocale(String locale) {
+        // Resort to hackish way to get language instead of using the proper Locale class since we
+        // may want some leeway in using non-national country codes
+        return locale.substring(0,2).toLowerCase();
     }
 
     public MetadataComponentDto getComponentDto(String componentName, int baselineVersionId) {

@@ -54,7 +54,7 @@ public class AreasREST {
     @Produces({MediaType.APPLICATION_JSON})
     @RolesAllowed("GRP_SYMPHONY")
     public Response getAreas(@PathParam("type") String type) throws SymphonyStandardAppException {
-        String countryCodeIso3 = props.getProperty("areas.countrycode");
+        String countryCodeIso3 = props.getProperty("areas.countrycode"); // TODO: Get from baseline?
         NationalArea areas = areasService.getNationalAreaByCountryAndType(countryCodeIso3,
 				type);
         String areasJson = areas.getAreasJson();

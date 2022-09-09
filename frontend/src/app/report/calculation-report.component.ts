@@ -23,7 +23,7 @@ export type BandMap = Record<'b' | 'e', Record<number, string>>;
   templateUrl: './calculation-report.component.html',
   styleUrls: ['./report.component.scss']
 })
-export class CalculationReportComponent { // Rename to ScenarioReport...?
+export class CalculationReportComponent {
   locale = 'en';
   report?: Report;
   loadingReport = true;
@@ -82,7 +82,7 @@ export class CalculationReportComponent { // Rename to ScenarioReport...?
     if (!metadata.ecoComponent.length || !data)
       return undefined;
 
-    let changeName = (node: any) => {
+    const changeName = (node: any) => {
       try {
         const bands = this.bandMap[node.name[0] as 'b' | 'e'];
         const name = bands[Number(node.name.slice(1))];

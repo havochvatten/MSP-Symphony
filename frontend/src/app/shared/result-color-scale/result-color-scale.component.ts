@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { LegendColor } from '@data/calculation/calculation.interfaces';
+import { Language } from "@src/app/app-translation-setup.module";
 
 @Component({
   selector: 'app-result-color-scale',
@@ -7,7 +8,7 @@ import { LegendColor } from '@data/calculation/calculation.interfaces';
   styleUrls: ['./result-color-scale.component.scss']
 })
 export class ResultColorScaleComponent {
-  @Input() locale: 'en' | 'sv' = 'en';
+  @Input() locale = 'en';
   @Input() title?: string;
   @Input() unit?: string;
   @Input() colors: LegendColor[] = [

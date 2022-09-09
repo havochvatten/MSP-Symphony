@@ -18,6 +18,7 @@ public class BaselineVersionDtoMapperTest {
         baselineVersion.setId(1);
         baselineVersion.setName("test");
         baselineVersion.setDescription("test desc");
+        baselineVersion.setLocale("sv_SE");
         baselineVersion.setValidFrom(new Date());
     }
 
@@ -27,6 +28,7 @@ public class BaselineVersionDtoMapperTest {
         assertEquals(dto.getId(), baselineVersion.getId());
         assertEquals(dto.getName(), baselineVersion.getName());
         assertEquals(dto.getDescription(), baselineVersion.getDescription());
+        assertEquals(dto.getLocale(), baselineVersion.getLocale());
         assertEquals(dto.getValidFrom(), baselineVersion.getValidFrom());
     }
 

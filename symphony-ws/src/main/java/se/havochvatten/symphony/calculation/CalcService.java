@@ -311,7 +311,8 @@ public class CalcService {
                 .filter(i -> {
                     var keep = indexThresholdPredicate.test(indices[i]);
                     if (!keep)
-                        LOG.warn("Removing band {} since value is below commonness threshold {}", i, COMMONNESS_THRESHOLD);
+                        LOG.warn("Removing band {} since value is below or equal to commonness threshold {}", i,
+                            COMMONNESS_THRESHOLD);
                     return keep;
                 }).toArray();
             var nonZeroIndices = Arrays.stream(indices).filter(indexThresholdPredicate).toArray();

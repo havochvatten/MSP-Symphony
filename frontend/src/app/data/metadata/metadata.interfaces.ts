@@ -83,6 +83,7 @@ export interface ComponentData {
 export interface APILayerData {
   ecoComponent: SymphonyTeam;
   pressureComponent: SymphonyTeam;
+  language: string;
 }
 
 export interface Components {
