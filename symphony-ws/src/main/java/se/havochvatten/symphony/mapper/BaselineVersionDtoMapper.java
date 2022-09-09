@@ -13,6 +13,7 @@ public class BaselineVersionDtoMapper {
         dto.setId(baselineVersion.getId());
         dto.setName(baselineVersion.getName());
         dto.setDescription(baselineVersion.getDescription());
+        dto.setLocale(baselineVersion.getLocale());
         dto.setValidFrom(baselineVersion.getValidFrom());
         return dto;
     }

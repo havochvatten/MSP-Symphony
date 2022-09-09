@@ -1,6 +1,6 @@
 // This file should be updated by CI system with actual build information
 export default {
-  version: '1.2.0',
-  buildNumber: '50',
-  gitSha: '2bac856290a36ac007d36631edac81259f5687f5' // Deeplink to source repo?
+ version: '1.3.0',
+  buildNumber: '<unknown>',
+  gitSha: '28ce342f2cc22d9baa05921d65ae52d9b3bb7997' // Deeplink to source repo?
 };

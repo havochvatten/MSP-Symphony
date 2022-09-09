@@ -2,6 +2,8 @@ package se.havochvatten.symphony.web;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.entity.NationalArea;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.service.AreasService;
@@ -11,13 +13,11 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Optional;
 
 @Stateless
 @Api(value = "/areas",
@@ -25,6 +25,8 @@ import javax.ws.rs.core.Response;
         consumes = MediaType.APPLICATION_JSON)
 @Path("areas")
 public class AreasREST {
+    private static final Logger LOG = LoggerFactory.getLogger(AreasREST.class);
+
     @EJB
     AreasService areasService;
 
@@ -39,13 +41,17 @@ public class AreasREST {
     @Produces({MediaType.APPLICATION_JSON})
     @RolesAllowed("GRP_SYMPHONY")
     public Response getAreaTypes() throws SymphonyStandardAppException {
-        String countryCodeIso3 = props.getProperty("areas.countrycode");
-        NationalArea areas = areasService.getNationalAreaByCountryAndType(countryCodeIso3, TYPE_TYPES);
-        String areasJson = areas.getTypesJson();
+        String countryCode = props.getProperty("areas.countrycode");
+        if (countryCode == null) {
+            LOG.error("Fatal error: Mandatory \"areas.countrycode\" property not set, returning empty areas!");
+            return Response.ok("[]").build(); // or some error
+        }
+
+        NationalArea areas = areasService.getNationalAreaByCountryAndType(countryCode, TYPE_TYPES);
+
         var cc = new CacheControl();
         cc.setMaxAge(WebUtil.ONE_YEAR_IN_SECONDS);
-
-        return Response.ok(areasJson).cacheControl(cc).build();
+        return Response.ok(areas.getTypesJson()).cacheControl(cc).build();
     }
 
     @GET
@@ -54,14 +60,14 @@ public class AreasREST {
     @Produces({MediaType.APPLICATION_JSON})
     @RolesAllowed("GRP_SYMPHONY")
     public Response getAreas(@PathParam("type") String type) throws SymphonyStandardAppException {
-        String countryCodeIso3 = props.getProperty("areas.countrycode");
-        NationalArea areas = areasService.getNationalAreaByCountryAndType(countryCodeIso3,
+        String countryCode = props.getProperty("areas.countrycode");
+
+        NationalArea areas = areasService.getNationalAreaByCountryAndType(countryCode,
 				type);
-        String areasJson = areas.getAreasJson();
+
         var cc = new CacheControl();
         cc.setMaxAge(WebUtil.ONE_YEAR_IN_SECONDS);
-
-        return Response.ok(areasJson).cacheControl(cc).build();
+        return Response.ok(areas.getAreasJson()).cacheControl(cc).build();
     }
 
     @GET
@@ -70,15 +76,17 @@ public class AreasREST {
     @Produces({MediaType.APPLICATION_JSON})
     @RolesAllowed("GRP_SYMPHONY")
     public Response getBoundaries() throws SymphonyStandardAppException {
-        String countryCodeIso3 = props.getProperty("areas.countrycode");
-        NationalArea areas = areasService.getNationalAreaByCountryAndType(countryCodeIso3,
+        String countryCode = props.getProperty("areas.countrycode");
+        if (countryCode == null) {
+            LOG.error("Fatal error: Mandatory \"areas.countrycode\" property not set, unable to fetch boundary areas!");
+            throw new InternalServerErrorException("Server misconfiguration");
+        }
+
+        NationalArea areas = areasService.getNationalAreaByCountryAndType(countryCode,
             TYPE_BOUNDARY);
-        String areasJson = areas.getAreasJson();
+
         var cc = new CacheControl();
         cc.setMaxAge(WebUtil.ONE_YEAR_IN_SECONDS);
-
-        return Response.ok(areasJson).cacheControl(cc).build();
+        return Response.ok(areas.getAreasJson()).cacheControl(cc).build();
     }
-
-
 }

@@ -6,7 +6,7 @@ import { environment as env } from '@src/environments/environment';
 import { State } from '../../app-reducer';
 import { MessageActions } from '@data/message';
 import { MetadataSelectors } from '@data/metadata';
-import { CalculationSlice, Legend, LegendType, StaticImageOptions } from './calculation.interfaces';
+import { CalculationSlice, Legend, LegendType, OperationParams, StaticImageOptions } from './calculation.interfaces';
 import { CalculationActions } from '.';
 import { AppSettings } from "@src/app/app.settings";
 import { register } from "ol/proj/proj4";
@@ -50,14 +50,12 @@ export class CalculationService implements OnDestroy {
       });
   }
 
-  public calculate(scenario: Scenario, operation: string) {
+  public calculate(scenario: Scenario, operation: string, params: OperationParams) {
     const that = this;
     // TODO Consider making it a simple request (not subject to CORS)
     // TODO make NgRx effect?
-    this.http.post<CalculationSlice>(env.apiBaseUrl + '/calculation/sum', scenario, {
-      headers: new HttpHeaders({       // op perhaps as query param...
-        'SYM-Operation': operation
-      })
+    this.http.post<CalculationSlice>(env.apiBaseUrl+'/calculation/sum/'+operation, scenario, {
+      params: new HttpParams({ fromObject: params })
     }).subscribe({
       next(response) {
         that.addResult(response.id).then(() => {
@@ -114,6 +112,7 @@ export class CalculationService implements OnDestroy {
           }
         },
         error(err: HttpErrorResponse) {
+          that.store.dispatch(CalculationActions.calculationFailed());
           reject('Error fetching result image at ' +err.url);
         }
       });

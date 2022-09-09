@@ -17,6 +17,7 @@ export interface State {
 export interface Report {
   baselineName: string;
   operationName: string;
+  operationOptions: OperationParams;
   name: string;
   total: number;
   average: number;
@@ -88,3 +89,7 @@ export interface Legend {
 export type LegendState = {
   [key in LegendType]: Legend | undefined;
 };
+
+export interface OperationParams {
+  [param: string]: string;
+}

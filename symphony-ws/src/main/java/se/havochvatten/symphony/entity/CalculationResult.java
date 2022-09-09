@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.vladmihalcea.hibernate.type.array.DoubleArrayType;
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.hibernate.annotations.Type;
@@ -21,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 
 @Entity
 @Table(name = "calculationresult")
@@ -44,10 +46,8 @@ import java.util.Date;
                         "DESC")
 })
 @TypeDefs({
-        @TypeDef(
-                name = "double-matrix",
-                typeClass = DoubleArrayType.class
-        )
+        @TypeDef(name = "json", typeClass = JsonType.class),
+        @TypeDef(name = "double-matrix", typeClass = DoubleArrayType.class)
 })
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class CalculationResult implements Serializable {
@@ -66,6 +66,11 @@ public class CalculationResult implements Serializable {
     @Size(min = 1, max = 255)
     @Column(name = "cares_op")
     private String operationName;
+
+    @Basic
+    @Type(type = "json")
+    @Column(name = "cares_op_options", columnDefinition = "json")
+    private Map<String, String> operationOptions;
 
     @Basic(optional = false)
     @NotNull
@@ -222,6 +227,12 @@ public class CalculationResult implements Serializable {
     public void setOperationName(String operation) { this.operationName = operation; }
 
     public String getOperationName() { return operationName; }
+
+    public void setOperationOptions(Map<String, String> opts) {
+        this.operationOptions = opts;
+    }
+
+    public Map<String, String> getOperationOptions() { return operationOptions; }
 
     @JsonIgnore
     public SimpleFeature getFeature() {

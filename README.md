@@ -44,7 +44,7 @@ organizational needs.
 While any Jakarta EE 8.0-compliant application should be OK, during development [Wildfly](https://www.wildfly.org/)
 has been used and is thus the recommended choice. At SwAM the frontend is served separately using Apache, 
 although any web server capable of serving static content should do (see [Frontend](#frontend-1) below). The backend 
-has been developed using Wildfly 18, PostgreSQL 10 and PostGIS v2.4, but more recent versions should be fine. The 
+has been tested using Wildfly 26.1, PostgreSQL 10 and PostGIS v2.4, but more recent versions should be fine. The 
 frontend has been built with NodeJS v.16.14.2. More recent versions may cause problems with the specific version of 
 Angular currently employed.
 
@@ -90,8 +90,7 @@ npm install -g @angular/cli
 npm install
 ng build
 ```
-The build artifacts will end up in the `frontend/dist` directory. If you are on a more recent Node.js and `npm install` 
-fails you may experiment with its `--legacy-peer-deps` flag.
+The build artifacts will end up in the `frontend/dist` directory.
 
 For frontend development there is also the Angular CLI development server, see the frontend README for more details. 
 

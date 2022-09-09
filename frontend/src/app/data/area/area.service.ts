@@ -39,9 +39,7 @@ export default class AreaService {
   }
 
   updateUserArea(userArea: Partial<UserArea>) {
-    return this.http.put<AreaInterfaces.UserArea>(
-      `${BASE_URL}/userdefinedarea/${userArea.id}`,
-      userArea
+    return this.http.put<AreaInterfaces.UserArea>(`${BASE_URL}/userdefinedarea/${userArea.id}`, userArea
     );
   }
 
@@ -50,8 +48,7 @@ export default class AreaService {
   }
 
   getBoundaries() {
-    return this.http.get<{ areas: AreaInterfaces.Boundary[] }>(
-      `${BASE_URL}/areas/boundary`
+    return this.http.get<{ areas: AreaInterfaces.Boundary[] }>(`${BASE_URL}/areas/boundary`
     );
   }
 }

@@ -42,13 +42,12 @@ public class ReportRESTTest extends RESTTest {
         Response response =
             given().
                 header("Content-Type", "application/json").
-                header("SYM-Operation", "CumulativeImpact").
                 auth().
                 preemptive().
                 basic(getUsername(), getPassword()).
                 when().
                 body(testScenario).
-                post(endpoint("/calculation/sum"));
+                post(endpoint("/calculation/sum/CumulativeImpact"));
         assertEquals(200, response.statusCode());
 
         sessionCookieValue = response.getCookie(SESSION_COOKIE_NAME);

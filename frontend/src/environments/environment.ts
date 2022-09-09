@@ -7,7 +7,7 @@ export const environment = {
   showBaseCalculations: false,
   showIncludeCoastCheckbox: true,
   apiBaseUrl: "/symphony-ws/service",
-  baseline: 'WIO-TEST-BASELINE',
+  baseline: false,
   map: {
     center: [10, -10],
     initialZoom: 4,

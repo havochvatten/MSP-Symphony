@@ -22,15 +22,10 @@ import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferDouble;
 import java.awt.image.DataBufferInt;
 import java.awt.image.Raster;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.function.DoublePredicate;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
@@ -39,7 +34,6 @@ import static java.util.stream.Collectors.toMap;
 
 @Singleton
 public class ReportService {
-    private static final Logger logger = Logger.getLogger(ReportService.class.getName());
     private static final ObjectMapper mapper = new ObjectMapper();
 
     // The CSV standard (RFC 4180) actually says to use comma, but tab is MS Excel default. Or use TSV?
@@ -54,23 +48,20 @@ public class ReportService {
     @Inject
     AreaTypeService areaTypeService;
 
+    @Inject
+    PropertiesService props;
+
     static DoublePredicate not(DoublePredicate t) {
         return t.negate();
     }
 
     private static DoubleStatistics getStatistics(Raster raster) {
-        DoubleStream stream;
-        switch (raster.getDataBuffer().getDataType()) {
-            case DataBuffer.TYPE_INT:
-                stream =
-                        Arrays.stream(((DataBufferInt) raster.getDataBuffer()).getData()).mapToDouble(x -> x);
-                break;
-            case DataBuffer.TYPE_DOUBLE:
-                stream = Arrays.stream(((DataBufferDouble) raster.getDataBuffer()).getData());
-                break;
-            default:
-                throw new RuntimeException("Unsupported raster data type");
-        }
+        DoubleStream stream = switch (raster.getDataBuffer().getDataType()) {
+            case DataBuffer.TYPE_INT ->
+                Arrays.stream(((DataBufferInt) raster.getDataBuffer()).getData()).mapToDouble(x -> x);
+            case DataBuffer.TYPE_DOUBLE -> Arrays.stream(((DataBufferDouble) raster.getDataBuffer()).getData());
+            default -> throw new RuntimeException("Unsupported raster data type");
+        };
         // TODO report total as long to prevent overflow on big areas?
         return stream.filter(not(CalcUtil.isNoData)).collect(DoubleStatistics::new,
                 DoubleStatistics::accept, DoubleStatistics::combine);
@@ -99,7 +90,7 @@ public class ReportService {
     }
 
     public ReportResponseDto generateReportData(CalculationResult calc, boolean computeChart)
-            throws IOException, FactoryException, TransformException, SymphonyStandardAppException {
+            throws FactoryException, TransformException {
         var scenario = calc.getScenarioSnapshot();
         var coverage = calc.getCoverage();
         var stats = getStatistics(coverage.getRenderedImage().getData());
@@ -116,6 +107,8 @@ public class ReportService {
 
         report.baselineName = calc.getBaselineVersion().getName();
         report.operationName = calc.getOperationName();
+        report.operationOptions = calc.getOperationOptions() != null ?
+            calc.getOperationOptions() : Collections.emptyMap();
         report.name = calc.getCalculationName();
         // Does not sum to exactly 100% for some reason? I.e. assert(getComponentTotals(...) == stats
         // .getSum()) not always true. Tolerance?
@@ -161,7 +154,9 @@ public class ReportService {
         report.impactPerEcoComponent = impactPerComponent(scenario.getEcosystemsToInclude(), esTotal);
         if (computeChart)
             report.chartData = new SankeyChart(scenario.getEcosystemsToInclude(),
-                    scenario.getPressuresToInclude(), impactMatrix, total).getChartData();
+                scenario.getPressuresToInclude(), impactMatrix, total,
+                props.getPropertyAsDouble("calc.sankey_chart.link_weight_threshold", 0.001)
+            ).getChartData();
 
         report.geographicalArea = JTS.transform(scenario.getGeometry(),
                 CRS.findMathTransform(DefaultGeographicCRS.WGS84,
@@ -175,7 +170,7 @@ public class ReportService {
 
     public ComparisonReportResponseDto generateComparisonReportData(CalculationResult calcA,
                                                                     CalculationResult calcB)
-            throws IOException, FactoryException, TransformException, SymphonyStandardAppException {
+            throws FactoryException, TransformException {
         var report = new ComparisonReportResponseDto();
         report.a = generateReportData(calcA, false);
         report.b = generateReportData(calcB, false);

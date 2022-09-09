@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { of, Observable, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { State } from '../app-reducer';
@@ -9,7 +9,7 @@ import { Report, ComparisonReport, LegendColor, Legend } from '@data/calculation
 import { environment as env } from "@src/environments/environment";
 import { HttpClient } from "@angular/common/http";
 import { filter } from "rxjs/operators";
-import { BandMap,  ReportComponent } from "@src/app/report/report.component";
+import { BandMap } from "@src/app/report/report.component";
 import { BandGroup } from "@data/metadata/metadata.interfaces";
 import MetadataService from "@data/metadata/metadata.service";
 import { ReportService } from "@src/app/report/report.service";
@@ -83,10 +83,10 @@ export class ComparisonReportComponent {
   // Compute relative difference with regard to first scenario element in components
   calculateRelativeDifference(components: Record<string, number>[]) {
     // Would be nicer written as an Immutable.js map operation
-    let diffs: Record<string, number> = {};
-    let unionOfBandKeys = new Set([...Object.keys(components[0]), ...Object.keys(components[1])]);
+    const diffs: Record<string, number> = {};
+    const unionOfBandKeys = new Set([...Object.keys(components[0]), ...Object.keys(components[1])]);
     unionOfBandKeys.forEach(band => {
-      let [a, b] = map(components, band);
+      const [a, b] = map(components, band);
       if (!a && !b)  // avoid divide by zero
         diffs[band] = 0;
       else if (!a && b)

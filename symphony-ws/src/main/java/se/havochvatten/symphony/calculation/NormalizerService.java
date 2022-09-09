@@ -29,8 +29,8 @@ public class NormalizerService {
             case USER_DEFINED:
                 return new UserDefinedValueNormalizer();
             case PERCENTILE:
-                return new PercentileNormalizer(Integer.parseInt(props.getProperty("calc.normalization" +
-                        ".histogram.percentile")));
+                return new PercentileNormalizer(Integer.parseInt(
+                    props.getProperty("calc.normalization.histogram.percentile")));
             default:
                 throw new RuntimeException("Unknown normalizer type: " + type);
         }

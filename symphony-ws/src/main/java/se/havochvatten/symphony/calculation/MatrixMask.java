@@ -9,21 +9,22 @@ import org.locationtech.jts.geom.Geometry;
 import org.opengis.referencing.FactoryException;
 import se.havochvatten.symphony.dto.AreaMatrixResponse;
 
+import javax.imageio.ImageIO;
 import javax.media.jai.ImageLayout;
 import javax.persistence.Transient;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
-import java.awt.image.RenderedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /* Immutable */
-public class MatrixMask {
+public class MatrixMask { // TODO: Make serializable for distributed session management
     private static final Logger logger = Logger.getLogger(MatrixMask.class.getName());
 
     // should color zero be transparent instead?
@@ -34,9 +35,8 @@ public class MatrixMask {
             Color.red,
             Color.cyan
     };
-    private static final int EXCLUDE = palette.length;
 
-    private ImageLayout layout;
+    private final ImageLayout layout;
 
     @Transient
     private final BufferedImage image;
@@ -69,7 +69,7 @@ public class MatrixMask {
                 Stream.concat(
                         areas.stream().filter(AreaMatrixResponse::isDefaultArea),
                         areas.stream().filter(Predicate.not(AreaMatrixResponse::isDefaultArea))).
-                        collect(Collectors.toList());
+                        toList();
 
         orderedAreas.forEach(area -> {
             area.getPolygons().forEach((polygon) -> {
@@ -85,9 +85,11 @@ public class MatrixMask {
         });
     }
 
-    /** @return the mask as a bitmap, suitable for saving and visualization */
-    public RenderedImage getImage() {
-        return image; //new PlanarImage(layout, new Vector(List.of(image)), null);
+    /** @return the mask as a PNG, suitable for saving and visualization */
+    public byte[] getAsPNG() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(image, "png", baos);
+        return baos.toByteArray();
     }
 
     /** @return the mask as a raster, suitable for further calculation */

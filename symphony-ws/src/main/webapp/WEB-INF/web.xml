@@ -21,4 +21,6 @@
         <description>Group Symphony Admin</description>
         <role-name>GRP_SYMPHONY_ADMIN</role-name>
     </security-role>
+
+    <distributable/>
 </web-app>

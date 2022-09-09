@@ -25,9 +25,21 @@
             "title": "Scenarion",
             "operation": {
                 "title": "Algoritm",
-                "CumulativeImpact": "Kumulativ belastning",
-                "RarityAdjustedCumulativeImpact": "Raritets-justerad kumulativ belastning"
-
+                "choose": "Välj algoritm",
+                "CumulativeImpact": {
+                    "title": "Kumulativ belastning"
+                },
+                "RarityAdjustedCumulativeImpact": {
+                    "title": "Raritetsjusterad kumulativ belastning",
+                    "options": {
+                        "domain": {
+                            "title": "Raritetsindexdomän",
+                            "description": "Beräkna raritetsindex baserat på:",
+                            "GLOBAL": "Hela datarastrets utsträckning",
+                            "LOCAL": "Valt områdes utsträckning"
+                        }
+                    }
+                }
             },
             "band-pressures": {
                 "intensity": "Ändring av förekomst",
@@ -58,8 +70,8 @@
                 }
             },
             "normalization": {
-                "title": "Normalisering",
-                "description": "Normalisera resultat med avseende på",
+                "title": "Färgskala för resultat",
+                "description": "Sätt maximalt värde baserat på",
                 "area": "Maximalt värde i valt område",
                 "domain": "95-percentilvärde i havsplaneområde",
                 "custom": "Egendefinierat värde",
@@ -93,7 +105,10 @@
                     "cancel": "Avbryt"
                 }
             },
-            "include-coast": "Inkludera kustområde",
+            "coastal-areas": {
+                "title": "Kustområden",
+                "include-coast": "Inkludera kustområde"
+            },
             "calculate": "Beräkna"
         },
         "toolbar": {
@@ -246,6 +261,7 @@
             "calculated-area": "Beräknad area",
             "km2": "km²",
             "normalization": {
+                "title": "Färgkodning maxvärde",
                 "domain": "95-percentil",
                 "area": "Maximalt värde i område",
                 "custom": "Egendefinerat värde",
@@ -290,7 +306,7 @@
         "description": "Beräkningar av kumulativ miljöpåverkan är utförda med Havs- och vattenmyndighetens system Symphony.",
         "more-info": "För mer information om Symphony se",
         "link": "https://www.havochvatten.se/hav/samordning--fakta/havsplanering/om-havsplanering/vad-ar-havsplanering/symphony---ett-planeringsverktyg-for-havsplanering.html",
-        "fetching-report": "Hämtar rapport...",
+        "fetching-report": "Hämtar rapport",
         "error-message": "Ett fel inträffade. Det finns ingen rapport att visa för tillfället – var god testa att göra en ny beräkning."
     },
     "hav-components": {

@@ -6,11 +6,15 @@
     </tr>
     <tr>
       <th>{{ 'report.cumulative-effect-etc.operation' | translate }}:</th>
-      <td>{{ 'map.editor.operation.'+reports[0].operationName | translate }}</td>
+      <td>{{ 'map.editor.operation.'+reports[0].operationName+'.title' | translate }}</td>
+    </tr>
+    <tr *ngFor="let option of reports[0].operationOptions | keyvalue">
+      <th>{{ 'map.editor.operation.'+reports[0].operationName+'.options.'+option.key+'.title' | translate }}:</th>
+      <td>{{ 'map.editor.operation.'+reports[0].operationName+'.options.'+option.key+'.'+option.value | translate }}</td>
     </tr>
     <!-- TODO Add relative diff of total impact in header -->
     <tr *ngIf="normalization">
-      <th>{{ 'map.editor.normalization.title' | translate }}:</th>
+      <th>{{ 'report.cumulative-effect-etc.normalization.title' | translate }}:</th>
       <td [ngSwitch]="normalization.type">
         <ng-container *ngSwitchCase="type.Domain">
           {{ 'report.cumulative-effect-etc.normalization.domain' | translate }}<sup>*</sup>
