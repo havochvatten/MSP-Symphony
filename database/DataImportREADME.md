@@ -67,10 +67,45 @@ geographical domain of a sensitivity matrix)
   delimitations, nature reserves etc.
 
 Calculation areas are stored in the _calculationarea_ table in database and the latter two in the _nationalareas_ 
-table. The generic areas are further grouped into arbitrary types (whose identifiers listed in a _narea_types_ 
-column).
+table. The generic areas are grouped into types (whose identifiers listed in a _narea_types_ 
+column), and the concrete areas (or "polygons", or "features") are further organized into groups.
 
-Areas are grouped together using an ISO3 country code identifer. Areas for several countries can coexist in
+The generic areas are stored in the the _narea_areas_ column as a JSON string of the following structure:
+```json
+{
+  "type": "<area type code>",
+  "en": "Area type title",
+  "fr": "A localized area type title",
+  "groups": [
+    {
+      "en": "An area grouping title",
+      "fr": "A localized area grouping title",
+      "areas": [
+        {
+          "name": "Area name",
+          "searchdata": "Optional data included when searching for areas",
+          "polygon": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  18.9533007694653,
+                  60.2826654692453
+                ],
+                ...
+              ]
+            ]
+          }
+        },
+        ...
+      ]
+    },
+    ...
+  ]
+}
+```
+
+All the areas are grouped together under country code identifer. Areas for several countries can coexist in
 the system, but the active one is selected through the _areas.countrycode_ system property.
 
 ### Import procedure
