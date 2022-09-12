@@ -32,6 +32,9 @@
       th:not(:first-child) {
         text-align: center;
       }
+      td:nth-child(4) {
+        text-align: right;
+      }
     }
     tr.ruled>* {
       border-top: 1px solid;
