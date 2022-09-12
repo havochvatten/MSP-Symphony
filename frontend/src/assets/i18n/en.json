@@ -260,6 +260,7 @@
             "std-dev": "Std. Dev",
             "calculated-area": "Calculated area",
             "km2": "km²",
+            "not-measurable": "(not measurable)",
             "normalization": {
                 "title": "Result colorscale",
                 "description": "Set maximum value based on",

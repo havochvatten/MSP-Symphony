@@ -45,6 +45,9 @@
     border-collapse: collapse;
     tr {
       line-height: 20px; /* compensate for collapsed borders */
+      td {
+        white-space: nowrap;
+      }
     }
   }
 
