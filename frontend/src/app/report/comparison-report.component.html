@@ -29,7 +29,7 @@
     [scenarioImpacts]="[report.a.impactPerPressure, report.b.impactPerPressure,
       calculateRelativeDifference([report.a.impactPerPressure, report.b.impactPerPressure])
      ]"
-    [names]="[report.a.name, report.b.name, 'report.impact-table.relative-diff' | translate]"
+    [names]="[report.a.name, report.b.name, 'report.cumulative-effect-etc.relative-diff' | translate]"
     [locale]="locale"
   ></app-impact-table>
   <app-impact-table
@@ -39,7 +39,7 @@
     [scenarioImpacts]="[report.a.impactPerEcoComponent, report.b.impactPerEcoComponent,
       calculateRelativeDifference([report.a.impactPerEcoComponent, report.b.impactPerEcoComponent])
      ]"
-    [names]="[report.a.name, report.b.name, 'report.impact-table.relative-diff' | translate]"
+    [names]="[report.a.name, report.b.name, 'report.cumulative-effect-etc.relative-diff' | translate]"
     [locale]="locale"
   ></app-impact-table>
   <p class="closing-matter">

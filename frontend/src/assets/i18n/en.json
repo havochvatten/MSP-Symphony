@@ -252,6 +252,7 @@
             "operation": "Algorithm",
             "choose": "Choose algorithm",
             "title": "Cumulative effect",
+            "relative-diff": "Relative change",
             "total": "Total",
             "average": "Average",
             "min": "Min",
@@ -259,6 +260,7 @@
             "std-dev": "Std. Dev",
             "calculated-area": "Calculated area",
             "km2": "km²",
+            "not-measurable": "(not measurable)",
             "normalization": {
                 "title": "Result colorscale",
                 "description": "Set maximum value based on",
@@ -294,8 +296,7 @@
             "ecoComponent": "Impact per nature value",
             "pressure": "Impact per pressure",
             "cumulative": "Cumulative",
-            "percentage-of-total": "% of Total",
-            "relative-diff": "Relative change"
+            "percentage-of-total": "% of Total"
         },
         "toolbar": {
             "export-csv": "Export as CSV",

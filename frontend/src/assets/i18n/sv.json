@@ -253,6 +253,7 @@
             "baseline": "Basdataversion",
             "operation": "Algoritm",
             "title": "Kumulativ effekt",
+            "relative-diff": "Relativ förändring",
             "total": "Summa",
             "average": "Genomsnitt",
             "min": "Minimalt värde",
@@ -260,6 +261,7 @@
             "std-dev": "Standardavvikelse",
             "calculated-area": "Beräknad area",
             "km2": "km²",
+            "not-measurable": "(ej mätbar)",
             "normalization": {
                 "title": "Färgkodning maxvärde",
                 "domain": "95-percentil",
@@ -294,8 +296,7 @@
             "ecoComponent": "Påverkan per naturvärde",
             "pressure": "Påverkan per belastning",
             "cumulative": "Kumulativt",
-            "percentage-of-total": "Av totalsumman",
-            "relative-diff": "Relativ förändring"
+            "percentage-of-total": "Av totalsumman"
         },
         "toolbar": {
             "export-csv": "Ladda ner CSV",
