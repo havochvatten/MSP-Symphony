@@ -22,11 +22,14 @@ export class CumulativeEffectEtcComponent {
 
   typeOf = (obj: any) => typeof obj;
   hasAreaTypes = (matrix: any) => typeof matrix === 'object' &&  Object.keys(matrix.areaTypes).length;
+
+  /* Assumes two reports */
   relativeDifferencePercentage(prop: string) {
-    const pkey = prop as keyof Report;
-    return this.reports && this.reports.length === 2 && (this.reports[0][pkey] as number) > 0 ?
-        ((this.reports[1][pkey] as number) /
-         (this.reports[0][pkey] as number)) * 100 :
-      0;
+    const pkey = prop as keyof Report,
+          a = this.reports ? this.reports[0][pkey] as number : 0,
+          b = this.reports ? this.reports[1][pkey] as number : 0;
+    return a > 0 ?
+        ((b - a) / a) * 100 :
+        0;
   }
 }
