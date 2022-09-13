@@ -249,7 +249,7 @@ public class CalcService {
         // Apply scenario changes, if any
         if (scenario.getChanges() != null && !scenario.getChanges().isNull()) {
             var changeFeatures =
-                    GeoJSONReader.parseFeatureCollection(new String(mapper.writeValueAsBytes(scenario.getChanges())));
+                    GeoJSONReader.parseFeatureCollection(mapper.writeValueAsString(scenario.getChanges()));
             if (!changeFeatures.isEmpty()) {
                 var scenarioComponents = scenarioService.applyScenario(
                         ecoComponents,

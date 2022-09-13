@@ -175,7 +175,7 @@ public class Scenario implements Serializable {
 
     public SimpleFeature getFeature() {
         try {
-            return GeoJSONReader.parseFeature(new String(mapper.writeValueAsBytes(feature)));
+            return GeoJSONReader.parseFeature(mapper.writeValueAsString(feature));
         } catch (IOException e) {
             throw new RuntimeException("Unable to parse feature: "+feature.toString());
         }

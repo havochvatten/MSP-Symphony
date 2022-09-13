@@ -17,26 +17,6 @@ public class DoubleStatistics extends DoubleSummaryStatistics {
         double squareValue = value * value;
         simpleSumOfSquare += squareValue;
         sumOfSquareWithCompensation(squareValue);
-        processMedian(value);
-    }
-
-    private void processMedian(double value) {
-        int ivalue = (int) value & 0xFFFFFF;
-        ++simpleHistogram[ivalue];
-    }
-
-    public double getMedian() {
-        int midPoint = (int) Math.ceil(this.getCount() / 2);
-        int acc = 0;
-        int i = 0;
-
-        for(int cur : simpleHistogram){
-            acc += cur > 0 ? cur : 0;
-            if(acc > midPoint) break;
-            i++;
-        }
-
-        return i;
     }
 
     public DoubleStatistics combine(DoubleStatistics other) {
