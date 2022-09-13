@@ -116,7 +116,6 @@ public class ReportService {
         // .getSum()) not always true. Tolerance?
         report.total = total; //stats.getSum();
         report.average = stats.getAverage();
-        report.median = stats.getMedian();
         report.min = stats.getMin();
         report.max = stats.getMax();
         report.stddev = stats.getStandardDeviation();
