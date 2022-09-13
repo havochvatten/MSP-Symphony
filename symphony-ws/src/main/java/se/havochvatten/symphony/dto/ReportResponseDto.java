@@ -23,6 +23,7 @@ public class ReportResponseDto {
     public Map<String, String> operationOptions;
     public double total;
     public double average;
+    public double median;
     public double min;
     public double max;
     public double stddev;

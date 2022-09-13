@@ -32,7 +32,7 @@
 
   <h4>{{ 'report.cumulative-effect-etc.title' | translate }}</h4>
   <table class="totals">
-    <tr *ngIf="reports.length==2">
+    <tr *ngIf="reports.length===2">
       <th></th>
       <th *ngFor="let r of reports">{{ r.name }}</th>
       <th>{{ 'report.cumulative-effect-etc.relative-diff' | translate }}</th>

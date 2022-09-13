@@ -31,6 +31,7 @@ import javax.ws.rs.NotFoundException;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Entity
@@ -174,7 +175,7 @@ public class Scenario implements Serializable {
 
     public SimpleFeature getFeature() {
         try {
-            return GeoJSONReader.parseFeature(mapper.writeValueAsString(feature));
+            return GeoJSONReader.parseFeature(new String(mapper.writeValueAsBytes(feature)));
         } catch (IOException e) {
             throw new RuntimeException("Unable to parse feature: "+feature.toString());
         }

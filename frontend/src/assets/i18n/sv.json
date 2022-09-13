@@ -249,6 +249,9 @@
             "title": "Scenariojämförelserapport",
             "vs": "kontra"
         },
+        "common" : {
+            "not-measurable": "(ej mätbar)"
+        },
         "cumulative-effect-etc": {
             "baseline": "Basdataversion",
             "operation": "Algoritm",
@@ -261,7 +264,6 @@
             "std-dev": "Standardavvikelse",
             "calculated-area": "Beräknad area",
             "km2": "km²",
-            "not-measurable": "(ej mätbar)",
             "normalization": {
                 "title": "Färgkodning maxvärde",
                 "domain": "95-percentil",

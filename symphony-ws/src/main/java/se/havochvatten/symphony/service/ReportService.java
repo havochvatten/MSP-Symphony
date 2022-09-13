@@ -2,9 +2,11 @@ package se.havochvatten.symphony.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.geotools.filter.function.Collection_MedianFunction;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.jaitools.numeric.SampleStats;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import se.havochvatten.symphony.calculation.CalcUtil;
@@ -100,6 +102,8 @@ public class ReportService {
 
         double[] pTotal = new double[pLen];
         double[] esTotal = new double[esLen];
+        double[] pMedian = new double[pLen];
+        double[] esMedian = new double[esLen];
         // N.B: Will set pTotal and esTotal as side effect!
         double total = getComponentTotals(impactMatrix, pTotal, esTotal);
 
@@ -114,6 +118,7 @@ public class ReportService {
         // .getSum()) not always true. Tolerance?
         report.total = total; //stats.getSum();
         report.average = stats.getAverage();
+        report.median = stats.getMedian();
         report.min = stats.getMin();
         report.max = stats.getMax();
         report.stddev = stats.getStandardDeviation();
