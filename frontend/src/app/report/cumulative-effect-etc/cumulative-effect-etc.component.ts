@@ -34,7 +34,7 @@ export class CumulativeEffectEtcComponent {
           b = this.reports ? this.reports[1][pkey] as number : 0,
           result = ((b - a) / a);
 
-    return (result === NaN) ?
+    return (isNaN(result)) ?
           this.translate.instant('report.cumulative-effect-etc.not-measurable') :
           formatNumber(result * 100, this.locale, '1.0-2') + "%";
   }
