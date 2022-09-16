@@ -32,6 +32,6 @@ export class CumulativeEffectEtcComponent {
     const pkey = prop as keyof Report;
     return formatRelativePercentage(
       this.reports ? relativeDifference(this.reports[0][pkey], this.reports[1][pkey]) : NaN,
-      2, this.translate.instant('report.common.not-measurable'), this.locale);
+      2, this.locale, this.translate.instant('report.common.not-measurable'));
   }
 }

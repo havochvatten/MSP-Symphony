@@ -19,6 +19,6 @@ export class ImpactTableComponent {
   }
 
   relativeDifferencePercentage(value: number, ersatz: string) {
-    return isNaN(value) ? "" : formatRelativePercentage(value, 2, ersatz, this.locale);
+    return isNaN(value) ? "" : formatRelativePercentage(value, 2, this.locale, ersatz);
   }
 }
