@@ -247,11 +247,15 @@
             "title": "Calculation Comparison Report",
             "vs": "and"
         },
+        "common" : {
+            "not-measurable": "(not measurable)"
+        },
         "cumulative-effect-etc": {
             "baseline": "Baseline version",
             "operation": "Algorithm",
             "choose": "Choose algorithm",
             "title": "Cumulative effect",
+            "relative-diff": "Relative change",
             "total": "Total",
             "average": "Average",
             "min": "Min",
@@ -294,8 +298,7 @@
             "ecoComponent": "Impact per nature value",
             "pressure": "Impact per pressure",
             "cumulative": "Cumulative",
-            "percentage-of-total": "% of Total",
-            "relative-diff": "Relative change"
+            "percentage-of-total": "% of Total"
         },
         "toolbar": {
             "export-csv": "Export as CSV",
