@@ -95,7 +95,7 @@
                 "add-scenarios-hint": "Créez un scénario en cliquant sur le + ci-dessus."
             },
             "clear": "Effacer",
-            "close": "Fermer",
+            "close": "❮",
             "delete": {
                 "label": "Supprimer",
                 "modal": {
