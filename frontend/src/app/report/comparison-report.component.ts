@@ -14,6 +14,7 @@ import { BandGroup } from "@data/metadata/metadata.interfaces";
 import MetadataService from "@data/metadata/metadata.service";
 import { ReportService } from "@src/app/report/report.service";
 import { CalculationService } from "@data/calculation/calculation.service";
+import { relativeDifference } from "@data/calculation/calculation.util";
 import { map } from "lodash";
 
 @Component({
@@ -87,16 +88,7 @@ export class ComparisonReportComponent {
     const unionOfBandKeys = new Set([...Object.keys(components[0]), ...Object.keys(components[1])]);
     unionOfBandKeys.forEach(band => {
       const [a, b] = map(components, band);
-      if (!a && !b)  // avoid divide by zero
-        diffs[band] = 0;
-      else if (!a && b)
-        diffs[band] = 100;
-      else if (a && !b)
-        diffs[band] = -100;
-      else if (a && b)
-        diffs[band] = 100*(b-a)/a;
-      else // both are undefined, this case will not happen since band then is excluded
-        console.error("Unhandled case of relative difference!", a, b);
+      diffs[band] = relativeDifference(a, b);
       }
     );
     return diffs;

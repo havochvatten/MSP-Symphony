@@ -247,11 +247,15 @@
             "title": "Rapport de comparaison",
             "vs": "vs."
         },
+        "common" : {
+            "not-measurable": "(non mesurable)"
+        },
         "cumulative-effect-etc": {
             "baseline": "Version de référence",
             "operation": "Algorithme",
             "choose": "Choisissez l'algorithme",
             "title": "Impact cumulé",
+            "relative-diff": "Changement relatif",
             "total": "Total",
             "average": "Moyenne",
             "min": "Min.",
@@ -295,7 +299,6 @@
             "pressure": "Impact par pression",
             "cumulative": "Cumulatif",
             "percentage-of-total": "% du total",
-            "relative-diff": "Changement relatif"
         },
         "toolbar": {
             "export-csv": "Exporter en tant que CSV",

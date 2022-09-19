@@ -5,7 +5,7 @@ export const environment = {
   apiBaseUrl: "/symphony-ws/service",
   baseline: false, // Set to some false value to get "latest" baseline
   map: {
-    center: [14.94, 60.57], // Modified center of Sweden with focus on seas
+    center: [0, 0],
     initialZoom: 6,
     maxZoom: 10,
     minZoom: 3,
@@ -36,15 +36,10 @@ export const environment = {
       //   },
       //   serverType: 'geoserver'
       // }
-    },
-    hav: {
-      wmsUrl: 'https://geodata.havochvatten.se/geoservices/hav-bakgrundskartor/wms',
-      params: { LAYERS: 'hav-bakgrundskartor:hav-grundkarta' },
-      serverType: 'geoserver'
     }
   },
   login: {
-    noAccountUrl: "https://sspr.havochvatten.se/sspr/public/newuser/profile/HaVkonto",
-    forgotPasswordUrl: "https://sspr.havochvatten.se/sspr/public/forgottenpassword"
+    noAccountUrl: "https://your.server.com/no-account.html",
+    forgotPasswordUrl: "https://your.server.com/forgot-password.html"
   }
 };

@@ -35,6 +35,7 @@ The input data is packaged in a so-called _baseline_. A baseline consists of:
     **N.B:** Not to be confused with the _Metadata Language_ column, 
     which specifies the language used for the non-localized text in the metadata, which is assumed to be 
     English.   
+  - The _Map Acknowledgement_ column will be displayed as an attribution on the map when that data layer is visible
   - The contents of the _Multiband .tif name_ and _Metadata filename_ columns are not used
 
 Fields are separated using semicolon.
