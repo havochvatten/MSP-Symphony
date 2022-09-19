@@ -40,16 +40,11 @@ export const environment = {
       //   },
       //   serverType: 'geoserver'
       // }
-    },
-    hav: {
-      wmsUrl: 'https://geodata.havochvatten.se/geoservices/hav-bakgrundskartor/wms',
-      params: { LAYERS: 'hav-bakgrundskartor:hav-grundkarta' },
-      serverType: 'geoserver'
     }
   },
   login: {
-    noAccountUrl: "https://sspr.havochvatten.se/sspr/public/newuser/profile/HaVkonto",
-    forgotPasswordUrl: "https://sspr.havochvatten.se/sspr/public/forgottenpassword"
+    noAccountUrl: "https://your.server.com/no-account.html",
+    forgotPasswordUrl: "https://your.server.com/forgot-password.html"
   }
 };
 
