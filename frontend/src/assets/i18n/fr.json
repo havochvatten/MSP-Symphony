@@ -228,7 +228,7 @@
         "logout": "Se déconnecter"
     },
     "about-dialog": {
-        "system-name": "Symphony Suède",
+        "system-name": "Symphony",
         "build": "build",
         "third-party-software": "Construit à l'aide des logiciels suivants:",
         "close": "Merci"
@@ -298,7 +298,7 @@
             "ecoComponent": "Impact par composante écosystème",
             "pressure": "Impact par pression",
             "cumulative": "Cumulatif",
-            "percentage-of-total": "% du total",
+            "percentage-of-total": "% du total"
         },
         "toolbar": {
             "export-csv": "Exporter en tant que CSV",
