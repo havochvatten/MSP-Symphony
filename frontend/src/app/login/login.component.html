@@ -22,11 +22,11 @@
 </form>
 <div class="login-options">
   <nav>
-    <p>
+    <p *ngIf="env.login.forgotPasswordUrl !== undefined">
       {{ 'login.forgot-password' | translate }}
       <a [href]="env.login.forgotPasswordUrl">{{ 'login.request-password' | translate }}</a>
     </p>
-    <p>
+    <p *ngIf="env.login.noAccountUrl !== undefined">
       {{ 'login.no-account' | translate }}
       <a [href]="env.login.noAccountUrl">{{ 'login.request-account' | translate }}</a>
     </p>
