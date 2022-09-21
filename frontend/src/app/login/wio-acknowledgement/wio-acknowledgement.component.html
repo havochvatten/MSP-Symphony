@@ -14,12 +14,18 @@
   </div>
   <div class="org_parties_logotypes">
     <div class="principal_orgs">
-      <div class="org_logo nc"></div>
-      <div class="org_logo unep"></div>
+      <a href="https://www.nairobiconvention.org/" target="_blank">
+        <div class="org_logo nc"></div>
+      </a>
+      <a href="https://www.unep.org/" target="_blank">
+        <div class="org_logo unep"></div>
+      </a>
     </div>
     <div class="swam_border">
       <div class="sweden_brand"></div>
-      <div class="SWaM_logo" [style.background-image]="'url(/assets/' + localized_hav_logo() + ')'"></div>
+      <a href="https://{{ localized_hav_url() }}" target="_blank">
+        <div class="SWaM_logo" [style.background-image]="'url(/assets/' + localized_hav_logo() + ')'"></div>
+      </a>
     </div>
   </div>
 </div>

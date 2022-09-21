@@ -14,4 +14,8 @@ export class WioAcknowledgementComponent {
     return this.translate.currentLang === 'sv' ? 'hav-logo-black.svg' : 'hav-logo-black-eng.svg';
   }
 
+  localized_hav_url() {
+    return 'www.havochvatten.se/' + (this.translate.currentLang !== 'sv' ? 'en' : '')
+  }
+
 }
