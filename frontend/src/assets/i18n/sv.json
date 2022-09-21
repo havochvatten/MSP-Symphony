@@ -230,7 +230,7 @@
         "logout": "Logga ut"
     },
     "about-dialog": {
-        "system-name": "Symphony",
+        "system-name": "WIO Symphony",
         "build": "Byggnummer",
         "third-party-software": "Byggt med följande tredjepartsmjukvara:",
         "close": "Tack"
@@ -315,6 +315,13 @@
     "hav-components": {
         "select": {
             "search": "Sök"
+        }
+    },
+    "wio": {
+        "login": {
+            "in-collaboration": "I samarbete",
+            "acknowledgement-1": "Utvecklat i samarbete mellan the Nairobi Convention, dess tio medlemsländer och ett svenskt team av myndigheter och universitet under ledning av Havs- och vattenmyndigheten.",
+            "acknowledgement-2": "Finansieras av Regeringskansliet och Sida, Styrelsen för internationellt utvecklingssamarbete. Tack till de som bidragit med data. Se lista här: "
         }
     },
     "footer": "Havs och Vattenmyndigheten"

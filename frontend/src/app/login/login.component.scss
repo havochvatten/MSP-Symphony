@@ -16,17 +16,24 @@
     z-index: 100;
   }
 
+  h2.instance_desc {
+    margin: 0 0 1rem;
+    color: $hav-darkblue;
+  }
+
   img {
     margin: $l-margin 0 $l-margin 0;
-    width: 18.5rem;
 
-    &.duck {
-      margin-top: 14.2rem;
+    &.instance {
+      margin-top: 16rem;
+      min-width: 18.5rem;
+      width: 13vw;
     }
 
     &.logo {
       margin-top: 7.5rem;
       margin-bottom: 13rem;
+      width: 18.5rem;
     }
   }
 
@@ -35,7 +42,7 @@
     margin-bottom: $m-margin;
     height: 92px;
     width: 300px;
-    color: #0b2d4b;
+    color: $hav-darkblue;
     font-size: 3.3rem;
     letter-spacing: 0.29rem;
     line-height: 3.8rem;

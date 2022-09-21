@@ -228,7 +228,7 @@
         "logout": "Log out"
     },
     "about-dialog": {
-        "system-name": "Symphony",
+        "system-name": "WIO Symphony",
         "build": "Build",
         "third-party-software": "Built using the following third party software:",
         "close": "Thank you"
@@ -315,6 +315,13 @@
     "hav-components": {
         "select": {
             "search": "Search"
+        }
+    },
+    "wio": {
+        "login": {
+            "in-collaboration": "In collaboration",
+            "acknowledgement-1": "Developed in collaboration between the Nairobi Convention, its ten member states, and a Swedish team of government agencies and universities led by the Swedish Agency for Marine and Water Management.",
+            "acknowledgement-2": "Financed by the Swedish Government Offices and Sida, the Swedish International Development Cooperation Agency. Data contributors, thank you! See list at "
         }
     },
     "footer": "Swedish Agency for Marine and Water Management"

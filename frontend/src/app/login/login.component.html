@@ -1,4 +1,5 @@
-<img class="duck" src="assets/long-tailed-duck.svg" alt="Alfågel" />
+<img class="instance" src="{{ env.instanceImage }}" alt="WIO Symphony" />
+<h2 class="instance_desc">{{ env.instanceDescriptor }}</h2>
 <h1>Symphony</h1>
 <form class="login-form" [formGroup]="loginForm">
   <hav-form-field
@@ -32,7 +33,7 @@
     </p>
   </nav>
 </div>
-<img class="logo" src="assets/hav-logo-orange.svg" alt="Havs och Vattenmyndigheten" />
+<app-wio-acknowledgement></app-wio-acknowledgement>
 <div class="topography" data-position="bottom-left"></div>
 <div class="topography" data-position="top-right"></div>
 <div *ngIf="loading | async" class="loading-overlay">

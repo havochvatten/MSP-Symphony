@@ -1,0 +1,116 @@
+$border-blue: #005795;
+
+:host {
+  z-index: 2;
+  .collaborating_parties {
+    text-align: center;
+    margin-top: 3rem;
+
+    .collaboration_label {
+      font-size: 1.4rem;
+    }
+
+    .national_parties_flags {
+      display: flex;
+      height: 11rem;
+      width: 100vw;
+      justify-content: center;
+      margin-top: 3rem;
+
+      .flag {
+        height: 4vw;
+        max-width: 8vw;
+        margin: 0 1vw;
+
+        &.km {
+          content: url("~src/assets/wio/flags/flags.km.svg");
+        }
+        &.fr {
+          content: url("~src/assets/wio/flags/flags.fr.svg");
+        }
+        &.ke {
+          content: url("~src/assets/wio/flags/flags.ke.svg");
+        }
+        &.mg {
+          content: url("~src/assets/wio/flags/flags.mg.svg");
+        }
+        &.mu {
+          content: url("~src/assets/wio/flags/flags.mu.svg");
+        }
+        &.mz {
+          content: url("~src/assets/wio/flags/flags.mz.svg");
+        }
+        &.sc {
+          content: url("~src/assets/wio/flags/flags.sc.svg");
+        }
+        &.so {
+          content: url("~src/assets/wio/flags/flags.so.svg");
+        }
+        &.za {
+          content: url("~src/assets/wio/flags/flags.za.svg");
+        }
+        &.tz {
+          content: url("~src/assets/wio/flags/flags.tz.svg");
+        }
+      }
+    }
+
+    .org_parties_logotypes {
+      .principal_orgs {
+        display: flex;
+        justify-content: center;
+        margin: 3rem 0 5rem;
+
+        .org_logo {
+          height: 12.4rem;
+
+          &.nc{
+            content: url("~src/assets/wio/nc_logo-tmp.png");
+            margin-right: 8rem;
+          }
+
+          &.unep {
+            content: url("~src/assets/wio/unep_logo.svg");
+          }
+        }
+      }
+
+      .swam_border {
+        display: flex;
+        justify-content: center;
+
+        div {
+          background-repeat: no-repeat;
+          background-size: auto 10rem;
+          border: 2.5px solid $border-blue;
+          width: 23rem;
+          height: 9rem;
+
+          &.sweden_brand {
+            background-image: url("~src/assets/sweden-logotype-english.svg");
+            background-position: 0 50%;
+            background-size: auto 9rem;
+            border-right: 0;
+          }
+
+          &.SWaM_logo {
+            background-position: center;
+            background-size: auto 6rem;
+          }
+        }
+      }
+    }
+  }
+
+  .front-acknowledgement {
+    text-align: center;
+    margin-top: 5rem;
+    padding-bottom: 5rem;
+
+    p {
+      font-size: 1.3rem;
+      line-height: 1.6rem;
+      margin: 0 0 0.3rem;
+    }
+  }
+}

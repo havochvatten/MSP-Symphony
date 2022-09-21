@@ -4,6 +4,9 @@ export const environment = {
   showIncludeCoastCheckbox: true,
   apiBaseUrl: "/symphony-ws/service",
   baseline: false, // Set to some false value to get "latest" baseline
+  instanceName: "WIO Symphony",
+  instanceImage: "assets/wio/wiosym-ideogram.svg",
+  instanceDescriptor: "Western Indian Ocean",
   map: {
     center: [39.0, -11.0], // Suitable starting center for WIO region
     initialZoom: 4.2,
