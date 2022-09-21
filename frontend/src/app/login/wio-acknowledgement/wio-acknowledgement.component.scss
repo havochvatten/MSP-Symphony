@@ -12,16 +12,7 @@ $border-blue: #005795;
 
     .national_parties_flags {
       display: flex;
-      height: 11rem;
-      width: 100vw;
-      justify-content: center;
-      margin-top: 3rem;
-
       .flag {
-        height: 4vw;
-        max-width: 8vw;
-        margin: 0 1vw;
-
         &.km {
           content: url("~src/assets/wio/flags/flags.km.svg");
         }
@@ -55,6 +46,36 @@ $border-blue: #005795;
       }
     }
 
+    @media (hover: hover) {
+      .national_parties_flags {
+        height: 11rem;
+        width: 100vw;
+        justify-content: center;
+        margin-top: 3rem;
+
+        .flag {
+          height: 4vw;
+          max-width: 8vw;
+          margin: 0 1vw;
+        }
+      }
+    }
+
+    @media (hover: none) {
+      .national_parties_flags {
+        width: 95vw;
+        flex-wrap: wrap;
+        margin: 0.8rem auto 5rem;
+
+        .flag {
+          flex: 1 0;
+          flex-basis: 18.9%;
+          max-height: 8vw;
+          margin-top: 1rem
+        }
+      }
+    }
+
     .org_parties_logotypes {
       .principal_orgs {
         display: flex;
@@ -63,6 +84,7 @@ $border-blue: #005795;
 
         .org_logo {
           height: 12.4rem;
+          max-height: 20vw;
 
           &.nc{
             content: url("~src/assets/wio/nc_logo-tmp.png");
@@ -85,17 +107,36 @@ $border-blue: #005795;
           border: 2.5px solid $border-blue;
           width: 23rem;
           height: 9rem;
+          max-width: 42vw;
 
           &.sweden_brand {
             background-image: url("~src/assets/sweden-logotype-english.svg");
             background-position: 0 50%;
-            background-size: auto 9rem;
             border-right: 0;
           }
 
           &.SWaM_logo {
             background-position: center;
-            background-size: auto 6rem;
+          }
+
+          @media (hover: hover) {
+            &.sweden_brand {
+              background-size: auto 9rem;
+            }
+
+            &.SWaM_logo {
+              background-size: auto 6rem;
+            }
+          }
+
+          @media (hover: none) {
+            &.sweden_brand {
+              background-size: auto 17.8vw
+            }
+
+            &.SWaM_logo {
+              background-size: auto 15.2vw;
+            }
           }
         }
       }
@@ -104,13 +145,23 @@ $border-blue: #005795;
 
   .front-acknowledgement {
     text-align: center;
-    margin-top: 5rem;
+    margin: 5rem 2rem 0;
     padding-bottom: 5rem;
 
-    p {
-      font-size: 1.3rem;
-      line-height: 1.6rem;
-      margin: 0 0 0.3rem;
+    @media (hover: hover) {
+      p {
+        font-size: 1.3rem;
+        line-height: 1.6rem;
+        margin: 0 0 0.3rem;
+      }
+    }
+
+    @media (hover: none) {
+      p {
+        font-size: 1.1rem;
+        line-height: 1.6rem;
+        margin: 0 0 1.4rem;
+      }
     }
   }
 }
