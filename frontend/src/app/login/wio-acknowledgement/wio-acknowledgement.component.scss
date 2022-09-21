@@ -117,6 +117,11 @@ $border-blue: #005795;
 
           &.SWaM_logo {
             background-position: center;
+            background-image: url("~src/assets/hav-logo-black.svg");
+
+            &.eng {
+              background-image: url("~src/assets/hav-logo-black-eng.svg");
+            }
           }
 
           @media (hover: hover) {
@@ -136,6 +141,10 @@ $border-blue: #005795;
 
             &.SWaM_logo {
               background-size: auto 15.2vw;
+
+              &.eng {
+                background-size: auto 11.8vw;
+              }
             }
           }
         }

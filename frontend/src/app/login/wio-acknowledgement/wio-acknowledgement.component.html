@@ -23,8 +23,8 @@
     </div>
     <div class="swam_border">
       <div class="sweden_brand"></div>
-      <a href="https://{{ localized_hav_url() }}" target="_blank">
-        <div class="SWaM_logo" [style.background-image]="'url(/assets/' + localized_hav_logo() + ')'"></div>
+      <a href="https://www.havochvatten.se{{ swedish_locale() ? '' : '/en' }}" target="_blank">
+        <div [ngClass]="{ 'SWaM_logo' : true, 'eng' : !swedish_locale() }"></div>
       </a>
     </div>
   </div>
