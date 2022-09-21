@@ -103,7 +103,21 @@ calculation domain(s).
 2. Make a PUT request to `/symphony-ws/service/percentile-normalization-values/<scenario id>/<calculation area 
    id>` using [Swagger](http://localhost:8080/symphony-ws/swagger/#/calibration/calcPercentileNormalizationValue) or 
    your REST client of choice. Make sure you are authenticated with a user having the GRP_SYMPHONY_ADMIN role prior 
-   to making the request (through a call to `/symphony-ws/service/login`)
+   to making the request (through a call to `/symphony-ws/service/login`). Example:
+
+```
+POST https://your.server.com/symphony-ws/service/login
+Content-Type: application/json
+
+{
+    "username":"<admin username>",
+    "password":"<admin password>"
+}
+
+### Assuming your REST client preserves session cookies between requests you can now do:
+PUT http://your.server.com/symphony-ws/service/calibration/percentile-normalization-values/<scenario 
+id>/<calculation area id>
+```
 
 The actual percentile used can be controlled through the _calc.normalization.histogram.percentile_ property (default 
 to 95th).
