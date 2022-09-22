@@ -1,318 +1,321 @@
 {
     "login": {
-        "username": "Username",
+        "username": "Nom d'utilisateur",
         "password": "Mot de passe",
-        "login": "Log in",
-        "forgot-password": "Forgot password?",
-        "request-password": "Request new password",
-        "no-account": "Are you an external user and lacking login credentials?",
-        "request-account": "Request an account",
+        "login": "Se connecter",
+        "forgot-password": "Mot de passe oublié?",
+        "request-password": "Demander un nouveau mot de passe",
+        "no-account": "Êtes-vous un utilisateur externe et souhaitez vous demander un compte?",
+        "request-account": "Demander un compte",
         "error": {
-            "invalid-credentials": "Wrong username or password.",
-            "system-unavailable": "System is not available, try again later."
+            "invalid-credentials": "Nom d'utilisateur ou mot de passe invalide.",
+            "system-unavailable": "Le système n'est pas disponible, veuillez réessayer plus tard."
         }
     },
     "map": {
-        "background-transparency": "Background map transparency",
-        "click-area": "Click to select area.",
-        "location-outside-scenario": "Location is outside of active scenario",
+        "background-transparency": "Transparence de la carte de fond",
+        "click-area": "Cliquez pour sélectionner une région.",
+        "location-outside-scenario": "Cette région n'est pas disponible dans le scénario actif.",
         "areas": "Régions",
-        "ecosystems": "Ecosystèmes",
-        "pressures": "Pressures",
+        "ecosystems": "Composante écosystèmes",
+        "pressures": "Pressions",
         "matrix": "Matrice",
-        "no-selected-area": "No area selected",
+        "no-selected-area": "Aucune région sélectionnée.",
         "editor": {
-            "title": "Scenarios",
+            "title": "Scénarios",
             "operation": {
-                "title": "Algorithm",
+                "title": "Algorithme",
                 "CumulativeImpact": {
-                    "title": "Cumulative impact"
+                    "title": "Impact cumulé"
                 },
                 "RarityAdjustedCumulativeImpact": {
-                    "title": "Rarity-adjusted cumulative impact",
+                    "title": "Impact cumulé, ajusté en fonction de la rareté",
                     "options": {
                         "domain": {
-                            "title": "Rarity index domain",
-                            "description": "Calculate rarity indices based on:",
-                            "GLOBAL": "Data grid extent",
-                            "LOCAL": "Calculated area extent"
+                            "title": "Domaine de l'indice de rareté",
+                            "description": "Calculer les coefficients de rareté en fonction de:",
+                            "GLOBAL": "L'étendue de la grille de données",
+                            "LOCAL": "L'étendue de la grille de la région sélectionnée."
                         }
                     }
                 }
             },
             "band-pressures": {
-                "intensity": "Edit intensity",
-                "opacity": "Layer opacity",
-                "percentage": "Percentage",
-                "constant-increase": "Constant",
-                "intensity-label": "Show/hide intensity",
-                "opacity-label": "Show/hide opacity",
-                "note": "If you have modified any values in the data layers, you can save these modifications as new layers, and reuse them in other calculations.",
-                "no-scenario-selected": "Select a scenario to adjust intensity values"
+                "intensity": "Changer l'intensité",
+                "opacity": "Changer la transparence",
+                "percentage": "Pourcentage",
+                "constant-increase": "Constante",
+                "intensity-label": "Afficher/masquer l'intensité",
+                "opacity-label": "Afficher/masquer la transparence",
+                "note": "Si vous avez modifié les valeurs pour certaines cartes, vous pouvez enregistrer vos modifications pour les réutiliser dans d'autres calculs.",
+                "no-scenario-selected": "Veuillez sélectionnez un scénario pour ajuster les valeurs d'intensité"
             },
             "matrix": {
-                "sensitivity-matrix": "Sensitivity matrix",
-                "default-matrix": "Default matrix",
-                "user-matrix": "User-defined matrix",
-                "choose-area-type": "Choose area type (optional)",
-                "choose-area-type-matrix": "Select matrix for area type",
-                "edited-matrixes": "Previously edited matrices",
-                "edit-matrix": "Edit matrix",
-                "upload-file": "Upload file",
-                "note": "Here you can modify the sensitivity matrix for different areas. You can also choose to use an uploaded sensitivity matrix.",
+                "sensitivity-matrix": "Matrice de sensibilité",
+                "default-matrix": "Matrice par défaut",
+                "user-matrix": "Matrice sélectionnée par l'utilisateur",
+                "choose-area-type": "Choisir le type de zone (facultatif)",
+                "choose-area-type-matrix": "Sélectionner la matrice pour le type de zone",
+                "edited-matrixes": "Matrice personnalisée",
+                "edit-matrix": "Modifier la matrice",
+                "upload-file": "Importer un fichier",
+                "note": "Vous pouvez modifier la matrice de sensibilité pour différentes zones ou choisir d'utiliser une matrice de sensibilité personnalisée.",
                 "table": {
-                    "edit-name": "Edit",
-                    "delete": "Delete matrix",
-                    "cancel": "Cancel",
-                    "save": "Save matrix",
-                    "save-as": "Save as new matrix"
+                    "edit-name": "Modifier",
+                    "delete": "Supprimer la matrice",
+                    "cancel": "Annuler",
+                    "save": "Enregistrer la matrice",
+                    "save-as": "Enregistrer en tant que nouvelle matrice"
                 }
             },
             "normalization": {
-                "title": "Result colormap",
-                "description": "Set maximum value based on",
-                "area": "Maximum value in computed area",
-                "domain": "Maximum value in MSP area",
-                "custom": "User-defined value",
-                "custom-value": "Value"
+                "title": "Palette de couleurs",
+                "description": "Définir la valeur maximale en tant que:",
+                "area": "Valeur maximale dans la zone de calcul",
+                "domain": "Valeur maximale dans la zone MSP",
+                "custom": "Valeur définie par l'utilisateur",
+                "custom-value": "Valeur"
             },
             "changes": {
-                "title": "Scenario changes",
-                "no-changes": "No scenario changes",
-                "make-changes-hint": "Select an area and make changes in the Ecosystems Components or Pressures tabs.",
-                "clear-change": "Clear change",
-                "units": "u."
+                "title": "Changements de scénario",
+                "no-changes": "Aucun changement de scénario",
+                "make-changes-hint": "Sélectionnez une zone et modifier les paramètres sous les onglets composantes écosystème ou pressions.",
+                "clear-change": "Effacer les modifications",
+                "units": "unités"
             },
-            "select-area-message": "Select an area to calculate. Start with selecting an area and then make any adjustments to nature values or pressures in the left panel.",
-            "fetching-matrices": "Fetching information on area's sensitivity matrices...",
-            "map-layer": "Map layer",
+            "select-area-message": "Sélectionnez une zone de calcul. Commencez par sélectionner une zone, puis modifiez les valeurs des composantes écosystèmes ou pressions dans le panel de gauche.",
+            "fetching-matrices": "Chargement des matrices de sensibilité...",
+            "map-layer": "Couche de données",
             "list": {
-                "user-scenarios": "User scenarios",
-                "add-scenario-label": "Create new scenario for {{area}}",
-                "scenario-name-template": "Scenario {{area}}",
-                "select-area-first-label": "Start by selecting an area for the scenario.",
-                "no-scenarios": "No scenarios",
-                "add-scenarios-hint": "Create a scenario by clicking on the + above."
+                "user-scenarios": "Scénarios utilisateur",
+                "add-scenario-label": "Créer un nouveau scénario pour {{area}}",
+                "scenario-name-template": "Scénario {{area}}",
+                "select-area-first-label": "Commencez par sélectionner une zone pour le scénario.",
+                "no-scenarios": "Aucun scénario",
+                "add-scenarios-hint": "Créez un scénario en cliquant sur le + ci-dessus."
             },
-            "clear": "Clear",
+            "clear": "Effacer",
             "close": "❮",
             "delete": {
-                "label": "Delete",
+                "label": "Supprimer",
                 "modal": {
-                    "title": "Are you sure you want to delete",
-                    "delete": "Delete",
-                    "cancel": "Cancel"
+                    "title": "Êtes-vous sûr de vouloir supprimer",
+                    "delete": "Supprimer",
+                    "cancel": "Annuler"
                 }
             },
-            "include-coast": "Include coast",
-            "calculate": "Calculate"
+            "include-coast": "Inclure la côte",
+            "calculate": "Calculer"
         },
         "toolbar": {
-            "zoom-in": "Zoom in",
-            "zoom-out": "Zoom ut",
-            "clear-results": "Remove results from map",
-            "search-area": "Search for area",
-            "draw-area": "Draw area",
-            "open-area": "Open saved area",
-            "save-area": "Save drawn area"
+            "zoom-in": "Zoom +",
+            "zoom-out": "Zoom -",
+            "clear-results": "Effacer les résultats",
+            "search-area": "Chercher une zone",
+            "draw-area": "Dessiner une zone",
+            "open-area": "Ouvrir une zone sauvegardée",
+            "save-area": "Sauvegarder une zone dessinée"
         },
-        "arrange-layers": "Arrange layers",
+        "arrange-layers": "Changer l'ordre des couches de données",
         "area": {
-            "sea-plan": "MSP areas",
-            "county": "Municipalities and Counties",
-            "protected": "Protectad areas",
-            "surface-water": "Swedish waterbodies managed under the EU Water Framework Directive",
-            "user-created": "User created areas",
-            "no-areas": "No areas",
+            "sea-plan": "Zone d'aménagement maritime",
+            "county": "Municipalités et communes",
+            "protected": "Zones protégées",
+            "surface-water": "Eaux suédoises Swedish gérées dans le cadre de la Water Framework Direction de l'UE",
+            "user-created": "Zones créées par l'utilisateur",
+            "no-areas": "Pas de zones",
             "search": {
-                "label": "Search for area",
-                "placeholder": "Search for area",
-                "clear": "Clear search"
+                "label": "Chercher une zone",
+                "placeholder": "Rechercher une zone",
+                "clear": "Effacer les résultats"
             }
         },
         "eco-component": {
             "search": {
-                "label": "Search for nature value",
-                "placeholder": "Search for nature value",
-                "no-matches": "No matches"
+                "label": "Chercher une composante écosystème",
+                "placeholder": "Chercher une composante écosystème",
+                "no-matches": "Aucun résultat"
             }
         },
         "pressure": {
             "search": {
-                "label": "Search for pressure",
-                "placeholder": "Search for pressure"
+                "label": "Chercher une pression",
+                "placeholder": "Chercher une pression"
             }
         },
         "history": {
-            "title": "Previous calculations",
-            "loading": "Loading calculations...",
-            "baseline-calculations": "Baseline Calculations",
-            "previous-calculations": "Previous Calculations",
-            "placeholder": "No calculations performed"
+            "title": "Résultat précédent",
+            "loading": "Calcul du résultat...",
+            "baseline-calculations": "Résultat du scénario de référence",
+            "previous-calculations": "Résultat précédent",
+            "placeholder": "Aucun résultat calculé"
         },
         "compare": {
-            "title": "Compare calcucaltions",
-            "compare": "Compare Calculations",
-            "base-scenario": "Calculation A",
-            "what-if-scenario": "Calculation B",
-            "choose-scenario": "Choose a calculation",
-            "choose-base-scenario-first": "Choose calculation A first"
+            "title": "Comparez les scénarios",
+            "compare": "Comparez les résultats",
+            "base-scenario": "Résultat du scénario de référence",
+            "what-if-scenario": "Résultat du scénario anticipé",
+            "choose-scenario": "Choisissez un scénario",
+            "choose-base-scenario-first": "Choisissez un scénario de référence avant"
         },
         "user-area": {
             "create": {
-                "label": "Draw new area",
+                "label": "Dessiner une nouvelle zone",
                 "modal": {
-                    "title": "Name your new area",
-                    "placeholder": "My area 1",
-                    "save": "Save",
-                    "close": "Close"
+                    "title": "Choisissez un num",
+                    "placeholder": "Zone 1",
+                    "save": "Sauvegarder",
+                    "close": "Fermer"
                 }
             },
             "upload": {
-                "label": "Upload new area",
+                "label": "Importer une nouvelle zone",
                 "modal": {
-                    "title": "Import area",
-                    "fileformat-note": "Files in <a href='https://www.geopackage.org/' target='_blank'>OGC GeoPackage</a>-format are supported.",
+                    "title": "Importer une zone",
+                    "fileformat-note": "Fichiers type <a href='https://www.geopackage.org/' target='_blank'>OGC GeoPackage</a> acceptés.",
                     "notice": {
-                        "WGS84-reprojection": "The area coordinates will be reprojected to <em>EPSG:4326 (WGS 84)",
-                        "first-area-only": "The GeoPackage contains several layers. Only <em>{{ firstFeature }}</em> will be imported!"
+                        "WGS84-reprojection": "La projection des coordonnées sera transformée vers <em>EPSG:4326 (WGS 84)",
+                        "first-area-only": "Le fichier GeoPackage contient plusieurs couches de données. Seule la couche <em>{{ firstFeature }}</em> sera importée!"
                     },
-                    "import": "Confirm import",
-                    "cancel": "Cancel"
+                    "import": "Confirmer",
+                    "cancel": "Annuler"
                 },
                 "error": {
-                    "NOT_A_GEOPACKAGE": "The chosen file is not a GeoPackage",
-                    "GEOPACKAGE_NO_FEATURES": "GeoPackage does not contain any areas.",
-                    "USER_DEF_AREA_NAME_EXISTS": "An area with this name already exists."
+                    "NOT_A_GEOPACKAGE": "Le fichier n'es pas un fichier GeoPackage",
+                    "GEOPACKAGE_NO_FEATURES": "Le fichier GeoPackage ne contient pas de zones correspondantes.",
+                    "USER_DEF_AREA_NAME_EXISTS": "Une zone avec ce nom existe déjà."
                 }
             },
             "rename": {
-                "label": "Rename area",
+                "label": "Renommer la zone",
                 "modal": {
-                    "title": "Edit area name",
-                    "placeholder": "My area 1",
-                    "save": "Save",
-                    "close": "Close"
+                    "title": "Modifier le nom de la zone",
+                    "placeholder": "Ma zone 1",
+                    "save": "Sauvegarder",
+                    "close": "Fermer"
                 }
             },
             "edit": {
-                "label": "Edit area"
+                "label": "Modifier la zone"
             },
             "delete": {
-                "label": "Delete",
+                "label": "Supprimer",
                 "modal": {
-                    "title": "Are you sure you want to delete",
-                    "delete": "Delete",
-                    "cancel": "Cancel"
+                    "title": "Êtes-vous sûr de vouloir supprimer",
+                    "delete": "Supprimer",
+                    "cancel": "Annuler"
                 }
             },
             "share": {
-                "label": "Share"
+                "label": "Partager"
             }
         },
         "color-scale": {
-            "result": "Cumulative impact",
-            "ecosystem": "Ecosystem value",
-            "pressure": "Pressure intensity"
+            "result": "Impact cumulé",
+            "ecosystem": "Valeur écosystème",
+            "pressure": "Valeur pression"
         }
     },
     "main-menu": {
-        "projects": "Project",
-        "calculations": "Calculations",
-        "files": "Files"
+        "projects": "Projets",
+        "calculations": "Calculs",
+        "files": "Fichiers"
     },
     "user-menu": {
-        "help": "Help",
-        "about": "About",
-        "profile": "My profile",
-        "logout": "Log out"
+        "help": "Aide",
+        "about": "À propos",
+        "profile": "Mon profil",
+        "logout": "Se déconnecter"
     },
     "about-dialog": {
-        "system-name": "Symphony Sweden",
-        "build": "Build",
-        "third-party-software": "Built using the following third party software:",
-        "close": "Thank you"
+        "system-name": "Symphony",
+        "build": "build",
+        "third-party-software": "Construit à l'aide des logiciels suivants:",
+        "close": "Merci"
     },
     "popup-message": {
-        "INFO": "Information",
-        "SUCCESS": "Process succeeded",
-        "ERROR": "An Error Occurred",
-        "WARNING": "Slow process"
+        "INFO": "Infomations",
+        "SUCCESS": "Succès",
+        "ERROR": "Une erreur est survenue",
+        "WARNING": "Attention, processus lent"
     },
     "report": {
         "calculation": {
-            "title": "Rapport de Calcul"
+            "title": "Rapport de calcul"
         },
         "comparison": {
-            "title": "Calculation Comparison Report",
-            "vs": "and"
+            "title": "Rapport de comparaison",
+            "vs": "vs."
+        },
+        "common" : {
+            "not-measurable": "(non mesurable)"
         },
         "cumulative-effect-etc": {
-            "baseline": "Baseline version",
-            "operation": "Algorithm",
-            "choose": "Choose algorithm",
-            "title": "Cumulative effect",
+            "baseline": "Version de référence",
+            "operation": "Algorithme",
+            "choose": "Choisissez l'algorithme",
+            "title": "Impact cumulé",
+            "relative-diff": "Changement relatif",
             "total": "Total",
-            "average": "Average",
-            "min": "Min",
-            "max": "Max",
-            "std-dev": "Std. Dev",
-            "calculated-area": "Calculated area",
+            "average": "Moyenne",
+            "min": "Min.",
+            "max": "Max.",
+            "std-dev": "Ecart type",
+            "calculated-area": "Surface",
             "km2": "km²",
             "normalization": {
-                "title": "Result colorscale",
-                "description": "Set maximum value based on",
-                "domain": "95th percentile",
-                "area": "Maximum value in area",
-                "custom": "User-defined value",
-                "domain-desc": "The result is normalized with regard to the range that 95% of data points in the respective marine spatial planning area belong to (including coastal areas)."
+                "title": "Palette de couleurs",
+                "description": "Définir la valeur maximale en tant que:",
+                "domain": "95e centile",
+                "area": "Valeur maximale dans la zone de calcul",
+                "custom": "Valeur définie par l'utilisateur",
+                "domain-desc": "Le résultat est normalisé afin que 95% des données dans la zone d'aménagement maritime soient sous le seuil."
             },
             "sensitivity-matrices": {
-                "title": "Sensitivity matrix",
-                "area-type-matrices": "Matrices per area type"
+                "title": "Matrice de sensibilité",
+                "area-type-matrices": "Matrice par type de zone"
             },
             "comparison": {
-                "legend-desc": "The image shows the relative difference in total cumulative impact between the base and what-if scenario."
+                "legend-desc": "L'image montre la différence relative d'impact cumulé entre le scénario de référence et le scénario anticipé."
             }
         },
         "highest-impact": {
-            "ecocomponent": "Nature values with highest impact",
-            "pressure": "Pressures with highest impact"
+            "ecocomponent": "Composante écosystèmes avec l'impact le plus important",
+            "pressure": "Pressions avec l'impact le plus important"
         },
         "sankey": {
-            "title": "Sankey diagram",
-            "description": "This Sankey diagram shows the relationship between the pressures and the nature values. The thickness of the arrows are proportional to the size of the pressures and their impact on the nature values."
+            "title": "Diagramme Sankey",
+            "description": "Ce diagramme Sankey montre la relation entre les pressions et les valeurs des composantes écosystème. L'épaisseur des flèches est proportionnelle à l'importance des pressions et à leur impact sur les composantes écosystème."
         },
         "scenario-changes": {
-            "title": "Scenario Parameters",
-            "percent-change-with": "Percent change with <strong>{{percent}}%</strong>",
-            "constant-offset-with": "Constant offset of <strong>{{offset}}</strong> units",
-            "and": "and",
-            "no-changes": "No changes"
+            "title": "Paramètres du scénario",
+            "percent-change-with": "Variation de <strong>{{percent}}%</strong>",
+            "constant-offset-with": "Impact équivalent à <strong>{{offset}}</strong> unités",
+            "and": "et",
+            "no-changes": "Aucun changement"
         },
         "impact-table": {
-            "ecoComponent": "Impact per nature value",
-            "pressure": "Impact per pressure",
-            "cumulative": "Cumulative",
-            "percentage-of-total": "% of Total",
-            "relative-diff": "Relative change"
+            "ecoComponent": "Impact par composante écosystème",
+            "pressure": "Impact par pression",
+            "cumulative": "Cumulatif",
+            "percentage-of-total": "% du total"
         },
         "toolbar": {
-            "export-csv": "Export as CSV",
-            "export-geotiff": "Export as GeoTIFF",
-            "open-in-new-tab": "Open in new tab",
-            "print": "Print"
+            "export-csv": "Exporter en tant que CSV",
+            "export-geotiff": "Exporter en tant que GeoTIFF",
+            "open-in-new-tab": "Ouvrir sous un nouvel onglet",
+            "print": "Imprimer"
         },
-        "description": "Les calculs of the cumulative environmental impact is made using the Swedish Agency for Marine and Water Management's application Symphony.",
-        "more-info": "Pour plus d'information sur Symphony voir ",
+        "description": "Les calculs d'impacts cumulés sur l'environnement sont faits avec l’outil Symphony de l’Agence Suédoise pour la Gestion de l'Eau et des Zones Maritimes (Havs och Vattenmyndigheten).",
+        "more-info": "Pour plus d'informations sur Symphony, veuillez vous renseigner sur ",
         "link": "https://www.havochvatten.se/en/swam/eu--international/marine-spatial-planning/symphony---a-tool-for-ecosystem-based-marine-spatial-planning.html",
-        "fetching-report": "Fetching report",
-        "error-message": "An error occurred. There is no report to show now. Please check options and try a calculation again."
+        "fetching-report": "Assemblage du rapport",
+        "error-message": "Une erreur est survenue. Aucun rapport n'a pu être produit. Veuillez vérifier les paramètres et réessayer."
     },
     "hav-components": {
         "select": {
-            "search": "Search"
+            "search": "Chercher"
         }
     },
-    "footer": "Swedish Agency for Marine and Water Management"
+    "footer": "Agence Suédoise pour la Gestion de l'Eau et des Zones Maritimes (Havs och Vattenmyndigheten)"
 }

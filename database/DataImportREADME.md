@@ -35,6 +35,7 @@ The input data is packaged in a so-called _baseline_. A baseline consists of:
     **N.B:** Not to be confused with the _Metadata Language_ column, 
     which specifies the language used for the non-localized text in the metadata, which is assumed to be 
     English.   
+  - The _Map Acknowledgement_ column will be displayed as an attribution on the map when that data layer is visible
   - The contents of the _Multiband .tif name_ and _Metadata filename_ columns are not used
 
 Fields are separated using semicolon.
@@ -102,7 +103,21 @@ calculation domain(s).
 2. Make a PUT request to `/symphony-ws/service/percentile-normalization-values/<scenario id>/<calculation area 
    id>` using [Swagger](http://localhost:8080/symphony-ws/swagger/#/calibration/calcPercentileNormalizationValue) or 
    your REST client of choice. Make sure you are authenticated with a user having the GRP_SYMPHONY_ADMIN role prior 
-   to making the request (through a call to `/symphony-ws/service/login`)
+   to making the request (through a call to `/symphony-ws/service/login`). Example:
+
+```
+POST https://your.server.com/symphony-ws/service/login
+Content-Type: application/json
+
+{
+    "username":"<username>",
+    "password":"<password>"
+}
+
+###
+PUT http://your.server.com/symphony-ws/service/calibration/percentile-normalization-values/<scenario 
+id>/<calculation area id>
+```
 
 The actual percentile used can be controlled through the _calc.normalization.histogram.percentile_ property (default 
 to 95th).

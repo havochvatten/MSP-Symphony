@@ -230,7 +230,7 @@
         "logout": "Logga ut"
     },
     "about-dialog": {
-        "system-name": "Symphony Sverige",
+        "system-name": "Symphony",
         "build": "Byggnummer",
         "third-party-software": "Byggt med följande tredjepartsmjukvara:",
         "close": "Tack"
@@ -249,10 +249,14 @@
             "title": "Scenariojämförelserapport",
             "vs": "kontra"
         },
+        "common" : {
+            "not-measurable": "(ej mätbar)"
+        },
         "cumulative-effect-etc": {
             "baseline": "Basdataversion",
             "operation": "Algoritm",
             "title": "Kumulativ effekt",
+            "relative-diff": "Relativ förändring",
             "total": "Summa",
             "average": "Genomsnitt",
             "min": "Minimalt värde",
@@ -294,8 +298,7 @@
             "ecoComponent": "Påverkan per naturvärde",
             "pressure": "Påverkan per belastning",
             "cumulative": "Kumulativt",
-            "percentage-of-total": "Av totalsumman",
-            "relative-diff": "Relativ förändring"
+            "percentage-of-total": "Av totalsumman"
         },
         "toolbar": {
             "export-csv": "Ladda ner CSV",
