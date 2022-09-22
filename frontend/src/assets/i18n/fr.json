@@ -228,7 +228,7 @@
         "logout": "Se déconnecter"
     },
     "about-dialog": {
-        "system-name": "WIO Symphony",
+        "system-name": "Symphony",
         "build": "build",
         "third-party-software": "Construit à l'aide des logiciels suivants:",
         "close": "Merci"
@@ -320,8 +320,8 @@
     "wio": {
         "login": {
             "in-collaboration": "En collaboration",
-            "acknowledgement-1": "Développé en collaboration entre la Convention de Nairobi, ses dix États membres et une équipe suédoise d'agences gouvernementales et d'universités dirigée par l'Agence Suédoise pour la Gestion de l'Eau et des Zones Maritimes.",
-            "acknowledgement-2": "Financé par les Services du gouvernement suédois et Sida, l’Agence suédoise de coopération internationale au développement. Contributeurs de données, merci ! Voir la liste sur "
+            "acknowledgement-1": "Développé en collaboration avec la Convention de Nairobi, ses dix États membres et une équipe suédoise composée d'agences gouvernementales et d'universités, sous la direction de l'Agence Suédoise pour la Gestion de l'Eau et des Zones Maritimes.",
+            "acknowledgement-2": "Financé par les services du gouvernement suédois et Sida, l’Agence suédoise de coopération internationale au développement. Contributeurs de données, merci ! Voir la liste sur "
         }
     },
     "footer": "Agence Suédoise pour la Gestion de l'Eau et des Zones Maritimes (Havs och Vattenmyndigheten)"
