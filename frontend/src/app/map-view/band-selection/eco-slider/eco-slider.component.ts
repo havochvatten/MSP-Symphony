@@ -14,7 +14,7 @@ import { State } from '@src/app/app-reducer';
 import { Band, StatePath } from '@data/metadata/metadata.interfaces';
 import { MetadataActions } from '@data/metadata';
 import { convertMultiplierToPercent, getComponentType } from '@data/metadata/metadata.selectors';
-import { formatRelativePercentage } from "@data/calculation/calculation.util";
+import { formatPercentage } from "@data/calculation/calculation.util";
 import { SelectableArea } from "@data/area/area.interfaces";
 import { ScenarioActions } from "@data/scenario";
 import { debounceTime, map } from "rxjs/operators";
@@ -35,7 +35,7 @@ export class EcoSliderComponent implements OnInit, OnChanges, AfterViewInit {
 
   @ViewChild("constant") constantEl!: ElementRef;
   convertMultiplierToPercent = convertMultiplierToPercent;
-  formatPercentage = formatRelativePercentage;
+  formatPercentage = formatPercentage;
 
   constructor(private store: Store<State>) {}
 

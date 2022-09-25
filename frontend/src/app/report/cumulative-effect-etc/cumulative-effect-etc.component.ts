@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { TranslateService } from "@ngx-translate/core";
 import { NormalizationOptions, NormalizationType } from "@data/calculation/calculation.service";
 import { Report } from "@data/calculation/calculation.interfaces";
-import { relativeDifference, formatRelativePercentage } from "@data/calculation/calculation.util";
+import { relativeDifference, formatPercentage } from "@data/calculation/calculation.util";
 
 @Component({
   selector: 'app-cumulative-effect-etc',
@@ -30,8 +30,8 @@ export class CumulativeEffectEtcComponent {
   /* Assumes two reports exist */
   relativeDifferencePercentage(prop: string) {
     const pkey = prop as keyof Report;
-    return formatRelativePercentage(
+    return formatPercentage(
       this.reports ? relativeDifference(this.reports[0][pkey], this.reports[1][pkey]) : NaN,
-      2, this.locale, this.translate.instant('report.common.not-measurable'));
+      2, this.locale, this.translate.instant('report.common.not-measurable'), true);
   }
 }
