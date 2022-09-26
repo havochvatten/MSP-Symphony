@@ -91,6 +91,7 @@ export class MatrixTableComponent {
   }
 
   getName(object: NamedObject) {
+    // FIXME eliminate 'sv'
     return this.locale === 'sv' ? object.nameLocal : object.name;
   }
 }
