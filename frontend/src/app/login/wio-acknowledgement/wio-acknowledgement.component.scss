@@ -1,4 +1,4 @@
-$border-blue: #005795;
+@import '~src/styles/hav-colors';
 
 :host {
   z-index: 2;
@@ -104,7 +104,7 @@ $border-blue: #005795;
         div {
           background-repeat: no-repeat;
           background-size: auto 10rem;
-          border: 2.5px solid $border-blue;
+          border: 2.5px solid $hav-borderblue;
           width: 23rem;
           height: 9rem;
           max-width: 42vw;

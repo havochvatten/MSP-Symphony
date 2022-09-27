@@ -250,7 +250,8 @@
             "vs": "kontra"
         },
         "common" : {
-            "not-measurable": "(ej mätbar)"
+            "not-measurable": "(ej mätbar)",
+            "date-and-time": "Datum och tid:"
         },
         "cumulative-effect-etc": {
             "baseline": "Basdataversion",
@@ -306,9 +307,16 @@
             "open-in-new-tab": "Öppna i ny flik",
             "print": "Skriv ut"
         },
-        "description": "Beräkningar av kumulativ miljöpåverkan är utförda med Havs- och vattenmyndighetens system Symphony.",
-        "more-info": "För mer information om Symphony se",
-        "link": "https://www.havochvatten.se/hav/samordning--fakta/havsplanering/om-havsplanering/vad-ar-havsplanering/symphony---ett-planeringsverktyg-for-havsplanering.html",
+        "wio-addendum": {
+            "citation-header": "Citera:",
+            "cc-license-header": "Licens:",
+            "cc-license-desc": "Denna rapport tillgängliggörs under en",
+            "cc-license-caption": "Creative Commons Erkännande-DelaLika 4.0 Internationell Licens",
+            "cc-license-permission": "Dela och anpassa innehållet, men uppge källa och dela under samma licens – se licenstexten för samtliga villkor."
+        },
+        "description": "Beräkningar av kumulativ miljöpåverkan är utförda med WIO Symphony, ett system framtaget\ni samarbete mellan the Nairobi Convention och Havs- och vattenmyndigheten.",
+        "more-info": "För mer information om WIO Symphony se",
+        "link": "www.nairobiconvention.org/wio-symphony",
         "fetching-report": "Hämtar rapport",
         "error-message": "Ett fel inträffade. Det finns ingen rapport att visa för tillfället – var god testa att göra en ny beräkning."
     },
@@ -318,11 +326,14 @@
         }
     },
     "wio": {
-        "login": {
-            "in-collaboration": "I samarbete",
-            "acknowledgement-1": "Utvecklat i samarbete mellan the Nairobi Convention, dess tio medlemsländer och ett svenskt team av myndigheter och universitet under ledning av Havs- och vattenmyndigheten.",
-            "acknowledgement-2": "Finansierat av regeringskansliet och Sida, Styrelsen för internationellt utvecklingssamarbete. Tack till de som bidragit med data. Se lista här: "
-        }
+        "in-collaboration": "I samarbete",
+        "in-collaboration-with": "I samarbete med",
+        "nairobi-convention" : "Nairobi Convention",
+        "acknowledgement-contributors": "Deltagare som bidragit,",
+        "acknowledgement-thank-you": "tack! Se lista här: ",
+        "acknowledgement-1": "Utvecklat i samarbete mellan the Nairobi Convention, dess tio medlemsländer och ett svenskt team av myndigheter och universitet under ledning av Havs- och vattenmyndigheten.",
+        "acknowledgement-2": "Finansierat av regeringskansliet och Sida, Styrelsen för internationellt utvecklingssamarbete.",
+        "acknowledgement-3": "Tack till de som bidragit med data. Se lista här: "
     },
     "footer": "Havs och Vattenmyndigheten"
 }

@@ -8,7 +8,8 @@
   background-color: white;
   border-radius: 4px;
   padding: 2rem;
-  width: 50rem;
+  width: 30vw;
+  min-width: 57rem;
 
   h2 {
     color: $hav-black;
@@ -44,6 +45,64 @@
 
     ::ng-deep hav-button {
       width: 14rem;
+    }
+  }
+
+  #about-wio-instance-attribution {
+    display: flex;
+    margin: 2rem 0;
+    justify-content: center;
+
+    .org_logo {
+      height: 8.8rem;
+
+      &.nc{
+        content: url("~src/assets/wio/nc_logo-tmp.png");
+        margin-right: 2.4vw;
+      }
+
+      &.unep {
+        content: url("~src/assets/wio/unep_logo.svg");
+        margin-right: 2.1vw
+      }
+    }
+
+    .swam_border {
+      display: flex;
+      margin: auto 0;
+
+      div {
+        background-repeat: no-repeat;
+        background-size: auto 75%;
+        border: 2.5px solid $hav-borderblue;
+        width: 14rem;
+        height: 7rem;
+
+        &.sweden_brand {
+          background-image: url("~src/assets/sweden-logotype-english.svg");
+          background-position: 0 50%;
+          border-right: 0;
+        }
+
+        &.SWaM_logo {
+          background-position: center;
+          background-size: auto 70%;
+          background-image: url("~src/assets/hav-logo-black.svg");
+
+          &.eng {
+            background-image: url("~src/assets/hav-logo-black-eng.svg");
+          }
+        }
+      }
+    }
+  }
+
+  #about-wio-acknowledgement {
+    margin-bottom: 2rem;
+
+    p {
+      font-size: 1.3rem;
+      line-height: 1.8rem;
     }
   }
 }

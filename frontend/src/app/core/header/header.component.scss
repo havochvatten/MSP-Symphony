@@ -35,12 +35,12 @@
       display: flex;
       flex: 1 1 0%;
       justify-content: space-between;
-      margin: 0;
+      margin: 0 3rem 0;
       font-size: 2rem;
       line-height: 2.3rem;
       margin-left: $xs-margin;
       color: inherit;
-      flex: 0;
+      flex: 0 0 auto;
     }
 
     ::ng-deep app-icon {
@@ -67,8 +67,12 @@
 
   .flag {
     width: auto;
-    height: 100%;
-    margin-left: auto;
+    height: 6rem;
+  }
+
+  .nc-logo {
+    height: 4rem;
+    margin-right: 1.5rem;
   }
 
   .instance {
@@ -80,6 +84,6 @@
   }
 
   app-user-menu-toggle {
-    //margin-left: auto;
+    margin-left: auto;
   }
 }

@@ -4,6 +4,27 @@
 <span *ngIf="buildInfo.gitSha"> ({{ buildInfo.gitSha }})</span>
 </p>
 
+<div id="about-wio-section">
+  <div id="about-wio-instance-attribution">
+    <a href="https://www.nairobiconvention.org/" target="_blank">
+      <div class="org_logo nc"></div>
+    </a>
+    <a href="https://www.unep.org/" target="_blank">
+      <div class="org_logo unep"></div>
+    </a>
+    <div class="swam_border">
+      <div class="sweden_brand"></div>
+      <a href="https://www.havochvatten.se{{ swedish_locale() ? '' : '/en' }}" target="_blank">
+        <div [ngClass]="{ 'SWaM_logo' : true, 'eng' : !swedish_locale() }"></div>
+      </a>
+    </div>
+  </div>
+  <div id="about-wio-acknowledgement">
+    <p>{{ 'wio.acknowledgement-1' | translate }}</p>
+    <p>{{ 'wio.acknowledgement-2' | translate }}<a href="https://www.nairobiconvention.org/wio-symphony/">www.nairobiconvention.org/wio-symphony</a></p>
+  </div>
+</div>
+
 <div id="third-party-container"> <!--Extract this to a separate dialog? -->
   <p>{{ 'about-dialog.third-party-software' | translate }}</p>
   <div class="scrollable">

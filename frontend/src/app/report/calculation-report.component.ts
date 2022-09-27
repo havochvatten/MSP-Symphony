@@ -10,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ChartData } from './pressure-chart/pressure-chart.component';
 import { Report } from '@data/calculation/calculation.interfaces';
 import { environment as env } from "@src/environments/environment";
+import buildInfo from '@src/build-info';
 import { NormalizationType } from "@data/calculation/calculation.service";
 import { ReportService } from "@src/app/report/report.service";
 import MetadataService from "@data/metadata/metadata.service";
@@ -35,15 +36,17 @@ export class CalculationReportComponent {
     pressureComponent: BandGroup[];
   }>;
 
+  env = env;
+  buildInfo = buildInfo;
+
   constructor(
     private translate: TranslateService,
     private store: Store<State>,
     private route: ActivatedRoute,
     private reportService: ReportService,
-    private metadataService: MetadataService
+    private metadataService: MetadataService,
   ) {
     this.locale = this.translate.currentLang;
-
     const that = this;
     route.paramMap
       .pipe(

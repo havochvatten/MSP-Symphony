@@ -1,9 +1,12 @@
 <div class="header-top">
   <div class="header-overlay"></div>
-  <h1 (click)="showDuck()">
+  <h1>
     {{ title }}
   </h1>
-  <img class="flag" src="assets/Sweden-SwAM-white-horizontal-no-borders.svg" />
+  <a href="https://www.nairobiconvention.org/" target="_blank">
+    <img class="nc-logo" src="assets/wio/nc_logo-tmp.png" />
+  </a>
+  <img class="flag" src="assets/sweden-logo-white.svg" />
   <img @openCloseMenu *ngIf="displayDuck" class="duck" src="assets/long-tailed-duck.svg" />
   <app-user-menu-toggle [user]="user$ | async" (click)="toggleOpenMenu('USER')"></app-user-menu-toggle>
 </div>

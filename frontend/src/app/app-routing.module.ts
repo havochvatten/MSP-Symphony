@@ -2,6 +2,7 @@ import { AuthenticationGuard } from './login/authentication.guard';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { MainViewComponent } from './map-view/main-view.component';
+import { environment } from "@src/environments/environment.prod";
 
 const routes: Routes = [
   {
@@ -12,7 +13,7 @@ const routes: Routes = [
     path: 'map', // TODO: rename to main
     component: MainViewComponent,
     canActivate: [AuthenticationGuard],
-    data: { headerTitle: 'Symphony' },
+    data: { headerTitle: environment.instanceName },
   },
   {
     path: 'report',
