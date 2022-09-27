@@ -285,7 +285,7 @@
         },
         "sankey": {
             "title": "Sankey-diagram",
-            "description": "Detta Sankey-diagram visar samabanden mellan belastningar och naturvärden. Flödespilarnas bredd är propotionella mot belastningarnas storlek och deras påverkan på olika naturvärden. Detta gör det möjligt att visa alla data översiktligt i en enda bild. Endast värden på över 1% inkluderas i diagrammet."
+            "description": "Detta Sankey-diagram visar sambanden mellan belastningar och naturvärden. Flödespilarnas bredd är proportionella mot belastningarnas storlek och deras påverkan på olika naturvärden. Detta gör det möjligt att visa alla data översiktligt i en enda bild. Endast värden på över 1% inkluderas i diagrammet."
         },
         "scenario-changes": {
             "title": "Scenarioparametrar",
