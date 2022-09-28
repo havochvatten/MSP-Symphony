@@ -1,6 +1,8 @@
 package se.havochvatten.symphony.calculation.jai.CIA;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.media.jai.*;
 import java.awt.*;
@@ -8,7 +10,7 @@ import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
 import java.util.Map;
-import java.util.logging.Logger;
+import java.util.concurrent.atomic.AtomicIntegerArray;
 
 /**
  * JAI operation for computing cumulative impact assessment
@@ -16,7 +18,7 @@ import java.util.logging.Logger;
  * This operation has no notion of geography.
  */
 public class CumulativeImpactOp extends PointOpImage {
-    private static final Logger LOG = Logger.getLogger(CumulativeImpactOp.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(CumulativeImpactOp.class);
 
     public final static int TRANSPARENT_VALUE = 0;
     public final static String IMPACT_MATRIX_PROPERTY_NAME = "se.havochvatten.symphony.impact_matrix";
@@ -30,13 +32,16 @@ public class CumulativeImpactOp extends PointOpImage {
     protected final int[] ecosystemBands;
     protected final int[] pressureBands;
 
+    private final AtomicIntegerArray tileCalculationCount =
+        new AtomicIntegerArray(getNumXTiles()*getNumYTiles());
+
     public CumulativeImpactOp(RenderedImage ecosystemsData, RenderedImage pressuresData,
                               ImageLayout layout, Map config,
                               double[][][] matrices, Raster mask,
                               int[] ecosystems, int[] pressures) {
         super(ecosystemsData, pressuresData, layout, config, true); // source cobbling -- do we need it?
 
-        LOG.fine("CulumativeImpactOp: tile scheduler parallelism=" + JAI.getDefaultInstance().getTileScheduler().getParallelism());
+        LOG.debug("CulumativeImpactOp: tile scheduler parallelism=" + JAI.getDefaultInstance().getTileScheduler().getParallelism());
 
 //        permitInPlaceOperation();
         // Setting matrix
@@ -54,7 +59,7 @@ public class CumulativeImpactOp extends PointOpImage {
     @Override
     protected void computeRect(Raster[] sources, WritableRaster dst, Rectangle dstRect) {
 //    protected void computeRect(PlanarImage[] sources, WritableRaster dst, Rectangle dstRect) { // uncobbled sources
-        LOG.fine("computeRect: " + dstRect + ", thread=" + Thread.currentThread().getId());
+        LOG.info("computeRect: " + dstRect + ", thread=" + Thread.currentThread().getId());
 
         RasterFormatTag[] formatTags = getFormatTags();
         Rectangle srcRect = mapDestRect(dstRect, 0);
@@ -157,6 +162,17 @@ public class CumulativeImpactOp extends PointOpImage {
         accumulateImpactMatrix(rectImpactMatrix);
     }
 
+    // FIXME probably not thread-safe. synchronize block for compareAndSet and computeTile?
+    // What we want to do is to make sure than computeRect is not called on the same rect more than once...
+    public Raster computeTile(int tileX, int tileY) {
+        final int tileArrayIndex = (tileX-getMinTileX())+getNumXTiles()*(tileY-getMinTileY());
+
+        if (!tileCalculationCount.compareAndSet(tileArrayIndex, 0, 1))
+            LOG.warn("Computation of tileArrayIndex={} requested more than once", tileArrayIndex);
+
+        return super.computeTile(tileX, tileY);
+    }
+
     // The below adds quite a lot of overhead (20%+) Optimize? Vectors?
     // or store intermediate matrix results in an async queue and accumulate at end?
     // or use separate "tile matrix cache"? (c.f. TileCache)
@@ -171,6 +187,12 @@ public class CumulativeImpactOp extends PointOpImage {
     @Override
     public Object getProperty(String name) {
         if (name.equals(IMPACT_MATRIX_PROPERTY_NAME)) {
+            LOG.debug("tileCalculationCount={}", tileCalculationCount);
+            for (int i=0; i<getNumXTiles()*getNumYTiles(); i++)
+                if (tileCalculationCount.get(i) != 1)
+                    LOG.error("tileCalculationCount[{}] != 1. Impact matrix may be erroneous! "+
+                        "Consider increasing JAI tile cache size",
+                        tileCalculationCount);
             return impactMatrix;         // assert finished?
         } else
             return super.getProperty(name);
