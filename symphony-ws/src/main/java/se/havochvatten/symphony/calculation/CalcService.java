@@ -47,11 +47,10 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
+import javax.media.jai.PlanarImage;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
-import java.awt.*;
-import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -142,7 +141,7 @@ public class CalcService {
         var candidates = findAllFullByUser(principal);
         var baseFeature = base.getFeature();
         return candidates.stream()
-                .filter(c -> c.getId() != base.getId()) // omit the calculation whose matches we are
+                .filter(c -> !c.getId().equals(base.getId())) // omit the calculation whose matches we are
                 // searching for
                 .filter(c -> geometryEquals(baseFeature, c.getFeature()))
                 .map(CalculationResultSlice::new)
@@ -359,34 +358,10 @@ public class CalcService {
             params.parameter("commonnessIndices").setValue(commonness);
 
         var coverage = (GridCoverage2D) processor.doOperation(params, new Hints(JAI.KEY_IMAGE_LAYOUT, layout));
-        triggerActualCalculation(coverage.getRenderedImage());
+        // Trigger actual calculation since GeoTiffWriter requests tiles in the same thread otherwise
+        var ignored = ((PlanarImage) coverage.getRenderedImage()).getTiles();
 
         return coverage;
-    }
-
-    /*
-     * In JAI computation is done lazily. Here we explicitly request calculation of each tile (using a
-     * thread-pool to perform the calculation concurrently)
-     *
-     * Inspired by https://github.com/geosolutions-it/soil_sealing/blob
-     * /96a8c86e9ac891a273e7bc61b910416a0dbe1582/src/extension/wps-soil-sealing/wps-changematrix/src/main/java/org/geoserver/wps/gs/soilsealing/ChangeMatrixProcess.java#L669
-     */
-    private void triggerActualCalculation(RenderedImage renderedImage) {
-        final int numTileY = renderedImage.getNumYTiles(),
-                numTileX = renderedImage.getNumXTiles(),
-                minTileX = renderedImage.getMinTileX(),
-                minTileY = renderedImage.getMinTileY();
-
-        final List<Point> tiles = new ArrayList<>(numTileX * numTileY);
-        for (int i = minTileX; i < minTileX + numTileX; i++) {
-            for (int j = minTileY; j < minTileY + numTileY; j++) {
-                tiles.add(new Point(i, j));
-            }
-        }
-
-        tiles.stream()
-                .parallel() // N.B: This one is important
-                .forEach(tileIndex -> renderedImage.getTile(tileIndex.x, tileIndex.y));
     }
 
     private GridGeometry2D getTargetGridGeometry(Envelope targetGridEnvelope, ReferencedEnvelope targetEnv) {
@@ -455,8 +430,9 @@ public class CalcService {
         String resultsDir = props.getProperty("results.geotiff.dir");
         if (resultsDir != null) {
             var dir = new File(resultsDir);
-            if (!dir.exists())
-                dir.mkdirs();
+            if (!dir.exists()) {
+                var ignored = dir.mkdirs();
+            }
 
             String filename = calculation.getId() + ".tiff";
             File file = dir.toPath().resolve(filename).toFile(); //.of(dir.toString, filename).toFile();
@@ -519,9 +495,8 @@ public class CalcService {
         params = divide.getParameters();
         params.parameter("Source0").setValue(difference);
         params.parameter("Source1").setValue(floatbase);
-        var result = (GridCoverage2D) processor.doOperation(params);
 
-        return result;
+        return (GridCoverage2D) processor.doOperation(params);
     }
 }
 
