@@ -5,7 +5,6 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.feature.FeatureCollection;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.referencing.CRS;
@@ -115,12 +114,10 @@ public class ScenarioServiceTest {
 
         var bigChange = changes.subCollection(ff.id(ff.featureId("features.2")));
 
-        byte[] insideValues = (byte[]) coverage.evaluate(INSIDE_ROI);
-
         var result = applyChanges(bigChange);
 
-        int[] newInsideValues = (int[]) result.evaluate(INSIDE_ROI);
-        assertEquals(insideValues[BAND] + 3000, newInsideValues[BAND], TOL);
+        byte[] newInsideValues = (byte[]) result.evaluate(INSIDE_ROI);
+        assertEquals(100.0, newInsideValues[BAND], TOL);
     }
 
     @Test
