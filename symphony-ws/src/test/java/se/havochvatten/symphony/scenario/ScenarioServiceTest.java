@@ -82,10 +82,10 @@ public class ScenarioServiceTest {
 
         var result = applyChanges(simpleChange);
 
-        var newOutsideValues = (int[]) result.evaluate(OUTSIDE_ROI);
+        var newOutsideValues = (byte[]) result.evaluate(OUTSIDE_ROI);
         assertEquals(outsideValues[BAND], newOutsideValues[BAND], TOL);
 
-        var newInsideValues = (int[]) result.evaluate(INSIDE_ROI);
+        var newInsideValues = (byte[]) result.evaluate(INSIDE_ROI);
         assertEquals(insideValues[17], newInsideValues[17], 0.1); // other bands should remain unchanged
         assertEquals(1.1 * insideValues[BAND], newInsideValues[BAND], TOL);
     }
@@ -101,11 +101,11 @@ public class ScenarioServiceTest {
 
         var result = applyChanges(compoundChange);
 
-        int[] newOutsideValues = (int[]) result.evaluate(OUTSIDE_ROI);
+        byte[] newOutsideValues = (byte[]) result.evaluate(OUTSIDE_ROI);
         assertEquals(outsideValues[BAND], newOutsideValues[BAND], TOL);
 
-        int[] newInsideValues = (int[]) result.evaluate(INSIDE_ROI);
-        assertEquals(1.1 * insideValues[BAND] + 10, newInsideValues[BAND], TOL);
+        byte[] newInsideValues = (byte[]) result.evaluate(INSIDE_ROI);
+        assertEquals(1.1 * insideValues[BAND] + 1, newInsideValues[BAND], TOL);
     }
 
     @Test
@@ -117,7 +117,7 @@ public class ScenarioServiceTest {
         var result = applyChanges(bigChange);
 
         byte[] newInsideValues = (byte[]) result.evaluate(INSIDE_ROI);
-        assertEquals(100.0, newInsideValues[BAND], TOL);
+        assertEquals(100, newInsideValues[BAND]);
     }
 
     @Test
@@ -128,7 +128,7 @@ public class ScenarioServiceTest {
 
         var result = applyChanges(zeroChange);
 
-        int[] newInsideValues = (int[]) result.evaluate(INSIDE_ROI);
+        byte[] newInsideValues = (byte[]) result.evaluate(INSIDE_ROI);
         assertEquals(0, newInsideValues[BAND], TOL);
     }
 }
