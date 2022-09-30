@@ -9,7 +9,7 @@ export const environment = {
   instanceDescriptor: "Western Indian Ocean",
   map: {
     center: [39.0, -11.0], // Suitable starting center for WIO region
-    initialZoom: 4.2,
+    initialZoom: 4.5,
     maxZoom: 10,
     minZoom: 3,
     zoomPadding: 20,

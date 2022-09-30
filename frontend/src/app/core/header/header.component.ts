@@ -51,7 +51,6 @@ export class HeaderComponent implements OnInit {
     ['user', false]
   ]);
   user$: Observable<User | undefined>;
-  displayDuck = false;
 
   constructor(private store: Store<State>,
               private dialogService: DialogService,
@@ -103,11 +102,4 @@ export class HeaderComponent implements OnInit {
   logout = () => {
     this.store.dispatch(UserActions.logoutUser());
   };
-
-  showDuck() {
-    this.displayDuck = !this.displayDuck;
-    setTimeout(() => {
-      this.displayDuck = false;
-    }, 2000);
-  }
 }

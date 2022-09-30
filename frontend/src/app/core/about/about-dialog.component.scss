@@ -86,10 +86,11 @@
 
         &.SWaM_logo {
           background-position: center;
-          background-size: auto 70%;
+          background-size: auto 62%;
           background-image: url("~src/assets/hav-logo-black.svg");
 
           &.eng {
+            background-size: auto 52%;
             background-image: url("~src/assets/hav-logo-black-eng.svg");
           }
         }
@@ -100,9 +101,14 @@
   #about-wio-acknowledgement {
     margin-bottom: 2rem;
 
-    p {
+    p, h6, a {
       font-size: 1.3rem;
       line-height: 1.8rem;
+    }
+
+    h6 {
+      margin: 0;
+      font-weight: bold;
     }
   }
 }
