@@ -17,7 +17,9 @@ public class RarityAdjustedCumulativeImpactOp extends CumulativeImpactOp {
     private final double[] commonnessIndices;
     private final double[][] impactMatrix;
 
-    public RarityAdjustedCumulativeImpactOp(RenderedImage ecosystemsData, RenderedImage pressuresData, ImageLayout layout, Map config, double[][][] matrices, Raster mask, int[] ecosystems, int[] pressures, double[] commonnessIndices) {
+    public RarityAdjustedCumulativeImpactOp(RenderedImage ecosystemsData, RenderedImage pressuresData,
+                                            ImageLayout layout, Map config, double[][][] matrices, Raster mask,
+                                            int[] ecosystems, int[] pressures, double[] commonnessIndices) {
         super(ecosystemsData, pressuresData, layout, config, matrices, mask, ecosystems, pressures);
         this.commonnessIndices = commonnessIndices;
         this.impactMatrix = new double[pressureBands.length][ecosystemBands.length];
@@ -31,9 +33,9 @@ public class RarityAdjustedCumulativeImpactOp extends CumulativeImpactOp {
         Rectangle srcRect = mapDestRect(dstRect, 0);
 
         // FIXME do away with raster accessors for source, instead use sources[x].getTile
-        RasterAccessor ecoAccessor = new RasterAccessor(sources[0]/*.getData(srcRect)*/, srcRect, formatTags[0],
+        RasterAccessor ecoAccessor = new RasterAccessor(sources[0], srcRect, formatTags[0],
             getSourceImage(0).getColorModel());
-        RasterAccessor presAccessor = new RasterAccessor(sources[1]/*.getData(srcRect)*/, srcRect, formatTags[1],
+        RasterAccessor presAccessor = new RasterAccessor(sources[1], srcRect, formatTags[1],
             getSourceImage(1).getColorModel());
         RasterAccessor dstAccessor = new RasterAccessor(dst, dstRect, formatTags[2], getColorModel());
 
@@ -45,8 +47,8 @@ public class RarityAdjustedCumulativeImpactOp extends CumulativeImpactOp {
         int srcY = ecoAccessor.getY();
         int[] ecoBandOffsets = ecoAccessor.getBandOffsets();
         int[] presBandOffsets = presAccessor.getBandOffsets();
-        double[][] presData = presAccessor.getDoubleDataArrays(); // or just get the data array as-is?
-        double[][] ecoData = ecoAccessor.getDoubleDataArrays(); // or use short?
+        float[][] presData = presAccessor.getFloatDataArrays(); // or just get the data array as-is?
+        float[][] ecoData = ecoAccessor.getFloatDataArrays(); // or use short?
 
         int dstWidth = dstAccessor.getWidth();
         int dstHeight = dstAccessor.getHeight();
@@ -58,8 +60,8 @@ public class RarityAdjustedCumulativeImpactOp extends CumulativeImpactOp {
         int numEcosystems = ecosystemBands.length;
         double[][] rectImpactMatrix = new double[numPressures][numEcosystems];
 
-        assert dstAccessor.getDataType() == DataBuffer.TYPE_DOUBLE;
-        double[] dstData = dstAccessor.getDoubleDataArray(0);
+        assert dstAccessor.getDataType() == DataBuffer.TYPE_FLOAT;
+        float[] dstData = dstAccessor.getFloatDataArray(0);
         int ecoLineOffset = 0;
         int presOffset = 0;
         // not tiled
@@ -75,18 +77,18 @@ public class RarityAdjustedCumulativeImpactOp extends CumulativeImpactOp {
                 // this slow?
                 if (maskValue != 0) { // is pixel inside ROI?
                     /* The actual cumulative impact calculation */
-                    double cumulativeSum = 0.0;
+                    float cumulativeSum = 0.0f;
                     // Make index of all non-empty matrix elements and iterate through only that instead?
                     for (int i = 0; i < numPressures; i++) {
-                        double B = presData[pressureBands[i]][presPixelOffset + presBandOffsets[pressureBands[i]]];
-                        double rowSum = 0.0;
+                        float B = presData[pressureBands[i]][presPixelOffset + presBandOffsets[pressureBands[i]]];
+                        float rowSum = 0.0f;
                         for (int j = 0; j < numEcosystems; j++) {
                             double K = ks[maskValue][pressureBands[i]][ecosystemBands[j]]; // sometimes K
                             // is NaN -- why?
-                            double E =
+                            float E =
                                 ecoData[ecosystemBands[j]][ecoPixelOffset + ecoBandOffsets[ecosystemBands[j]]];
-                            double impact = B*E*K/commonnessIndices[j];
-                            if (!Double.isNaN(impact)) {
+                            float impact = (float)(B*E*K/commonnessIndices[j]);
+                            if (!Float.isNaN(impact)) {
                                 rectImpactMatrix[i][j] += impact;
                                 rowSum += impact;
                             }

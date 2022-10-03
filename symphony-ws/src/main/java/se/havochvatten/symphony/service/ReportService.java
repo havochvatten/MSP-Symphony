@@ -18,10 +18,7 @@ import se.havochvatten.symphony.util.Util;
 
 import javax.ejb.Singleton;
 import javax.inject.Inject;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferDouble;
-import java.awt.image.DataBufferInt;
-import java.awt.image.Raster;
+import java.awt.image.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
@@ -56,10 +53,15 @@ public class ReportService {
     }
 
     private static DoubleStatistics getStatistics(Raster raster) {
-        DoubleStream stream = switch (raster.getDataBuffer().getDataType()) {
+        DataBuffer buffer = raster.getDataBuffer();
+        DoubleStream stream = switch (buffer.getDataType()) {
             case DataBuffer.TYPE_INT ->
-                Arrays.stream(((DataBufferInt) raster.getDataBuffer()).getData()).mapToDouble(x -> x);
-            case DataBuffer.TYPE_DOUBLE -> Arrays.stream(((DataBufferDouble) raster.getDataBuffer()).getData());
+                Arrays.stream(((DataBufferInt)buffer).getData()).mapToDouble(x -> x);
+            case DataBuffer.TYPE_FLOAT ->
+                IntStream.range(0, ((DataBufferFloat)buffer).getData().length)
+                    .mapToDouble(i -> ((DataBufferFloat)buffer).getData()[i]);
+            case DataBuffer.TYPE_DOUBLE ->
+                Arrays.stream(((DataBufferDouble) buffer).getData());
             default -> throw new RuntimeException("Unsupported raster data type");
         };
         // TODO report total as long to prevent overflow on big areas?
