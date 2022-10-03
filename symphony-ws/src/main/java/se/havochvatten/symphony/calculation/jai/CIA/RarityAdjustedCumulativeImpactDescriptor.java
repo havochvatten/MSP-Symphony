@@ -71,7 +71,7 @@ public class RarityAdjustedCumulativeImpactDescriptor extends OperationDescripto
         // Just use new SampleModel??
         layout.setSampleModel(RasterFactory.createComponentSampleModel(
                 source0.getSampleModel(),
-                DataBuffer.TYPE_DOUBLE, layout.getWidth(null), layout.getHeight(null), 1));
+                DataBuffer.TYPE_FLOAT, layout.getWidth(null), layout.getHeight(null), 1));
 
         RenderedImage source1 = pb.getRenderedSource(1);
 
@@ -97,7 +97,8 @@ public class RarityAdjustedCumulativeImpactDescriptor extends OperationDescripto
         var commonnessIndices = (double[]) args.getObjectParameter(4);
         int[] ecosystems = (int[]) args.getObjectParameter(2);
         if (commonnessIndices != null && commonnessIndices.length != ecosystems.length) {
-            message.append(getName() + ": " + "number of commonness indices does not match number of ecosystems services");
+            message.append(String.format("%s: number of commonness indices does not match number of ecosystems services",
+                getName()));
             return false;
         }
 
