@@ -2,9 +2,12 @@ package se.havochvatten.symphony.web;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
 import se.havochvatten.symphony.calculation.CalculationREST;
 import se.havochvatten.symphony.dto.ComparisonReportResponseDto;
 import se.havochvatten.symphony.dto.ReportResponseDto;
+import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.calculation.CalcService;
 import se.havochvatten.symphony.service.ReportService;
@@ -20,7 +23,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.io.IOException;
 import java.util.logging.Logger;
 
 import static javax.ws.rs.core.Response.ok;
@@ -44,24 +46,20 @@ public class ReportREST {
     @RolesAllowed("GRP_SYMPHONY")
     @ApiOperation(value = "Return data for report associated with calculation",
             response = ReportResponseDto.class)
-    public Response getReport(@Context HttpServletRequest req, @PathParam("id") String id,
+    public Response getReport(@Context HttpServletRequest req,
+                              @PathParam("id") int id,
                               @Context UriInfo uriInfo)
-    {
+        throws FactoryException, TransformException {
         logger.info("Fetching report "+id);
-        // TODO: Get from session: lastResult = (CalculationResult) req.getSession().getAttribute("last-calculation");
-        try {
-            var result = calcService.getCalculation(Integer.valueOf(id));
-            if (result.isPresent()) {
-                var calc = result.get();
-                if (CalculationREST.hasAccess(calc, req.getUserPrincipal()))
-                    return ok(reportService.generateReportData(calc, true)).build();
-                else
-                    return status(Response.Status.UNAUTHORIZED).build();
-            } else
-                return status(Response.Status.NO_CONTENT).build(); // TODO Calculation not found error code
-        } catch (Exception e) {
-            return status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
+        var lastResult = (CalculationResult) req.getSession().getAttribute("last-calculation");
+        var calc = lastResult != null && lastResult.getId() == id
+            ? lastResult
+            : calcService.getCalculation(id).orElseThrow();
+
+        if (CalculationREST.hasAccess(calc, req.getUserPrincipal()))
+            return ok(reportService.generateReportData(calc, true)).build();
+        else
+            return status(Response.Status.UNAUTHORIZED).build();
     }
 
     private static String escapeFilename(String s) {
@@ -93,9 +91,9 @@ public class ReportREST {
     @RolesAllowed("GRP_SYMPHONY")
     @ApiOperation(value = "Returns aggregated calculation results as CSV file")
     // TODO Parameterize with locale front frontend
-    public Response getResultCSV(@Context HttpServletRequest req, @PathParam("id") String id)
+    public Response getResultCSV(@Context HttpServletRequest req, @PathParam("id") int id)
             throws SymphonyStandardAppException {
-        var calc = calcService.getCalculation(Integer.valueOf(id)).orElseThrow();
+        var calc = calcService.getCalculation(id).orElseThrow();
 
         if (CalculationREST.hasAccess(calc, req.getUserPrincipal()))
             return ok(reportService.generateCSVReport(calc, req.getLocale())).

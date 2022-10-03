@@ -167,7 +167,6 @@ public class CalculationREST {
                                    @QueryParam("crs") String crs)
             throws Exception {
         var lastResult = (CalculationResult) req.getSession().getAttribute("last-calculation");
-
         var calc = lastResult != null && lastResult.getId() == id
                 ? lastResult
                 : calcService.getCalculation(id).orElseThrow();
