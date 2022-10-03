@@ -54,7 +54,9 @@ public class Rescale2CRIF extends CRIFImpl {
         noData = RangeFactory.convert(noData, source.getSampleModel().getDataType());
         boolean useRoiAccessor = (Boolean) pb.getObjectParameter(4);
         double destinationNoData = pb.getDoubleParameter(5);
+        double clamp = (double) pb.getObjectParameter(6);
         // Creation of the new image
-        return new Rescale2OpImage(source, layout, hints, scales, offsets, destinationNoData, roi, noData, useRoiAccessor);
+        return new Rescale2OpImage(source, layout, hints, scales, offsets, destinationNoData, roi, noData,
+            useRoiAccessor, clamp);
     }
 }

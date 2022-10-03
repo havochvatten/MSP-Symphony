@@ -330,6 +330,7 @@ public class CalcService {
                 scenario, ecosystemsToInclude, operationName, operationOptions, baseline);
 
         // Cache last calculation in session to speed up subsequent REST call to retrieve result image
+        // FIXME: Use id as key instead of "last-calculation"
         req.getSession().setAttribute("last-calculation", calculation);
 
         return calculation;

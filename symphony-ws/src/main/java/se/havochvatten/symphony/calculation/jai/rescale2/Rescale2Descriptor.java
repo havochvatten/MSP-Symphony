@@ -83,28 +83,28 @@ class Rescale2PropertyGenerator extends PropertyGeneratorImpl {
 
 /**
  * An <code>OperationDescriptor</code> describing the "Rescale2" operation.
- * 
+ *
  * <p>
  * The "Rescale" operation takes a rendered or renderable source image and changes the image dynamics by multiplying each pixel value by a constant
  * and then adding another constant to the result of the multiplication. Each constant value is associated to a band. If the number of constants
  * supplied is less than the number of bands of the destination, then the constant from entry 0 is applied to all the bands. Otherwise, a constant
  * from a different entry is applied to each band. The optional presence of NoData or ROI is taken into account by replacing each value out of ROI or
  * each NoData, with the supplied DestinationNoData value.
- * 
+ *
  * <p>
  * The destination pixel values are defined by the following pseudocode:
- * 
+ *
  * <pre>
  * dst = destination pixel array
  * src = source pixel array
- * 
+ *
  * dst[x][y][b] = src[x][y][b] * constant + offset;
  * </pre>
- * 
+ *
  * <p>
  * The pixel arithmetic is performed using the data type of the destination image. By default, the destination will have the same data type as the
  * source image unless an <code>ImageLayout</code> containing a <code>SampleModel</code> with a different data type is supplied as a rendering hint.
- * 
+ *
  * <p>
  * <table border=1>
  * <caption>Resource List</caption>
@@ -162,7 +162,7 @@ class Rescale2PropertyGenerator extends PropertyGeneratorImpl {
  * </tr>
  * </table>
  * </p>
- * 
+ *
  * <p>
  * <table border=1>
  * <caption>Parameter List</caption>
@@ -216,20 +216,21 @@ public class Rescale2Descriptor extends OperationDescriptorImpl {
             { "arg2Desc", "ROI object used" },
             { "arg3Desc", "No Data Range used" },
             { "arg4Desc", "Boolean checking if ROI RasterAccessor is used" },
-            { "arg5Desc", "Destination No Data value" } };
+            { "arg5Desc", "Destination No Data value" },
+            { "arg6Desc", "Max value to clamp to" }};
 
     /** The parameter class list for this operation. */
     private static final Class[] paramClasses = { double[].class, double[].class,
             ROI.class, it.geosolutions.jaiext.range.Range.class, Boolean.class,
-            Double.class };
+            Double.class, Double.class };
 
     /** The parameter name list for this operation. */
     private static final String[] paramNames = { "constants", "offsets", "ROI", "noData",
-            "useRoiAccessor", "destNoData" };
+            "useRoiAccessor", "destNoData", "clamp" };
 
     /** The parameter default value list for this operation. */
     private static final Object[] paramDefaults = { new double[] { 1.0 }, new double[] { 0.0 },
-            null, null, false, 0.0d };
+            null, null, false, 0.0d, 100.0d };
 
     /** Constructor. */
     public Rescale2Descriptor() {
@@ -243,7 +244,7 @@ public class Rescale2Descriptor extends OperationDescriptorImpl {
 
     /**
      * Returns an array of <code>PropertyGenerators</code> implementing property inheritance for the "Rescale" operation
-     * 
+     *
      * @return An array of property generators.
      */
     public PropertyGenerator[] getPropertyGenerators() {
@@ -254,16 +255,17 @@ public class Rescale2Descriptor extends OperationDescriptorImpl {
 
     /**
      * Maps the pixels values of an image from one range to another range.
-     * 
+     *
      * <p>
      * Creates a <code>ParameterBlockJAI</code> from all supplied arguments except <code>hints</code> and invokes
      * {@link JAI#create(String,ParameterBlock,RenderingHints)}.
-     * 
+     *
      * @param source0 <code>RenderedImage</code> source 0.
      * @param scales The per-band scale factors to multiply by.
      * @param offsets The per-band offsets to be added.
      * @param roi Optional ROI used for computations.
      * @param noData Optional No Data range used for computations.
+     * @param clamp Optional Maximum value to clamp values to (only implemented for bytes at the moment)
      * @param useROIAccessor Boolean indicating if ROI RasterAccessor must be used.
      * @param destinationNoData Destination value for No Data.
      * @param hints The <code>RenderingHints</code> to use.
@@ -271,7 +273,8 @@ public class Rescale2Descriptor extends OperationDescriptorImpl {
      * @throws IllegalArgumentException if <code>source0</code> is <code>null</code>.
      */
     public static RenderedOp create(RenderedImage source0, double[] constants, double[] offsets,
-                                    ROI roi, Range rangeND, boolean useRoiAccessor, double destNoData, RenderingHints hints) {
+                                    ROI roi, Range rangeND, double clamp, boolean useRoiAccessor, double destNoData,
+                                    RenderingHints hints) {
         // Creation of the parameterBlock object associated to the operation
         ParameterBlockJAI pb = new ParameterBlockJAI("se.havochvatten.Rescale", RenderedRegistryMode.MODE_NAME);
         // Setting of the source
@@ -283,17 +286,18 @@ public class Rescale2Descriptor extends OperationDescriptorImpl {
         pb.setParameter("noData", rangeND);
         pb.setParameter("useRoiAccessor", useRoiAccessor);
         pb.setParameter("destNoData", destNoData);
+        pb.setParameter("clamp", clamp);
 
         return JAI.create("se.havochvatten.Rescale", pb, hints);
     }
 
     /**
      * Maps the pixels values of an image from one range to another range.
-     * 
+     *
      * <p>
      * Creates a <code>ParameterBlockJAI</code> from all supplied arguments except <code>hints</code> and invokes
      * {@link JAI#createRenderable(String, ParameterBlock, RenderingHints)}.
-     * 
+     *
      * @param source0 <code>RenderedImage</code> source 0.
      * @param scales The per-band scale factors to multiply by.
      * @param offsets The per-band offsets to be added.

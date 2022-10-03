@@ -33,9 +33,4 @@ public class CalcUtil {
         // TODO use toMap
         return matrixIdToIndex;
     }
-
-    public static SampleModel createSampleModel(int dataType, SampleModel source) {
-        return new PixelInterleavedSampleModel(dataType, source.getWidth(), source.getHeight(), source.getNumBands(),
-                source.getNumBands() * source.getWidth(), IntStream.range(0, source.getNumBands()).toArray());
-    }
 }

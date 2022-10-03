@@ -48,6 +48,7 @@ public class ReportREST {
                               @Context UriInfo uriInfo)
     {
         logger.info("Fetching report "+id);
+        // TODO: Get from session: lastResult = (CalculationResult) req.getSession().getAttribute("last-calculation");
         try {
             var result = calcService.getCalculation(Integer.valueOf(id));
             if (result.isPresent()) {
@@ -93,7 +94,7 @@ public class ReportREST {
     @ApiOperation(value = "Returns aggregated calculation results as CSV file")
     // TODO Parameterize with locale front frontend
     public Response getResultCSV(@Context HttpServletRequest req, @PathParam("id") String id)
-            throws SymphonyStandardAppException, IOException {
+            throws SymphonyStandardAppException {
         var calc = calcService.getCalculation(Integer.valueOf(id)).orElseThrow();
 
         if (CalculationREST.hasAccess(calc, req.getUserPrincipal()))
