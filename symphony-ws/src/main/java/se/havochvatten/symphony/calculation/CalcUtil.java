@@ -1,20 +1,25 @@
 package se.havochvatten.symphony.calculation;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.dto.SensitivityMatrix;
+import se.havochvatten.symphony.entity.CalculationResult;
 
+import javax.servlet.http.HttpSession;
 import java.awt.*;
 import java.awt.image.IndexColorModel;
-import java.awt.image.PixelInterleavedSampleModel;
-import java.awt.image.SampleModel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.DoublePredicate;
 import java.util.stream.IntStream;
 
 public class CalcUtil {
-    public final static double NO_DATA = Double.NaN;
-    public static DoublePredicate isNoData = d -> Double.isNaN(d);
+    private static final Logger LOG = LoggerFactory.getLogger(CalcUtil.class);
+
+    static String LAST_CALCULATION_PROPERTY_NAME = "last-calculation";
+    public static DoublePredicate isNoData = Double::isNaN;
 
     public static IndexColorModel makeIndexedColorModel(Color[] cs) {
         byte[] rs = new byte[cs.length], gs = new byte[cs.length], bs = new byte[cs.length];
@@ -32,5 +37,17 @@ public class CalcUtil {
                 .forEach(index -> matrixIdToIndex.put(matrices.get(index).getMatrixId(), index));
         // TODO use toMap
         return matrixIdToIndex;
+    }
+
+    public static Optional<CalculationResult> getCalculationResultFromSessionOrDb(int id,
+                                                                                  HttpSession session,
+                                                                                  CalcService calcService) {
+        var lastResult = (CalculationResult) session.getAttribute(LAST_CALCULATION_PROPERTY_NAME);
+
+        if (lastResult != null && lastResult.getId().equals(id)) {
+            LOG.info("Getting calculation {} from session {}", id, session.getId());
+            return Optional.of(lastResult);
+        } else
+            return Optional.ofNullable(calcService.getCalculation(id));
     }
 }

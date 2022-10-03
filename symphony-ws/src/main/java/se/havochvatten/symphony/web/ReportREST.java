@@ -4,10 +4,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
+import se.havochvatten.symphony.calculation.CalcUtil;
 import se.havochvatten.symphony.calculation.CalculationREST;
 import se.havochvatten.symphony.dto.ComparisonReportResponseDto;
 import se.havochvatten.symphony.dto.ReportResponseDto;
-import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.calculation.CalcService;
 import se.havochvatten.symphony.service.ReportService;
@@ -15,14 +15,8 @@ import se.havochvatten.symphony.service.ReportService;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 import java.util.logging.Logger;
 
 import static javax.ws.rs.core.Response.ok;
@@ -51,10 +45,8 @@ public class ReportREST {
                               @Context UriInfo uriInfo)
         throws FactoryException, TransformException {
         logger.info("Fetching report "+id);
-        var lastResult = (CalculationResult) req.getSession().getAttribute("last-calculation");
-        var calc = lastResult != null && lastResult.getId() == id
-            ? lastResult
-            : calcService.getCalculation(id).orElseThrow();
+        var calc = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
+            calcService).orElseThrow(NotFoundException::new);
 
         if (CalculationREST.hasAccess(calc, req.getUserPrincipal()))
             return ok(reportService.generateReportData(calc, true)).build();
@@ -71,8 +63,9 @@ public class ReportREST {
     @Produces({"image/geotiff"})
     @RolesAllowed("GRP_SYMPHONY")
     @ApiOperation(value = "Returns calculation result image")
-     public Response getResultGeoTIFFImage(@Context HttpServletRequest req, @PathParam("id") String id) {
-        var calc = calcService.getCalculation(Integer.valueOf(id)).orElseThrow();
+     public Response getResultGeoTIFFImage(@Context HttpServletRequest req, @PathParam("id") int id) {
+        var calc = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
+            calcService).orElseThrow(BadRequestException::new);
 
         if (calc.isBaselineCalculation() || calc.getOwner().equals(req.getUserPrincipal().getName()))
             return ok(calc.getRasterData()).
@@ -93,8 +86,8 @@ public class ReportREST {
     // TODO Parameterize with locale front frontend
     public Response getResultCSV(@Context HttpServletRequest req, @PathParam("id") int id)
             throws SymphonyStandardAppException {
-        var calc = calcService.getCalculation(id).orElseThrow();
-
+        var calc = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
+            calcService).orElseThrow(BadRequestException::new);
         if (CalculationREST.hasAccess(calc, req.getUserPrincipal()))
             return ok(reportService.generateCSVReport(calc, req.getLocale())).
                     header("Content-Disposition",
@@ -112,14 +105,17 @@ public class ReportREST {
     @ApiOperation(value = "Return data for scenario report associated with two calculations",
             response = ComparisonReportResponseDto.class)
     public Response getComparisonReport(@Context HttpServletRequest req,
-                                        @PathParam("a") String baseId,
-                                        @PathParam("b") String scenarioId,
-                              @Context UriInfo uriInfo)
-    {
+                                        @PathParam("a") int baseId,
+                                        @PathParam("b") int scenarioId,
+                                        @Context UriInfo uriInfo) {
         logger.info("Comparing report "+baseId+" and "+scenarioId);
         try {
-            var baseRes = calcService.getCalculation(Integer.valueOf(baseId)).orElseThrow(javax.ws.rs.BadRequestException::new);
-            var scenarioRes = calcService.getCalculation(Integer.valueOf(scenarioId)).orElseThrow(javax.ws.rs.BadRequestException::new);
+            var baseRes =
+                CalcUtil.getCalculationResultFromSessionOrDb(baseId, req.getSession(), calcService)
+                    .orElseThrow(javax.ws.rs.BadRequestException::new);
+            var scenarioRes =
+                CalcUtil.getCalculationResultFromSessionOrDb(scenarioId, req.getSession(), calcService)
+                    .orElseThrow(javax.ws.rs.BadRequestException::new);
 
             if (CalculationREST.hasAccess(baseRes, req.getUserPrincipal()) && CalculationREST.hasAccess(scenarioRes, req.getUserPrincipal()) )
                 return ok(reportService.generateComparisonReportData(baseRes, scenarioRes)).build();

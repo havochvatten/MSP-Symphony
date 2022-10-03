@@ -164,8 +164,8 @@ public class CalcService {
     /**
      * Get full calculation object
      */
-    public Optional<CalculationResult> getCalculation(Integer id) {
-        return Optional.ofNullable(em.find(CalculationResult.class, id));
+    public CalculationResult getCalculation(Integer id) {
+        return em.find(CalculationResult.class, id);
     }
 
     public CalculationResult updateCalculationName(CalculationResult calc, String newName) {
@@ -330,8 +330,7 @@ public class CalcService {
                 scenario, ecosystemsToInclude, operationName, operationOptions, baseline);
 
         // Cache last calculation in session to speed up subsequent REST call to retrieve result image
-        // FIXME: Use id as key instead of "last-calculation"
-        req.getSession().setAttribute("last-calculation", calculation);
+        req.getSession().setAttribute(CalcUtil.LAST_CALCULATION_PROPERTY_NAME, calculation);
 
         return calculation;
     }
