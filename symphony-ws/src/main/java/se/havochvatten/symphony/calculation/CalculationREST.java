@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.awt.image.RenderedImage;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -260,8 +259,8 @@ public class CalculationREST {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
     @ApiOperation(value = "Returns a list of calculation matching the ROI of specified calculation")
-    public List<CalculationResultSlice> getMatchingCalculations(@Context HttpServletRequest req,
-                                                                @PathParam("id") int id) {
+    public List<CalculationResultSlice> getCalculationsWithMatchingGeometry(@Context HttpServletRequest req,
+                                                                            @PathParam("id") int id) {
         var base = calcService.getCalculation(id).orElseThrow(NotFoundException::new);
         verifyAccessToCalculation(base, req.getUserPrincipal());
 
@@ -287,10 +286,9 @@ public class CalculationREST {
 
     public static void verifyAccessToCalculation(CalculationResult calc, Principal user) {
         if (!hasAccess(calc, user)) {
-            var e = user != null
+            throw user != null
                     ? new ForbiddenException("User " + user.getName() + " is not owner of calculation " + calc.getId())
                     : new NotAuthorizedException("User not authorized");
-            throw e;
         }
     }
 }

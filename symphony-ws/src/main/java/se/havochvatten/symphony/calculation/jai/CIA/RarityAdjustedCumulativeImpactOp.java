@@ -4,6 +4,7 @@ import javax.media.jai.ImageLayout;
 import javax.media.jai.RasterAccessor;
 import javax.media.jai.RasterFormatTag;
 import java.awt.*;
+import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
@@ -57,6 +58,7 @@ public class RarityAdjustedCumulativeImpactOp extends CumulativeImpactOp {
         int numEcosystems = ecosystemBands.length;
         double[][] rectImpactMatrix = new double[numPressures][numEcosystems];
 
+        assert dstAccessor.getDataType() == DataBuffer.TYPE_DOUBLE;
         double[] dstData = dstAccessor.getDoubleDataArray(0);
         int ecoLineOffset = 0;
         int presOffset = 0;

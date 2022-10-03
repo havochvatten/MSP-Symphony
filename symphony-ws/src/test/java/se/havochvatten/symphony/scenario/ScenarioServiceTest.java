@@ -109,7 +109,7 @@ public class ScenarioServiceTest {
     }
 
     @Test
-    public void applyBigChange() { // Test promotion from Byte to UShort layer
+    public void applyBigChange() { // Test clamping of big values
         int BAND = 12;
 
         var bigChange = changes.subCollection(ff.id(ff.featureId("features.2")));
