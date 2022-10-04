@@ -124,7 +124,8 @@ public class CalculationREST {
                 req.getSession(), calcService).orElseThrow(NotFoundException::new);
             if (calculation.getOwner().equals(req.getUserPrincipal().getName())
                     && !calculation.isBaselineCalculation()) {
-                var updated = calcService.updateCalculationName(calculation, newName);
+                calculation.setCalculationName(newName);
+                var updated = calcService.updateCalculation(calculation);
                 return ok(new CalculationResultSlice(updated)).build();
             } else
                 return status(Response.Status.UNAUTHORIZED).build();

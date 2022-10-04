@@ -168,11 +168,6 @@ public class CalcService {
         return em.find(CalculationResult.class, id);
     }
 
-    public CalculationResult updateCalculationName(CalculationResult calc, String newName) {
-        calc.setCalculationName(newName);
-        return em.merge(calc);
-    }
-
     public CalculationResult updateCalculation(CalculationResult calc) {
         return em.merge(calc);
     }
