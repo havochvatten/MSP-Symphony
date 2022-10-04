@@ -49,6 +49,8 @@ public class ScenarioService {
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioService.class);
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    private static final double MAX_IMPACT_VALUE = 100.0;
+
     @PersistenceContext(unitName = "symphonyPU")
     private EntityManager em;
 
@@ -181,13 +183,9 @@ public class ScenarioService {
         params.parameter("constants").setValue(constants);
         params.parameter("offsets").setValue(offsets);
         params.parameter("ROI").setValue(roi);
+        params.parameter("clamp").setValue(MAX_IMPACT_VALUE);
 
-        ImageLayout destLayout = new ImageLayout();
-        destLayout.setSampleModel(CalcUtil.createSampleModel(DataBuffer.TYPE_USHORT,
-            source.getRenderedImage().getSampleModel()));
-
-        Hints hints = new Hints(JAI.KEY_IMAGE_LAYOUT, destLayout);
-        return (GridCoverage2D) processor.doOperation(params, hints);
+        return (GridCoverage2D) processor.doOperation(params);
     }
 
 

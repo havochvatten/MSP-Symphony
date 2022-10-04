@@ -283,7 +283,7 @@ CalculationRESTTest extends RESTTest {
         assertEquals(200, report.statusCode());
         var res = report.jsonPath().getList("", CalculationResultSlice.class);
         assertTrue(res.size() >= 1);
-        assertTrue(res.stream().anyMatch(calc -> calc.id == testCalcId));
+        assertFalse(res.stream().anyMatch(calc -> calc.id == testCalcId));
     }
 
     @AfterClass

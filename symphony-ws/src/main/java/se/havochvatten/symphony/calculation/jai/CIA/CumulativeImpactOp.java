@@ -1,14 +1,17 @@
 package se.havochvatten.symphony.calculation.jai.CIA;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.media.jai.*;
 import java.awt.*;
+import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
 import java.util.Map;
-import java.util.logging.Logger;
+import java.util.concurrent.atomic.AtomicIntegerArray;
 
 /**
  * JAI operation for computing cumulative impact assessment
@@ -16,7 +19,7 @@ import java.util.logging.Logger;
  * This operation has no notion of geography.
  */
 public class CumulativeImpactOp extends PointOpImage {
-    private static final Logger LOG = Logger.getLogger(CumulativeImpactOp.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(CumulativeImpactOp.class);
 
     public final static int TRANSPARENT_VALUE = 0;
     public final static String IMPACT_MATRIX_PROPERTY_NAME = "se.havochvatten.symphony.impact_matrix";
@@ -30,13 +33,17 @@ public class CumulativeImpactOp extends PointOpImage {
     protected final int[] ecosystemBands;
     protected final int[] pressureBands;
 
+    // FIXME replace with simple counter
+    private final AtomicIntegerArray tileCalculationCount =
+        new AtomicIntegerArray(getNumXTiles()*getNumYTiles());
+
     public CumulativeImpactOp(RenderedImage ecosystemsData, RenderedImage pressuresData,
                               ImageLayout layout, Map config,
                               double[][][] matrices, Raster mask,
                               int[] ecosystems, int[] pressures) {
-        super(ecosystemsData, pressuresData, layout, config, true); // source cobbling -- do we need it?
+        super(ecosystemsData, pressuresData, layout, config, true); // source cobbling -- can we eliminate it??
 
-        LOG.fine("CulumativeImpactOp: tile scheduler parallelism=" + JAI.getDefaultInstance().getTileScheduler().getParallelism());
+        LOG.debug("CulumativeImpactOp: tile scheduler parallelism=" + JAI.getDefaultInstance().getTileScheduler().getParallelism());
 
 //        permitInPlaceOperation();
         // Setting matrix
@@ -54,15 +61,15 @@ public class CumulativeImpactOp extends PointOpImage {
     @Override
     protected void computeRect(Raster[] sources, WritableRaster dst, Rectangle dstRect) {
 //    protected void computeRect(PlanarImage[] sources, WritableRaster dst, Rectangle dstRect) { // uncobbled sources
-        LOG.fine("computeRect: " + dstRect + ", thread=" + Thread.currentThread().getId());
+        LOG.info("computeRect: " + dstRect + ", thread=" + Thread.currentThread().getId());
 
         RasterFormatTag[] formatTags = getFormatTags();
-        Rectangle srcRect = mapDestRect(dstRect, 0);
+        Rectangle srcRect = mapDestRect(dstRect, 0); // assume identical to sources[1]
 
         // FIXME do away with raster accessors for source, instead use sources[x].getTile
-        RasterAccessor ecoAccessor = new RasterAccessor(sources[0]/*.getData(srcRect)*/, srcRect, formatTags[0],
+        RasterAccessor ecoAccessor = new RasterAccessor(sources[0], srcRect, formatTags[0],
                 getSourceImage(0).getColorModel());
-        RasterAccessor presAccessor = new RasterAccessor(sources[1]/*.getData(srcRect)*/, srcRect, formatTags[1],
+        RasterAccessor presAccessor = new RasterAccessor(sources[1], srcRect, formatTags[1],
                 getSourceImage(1).getColorModel());
         RasterAccessor dstAccessor = new RasterAccessor(dst, dstRect, formatTags[2], getColorModel());
         // TODO Perhaps use something less sophisticated than a RasterAccesor (since it's untiled)
@@ -95,12 +102,11 @@ public class CumulativeImpactOp extends PointOpImage {
         int numEcosystems = ecosystemBands.length;
         int[][] rectImpactMatrix = new int[numPressures][numEcosystems];
 
-//        sources[1].getDataBuffer()
-        // FIXME sources as byte?? Or don't use RasterAccessor
         // Make maskData in input? It is not really a ROI since there is no NODATA
 //        /*byte*/int[] maskData = maskAccessor.getIntDataArray(0); //maskAccessor.getByteDataArray(0);
 //        int maskDataLength = maskData.length;
 
+        assert dstAccessor.getDataType() == DataBuffer.TYPE_INT;
         int[] dstData = dstAccessor.getIntDataArray(0);
         int ecoLineOffset = 0;
         int presOffset = 0;
@@ -157,10 +163,23 @@ public class CumulativeImpactOp extends PointOpImage {
         accumulateImpactMatrix(rectImpactMatrix);
     }
 
+    // FIXME probably not thread-safe. synchronize block for compareAndSet and computeTile?
+    // What we want to do is to make sure than computeRect is not called on the same rect more than once...
+    public Raster computeTile(int tileX, int tileY) {
+        final int tileArrayIndex = (tileX-getMinTileX())+getNumXTiles()*(tileY-getMinTileY());
+
+        if (!tileCalculationCount.compareAndSet(tileArrayIndex, 0, 1))
+            LOG.warn("Computation of tileArrayIndex={} requested more than once", tileArrayIndex);
+
+        return super.computeTile(tileX, tileY);
+    }
+
     // The below adds quite a lot of overhead (20%+) Optimize? Vectors?
     // or store intermediate matrix results in an async queue and accumulate at end?
     // or use separate "tile matrix cache"? (c.f. TileCache)
     protected synchronized void accumulateImpactMatrix(int[][] rectImpactMatrix) {
+        // FIXME Check tile calculation count and stop accumulating if all tiles have been calculated (to prevent
+        //  double-counting)
         int numPressures = pressureBands.length;
         int numEcosystems = ecosystemBands.length;
         for (int i = 0; i < numPressures; i++)
@@ -171,6 +190,12 @@ public class CumulativeImpactOp extends PointOpImage {
     @Override
     public Object getProperty(String name) {
         if (name.equals(IMPACT_MATRIX_PROPERTY_NAME)) {
+            LOG.debug("tileCalculationCount={}", tileCalculationCount);
+            for (int i=0; i<getNumXTiles()*getNumYTiles(); i++)
+                if (tileCalculationCount.get(i) != 1)
+                    LOG.error("tileCalculationCount[{}] != 1. Impact matrix may be erroneous! "+
+                        "Consider increasing JAI tile cache size",
+                        tileCalculationCount);
             return impactMatrix;         // assert finished?
         } else
             return super.getProperty(name);

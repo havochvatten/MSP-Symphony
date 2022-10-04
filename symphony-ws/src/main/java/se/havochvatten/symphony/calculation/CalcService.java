@@ -47,11 +47,10 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
+import javax.media.jai.PlanarImage;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
-import java.awt.*;
-import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -142,7 +141,7 @@ public class CalcService {
         var candidates = findAllFullByUser(principal);
         var baseFeature = base.getFeature();
         return candidates.stream()
-                .filter(c -> c.getId() != base.getId()) // omit the calculation whose matches we are
+                .filter(c -> !c.getId().equals(base.getId())) // omit the calculation whose matches we are
                 // searching for
                 .filter(c -> geometryEquals(baseFeature, c.getFeature()))
                 .map(CalculationResultSlice::new)
@@ -165,30 +164,29 @@ public class CalcService {
     /**
      * Get full calculation object
      */
-    public Optional<CalculationResult> getCalculation(Integer id) {
-        return Optional.ofNullable(em.find(CalculationResult.class, id));
-    }
-
-    public CalculationResult updateCalculationName(CalculationResult calc, String newName) {
-        calc.setCalculationName(newName);
-        return em.merge(calc);
+    public CalculationResult getCalculation(Integer id) {
+        return em.find(CalculationResult.class, id);
     }
 
     public CalculationResult updateCalculation(CalculationResult calc) {
         return em.merge(calc);
     }
 
-    // TODO move to util?
-    static byte[] writeGeoTiff(GridCoverage2D coverage, String type, float quality) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    byte[] writeGeoTiff(GridCoverage2D coverage) throws IOException {
+        String type = props.getProperty("calc.result.compression.type");
+        var quality = props.getProperty("calc.result.compression.quality");
 
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             GeoTiffWriter writer = new GeoTiffWriter(baos);
             var wp = new GeoTiffWriteParams();
 
-            wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
-            wp.setCompressionType(type);
-            wp.setCompressionQuality(quality);
+            if (type != null) {
+                wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
+                wp.setCompressionType(type);
+                if (quality != null)
+                    wp.setCompressionQuality(Float.parseFloat(quality));
+            }
             ParameterValueGroup pvg = writer.getFormat().getWriteParameters();
             pvg.parameter(
                             AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString())
@@ -331,7 +329,7 @@ public class CalcService {
                 scenario, ecosystemsToInclude, operationName, operationOptions, baseline);
 
         // Cache last calculation in session to speed up subsequent REST call to retrieve result image
-        req.getSession().setAttribute("last-calculation", calculation);
+        req.getSession().setAttribute(CalcUtil.LAST_CALCULATION_PROPERTY_NAME, calculation);
 
         return calculation;
     }
@@ -359,34 +357,10 @@ public class CalcService {
             params.parameter("commonnessIndices").setValue(commonness);
 
         var coverage = (GridCoverage2D) processor.doOperation(params, new Hints(JAI.KEY_IMAGE_LAYOUT, layout));
-        triggerActualCalculation(coverage.getRenderedImage());
+        // Trigger actual calculation since GeoTiffWriter requests tiles in the same thread otherwise
+        var ignored = ((PlanarImage) coverage.getRenderedImage()).getTiles();
 
         return coverage;
-    }
-
-    /*
-     * In JAI computation is done lazily. Here we explicitly request calculation of each tile (using a
-     * thread-pool to perform the calculation concurrently)
-     *
-     * Inspired by https://github.com/geosolutions-it/soil_sealing/blob
-     * /96a8c86e9ac891a273e7bc61b910416a0dbe1582/src/extension/wps-soil-sealing/wps-changematrix/src/main/java/org/geoserver/wps/gs/soilsealing/ChangeMatrixProcess.java#L669
-     */
-    private void triggerActualCalculation(RenderedImage renderedImage) {
-        final int numTileY = renderedImage.getNumYTiles(),
-                numTileX = renderedImage.getNumXTiles(),
-                minTileX = renderedImage.getMinTileX(),
-                minTileY = renderedImage.getMinTileY();
-
-        final List<Point> tiles = new ArrayList<>(numTileX * numTileY);
-        for (int i = minTileX; i < minTileX + numTileX; i++) {
-            for (int j = minTileY; j < minTileY + numTileY; j++) {
-                tiles.add(new Point(i, j));
-            }
-        }
-
-        tiles.stream()
-                .parallel() // N.B: This one is important
-                .forEach(tileIndex -> renderedImage.getTile(tileIndex.x, tileIndex.y));
     }
 
     private GridGeometry2D getTargetGridGeometry(Envelope targetGridEnvelope, ReferencedEnvelope targetEnv) {
@@ -425,9 +399,8 @@ public class CalcService {
         throws IOException {
         var calculation = new CalculationResult(result);
 
-        // TODO: Fill out some relevant TIFF metadata
-        // Creator, NODATA?
-        byte[] tiff = writeGeoTiff(result, "LZW", 0.90f);      // N.B: raw result data, not normalized nor color-mapped
+        // TODO: Fill out some relevant TIFF metadata (such as Creator and NODATA)
+        byte[] tiff = writeGeoTiff(result);      // N.B: raw result data, not normalized nor color-mapped
 
         var snapshot = ScenarioSnapshot.makeSnapshot(scenario);
         snapshot.setEcosystemsToInclude(ecosystemsThatWasIncluded); // Override actually used only in snapshot
@@ -455,8 +428,9 @@ public class CalcService {
         String resultsDir = props.getProperty("results.geotiff.dir");
         if (resultsDir != null) {
             var dir = new File(resultsDir);
-            if (!dir.exists())
-                dir.mkdirs();
+            if (!dir.exists()) {
+                var ignored = dir.mkdirs();
+            }
 
             String filename = calculation.getId() + ".tiff";
             File file = dir.toPath().resolve(filename).toFile(); //.of(dir.toString, filename).toFile();
@@ -519,9 +493,8 @@ public class CalcService {
         params = divide.getParameters();
         params.parameter("Source0").setValue(difference);
         params.parameter("Source1").setValue(floatbase);
-        var result = (GridCoverage2D) processor.doOperation(params);
 
-        return result;
+        return (GridCoverage2D) processor.doOperation(params);
     }
 }
 

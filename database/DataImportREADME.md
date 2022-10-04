@@ -110,11 +110,11 @@ POST https://your.server.com/symphony-ws/service/login
 Content-Type: application/json
 
 {
-    "username":"<username>",
-    "password":"<password>"
+    "username":"<admin username>",
+    "password":"<admin password>"
 }
 
-###
+### Assuming your REST client preserves session cookies between requests you can now do:
 PUT http://your.server.com/symphony-ws/service/calibration/percentile-normalization-values/<scenario 
 id>/<calculation area id>
 ```
