@@ -177,17 +177,21 @@ public class CalcService {
         return em.merge(calc);
     }
 
-    // TODO move to util?
-    static byte[] writeGeoTiff(GridCoverage2D coverage, String type, float quality) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    byte[] writeGeoTiff(GridCoverage2D coverage) throws IOException {
+        String type = props.getProperty("calc.result.compression.type");
+        var quality = props.getProperty("calc.result.compression.quality");
 
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             GeoTiffWriter writer = new GeoTiffWriter(baos);
             var wp = new GeoTiffWriteParams();
 
-            wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
-            wp.setCompressionType(type);
-            wp.setCompressionQuality(quality);
+            if (type != null) {
+                wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
+                wp.setCompressionType(type);
+                if (quality != null)
+                    wp.setCompressionQuality(Float.parseFloat(quality));
+            }
             ParameterValueGroup pvg = writer.getFormat().getWriteParameters();
             pvg.parameter(
                             AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString())
@@ -400,9 +404,8 @@ public class CalcService {
         throws IOException {
         var calculation = new CalculationResult(result);
 
-        // TODO: Fill out some relevant TIFF metadata
-        // Creator, NODATA?
-        byte[] tiff = writeGeoTiff(result, "LZW", 0.90f);      // N.B: raw result data, not normalized nor color-mapped
+        // TODO: Fill out some relevant TIFF metadata (such as Creator and NODATA)
+        byte[] tiff = writeGeoTiff(result);      // N.B: raw result data, not normalized nor color-mapped
 
         var snapshot = ScenarioSnapshot.makeSnapshot(scenario);
         snapshot.setEcosystemsToInclude(ecosystemsThatWasIncluded); // Override actually used only in snapshot
