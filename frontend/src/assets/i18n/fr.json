@@ -104,7 +104,10 @@
                     "cancel": "Annuler"
                 }
             },
-            "include-coast": "Inclure la côte",
+            "coastal-areas": {
+                "title": "Zones côtières",
+                "include-coast": "Inclure la côte"
+            },
             "calculate": "Calculer"
         },
         "toolbar": {
