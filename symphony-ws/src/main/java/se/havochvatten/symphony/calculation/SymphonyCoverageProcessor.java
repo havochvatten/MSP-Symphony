@@ -8,6 +8,7 @@ import se.havochvatten.symphony.calculation.jai.rescale2.Rescale2Descriptor;
 
 import javax.ejb.Singleton;
 
+// TODO Do away with this one in favour of a class inheriting from Operations
 @Singleton
 public class SymphonyCoverageProcessor extends CoverageProcessor {
     public SymphonyCoverageProcessor() {
