@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { NormalizationOptions, NormalizationType } from "@data/calculation/calculation.service";
 
 export const DEFAULT_OPTIONS: NormalizationOptions = {
-  type: NormalizationType.Domain
+  type: NormalizationType.Area
 }
 
 @Component({
