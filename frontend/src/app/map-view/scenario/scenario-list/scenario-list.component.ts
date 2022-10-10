@@ -14,7 +14,6 @@ import { UserSelectors } from '@data/user';
 import { Baseline } from '@data/user/user.interfaces';
 import * as Normalization from '@src/app/map-view/scenario/scenario-detail/normalization-selection/normalization-selection.component';
 import { TranslateService } from '@ngx-translate/core';
-import { selectSelectedComponents } from '@data/metadata/metadata.selectors';
 import { MetadataSelectors } from '@data/metadata';
 import { Band } from '@data/metadata/metadata.interfaces';
 

@@ -23,7 +23,6 @@ import {
   fetchAreaMatricesSuccess
 } from '@data/scenario/scenario.actions';
 import { CalculationActions } from '@data/calculation';
-import { Feature } from 'geojson';
 
 @Injectable()
 export class ScenarioEffects {

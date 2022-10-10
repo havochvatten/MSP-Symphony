@@ -44,7 +44,7 @@
         "core-js": "^2.5.4",
         "d3": "^5.15.0",
         "d3-sankey": "^0.12.3",
-        "hav-components": "^1.4.0",
+        "hav-components": "^2.0.0",
         "immutable": "^4.0.0-rc.12",
         "lodash": "^4.17.15",
         "ol": "^7.1.0",

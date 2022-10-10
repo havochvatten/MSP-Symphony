@@ -7,11 +7,7 @@ export class ReportModalComponent {
   safeUrl: SafeResourceUrl;
   @ViewChild('frame') iframe?: ElementRef<HTMLIFrameElement>;
 
-  constructor(
-    private dialog: DialogRef,
-    private dom: DomSanitizer,
-    private url: string
-  ) {
+  constructor(private dialog: DialogRef, private dom: DomSanitizer, private url: string) {
     this.safeUrl = this.dom.bypassSecurityTrustResourceUrl(this.url);
   }
 
