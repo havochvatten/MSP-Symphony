@@ -2,15 +2,11 @@ import { AuthenticationGuard } from './login/authentication.guard';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { MainViewComponent } from './map-view/main-view.component';
-import { ComparisonReportComponent } from './report/comparison-report.component';
-import { CalculationReportComponent } from './report/calculation-report.component';
-import { LoginComponent } from './login/login.component';
 
 const routes: Routes = [
   {
     path: 'login',
-    //loadChildren: () => import('./login/login.module').then(mod => mod.LoginModule)
-    component: LoginComponent
+    loadChildren: () => import('./login/login.module').then(mod => mod.LoginModule)
   },
   {
     path: 'map', // TODO: rename to main
@@ -20,20 +16,10 @@ const routes: Routes = [
   },
   {
     path: 'report',
-    // loadChildren: () => import('./report/calculation-report.module').then(mod =>
-    //   mod.CalculationReportModule),
-    children: [
-      {
-        path: 'compare/:aId/:bId',
-        component: ComparisonReportComponent
-      },
-      {
-        path: ':calcId',
-        component: CalculationReportComponent
-      }
-    ],
+    loadChildren: () =>
+      import('./report/calculation-report.module').then(mod => mod.CalculationReportModule),
     canActivate: [AuthenticationGuard]
-    //data: { headerTitle: 'Symphony' }
+    // data: { headerTitle: 'Symphony' }
   },
   { path: '', redirectTo: '/map', pathMatch: 'full' }
 ];
