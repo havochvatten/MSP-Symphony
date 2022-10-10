@@ -12,13 +12,14 @@ import { relativeDifference, formatPercentage } from "@data/calculation/calculat
 export class CumulativeEffectEtcComponent {
   @Input() reports?: Report[];
   @Input() area?: number;
-  @Input() footnote?: string;
+  @Input() normalized = false;
   @Input() normalization?: NormalizationOptions;
+  @Input() percentileValue = 0;
   @Input() locale = 'en';
 
-  constructor( private translate : TranslateService) {}
-
   type = NormalizationType; // make enum available to template
+
+  constructor(private translate : TranslateService) {}
 
   get areaKm2() {
     return this.area ? this.area / 1e6 : 0;

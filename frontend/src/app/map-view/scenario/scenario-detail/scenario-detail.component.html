@@ -94,6 +94,7 @@
     <section class="normalization"> <!--Wrap in accordion-box?-->
       <h3>{{ 'map.editor.normalization.title' | translate }}</h3>
       <app-normalization-selection [options]="scenario.normalization" [algorithm]="operation.value"
+                                   [percentileValue]="this.percentileValue$ | async"
         (modeSelectionEvent)="setNormalizationOptions($event)">
       </app-normalization-selection>
     </section>

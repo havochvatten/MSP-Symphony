@@ -12,6 +12,7 @@ export interface State {
   loadingCalculations: boolean;
   calculating: boolean;
   legends: LegendState;
+  percentileValue: number;
 }
 
 export interface Report {
@@ -84,6 +85,10 @@ export interface LegendColor {
 export interface Legend {
   unit: string;
   colorMap: LegendColor[];
+}
+
+export interface PercentileResponse {
+  percentileValue: number;
 }
 
 export type LegendState = {

@@ -8,6 +8,7 @@ export const initialState: CalculationInterfaces.State = {
   calculations: [],
   loadingCalculations: false,
   calculating: false,
+  percentileValue: 0,
   legends: {
     result: undefined,
     ecosystem: undefined,
@@ -54,5 +55,9 @@ export const calculationReducer = createReducer(
   on(CalculationActions.updateName, (state, { index, newName }) => ({
     ...state,
     calculations: setIn(state.calculations, [index, 'name'], newName)
+  })),
+  on(CalculationActions.fetchPercentileSuccess, (state, { percentileValue }) => ({
+    ...state,
+    percentileValue: percentileValue
   }))
 );

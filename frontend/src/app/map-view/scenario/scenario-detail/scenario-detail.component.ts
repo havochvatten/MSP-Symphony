@@ -56,6 +56,8 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   areaCoastMatrices?: AreaTypeRef; // AreaMatrixMapping[] = [];
 
+  percentileValue$: Observable<number>;
+
   constructor(
     private store: Store<State>,
     private calcService: CalculationService,
@@ -81,6 +83,8 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     });
 
     this.calculating$ = this.store.select(CalculationSelectors.selectCalculating);
+    this.percentileValue$ = this.store.select(CalculationSelectors.selectPercentileValue);
+    this.store.dispatch(CalculationActions.fetchPercentile());
   }
 
   convertMultiplierToPercent = convertMultiplierToPercent;

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { catchError, map, mergeMap } from 'rxjs/operators';
+import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
 import { CalculationActions } from './';
 import { CalculationService } from './calculation.service';
 
@@ -38,6 +38,23 @@ export class CalculationEffects {
         catchError(({ status, error: message }) =>
           of(
             CalculationActions.fetchLegendFailure({
+              error: { status, message }
+            })
+          )
+        )
+      )
+    )
+  );
+
+  @Effect()
+  fetchPercentile$ = this.actions$.pipe(
+    ofType(CalculationActions.fetchPercentile),
+    switchMap(() =>
+      this.calcService.getPercentileValue().pipe(
+        map(response => CalculationActions.fetchPercentileSuccess(response)),
+        catchError(({ status, error: message }) =>
+          of(
+            CalculationActions.fetchPercentileFailure({
               error: { status, message }
             })
           )

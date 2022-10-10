@@ -73,7 +73,7 @@
                 "title": "Färgskala för resultat",
                 "description": "Sätt maximalt värde baserat på",
                 "area": "Maximalt värde i valt område",
-                "domain": "95-percentilvärde i havsplaneområde",
+                "domain": "{{ ordinalPercentileValue }} percentil i havsplaneområde",
                 "custom": "Egendefinierat värde",
                 "custom-value": "Värde"
             },
@@ -266,10 +266,10 @@
             "km2": "km²",
             "normalization": {
                 "title": "Färgkodning maxvärde",
-                "domain": "95-percentil",
+                "domain": "{{ ordinalPercentileValue }} percentilen",
                 "area": "Maximalt värde i område",
                 "custom": "Egendefinerat värde",
-                "domain-desc": "Resultatet är normaliserat med avseende på det värde som 95% av datapunkterna i tillhörande havsplaneområdet ligger inom (inklusive värden för kustområden)."
+                "domain-desc": "Resultatet är normaliserat med avseende på det värde som {{ percentileValue }}% av datapunkterna i tillhörande havsplaneområdet ligger inom (inklusive värden för kustområden)."
             },
             "sensitivity-matrices": {
                 "title": "Känslighetsmatrisval",

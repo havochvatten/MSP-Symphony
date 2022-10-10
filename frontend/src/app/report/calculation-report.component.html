@@ -10,7 +10,8 @@
   <app-cumulative-effect-etc [reports]="report ? [report] : undefined"
     [area]="area"
     [normalization]="report.normalization"
-    [footnote]="isDomainNormalization(report) && 'report.cumulative-effect-etc.normalization.domain-desc' | translate"
+    [percentileValue]="this.percentileValue$ | async"
+    [normalized]="isDomainNormalization(report)"
     [locale]="locale"
   ></app-cumulative-effect-etc>
   <app-result-color-scale [locale]="locale"></app-result-color-scale>
