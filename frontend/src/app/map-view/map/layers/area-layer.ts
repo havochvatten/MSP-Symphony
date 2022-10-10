@@ -5,7 +5,6 @@ import GeoJSON from 'ol/format/GeoJSON';
 import Feature, { FeatureLike } from 'ol/Feature';
 import { Draw, Select, Snap } from 'ol/interaction';
 import { Fill, Stroke, Style } from 'ol/style';
-import GeometryType from 'ol/geom/GeometryType';
 import Point from 'ol/geom/Point';
 import { Coordinate } from 'ol/coordinate';
 import { FeatureCollection, Polygon, StatePath } from '@data/area/area.interfaces';
@@ -60,7 +59,8 @@ class DrawAreaInteraction extends Draw {
   ) {
     super({
       source: source,
-      type: GeometryType.POLYGON,
+      // GeometryType.POLYGON is no longer exported ... https://github.com/openlayers/openlayers/issues/5241
+      type: 'Polygon',
       condition
     });
     const snap = new Snap({
