@@ -1,7 +1,8 @@
-import { ElementRef, ViewChild } from '@angular/core';
+import { ElementRef, ViewChild, Directive } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DialogRef } from '../dialog/dialog-ref';
 
+@Directive()
 export class ReportModalComponent {
   safeUrl: SafeResourceUrl;
   @ViewChild('frame') iframe?: ElementRef<HTMLIFrameElement>;

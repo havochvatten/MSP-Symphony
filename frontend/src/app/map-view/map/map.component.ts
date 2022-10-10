@@ -1,4 +1,11 @@
-import { AfterViewInit, Component, HostListener, Input, NgModuleRef, OnDestroy } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  HostListener,
+  Input,
+  NgModuleRef,
+  OnDestroy
+} from '@angular/core';
 import { Coordinate } from 'ol/coordinate';
 import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -10,24 +17,24 @@ import { CalculationService } from '@data/calculation/calculation.service';
 import { StaticImageOptions } from '@data/calculation/calculation.interfaces';
 import { DialogService } from '@src/app/shared/dialog/dialog.service';
 import { CreateUserAreaModalComponent } from './create-user-area-modal/create-user-area-modal.component';
-import { UserSelectors } from "@data/user";
-import { ScenarioSelectors } from "@data/scenario";
-import { Scenario } from "@data/scenario/scenario.interfaces";
-import { distinctUntilChanged, filter, skip } from "rxjs/operators";
-import { Feature, Map as OLMap, View } from "ol";
-import { isNotNullOrUndefined } from "@src/util/rxjs";
-import { TranslateService } from "@ngx-translate/core";
-import { ScenarioService } from "@data/scenario/scenario.service";
-import { environment as env } from "@src/environments/environment";
-import { BackgroundLayer } from "@src/app/map-view/map/layers/background-layer";
-import { Attribution, ScaleLine } from "ol/control";
-import * as proj from "ol/proj";
-import BandLayer from "@src/app/map-view/map/layers/band-layer";
-import { ResultLayerGroup } from "@src/app/map-view/map/layers/result-layer-group";
-import { ScenarioLayer } from "@src/app/map-view/map/layers/scenario-layer";
-import AreaLayer from "@src/app/map-view/map/layers/area-layer";
-import { Extent } from "ol/extent";
-import { DataLayerService } from "@src/app/map-view/map/layers/data-layer.service";
+import { UserSelectors } from '@data/user';
+import { ScenarioSelectors } from '@data/scenario';
+import { Scenario } from '@data/scenario/scenario.interfaces';
+import { distinctUntilChanged, filter, skip } from 'rxjs/operators';
+import { Feature, Map as OLMap, View } from 'ol';
+import { isNotNullOrUndefined } from '@src/util/rxjs';
+import { TranslateService } from '@ngx-translate/core';
+import { ScenarioService } from '@data/scenario/scenario.service';
+import { environment as env } from '@src/environments/environment';
+import { BackgroundLayer } from '@src/app/map-view/map/layers/background-layer';
+import { Attribution, ScaleLine } from 'ol/control';
+import * as proj from 'ol/proj';
+import BandLayer from '@src/app/map-view/map/layers/band-layer';
+import { ResultLayerGroup } from '@src/app/map-view/map/layers/result-layer-group';
+import { ScenarioLayer } from '@src/app/map-view/map/layers/scenario-layer';
+import AreaLayer from '@src/app/map-view/map/layers/area-layer';
+import { Extent } from 'ol/extent';
+import { DataLayerService } from '@src/app/map-view/map/layers/data-layer.service';
 
 @Component({
   selector: 'app-map',
@@ -63,16 +70,18 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     private dataLayerService: DataLayerService,
     private moduleRef: NgModuleRef<any>
   ) {
-    this.userSubscription = this.store        /* TOOD: Just get from static environment?*/
-      .select(UserSelectors.selectBaseline).pipe(isNotNullOrUndefined())
-      .subscribe((baseline) => {
+    this.userSubscription = this.store /* TOOD: Just get from static environment?*/
+      .select(UserSelectors.selectBaseline)
+      .pipe(isNotNullOrUndefined())
+      .subscribe(baseline => {
         this.bandLayer = new BandLayer(baseline.name, dataLayerService);
         this.map!.getLayers().insertAt(1, this.bandLayer); // on top of background layer
       });
 
     this.storeSubscription = this.store
       .select(MetadataSelectors.selectVisibleBands)
-      .subscribe(components => { // FIXME
+      .subscribe(components => {
+        // FIXME
         this.bandLayer?.setVisibleBands('ECOSYSTEM', components.ecoComponent);
         this.bandLayer?.setVisibleBands('PRESSURE', components.pressureComponent);
       });
@@ -88,38 +97,51 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     this.activeScenario$ = this.store.select(ScenarioSelectors.selectActiveScenario);
 
-    this.scenarioSubscription = this.activeScenario$.pipe(
-      distinctUntilChanged((prev: Scenario|undefined, curr: Scenario|undefined) => prev?.id === curr?.id),
-      isNotNullOrUndefined(),
-    ).subscribe((scenario: Scenario) => {
-      this.scenarioLayer.clearLayers();
+    this.scenarioSubscription = this.activeScenario$
+      .pipe(
+        distinctUntilChanged(
+          (prev: Scenario | undefined, curr: Scenario | undefined) => prev?.id === curr?.id
+        ),
+        isNotNullOrUndefined()
+      )
+      .subscribe((scenario: Scenario) => {
+        this.scenarioLayer.clearLayers();
 
-      this.scenarioLayer.setScenarioBoundary(scenario);
-      if (scenario.changes)
-        this.scenarioLayer.addScenarioChangeAreas(scenario.changes);
+        this.scenarioLayer.setScenarioBoundary(scenario);
+        if (scenario.changes) this.scenarioLayer.addScenarioChangeAreas(scenario.changes);
 
-      this.zoomToExtent(this.scenarioLayer.getBoundaryFeature()!.getGeometry().getExtent(),
-        500);
-    });
+        const extent = this.scenarioLayer
+          .getBoundaryFeature()
+          ?.getGeometry()
+          ?.getExtent();
+        if (!extent) {
+          return;
+        }
+        this.zoomToExtent(extent, 500);
+      });
 
-    this.scenarioCloseSubscription = this.activeScenario$.pipe(
-      skip(1), // undefined as always emitted on start, which does indicate a scenario close
-      filter(s => s === undefined)
-    ).subscribe(_ => {  // A scenario was closed
-      // TODO: Remove result layer if loadResultLayerOnOpen is true
-      this.scenarioLayer.clearLayers();
-      this.zoomOut(); // visual cue that scenario has been exited
-    });
+    this.scenarioCloseSubscription = this.activeScenario$
+      .pipe(
+        skip(1), // undefined as always emitted on start, which does indicate a scenario close
+        filter(s => s === undefined)
+      )
+      .subscribe(_ => {
+        // A scenario was closed
+        // TODO: Remove result layer if loadResultLayerOnOpen is true
+        this.scenarioLayer.clearLayers();
+        this.zoomOut(); // visual cue that scenario has been exited
+      });
 
     // Use store instead?
-    this.resultSubscription = this.calcService.resultReady$.subscribe((result: StaticImageOptions) => {
-      this.resultLayerGroup.addResult(result);
-    });
+    this.resultSubscription = this.calcService.resultReady$.subscribe(
+      (result: StaticImageOptions) => {
+        this.resultLayerGroup.addResult(result);
+      }
+    );
   }
 
   ngAfterViewInit() {
-    if (!env.map.disableBackgroundMap)
-      this.background = new BackgroundLayer('OpenSeaMap');
+    if (!env.map.disableBackgroundMap) this.background = new BackgroundLayer('OpenSeaMap');
 
     // TODO useGeographic function in the ‘ol/proj’?
     this.map = new OLMap({
@@ -143,7 +165,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         center: proj.fromLonLat(this.mapCenter!),
         zoom: env.map.initialZoom,
         maxZoom: env.map.maxZoom,
-        minZoom: env.map.minZoom,
+        minZoom: env.map.minZoom
         // Web Mercator is Open Layers default (like OSM). Use EPSG:4326 instead?
         // projection: proj.get(AppSettings.MAP_PROJECTION),
       }),
@@ -152,10 +174,24 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.resultLayerGroup = new ResultLayerGroup();
     this.map.addLayer(this.resultLayerGroup);
 
-    this.scenarioLayer = new ScenarioLayer(this.scenarioService, this.map.getView().getProjection().getCode(), this.store);
+    const code = this.map
+      .getView()
+      .getProjection()
+      .getCode();
+    if (!code) {
+      return;
+    }
 
-    this.areaLayer = new AreaLayer(this.map, this.dispatchSelectionUpdate, this.zoomToExtent, this.onDrawEnd,
-      this.scenarioLayer, this.translateService); // Will add itself to the map
+    this.scenarioLayer = new ScenarioLayer(this.scenarioService, code, this.store);
+
+    this.areaLayer = new AreaLayer(
+      this.map,
+      this.dispatchSelectionUpdate,
+      this.zoomToExtent,
+      this.onDrawEnd,
+      this.scenarioLayer,
+      this.translateService
+    ); // Will add itself to the map
     this.map.addLayer(this.areaLayer);
 
     this.map.addLayer(this.scenarioLayer);
@@ -208,15 +244,23 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       };
       this.store.dispatch(AreaActions.createUserDefinedArea(newArea));
     }
-  }
+  };
 
   public zoomIn() {
-    this.setZoom(this.map!.getView().getZoom() + 1);
-  };
+    const zoom = this.map?.getView().getZoom();
+    if (!zoom) {
+      return;
+    }
+    this.setZoom(zoom + 1);
+  }
 
   public zoomOut() {
-    this.setZoom(this.map!.getView().getZoom() - 1);
-  };
+    const zoom = this.map?.getView().getZoom();
+    if (!zoom) {
+      return;
+    }
+    this.setZoom(zoom - 1);
+  }
 
   private setZoom = (zoomLevel: number, duration = 250, center?: Coordinate) => {
     this.map!.getView().animate({ zoom: zoomLevel, duration }, { center });
@@ -224,22 +268,21 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   public zoomToArea = (statePath: StatePath) => {
     this.areaLayer.zoomToArea(statePath);
-  }
+  };
 
   public zoomToExtent(extent: Extent, duration: number) {
     const padding = env.map.zoomPadding;
     this.map!.getView().fit(extent, {
-      padding: [padding, padding, padding, /*40 rem=*/400], // TODO: set last element to width of left side panel, if
+      padding: [padding, padding, padding, /*40 rem=*/ 400], // TODO: set last element to width of left side panel, if
       // open
       // TODO observe state of sidebar toggle
-      duration,
+      duration
     });
   }
 
   public setMapOpacity(opacity: number) {
     // The event object is sometimes emitted when using this function
     // in an input event, which makes the opacity reset to 1
-    if (typeof opacity === 'number' && this.background)
-      this.background.setOpacity(opacity);
+    if (typeof opacity === 'number' && this.background) this.background.setOpacity(opacity);
   }
 }

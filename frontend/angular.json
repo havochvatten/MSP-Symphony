@@ -31,8 +31,7 @@
               "src/styles.scss",
               "./node_modules/ol/ol.css"
             ],
-            "scripts": [],
-            "es5BrowserSupport": true
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -149,7 +148,7 @@
   "defaultProject": "symphony-fe",
   "schematics": {
     "@schematics/angular:component": {
-      "styleext": "scss"
+      "style": "scss"
     }
   },
   "cli": {
