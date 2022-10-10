@@ -5,7 +5,7 @@
     <hav-radio-button
       *ngFor="let button of radioButtons"
       radioButtonSize="medium"
-      label="{{ button.label | translate }}"
+      label="{{ button.label | translate: { ordinalPercentileValue: this.percentileValue | ordinal:locale } }}"
       [value]="button.value"
       [checked]="button.value == options.type"
       [disabled]="button.value === NormalizationType.Domain && algorithm === 'RarityAdjustedCumulativeImpact'"

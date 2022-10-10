@@ -72,7 +72,7 @@
                 "title": "Result Colormap",
                 "description": "Set maximum value based on",
                 "area": "Maximum value in computed area",
-                "domain": "Maximum value in MSP area",
+                "domain": "Normalized to {{ ordinalPercentileValue }} percentile in MSP area",
                 "custom": "User-defined value",
                 "custom-value": "Value"
             },
@@ -269,10 +269,10 @@
             "normalization": {
                 "title": "Result colorscale",
                 "description": "Set maximum value based on",
-                "domain": "95th percentile",
+                "domain": "{{ ordinalPercentileValue }} percentile",
                 "area": "Maximum value in area",
                 "custom": "User-defined value",
-                "domain-desc": "The result is normalized with regard to the range that 95% of data points in the respective marine spatial planning area belong to (including coastal areas)."
+                "domain-desc": "The result is normalized with regard to the range that {{ percentileValue }}% of data points in the respective marine spatial planning area belong to (including coastal areas)."
             },
             "sensitivity-matrices": {
                 "title": "Sensitivity matrix",

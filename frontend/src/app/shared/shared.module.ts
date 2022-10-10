@@ -37,6 +37,7 @@ import { PressureColorScaleComponent } from './pressure-color-scale/pressure-col
 import { PopupMessageComponent } from './popup-message/popup-message.component';
 import { StatusIconComponent } from './status-icon/status-icon.component';
 import { ComparisonReportModalComponent } from "@shared/report-modal/comparison-report-modal.component";
+import { OrdinalPipe } from "@shared/ordinal.pipe";
 
 @NgModule({
   declarations: [
@@ -73,6 +74,7 @@ import { ComparisonReportModalComponent } from "@shared/report-modal/comparison-
     PressureColorScaleComponent,
     PopupMessageComponent,
     StatusIconComponent,
+    OrdinalPipe
   ],
   imports: [
     CommonModule,
@@ -117,7 +119,8 @@ import { ComparisonReportModalComponent } from "@shared/report-modal/comparison-
     PopupMessageComponent,
     StatusIconComponent,
     RouterModule,
-    TranslateModule
+    TranslateModule,
+    OrdinalPipe
   ]
 })
 export class SharedModule {}
