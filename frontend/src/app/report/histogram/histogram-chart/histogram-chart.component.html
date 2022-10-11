@@ -1,0 +1,35 @@
+<svg [attr.viewBox]=chartViewBox()>
+  <ng-container *ngFor="let bVal of bins; index as i">
+    <path
+      [attr.d]="phDraw(i, false)"
+      [attr.fill]="phRed(i)"
+    >
+    </path>
+    <path
+      class="histogram_info"
+      [attr.d]="phDraw(i, true)"
+    >
+      <title>{{
+        ('report.histogram.interval' | translate) + ': '
+      + binInfo[i].lowerBound + ' &ndash; ' + binInfo[i + 1].lowerBound + ' : '
+      + (bVal | number: '1.0':locale) + '\n'
+      + ('report.histogram.cumulative-proportion' | translate) + ' > ' + binInfo[i].cumulativeQuantity + '\n'
+      + ('report.histogram.cumulative-proportion-exclusive' | translate) + ' > ' +  binInfo[i].cumulativeQuantityEx}}
+      </title>
+    </path>
+  </ng-container>
+  <ng-container *ngFor="let hr of segments">
+    <text
+      [attr.x]="leftMargin - binWidth * 6"
+      [attr.y]="hr.y + binWidth"
+      text-anchor="end"
+    >
+      {{ hr.value }}
+    </text>
+    <path
+      [attr.d]="hr.draw"
+      stroke="#aaa"
+      stroke-width="0.75"
+    ></path>
+  </ng-container>
+</svg>

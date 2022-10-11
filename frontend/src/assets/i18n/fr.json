@@ -282,6 +282,16 @@
                 "legend-desc": "L'image montre la différence relative d'impact cumulé entre le scénario de référence et le scénario anticipé."
             }
         },
+        "histogram": {
+            "caption": "Histogramme",
+            "interval": "Intervalle",
+            "zeroes-included": "Y compris des zéros",
+            "zeroes-excluded": "REMARQUE: Cet histogramme exclut des zéros",
+            "include-zero": "Inclure zéro",
+            "exclude-zero": "Exclure zéro",
+            "cumulative-proportion": "Proportion cumulée",
+            "cumulative-proportion-exclusive": "Proportion cumulée sauf des zéros"
+        },
         "highest-impact": {
             "ecocomponent": "Composante écosystèmes avec l'impact le plus important",
             "pressure": "Pressions avec l'impact le plus important"

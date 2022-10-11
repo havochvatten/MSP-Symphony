@@ -1,0 +1,21 @@
+:host {
+  svg {
+    width: 350px;
+    margin: 0 -1rem;
+
+    path.histogram_info {
+      fill: #77a467;
+      opacity: 0;
+      cursor: pointer;
+
+      &:hover {
+        opacity: 0.3;
+      }
+    }
+
+    text {
+      font-family: monospace;
+      font-size: 3.3rem;
+    }
+  }
+}

@@ -26,6 +26,8 @@ public class ReportResponseDto {
     public double min;
     public double max;
     public double stddev;
+    public int[] histogram;
+    public long zeroes;
     public double geographicalArea; // in m²
 
     public long calculatedPixels;
