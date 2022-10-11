@@ -14,6 +14,7 @@ import se.havochvatten.symphony.dto.NormalizationType;
 import se.havochvatten.symphony.scenario.ScenarioService;
 import se.havochvatten.symphony.service.CalculationAreaService;
 import se.havochvatten.symphony.service.PropertiesService;
+import se.havochvatten.symphony.web.WebUtil;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -21,6 +22,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -107,8 +109,10 @@ public class CalibrationREST {
     public Response checkPercentileValue(@Context HttpServletRequest req) throws NotAuthorizedException {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(WebUtil.ONE_YEAR_IN_SECONDS);
         int percentile = propertiesService.getPropertyAsInt("calc.normalization.histogram.percentile", 95);
-        return Response.ok(Map.of("percentileValue", percentile)).build();
+        return Response.ok(Map.of("percentileValue", percentile)).cacheControl(cc).build();
     }
 }
 
