@@ -9,12 +9,13 @@ import { BandGroup, LayerData } from '@data/metadata/metadata.interfaces';
 import { TranslateService } from '@ngx-translate/core';
 import { ChartData } from './pressure-chart/pressure-chart.component';
 import { Report } from '@data/calculation/calculation.interfaces';
-import { environment as env } from '@src/environments/environment';
-import { NormalizationType } from '@data/calculation/calculation.service';
-import { ReportService } from '@src/app/report/report.service';
-import MetadataService from '@data/metadata/metadata.service';
-import { fromJS } from 'immutable';
-import { cloneDeep } from 'lodash';
+import { environment as env } from "@src/environments/environment";
+import { CalculationActions, CalculationSelectors } from "@data/calculation";
+import { NormalizationType } from "@data/calculation/calculation.service";
+import { ReportService } from "@src/app/report/report.service";
+import MetadataService from "@data/metadata/metadata.service";
+import { fromJS } from "immutable";
+import { cloneDeep } from "lodash";
 
 export type BandMap = Record<'b' | 'e', Record<number, string>>;
 
@@ -30,6 +31,7 @@ export class CalculationReportComponent {
   area?: number;
   private imageUrl?: string;
   bandMap: BandMap = { b: {}, e: {} };
+  percentileValue$: Observable<number>;
   metadata$: Observable<{
     ecoComponent: BandGroup[];
     pressureComponent: BandGroup[];
@@ -74,6 +76,9 @@ export class CalculationReportComponent {
         e: this.metadataService.flattenBandGroups(layerData.ecoComponent)
       };
     });
+
+    this.percentileValue$ = this.store.select(CalculationSelectors.selectPercentileValue);
+    this.store.dispatch(CalculationActions.fetchPercentile());
   }
 
   formatChartData(data: ChartData, metadata: LayerData) {
@@ -106,7 +111,7 @@ export class CalculationReportComponent {
 
   calculatePercentOfTotal(components: Record<number, number>, total: number) {
     return fromJS(components)
-      .map(x => total && (100 * (x as number)) / total)
+      .map((x: number) => total && (100 * x) / total)
       .toJS();
   }
 }

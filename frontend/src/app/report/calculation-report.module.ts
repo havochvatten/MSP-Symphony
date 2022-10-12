@@ -12,6 +12,7 @@ import { CalculationImageComponent } from './calculation-image/calculation-image
 import { HavSpinnerModule } from 'hav-components';
 import { ScenarioChangesComponent } from './scenario-changes/scenario-changes.component';
 import { ComparisonReportComponent } from "@src/app/report/comparison-report.component";
+import { OrdinalPipe } from "@shared/ordinal.pipe";
 
 @NgModule({
   declarations: [
@@ -25,6 +26,6 @@ import { ComparisonReportComponent } from "@src/app/report/comparison-report.com
     ScenarioChangesComponent
   ],
   imports: [CommonModule, SharedModule, CalculationReportRoutingModule, HavSpinnerModule],
-  providers: [DecimalPipe]
+  providers: [DecimalPipe, OrdinalPipe]
 })
 export class CalculationReportModule {}
