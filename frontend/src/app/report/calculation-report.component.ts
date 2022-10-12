@@ -111,7 +111,7 @@ export class CalculationReportComponent {
 
   calculatePercentOfTotal(components: Record<number, number>, total: number) {
     return fromJS(components)
-      .map((x: number) => total && (100 * x) / total)
+      .map(x => total && (100 * (x as number)) / total)
       .toJS();
   }
 }
