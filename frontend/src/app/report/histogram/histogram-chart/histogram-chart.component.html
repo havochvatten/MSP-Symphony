@@ -1,0 +1,50 @@
+<svg [attr.viewBox]=chartViewBox()>
+  <ng-container *ngFor="let bVal of bins; index as i">
+    <path
+      [attr.d]="phDraw(i, false)"
+      [attr.fill]="phRed(i)">
+    </path>
+    <path
+      class="histogram_info"
+      [attr.d]="phDraw(i, true)">
+      <title>{{
+        ('report.histogram.interval' | translate) + ': '
+      + binInfo[i].lowerBound + ' &ndash; ' + binInfo[i + 1].lowerBound + ' : '
+      + (bVal | number: '1.0':locale) + '\n'
+      + ('report.histogram.cumulative-proportion' | translate) + ' ≥ ' + binInfo[i].cumulativeQuantity + '\n'
+      + ('report.histogram.cumulative-proportion-exclusive' | translate) + ' ≥ ' +  binInfo[i].cumulativeQuantityEx + '\n'
+      + ('report.histogram.median-in-range' | translate) + ' ≈ ' + binInfo[i].middle }}
+      </title>
+    </path>
+  </ng-container>
+  <ng-container *ngFor="let hr of segments">
+    <text
+      [attr.x]="leftMargin - binWidth * 6"
+      [attr.y]="hr.y + binWidth"
+      text-anchor="end">
+      {{ hr.value }}
+    </text>
+    <path
+      class="segment"
+      [attr.d]="hr.draw">
+    </path>
+  </ng-container>
+  <path
+    class="segment"
+    [attr.d]="'M 154 ' + (cHeight + topMargin) + ' h 1040'">
+  </path>
+  <ng-container *ngFor="let xl of xlabels; index as i">
+    <path
+      class="segment"
+      [attr.d]="'M ' + xl[0] + ' '
+                     + (cHeight + topMargin) + ' v ' + binWidth"
+      stroke="#888">
+    </path>
+    <text
+    [attr.x]="xl[0]"
+    [attr.y]="(cHeight + topMargin + binWidth * 4)"
+    text-anchor="middle">
+    {{ xl[1] }}
+    </text>
+  </ng-container>
+</svg>

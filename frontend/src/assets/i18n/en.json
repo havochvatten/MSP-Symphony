@@ -282,6 +282,17 @@
                 "legend-desc": "The image shows the relative difference in total cumulative impact between the base and what-if scenario."
             }
         },
+        "histogram": {
+            "caption": "Histogram",
+            "interval": "Interval",
+            "zeroes-included": "Full range",
+            "zeroes-excluded": "NB. The histogram excludes zero values",
+            "include-zero": "Include zero",
+            "exclude-zero": "Exclude zero",
+            "cumulative-proportion": "Cumulative proportion",
+            "cumulative-proportion-exclusive": "Cum. proportion w/o zeroes",
+            "median-in-range": "Median in range"
+        },
         "highest-impact": {
             "ecocomponent": "Nature values with highest impact",
             "pressure": "Pressures with highest impact"
