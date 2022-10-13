@@ -44,7 +44,7 @@
     [attr.x]="xl[0]"
     [attr.y]="(cHeight + topMargin + binWidth * 4)"
     text-anchor="middle">
-    {{ ( xl[1] | number:'.0':locale ) }}
+    {{ ( xl[1] | number:'.0-5':locale ) }}
     </text>
   </ng-container>
 </svg>

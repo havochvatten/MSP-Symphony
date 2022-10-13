@@ -14,6 +14,7 @@ export class HistogramChartComponent implements OnInit, OnChanges {
   @Input() zeroes!: number;
   @Input() inclusive = false;
   @Input() locale = 'en';
+  @Input() algorithm = '';
 
   readonly leftMargin = 184;
   readonly cHeight     = 800;
@@ -30,6 +31,7 @@ export class HistogramChartComponent implements OnInit, OnChanges {
   private max         = 0;
   private bmax        = 0;
   private binSz       = 0;
+  private isRarityAdjusted = false;
 
   constructor(private decimalPipe: DecimalPipe) { }
 
@@ -37,6 +39,7 @@ export class HistogramChartComponent implements OnInit, OnChanges {
 
     this.bmax = Math.max(...this.bins);
     this.binSz = this.reportMax / 100;
+    this.isRarityAdjusted = this.algorithm === 'RarityAdjustedCumulativeImpact';
 
     const incZero = (this.inclusive ? 0 : this.zeroes),
           count = this.bins.reduce((a, b) => a + b) + incZero,
@@ -82,7 +85,7 @@ export class HistogramChartComponent implements OnInit, OnChanges {
                       ((v + 1) * (this.binWidth * 20))),
                       this.binInfo[(v + 1) * 20 - 1].middle
                     ]);
-    
+
     this.xlabels.unshift([this.leftMargin - (this.binWidth / 2), this.binInfo[0].middle]);
   }
 
@@ -112,8 +115,11 @@ export class HistogramChartComponent implements OnInit, OnChanges {
   }
 
   makeInfo(binIndex: number, acc: number, count: number) {
+    // "Middle number": arbitrarily prefer an integer value when reasonable
+    // Actual values may be expected to be discrete
+    const middle = binIndex * this.binSz + (this.binSz / 2);
     return new BinInfo(this.decimalPipe.transform(binIndex * this.binSz, '1.2-4', this.locale) || '',
-                        acc, Math.trunc(binIndex * this.binSz + (this.binSz / 2)), count, this.zeroes, this.locale)
+                        acc, this.isRarityAdjusted || this.reportMax < 200 ? middle : Math.round(middle), count, this.zeroes, this.locale)
   }
 
   ngOnChanges(): void {

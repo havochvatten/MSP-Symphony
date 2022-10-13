@@ -9,8 +9,10 @@
         fill: #77a467;
         opacity: 0;
         cursor: pointer;
-          &:hover {
-            opacity: 0.3;
+          @media screen {
+            &:hover {
+              opacity: 0.3;
+            }
           }
       }
 
