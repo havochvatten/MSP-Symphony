@@ -13,7 +13,7 @@
       + (bVal | number: '1.0':locale) + '\n'
       + ('report.histogram.cumulative-proportion' | translate) + ' ≥ ' + binInfo[i].cumulativeQuantity + '\n'
       + ('report.histogram.cumulative-proportion-exclusive' | translate) + ' ≥ ' +  binInfo[i].cumulativeQuantityEx + '\n'
-      + ('report.histogram.median-in-range' | translate) + ' ≈ ' + binInfo[i].middle }}
+      + ('report.histogram.middle-of-range' | translate) + ' = ' + (binInfo[i].middle | number:'.0':locale ) }}
       </title>
     </path>
   </ng-container>
@@ -44,7 +44,7 @@
     [attr.x]="xl[0]"
     [attr.y]="(cHeight + topMargin + binWidth * 4)"
     text-anchor="middle">
-    {{ xl[1] }}
+    {{ ( xl[1] | number:'.0':locale ) }}
     </text>
   </ng-container>
 </svg>

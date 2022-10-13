@@ -21,7 +21,7 @@ export class HistogramChartComponent implements OnInit, OnChanges {
 
   segments: Segment[] = [];
   binInfo: BinInfo[] = [];
-  xlabels: [number, string][] = [];
+  xlabels: [number, number][] = [];
 
   private readonly chartWidth  = 1200
   private readonly chartHeight = 864;
@@ -78,12 +78,12 @@ export class HistogramChartComponent implements OnInit, OnChanges {
 
     this.xlabels = [...Array(5).keys()].map(
                     (v) => [
-                      ((this.leftMargin - this.binWidth) +
-                      ((v + 1) * (this.binWidth * 20)) - (this.binWidth / 2)),
-                      this.binInfo[(v + 1) * 20 - 1].middle.toString()
+                      ((this.leftMargin - this.binWidth * 1.5) +
+                      ((v + 1) * (this.binWidth * 20))),
+                      this.binInfo[(v + 1) * 20 - 1].middle
                     ]);
-
-    this.xlabels.unshift([this.leftMargin - (this.binWidth / 2), this.binInfo[0].middle.toString()]);
+    
+    this.xlabels.unshift([this.leftMargin - (this.binWidth / 2), this.binInfo[0].middle]);
   }
 
   chartViewBox() {

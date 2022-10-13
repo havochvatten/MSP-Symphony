@@ -291,7 +291,7 @@
             "exclude-zero": "Exclude zero",
             "cumulative-proportion": "Cumulative proportion",
             "cumulative-proportion-exclusive": "Cum. proportion w/o zeroes",
-            "median-in-range": "Median in range"
+            "middle-of-range": "Middle of range"
         },
         "highest-impact": {
             "ecocomponent": "Nature values with highest impact",
