@@ -28,8 +28,7 @@ public class PercentileNormalizer extends RasterNormalizer {
         var extrema = (GridCoverage2D) Operations.DEFAULT.extrema(coverage);
         var histogram = getHistogram(coverage, ((double[]) extrema.getProperty("minimum"))[0],
             ((double[]) extrema.getProperty("maximum"))[0], NUM_BINS);
-        var normalizationValue = getValueBelowPercentile(histogram);
-        return normalizationValue;
+        return getValueBelowPercentile(histogram);
     }
 
     private double getValueBelowPercentile(Histogram histogram) {
