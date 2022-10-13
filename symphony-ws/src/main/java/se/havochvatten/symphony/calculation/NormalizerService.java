@@ -29,8 +29,10 @@ public class NormalizerService {
             case USER_DEFINED:
                 return new UserDefinedValueNormalizer();
             case PERCENTILE:
-                return new PercentileNormalizer(Integer.parseInt(
-                    props.getProperty("calc.normalization.histogram.percentile")));
+                var prop = props.getProperty("calc.normalization.histogram.percentile");
+                if (prop == null)
+                    throw new RuntimeException("No percentile valued set in properties");
+                return new PercentileNormalizer(Integer.parseInt(prop));
             default:
                 throw new RuntimeException("Unknown normalizer type: " + type);
         }
@@ -60,4 +62,3 @@ class AreaNormalizer extends RasterNormalizer {
 class DomainNormalizer extends RasterNormalizer {}
 
 class UserDefinedValueNormalizer extends RasterNormalizer {}
-
