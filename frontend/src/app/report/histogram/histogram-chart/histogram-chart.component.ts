@@ -16,27 +16,30 @@ export class HistogramChartComponent implements OnInit, OnChanges {
   @Input() locale = 'en';
 
   readonly leftMargin = 184;
+  readonly cHeight     = 800;
+  readonly topMargin   = 20;
+
   segments: Segment[] = [];
   binInfo: BinInfo[] = [];
+  xlabels: [number, string][] = [];
 
   private readonly chartWidth  = 1200
   private readonly chartHeight = 864;
-  private readonly cHeight     = 800;
-  private readonly topMargin   = 20;
   private readonly binWidth    = 10;
 
   private max         = 0;
   private bmax        = 0;
+  private binSz       = 0;
 
   constructor(private decimalPipe: DecimalPipe) { }
 
   ngOnInit(): void {
 
     this.bmax = Math.max(...this.bins);
+    this.binSz = this.reportMax / 100;
 
-    const count = this.bins.reduce((a, b) => a + b)
-                + (this.inclusive ? 0 : this.zeroes),
-          binSz = this.reportMax / 100,
+    const incZero = (this.inclusive ? 0 : this.zeroes),
+          count = this.bins.reduce((a, b) => a + b) + incZero,
           ystep =       // suitable vertical measure interval
             this.bmax < 10 ? 1 :
             this.bmax < 30 ? 5 :
@@ -50,31 +53,37 @@ export class HistogramChartComponent implements OnInit, OnChanges {
             this.bmax < 1000000 ? 100000 :
             500000;
 
-    let bx = 0,
-        acc = this.bins[0] + (this.inclusive ? 0 : this.zeroes),
-        yc = 0;
+    let acc = this.bins[0] + incZero;
 
     this.max = this.bmax < 10 ? 10 :
       (Math.trunc(this.bmax / ystep) + 1) * ystep;
 
-    this.binInfo[0] = this.inclusive ?
-                        this.makeInfo(0, acc, count) :
-                        new BinInfo('ε', acc, count, this.zeroes, this.locale);
+    this.binInfo = this.bins.slice(1).map((b, ix) => {
+      acc += b;
+      return this.makeInfo(ix + 1, acc, count);
+    });
 
-    while (bx++ < this.bins.length -1) {
-      acc += this.bins[bx];
-      this.binInfo[bx] = this.makeInfo(bx * binSz,  acc, count);
-    }
+    this.binInfo.unshift(this.makeInfo(0, this.bins[0] + incZero, count));
+    this.binInfo.push(this.makeInfo(100, acc, count));
+    this.binInfo[0].lowerBound = !this.inclusive ? 'ε' : this.binInfo[0].lowerBound;
 
-    this.binInfo[bx] = this.makeInfo(this.reportMax, acc, count);
-
-    while (yc < this.max) {
-      yc += ystep;
-      this.segments.push(
-        new Segment(this.leftMargin - this.binWidth * 3,
+    this.segments = [...Array(Math.ceil(this.max / ystep)).keys()]
+      .map((v) => {
+        const yc = v * ystep;
+        return new Segment(
+          this.leftMargin - this.binWidth * 3,
           this.topMargin + this.cHeight * (1 - yc / this.max),
-          this.binWidth * 104, yc));
-    }
+          this.binWidth * 104, yc)
+    });
+
+    this.xlabels = [...Array(5).keys()].map(
+                    (v) => [
+                      ((this.leftMargin - this.binWidth) +
+                      ((v + 1) * (this.binWidth * 20)) - (this.binWidth / 2)),
+                      this.binInfo[(v + 1) * 20 - 1].middle.toString()
+                    ]);
+
+    this.xlabels.unshift([this.leftMargin - (this.binWidth / 2), this.binInfo[0].middle.toString()]);
   }
 
   chartViewBox() {
@@ -96,20 +105,18 @@ export class HistogramChartComponent implements OnInit, OnChanges {
     // The range is deliberately chosen to appear distinct from the
     // rainbow type gradient used for the raster image.
 
-    const r = ix > 27 ? (ix * 1.26 + 27)|0 : ix,
+    const r = ix > 27 ? Math.round(ix * 1.26 + 27) : ix,
       g = ix > 27 ? 28 : ix,
       b = ix > 27 ? 28 : 27 + (27 - ix);
     return '#' + r.toString(16).padStart(2, '0') + g.toString(16).padStart(2, '0') + b.toString(16).padStart(2, '0');
   }
 
-  makeInfo(bound: number, acc: number, count: number) {
-    return new BinInfo(this.decimalPipe.transform(bound, '1.2-4', this.locale) || '',
-                        acc, count, this.zeroes, this.locale)
+  makeInfo(binIndex: number, acc: number, count: number) {
+    return new BinInfo(this.decimalPipe.transform(binIndex * this.binSz, '1.2-4', this.locale) || '',
+                        acc, Math.trunc(binIndex * this.binSz + (this.binSz / 2)), count, this.zeroes, this.locale)
   }
 
   ngOnChanges(): void {
-    this.segments = [];
-    this.binInfo = [];
     this.ngOnInit();
   }
 }
@@ -130,9 +137,11 @@ class BinInfo {
   lowerBound: string;
   cumulativeQuantity: string;
   cumulativeQuantityEx: string;
+  middle: number;
 
-  constructor(lowerBound: string, cQuantity: number, count: number, zeroes: number, locale: string) {
+  constructor(lowerBound: string, cQuantity: number, middle: number, count: number, zeroes: number, locale: string) {
     this.lowerBound = lowerBound;
+    this.middle = middle;
     this.cumulativeQuantity = formatPercentage(cQuantity / count, 3, locale);
     this.cumulativeQuantityEx = formatPercentage((cQuantity - zeroes) / (count - zeroes) , 3, locale);
   }

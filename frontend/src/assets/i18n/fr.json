@@ -290,7 +290,8 @@
             "include-zero": "Inclure zéro",
             "exclude-zero": "Exclure zéro",
             "cumulative-proportion": "Proportion cumulée",
-            "cumulative-proportion-exclusive": "Proportion cumulée sauf des zéros"
+            "cumulative-proportion-exclusive": "Proportion cumulée sauf des zéros",
+            "median-in-range": "Médiane dans l'intervalle"
         },
         "highest-impact": {
             "ecocomponent": "Composante écosystèmes avec l'impact le plus important",

@@ -287,7 +287,8 @@
             "include-zero": "Inkludera noll",
             "exclude-zero": "Exkludera noll",
             "cumulative-proportion": "Kumulativ andel",
-            "cumulative-proportion-exclusive": "Kumulativ andel utom nollvärden"
+            "cumulative-proportion-exclusive": "Kumulativ andel utom nollvärden",
+            "median-in-range": "Mediantal inom intervall"
         },
         "highest-impact": {
             "ecocomponent": "Naturvärden med högst påverkan",

@@ -2,10 +2,8 @@
   position: relative;
 
   h4 {
-    font-size: 1.5rem;
-    white-space: pre;
     font-weight: 600;
-    margin: 2rem 0;
+    margin: 0.5rem 0;
   }
 
   p.zeroes_detail {
@@ -19,7 +17,7 @@
 
   #toggleZeroes {
     position: absolute;
-    right: 0;
+    right: 2%;
     top: 6.7rem;
     padding: 0.4rem 0.8rem;
     border: 1px solid gray;
