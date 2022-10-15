@@ -32,7 +32,14 @@
               "./node_modules/ol/ol.css"
             ],
             "scripts": [],
-            "es5BrowserSupport": true
+            "allowedCommonJsDependencies": [
+              "lodash",
+              "uuid/v4",
+              "pbf",
+              "xml-utils/find-tags-by-name.js",
+              "lerc",
+              "lru-cache"
+            ]
           },
           "configurations": {
             "production": {
@@ -149,7 +156,7 @@
   "defaultProject": "symphony-fe",
   "schematics": {
     "@schematics/angular:component": {
-      "styleext": "scss"
+      "style": "scss"
     }
   },
   "cli": {

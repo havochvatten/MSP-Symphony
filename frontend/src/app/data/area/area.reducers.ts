@@ -1,7 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import { AreaActions, AreaInterfaces } from './';
 import { getIn, setIn, updateIn } from 'immutable';
-import { ScenarioActions } from "@data/scenario";
+import { ScenarioActions } from '@data/scenario';
 
 export const initialState: AreaInterfaces.State = {
   areaTypes: [],
@@ -27,13 +27,13 @@ export const areaReducer = createReducer(
   })),
   on(AreaActions.updateSelectedArea, (state, { statePath }) => ({
     ...state,
-    currentSelection: statePath//feature?.get("statePath")
+    currentSelection: statePath //feature?.get("statePath")
   })),
   // on(ScenarioActions.openScenario, (state, { scenario, index }) => ({
   //   ...state,
   //   currentSelection: scenario.feature?.properties?.['statePath']
   // })),
-  on(ScenarioActions.closeActiveScenario, (state) => ({
+  on(ScenarioActions.closeActiveScenario, state => ({
     ...state,
     currentSelection: undefined
   })),
@@ -76,11 +76,14 @@ export const areaReducer = createReducer(
   })),
   on(ScenarioActions.fetchAreaMatricesSuccess, (state, { matrixData }) => ({
     ...state,
-    selectionMatrices: matrixData,
+    selectionMatrices: matrixData
   })),
   on(AreaActions.addUserDefinedMatrix, (state, { matrix }) =>
-      updateIn(state, ['selectionMatrices', 'defaultArea', 'userDefinedMatrices'],
-        oldMatrices => oldMatrices.concat(matrix) // sort?
-      )
+    updateIn(state, ['selectionMatrices', 'defaultArea', 'userDefinedMatrices'], oldMatrices => {
+      const mat = Object(oldMatrices);
+      if (Symbol.iterator in mat) {
+        return mat.concat(matrix); // sort?
+      }
+    })
   )
 );

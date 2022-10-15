@@ -26,7 +26,9 @@ import { AreaEffects } from '@data/area/area.effects';
 import { TranslationSetupModule } from './app-translation-setup.module';
 import { MessageEffects } from '@data/message/message.effects';
 import { CalculationEffects } from '@data/calculation/calculation.effects';
-import { ScenarioEffects } from "@data/scenario/scenario.effects";
+import { ScenarioEffects } from '@data/scenario/scenario.effects';
+import { CalculationReportModule } from './report/calculation-report.module';
+import { LoginModule } from './login/login.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -61,7 +63,9 @@ import { ScenarioEffects } from "@data/scenario/scenario.effects";
       ScenarioEffects
     ]),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
-    TranslationSetupModule
+    TranslationSetupModule,
+    CalculationReportModule,
+    LoginModule
   ],
   providers: [],
   bootstrap: [AppComponent]

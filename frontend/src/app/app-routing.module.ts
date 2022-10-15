@@ -12,14 +12,14 @@ const routes: Routes = [
     path: 'map', // TODO: rename to main
     component: MainViewComponent,
     canActivate: [AuthenticationGuard],
-    data: { headerTitle: 'Symphony' },
+    data: { headerTitle: 'Symphony' }
   },
   {
     path: 'report',
-    loadChildren: () => import('./report/calculation-report.module').then(mod =>
-      mod.CalculationReportModule),
-    canActivate: [AuthenticationGuard],
-    //data: { headerTitle: 'Symphony' }
+    loadChildren: () =>
+      import('./report/calculation-report.module').then(mod => mod.CalculationReportModule),
+    canActivate: [AuthenticationGuard]
+    // data: { headerTitle: 'Symphony' }
   },
   { path: '', redirectTo: '/map', pathMatch: 'full' }
 ];
@@ -27,7 +27,7 @@ const routes: Routes = [
 @NgModule({
   imports: [
     RouterModule.forRoot(
-      routes,
+      routes
       // { enableTracing: true } // <-- debugging purposes only
     )
   ],
