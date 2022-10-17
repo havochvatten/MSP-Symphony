@@ -4,9 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.geosolutions.jaiext.stats.Statistics;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
@@ -18,10 +20,15 @@ import se.havochvatten.symphony.entity.AreaType;
 import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.util.Util;
+import si.uom.SI;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
+import javax.measure.Quantity;
+import javax.measure.Unit;
+import javax.measure.quantity.Length;
 import javax.media.jai.Histogram;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -84,6 +91,16 @@ public class ReportService {
                         simpleStats[0].getNumSamples());
     }
 
+    private static double getResolutionInMetres(GridCoverage2D coverage){
+
+        GridGeometry2D geometry = coverage.getGridGeometry();
+        Double scale = ((AffineTransform2D) geometry.getGridToCRS()).getScaleX();
+        Unit<Length> unit = (Unit<Length>) geometry.getCoordinateReferenceSystem2D().getCoordinateSystem().getAxis(0).getUnit();
+        Quantity<Length> resolution = Quantities.getQuantity(scale, unit);
+
+        return resolution.to(SI.METRE).getValue().doubleValue();
+    }
+
     /**
      * @param pTotal  output param containing pressure row total
      * @param esTotal output param containing ecosystem column total
@@ -138,7 +155,9 @@ public class ReportService {
         report.histogram = stats.histogram;
 
         report.calculatedPixels = stats.pixels;
-        report.gridResolution = 250.0; // Unit: meters TODO get from grid-to-CRS transform
+
+        // Round to two decimal places
+        report.gridResolution = Math.round(getResolutionInMetres(coverage) * 100) / 100;
 
         try {
             var matrixParams = mapper.treeToValue(scenario.getMatrix(), MatrixParameters.class);
