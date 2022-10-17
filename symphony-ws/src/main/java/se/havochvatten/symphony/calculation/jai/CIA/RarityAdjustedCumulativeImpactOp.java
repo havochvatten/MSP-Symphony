@@ -15,14 +15,12 @@ public class RarityAdjustedCumulativeImpactOp extends CumulativeImpactOp {
     private static final Logger LOG = Logger.getLogger(RarityAdjustedCumulativeImpactOp.class.getName());
 
     private final double[] commonnessIndices;
-    private final double[][] impactMatrix;
 
     public RarityAdjustedCumulativeImpactOp(RenderedImage ecosystemsData, RenderedImage pressuresData,
                                             ImageLayout layout, Map config, double[][][] matrices, Raster mask,
                                             int[] ecosystems, int[] pressures, double[] commonnessIndices) {
         super(ecosystemsData, pressuresData, layout, config, matrices, mask, ecosystems, pressures);
         this.commonnessIndices = commonnessIndices;
-        this.impactMatrix = new double[pressureBands.length][ecosystemBands.length];
     }
 
     @Override
@@ -117,28 +115,4 @@ public class RarityAdjustedCumulativeImpactOp extends CumulativeImpactOp {
 
         accumulateImpactMatrix(rectImpactMatrix);
     }
-
-    protected synchronized void accumulateImpactMatrix(double[][] rectImpactMatrix) {
-        int numPressures = pressureBands.length;
-        int numEcosystems = ecosystemBands.length;
-        for (int i = 0; i < numPressures; i++)
-            for (int j = 0; j < numEcosystems; j++)
-                impactMatrix[i][j] += rectImpactMatrix[i][j];
-    }
-
-    @Override
-    public Object getProperty(String name) {
-        if (name.equals(IMPACT_MATRIX_PROPERTY_NAME)) {
-            return impactMatrix;         // assert finished?
-        } else
-            return super.getProperty(name);
-    }
-//
-//    @Override
-//    public Class getPropertyClass(String name) {
-//        if (name.equals(IMPACT_MATRIX_PROPERTY_NAME)) {
-//            return double[][].class;
-//        } else
-//            return super.getPropertyClass(name);
-//    }
 }
