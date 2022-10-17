@@ -94,7 +94,7 @@ public class ReportService {
     private static double getResolutionInMetres(GridCoverage2D coverage){
 
         GridGeometry2D geometry = coverage.getGridGeometry();
-        Double scale = ((AffineTransform2D) coverage.getGridGeometry().getGridToCRS()).getScaleX();
+        Double scale = ((AffineTransform2D) geometry.getGridToCRS()).getScaleX();
         Unit<Length> unit = (Unit<Length>) geometry.getCoordinateReferenceSystem2D().getCoordinateSystem().getAxis(0).getUnit();
         Quantity<Length> resolution = Quantities.getQuantity(scale, unit);
 
