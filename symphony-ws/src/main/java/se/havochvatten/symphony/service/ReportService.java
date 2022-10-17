@@ -80,13 +80,17 @@ public class ReportService {
 
         double[] extrema = (double[]) simpleStats[0].getResult();
 
-        Histogram histogram = PercentileNormalizer.getHistogram(coverage, Double.MIN_VALUE, extrema[1] + Math.ulp(extrema[1]), 100);
+        // Edge case: all zero values
+        Histogram histogram = extrema[1] > 0 ?
+            PercentileNormalizer.getHistogram(coverage, Double.MIN_VALUE, extrema[1] + Math.ulp(extrema[1]), 100) :
+            null;
+
         Histogram zeroes = PercentileNormalizer.getHistogram(coverage, 0.0, Double.MIN_VALUE, 1);
 
         return new StatisticsResult(extrema[0], extrema[1],
                         (double) simpleStats[1].getResult(),
                         (double) simpleStats[2].getResult(),
-                        histogram.getBins(0),
+                        histogram == null ? new int[100] : histogram.getBins(0),
                         zeroes.getBins(0)[0],
                         simpleStats[0].getNumSamples());
     }
