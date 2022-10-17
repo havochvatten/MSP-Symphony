@@ -61,7 +61,7 @@ public class CumulativeImpactOp extends PointOpImage {
     @Override
     protected void computeRect(Raster[] sources, WritableRaster dst, Rectangle dstRect) {
 //    protected void computeRect(PlanarImage[] sources, WritableRaster dst, Rectangle dstRect) { // uncobbled sources
-        LOG.info("computeRect: " + dstRect + ", thread=" + Thread.currentThread().getId());
+        LOG.trace("computeRect: " + dstRect + ", thread=" + Thread.currentThread().getId());
 
         RasterFormatTag[] formatTags = getFormatTags();
         Rectangle srcRect = mapDestRect(dstRect, 0); // assume identical to sources[1]
@@ -191,7 +191,7 @@ public class CumulativeImpactOp extends PointOpImage {
         if (name.equals(IMPACT_MATRIX_PROPERTY_NAME)) {
             synchronized (this) {
                 if (tilesToCalculate != 0)
-                    LOG.warn("{} property accessed when tilesToCaluclate>0!", IMPACT_MATRIX_PROPERTY_NAME);
+                    LOG.warn("{} property accessed when tilesToCalculate>0!", IMPACT_MATRIX_PROPERTY_NAME);
                 return impactMatrix;
             }
         } else
