@@ -30,7 +30,9 @@ import se.havochvatten.symphony.calculation.jai.CIA.CumulativeImpactOp;
 import se.havochvatten.symphony.dto.*;
 import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.entity.CalculationResult;
+import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
+import se.havochvatten.symphony.exception.SymphonyStandardSystemException;
 import se.havochvatten.symphony.scenario.Scenario;
 import se.havochvatten.symphony.scenario.ScenarioService;
 import se.havochvatten.symphony.scenario.ScenarioSnapshot;
@@ -41,9 +43,7 @@ import se.havochvatten.symphony.service.PropertiesService;
 import se.havochvatten.symphony.util.Util;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.ejb.Startup;
-import javax.ejb.Stateless;
+import javax.ejb.*;
 import javax.inject.Inject;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
@@ -51,6 +51,7 @@ import javax.media.jai.PlanarImage;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -72,6 +73,7 @@ import static se.havochvatten.symphony.dto.NormalizationType.PERCENTILE;
  */
 @Stateless // But some stuff is stored in user session!
 @Startup
+@TransactionManagement(TransactionManagementType.BEAN)
 public class CalcService {
     private static final Logger LOG = LoggerFactory.getLogger(CalcService.class);
 
@@ -82,6 +84,9 @@ public class CalcService {
 
     @PersistenceContext(unitName = "symphonyPU")
     public EntityManager em;
+
+    @Inject
+    private UserTransaction transaction;
 
     @EJB
     BaselineVersionService baselineVersionService;
@@ -168,8 +173,21 @@ public class CalcService {
         return em.find(CalculationResult.class, id);
     }
 
-    public CalculationResult updateCalculation(CalculationResult calc) {
-        return em.merge(calc);
+    public synchronized CalculationResult updateCalculation(CalculationResult calc) {
+        try {
+            transaction.begin();
+            var result = em.merge(calc);
+            transaction.commit();
+            return result;
+        } catch (Exception e) {
+            throw new SymphonyStandardSystemException(SymphonyModelErrorCode.OTHER_ERROR, e, "CalculationResult " +
+                "persistence error");
+        } finally {
+            try {
+                if (transaction.getStatus() == Status.STATUS_ACTIVE)
+                    transaction.rollback();
+            } catch (Throwable e) {/* ignore */}
+        }
     }
 
     byte[] writeGeoTiff(GridCoverage2D coverage) throws IOException {
@@ -218,7 +236,7 @@ public class CalcService {
     }
 
     private static List<SensitivityMatrix> getUniqueMatrices(List<SensitivityMatrix> matrices) {
-        return matrices.stream(). // do filtering in symphony-ws instead? (or use map!)
+        return matrices.stream(). // filter in symphony-ws instead? (or use map!)
                 filter(Util.distinctByKey(SensitivityMatrix::getMatrixId)).
                 collect(Collectors.toList());
     }
@@ -402,27 +420,43 @@ public class CalcService {
         // TODO: Fill out some relevant TIFF metadata (such as Creator and NODATA)
         byte[] tiff = writeGeoTiff(result);      // N.B: raw result data, not normalized nor color-mapped
 
-        var snapshot = ScenarioSnapshot.makeSnapshot(scenario);
-        snapshot.setEcosystemsToInclude(ecosystemsThatWasIncluded); // Override actually used only in snapshot
-        em.persist(snapshot);
-        calculation.setScenarioSnapshot(snapshot);
+        synchronized (this) {
+            try {
+                transaction.begin();
 
-        calculation.setRasterData(tiff);
-        calculation.setOwner(scenario.getOwner());
-        calculation.setCalculationName(makeCalculationName(scenario));
-        calculation.setNormalizationValue(normalizationValue);
-        calculation.setTimestamp(new Date());
-        var impactMatrix = (double[][]) result.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME);
-        calculation.setImpactMatrix(impactMatrix);
-        calculation.setBaselineVersion(baselineVersion);
-        calculation.setOperationName(operation);
-        calculation.setOperationOptions(operationOptions);
+                var snapshot = ScenarioSnapshot.makeSnapshot(scenario);
+                snapshot.setEcosystemsToInclude(ecosystemsThatWasIncluded); // Override actually used only in snapshot
+                em.persist(snapshot);
+                calculation.setScenarioSnapshot(snapshot);
 
-        em.persist(calculation);
-        em.flush(); // to have id generated
+                calculation.setRasterData(tiff);
+                calculation.setOwner(scenario.getOwner());
+                calculation.setCalculationName(makeCalculationName(scenario));
+                calculation.setNormalizationValue(normalizationValue);
+                calculation.setTimestamp(new Date());
+                var impactMatrix = (double[][]) result.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME);
+                calculation.setImpactMatrix(impactMatrix);
+                calculation.setBaselineVersion(baselineVersion);
+                calculation.setOperationName(operation);
+                calculation.setOperationOptions(operationOptions);
 
-        scenario.setLatestCalculation(calculation);
-        em.merge(scenario); // N.B: Will also persist any changes user has made to scenario since last save
+                em.persist(calculation);
+                em.flush(); // to have id generated
+
+                scenario.setLatestCalculation(calculation);
+                em.merge(scenario); // N.B: Will also persist any changes user has made to scenario since last save
+
+                transaction.commit();
+            } catch (Exception e) {
+                throw new SymphonyStandardSystemException(SymphonyModelErrorCode.OTHER_ERROR, e,
+                    "Error persisting calculation "+calculation);
+            } finally {
+                try {
+                    if (transaction.getStatus() == Status.STATUS_ACTIVE)
+                        transaction.rollback();
+                } catch (Throwable e) {/* ignore */}
+            }
+        }
 
         // Optionally save to disk (for debugging)
         String resultsDir = props.getProperty("results.geotiff.dir");

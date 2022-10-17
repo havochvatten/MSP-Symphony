@@ -4,6 +4,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.concurrent.GuardedBy;
 import javax.media.jai.*;
 import java.awt.*;
 import java.awt.image.DataBuffer;
@@ -11,7 +12,6 @@ import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicIntegerArray;
 
 /**
  * JAI operation for computing cumulative impact assessment
@@ -29,13 +29,11 @@ public class CumulativeImpactOp extends PointOpImage {
 
     protected final Raster mask;
 
-    private final double[][] impactMatrix;
     protected final int[] ecosystemBands;
     protected final int[] pressureBands;
 
-    // FIXME replace with simple counter
-    private final AtomicIntegerArray tileCalculationCount =
-        new AtomicIntegerArray(getNumXTiles()*getNumYTiles());
+    @GuardedBy("this") protected int tilesToCalculate = getNumXTiles()*getNumYTiles();
+    @GuardedBy("this") protected final double[][] impactMatrix;
 
     public CumulativeImpactOp(RenderedImage ecosystemsData, RenderedImage pressuresData,
                               ImageLayout layout, Map config,
@@ -52,7 +50,9 @@ public class CumulativeImpactOp extends PointOpImage {
         this.ecosystemBands = ecosystems;
         this.pressureBands = pressures;
 
-        this.impactMatrix = new double[pressureBands.length][ecosystemBands.length];
+        synchronized (this) {
+            this.impactMatrix = new double[pressureBands.length][ecosystemBands.length];
+        }
 //        setProperty(IMPACT_MATRIX_PROPERTY_NAME, new double[] {0});
     }
 
@@ -61,7 +61,7 @@ public class CumulativeImpactOp extends PointOpImage {
     @Override
     protected void computeRect(Raster[] sources, WritableRaster dst, Rectangle dstRect) {
 //    protected void computeRect(PlanarImage[] sources, WritableRaster dst, Rectangle dstRect) { // uncobbled sources
-        LOG.info("computeRect: " + dstRect + ", thread=" + Thread.currentThread().getId());
+        LOG.trace("computeRect: " + dstRect + ", thread=" + Thread.currentThread().getId());
 
         RasterFormatTag[] formatTags = getFormatTags();
         Rectangle srcRect = mapDestRect(dstRect, 0); // assume identical to sources[1]
@@ -100,7 +100,7 @@ public class CumulativeImpactOp extends PointOpImage {
         // Use [thread]local matrix to minimize contention when accumulating impacts in matrix
         int numPressures = pressureBands.length;
         int numEcosystems = ecosystemBands.length;
-        int[][] rectImpactMatrix = new int[numPressures][numEcosystems];
+        var rectImpactMatrix = new double[numPressures][numEcosystems];
 
         // Make maskData in input? It is not really a ROI since there is no NODATA
 //        /*byte*/int[] maskData = maskAccessor.getIntDataArray(0); //maskAccessor.getByteDataArray(0);
@@ -163,40 +163,37 @@ public class CumulativeImpactOp extends PointOpImage {
         accumulateImpactMatrix(rectImpactMatrix);
     }
 
-    // FIXME probably not thread-safe. synchronize block for compareAndSet and computeTile?
-    // What we want to do is to make sure than computeRect is not called on the same rect more than once...
     public Raster computeTile(int tileX, int tileY) {
-        final int tileArrayIndex = (tileX-getMinTileX())+getNumXTiles()*(tileY-getMinTileY());
-
-        if (!tileCalculationCount.compareAndSet(tileArrayIndex, 0, 1))
-            LOG.warn("Computation of tileArrayIndex={} requested more than once", tileArrayIndex);
-
-        return super.computeTile(tileX, tileY);
+        var tile = super.computeTile(tileX, tileY);
+        // Another (more performant) option would be to have a volatile flag set in a method when all tiles have been
+        // calculated
+        synchronized (this) {
+            tilesToCalculate--;
+        }
+        return tile;
     }
 
     // The below adds quite a lot of overhead (20%+) Optimize? Vectors?
     // or store intermediate matrix results in an async queue and accumulate at end?
     // or use separate "tile matrix cache"? (c.f. TileCache)
-    protected synchronized void accumulateImpactMatrix(int[][] rectImpactMatrix) {
-        // FIXME Check tile calculation count and stop accumulating if all tiles have been calculated (to prevent
-        //  double-counting)
-        int numPressures = pressureBands.length;
-        int numEcosystems = ecosystemBands.length;
-        for (int i = 0; i < numPressures; i++)
-            for (int j = 0; j < numEcosystems; j++)
-                impactMatrix[i][j] += rectImpactMatrix[i][j];
+    protected synchronized void accumulateImpactMatrix(double[][] rectImpactMatrix) {
+        if (tilesToCalculate > 0) {
+            int numPressures = pressureBands.length;
+            int numEcosystems = ecosystemBands.length;
+            for (int i = 0; i < numPressures; i++)
+                for (int j = 0; j < numEcosystems; j++)
+                    impactMatrix[i][j] += rectImpactMatrix[i][j];
+        }
     }
 
     @Override
     public Object getProperty(String name) {
         if (name.equals(IMPACT_MATRIX_PROPERTY_NAME)) {
-            LOG.debug("tileCalculationCount={}", tileCalculationCount);
-            for (int i=0; i<getNumXTiles()*getNumYTiles(); i++)
-                if (tileCalculationCount.get(i) != 1)
-                    LOG.error("tileCalculationCount[{}] != 1. Impact matrix may be erroneous! "+
-                        "Consider increasing JAI tile cache size",
-                        tileCalculationCount);
-            return impactMatrix;         // assert finished?
+            synchronized (this) {
+                if (tilesToCalculate != 0)
+                    LOG.warn("{} property accessed when tilesToCalculate>0!", IMPACT_MATRIX_PROPERTY_NAME);
+                return impactMatrix;
+            }
         } else
             return super.getProperty(name);
     }
@@ -218,5 +215,4 @@ public class CumulativeImpactOp extends PointOpImage {
     public int getOperationComputeType() {
         return OP_COMPUTE_BOUND;
     }
-
 }
