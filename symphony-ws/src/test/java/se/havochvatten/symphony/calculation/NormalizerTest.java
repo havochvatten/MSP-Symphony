@@ -65,7 +65,7 @@ public class NormalizerTest {
     public void percentileNormalizer() {
         factory = mock(NormalizerService.class);
         when(factory.getNormalizer(NormalizationType.PERCENTILE))
-                .thenReturn(new PercentileNormalizer(95, new Operations(new SymphonyCoverageProcessor())));
+                .thenReturn(new PercentileNormalizer(95, new Operations()));
 
         var normalizer = factory.getNormalizer(NormalizationType.PERCENTILE);
         var result = normalizer.apply(coverage, Double.NaN);
