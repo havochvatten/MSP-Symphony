@@ -14,7 +14,6 @@ import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.util.factory.Hints;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -95,7 +94,7 @@ public class CalcService {
     @EJB
     PropertiesService props;
     @EJB
-    SymphonyCoverageProcessor processor;
+    Operations operations;
     @EJB
     ScenarioService scenarioService;
 
@@ -334,12 +333,17 @@ public class CalcService {
             var nonZeroIndices = Arrays.stream(indices).filter(indexThresholdPredicate).toArray();
             // TODO report this information to the user and show in a dialog on frontend?
 
-            coverage = invokeCumulativeImpactOperation(scenario, operationName,
-                ecoComponents, pressures, ecosystemsToInclude,
-                matrices, layout, mask, nonZeroIndices);
+            coverage = operations.cumulativeImpact("RarityAdjustedCumulativeImpact",
+                ecoComponents, pressures,
+                ecosystemsToInclude, scenario.getPressuresToInclude(),
+                preprocessMatrices(matrices), layout, mask, nonZeroIndices);
         } else
-            coverage = invokeCumulativeImpactOperation(scenario, operationName,
-                ecoComponents, pressures, ecosystemsToInclude, matrices, layout, mask, null);
+            coverage = operations.cumulativeImpact(operationName, ecoComponents, pressures,
+                ecosystemsToInclude, scenario.getPressuresToInclude(), preprocessMatrices(matrices), layout, mask,
+                null);
+
+        // Trigger actual calculation since GeoTiffWriter requests tiles in the same thread otherwise
+        var ignored = ((PlanarImage) coverage.getRenderedImage()).getTiles();
 
         CalculationResult calculation = scenario.getNormalization().type == PERCENTILE ?
             new CalculationResult(coverage) :
@@ -350,35 +354,6 @@ public class CalcService {
         req.getSession().setAttribute(CalcUtil.LAST_CALCULATION_PROPERTY_NAME, calculation);
 
         return calculation;
-    }
-
-    private GridCoverage2D invokeCumulativeImpactOperation(Scenario scenario, String operationName,
-                                                           GridCoverage2D ecoComponents,
-                                                           GridCoverage2D pressures,
-                                                           int[] actualEcosystemsToBeIncluded,
-                                                           List<SensitivityMatrix> matrices,
-                                                           ImageLayout layout, MatrixMask mask,
-                                                           double[] commonness) {
-        final var OPERATION_PREFIX = "se.havochvatten.symphony";
-        var qualifiedOpName = String.join(".", OPERATION_PREFIX, operationName);
-
-        var op = processor.getOperation(qualifiedOpName);
-
-        var params = op.getParameters();
-        params.parameter("Source0").setValue(ecoComponents);
-        params.parameter("Source1").setValue(pressures);
-        params.parameter("matrix").setValue(preprocessMatrices(matrices));
-        params.parameter("mask").setValue(mask.getRaster());
-        params.parameter("ecosystemBands").setValue(actualEcosystemsToBeIncluded);
-        params.parameter("pressureBands").setValue(scenario.getPressuresToInclude());
-        if (commonness != null)
-            params.parameter("commonnessIndices").setValue(commonness);
-
-        var coverage = (GridCoverage2D) processor.doOperation(params, new Hints(JAI.KEY_IMAGE_LAYOUT, layout));
-        // Trigger actual calculation since GeoTiffWriter requests tiles in the same thread otherwise
-        var ignored = ((PlanarImage) coverage.getRenderedImage()).getTiles();
-
-        return coverage;
     }
 
     private GridGeometry2D getTargetGridGeometry(Envelope targetGridEnvelope, ReferencedEnvelope targetEnv) {
@@ -507,28 +482,11 @@ public class CalcService {
      * Compute (scenario-base)/base = div(sub(b,a), a)
      */
     public GridCoverage2D relativeDifference(GridCoverage2D base, GridCoverage2D scenario) {
-        final var subtract = processor.getOperation("Subtract");
-
-        var params = subtract.getParameters();
-        params.parameter("Source0").setValue(scenario);
-        params.parameter("Source1").setValue(base);
-        var difference = (GridCoverage2D) processor.doOperation(params);
-
+        var difference = operations.subtract(scenario, base);
         // Do dummy add operation to promote base (denominator) image to float
-        var add = processor.getOperation("AddConst");
-        params = add.getParameters();
-        params.parameter("Source").setValue(base);
-        params.parameter("constants").setValue(new double[]{0.0});
-        var floatbase = (GridCoverage2D) processor.doOperation(params);
-
-        // FIXME integer division? promote base to float!
-        // or multiply with 100?
-        var divide = processor.getOperation("Divide");
-        params = divide.getParameters();
-        params.parameter("Source0").setValue(difference);
-        params.parameter("Source1").setValue(floatbase);
-
-        return (GridCoverage2D) processor.doOperation(params);
+        // TODO: Add promote operation?
+        var floatbase = operations.add(base, new double[]{0.0});
+        return (GridCoverage2D) operations.divide(difference, floatbase);
     }
 }
 
