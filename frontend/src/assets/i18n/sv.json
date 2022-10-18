@@ -279,6 +279,17 @@
                 "legend-desc": "Bilden visar den relativa skillnaden i total kumulativ belastning mellan grund- och what-if-scenario."
             }
         },
+        "histogram": {
+            "caption": "Histogram",
+            "interval": "Intervall",
+            "zeroes-included": "Inklusive nollvärden",
+            "zeroes-excluded": "OBS. Histogrammet exkluderar nollvärden",
+            "include-zero": "Inkludera noll",
+            "exclude-zero": "Exkludera noll",
+            "cumulative-proportion": "Kumulativ andel",
+            "cumulative-proportion-exclusive": "Kumulativ andel utom nollvärden",
+            "middle-of-range": "Intervallets mittental"
+        },
         "highest-impact": {
             "ecocomponent": "Naturvärden med högst påverkan",
             "pressure": "Belastningar med högst påverkan"

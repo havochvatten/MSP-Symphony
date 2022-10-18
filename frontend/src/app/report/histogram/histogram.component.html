@@ -1,0 +1,15 @@
+<h4>{{ title }}</h4>
+<p [ngClass]="{ 'zeroes_detail': true, 'normal': hasZeroes }">{{
+  (hasZeroes ? '(' + (('report.histogram.zeroes-included' | translate) | lowercase) + ')' :
+                      'report.histogram.zeroes-excluded') | translate }}</p>
+<div id="toggleZeroes" (click)="toggleHistogramRange()">{{
+  (hasZeroes ?'report.histogram.exclude-zero' :
+              'report.histogram.include-zero')| translate }}</div>
+<app-histogram-chart
+  [zeroes]="report.zeroes"
+  [inclusive]="hasZeroes"
+  [bins]="this.dbins[!hasZeroes ? 0 : 1]"
+  [reportMax]="report.max"
+  [algorithm]="report.operationName"
+  [locale]="locale">
+</app-histogram-chart>

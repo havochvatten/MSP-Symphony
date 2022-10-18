@@ -2,29 +2,31 @@ package se.havochvatten.symphony.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.geosolutions.jaiext.stats.Statistics;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
-import se.havochvatten.symphony.calculation.CalcUtil;
-import se.havochvatten.symphony.calculation.DoubleStatistics;
+import se.havochvatten.symphony.calculation.PercentileNormalizer;
 import se.havochvatten.symphony.calculation.SankeyChart;
+import se.havochvatten.symphony.calculation.SymphonyCoverageProcessor;
 import se.havochvatten.symphony.dto.*;
 import se.havochvatten.symphony.entity.AreaType;
 import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.util.Util;
 
+import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
-import java.awt.image.*;
+import javax.media.jai.Histogram;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
-import java.util.function.DoublePredicate;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toMap;
@@ -35,6 +37,9 @@ public class ReportService {
 
     // The CSV standard (RFC 4180) actually says to use comma, but tab is MS Excel default. Or use TSV?
     private static final char CSV_FIELD_SEPARATOR = '\t';
+
+    @EJB
+    private SymphonyCoverageProcessor processor;
 
     @Inject
     MetaDataService metaDataService;
@@ -48,25 +53,35 @@ public class ReportService {
     @Inject
     PropertiesService props;
 
-    static DoublePredicate not(DoublePredicate t) {
-        return t.negate();
-    }
+    record StatisticsResult(double min, double max, double average, double stddev,
+                            int[] histogram, long zeroes, long pixels){}
 
-    private static DoubleStatistics getStatistics(Raster raster) {
-        DataBuffer buffer = raster.getDataBuffer();
-        DoubleStream stream = switch (buffer.getDataType()) {
-            case DataBuffer.TYPE_INT ->
-                Arrays.stream(((DataBufferInt)buffer).getData()).mapToDouble(x -> x);
-            case DataBuffer.TYPE_FLOAT ->
-                IntStream.range(0, ((DataBufferFloat)buffer).getData().length)
-                    .mapToDouble(i -> ((DataBufferFloat)buffer).getData()[i]);
-            case DataBuffer.TYPE_DOUBLE ->
-                Arrays.stream(((DataBufferDouble) buffer).getData());
-            default -> throw new RuntimeException("Unsupported raster data type");
-        };
-        // TODO report total as long to prevent overflow on big areas?
-        return stream.filter(not(CalcUtil.isNoData)).collect(DoubleStatistics::new,
-                DoubleStatistics::accept, DoubleStatistics::combine);
+    private StatisticsResult getStatistics(GridCoverage2D coverage) {
+
+        ParameterValueGroup simpleStatParams = processor.getOperation("Stats").getParameters();
+        simpleStatParams.parameter("source").setValue(coverage);
+        simpleStatParams.parameter("bands").setValue(new int[1]);
+        simpleStatParams.parameter("stats").setValue(
+            new Statistics.StatsType[]{
+                Statistics.StatsType.EXTREMA,
+                Statistics.StatsType.MEAN,
+                Statistics.StatsType.DEV_STD });
+
+        Statistics[] simpleStats =
+            ((Statistics[][])((GridCoverage2D) processor.doOperation(simpleStatParams))
+                .getProperty(Statistics.STATS_PROPERTY))[0];
+
+        double[] extrema = (double[]) simpleStats[0].getResult();
+
+        Histogram histogram = PercentileNormalizer.getHistogram(coverage, Double.MIN_VALUE, extrema[1] + Math.ulp(extrema[1]), 100);
+        Histogram zeroes = PercentileNormalizer.getHistogram(coverage, 0.0, Double.MIN_VALUE, 1);
+
+        return new StatisticsResult(extrema[0], extrema[1],
+                        (double) simpleStats[1].getResult(),
+                        (double) simpleStats[2].getResult(),
+                        histogram.getBins(0),
+                        zeroes.getBins(0)[0],
+                        simpleStats[0].getNumSamples());
     }
 
     /**
@@ -95,7 +110,7 @@ public class ReportService {
             throws FactoryException, TransformException {
         var scenario = calc.getScenarioSnapshot();
         var coverage = calc.getCoverage();
-        var stats = getStatistics(coverage.getRenderedImage().getData());
+        var stats = getStatistics(coverage);
 
         var impactMatrix = calc.getImpactMatrix();
         int pLen = impactMatrix.length, esLen = impactMatrix[0].length;
@@ -115,12 +130,14 @@ public class ReportService {
         // Does not sum to exactly 100% for some reason? I.e. assert(getComponentTotals(...) == stats
         // .getSum()) not always true. Tolerance?
         report.total = total; //stats.getSum();
-        report.average = stats.getAverage();
-        report.min = stats.getMin();
-        report.max = stats.getMax();
-        report.stddev = stats.getStandardDeviation();
+        report.min       = stats.min;
+        report.max       = stats.max;
+        report.average   = stats.average;
+        report.stddev    = stats.stddev;
+        report.zeroes    = stats.zeroes;
+        report.histogram = stats.histogram;
 
-        report.calculatedPixels = stats.getCount();
+        report.calculatedPixels = stats.pixels;
         report.gridResolution = 250.0; // Unit: meters TODO get from grid-to-CRS transform
 
         try {

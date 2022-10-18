@@ -13,6 +13,8 @@ import { HavSpinnerModule } from 'hav-components';
 import { ScenarioChangesComponent } from './scenario-changes/scenario-changes.component';
 import { ComparisonReportComponent } from "@src/app/report/comparison-report.component";
 import { OrdinalPipe } from "@shared/ordinal.pipe";
+import { HistogramComponent } from './histogram/histogram.component';
+import { HistogramChartComponent } from './histogram/histogram-chart/histogram-chart.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +25,9 @@ import { OrdinalPipe } from "@shared/ordinal.pipe";
     ImpactTableComponent,
     HighestImpactsComponent,
     CalculationImageComponent,
-    ScenarioChangesComponent
+    ScenarioChangesComponent,
+    HistogramComponent,
+    HistogramChartComponent
   ],
   imports: [CommonModule, SharedModule, CalculationReportRoutingModule, HavSpinnerModule],
   providers: [DecimalPipe, OrdinalPipe]

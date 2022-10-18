@@ -1,0 +1,36 @@
+:host {
+  position: relative;
+
+  h4 {
+    font-weight: 600;
+    margin: 0.5rem 0;
+  }
+
+  p.zeroes_detail {
+    font-size: 1.2rem;
+    margin: 0 0 1rem;
+
+    &.normal {
+      color: #888;
+    }
+  }
+
+  #toggleZeroes {
+    position: absolute;
+    right: 2%;
+    top: 6.7rem;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid gray;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #ecf9e7;
+    }
+  }
+
+  @media print {
+    #toggleZeroes {
+      display: none;
+    }
+  }
+}
