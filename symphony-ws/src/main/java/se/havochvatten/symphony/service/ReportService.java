@@ -9,12 +9,10 @@ import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
-import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
-import se.havochvatten.symphony.calculation.PercentileNormalizer;
+import se.havochvatten.symphony.calculation.Operations;
 import se.havochvatten.symphony.calculation.SankeyChart;
-import se.havochvatten.symphony.calculation.SymphonyCoverageProcessor;
 import se.havochvatten.symphony.dto.*;
 import se.havochvatten.symphony.entity.AreaType;
 import se.havochvatten.symphony.entity.CalculationResult;
@@ -46,7 +44,7 @@ public class ReportService {
     private static final char CSV_FIELD_SEPARATOR = '\t';
 
     @EJB
-    private SymphonyCoverageProcessor processor;
+    private Operations operations;
 
     @Inject
     MetaDataService metaDataService;
@@ -64,28 +62,19 @@ public class ReportService {
                             int[] histogram, long zeroes, long pixels){}
 
     private StatisticsResult getStatistics(GridCoverage2D coverage) {
-
-        ParameterValueGroup simpleStatParams = processor.getOperation("Stats").getParameters();
-        simpleStatParams.parameter("source").setValue(coverage);
-        simpleStatParams.parameter("bands").setValue(new int[1]);
-        simpleStatParams.parameter("stats").setValue(
-            new Statistics.StatsType[]{
+        Statistics[] simpleStats = operations.stats(coverage, new int[]{0}, new Statistics.StatsType[]{
                 Statistics.StatsType.EXTREMA,
                 Statistics.StatsType.MEAN,
-                Statistics.StatsType.DEV_STD });
-
-        Statistics[] simpleStats =
-            ((Statistics[][])((GridCoverage2D) processor.doOperation(simpleStatParams))
-                .getProperty(Statistics.STATS_PROPERTY))[0];
+                Statistics.StatsType.DEV_STD })[0];
 
         double[] extrema = (double[]) simpleStats[0].getResult();
 
         // Edge case: all zero values
         Histogram histogram = extrema[1] > 0 ?
-            PercentileNormalizer.getHistogram(coverage, Double.MIN_VALUE, extrema[1] + Math.ulp(extrema[1]), 100) :
+            operations.histogram(coverage, Double.MIN_VALUE, extrema[1] + Math.ulp(extrema[1]), 100) :
             null;
 
-        Histogram zeroes = PercentileNormalizer.getHistogram(coverage, 0.0, Double.MIN_VALUE, 1);
+        Histogram zeroes = operations.histogram(coverage, 0.0, Double.MIN_VALUE, 1);
 
         return new StatisticsResult(extrema[0], extrema[1],
                         (double) simpleStats[1].getResult(),
@@ -95,8 +84,7 @@ public class ReportService {
                         simpleStats[0].getNumSamples());
     }
 
-    private static double getResolutionInMetres(GridCoverage2D coverage){
-
+    private static double getResolutionInMetres(GridCoverage2D coverage) {
         GridGeometry2D geometry = coverage.getGridGeometry();
         Double scale = ((AffineTransform2D) geometry.getGridToCRS()).getScaleX();
         Unit<Length> unit = (Unit<Length>) geometry.getCoordinateReferenceSystem2D().getCoordinateSystem().getAxis(0).getUnit();

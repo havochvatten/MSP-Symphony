@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 public class NormalizerTest {
     public static final double TOL = 0.1;
 
-    NormalizerService factory = new NormalizerService();
+    NormalizerService factory = new NormalizerService(new Operations());
 
     GridCoverage2D coverage;
 
@@ -62,14 +62,13 @@ public class NormalizerTest {
     }
 
     @Test
-    @Ignore // Not sure if this is correct actually
     public void percentileNormalizer() {
         factory = mock(NormalizerService.class);
         when(factory.getNormalizer(NormalizationType.PERCENTILE))
-                .thenReturn(new PercentileNormalizer(95));
+                .thenReturn(new PercentileNormalizer(95, new Operations()));
 
         var normalizer = factory.getNormalizer(NormalizationType.PERCENTILE);
-        var result = normalizer.apply(coverage, 242.0);
+        var result = normalizer.apply(coverage, Double.NaN);
 
         assertEquals(0.005, result.doubleValue(), TOL); // other bands should remain unchanged
     }

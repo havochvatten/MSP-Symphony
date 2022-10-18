@@ -72,7 +72,7 @@
                 "title": "Result Colormap",
                 "description": "Set maximum value based on",
                 "area": "Maximum value in computed area",
-                "domain": "Normalized to {{ ordinalPercentileValue }} percentile in MSP area",
+                "domain": "{{ ordinalPercentileValue }} percentile in MSP area",
                 "custom": "User-defined value",
                 "custom-value": "Value"
             },

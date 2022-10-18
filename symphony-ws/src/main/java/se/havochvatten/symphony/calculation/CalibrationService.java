@@ -47,13 +47,14 @@ import static javax.ejb.ConcurrencyManagementType.BEAN;
 public class CalibrationService {
     private static final Logger logger = LoggerFactory.getLogger(CalibrationService.class);
 
+    private ConcurrentMap<Integer, double[]> globalIndicesCache = new ConcurrentSkipListMap<>();
+    private final Operations operations;
+
     @PersistenceContext(unitName = "symphonyPU")
     public EntityManager em;
 
     @EJB
     DataLayerService dataLayerService;
-
-    private final SymphonyCoverageProcessor processor;
 
     @Inject
     private CalcService calcService;
@@ -61,13 +62,11 @@ public class CalibrationService {
     @Inject
     private NormalizerService normalizationFactory;
 
-    private ConcurrentMap<Integer, double[]> globalIndicesCache = new ConcurrentSkipListMap<>();
-
-    public CalibrationService() { this.processor = null; }
+    public CalibrationService() { this.operations = null; } // to satisfy CDI
 
     @Inject
-    public CalibrationService(SymphonyCoverageProcessor processor) {
-        this.processor = processor;
+    public CalibrationService(Operations ops) {
+        this.operations = ops;
     }
 
     /**
@@ -78,17 +77,12 @@ public class CalibrationService {
                                                      int baselineId) {
         var allIndices = globalIndicesCache.computeIfAbsent(baselineId, id -> {
             logger.info("Calculating global rarity indices for coverage {}", ecoComponents.getName());
-            var watch = new StopWatch();
-            final var statsOp = processor.getOperation("Stats");
 
-            var params = statsOp.getParameters();
-            params.parameter("source").setValue(ecoComponents);
-            params.parameter("bands").setValue(
-                IntStream.range(0, ecoComponents.getNumSampleDimensions()).toArray());
-            params.parameter("stats").setValue(new Statistics.StatsType[]{Statistics.StatsType.SUM});
+            var watch = new StopWatch();
             watch.start();
-            var result = (GridCoverage2D) processor.doOperation(params);
-            var bandsStats = (Statistics[][]) result.getProperty("JAI-EXT.stats");
+            var bandsStats = operations.stats(ecoComponents,
+                IntStream.range(0, ecoComponents.getNumSampleDimensions()).toArray(),
+                new Statistics.StatsType[]{Statistics.StatsType.SUM});
             watch.stop();
             logger.info("DONE. ({} ms)", watch.getTime());
 
@@ -106,18 +100,11 @@ public class CalibrationService {
     public double[] calculateLocalCommonnessIndices(GridCoverage2D ecoComponents, int[] ecosystemBands,
                                                     Geometry roi/*RenderedImage zones*/) {
         logger.info("Calculating local rarity indices for coverage {}", ecoComponents.getName());
-        var watch = new StopWatch();
-        final var statsOp = processor.getOperation("Zonal");
 
-        var params = statsOp.getParameters();
-        params.parameter("source").setValue(ecoComponents);
-        params.parameter("bands").setValue(ecosystemBands);
-        params.parameter("stats").setValue(new Statistics.StatsType[]{Statistics.StatsType.SUM});
-        params.parameter("roi").setValue(roi); // JTS polygon geometry
+        var watch = new StopWatch();
         watch.start();
-        var result = (GridCoverage2D) processor.doOperation(params);
-        var zoneStats = (List<ZoneGeometry>)result.getProperty(ZonalStatsDescriptor.ZS_PROPERTY);
-        var theZone = zoneStats.get(0);
+        var theZone = operations.zonalStats(ecoComponents, ecosystemBands,
+            new Statistics.StatsType[]{Statistics.StatsType.SUM}, roi);
         watch.stop();
         logger.info("DONE. ({} ms)", watch.getTime());
 

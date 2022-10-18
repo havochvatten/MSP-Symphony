@@ -34,8 +34,7 @@ public class CalibrationServiceTest {
         Hints hints = null;
         ecoComponents = new GeoTiffReader(new File(CalibrationServiceTest.class.getClassLoader().
             getResource("SGU-2019-multiband/ecocomponents-tiled-packbits.tif").getFile()), hints).read(null);
-
-        service = new CalibrationService(new SymphonyCoverageProcessor());
+        service = new CalibrationService(new Operations());
     }
 
     @Test
