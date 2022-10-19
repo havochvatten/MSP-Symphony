@@ -1,3 +1,6 @@
+![Screenshot](https://objects.githubusercontent.com/github-production-release-asset-2e65be/505358546/3bfe86fc-738c-4a27-becd-fb7b12c4b7a6?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20221019%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221019T155640Z&X-Amz-Expires=300&X-Amz-Signature=794865d2d7741614126ccfced680c56812e33bdf8cdf8deb4bfc0bed7f91fb2e&X-Amz-SignedHeaders=host&actor_id=107037640&key_id=0&repo_id=505358546&response-content-disposition=attachment%3B%20filename%3Dscreenshot.jpg&response-content-type=application%2Foctet-stream)
+
+
 # Symphony: A tool for ecosystem-based marine spatial planning
 
 Symphony is a method developed by the Swedish Agency for Marine and Water Management (SwAM), to quantitatively weigh 
