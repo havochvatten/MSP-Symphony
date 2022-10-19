@@ -8,8 +8,8 @@ import org.geotools.coverage.processing.CoverageProcessingException;
 import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.coverage.processing.OperationJAI;
 import org.geotools.util.factory.Hints;
-import org.locationtech.jts.geom.Geometry;
 import org.opengis.coverage.Coverage;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.parameter.ParameterValueGroup;
 import se.havochvatten.symphony.calculation.jai.CIA.CumulativeImpactDescriptor;
 import se.havochvatten.symphony.calculation.jai.CIA.RarityAdjustedCumulativeImpactDescriptor;
@@ -95,18 +95,18 @@ public class Operations extends org.geotools.coverage.processing.Operations {
     }
 
     /**
-     * Zonal statistics for a single zone geometry
+     * Zonal statistics for a single feature
      */
-    public ZoneGeometry zonalStats(final Coverage source, int[] bands, Statistics.StatsType[] stats, Geometry roi)
+    public ZoneGeometry zonalStats(final Coverage source, int[] bands, Statistics.StatsType[] stats, SimpleFeature roi)
         throws CoverageProcessingException {
-        // FIXME swap this for something that handles MULTI_POLYGON geometries
         final var statsOp = processor.getOperation("Zonal");
 
         var params = statsOp.getParameters();
         params.parameter("source").setValue(source);
         params.parameter("bands").setValue(bands);
         params.parameter("stats").setValue(stats);
-        params.parameter("roi").setValue(roi); // JTS polygon geometry
+        // Perhaps use RasterZonalStatistics if its faster?
+        params.parameter("roilist").setValue(List.of(roi));
         var result = (GridCoverage2D) processor.doOperation(params);
         var zoneStats = (List<ZoneGeometry>) result.getProperty(ZonalStatsDescriptor.ZS_PROPERTY);
         return zoneStats.get(0);

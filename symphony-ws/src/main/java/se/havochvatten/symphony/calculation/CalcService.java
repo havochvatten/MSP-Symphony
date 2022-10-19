@@ -7,6 +7,7 @@ import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.data.geojson.GeoJSONReader;
+import org.geotools.feature.simple.SimpleFeatureImpl;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.geometry.jts.JTS;
@@ -312,11 +313,16 @@ public class CalcService {
         if (operationName.equals("RarityAdjustedCumulativeImpact")) {
             var domain = operationOptions.get("domain");
             var indices = switch (domain) {
-                case "GLOBAL" -> calibrationService.calculateGlobalCommonnessIndices(ecoComponents,
-                    ecosystemsToInclude, scenario.getBaselineId());
-                case "LOCAL" -> calibrationService.calculateLocalCommonnessIndices(ecoComponents,
-                    ecosystemsToInclude, targetRoi);
-                default -> throw new RuntimeException("Unknown rarity index calculation domain: "+domain);
+                case "GLOBAL":
+                    yield calibrationService.calculateGlobalCommonnessIndices(ecoComponents,
+                        ecosystemsToInclude, scenario.getBaselineId());
+                case "LOCAL":
+                    var targetFeatureProjected = scenario.getFeature(); // N.B: Returns copy
+                    targetFeatureProjected.setDefaultGeometry(targetRoi);
+                    yield calibrationService.calculateLocalCommonnessIndices(ecoComponents,
+                        ecosystemsToInclude, targetFeatureProjected);
+                default:
+                    throw new RuntimeException("Unknown rarity index calculation domain: "+domain);
             };
 
             // Filter out small layers that would cause division by zero, i.e. infinite impact.
