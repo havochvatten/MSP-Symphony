@@ -36,13 +36,12 @@ public class CalibrationServiceTest {
     static MathTransform WGS84toTarget;
 
     static {
-        System.setProperty("org.geotools.referencing.forceXY", "true");
         JAIExt.initJAIEXT();
     }
 
     @BeforeClass
     public static void setup() throws IOException, FactoryException {
-        Hints hints = null;
+        Hints hints = new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
         ecoComponents = new GeoTiffReader(new File(CalibrationServiceTest.class.getClassLoader().
             getResource("SGU-2019-multiband/ecocomponents-tiled-packbits.tif").getFile()), hints).read(null);
         service = new CalibrationService(new Operations());
