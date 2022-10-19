@@ -11,11 +11,9 @@ import javax.ejb.*;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +24,6 @@ import se.havochvatten.symphony.service.DataLayerService;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.stream.Collectors;
@@ -95,16 +92,16 @@ public class CalibrationService {
     }
 
     /**
-     * Calculate local rarity indices (or actually its inverse, i.e. commonness)
+     * Calculate local rarity indices (or actually its inverse, i.e. "commonness")
      **/
     public double[] calculateLocalCommonnessIndices(GridCoverage2D ecoComponents, int[] ecosystemBands,
-                                                    Geometry roi/*RenderedImage zones*/) {
+                                                    SimpleFeature projectedRoi) {
         logger.info("Calculating local rarity indices for coverage {}", ecoComponents.getName());
-
+        // TODO: Cache indices? (based on feature hash?)
         var watch = new StopWatch();
         watch.start();
         var theZone = operations.zonalStats(ecoComponents, ecosystemBands,
-            new Statistics.StatsType[]{Statistics.StatsType.SUM}, roi);
+            new Statistics.StatsType[]{ Statistics.StatsType.SUM }, projectedRoi);
         watch.stop();
         logger.info("DONE. ({} ms)", watch.getTime());
 

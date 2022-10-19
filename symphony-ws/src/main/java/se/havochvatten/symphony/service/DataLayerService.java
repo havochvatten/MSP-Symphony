@@ -30,6 +30,7 @@ public class DataLayerService {
 			SymphonyStandardAppException {
         String filename = getComponentFilePath(type, baselineVersionId);
         File file = new File(filename);
+        // See https://docs.geotools.org/latest/userguide/library/referencing/order.html
         Hints hints = new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
         AbstractGridFormat format = GridFormatFinder.findFormat(file);
         return format.getReader(file, hints).read(null);
