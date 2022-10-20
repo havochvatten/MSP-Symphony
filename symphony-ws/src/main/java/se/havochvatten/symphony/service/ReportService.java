@@ -2,6 +2,7 @@ package se.havochvatten.symphony.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.geosolutions.jaiext.stats.HistogramMode;
 import it.geosolutions.jaiext.stats.Statistics;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
@@ -27,7 +28,6 @@ import javax.inject.Inject;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
-import javax.media.jai.Histogram;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
@@ -58,8 +58,7 @@ public class ReportService {
     @Inject
     PropertiesService props;
 
-    record StatisticsResult(double min, double max, double average, double stddev,
-                            int[] histogram, long zeroes, long pixels){}
+    record StatisticsResult(double min, double max, double average, double stddev, double[] histogram, long pixels){}
 
     private StatisticsResult getStatistics(GridCoverage2D coverage) {
         Statistics[] simpleStats = operations.stats(coverage, new int[]{0}, new Statistics.StatsType[]{
@@ -68,19 +67,15 @@ public class ReportService {
                 Statistics.StatsType.DEV_STD })[0];
 
         double[] extrema = (double[]) simpleStats[0].getResult();
+        double max = extrema[1] + (Math.ulp(extrema[1]) * 100);
 
-        // Edge case: all zero values
-        Histogram histogram = extrema[1] > 0 ?
-            operations.histogram(coverage, Double.MIN_VALUE, extrema[1] + Math.ulp(extrema[1]), 100) :
-            null;
-
-        Histogram zeroes = operations.histogram(coverage, 0.0, Double.MIN_VALUE, 1);
+        HistogramMode histogram =
+            operations.histogram(coverage, 0.0, max, 100);
 
         return new StatisticsResult(extrema[0], extrema[1],
                         (double) simpleStats[1].getResult(),
                         (double) simpleStats[2].getResult(),
-                        histogram == null ? new int[100] : histogram.getBins(0),
-                        zeroes.getBins(0)[0],
+                        (double[]) histogram.getResult(),
                         simpleStats[0].getNumSamples());
     }
 
@@ -143,7 +138,6 @@ public class ReportService {
         report.max       = stats.max;
         report.average   = stats.average;
         report.stddev    = stats.stddev;
-        report.zeroes    = stats.zeroes;
         report.histogram = stats.histogram;
 
         report.calculatedPixels = stats.pixels;

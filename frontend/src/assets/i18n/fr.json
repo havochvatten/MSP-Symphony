@@ -285,12 +285,7 @@
         "histogram": {
             "caption": "Histogramme",
             "interval": "Intervalle",
-            "zeroes-included": "Y compris des zéros",
-            "zeroes-excluded": "REMARQUE: Cet histogramme exclut des zéros",
-            "include-zero": "Inclure zéro",
-            "exclude-zero": "Exclure zéro",
             "cumulative-proportion": "Proportion cumulée",
-            "cumulative-proportion-exclusive": "Proportion cumulée sauf des zéros",
             "middle-of-range": "Milieu de l'intervalle"
         },
         "highest-impact": {

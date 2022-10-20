@@ -1,5 +1,6 @@
 package se.havochvatten.symphony.calculation;
 
+import it.geosolutions.jaiext.stats.Statistics;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,8 +65,10 @@ class AreaNormalizer extends RasterNormalizer {
 
     @Override
     public Double apply(GridCoverage2D coverage, Double ignored) {
-        var extrema = (GridCoverage2D) operations.extrema(coverage);
-        return ((double[]) extrema.getProperty("maximum"))[0];
+        double[] extrema =
+            (double[]) ((Statistics[][])
+                ((GridCoverage2D) operations.extrema(coverage)).getProperty(Statistics.STATS_PROPERTY))[0][0].getResult();
+        return extrema[1];
     }
 }
 

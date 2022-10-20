@@ -1,9 +1,6 @@
 package se.havochvatten.symphony.calculation;
 
 import it.geosolutions.jaiext.stats.Statistics;
-import it.geosolutions.jaiext.stats.StatisticsDescriptor;
-import it.geosolutions.jaiext.zonal.ZonalStatsDescriptor;
-import it.geosolutions.jaiext.zonal.ZoneGeometry;
 import org.apache.commons.lang3.time.StopWatch;
 import org.geotools.coverage.grid.GridCoverage2D;
 

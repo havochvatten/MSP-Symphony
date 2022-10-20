@@ -1,5 +1,6 @@
 package se.havochvatten.symphony.calculation.jai.CIA;
 
+import it.geosolutions.jaiext.range.NoDataContainer;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,8 @@ public class CumulativeImpactOp extends PointOpImage {
     private static final Logger LOG = LoggerFactory.getLogger(CumulativeImpactOp.class);
 
     public final static int TRANSPARENT_VALUE = 0;
+
+    public static final int NODATA_VALUE = -1;
     public final static String IMPACT_MATRIX_PROPERTY_NAME = "se.havochvatten.symphony.impact_matrix";
 
     /** Sensitivity matrix */
@@ -49,6 +52,8 @@ public class CumulativeImpactOp extends PointOpImage {
         this.mask = mask;
         this.ecosystemBands = ecosystems;
         this.pressureBands = pressures;
+
+        setProperty(NoDataContainer.GC_NODATA, new NoDataContainer(NODATA_VALUE));
 
         synchronized (this) {
             this.impactMatrix = new double[pressureBands.length][ecosystemBands.length];
@@ -141,6 +146,8 @@ public class CumulativeImpactOp extends PointOpImage {
                     }
                     /* ... ends here. */
                     dstData[dstPixelOffset] = cumulativeSum; // +0 since band offset=0
+                } else {
+                    dstData[dstPixelOffset] = NODATA_VALUE;
                 }
 
                 ecoPixelOffset += ecoPixelStride;

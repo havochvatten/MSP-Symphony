@@ -96,6 +96,8 @@ public class RarityAdjustedCumulativeImpactOp extends CumulativeImpactOp {
                     }
                     /* ... ends here. */
                     dstData[dstPixelOffset] = cumulativeSum; // +0 since band offset=0
+                } else {
+                    dstData[dstPixelOffset] = NODATA_VALUE;
                 }
 
                 ecoPixelOffset += ecoPixelStride;

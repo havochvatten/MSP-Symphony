@@ -1,7 +1,10 @@
 package se.havochvatten.symphony.calculation;
 
+import it.geosolutions.jaiext.stats.HistogramMode;
+import it.geosolutions.jaiext.stats.Statistics;
 import org.geotools.coverage.grid.GridCoverage2D;
-import javax.media.jai.Histogram;
+
+import java.util.Arrays;
 
 public class PercentileNormalizer extends RasterNormalizer {
     final static int NUM_BINS = 100; // More bins yields more accurate result
@@ -20,21 +23,23 @@ public class PercentileNormalizer extends RasterNormalizer {
     }
 
     public double computeNthPercentileNormalizationValue(GridCoverage2D coverage) {
-        var extrema = (GridCoverage2D) operations.extrema(coverage);
-        var histogram = operations.histogram(coverage, ((double[]) extrema.getProperty("minimum"))[0],
-            ((double[]) extrema.getProperty("maximum"))[0], NUM_BINS);
-        return getValueBelowPercentile(histogram);
-    }
 
-    private double getValueBelowPercentile(Histogram histogram) {
-        final int RESULT_BAND = 0; // only one band in result
+        double[] extrema = (double[]) ((Statistics[][])
+            ((GridCoverage2D) operations.extrema(coverage)).getProperty(Statistics.STATS_PROPERTY))[0][0].getResult();
+        double max = extrema[1] + (Math.ulp(extrema[1]) * 100);
 
-        double threshold = percentile / 100.0 * histogram.getTotals()[RESULT_BAND], accumulator = 0;
+        HistogramMode histogram = operations.histogram(coverage, 0.0, max, NUM_BINS);
+        double[] bins = (double[]) histogram.getResult();
+
+        double binSize = max / 100,
+            total = Arrays.stream(bins).reduce(0.0, Double::sum),
+            threshold = percentile / 100.0 * total, accumulator = 0;
+
         int i;
-        for (i = 0; i < histogram.getNumBins(RESULT_BAND) && accumulator < threshold; i++)
-            accumulator += histogram.getBinSize(RESULT_BAND, i);
+        for (i = 0; i < NUM_BINS && accumulator < threshold; i++)
+            accumulator += bins[i];
 
-        // simple linear interpolation between last two bins:
-        return (histogram.getBinLowValue(RESULT_BAND, i - 1) + histogram.getBinLowValue(RESULT_BAND, i)) / 2;
+        // simple linear interpolation between last two bins (middle value)
+        return binSize * i + binSize * 0.5;
     }
 }

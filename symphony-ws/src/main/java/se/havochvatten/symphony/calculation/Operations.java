@@ -1,5 +1,8 @@
 package se.havochvatten.symphony.calculation;
 
+import it.geosolutions.jaiext.range.Range;
+import it.geosolutions.jaiext.range.RangeFactory;
+import it.geosolutions.jaiext.stats.HistogramMode;
 import it.geosolutions.jaiext.stats.Statistics;
 import it.geosolutions.jaiext.zonal.ZonalStatsDescriptor;
 import it.geosolutions.jaiext.zonal.ZoneGeometry;
@@ -12,6 +15,7 @@ import org.opengis.coverage.Coverage;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.parameter.ParameterValueGroup;
 import se.havochvatten.symphony.calculation.jai.CIA.CumulativeImpactDescriptor;
+import se.havochvatten.symphony.calculation.jai.CIA.CumulativeImpactOp;
 import se.havochvatten.symphony.calculation.jai.CIA.RarityAdjustedCumulativeImpactDescriptor;
 import se.havochvatten.symphony.calculation.jai.rescale2.Rescale2Descriptor;
 
@@ -38,6 +42,9 @@ public class Operations extends org.geotools.coverage.processing.Operations {
 
     /* Additional coverage processor since it's currently not possible to add operation to the default instance */
     private SymphonyCoverageProcessor processor;
+
+    private Range defaultNoDataRange =
+        RangeFactory.create(CumulativeImpactOp.NODATA_VALUE, false, CumulativeImpactOp.NODATA_VALUE, true);
 
 //    @PostConstruct
 //    void init() {
@@ -82,16 +89,28 @@ public class Operations extends org.geotools.coverage.processing.Operations {
         return processor.doOperation(params);
     }
 
-    public Statistics[][] stats(final Coverage source, int[] bands, Statistics.StatsType[] stats)
-        throws CoverageProcessingException {
-        final var statsOp = processor.getOperation("Stats");
+    /** Min/max jai-ext stats op for a single band, assuming default "NoData"-range */
+    @Override
+    public Coverage extrema(Coverage source) throws CoverageProcessingException {
+        return _stats(  source,
+                        new int[]{0},
+                        new Statistics.StatsType[]{ Statistics.StatsType.EXTREMA },
+                        defaultNoDataRange);
+    }
 
+    private Coverage _stats(final Coverage source, int[] bands, Statistics.StatsType[] stats, Range noData){
+        final var statsOp = processor.getOperation("Stats");
         var params = statsOp.getParameters();
         params.parameter("source").setValue(source);
         params.parameter("bands").setValue(bands);
+        params.parameter("noData").setValue(noData);
         params.parameter("stats").setValue(stats);
-        var result = (GridCoverage2D) processor.doOperation(params);
-        return (Statistics[][]) result.getProperty(Statistics.STATS_PROPERTY);
+       return processor.doOperation(params);
+    }
+
+    public Statistics[][] stats(final Coverage source, int[] bands, Statistics.StatsType[] stats)
+        throws CoverageProcessingException {
+        return (Statistics[][]) ((GridCoverage2D) _stats(source, bands, stats, defaultNoDataRange)).getProperty(Statistics.STATS_PROPERTY);
     }
 
     /**
@@ -113,23 +132,32 @@ public class Operations extends org.geotools.coverage.processing.Operations {
     }
 
     /** Computes a histogram for a single band */
-    public Histogram histogram(final Coverage source, double lowValue, double highValue, int numBins)
+    /** TODO: Investigate utilization of it.geosolutions.jaiext.stats.HistogramWrapper for
+     *        access to useful helper methods that javax.media.jai.Histogram defines      */
+    public HistogramMode histogram(final Coverage source, double lowValue, double highValue, int numBins, Range noData)
         throws CoverageProcessingException  {
         final var op = processor.getOperation("histogram");
 
-        ParameterValueGroup param = op.getParameters();
+        final var statsOp = processor.getOperation("Stats");
+
+        ParameterValueGroup param = statsOp.getParameters();
         param.parameter("Source").setValue(source);
-        // CalcEngine.NO_DATA (NaN) is handled appropriately no ROI not needed:
-        //                var geom = (Geometry)coverage.getProperty("roi");
-        //                var shape = new LiteShape(geom,
-        //                        (AffineTransform)coverage.getGridGeometry().toCanonical().getCRSToGrid2D
-        //                        (), false);
-        //                param.parameter("roi").setValue(new ROIShape(shape));
+        param.parameter("stats").setValue(
+            new Statistics.StatsType[]{
+                Statistics.StatsType.HISTOGRAM
+            }
+        );
         param.parameter("lowValue").setValue(new double[]{lowValue});
         param.parameter("highValue").setValue(new double[]{highValue});
         param.parameter("numBins").setValue(new int[]{numBins});
-        var result = (GridCoverage2D) processor.doOperation(param, null);
-        return (Histogram) result.getProperty("histogram");
+        param.parameter("noData").setValue(noData);
+        var result = (GridCoverage2D) processor.doOperation(param);
+
+        return (HistogramMode) ((Statistics[][]) result.getProperty(Statistics.STATS_PROPERTY))[0][0];
+    }
+
+    public HistogramMode histogram(final Coverage source, double lowValue, double highValue, int numBins) {
+        return histogram(source, lowValue, highValue, numBins, defaultNoDataRange);
     }
 
     public GridCoverage2D cumulativeImpact(String operationName, GridCoverage2D ecoComponents, GridCoverage2D pressures,
@@ -148,6 +176,7 @@ public class Operations extends org.geotools.coverage.processing.Operations {
         params.parameter("mask").setValue(mask.getRaster());
         params.parameter("ecosystemBands").setValue(actualEcosystemsToBeIncluded);
         params.parameter("pressureBands").setValue(pressuresToInclude);
+
         if (commonness != null)
             params.parameter("commonnessIndices").setValue(commonness);
 
