@@ -27,7 +27,7 @@ public class NormalizerTest {
     @Before
     public void setup() throws IOException {
         JAIExt.initJAIEXT();
-
+        /* TODO: Supply a more suitable test raster for the percentile calculation  */
         Hints hints = null; //new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
         coverage = new GeoTiffReader(new File(NormalizerTest.class.getClassLoader().
                 getResource("unittest/checkerboard.tif").getFile()), hints).read(null);
@@ -65,11 +65,11 @@ public class NormalizerTest {
     public void percentileNormalizer() {
         factory = mock(NormalizerService.class);
         when(factory.getNormalizer(NormalizationType.PERCENTILE))
-                .thenReturn(new PercentileNormalizer(95, new Operations()));
+                .thenReturn(new PercentileNormalizer(50, new Operations()));
 
         var normalizer = factory.getNormalizer(NormalizationType.PERCENTILE);
         var result = normalizer.apply(coverage, Double.NaN);
 
-        assertEquals(0.005, result.doubleValue(), TOL); // other bands should remain unchanged
+        assertEquals(0.015, result.doubleValue(), TOL); // other bands should remain unchanged
     }
 }

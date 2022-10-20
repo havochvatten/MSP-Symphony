@@ -7,7 +7,7 @@ import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.data.geojson.GeoJSONReader;
-import org.geotools.feature.simple.SimpleFeatureImpl;
+import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.geometry.jts.JTS;
@@ -209,7 +209,7 @@ public class CalcService {
             pvg.parameter(
                             AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString())
                     .setValue(wp);
-
+            pvg.parameter(GeoTiffFormat.WRITE_NODATA.getName().toString()).setValue(true);
             writer.write(coverage, pvg.values().toArray(new GeneralParameterValue[1]));
             writer.dispose();
         } catch (IOException e) {

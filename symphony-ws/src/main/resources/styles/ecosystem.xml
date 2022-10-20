@@ -9,7 +9,8 @@ http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd" version="1.0.0">
 		<Rule>
 		  <RasterSymbolizer>
 			<ColorMap type="intervals">
-			  <ColorMapEntry color="#cbff02" quantity="1" opacity="0"/>
+			  <ColorMapEntry color="#000000" quantity="0" opacity="0"/>
+			  <ColorMapEntry color="#f1f68e" quantity="1"/>
 			  <ColorMapEntry color="#cbff02" quantity="5"/>
 			  <ColorMapEntry color="#b6f005" quantity="10"/>
 			  <ColorMapEntry color="#a2e704" quantity="15"/>
