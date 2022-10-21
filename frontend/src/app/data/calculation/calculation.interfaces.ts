@@ -12,6 +12,7 @@ export interface State {
   loadingCalculations: boolean;
   calculating: boolean;
   legends: LegendState;
+  percentileValue: number;
 }
 
 export interface Report {
@@ -24,6 +25,7 @@ export interface Report {
   min: number;
   max: number;
   stddev: number;
+  histogram: number[];
   geographicalArea: number; // m^2
   calculatedPixels: number;
   gridResolution: number; // [m]
@@ -84,6 +86,10 @@ export interface LegendColor {
 export interface Legend {
   unit: string;
   colorMap: LegendColor[];
+}
+
+export interface PercentileResponse {
+  percentileValue: number;
 }
 
 export type LegendState = {

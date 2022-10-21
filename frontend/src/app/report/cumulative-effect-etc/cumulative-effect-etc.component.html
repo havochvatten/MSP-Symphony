@@ -17,7 +17,7 @@
       <th>{{ 'report.cumulative-effect-etc.normalization.title' | translate }}:</th>
       <td [ngSwitch]="normalization.type">
         <ng-container *ngSwitchCase="type.Domain">
-          {{ 'report.cumulative-effect-etc.normalization.domain' | translate }}<sup>*</sup>
+          {{ 'report.cumulative-effect-etc.normalization.domain' | translate:{ ordinalPercentileValue: this.percentileValue | ordinal:locale } }}<sup>*</sup>
         </ng-container>
         <ng-container *ngSwitchCase="type.Area">
           {{ 'report.cumulative-effect-etc.normalization.area' | translate }}
@@ -94,8 +94,8 @@
     </ng-container>
   </ng-container>
 
-  <fn *ngIf="this.footnote">
+  <fn *ngIf="this.normalized">
     <span class='star'>&lowast;</span>
-    {{ this.footnote }}
+    {{ 'report.cumulative-effect-etc.normalization.domain-desc' | translate:{ percentileValue: this.percentileValue } }}
   </fn>
 </section>

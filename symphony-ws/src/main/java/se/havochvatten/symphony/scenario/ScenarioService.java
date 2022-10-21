@@ -20,23 +20,20 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.havochvatten.symphony.calculation.CalcUtil;
-import se.havochvatten.symphony.calculation.SymphonyCoverageProcessor;
+import se.havochvatten.symphony.calculation.Operations;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.ScenarioDto;
 import se.havochvatten.symphony.util.Util;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.JAI;
 import javax.media.jai.ROI;
 import javax.media.jai.ROIShape;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
-import java.awt.image.DataBuffer;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
@@ -47,19 +44,20 @@ import java.util.stream.Collectors;
 @Stateless
 public class ScenarioService {
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioService.class);
+    private static final double MAX_IMPACT_VALUE = 100.0;
+
     private static final ObjectMapper mapper = new ObjectMapper();
 
     @PersistenceContext(unitName = "symphonyPU")
     private EntityManager em;
 
-    private final SymphonyCoverageProcessor processor;
+    private final Operations operations;
 
-    // dummy constructor to satisfy CDI framework
-    public ScenarioService() {this.processor = null;}
+    public ScenarioService() {this.operations = null;}     // dummy constructor to satisfy CDI framework
 
     @Inject
-    public ScenarioService(SymphonyCoverageProcessor processor) {
-        this.processor = processor;
+    public ScenarioService(Operations operations) {
+        this.operations = operations;
     }
 
     public Scenario findById(int id) {
@@ -161,7 +159,8 @@ public class ScenarioService {
                                     // No need to fill since array is initialized to zero by default
                                     offsets[bandChange.band] = bandChange.offset;
 
-                                    return rescaleCoverage(innerState, multipliers, offsets, gridROI);
+                                    return (GridCoverage2D) operations.rescale(innerState, multipliers, offsets,
+                                        gridROI, MAX_IMPACT_VALUE);
                                 });
                     } catch (TransformException | FactoryException e) {
                         LOG.error("Error transforming change ROI: " + e);
@@ -170,26 +169,6 @@ public class ScenarioService {
                 }
         );
     }
-
-    GridCoverage2D rescaleCoverage(GridCoverage2D source, double[] constants, double[] offsets,
-                                          ROI roi) {
-        // Pass in ImageLayout?
-        final var rescale = processor.getOperation("se.havochvatten.symphony.Rescale");
-
-        var params = rescale.getParameters();
-        params.parameter("Source").setValue(source);
-        params.parameter("constants").setValue(constants);
-        params.parameter("offsets").setValue(offsets);
-        params.parameter("ROI").setValue(roi);
-
-        ImageLayout destLayout = new ImageLayout();
-        destLayout.setSampleModel(CalcUtil.createSampleModel(DataBuffer.TYPE_USHORT,
-            source.getRenderedImage().getSampleModel()));
-
-        Hints hints = new Hints(JAI.KEY_IMAGE_LAYOUT, destLayout);
-        return (GridCoverage2D) processor.doOperation(params, hints);
-    }
-
 
     private static <U> U reduceFeatures(FeatureIterator iter, U identity,
                                         BiFunction<U, Feature, U> accumulator) {

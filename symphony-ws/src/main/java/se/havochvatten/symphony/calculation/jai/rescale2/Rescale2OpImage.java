@@ -104,7 +104,7 @@ public class Rescale2OpImage extends PointOpImage {
 
     public Rescale2OpImage(RenderedImage source, ImageLayout layout, Map configuration,
                            double[] valueScale, double[] valueOffsets, double destinationNoData, ROI roi,
-                           Range noData, boolean useROIAccessor) {
+                           Range noData, boolean useROIAccessor, double clamp) {
         super(source, layout, configuration, true);
 
         // Selection of the band number
@@ -215,7 +215,7 @@ public class Rescale2OpImage extends PointOpImage {
                 double c = scaleFactors[b];
                 double o = offsetArray[b];
                 for (int i = 0; i < 256; i++) {
-                    band[i] = ImageUtil.clampRoundByte(i * c + o);
+                    band[i] = clampTo(i * c + o, (byte)clamp);
                 }
             }
         }
@@ -255,9 +255,13 @@ public class Rescale2OpImage extends PointOpImage {
 
     }
 
+    private byte clampTo(double in, byte value) {
+        return in > 100 ? 100 : (in >= 0 ? (byte)in : 0);
+    }
+
     /**
      * Rescales to the pixel values within a specified rectangle.
-     * 
+     *
      * @param sources Cobbled sources, guaranteed to provide all the source data necessary for computing the rectangle.
      * @param dest The tile containing the rectangle to be computed.
      * @param destRect The rectangle within the tile to be computed.
@@ -2262,7 +2266,7 @@ public class Rescale2OpImage extends PointOpImage {
             }
         }
     }
-    
+
     @Override
     public synchronized void dispose() {
         if(srcROIImgExt != null) {

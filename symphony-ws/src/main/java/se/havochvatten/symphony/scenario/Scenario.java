@@ -1,8 +1,5 @@
 package se.havochvatten.symphony.scenario;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,8 +24,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Size;
-import javax.ws.rs.NotFoundException;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
@@ -127,9 +122,9 @@ public class Scenario implements Serializable {
         ecosystemsToInclude = dto.ecosystemsToInclude;
         pressuresToInclude = dto.pressuresToInclude;
         if (dto.latestCalculation != null)
-            // TODO handle case when old Calculaltions can have been pruned?
+            // TODO handle case when old Calculations can have been pruned?
             latestCalculation =
-                    calcService.getCalculation(dto.latestCalculation).orElseThrow(NotFoundException::new);
+                    calcService.getCalculation(dto.latestCalculation);
     }
 
     public static Scenario createWithoutId(String name, BaselineVersion baseline,

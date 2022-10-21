@@ -5,7 +5,7 @@
       <div class="row">
         <span>{{ 'map.editor.band-pressures.percentage' | translate }}</span>
         <span>
-          {{ formatPercentage(convertMultiplierToPercent(multiplier), 0, locale) }}
+          {{ formatPercentage(convertMultiplierToPercent(multiplier), 0, locale, "", true) }}
         </span>
       </div>
       <app-slider

@@ -80,7 +80,7 @@ public class CalcEngineBenchmark {
 
     @Setup
     public void prepare() throws IOException {
-        // Perhaps make us of TemporaryFolder Rule later
+        // Perhaps make use of TemporaryFolder Rule later
         File f = new File(OUT_DIR);
         if (!f.exists()) {
             boolean res = f.mkdirs();
@@ -108,20 +108,21 @@ public class CalcEngineBenchmark {
 //        var res = sum();
 //    }
 
-    @Benchmark
-    @Fork(value = 0, warmups = 0) // value = 0 when debugging!
-    @BenchmarkMode(Mode.SingleShotTime)
-    public void allOfIt() throws Exception {
-        var envelope = new ReferencedEnvelope(ecosystems.getEnvelope());
-        var t = CRS.findMathTransform(ecosystems.getCoordinateReferenceSystem2D(),
-                DefaultGeographicCRS.WGS84);
-        // FIXME geometry to big?
-        var WGS84envelope = JTS.transform(envelope, t);
-        sum(JTS.toGeometry(WGS84envelope), "all-of-it");
-    }
+//    @Benchmark
+//    @Fork(value = 1, warmups = 0, jvmArgs = {"-Xmx10G"}) // value = 0 when debugging!
+//    @BenchmarkMode(Mode.SingleShotTime)
+//    public void allOfIt() throws Exception {
+//        var envelope = new ReferencedEnvelope(ecosystems.getEnvelope());
+//        var t = CRS.findMathTransform(ecosystems.getCoordinateReferenceSystem2D(),
+//                DefaultGeographicCRS.WGS84);
+//        // FIXME geometry too big?
+//        var WGS84envelope = JTS.transform(envelope, t);
+//        sum(JTS.toGeometry(WGS84envelope), "all-of-it");
+//    }
 
     @Benchmark
-    @Fork(value = 0, warmups = 0) // value = 0 when debugging!
+    @Threads(10)
+    @Fork(value = 10, warmups = 1) // value = 0 when debugging!
     @BenchmarkMode(Mode.SingleShotTime)
     public void smallerRegion() throws Exception {
         Coordinate[] coords =
@@ -242,7 +243,7 @@ public class CalcEngineBenchmark {
 //                .createWritableTranslatedChild(layout.getMinX(null), layout.getMinY(null));
         var mask = new MatrixMask(roiGridGeomtry.toCanonical(), layout,
                 List.of(area), CalcUtil.createMapFromMatrixIdToIndex(matrices));
-        ParameterBlockJAI pb = new ParameterBlockJAI("se.havochvatten.CumulativeImpact");
+        ParameterBlockJAI pb = new ParameterBlockJAI("se.havochvatten.symphony.CumulativeImpact");
         pb.setSource("source0", /*croppedEcosystems*/ecosystems.getRenderedImage());
         pb.setSource("source1", /*croppedPressures*/pressures.getRenderedImage());
         pb.setParameter("matrix", CalcService.preprocessMatrices(matrices));
@@ -252,7 +253,7 @@ public class CalcEngineBenchmark {
 
         var hints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout);
         // pass image layout somehow
-        var result = JAI.create("se.havochvatten.CumulativeImpact", pb, hints);
+        var result = JAI.create("se.havochvatten.symphony.CumulativeImpact", pb, hints);
 
         final int numTileX = result.getNumXTiles();
         final int numTileY = result.getNumYTiles();

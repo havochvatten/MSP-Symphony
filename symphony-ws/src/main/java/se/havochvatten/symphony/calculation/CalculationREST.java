@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.awt.image.RenderedImage;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -99,7 +98,8 @@ public class CalculationREST {
     @ApiOperation(value = "Get a specified calculation", response = CalculationResultSlice.class)
     public Response getCalculation(@Context HttpServletRequest req, @PathParam("id") int id) {
         try {
-            var calculation = calcService.getCalculation(id).orElseThrow(NotFoundException::new);
+            var calculation = CalcUtil.getCalculationResultFromSessionOrDb(id,
+                    req.getSession(), calcService).orElseThrow(NotFoundException::new);
             if (calculation.getOwner().equals(req.getUserPrincipal().getName()))
                 return ok(new CalculationResultSlice(calculation)).build();
             else
@@ -120,10 +120,12 @@ public class CalculationREST {
                                @QueryParam("action") String action,
                                String newName) {
         if (action.equals("update-name")) {
-            var calculation = calcService.getCalculation(id).orElseThrow(NotFoundException::new);
+            var calculation = CalcUtil.getCalculationResultFromSessionOrDb(id,
+                req.getSession(), calcService).orElseThrow(NotFoundException::new);
             if (calculation.getOwner().equals(req.getUserPrincipal().getName())
                     && !calculation.isBaselineCalculation()) {
-                var updated = calcService.updateCalculationName(calculation, newName);
+                calculation.setCalculationName(newName);
+                var updated = calcService.updateCalculation(calculation);
                 return ok(new CalculationResultSlice(updated)).build();
             } else
                 return status(Response.Status.UNAUTHORIZED).build();
@@ -167,11 +169,8 @@ public class CalculationREST {
                                    @PathParam("id") int id,
                                    @QueryParam("crs") String crs)
             throws Exception {
-        var lastResult = (CalculationResult) req.getSession().getAttribute("last-calculation");
-
-        var calc = lastResult != null && lastResult.getId() == id
-                ? lastResult
-                : calcService.getCalculation(id).orElseThrow();
+        var calc = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
+            calcService).orElseThrow(NotFoundException::new);
 
         if (!hasAccess(calc, req.getUserPrincipal()))
             return status(Response.Status.UNAUTHORIZED).build();
@@ -232,8 +231,11 @@ public class CalculationREST {
             throws Exception {
         logger.info("Diffing base line calculations " + baseId + " against calculation " + scenarioId);
 
-        var base = calcService.getCalculation(baseId).orElseThrow(javax.ws.rs.BadRequestException::new);
-        var scenario = calcService.getCalculation(scenarioId).orElseThrow(javax.ws.rs.BadRequestException::new);
+        var base = CalcUtil.getCalculationResultFromSessionOrDb(baseId, req.getSession(),
+            calcService).orElseThrow(javax.ws.rs.BadRequestException::new);
+        var scenario =
+            CalcUtil.getCalculationResultFromSessionOrDb(scenarioId, req.getSession(),
+                calcService).orElseThrow(javax.ws.rs.BadRequestException::new);
         if (!hasAccess(base, req.getUserPrincipal()) || !hasAccess(scenario, req.getUserPrincipal()))
             return status(Response.Status.UNAUTHORIZED).build();
 
@@ -260,9 +262,10 @@ public class CalculationREST {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
     @ApiOperation(value = "Returns a list of calculation matching the ROI of specified calculation")
-    public List<CalculationResultSlice> getMatchingCalculations(@Context HttpServletRequest req,
-                                                                @PathParam("id") int id) {
-        var base = calcService.getCalculation(id).orElseThrow(NotFoundException::new);
+    public List<CalculationResultSlice> getCalculationsWithMatchingGeometry(@Context HttpServletRequest req,
+                                                                            @PathParam("id") int id) {
+        var base = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
+            calcService).orElseThrow(javax.ws.rs.NotFoundException::new);
         verifyAccessToCalculation(base, req.getUserPrincipal());
 
         return calcService.findAllMatchingGeometryByUser(req.getUserPrincipal(), base);
@@ -287,10 +290,9 @@ public class CalculationREST {
 
     public static void verifyAccessToCalculation(CalculationResult calc, Principal user) {
         if (!hasAccess(calc, user)) {
-            var e = user != null
+            throw user != null
                     ? new ForbiddenException("User " + user.getName() + " is not owner of calculation " + calc.getId())
                     : new NotAuthorizedException("User not authorized");
-            throw e;
         }
     }
 }

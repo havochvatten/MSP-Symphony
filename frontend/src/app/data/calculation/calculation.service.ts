@@ -6,7 +6,7 @@ import { environment as env } from '@src/environments/environment';
 import { State } from '../../app-reducer';
 import { MessageActions } from '@data/message';
 import { MetadataSelectors } from '@data/metadata';
-import { CalculationSlice, Legend, LegendType, OperationParams, StaticImageOptions } from './calculation.interfaces';
+import { CalculationSlice, Legend, LegendType, OperationParams, PercentileResponse, StaticImageOptions } from './calculation.interfaces';
 import { CalculationActions } from '.';
 import { AppSettings } from "@src/app/app.settings";
 import { register } from "ol/proj/proj4";
@@ -141,6 +141,10 @@ export class CalculationService implements OnDestroy {
 
   public getLegend(type: LegendType|'comparison') {
     return this.http.get<Legend>(`${env.apiBaseUrl}/legend/${type}`);
+  }
+
+  public getPercentileValue() {
+    return this.http.get<PercentileResponse>(`${env.apiBaseUrl}/calibration/percentile-value`);
   }
 
   ngOnDestroy() {

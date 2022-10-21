@@ -22,7 +22,7 @@ public class ReportRESTTest extends RESTTest {
     private static int testScenarioId;
     static int reportId;
 
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     @BeforeClass
     public static void doCalculation() throws IOException {
@@ -62,7 +62,7 @@ public class ReportRESTTest extends RESTTest {
             when().
             get("/report/{id}").
             then().
-            statusCode(204);
+            statusCode(404);
     }
 
 //    @Test

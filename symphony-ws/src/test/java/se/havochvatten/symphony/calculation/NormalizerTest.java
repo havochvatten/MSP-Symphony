@@ -20,14 +20,14 @@ import static org.mockito.Mockito.when;
 public class NormalizerTest {
     public static final double TOL = 0.1;
 
-    NormalizerService factory = new NormalizerService();
+    NormalizerService factory = new NormalizerService(new Operations());
 
     GridCoverage2D coverage;
 
     @Before
     public void setup() throws IOException {
         JAIExt.initJAIEXT();
-
+        /* TODO: Supply a more suitable test raster for the percentile calculation  */
         Hints hints = null; //new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
         coverage = new GeoTiffReader(new File(NormalizerTest.class.getClassLoader().
                 getResource("unittest/checkerboard.tif").getFile()), hints).read(null);
@@ -62,15 +62,14 @@ public class NormalizerTest {
     }
 
     @Test
-    @Ignore // Not sure if this is correct actually
     public void percentileNormalizer() {
         factory = mock(NormalizerService.class);
         when(factory.getNormalizer(NormalizationType.PERCENTILE))
-                .thenReturn(new PercentileNormalizer(95));
+                .thenReturn(new PercentileNormalizer(50, new Operations()));
 
         var normalizer = factory.getNormalizer(NormalizationType.PERCENTILE);
-        var result = normalizer.apply(coverage, 242.0);
+        var result = normalizer.apply(coverage, Double.NaN);
 
-        assertEquals(0.005, result.doubleValue(), TOL); // other bands should remain unchanged
+        assertEquals(0.015, result.doubleValue(), TOL); // other bands should remain unchanged
     }
 }

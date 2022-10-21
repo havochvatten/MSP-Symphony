@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { BandGroup } from '@data/metadata/metadata.interfaces';
-import { formatRelativePercentage } from "@data/calculation/calculation.util";
+import { formatPercentage } from "@data/calculation/calculation.util";
 
 @Component({
   selector: 'app-impact-table',
@@ -18,7 +18,7 @@ export class ImpactTableComponent {
     return this.scenarioImpacts.every(impacts => !(bandNumber in impacts));
   }
 
-  relativeDifferencePercentage(value: number, ersatz: string) {
-    return isNaN(value) ? "" : formatRelativePercentage(value / 100, 2, this.locale, ersatz);
+  formatPercentage(value: number, ersatz: string, relative: boolean) {
+    return isNaN(value) ? "" : formatPercentage(value / 100, 2, this.locale, ersatz, relative);
   }
 }

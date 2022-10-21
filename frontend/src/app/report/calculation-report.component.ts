@@ -10,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ChartData } from './pressure-chart/pressure-chart.component';
 import { Report } from '@data/calculation/calculation.interfaces';
 import { environment as env } from "@src/environments/environment";
+import { CalculationActions, CalculationSelectors } from "@data/calculation";
 import { NormalizationType } from "@data/calculation/calculation.service";
 import { ReportService } from "@src/app/report/report.service";
 import MetadataService from "@data/metadata/metadata.service";
@@ -30,6 +31,7 @@ export class CalculationReportComponent {
   area?: number;
   private imageUrl?: string;
   bandMap: BandMap = { b: {}, e: {} };
+  percentileValue$: Observable<number>;
   metadata$: Observable<{
     ecoComponent: BandGroup[];
     pressureComponent: BandGroup[];
@@ -43,6 +45,7 @@ export class CalculationReportComponent {
     private metadataService: MetadataService
   ) {
     this.locale = this.translate.currentLang;
+    this.store.dispatch(CalculationActions.fetchPercentile());
 
     const that = this;
     route.paramMap
@@ -76,6 +79,7 @@ export class CalculationReportComponent {
       };
     });
 
+    this.percentileValue$ = this.store.select(CalculationSelectors.selectPercentileValue);
   }
 
   formatChartData(data: ChartData, metadata: LayerData) {

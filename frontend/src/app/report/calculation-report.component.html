@@ -10,9 +10,17 @@
   <app-cumulative-effect-etc [reports]="report ? [report] : undefined"
     [area]="area"
     [normalization]="report.normalization"
-    [footnote]="isDomainNormalization(report) && 'report.cumulative-effect-etc.normalization.domain-desc' | translate"
+    [percentileValue]="this.percentileValue$ | async"
+    [normalized]="isDomainNormalization(report)"
     [locale]="locale"
   ></app-cumulative-effect-etc>
+  <app-histogram
+    [title]="('report.histogram.caption'| translate) +
+        ' (' + ('map.editor.operation.'+ (report.operationName) + '.title' | translate | lowercase) +')'"
+    [report]="report"
+    [locale]="locale"
+  >
+  </app-histogram>
   <app-result-color-scale [locale]="locale"></app-result-color-scale>
   <app-highest-impacts
     class="pressure-impacts"

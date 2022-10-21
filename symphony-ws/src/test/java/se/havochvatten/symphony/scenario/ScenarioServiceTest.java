@@ -5,7 +5,6 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.feature.FeatureCollection;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.referencing.CRS;
@@ -19,7 +18,7 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.geometry.DirectPosition;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.MathTransform;
-import se.havochvatten.symphony.calculation.SymphonyCoverageProcessor;
+import se.havochvatten.symphony.calculation.Operations;
 import se.havochvatten.symphony.dto.LayerType;
 
 import java.io.File;
@@ -65,7 +64,7 @@ public class ScenarioServiceTest {
 
     @Before
     public void setup() {
-        service = new ScenarioService(new SymphonyCoverageProcessor());
+        service = new ScenarioService(new Operations());
     }
 
     private GridCoverage2D applyChanges(SimpleFeatureCollection changes) {
@@ -83,10 +82,10 @@ public class ScenarioServiceTest {
 
         var result = applyChanges(simpleChange);
 
-        var newOutsideValues = (int[]) result.evaluate(OUTSIDE_ROI);
+        var newOutsideValues = (byte[]) result.evaluate(OUTSIDE_ROI);
         assertEquals(outsideValues[BAND], newOutsideValues[BAND], TOL);
 
-        var newInsideValues = (int[]) result.evaluate(INSIDE_ROI);
+        var newInsideValues = (byte[]) result.evaluate(INSIDE_ROI);
         assertEquals(insideValues[17], newInsideValues[17], 0.1); // other bands should remain unchanged
         assertEquals(1.1 * insideValues[BAND], newInsideValues[BAND], TOL);
     }
@@ -102,25 +101,23 @@ public class ScenarioServiceTest {
 
         var result = applyChanges(compoundChange);
 
-        int[] newOutsideValues = (int[]) result.evaluate(OUTSIDE_ROI);
+        byte[] newOutsideValues = (byte[]) result.evaluate(OUTSIDE_ROI);
         assertEquals(outsideValues[BAND], newOutsideValues[BAND], TOL);
 
-        int[] newInsideValues = (int[]) result.evaluate(INSIDE_ROI);
-        assertEquals(1.1 * insideValues[BAND] + 10, newInsideValues[BAND], TOL);
+        byte[] newInsideValues = (byte[]) result.evaluate(INSIDE_ROI);
+        assertEquals(1.1 * insideValues[BAND] + 1, newInsideValues[BAND], TOL);
     }
 
     @Test
-    public void applyBigChange() { // Test promotion from Byte to UShort layer
+    public void applyBigChange() { // Test clamping of big values
         int BAND = 12;
 
         var bigChange = changes.subCollection(ff.id(ff.featureId("features.2")));
 
-        byte[] insideValues = (byte[]) coverage.evaluate(INSIDE_ROI);
-
         var result = applyChanges(bigChange);
 
-        int[] newInsideValues = (int[]) result.evaluate(INSIDE_ROI);
-        assertEquals(insideValues[BAND] + 3000, newInsideValues[BAND], TOL);
+        byte[] newInsideValues = (byte[]) result.evaluate(INSIDE_ROI);
+        assertEquals(100, newInsideValues[BAND]);
     }
 
     @Test
@@ -131,7 +128,7 @@ public class ScenarioServiceTest {
 
         var result = applyChanges(zeroChange);
 
-        int[] newInsideValues = (int[]) result.evaluate(INSIDE_ROI);
+        byte[] newInsideValues = (byte[]) result.evaluate(INSIDE_ROI);
         assertEquals(0, newInsideValues[BAND], TOL);
     }
 }

@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { TranslateService } from "@ngx-translate/core";
 import { NormalizationOptions, NormalizationType } from "@data/calculation/calculation.service";
 import { Report } from "@data/calculation/calculation.interfaces";
-import { relativeDifference, formatRelativePercentage } from "@data/calculation/calculation.util";
+import { relativeDifference, formatPercentage } from "@data/calculation/calculation.util";
 
 @Component({
   selector: 'app-cumulative-effect-etc',
@@ -12,13 +12,14 @@ import { relativeDifference, formatRelativePercentage } from "@data/calculation/
 export class CumulativeEffectEtcComponent {
   @Input() reports?: Report[];
   @Input() area?: number;
-  @Input() footnote?: string;
+  @Input() normalized = false;
   @Input() normalization?: NormalizationOptions;
+  @Input() percentileValue = 0;
   @Input() locale = 'en';
 
-  constructor( private translate : TranslateService) {}
-
   type = NormalizationType; // make enum available to template
+
+  constructor(private translate : TranslateService) {}
 
   get areaKm2() {
     return this.area ? this.area / 1e6 : 0;
@@ -30,8 +31,8 @@ export class CumulativeEffectEtcComponent {
   /* Assumes two reports exist */
   relativeDifferencePercentage(prop: string) {
     const pkey = prop as keyof Report;
-    return formatRelativePercentage(
+    return formatPercentage(
       this.reports ? relativeDifference(this.reports[0][pkey], this.reports[1][pkey]) : NaN,
-      2, this.locale, this.translate.instant('report.common.not-measurable'));
+      2, this.locale, this.translate.instant('report.common.not-measurable'), true);
   }
 }
