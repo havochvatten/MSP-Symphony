@@ -99,17 +99,6 @@ export class HistogramChartComponent implements OnInit, OnChanges {
       'H', x, 'Z'].join(' ');
   }
 
-  phRed(ix : number) {
-    // Color gradient from dark blue (#00001c) to matte red (#971c1c)
-    // The range is deliberately chosen to appear distinct from the
-    // rainbow type gradient used for the raster image.
-
-    const r = ix > 27 ? Math.round(ix * 1.26 + 27) : ix,
-      g = ix > 27 ? 28 : ix,
-      b = ix > 27 ? 28 : 27 + (27 - ix);
-    return '#' + r.toString(16).padStart(2, '0') + g.toString(16).padStart(2, '0') + b.toString(16).padStart(2, '0');
-  }
-
   makeInfo(binIndex: number, acc: number, count: number) {
     // "Middle number": arbitrarily prefer an integer value when reasonable
     // Actual values may be expected to be discrete
