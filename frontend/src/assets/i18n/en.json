@@ -54,6 +54,7 @@
                 "sensitivity-matrix": "Sensitivity Matrix",
                 "default-matrix": "Default matrix",
                 "user-matrix": "User-defined matrix",
+                "choose-matrix": "Choose matrix",
                 "choose-area-type": "Choose area type (optional)",
                 "choose-area-type-matrix": "Select matrix for area type",
                 "edited-matrixes": "Previously edited matrices",
