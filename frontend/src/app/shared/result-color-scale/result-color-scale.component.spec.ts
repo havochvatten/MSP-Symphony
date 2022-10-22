@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ResultColorScaleComponent } from './result-color-scale.component';
 
@@ -9,7 +9,7 @@ function setUp() {
 }
 
 describe('ResultColorScaleComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ResultColorScaleComponent ]
     })

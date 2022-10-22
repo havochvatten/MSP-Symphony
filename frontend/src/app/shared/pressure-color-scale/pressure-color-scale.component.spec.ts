@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { PressureColorScaleComponent } from './pressure-color-scale.component';
 
@@ -9,7 +9,7 @@ function setUp() {
 }
 
 describe('PressureColorScaleComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ PressureColorScaleComponent ]
     })

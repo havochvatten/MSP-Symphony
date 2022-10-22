@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { UploadFilesComponent } from './upload-files.component';
 import { IconComponent } from '../icon/icon.component';
@@ -15,7 +15,7 @@ function setUp() {
 }
 
 describe('UploadFilesComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [UploadFilesComponent, IconComponent, IconButtonComponent, DragDropDirective],
       imports: [HavCoreModule]

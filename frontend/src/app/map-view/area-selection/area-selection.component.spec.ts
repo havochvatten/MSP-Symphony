@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AreaSelectionComponent } from './area-selection.component';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
@@ -15,7 +15,7 @@ function setUp() {
 }
 
 describe('AreaSelectionComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [AreaSelectionComponent, SelectionLayoutComponent, AreaGroupComponent],
       imports: [SharedModule, HavCheckboxModule, TranslationSetupModule],

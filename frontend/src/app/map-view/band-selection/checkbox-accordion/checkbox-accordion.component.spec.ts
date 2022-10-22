@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CheckboxAccordionComponent } from './checkbox-accordion.component';
 import { HavCheckboxModule, HavCoreModule } from 'hav-components';
@@ -17,7 +17,7 @@ function setUp() {
 }
 
 describe('CheckboxAccordionComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         CheckboxAccordionComponent,

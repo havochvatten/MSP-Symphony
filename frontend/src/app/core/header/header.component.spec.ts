@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 
 import { HeaderComponent } from './header.component';
@@ -12,7 +12,7 @@ function setUp() {
 }
 
 describe('HeaderComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [SharedModule],
       declarations: [HeaderComponent, UserMenuToggleComponent],
