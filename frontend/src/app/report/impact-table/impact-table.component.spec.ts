@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ImpactTableComponent } from './impact-table.component';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
@@ -12,7 +12,7 @@ function setUp() {
 }
 
 describe('ImpactTableComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ImpactTableComponent],
       imports: [TranslationSetupModule]

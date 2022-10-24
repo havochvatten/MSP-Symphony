@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { MapToolbarComponent } from './map-toolbar.component';
 import {
@@ -18,7 +18,7 @@ function setUp() {
 }
 
 describe('MapToolbarComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [SharedModule, TranslationSetupModule],
       declarations: [
@@ -35,7 +35,7 @@ describe('MapToolbarComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should trigger toggleDraw on button click', async(() => {
+  it('should trigger toggleDraw on button click', waitForAsync(() => {
     const { component, fixture } = setUp();
     spyOn(component, 'onToggleDraw');
     const button = fixture.debugElement.children[1].nativeElement;
@@ -45,7 +45,7 @@ describe('MapToolbarComponent', () => {
     });
   }));
 
-  it('should trigger zoomIn on button click', async(() => {
+  it('should trigger zoomIn on button click', waitForAsync(() => {
     const { component, fixture } = setUp();
     spyOn(component, 'onClickZoomIn');
     const button = fixture.debugElement.children[0].nativeElement.querySelectorAll('button')[0];
@@ -55,7 +55,7 @@ describe('MapToolbarComponent', () => {
     });
   }));
 
-  it('should trigger zoomOut on button click', async(() => {
+  it('should trigger zoomOut on button click', waitForAsync(() => {
     const { component, fixture } = setUp();
     spyOn(component, 'onClickZoomOut');
     const button = fixture.debugElement.children[0].nativeElement.querySelectorAll('button')[1];

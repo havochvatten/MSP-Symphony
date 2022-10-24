@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { HavButtonModule, HavCoreModule } from 'hav-components';
 
 import { CalculationReportModalComponent } from './calculation-report-modal.component';
@@ -18,7 +18,7 @@ function setUp() {
 }
 
 describe('CalculationReportModalComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CalculationReportModalComponent, IconButtonComponent, IconComponent],
       imports: [HavButtonModule, HavCoreModule, HttpClientModule, TranslationSetupModule],

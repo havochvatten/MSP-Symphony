@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CalculationReportComponent } from './calculation-report.component';
 import { SharedModule } from '../shared/shared.module';
@@ -21,7 +21,7 @@ function setUp() {
 }
 
 describe('CalculationReportComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         CalculationReportComponent,
