@@ -18,7 +18,7 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.geometry.DirectPosition;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.MathTransform;
-import se.havochvatten.symphony.calculation.SymphonyCoverageProcessor;
+import se.havochvatten.symphony.calculation.Operations;
 import se.havochvatten.symphony.dto.LayerType;
 
 import java.io.File;
@@ -64,7 +64,7 @@ public class ScenarioServiceTest {
 
     @Before
     public void setup() {
-        service = new ScenarioService(new SymphonyCoverageProcessor());
+        service = new ScenarioService(new Operations());
     }
 
     private GridCoverage2D applyChanges(SimpleFeatureCollection changes) {

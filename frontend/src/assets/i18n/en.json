@@ -54,6 +54,7 @@
                 "sensitivity-matrix": "Sensitivity Matrix",
                 "default-matrix": "Default matrix",
                 "user-matrix": "User-defined matrix",
+                "choose-matrix": "Choose matrix",
                 "choose-area-type": "Choose area type (optional)",
                 "choose-area-type-matrix": "Select matrix for area type",
                 "edited-matrixes": "Previously edited matrices",
@@ -72,7 +73,7 @@
                 "title": "Result Colormap",
                 "description": "Set maximum value based on",
                 "area": "Maximum value in computed area",
-                "domain": "Normalized to {{ ordinalPercentileValue }} percentile in MSP area",
+                "domain": "{{ ordinalPercentileValue }} percentile in MSP area",
                 "custom": "User-defined value",
                 "custom-value": "Value"
             },
@@ -285,12 +286,7 @@
         "histogram": {
             "caption": "Histogram",
             "interval": "Interval",
-            "zeroes-included": "Full range",
-            "zeroes-excluded": "NB. The histogram excludes zero values",
-            "include-zero": "Include zero",
-            "exclude-zero": "Exclude zero",
             "cumulative-proportion": "Cumulative proportion",
-            "cumulative-proportion-exclusive": "Cum. proportion w/o zeroes",
             "middle-of-range": "Middle of range"
         },
         "highest-impact": {
