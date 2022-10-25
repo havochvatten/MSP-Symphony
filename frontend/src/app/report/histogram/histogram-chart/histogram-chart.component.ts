@@ -11,7 +11,6 @@ import { formatPercentage } from "@data/calculation/calculation.util";
 export class HistogramChartComponent implements OnInit, OnChanges {
   @Input() bins: number[] = []
   @Input() reportMax!: number;
-  @Input() zeroes!: number;
   @Input() inclusive = false;
   @Input() locale = 'en';
   @Input() algorithm = '';
@@ -41,8 +40,7 @@ export class HistogramChartComponent implements OnInit, OnChanges {
     this.binSz = this.reportMax / 100;
     this.isRarityAdjusted = this.algorithm === 'RarityAdjustedCumulativeImpact';
 
-    const incZero = (this.inclusive ? 0 : this.zeroes),
-          count = this.bins.reduce((a, b) => a + b) + incZero,
+    const count = this.bins.reduce((a, b) => a + b),
           ystep =       // suitable vertical measure interval
             this.bmax < 10 ? 1 :
             this.bmax < 30 ? 5 :
@@ -56,19 +54,17 @@ export class HistogramChartComponent implements OnInit, OnChanges {
             this.bmax < 1000000 ? 100000 :
             500000;
 
-    let acc = this.bins[0] + incZero;
+    let acc = this.bins[0];
 
     this.max = this.bmax < 10 ? 10 :
       (Math.trunc(this.bmax / ystep) + 1) * ystep;
 
-    this.binInfo = this.bins.slice(1).map((b, ix) => {
+    this.binInfo = this.bins.map((b, ix) => {
       acc += b;
-      return this.makeInfo(ix + 1, acc, count);
+      return this.makeInfo(ix, acc, count);
     });
 
-    this.binInfo.unshift(this.makeInfo(0, this.bins[0] + incZero, count));
     this.binInfo.push(this.makeInfo(100, acc, count));
-    this.binInfo[0].lowerBound = !this.inclusive ? 'ε' : this.binInfo[0].lowerBound;
 
     this.segments = [...Array(Math.ceil(this.max / ystep)).keys()]
       .map((v) => {
@@ -103,23 +99,12 @@ export class HistogramChartComponent implements OnInit, OnChanges {
       'H', x, 'Z'].join(' ');
   }
 
-  phRed(ix : number) {
-    // Color gradient from dark blue (#00001c) to matte red (#971c1c)
-    // The range is deliberately chosen to appear distinct from the
-    // rainbow type gradient used for the raster image.
-
-    const r = ix > 27 ? Math.round(ix * 1.26 + 27) : ix,
-      g = ix > 27 ? 28 : ix,
-      b = ix > 27 ? 28 : 27 + (27 - ix);
-    return '#' + r.toString(16).padStart(2, '0') + g.toString(16).padStart(2, '0') + b.toString(16).padStart(2, '0');
-  }
-
   makeInfo(binIndex: number, acc: number, count: number) {
     // "Middle number": arbitrarily prefer an integer value when reasonable
     // Actual values may be expected to be discrete
     const middle = binIndex * this.binSz + (this.binSz / 2);
-    return new BinInfo(this.decimalPipe.transform(binIndex * this.binSz, '1.2-4', this.locale) || '',
-                        acc, this.isRarityAdjusted || this.reportMax < 200 ? middle : Math.round(middle), count, this.zeroes, this.locale)
+    return new BinInfo(this.decimalPipe.transform(binIndex * this.binSz, '1.2-5', this.locale) || '',
+                        acc, this.isRarityAdjusted || this.reportMax < 200 ? middle : Math.round(middle), count, this.locale)
   }
 
   ngOnChanges(): void {
@@ -142,13 +127,11 @@ class Segment {
 class BinInfo {
   lowerBound: string;
   cumulativeQuantity: string;
-  cumulativeQuantityEx: string;
   middle: number;
 
-  constructor(lowerBound: string, cQuantity: number, middle: number, count: number, zeroes: number, locale: string) {
+  constructor(lowerBound: string, cQuantity: number, middle: number, count: number, locale: string) {
     this.lowerBound = lowerBound;
     this.middle = middle;
     this.cumulativeQuantity = formatPercentage(cQuantity / count, 3, locale);
-    this.cumulativeQuantityEx = formatPercentage((cQuantity - zeroes) / (count - zeroes) , 3, locale);
   }
 }

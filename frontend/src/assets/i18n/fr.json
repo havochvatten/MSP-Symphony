@@ -54,6 +54,7 @@
                 "sensitivity-matrix": "Matrice de sensibilité",
                 "default-matrix": "Matrice par défaut",
                 "user-matrix": "Matrice sélectionnée par l'utilisateur",
+                "choose-matrix": "Choisir la matrice",
                 "choose-area-type": "Choisir le type de zone (facultatif)",
                 "choose-area-type-matrix": "Sélectionner la matrice pour le type de zone",
                 "edited-matrixes": "Matrice personnalisée",
@@ -285,12 +286,7 @@
         "histogram": {
             "caption": "Histogramme",
             "interval": "Intervalle",
-            "zeroes-included": "Y compris des zéros",
-            "zeroes-excluded": "REMARQUE: Cet histogramme exclut des zéros",
-            "include-zero": "Inclure zéro",
-            "exclude-zero": "Exclure zéro",
             "cumulative-proportion": "Proportion cumulée",
-            "cumulative-proportion-exclusive": "Proportion cumulée sauf des zéros",
             "middle-of-range": "Milieu de l'intervalle"
         },
         "highest-impact": {

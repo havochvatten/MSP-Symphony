@@ -2,27 +2,32 @@ package se.havochvatten.symphony.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.geosolutions.jaiext.stats.HistogramMode;
 import it.geosolutions.jaiext.stats.Statistics;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.opengis.parameter.ParameterValueGroup;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
-import se.havochvatten.symphony.calculation.PercentileNormalizer;
+import se.havochvatten.symphony.calculation.Operations;
 import se.havochvatten.symphony.calculation.SankeyChart;
-import se.havochvatten.symphony.calculation.SymphonyCoverageProcessor;
 import se.havochvatten.symphony.dto.*;
 import se.havochvatten.symphony.entity.AreaType;
 import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.util.Util;
+import si.uom.SI;
+import tech.units.indriya.quantity.Quantities;
 
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
-import javax.media.jai.Histogram;
+import javax.measure.Quantity;
+import javax.measure.Unit;
+import javax.measure.quantity.Length;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
@@ -39,7 +44,7 @@ public class ReportService {
     private static final char CSV_FIELD_SEPARATOR = '\t';
 
     @EJB
-    private SymphonyCoverageProcessor processor;
+    private Operations operations;
 
     @Inject
     MetaDataService metaDataService;
@@ -53,35 +58,34 @@ public class ReportService {
     @Inject
     PropertiesService props;
 
-    record StatisticsResult(double min, double max, double average, double stddev,
-                            int[] histogram, long zeroes, long pixels){}
+    record StatisticsResult(double min, double max, double average, double stddev, double[] histogram, long pixels){}
 
     private StatisticsResult getStatistics(GridCoverage2D coverage) {
-
-        ParameterValueGroup simpleStatParams = processor.getOperation("Stats").getParameters();
-        simpleStatParams.parameter("source").setValue(coverage);
-        simpleStatParams.parameter("bands").setValue(new int[1]);
-        simpleStatParams.parameter("stats").setValue(
-            new Statistics.StatsType[]{
+        Statistics[] simpleStats = operations.stats(coverage, new int[]{0}, new Statistics.StatsType[]{
                 Statistics.StatsType.EXTREMA,
                 Statistics.StatsType.MEAN,
-                Statistics.StatsType.DEV_STD });
-
-        Statistics[] simpleStats =
-            ((Statistics[][])((GridCoverage2D) processor.doOperation(simpleStatParams))
-                .getProperty(Statistics.STATS_PROPERTY))[0];
+                Statistics.StatsType.DEV_STD })[0];
 
         double[] extrema = (double[]) simpleStats[0].getResult();
+        double max = extrema[1] + (Math.ulp(extrema[1]) * 100);
 
-        Histogram histogram = PercentileNormalizer.getHistogram(coverage, Double.MIN_VALUE, extrema[1] + Math.ulp(extrema[1]), 100);
-        Histogram zeroes = PercentileNormalizer.getHistogram(coverage, 0.0, Double.MIN_VALUE, 1);
+        HistogramMode histogram =
+            operations.histogram(coverage, 0.0, max, 100);
 
         return new StatisticsResult(extrema[0], extrema[1],
                         (double) simpleStats[1].getResult(),
                         (double) simpleStats[2].getResult(),
-                        histogram.getBins(0),
-                        zeroes.getBins(0)[0],
+                        (double[]) histogram.getResult(),
                         simpleStats[0].getNumSamples());
+    }
+
+    private static double getResolutionInMetres(GridCoverage2D coverage) {
+        GridGeometry2D geometry = coverage.getGridGeometry();
+        Double scale = ((AffineTransform2D) geometry.getGridToCRS()).getScaleX();
+        Unit<Length> unit = (Unit<Length>) geometry.getCoordinateReferenceSystem2D().getCoordinateSystem().getAxis(0).getUnit();
+        Quantity<Length> resolution = Quantities.getQuantity(scale, unit);
+
+        return resolution.to(SI.METRE).getValue().doubleValue();
     }
 
     /**
@@ -134,11 +138,12 @@ public class ReportService {
         report.max       = stats.max;
         report.average   = stats.average;
         report.stddev    = stats.stddev;
-        report.zeroes    = stats.zeroes;
         report.histogram = stats.histogram;
 
         report.calculatedPixels = stats.pixels;
-        report.gridResolution = 250.0; // Unit: meters TODO get from grid-to-CRS transform
+
+        // Round to two decimal places
+        report.gridResolution = Math.round(getResolutionInMetres(coverage) * 100) / 100;
 
         try {
             var matrixParams = mapper.treeToValue(scenario.getMatrix(), MatrixParameters.class);

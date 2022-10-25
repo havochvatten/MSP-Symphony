@@ -26,7 +26,6 @@ export interface Report {
   max: number;
   stddev: number;
   histogram: number[];
-  zeroes: number;
   geographicalArea: number; // m^2
   calculatedPixels: number;
   gridResolution: number; // [m]

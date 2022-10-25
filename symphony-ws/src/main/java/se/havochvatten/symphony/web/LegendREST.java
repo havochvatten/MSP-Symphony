@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.StyledLayerDescriptor;
+import se.havochvatten.symphony.dto.ComparisonReportResponseDto;
 import se.havochvatten.symphony.dto.LegendDto;
 import se.havochvatten.symphony.service.PropertiesService;
 
@@ -58,6 +59,7 @@ public class LegendREST {
             }
             legend.colorMap =
 					Arrays.stream(symbolizer.getColorMap().getColorMapEntries())
+                            .skip(type != LegendDto.Type.COMPARISON ? 1 : 0)
 							.map(entry -> new LegendDto.ColorMapEntry(entry, type))
 							.toArray(LegendDto.ColorMapEntry[]::new);
 
