@@ -1,0 +1,118 @@
+tbody {
+  display: grid;
+  grid-template-columns: 1fr 1fr 12mm 1fr 1fr;
+  grid-template-rows: 20mm 50mm 50mm 15mm auto;
+  row-gap: 6mm;
+  margin-bottom: 3rem;
+
+  :host {
+    grid-column-start: 1;
+    grid-column-end: 6;
+
+    .closing-matter {
+      text-align: center;
+      margin: 2rem 0 0;
+      white-space: pre;
+
+      p {
+        font-size: 1.3rem;
+        line-height: 1.8rem;
+        margin: 0 0 0.6rem;
+      }
+    }
+
+    .date {
+      grid-column-start: 1;
+      grid-column-end: 6;
+      display: flex;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .error-page {
+      margin: auto;
+      max-width: 34rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      ::ng-deep app-status-icon svg {
+        width: 6rem;
+        height: 6rem;
+      }
+
+      h3 {
+        font-weight: 700;
+        text-align: center;
+      }
+
+      img {
+        width: 34rem;
+        height: auto;
+      }
+    }
+
+    #wio-footer {
+      grid-column-start: 1;
+      grid-column-end: 6;
+
+      #wio-addendum-footer {
+        font-size: 1.3rem;
+
+        h5 {
+          font-weight: bold;
+          margin: 3rem 0 0.8rem;
+        }
+
+        .citation-notice, .license-section {
+          text-align: center;
+
+          span {
+            display: block;
+            line-height: 2rem;
+          }
+        }
+
+        img.cc-license-logo {
+          height: 2.8rem;
+        }
+
+        .wio-acknowledgement {
+          width: 62%;
+          text-align: center;
+          margin: 4rem auto 3rem;
+          page-break-inside: avoid;
+
+          .collaboration-logotypes {
+            display: flex;
+            justify-content: center;
+
+            img {
+              height: 5rem;
+
+              &:first-child {
+                padding: 0 2rem 0 4.5rem;
+              }
+            }
+          }
+
+          h6 {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin: 3rem 0 0;
+          }
+
+          p {
+            font-size: 1.3rem;
+            line-height: 2rem;
+            margin: 0.8rem 0;
+          }
+
+          a {
+            display: block;
+          }
+        }
+      }
+    }
+  }
+}

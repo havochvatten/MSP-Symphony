@@ -1,0 +1,44 @@
+<div id="wio-footer">
+  <span class="date">{{'report.common.date-and-time' | translate }} {{ formattedDate }}</span>
+
+  <div class="closing-matter">
+    <p>{{ 'report.description' | translate }}</p>
+    <p>{{ 'report.more-info' | translate }}
+      <a [href]="'https://' + ('report.link' | translate)" target="_blank" rel="noreferrer">
+        {{ 'report.link' | translate }}
+      </a>.
+    </p>
+  </div>
+
+  <div id="wio-addendum-footer">
+    <div class="citation-notice">
+      <h5>{{ 'report.wio-addendum.citation-header' | translate }}</h5>
+      <span>{{ env.instanceName }}</span>
+      <span>version {{ buildInfo.version }}</span>
+      <span>{{ 'wio.nairobi-convention' | translate }}</span>
+    </div>
+    <div class="license-section">
+      <h5>{{ 'report.wio-addendum.cc-license-header' | translate }}</h5>
+      <a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode" target="_blank">
+        <img class="cc-license-logo" src="assets/wio/cc-by-sa.svg">
+      </a>
+      <span>{{ 'report.wio-addendum.cc-license-desc' | translate }}
+        <a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode" target="_blank">
+          {{ 'report.wio-addendum.cc-license-caption' | translate }}
+        </a>
+      </span>
+      <span>{{ 'report.wio-addendum.cc-license-permission' | translate }}</span>
+    </div>
+    <div class="wio-acknowledgement">
+      <div class="collaboration-logotypes">
+        <img src="assets/wio/nc_logo-tmp.png" />
+        <img src="assets/sweden-logotype-english.svg" />
+      </div>
+      <p>{{ 'wio.acknowledgement-1' | translate }}</p>
+      <p>{{ 'wio.acknowledgement-2' | translate }}<a href="https://www.nairobiconvention.org/wio-symphony/">www.nairobiconvention.org/wio-symphony</a></p>
+      <h6>{{ 'wio.acknowledgement-contributors' | translate }}</h6>
+      <p>{{ 'wio.acknowledgement-thank-you' | translate }}</p>
+      <a href="https://www.nairobiconvention.org/wio-symphony/" target="_blank">www.nairobiconvention.org/wio-symphony</a>
+    </div>
+  </div>
+</div>

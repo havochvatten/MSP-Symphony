@@ -12,6 +12,7 @@ import { CalculationImageComponent } from './calculation-image/calculation-image
 import { HavSpinnerModule } from 'hav-components';
 import { ScenarioChangesComponent } from './scenario-changes/scenario-changes.component';
 import { ComparisonReportComponent } from "@src/app/report/comparison-report.component";
+import { ReportBottomComponent } from './report-bottom/report-bottom.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { ComparisonReportComponent } from "@src/app/report/comparison-report.com
     ImpactTableComponent,
     HighestImpactsComponent,
     CalculationImageComponent,
-    ScenarioChangesComponent
+    ScenarioChangesComponent,
+    ReportBottomComponent
   ],
   imports: [CommonModule, SharedModule, CalculationReportRoutingModule, HavSpinnerModule],
   providers: [DecimalPipe]
