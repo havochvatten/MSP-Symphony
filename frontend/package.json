@@ -44,7 +44,6 @@
         "core-js": "^2.5.4",
         "d3": "^7.6.1",
         "d3-sankey": "^0.12.3",
-        "hav-components": "^2.0.0",
         "immutable": "^4.0.0-rc.12",
         "karma-coverage": "^2.2.0",
         "lodash": "^4.17.15",
@@ -95,7 +94,8 @@
         "raw-loader": "^1.0.0",
         "ts-node": "~7.0.0",
         "tslint": "~6.1.0",
-        "typescript": "^4.3.5"
+        "typescript": "^4.3.5",
+        "hav-components": "^2.0.0"
     },
     "husky": {
         "hooks": {
