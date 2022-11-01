@@ -12,7 +12,7 @@ import { environment } from '@src/environments/environment.prod';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit, OnDestroy {
-  loginForm = this.fb.group({
+  loginForm = this.fb.nonNullable.group({
     username: ['', Validators.required],
     password: ['', Validators.required]
   });
@@ -41,7 +41,14 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
   }
 
-  login = (username: string, password: string) => {
-    this.store.dispatch(UserActions.loginUser({ username, password }));
-  };
+  login() {
+    if (this.loginForm.valid && this.loginForm.value.username && this.loginForm.value.password) {
+      this.store.dispatch(
+        UserActions.loginUser({
+          username: this.loginForm.value.username,
+          password: this.loginForm.value.password
+        })
+      );
+    }
+  }
 }

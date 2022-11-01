@@ -137,7 +137,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
                 : this.scenario.matrix!.areaTypes ?? []
             }
           },
-          this.operation.value,
+          this.operation.value ?? '',
           this.operation.value === 'RarityAdjustedCumulativeImpact' ? this.operationParams : {}
         );
       });
