@@ -46,6 +46,7 @@
     "d3-sankey": "^0.12.3",
     "hav-components": "^2.0.0",
     "immutable": "^4.0.0-rc.12",
+    "karma-coverage": "^2.2.0",
     "lodash": "^4.17.15",
     "ol": "^7.1.0",
     "proj4": "^2.6.1",
