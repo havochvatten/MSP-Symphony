@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { UserActions, UserSelectors } from '@data/user';
 import { Subscription, Observable } from 'rxjs';
-import { environment } from "@src/environments/environment.prod";
+import { environment } from '@src/environments/environment.prod';
 
 @Component({
   selector: 'app-login',

@@ -136,7 +136,6 @@
       }
     }
   },
-  "defaultProject": "symphony-fe",
   "schematics": {
     "@schematics/angular:component": {
       "style": "scss"
