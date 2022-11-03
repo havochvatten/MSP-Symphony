@@ -1,7 +1,14 @@
 <section>
   <div>
     <h2>{{ title }}</h2>
-    <span *ngIf="selectedAreaName">{{ selectedAreaName }}</span>
+    <div *ngIf="selectedAreaName || showResetButton" class="selection-info">
+      <span>{{ selectedAreaName }}</span>
+      <button *ngIf="showResetButton" (click)="reset()" title="{{
+        'map.reset-preselected-description' | translate
+      }}">{{
+        'map.reset-preselected' | translate
+        }}</button>
+    </div>
   </div>
   <app-search-input
     [label]="searchLabel"

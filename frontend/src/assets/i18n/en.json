@@ -21,6 +21,17 @@
         "pressures": "Pressures",
         "matrix": "Matrix",
         "no-selected-area": "No area selected",
+        "reset-preselected": "Reset",
+        "reset-preselected-description": "Reset selected components/pressures and intensity values",
+        "confirm-reset": {
+            "modal": {
+                "header": "Confirm reset",
+                "message": "Reset selected components/pressures?",
+                "message-scenario": "Reset selected components/pressures and any changes to intensity in the active scenario ({{ scenario }})?",
+                "cancel": "Cancel",
+                "confirm": "Reset"
+            }
+        },
         "editor": {
             "title": "Scenarios",
             "operation": {

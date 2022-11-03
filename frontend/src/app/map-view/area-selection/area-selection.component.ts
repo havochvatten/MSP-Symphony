@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, NgModuleRef, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, NgModuleRef } from '@angular/core';
 import {
   AllAreas,
   NationalArea,

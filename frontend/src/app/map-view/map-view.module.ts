@@ -42,6 +42,7 @@ import { ScenarioEditorModule } from "@src/app/map-view/scenario/scenario-editor
 import {
   DeleteScenarioConfirmationDialogComponent
 } from "@src/app/map-view/scenario/scenario-detail/delete-scenario-confirmation-dialog/delete-scenario-confirmation-dialog.component";
+import { ConfirmResetComponent } from './confirm-reset/confirm-reset.component';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import {
     DeleteScenarioConfirmationDialogComponent,
     CheckboxAccordionComponent,
     MatrixTableComponent,
+    ConfirmResetComponent,
   ],
     imports: [
         SharedModule,
