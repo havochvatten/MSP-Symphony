@@ -13,12 +13,9 @@
     autocomplete="current-password"
   ></hav-form-field>
   <p *ngIf="errorMessage" class="error">{{ errorMessage | translate }}</p>
-  <hav-button
-    [isSubmitButton]="true"
-    (click)="loginForm.valid ? login(loginForm.value.username, loginForm.value.password) : ''"
-    [disabled]="!loginForm.valid"
-    >{{ 'login.login' | translate }}</hav-button
-  >
+  <hav-button [isSubmitButton]="true" (click)="login()" [disabled]="!loginForm.valid">{{
+    'login.login' | translate
+  }}</hav-button>
 </form>
 <div class="login-options">
   <nav>
