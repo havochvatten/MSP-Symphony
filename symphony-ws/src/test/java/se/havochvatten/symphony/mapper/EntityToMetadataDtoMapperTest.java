@@ -39,9 +39,9 @@ public class EntityToMetadataDtoMapperTest {
         assertThat(propDto1.getDateCreated(), is(metadata1.getDateCreated()));
         assertThat(propDto1.getDescriptiveKeywords(), is(metadata1.getDescriptiveKeywords()));
         assertThat(propDto1.getLimitationsForSymphony(), is(metadata1.getLimitationsForSymphony()));
-        assertThat(propDto1.getLinage(), is(metadata1.getLineage()));
-        assertThat(propDto1.getMaintanceInformation(), is(metadata1.getMaintenanceInformation()));
-        assertThat(propDto1.getMapAknowledgement(), is(metadata1.getMapAcknowledgement()));
+        assertThat(propDto1.getLineage(), is(metadata1.getLineage()));
+        assertThat(propDto1.getMaintenanceInformation(), is(metadata1.getMaintenanceInformation()));
+        assertThat(propDto1.getMapAcknowledgement(), is(metadata1.getMapAcknowledgement()));
         assertThat(propDto1.getMarinePlaneArea(), is(metadata1.getMarinePlaneArea()));
         assertThat(propDto1.getMetadataDate(), is(metadata1.getMetadataDate()));
         assertThat(propDto1.getMetadataEmail(), is(metadata1.getMetadataEmail()));
@@ -51,15 +51,15 @@ public class EntityToMetadataDtoMapperTest {
         assertThat(propDto1.getOwnerEmail(), is(metadata1.getOwnerEmail()));
         assertThat(propDto1.getSummary(), is(metadata1.getSummary()));
         assertThat(propDto1.getSummaryLocal(), is(metadata1.getSummaryLocal()));
-        assertThat(propDto1.getRecomendations(), is(metadata1.getRecommendations()));
+        assertThat(propDto1.getRecommendations(), is(metadata1.getRecommendations()));
         assertThat(propDto1.getStatus(), is(metadata1.getStatus()));
-        assertThat(propDto1.getTopicCathegory(), is(metadata1.getTopicCategory()));
+        assertThat(propDto1.getTopicCategory(), is(metadata1.getTopicCategory()));
         assertThat(propDto1.getTheme(), is(metadata1.getTheme()));
         assertThat(propDto1.getUseLimitations(), is(metadata1.getUseLimitations()));
         assertThat(propDto1.getOtherRestrictions(), is(metadata1.getOtherRestrictions()));
         assertThat(propDto1.getSecurityClassification(), is(metadata1.getSecurityClassification()));
-        assertThat(propDto1.getSpacialPresentation(), is(metadata1.getSpatialRepresentation()));
-        assertThat(propDto1.getRasterSpacialReferenceSystem(),
+        assertThat(propDto1.getSpatialPresentation(), is(metadata1.getSpatialRepresentation()));
+        assertThat(propDto1.getRasterSpatialReferenceSystem(),
 				is(metadata1.getRasterSpatialReferencesystem()));
         assertThat(propDto1.getSymphonyDataType(), is(metadata1.getSymphonyDataType()));
         assertThat(propDto1.getBandNumber(), is(metadata1.getBandNumber()));

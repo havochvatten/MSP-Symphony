@@ -21,6 +21,17 @@
         "pressures": "Pressions",
         "matrix": "Matrice",
         "no-selected-area": "Aucune région sélectionnée.",
+        "reset-preselected": "Réinitialiser",
+        "reset-preselected-description": "Réinitialiser les composants et les pressions sélectionnés à la sélection par défaut, supprimez tous les changements d'intensité pour le scénario actif",
+        "confirm-reset": {
+            "modal": {
+                "header": "Confirmer réinitialisation",
+                "message": "Voulez-vous réinitialiser les composants et les pressions sélectionnés à la sélection par défaut?",
+                "message-scenario": "Voulez-vous réinitialiser les composants et les pressions sélectionnés à la sélection par défaut, supprimez tous les changements d'intensité pour le scénario actif ({{ scenario }})?",
+                "cancel": "Annuler",
+                "confirm": "Réinitialiser"
+            }
+        },
         "editor": {
             "title": "Scénarios",
             "operation": {

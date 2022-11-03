@@ -14,10 +14,6 @@ import { selectActiveScenario } from "@data/scenario/scenario.selectors";
   styleUrls: ['./slider-controls.component.scss']
 })
 export class SliderControlsComponent implements OnDestroy {
-  @Input() band!: Band;
-  @Input() selectedArea?: SelectableArea = undefined;
-  @Input() onSelect = (checked: boolean, statePath: StatePath) => {}
-  @Input() onChangeVisible: (value: boolean, statePath: StatePath) => void = () => {};
   open = false;
 
   scenario?: Scenario;
@@ -27,6 +23,11 @@ export class SliderControlsComponent implements OnDestroy {
   private scenarioSubscription$: Subscription;
   private changesSubscription$: Subscription;
 
+  @Input() band!: Band;
+  @Input() selectedArea?: SelectableArea = undefined;
+  @Input() onSelect = (checked: boolean, statePath: StatePath) => {}
+  @Input() onChangeVisible: (value: boolean, statePath: StatePath) => void = () => {};
+
   constructor(
     private store: Store<State>,
   ) {
@@ -34,13 +35,13 @@ export class SliderControlsComponent implements OnDestroy {
       .subscribe(s => {
         if (s === undefined)
           this.open = false;
-        
+
         this.scenario = s;
       });
 
     this.changesSubscription$ = this.store.select(ScenarioSelectors.selectActiveScenarioFeatureChanges)
       .subscribe((changes: ChangesProperty) => {
-        if (Object.keys(changes).length>0) {
+        if (this.band && Object.keys(changes).length>0) {
           if (this.band.title in changes) {
             this.multiplier = changes[this.band!.title]?.multiplier;
             this.offset = changes[this.band!.title]?.offset;

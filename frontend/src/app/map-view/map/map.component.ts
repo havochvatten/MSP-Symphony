@@ -54,6 +54,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private resultLayerGroup!: ResultLayerGroup;
   private scenarioLayer!: ScenarioLayer;
 
+  public baselineName = '';
+
   constructor(
     private store: Store<State>,
     private calcService: CalculationService,
@@ -66,6 +68,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.userSubscription = this.store        /* TOOD: Just get from static environment?*/
       .select(UserSelectors.selectBaseline).pipe(isNotNullOrUndefined())
       .subscribe((baseline) => {
+        this.baselineName = baseline.name;
         this.bandLayer = new BandLayer(baseline.name, dataLayerService);
         this.map!.getLayers().insertAt(1, this.bandLayer); // on top of background layer
       });
