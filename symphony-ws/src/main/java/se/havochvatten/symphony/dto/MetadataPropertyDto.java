@@ -13,25 +13,25 @@ public class MetadataPropertyDto {
     String summary;
     String summaryLocal;
     String limitationsForSymphony;
-    String recomendations;
-    String linage;
+    String recommendations;
+    String lineage;
     String status;
     String authorOrganisation;
     String authorEmail;
     String dataOwner;
     String dataOwnerLocal;
     String ownerEmail;
-    String topicCathegory;
+    String topicCategory;
     String descriptiveKeywords;
     String theme;
     String useLimitations;
     String accessUserRestrictions;
     String otherRestrictions;
-    String mapAknowledgement;
+    String mapAcknowledgement;
     String securityClassification;
-    String maintanceInformation;
-    String spacialPresentation;
-    String rasterSpacialReferenceSystem;
+    String maintenanceInformation;
+    String spatialPresentation;
+    String rasterSpatialReferenceSystem;
     String metadataDate;
     String metadataOrganisation;
     String metadataOrganisationLocal;
@@ -128,20 +128,20 @@ public class MetadataPropertyDto {
         this.limitationsForSymphony = limitationsForSymphony;
     }
 
-    public String getRecomendations() {
-        return recomendations;
+    public String getRecommendations() {
+        return recommendations;
     }
 
-    public void setRecomendations(String recomendations) {
-        this.recomendations = recomendations;
+    public void setRecommendations(String recommendations) {
+        this.recommendations = recommendations;
     }
 
-    public String getLinage() {
-        return linage;
+    public String getLineage() {
+        return lineage;
     }
 
-    public void setLinage(String linage) {
-        this.linage = linage;
+    public void setLineage(String lineage) {
+        this.lineage = lineage;
     }
 
     public String getStatus() {
@@ -192,12 +192,12 @@ public class MetadataPropertyDto {
         this.ownerEmail = ownerEmail;
     }
 
-    public String getTopicCathegory() {
-        return topicCathegory;
+    public String getTopicCategory() {
+        return topicCategory;
     }
 
-    public void setTopicCathegory(String topicCathegory) {
-        this.topicCathegory = topicCathegory;
+    public void setTopicCategory(String topicCategory) {
+        this.topicCategory = topicCategory;
     }
 
     public String getDescriptiveKeywords() {
@@ -240,12 +240,12 @@ public class MetadataPropertyDto {
         this.otherRestrictions = otherRestrictions;
     }
 
-    public String getMapAknowledgement() {
-        return mapAknowledgement;
+    public String getMapAcknowledgement() {
+        return mapAcknowledgement;
     }
 
-    public void setMapAknowledgement(String mapAknowledgement) {
-        this.mapAknowledgement = mapAknowledgement;
+    public void setMapAcknowledgement(String mapAcknowledgement) {
+        this.mapAcknowledgement = mapAcknowledgement;
     }
 
     public String getSecurityClassification() {
@@ -256,28 +256,28 @@ public class MetadataPropertyDto {
         this.securityClassification = securityClassification;
     }
 
-    public String getMaintanceInformation() {
-        return maintanceInformation;
+    public String getMaintenanceInformation() {
+        return maintenanceInformation;
     }
 
-    public void setMaintanceInformation(String maintanceInformation) {
-        this.maintanceInformation = maintanceInformation;
+    public void setMaintenanceInformation(String maintenanceInformation) {
+        this.maintenanceInformation = maintenanceInformation;
     }
 
-    public String getSpacialPresentation() {
-        return spacialPresentation;
+    public String getSpatialPresentation() {
+        return spatialPresentation;
     }
 
-    public void setSpacialPresentation(String spacialPresentation) {
-        this.spacialPresentation = spacialPresentation;
+    public void setSpatialPresentation(String spatialPresentation) {
+        this.spatialPresentation = spatialPresentation;
     }
 
-    public String getRasterSpacialReferenceSystem() {
-        return rasterSpacialReferenceSystem;
+    public String getRasterSpatialReferenceSystem() {
+        return rasterSpatialReferenceSystem;
     }
 
-    public void setRasterSpacialReferenceSystem(String rasterSpacialReferenceSystem) {
-        this.rasterSpacialReferenceSystem = rasterSpacialReferenceSystem;
+    public void setRasterSpatialReferenceSystem(String rasterSpatialReferenceSystem) {
+        this.rasterSpatialReferenceSystem = rasterSpatialReferenceSystem;
     }
 
     public String getMetadataDate() {
