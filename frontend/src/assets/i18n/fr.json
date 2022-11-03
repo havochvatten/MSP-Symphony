@@ -36,6 +36,7 @@
             "title": "Scénarios",
             "operation": {
                 "title": "Algorithme",
+                "choose": "Choisissez l'algorithme",
                 "CumulativeImpact": {
                     "title": "Impact cumulé"
                 },
@@ -268,7 +269,6 @@
         "cumulative-effect-etc": {
             "baseline": "Version de référence",
             "operation": "Algorithme",
-            "choose": "Choisissez l'algorithme",
             "title": "Impact cumulé",
             "relative-diff": "Changement relatif",
             "total": "Total",
@@ -280,7 +280,6 @@
             "km2": "km²",
             "normalization": {
                 "title": "Palette de couleurs",
-                "description": "Définir la valeur maximale en tant que:",
                 "domain": "{{ ordinalPercentileValue }} centile",
                 "area": "Valeur maximale dans la zone de calcul",
                 "custom": "Valeur définie par l'utilisateur",

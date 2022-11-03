@@ -126,6 +126,7 @@
         "toolbar": {
             "zoom-in": "Zooma in",
             "zoom-out": "Zooma ut",
+            "clear-results": "Rensa kartbilden",
             "search-area": "Sök område",
             "draw-area": "Rita eget område",
             "open-area": "Öppna sparat område",
@@ -138,6 +139,7 @@
             "protected": "Skyddade områden",
             "surface-water": "Vattendirektivets ytvattenförekomst i Sverige",
             "user-created": "Mina områden",
+            "no-areas": "Inga områden",
             "search": {
                 "label": "Sökresultat",
                 "placeholder": "Sök område",
@@ -182,6 +184,24 @@
                     "close": "Avbryt"
                 }
             },
+            "upload": {
+                "label": "Importera områdespolygon",
+                "modal": {
+                    "title": "Importera område",
+                    "fileformat-note": "Filer i <a href='https://www.geopackage.org/' target='_blank'>OGC GeoPackage</a>-format stöds.",
+                    "notice": {
+                        "WGS84-reprojection": "Områdets koordinater kommer att projiceras om till <em>EPSG:4326 (WGS 84)",
+                        "first-area-only": "GeoPackage-arkivet innehåller flera lager. Endast <em>{{ firstFeature }}</em> kommer att importeras!"
+                    },
+                    "import": "Bekräfta import",
+                    "cancel": "Avbryt"
+                },
+                "error": {
+                    "NOT_A_GEOPACKAGE": "Filen är inte ett GeoPackage-arkiv!",
+                    "GEOPACKAGE_NO_FEATURES": "GeoPackage-arkivet innehåller inga områden.",
+                    "USER_DEF_AREA_NAME_EXISTS": "Ett område med detta namn finns redan."
+                }
+            },
             "rename": {
                 "label": "Ändra namn",
                 "modal": {
@@ -204,24 +224,6 @@
             },
             "share": {
                 "label": "Dela"
-            },
-            "upload": {
-                "label": "Importera områdespolygon",
-                "modal": {
-                    "title": "Importera område",
-                    "fileformat-note": "Filer i <a href='https://www.geopackage.org/' target='_blank'>OGC GeoPackage</a>-format stöds.",
-                    "notice": {
-                        "WGS84-reprojection": "Områdets koordinater kommer att projiceras om till <em>EPSG:4326 (WGS 84)",
-                        "first-area-only": "GeoPackage-arkivet innehåller flera lager. Endast <em>{{ firstFeature }}</em> kommer att importeras!"
-                    },
-                    "import": "Bekräfta import",
-                    "cancel": "Avbryt"
-                },
-                "error": {
-                    "NOT_A_GEOPACKAGE": "Filen är inte ett GeoPackage-arkiv!",
-                    "GEOPACKAGE_NO_FEATURES": "GeoPackage-arkivet innehåller inga områden.",
-                    "USER_DEF_AREA_NAME_EXISTS": "Ett område med detta namn finns redan."
-                }
             }
         },
         "color-scale": {

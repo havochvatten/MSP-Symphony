@@ -36,6 +36,7 @@
             "title": "Scenarios",
             "operation": {
                 "title": "Algorithm",
+                "choose": "Choose algorithm",
                 "CumulativeImpact": {
                     "title": "Cumulative impact"
                 },
@@ -135,7 +136,7 @@
         "area": {
             "sea-plan": "MSP areas",
             "county": "Municipalities and Counties",
-            "protected": "Protectad areas",
+            "protected": "Protected areas",
             "surface-water": "Swedish waterbodies managed under the EU Water Framework Directive",
             "user-created": "User-created Areas",
             "no-areas": "No areas",
@@ -268,7 +269,6 @@
         "cumulative-effect-etc": {
             "baseline": "Baseline version",
             "operation": "Algorithm",
-            "choose": "Choose algorithm",
             "title": "Cumulative effect",
             "relative-diff": "Relative change",
             "total": "Total",
@@ -280,7 +280,6 @@
             "km2": "km²",
             "normalization": {
                 "title": "Result colorscale",
-                "description": "Set maximum value based on",
                 "domain": "{{ ordinalPercentileValue }} percentile",
                 "area": "Maximum value in area",
                 "custom": "User-defined value",
