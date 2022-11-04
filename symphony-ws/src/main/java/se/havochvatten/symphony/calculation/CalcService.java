@@ -328,20 +328,21 @@ public class CalcService {
             // Filter out small layers that would cause division by zero, i.e. infinite impact.
             final var COMMONNESS_THRESHOLD = props.getPropertyAsDouble("calc.rarity_index.threshold", 0);
             DoublePredicate indexThresholdPredicate = (index) -> index > COMMONNESS_THRESHOLD;
-            ecosystemsToInclude = IntStream.range(0, ecosystemsToInclude.length)
-                .filter(i -> {
+            int[] ecosystemsToIncludeFiltered = IntStream.range(0, ecosystemsToInclude.length)
+                .map(i -> {
                     var keep = indexThresholdPredicate.test(indices[i]);
                     if (!keep)
                         LOG.warn("Removing band {} since value is below or equal to commonness threshold {}", i,
                             COMMONNESS_THRESHOLD);
-                    return keep;
-                }).toArray();
+                    return keep ? ecosystemsToInclude[i] : -1;
+            }).filter(e -> e >= 0).toArray();
+
             var nonZeroIndices = Arrays.stream(indices).filter(indexThresholdPredicate).toArray();
             // TODO report this information to the user and show in a dialog on frontend?
 
             coverage = operations.cumulativeImpact("RarityAdjustedCumulativeImpact",
                 ecoComponents, pressures,
-                ecosystemsToInclude, scenario.getPressuresToInclude(),
+                ecosystemsToIncludeFiltered, scenario.getPressuresToInclude(),
                 preprocessMatrices(matrices), layout, mask, nonZeroIndices);
         } else
             coverage = operations.cumulativeImpact(operationName, ecoComponents, pressures,
