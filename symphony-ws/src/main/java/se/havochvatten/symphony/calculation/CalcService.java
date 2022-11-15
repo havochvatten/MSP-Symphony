@@ -311,6 +311,7 @@ public class CalcService {
         var ecosystemsToInclude = scenario.getEcosystemsToInclude();
         GridCoverage2D coverage;
         if (operationName.equals("RarityAdjustedCumulativeImpact")) {
+            final int[] tmpEcoSystems = ecosystemsToInclude;
             var domain = operationOptions.get("domain");
             var indices = switch (domain) {
                 case "GLOBAL":
@@ -334,15 +335,17 @@ public class CalcService {
                     if (!keep)
                         LOG.warn("Removing band {} since value is below or equal to commonness threshold {}", i,
                             COMMONNESS_THRESHOLD);
-                    return keep ? ecosystemsToInclude[i] : -1;
+                    return keep ? tmpEcoSystems[i] : -1;
             }).filter(e -> e >= 0).toArray();
+
+            ecosystemsToInclude = ecosystemsToIncludeFiltered;
 
             var nonZeroIndices = Arrays.stream(indices).filter(indexThresholdPredicate).toArray();
             // TODO report this information to the user and show in a dialog on frontend?
 
             coverage = operations.cumulativeImpact("RarityAdjustedCumulativeImpact",
                 ecoComponents, pressures,
-                ecosystemsToIncludeFiltered, scenario.getPressuresToInclude(),
+                ecosystemsToInclude, scenario.getPressuresToInclude(),
                 preprocessMatrices(matrices), layout, mask, nonZeroIndices);
         } else
             coverage = operations.cumulativeImpact(operationName, ecoComponents, pressures,
