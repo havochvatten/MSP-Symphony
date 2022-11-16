@@ -278,6 +278,8 @@
             "std-dev": "Ecart type",
             "calculated-area": "Surface",
             "km2": "km²",
+            "no-area": "N/A",
+            "no-area-desc": "Étendue indéterminable",
             "normalization": {
                 "title": "Palette de couleurs",
                 "domain": "{{ ordinalPercentileValue }} centile",

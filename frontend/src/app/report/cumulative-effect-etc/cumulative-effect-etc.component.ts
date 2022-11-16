@@ -18,8 +18,11 @@ export class CumulativeEffectEtcComponent {
   @Input() locale = 'en';
 
   type = NormalizationType; // make enum available to template
+  validArea: boolean;
 
-  constructor(private translate : TranslateService) {}
+  constructor(private translate : TranslateService) {
+    this.validArea = !isNaN(this.area!);
+  }
 
   get areaKm2() {
     return this.area ? this.area / 1e6 : 0;

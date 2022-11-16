@@ -278,6 +278,8 @@
             "std-dev": "Standardavvikelse",
             "calculated-area": "Beräknad area",
             "km2": "km²",
+            "no-area": "(kan ej beräknas)",
+            "no-area-desc": "Områdets omfattning kan ej bestämmas",
             "normalization": {
                 "title": "Färgkodning maxvärde",
                 "domain": "{{ ordinalPercentileValue }} percentilen",
