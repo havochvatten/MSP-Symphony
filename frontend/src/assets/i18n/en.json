@@ -278,6 +278,8 @@
             "std-dev": "Std. Dev",
             "calculated-area": "Calculated area",
             "km2": "km²",
+            "no-area": "N/A",
+            "no-area-desc": "Area cannot be measured",
             "normalization": {
                 "title": "Result colorscale",
                 "domain": "{{ ordinalPercentileValue }} percentile",
