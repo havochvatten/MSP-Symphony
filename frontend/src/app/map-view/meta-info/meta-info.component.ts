@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { Band } from "@data/metadata/metadata.interfaces";
@@ -9,7 +9,7 @@ import { KeyValue } from "@angular/common";
   templateUrl: './meta-info.component.html',
   styleUrls: ['./meta-info.component.scss']
 })
-export class MetaInfoComponent implements OnInit {
+export class MetaInfoComponent {
 
   private band: Band;
   public bandMetadataSources: string[];
@@ -20,17 +20,14 @@ export class MetaInfoComponent implements OnInit {
   constructor(private dialog: DialogRef, private config: DialogConfig) {
     this.band = config.data.band;
     this.bandMetadata = new Map<string, string> ([
-                             ['method-summary',     this.band.methodSummary],
-                             ['known-limitations',  this.band.limitationsForSymphony],
-                             ['value-range',        this.band.valueRange],
-                             ['data-processing',    this.band.dataProcessing]
-                           ]);
+      ['method-summary',     this.band.methodSummary],
+      ['known-limitations',  this.band.limitationsForSymphony],
+      ['value-range',        this.band.valueRange],
+      ['data-processing',    this.band.dataProcessing]
+    ]);
     this.bandMetadataSources = this.band.dataSources?.split(';') || [];
     this.category = this.band.statePath[0] === 'ecoComponent' ? 'ecosystem' : 'pressure';
     this.title = this.band.title;
-  }
-
-  ngOnInit(): void {
   }
 
   close = () => {
@@ -38,9 +35,4 @@ export class MetaInfoComponent implements OnInit {
   }
 
   preserveKV(a: KeyValue<string, string>, b: KeyValue<string, string>): number { return 0; }
-}
-
-interface BandMeta {
-  methodSummary: string;
-
 }
