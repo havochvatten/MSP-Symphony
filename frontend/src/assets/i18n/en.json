@@ -123,6 +123,19 @@
             },
             "calculate": "Calculate"
         },
+        "metadata": {
+            "label": "Show metadata",
+            "header": "Metadata regarding {{ layerType }}: {{ layerName }}",
+            "method-summary": "Method summary",
+            "known-limitations": "Known limitations",
+            "value-range": "Value range",
+            "data-processing": "Data processing",
+            "data-sources": "Data sources",
+            "close": "Close",
+            "ecosystem": "ecosystem",
+            "pressure": "pressure",
+            "no-info": "Metadatum missing."
+        },
         "toolbar": {
             "zoom-in": "Zoom in",
             "zoom-out": "Zoom ut",
