@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { NormalizationOptions, NormalizationType } from "@data/calculation/calculation.service";
+import { TranslateService } from "@ngx-translate/core";
 
 export const DEFAULT_OPTIONS: NormalizationOptions = {
   type: NormalizationType.Area
@@ -13,9 +14,14 @@ export const DEFAULT_OPTIONS: NormalizationOptions = {
 export class NormalizationSelectionComponent implements OnChanges {
   @Input() options: NormalizationOptions = DEFAULT_OPTIONS;
   @Input() algorithm = '';
-
+  @Input() percentileValue = 0;
   @Output() modeSelectionEvent = new EventEmitter<NormalizationOptions>();
   readonly NormalizationType = NormalizationType;
+  locale = 'en';
+
+  constructor(private translateService: TranslateService) {
+    this.locale = this.translateService.currentLang;
+  }
 
   radioButtons = [
     {

@@ -1,0 +1,49 @@
+@import '../../../styles/hav-colors';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 4px;
+  padding: 2rem;
+  width: 50vw;
+  min-width: 36rem;
+
+  h4 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0 0 1rem;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    h5 {
+      font-weight: 600;
+      font-size: 1.4rem;
+      margin: 0.4rem 0;
+    }
+
+    p {
+      font-size: 1.3rem;
+      line-height: 2.2rem;
+      margin: 0 0 1.8rem;
+
+      &.no-info {
+        font-style: oblique;
+        color: $hav-darkgrey;
+      }
+    }
+
+    > hav-button {
+      margin-right: 1.4rem;
+      align-self: center;
+    }
+
+    &.meta-sections {
+      margin-bottom: 1rem;
+    }
+  }
+}

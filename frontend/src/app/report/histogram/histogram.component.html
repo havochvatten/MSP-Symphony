@@ -1,0 +1,7 @@
+<h4>{{ title }}</h4>
+<app-histogram-chart
+  [bins]="report.histogram"
+  [reportMax]="report.max"
+  [algorithm]="report.operationName"
+  [locale]="locale">
+</app-histogram-chart>

@@ -2,29 +2,37 @@ package se.havochvatten.symphony.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.geosolutions.jaiext.stats.HistogramMode;
+import it.geosolutions.jaiext.stats.Statistics;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
-import se.havochvatten.symphony.calculation.CalcUtil;
-import se.havochvatten.symphony.calculation.DoubleStatistics;
+import se.havochvatten.symphony.calculation.Operations;
 import se.havochvatten.symphony.calculation.SankeyChart;
 import se.havochvatten.symphony.dto.*;
 import se.havochvatten.symphony.entity.AreaType;
 import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.util.Util;
+import si.uom.SI;
+import tech.units.indriya.quantity.Quantities;
 
+import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
-import java.awt.image.*;
+import javax.measure.Quantity;
+import javax.measure.UnconvertibleException;
+import javax.measure.Unit;
+import javax.measure.quantity.Length;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
-import java.util.function.DoublePredicate;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toMap;
@@ -35,6 +43,9 @@ public class ReportService {
 
     // The CSV standard (RFC 4180) actually says to use comma, but tab is MS Excel default. Or use TSV?
     private static final char CSV_FIELD_SEPARATOR = '\t';
+
+    @EJB
+    private Operations operations;
 
     @Inject
     MetaDataService metaDataService;
@@ -48,25 +59,43 @@ public class ReportService {
     @Inject
     PropertiesService props;
 
-    static DoublePredicate not(DoublePredicate t) {
-        return t.negate();
+    record StatisticsResult(double min, double max, double average, double stddev, double[] histogram, long pixels){}
+
+    private StatisticsResult getStatistics(GridCoverage2D coverage) {
+        Statistics[] simpleStats = operations.stats(coverage, new int[]{0}, new Statistics.StatsType[]{
+                Statistics.StatsType.EXTREMA,
+                Statistics.StatsType.MEAN,
+                Statistics.StatsType.DEV_STD })[0];
+
+        double[] extrema = (double[]) simpleStats[0].getResult();
+        double max = extrema[1] + (Math.ulp(extrema[1]) * 100);
+
+        HistogramMode histogram =
+            operations.histogram(coverage, 0.0, max, 100);
+
+        return new StatisticsResult(extrema[0], extrema[1],
+                        (double) simpleStats[1].getResult(),
+                        (double) simpleStats[2].getResult(),
+                        (double[]) histogram.getResult(),
+                        simpleStats[0].getNumSamples());
     }
 
-    private static DoubleStatistics getStatistics(Raster raster) {
-        DataBuffer buffer = raster.getDataBuffer();
-        DoubleStream stream = switch (buffer.getDataType()) {
-            case DataBuffer.TYPE_INT ->
-                Arrays.stream(((DataBufferInt)buffer).getData()).mapToDouble(x -> x);
-            case DataBuffer.TYPE_FLOAT ->
-                IntStream.range(0, ((DataBufferFloat)buffer).getData().length)
-                    .mapToDouble(i -> ((DataBufferFloat)buffer).getData()[i]);
-            case DataBuffer.TYPE_DOUBLE ->
-                Arrays.stream(((DataBufferDouble) buffer).getData());
-            default -> throw new RuntimeException("Unsupported raster data type");
-        };
-        // TODO report total as long to prevent overflow on big areas?
-        return stream.filter(not(CalcUtil.isNoData)).collect(DoubleStatistics::new,
-                DoubleStatistics::accept, DoubleStatistics::combine);
+    private static double getResolutionInMetres(GridCoverage2D coverage) {
+        double result;
+        GridGeometry2D geometry = coverage.getGridGeometry();
+        Double scale = ((AffineTransform2D) geometry.getGridToCRS()).getScaleX();
+        Unit<Length> unit = (Unit<Length>) geometry.getCoordinateReferenceSystem2D().getCoordinateSystem().getAxis(0).getUnit();
+        Quantity<Length> resolution = Quantities.getQuantity(scale, unit);
+
+        try {
+            result = resolution.to(SI.METRE).getValue().doubleValue();
+        } catch (UnconvertibleException e) { // Coordinate system isn't projected, unit (rad/deg) cannot be converted.
+                                             // We could check the CoordinateSystem or specific types of Unit but
+                                             // let it throw instead at the conversion stage.
+            result = Double.NaN;
+        }
+
+        return result;
     }
 
     /**
@@ -95,7 +124,7 @@ public class ReportService {
             throws FactoryException, TransformException {
         var scenario = calc.getScenarioSnapshot();
         var coverage = calc.getCoverage();
-        var stats = getStatistics(coverage.getRenderedImage().getData());
+        var stats = getStatistics(coverage);
 
         var impactMatrix = calc.getImpactMatrix();
         int pLen = impactMatrix.length, esLen = impactMatrix[0].length;
@@ -115,14 +144,19 @@ public class ReportService {
         // Does not sum to exactly 100% for some reason? I.e. assert(getComponentTotals(...) == stats
         // .getSum()) not always true. Tolerance?
         report.total = total; //stats.getSum();
-        report.average = stats.getAverage();
-        report.min = stats.getMin();
-        report.max = stats.getMax();
-        report.stddev = stats.getStandardDeviation();
+        report.min       = stats.min;
+        report.max       = stats.max;
+        report.average   = stats.average;
+        report.stddev    = stats.stddev;
+        report.histogram = stats.histogram;
 
-        report.calculatedPixels = stats.getCount();
-        report.gridResolution = 250.0; // Unit: meters TODO get from grid-to-CRS transform
+        report.calculatedPixels = stats.pixels;
 
+        double resolution = getResolutionInMetres(coverage);
+        report.gridResolution = Double.isNaN(resolution) ? Double.NaN :
+                                Math.round(resolution * 100) / 100;
+                                // Round to two decimal places and guard for NaN
+                                // since Math.round(Double.NaN) returns 0
         try {
             var matrixParams = mapper.treeToValue(scenario.getMatrix(), MatrixParameters.class);
             if (matrixParams.userDefinedMatrixId != null) {

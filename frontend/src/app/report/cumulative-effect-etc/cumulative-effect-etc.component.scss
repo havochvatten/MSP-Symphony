@@ -1,3 +1,5 @@
+@import '../../../styles/hav-colors';
+
 :host {
   display: block;
   max-width: 300px;
@@ -28,6 +30,11 @@
         padding-left: 0;
         margin-right: 25px;
         width: 10em;
+
+        &.invalid {
+          color: $hav-darkgrey;
+          text-decoration: line-through;
+        }
       }
       th:not(:first-child) {
         text-align: center;
@@ -35,6 +42,14 @@
       td:nth-child(4) {
         text-align: right;
       }
+
+      td {
+        &.invalid {
+          color: $hav-darkgrey;
+          font-style: oblique;
+        }
+      }
+
     }
     tr.ruled>* {
       border-top: 1px solid;
@@ -60,8 +75,8 @@
     position: relative;
 
     margin-top: 2rem;
-    font-size: 12px;
-    line-height: 18px;
+    font-size: 11px;
+    line-height: 16px;
     hyphens: auto;
 
     .star {

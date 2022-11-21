@@ -9,6 +9,7 @@
   [searchValue]="search"
   [onSearch]="onSearch"
   [searchPlaceholder]="placeholder | translate"
+  [showResetButton]="true"
 >
   <app-checkbox-accordion
     *ngFor="let group of filteredGroups; trackBy: displayName"

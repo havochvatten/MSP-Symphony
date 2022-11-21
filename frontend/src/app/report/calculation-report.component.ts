@@ -11,6 +11,7 @@ import { ChartData } from './pressure-chart/pressure-chart.component';
 import { Report } from '@data/calculation/calculation.interfaces';
 import { environment as env } from "@src/environments/environment";
 import buildInfo from '@src/build-info';
+import { CalculationActions, CalculationSelectors } from "@data/calculation";
 import { NormalizationType } from "@data/calculation/calculation.service";
 import { ReportService } from "@src/app/report/report.service";
 import MetadataService from "@data/metadata/metadata.service";
@@ -31,6 +32,7 @@ export class CalculationReportComponent {
   area?: number;
   private imageUrl?: string;
   bandMap: BandMap = { b: {}, e: {} };
+  percentileValue$: Observable<number>;
   metadata$: Observable<{
     ecoComponent: BandGroup[];
     pressureComponent: BandGroup[];
@@ -44,9 +46,11 @@ export class CalculationReportComponent {
     private store: Store<State>,
     private route: ActivatedRoute,
     private reportService: ReportService,
-    private metadataService: MetadataService,
+    private metadataService: MetadataService
   ) {
     this.locale = this.translate.currentLang;
+    this.store.dispatch(CalculationActions.fetchPercentile());
+
     const that = this;
     route.paramMap
       .pipe(
@@ -79,6 +83,7 @@ export class CalculationReportComponent {
       };
     });
 
+    this.percentileValue$ = this.store.select(CalculationSelectors.selectPercentileValue);
   }
 
   formatChartData(data: ChartData, metadata: LayerData) {

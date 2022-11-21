@@ -21,6 +21,17 @@
         "pressures": "Belastningar",
         "matrix": "Matris",
         "no-selected-area": "Inget valt område",
+        "reset-preselected": "Återställ",
+        "reset-preselected-description": "Återställ valda naturvärden och belastningar till standardurvalet och nollställ ändringar",
+        "confirm-reset": {
+            "modal": {
+                "header": "Bekräfta återställning",
+                "message": "Vill du återställa urvalet av naturvärden och belastningar?",
+                "message-scenario": "Vill du återställa urvalet av naturvärden och belastningar och nollställa all ändring av förekomst för aktivt scenario ({{ scenario }})?",
+                "cancel": "Avbryt",
+                "confirm": "Återställ"
+            }
+        },
         "editor": {
             "title": "Scenarion",
             "operation": {
@@ -55,6 +66,7 @@
                 "sensitivity-matrix": "Känslighetsmatris",
                 "default-matrix": "Standardmatris",
                 "user-matrix": "Egen matris",
+                "choose-matrix": "Välj matrix",
                 "choose-area-type": "Välj områdestyp (valfritt)",
                 "choose-area-type-matrix": "Välj matris för områdestyp",
                 "edited-matrixes": "Tidigare justerade matriser",
@@ -73,7 +85,7 @@
                 "title": "Färgskala för resultat",
                 "description": "Sätt maximalt värde baserat på",
                 "area": "Maximalt värde i valt område",
-                "domain": "95-percentilvärde i havsplaneområde",
+                "domain": "{{ ordinalPercentileValue }} percentil i havsplaneområde",
                 "custom": "Egendefinierat värde",
                 "custom-value": "Värde"
             },
@@ -111,9 +123,23 @@
             },
             "calculate": "Beräkna"
         },
+        "metadata": {
+            "label": "Visa metadata",
+            "header": "Metadata avseende {{ layerType }}: {{ layerName }}",
+            "method-summary": "Method summary",
+            "known-limitations": "Known limitations",
+            "value-range": "Value range",
+            "data-processing": "Data processing",
+            "data-sources": "Data sources",
+            "close": "Stäng",
+            "ecosystem": "naturvärde",
+            "pressure": "belastning",
+            "no-info": "Uppgift saknas."
+        },
         "toolbar": {
             "zoom-in": "Zooma in",
             "zoom-out": "Zooma ut",
+            "clear-results": "Rensa kartbilden",
             "search-area": "Sök område",
             "draw-area": "Rita eget område",
             "open-area": "Öppna sparat område",
@@ -126,6 +152,7 @@
             "protected": "Skyddade områden",
             "surface-water": "Vattendirektivets ytvattenförekomst i Sverige",
             "user-created": "Mina områden",
+            "no-areas": "Inga områden",
             "search": {
                 "label": "Sökresultat",
                 "placeholder": "Sök område",
@@ -170,6 +197,24 @@
                     "close": "Avbryt"
                 }
             },
+            "upload": {
+                "label": "Importera områdespolygon",
+                "modal": {
+                    "title": "Importera område",
+                    "fileformat-note": "Filer i <a href='https://www.geopackage.org/' target='_blank'>OGC GeoPackage</a>-format stöds.",
+                    "notice": {
+                        "WGS84-reprojection": "Områdets koordinater kommer att projiceras om till <em>EPSG:4326 (WGS 84)",
+                        "first-area-only": "GeoPackage-arkivet innehåller flera lager. Endast <em>{{ firstFeature }}</em> kommer att importeras!"
+                    },
+                    "import": "Bekräfta import",
+                    "cancel": "Avbryt"
+                },
+                "error": {
+                    "NOT_A_GEOPACKAGE": "Filen är inte ett GeoPackage-arkiv!",
+                    "GEOPACKAGE_NO_FEATURES": "GeoPackage-arkivet innehåller inga områden.",
+                    "USER_DEF_AREA_NAME_EXISTS": "Ett område med detta namn finns redan."
+                }
+            },
             "rename": {
                 "label": "Ändra namn",
                 "modal": {
@@ -192,24 +237,6 @@
             },
             "share": {
                 "label": "Dela"
-            },
-            "upload": {
-                "label": "Importera områdespolygon",
-                "modal": {
-                    "title": "Importera område",
-                    "fileformat-note": "Filer i <a href='https://www.geopackage.org/' target='_blank'>OGC GeoPackage</a>-format stöds.",
-                    "notice": {
-                        "WGS84-reprojection": "Områdets koordinater kommer att projiceras om till <em>EPSG:4326 (WGS 84)",
-                        "first-area-only": "GeoPackage-arkivet innehåller flera lager. Endast <em>{{ firstFeature }}</em> kommer att importeras!"
-                    },
-                    "import": "Bekräfta import",
-                    "cancel": "Avbryt"
-                },
-                "error": {
-                    "NOT_A_GEOPACKAGE": "Filen är inte ett GeoPackage-arkiv!",
-                    "GEOPACKAGE_NO_FEATURES": "GeoPackage-arkivet innehåller inga områden.",
-                    "USER_DEF_AREA_NAME_EXISTS": "Ett område med detta namn finns redan."
-                }
             }
         },
         "color-scale": {
@@ -265,12 +292,14 @@
             "std-dev": "Standardavvikelse",
             "calculated-area": "Beräknad area",
             "km2": "km²",
+            "no-area": "(kan ej beräknas)",
+            "no-area-desc": "Områdets omfattning kan ej bestämmas",
             "normalization": {
                 "title": "Färgkodning maxvärde",
-                "domain": "95-percentil",
+                "domain": "{{ ordinalPercentileValue }} percentilen",
                 "area": "Maximalt värde i område",
                 "custom": "Egendefinerat värde",
-                "domain-desc": "Resultatet är normaliserat med avseende på det värde som 95% av datapunkterna i tillhörande havsplaneområdet ligger inom (inklusive värden för kustområden)."
+                "domain-desc": "Resultatet är normaliserat med avseende på det värde som {{ percentileValue }}% av datapunkterna i tillhörande havsplaneområdet ligger inom (inklusive värden för kustområden)."
             },
             "sensitivity-matrices": {
                 "title": "Känslighetsmatrisval",
@@ -279,6 +308,12 @@
             "comparison": {
                 "legend-desc": "Bilden visar den relativa skillnaden i total kumulativ belastning mellan grund- och what-if-scenario."
             }
+        },
+        "histogram": {
+            "caption": "Histogram",
+            "interval": "Intervall",
+            "cumulative-proportion": "Kumulativ andel",
+            "middle-of-range": "Intervallets mittental"
         },
         "highest-impact": {
             "ecocomponent": "Naturvärden med högst påverkan",

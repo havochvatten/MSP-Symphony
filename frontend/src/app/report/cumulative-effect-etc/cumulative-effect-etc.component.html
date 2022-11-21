@@ -17,7 +17,7 @@
       <th>{{ 'report.cumulative-effect-etc.normalization.title' | translate }}:</th>
       <td [ngSwitch]="normalization.type">
         <ng-container *ngSwitchCase="type.Domain">
-          {{ 'report.cumulative-effect-etc.normalization.domain' | translate }}<sup>*</sup>
+          {{ 'report.cumulative-effect-etc.normalization.domain' | translate:{ ordinalPercentileValue: this.percentileValue | ordinal:locale } }}<sup>*</sup>
         </ng-container>
         <ng-container *ngSwitchCase="type.Area">
           {{ 'report.cumulative-effect-etc.normalization.area' | translate }}
@@ -63,8 +63,9 @@
       <td *ngIf="reports.length==2">{{ relativeDifferencePercentage('stddev') }}</td>
     </tr>
     <tr class="ruled">
-      <th>{{ 'report.cumulative-effect-etc.calculated-area' | translate }}:</th>
-      <td [colSpan]="reports.length === 2 ? 3 : 1">{{ areaKm2 | number: '1.0-2':locale }} {{ 'report.cumulative-effect-etc.km2' | translate }}</td>
+      <th [ngClass]="validArea ? '' : 'invalid'">{{ 'report.cumulative-effect-etc.calculated-area' | translate }}:</th>
+      <td *ngIf="validArea" [colSpan]="reports.length === 2 ? 3 : 1">{{ areaKm2 | number: '1.0-2':locale }} {{ 'report.cumulative-effect-etc.km2' | translate }}</td>
+      <td *ngIf="!validArea" [colSpan]="reports.length === 2 ? 3 : 1" class="invalid" title="{{ 'report.cumulative-effect-etc.no-area-desc' | translate }}">{{ 'report.cumulative-effect-etc.no-area' | translate }}</td>
     </tr>
   </table>
 
@@ -94,8 +95,8 @@
     </ng-container>
   </ng-container>
 
-  <fn *ngIf="this.footnote">
+  <fn *ngIf="this.normalized">
     <span class='star'>&lowast;</span>
-    {{ this.footnote }}
+    {{ 'report.cumulative-effect-etc.normalization.domain-desc' | translate:{ percentileValue: this.percentileValue } }}
   </fn>
 </section>

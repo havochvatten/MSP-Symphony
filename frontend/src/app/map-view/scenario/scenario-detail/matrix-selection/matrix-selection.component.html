@@ -41,7 +41,7 @@
   <article>
     <hav-select [disabled]="matrixOption !== 'CUSTOM'"
                 (selectedChanged)="customSelect($event)"
-                noItemSelectedLabel="Välj matris">
+                [noItemSelectedLabel]="'map.editor.matrix.choose-matrix' | translate">
       <hav-select-item *ngFor="let matrix of matrixOptions" [value]="matrix">
         {{ matrix.name }}
       </hav-select-item>

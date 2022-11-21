@@ -11,20 +11,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.dto.NormalizationOptions;
 import se.havochvatten.symphony.dto.NormalizationType;
-import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.scenario.ScenarioService;
-import se.havochvatten.symphony.service.BaselineVersionService;
 import se.havochvatten.symphony.service.CalculationAreaService;
+import se.havochvatten.symphony.service.PropertiesService;
+import se.havochvatten.symphony.web.WebUtil;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Calibration REST API
@@ -35,7 +38,7 @@ import java.io.IOException;
 
 @Path("/calibration")
 @Api(value = "/calibration")
-@RolesAllowed("GRP_SYMPHONY_ADMIN")
+@RolesAllowed({"GRP_SYMPHONY_ADMIN", "GRP_SYMPHONY"})
 public class CalibrationREST {
     private static final Logger LOG = LoggerFactory.getLogger(CalibrationREST.class);
 
@@ -50,6 +53,9 @@ public class CalibrationREST {
 
     @Inject
     private CalculationAreaService caService;
+
+    @Inject
+    private PropertiesService propertiesService;
 
     @GET
     @Path("/rarity-indices/{baseline}")
@@ -95,4 +101,18 @@ public class CalibrationREST {
 
         return Response.ok(percentileValue).build();
     }
+    
+    @GET
+    @Path("/percentile-value")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get percentile setting used for value normalization")
+    public Response checkPercentileValue(@Context HttpServletRequest req) throws NotAuthorizedException {
+        if (req.getUserPrincipal() == null)
+            throw new NotAuthorizedException("Null principal");
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(WebUtil.ONE_YEAR_IN_SECONDS);
+        int percentile = propertiesService.getPropertyAsInt("calc.normalization.histogram.percentile", 95);
+        return Response.ok(Map.of("percentileValue", percentile)).cacheControl(cc).build();
+    }
 }
+

@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { CalculationSlice, LegendType, Legend } from './calculation.interfaces';
+import { CalculationSlice, LegendType, Legend, PercentileResponse } from './calculation.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
 
 export const startCalculation = createAction('[Calculation] Add calculation');
@@ -40,6 +40,20 @@ export const fetchLegendSuccess = createAction(
 
 export const fetchLegendFailure = createAction(
   '[Calculation] Fetch legend failure',
+  props<{ error: ErrorMessage }>()
+);
+
+export const fetchPercentile = createAction(
+  '[Calculation] Fetch percentile value used for normalization'
+);
+
+export const fetchPercentileSuccess = createAction(
+  '[Calculation] Fetch percentile value success',
+  props<PercentileResponse>()
+);
+
+export const fetchPercentileFailure = createAction(
+  '[Calculation] Fetch percentile value',
   props<{ error: ErrorMessage }>()
 );
 

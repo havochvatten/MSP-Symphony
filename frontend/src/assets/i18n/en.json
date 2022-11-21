@@ -21,10 +21,22 @@
         "pressures": "Pressures",
         "matrix": "Matrix",
         "no-selected-area": "No area selected",
+        "reset-preselected": "Reset",
+        "reset-preselected-description": "Reset selected components/pressures and intensity values",
+        "confirm-reset": {
+            "modal": {
+                "header": "Confirm reset",
+                "message": "Reset selected components/pressures?",
+                "message-scenario": "Reset selected components/pressures and any changes to intensity in the active scenario ({{ scenario }})?",
+                "cancel": "Cancel",
+                "confirm": "Reset"
+            }
+        },
         "editor": {
             "title": "Scenarios",
             "operation": {
                 "title": "Algorithm",
+                "choose": "Choose algorithm",
                 "CumulativeImpact": {
                     "title": "Cumulative impact"
                 },
@@ -54,6 +66,7 @@
                 "sensitivity-matrix": "Sensitivity Matrix",
                 "default-matrix": "Default matrix",
                 "user-matrix": "User-defined matrix",
+                "choose-matrix": "Choose matrix",
                 "choose-area-type": "Choose area type (optional)",
                 "choose-area-type-matrix": "Select matrix for area type",
                 "edited-matrixes": "Previously edited matrices",
@@ -72,7 +85,7 @@
                 "title": "Result Colormap",
                 "description": "Set maximum value based on",
                 "area": "Maximum value in computed area",
-                "domain": "Maximum value in MSP area",
+                "domain": "{{ ordinalPercentileValue }} percentile in MSP area",
                 "custom": "User-defined value",
                 "custom-value": "Value"
             },
@@ -87,7 +100,7 @@
             "fetching-matrices": "Fetching information on area's sensitivity matrices...",
             "map-layer": "Map layer",
             "list": {
-                "user-scenarios": "User scenarios",
+                "user-scenarios": "User Scenarios",
                 "add-scenario-label": "Create new scenario for {{area}}",
                 "scenario-name-template": "Scenario {{area}}",
                 "select-area-first-label": "Start by selecting an area for the scenario.",
@@ -110,6 +123,19 @@
             },
             "calculate": "Calculate"
         },
+        "metadata": {
+            "label": "Show metadata",
+            "header": "Metadata regarding {{ layerType }}: {{ layerName }}",
+            "method-summary": "Method summary",
+            "known-limitations": "Known limitations",
+            "value-range": "Value range",
+            "data-processing": "Data processing",
+            "data-sources": "Data sources",
+            "close": "Close",
+            "ecosystem": "ecosystem",
+            "pressure": "pressure",
+            "no-info": "Metadatum missing."
+        },
         "toolbar": {
             "zoom-in": "Zoom in",
             "zoom-out": "Zoom ut",
@@ -123,9 +149,9 @@
         "area": {
             "sea-plan": "MSP areas",
             "county": "Municipalities and Counties",
-            "protected": "Protectad areas",
+            "protected": "Protected areas",
             "surface-water": "Swedish waterbodies managed under the EU Water Framework Directive",
-            "user-created": "User created areas",
+            "user-created": "User-created Areas",
             "no-areas": "No areas",
             "search": {
                 "label": "Search for area",
@@ -257,7 +283,6 @@
         "cumulative-effect-etc": {
             "baseline": "Baseline version",
             "operation": "Algorithm",
-            "choose": "Choose algorithm",
             "title": "Cumulative effect",
             "relative-diff": "Relative change",
             "total": "Total",
@@ -267,13 +292,14 @@
             "std-dev": "Std. Dev",
             "calculated-area": "Calculated area",
             "km2": "km²",
+            "no-area": "N/A",
+            "no-area-desc": "Area cannot be measured",
             "normalization": {
                 "title": "Result colorscale",
-                "description": "Set maximum value based on",
-                "domain": "95th percentile",
+                "domain": "{{ ordinalPercentileValue }} percentile",
                 "area": "Maximum value in area",
                 "custom": "User-defined value",
-                "domain-desc": "The result is normalized with regard to the range that 95% of data points in the respective marine spatial planning area belong to (including coastal areas)."
+                "domain-desc": "The result is normalized with regard to the range that {{ percentileValue }}% of data points in the respective marine spatial planning area belong to (including coastal areas)."
             },
             "sensitivity-matrices": {
                 "title": "Sensitivity matrix",
@@ -282,6 +308,12 @@
             "comparison": {
                 "legend-desc": "The image shows the relative difference in total cumulative impact between the base and what-if scenario."
             }
+        },
+        "histogram": {
+            "caption": "Histogram",
+            "interval": "Interval",
+            "cumulative-proportion": "Cumulative proportion",
+            "middle-of-range": "Middle of range"
         },
         "highest-impact": {
             "ecocomponent": "Nature values with highest impact",

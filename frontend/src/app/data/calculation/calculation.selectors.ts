@@ -30,6 +30,11 @@ export const selectLegends = createSelector(
   state => state.legends
 );
 
+export const selectPercentileValue = createSelector(
+  selectCalculationState,
+  state => state.percentileValue
+);
+
 export const selectVisibleLegends = createSelector(
   selectLegends,
   MetadataSelectors.selectVisibleBands,
