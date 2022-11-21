@@ -86,8 +86,20 @@ public class Metadata implements Serializable {
     @Column(name = "meta_summarylocal")
     private String summaryLocal;
     @Size(max = 2147483647)
+    @Column(name = "meta_methodsummary")
+    private String methodSummary;
+    @Size(max = 2147483647)
     @Column(name = "meta_limitationsforsymphony")
     private String limitationsForSymphony;
+    @Size(max = 2147483647)
+    @Column(name = "meta_valuerange")
+    private String valueRange;
+    @Size(max = 2147483647)
+    @Column(name = "meta_dataprocessing")
+    private String dataProcessing;
+    @Size(max = 2147483647)
+    @Column(name = "meta_datasources")
+    private String dataSources;
     @Size(max = 2147483647)
     @Column(name = "meta_recommendations")
     private String recommendations;
@@ -293,6 +305,18 @@ public class Metadata implements Serializable {
     public void setLimitationsForSymphony(String limitationsForSymphony) {
         this.limitationsForSymphony = limitationsForSymphony;
     }
+
+    public String getValueRange() { return valueRange; }
+
+    public void setValueRange(String valueRange) { this.valueRange = valueRange; }
+
+    public String getDataProcessing() { return dataProcessing; }
+
+    public void setDataProcessing(String dataProcessing) { this.dataProcessing = dataProcessing;}
+
+    public String getDataSources() { return dataSources; }
+
+    public void setDataSources(String dataSources) { this.dataSources = dataSources; }
 
     public String getRecommendations() {
         return recommendations;
@@ -509,6 +533,10 @@ public class Metadata implements Serializable {
     public void setSummaryLocal(String summaryLocal) {
         this.summaryLocal = summaryLocal;
     }
+
+    public String getMethodSummary() { return methodSummary; }
+
+    public void setMethodSummary(String methodSummary) { this.methodSummary = methodSummary;}
 
     public int getBandNumber() {
         return bandNumber;

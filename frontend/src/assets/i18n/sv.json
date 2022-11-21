@@ -123,6 +123,19 @@
             },
             "calculate": "Beräkna"
         },
+        "metadata": {
+            "label": "Visa metadata",
+            "header": "Metadata avseende {{ layerType }}: {{ layerName }}",
+            "method-summary": "Method summary",
+            "known-limitations": "Known limitations",
+            "value-range": "Value range",
+            "data-processing": "Data processing",
+            "data-sources": "Data sources",
+            "close": "Stäng",
+            "ecosystem": "naturvärde",
+            "pressure": "belastning",
+            "no-info": "Uppgift saknas."
+        },
         "toolbar": {
             "zoom-in": "Zooma in",
             "zoom-out": "Zooma ut",

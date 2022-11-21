@@ -123,6 +123,19 @@
             },
             "calculate": "Calculer"
         },
+        "metadata": {
+            "label": "Voir les métadonnées",
+            "header": "Métadonnées concernant {{ layerType }}: {{ layerName }}",
+            "method-summary": "Résumé de la méthode",
+            "known-limitations": "Limites connues",
+            "value-range": "Plage de valeurs",
+            "data-processing": "Traitement de l'information",
+            "data-sources": "Source de données",
+            "close": "Fermer",
+            "ecosystem": "écosystème",
+            "pressure": "pression",
+            "no-info": "Métadonnée manquante."
+        },
         "toolbar": {
             "zoom-in": "Zoom +",
             "zoom-out": "Zoom -",

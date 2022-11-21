@@ -37,6 +37,9 @@ public class EntityToMetadataDtoMapper {
         dto.setDateCreated(metadata.getDateCreated());
         dto.setDescriptiveKeywords(metadata.getDescriptiveKeywords());
         dto.setLimitationsForSymphony(metadata.getLimitationsForSymphony());
+        dto.setValueRange(metadata.getValueRange());
+        dto.setDataProcessing(metadata.getDataProcessing());
+        dto.setDataSources(metadata.getDataSources());
         dto.setLineage(metadata.getLineage());
         dto.setMaintenanceInformation(metadata.getMaintenanceInformation());
         dto.setMapAcknowledgement(metadata.getMapAcknowledgement());
@@ -49,6 +52,7 @@ public class EntityToMetadataDtoMapper {
         dto.setOwnerEmail(metadata.getOwnerEmail());
         dto.setSummary(metadata.getSummary());
         dto.setSummaryLocal(metadata.getSummaryLocal());
+        dto.setMethodSummary(metadata.getMethodSummary());
         dto.setRecommendations(metadata.getRecommendations());
         dto.setStatus(metadata.getStatus());
         dto.setTopicCategory(metadata.getTopicCategory());

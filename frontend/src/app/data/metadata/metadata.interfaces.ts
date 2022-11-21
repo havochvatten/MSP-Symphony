@@ -27,9 +27,13 @@ export interface Band extends SelectableLayer {
   dateCreated: string;
   summary: string;
   summaryLocal: string;
+  methodSummary: string;
   limitationsForSymphony: string;
+  valueRange: string;
+  dataProcessing: string;
+  dataSources: string;
   recommendations: string;
-  linage: string;
+  lineage: string;
   status: string;
   authorOrganisation: string;
   authorEmail: string;

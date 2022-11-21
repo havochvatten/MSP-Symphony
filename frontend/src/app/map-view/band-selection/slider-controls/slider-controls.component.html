@@ -9,6 +9,14 @@
     ></hav-checkbox>
     <div class="editing">
       <button
+        *ngIf="hasPublicMeta"
+        (click)="showMetaDialog()"
+        [title]="'map.metadata.label' | translate"
+        data-active="true"
+      >
+        <app-icon iconType="info-circle"></app-icon>
+      </button>
+      <button
         (click)="toggleOpen()"
         [disabled]="!selectedArea || !scenario"
         [attr.data-active]="open"

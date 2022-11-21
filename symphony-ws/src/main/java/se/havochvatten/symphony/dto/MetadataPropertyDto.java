@@ -12,7 +12,11 @@ public class MetadataPropertyDto {
     String dateCreated;
     String summary;
     String summaryLocal;
+    String methodSummary;
     String limitationsForSymphony;
+    String valueRange;
+    String dataProcessing;
+    String dataSources;
     String recommendations;
     String lineage;
     String status;
@@ -38,7 +42,6 @@ public class MetadataPropertyDto {
     String metadataEmail;
     String metadataLanguage;
     int bandNumber;
-
 
     public String getTitle() {
         return title;
@@ -120,12 +123,40 @@ public class MetadataPropertyDto {
         this.summaryLocal = summaryLocal;
     }
 
+    public String getMethodSummary() { return methodSummary; }
+
+    public void setMethodSummary(String methodSummary) { this.methodSummary = methodSummary; }
+
     public String getLimitationsForSymphony() {
         return limitationsForSymphony;
     }
 
     public void setLimitationsForSymphony(String limitationsForSymphony) {
         this.limitationsForSymphony = limitationsForSymphony;
+    }
+
+    public String getValueRange() {
+        return valueRange;
+    }
+
+    public void setValueRange(String valueRange) {
+        this.valueRange = valueRange;
+    }
+
+    public String getDataProcessing() {
+        return dataProcessing;
+    }
+
+    public void setDataProcessing(String dataProcessing) {
+        this.dataProcessing = dataProcessing;
+    }
+
+    public String getDataSources() {
+        return dataSources;
+    }
+
+    public void setDataSources(String dataSources) {
+        this.dataSources = dataSources;
     }
 
     public String getRecommendations() {
