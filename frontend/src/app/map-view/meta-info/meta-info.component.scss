@@ -44,6 +44,17 @@
 
     &.meta-sections {
       margin-bottom: 1rem;
+
+      ul {
+        padding-left: 2rem;
+        margin: 0 0 1rem;
+        font-size: 1.14rem;
+        list-style-type: circle;
+
+        li {
+          margin-bottom: 0.3rem;
+        }
+      }
     }
   }
 }
