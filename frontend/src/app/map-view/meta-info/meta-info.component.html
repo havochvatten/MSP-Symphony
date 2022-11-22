@@ -9,6 +9,14 @@
       {{ (metaSection.value || ('map.metadata.no-info' | translate)) }}
     </p>
   </div>
+  <div *ngIf="bandMetadataSources.length > 0">
+    <h5>{{ 'map.metadata.data-sources' | translate }}</h5>
+    <ul>
+      <li *ngFor="let mdSource of bandMetadataSources">
+        {{ mdSource }}
+      </li>
+    </ul>
+  </div>
 </div>
 <div>
   <hav-button (click)="close()">{{
