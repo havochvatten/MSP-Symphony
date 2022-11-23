@@ -19,7 +19,6 @@ export interface Selection {
   value: boolean;
 }
 
-// TODO Fix spelling mistakes
 export interface Band extends SelectableLayer {
   marinePlaneArea: string;
   symphonyDataType: string;
@@ -28,26 +27,30 @@ export interface Band extends SelectableLayer {
   dateCreated: string;
   summary: string;
   summaryLocal: string;
+  methodSummary: string;
   limitationsForSymphony: string;
-  recomendations: string;
-  linage: string;
+  valueRange: string;
+  dataProcessing: string;
+  dataSources: string;
+  recommendations: string;
+  lineage: string;
   status: string;
   authorOrganisation: string;
   authorEmail: string;
   dataOwner: string;
   dataOwnerLocal: string;
   ownerEmail: string;
-  topicCathegory: string;
+  topicCategory: string;
   descriptiveKeywords: string;
   theme: string;
   useLimitations: string;
   accessUserRestrictions: string;
   otherRestrictions: string;
-  mapAknowledgement: string;
+  mapAcknowledgement: string;
   securityClassification: string;
-  maintanceInformation: string;
-  spacialPresentation: string;
-  rasterSpacialReferenceSystem: string;
+  maintenanceInformation: string;
+  spatialPresentation: string;
+  rasterSpatialReferenceSystem: string;
   metadataDate: string;
   metadataOrganisation: string;
   metadataOrganisationLocal: string;

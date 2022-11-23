@@ -63,8 +63,9 @@
       <td *ngIf="reports.length==2">{{ relativeDifferencePercentage('stddev') }}</td>
     </tr>
     <tr class="ruled">
-      <th>{{ 'report.cumulative-effect-etc.calculated-area' | translate }}:</th>
-      <td [colSpan]="reports.length === 2 ? 3 : 1">{{ areaKm2 | number: '1.0-2':locale }} {{ 'report.cumulative-effect-etc.km2' | translate }}</td>
+      <th [ngClass]="validArea ? '' : 'invalid'">{{ 'report.cumulative-effect-etc.calculated-area' | translate }}:</th>
+      <td *ngIf="validArea" [colSpan]="reports.length === 2 ? 3 : 1">{{ areaKm2 | number: '1.0-2':locale }} {{ 'report.cumulative-effect-etc.km2' | translate }}</td>
+      <td *ngIf="!validArea" [colSpan]="reports.length === 2 ? 3 : 1" class="invalid" title="{{ 'report.cumulative-effect-etc.no-area-desc' | translate }}">{{ 'report.cumulative-effect-etc.no-area' | translate }}</td>
     </tr>
   </table>
 

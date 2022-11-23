@@ -26,6 +26,7 @@ import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
 import javax.measure.Quantity;
+import javax.measure.UnconvertibleException;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import java.io.PrintWriter;
@@ -80,12 +81,21 @@ public class ReportService {
     }
 
     private static double getResolutionInMetres(GridCoverage2D coverage) {
+        double result;
         GridGeometry2D geometry = coverage.getGridGeometry();
         Double scale = ((AffineTransform2D) geometry.getGridToCRS()).getScaleX();
         Unit<Length> unit = (Unit<Length>) geometry.getCoordinateReferenceSystem2D().getCoordinateSystem().getAxis(0).getUnit();
         Quantity<Length> resolution = Quantities.getQuantity(scale, unit);
 
-        return resolution.to(SI.METRE).getValue().doubleValue();
+        try {
+            result = resolution.to(SI.METRE).getValue().doubleValue();
+        } catch (UnconvertibleException e) { // Coordinate system isn't projected, unit (rad/deg) cannot be converted.
+                                             // We could check the CoordinateSystem or specific types of Unit but
+                                             // let it throw instead at the conversion stage.
+            result = Double.NaN;
+        }
+
+        return result;
     }
 
     /**
@@ -142,9 +152,11 @@ public class ReportService {
 
         report.calculatedPixels = stats.pixels;
 
-        // Round to two decimal places
-        report.gridResolution = Math.round(getResolutionInMetres(coverage) * 100) / 100;
-
+        double resolution = getResolutionInMetres(coverage);
+        report.gridResolution = Double.isNaN(resolution) ? Double.NaN :
+                                Math.round(resolution * 100) / 100;
+                                // Round to two decimal places and guard for NaN
+                                // since Math.round(Double.NaN) returns 0
         try {
             var matrixParams = mapper.treeToValue(scenario.getMatrix(), MatrixParameters.class);
             if (matrixParams.userDefinedMatrixId != null) {
