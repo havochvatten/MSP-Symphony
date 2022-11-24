@@ -133,8 +133,8 @@ public class CalcService {
                 getResultList();
     }
 
-    public List<CalculationResult> findAllFullByUser(Principal principal) {
-        return em.createNamedQuery("CalculationResult.findFullByOwner", CalculationResult.class).
+    public List<CalculationResultSlice> findAllCmpByUser(Principal principal) {
+        return em.createNamedQuery("CalculationResult.findCmpByOwner", CalculationResultSlice.class).
                 setParameter("username", principal.getName()).
                 getResultList();
     }
@@ -143,14 +143,14 @@ public class CalcService {
             Principal principal, CalculationResult base) {
         // Ideally we would do a spatial query to the database, but since areas are not stored as proper
         // PostGIS geometries this is not possible at it stands.
-        var candidates = findAllFullByUser(principal);
+
+        var candidates = findAllCmpByUser(principal);
         var baseFeature = base.getFeature();
         return candidates.stream()
-                .filter(c -> !c.getId().equals(base.getId())) // omit the calculation whose matches we are
+                .filter(c -> !base.getId().equals(c.id)) // omit the calculation whose matches we are
                 // searching for
                 .filter(c -> geometryEquals(baseFeature, c.getFeature()))
-                .map(CalculationResultSlice::new)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

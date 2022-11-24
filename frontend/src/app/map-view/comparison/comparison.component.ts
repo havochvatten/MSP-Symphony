@@ -64,10 +64,10 @@ export class ComparisonComponent implements AfterViewInit {
 
     this.candidates$ = this.calcService.getMatchingCalculations(id).pipe(
       withLatestFrom(this.translate.get('map.compare.choose-scenario')),
-      tap(([_, trans]) => {
+      tap(([res, trans]) => {
         this.loadingCandidates = false;
         this.bSelect.noItemSelectedLabel = trans;
-        this.bSelect.disabled = false;
+        this.bSelect.disabled = res.length === 0;
       }),
       map(([res, _]) => res)
     );
