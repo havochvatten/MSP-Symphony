@@ -11,6 +11,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 import org.opengis.feature.simple.SimpleFeature;
+import se.havochvatten.symphony.dto.CalculationResultSlice;
 import se.havochvatten.symphony.scenario.Scenario;
 import se.havochvatten.symphony.scenario.ScenarioSnapshot;
 
@@ -45,6 +46,25 @@ import java.util.Map;
                 query = "SELECT c FROM CalculationResult c WHERE c.owner = :username ORDER BY c.timestamp " +
                         "DESC")
 })
+
+@SqlResultSetMapping(
+    name = "CalculationCmpMapping",
+    classes = @ConstructorResult(
+        targetClass = CalculationResultSlice.class,
+        columns = { @ColumnResult(name="cares_id", type=Integer.class),
+            @ColumnResult(name="cares_calculationname", type=String.class),
+            @ColumnResult(name="cares_timestamp", type=Date.class),
+            @ColumnResult(name="feature", type=String.class)
+        }
+    )
+)
+
+@NamedNativeQuery(name = "CalculationResult.findCmpByOwner",
+    query = "SELECT c.cares_id, c.cares_calculationname, c.cares_timestamp, s.feature FROM " +
+            "calculationresult c JOIN scenariosnapshot s ON c.scenariosnapshot_id = s.id "+
+            "AND s.owner = :username ORDER BY c.cares_timestamp DESC",
+    resultSetMapping = "CalculationCmpMapping" )
+
 @TypeDefs({
         @TypeDef(name = "json", typeClass = JsonType.class),
         @TypeDef(name = "double-matrix", typeClass = DoubleArrayType.class)
