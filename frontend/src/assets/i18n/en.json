@@ -195,6 +195,9 @@
                     "placeholder": "My area 1",
                     "save": "Save",
                     "close": "Close"
+                },
+                "error": {
+                    "USER_DEF_AREA_NAME_EXISTS" : "You have already saved an area by the name <em>{{ areaName }}</em>.\n\nDelete or rename the previously saved area, or choose another name, and try again."
                 }
             },
             "upload": {

@@ -29,6 +29,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        margin-bottom: 2rem;
 
         svg {
           margin-bottom: 0.6rem;
@@ -40,7 +41,7 @@
         }
 
         p {
-          margin-top: 1rem;
+          margin: 1rem 0 0;
         }
       }
     }

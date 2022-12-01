@@ -195,6 +195,9 @@
                     "placeholder": "Zone 1",
                     "save": "Sauvegarder",
                     "close": "Fermer"
+                },
+                "error": {
+                    "USER_DEF_AREA_NAME_EXISTS" : "Vous avez déjà enregistré une zone nommée <em>{{ areaName }}</em>.\n\nSupprimez ou renommez la zone précédemment enregistrée, ou choisissez un autre nom et réessayez."
                 }
             },
             "upload": {
