@@ -16,7 +16,7 @@
         </ng-container>
       </ng-container>
       <h3>{{ messages[0].title || ('popup-message.'+messages[0].type | translate)}}</h3>
-      <p [innerHTML]="messages[0].message"></p>
+      <p *ngFor="let message of messages[0].message.split('\n')" [innerHTML]="message"></p>
     </div>
     <hav-button (click)="removeMessage(messages[0].uuid)">Ok</hav-button>
   </article>

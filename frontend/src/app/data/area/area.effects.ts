@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 import AreaService from './area.service';
 import { AreaActions } from './';
 import { Area, Areas, Feature, NationalArea, NationalAreaState, Polygon, StatePath } from './area.interfaces';
+import { ServerError } from "../message/message.interfaces";
 import { TranslateService } from '@ngx-translate/core';
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
@@ -111,8 +112,15 @@ export class AreaEffects {
             }
           })
         ),
-        catchError(({ status, error: message }) =>
-          of(AreaActions.createUserDefinedAreaFailure({ error: { status, message } }))
+        catchError(({ status, error: message }) => {
+            const srvError = (message as ServerError),
+                  tmpMessage = this.translateService.instant('map.user-area.create.error.' + srvError.errorCode,
+                    { areaName: name });
+            if(tmpMessage !== srvError.errorCode) {
+              (message as ServerError).errorMessage = tmpMessage;
+            }
+            return of(AreaActions.createUserDefinedAreaFailure({error: { status, message }}))
+          }
         )
       )
     )
