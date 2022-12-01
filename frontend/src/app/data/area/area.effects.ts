@@ -113,10 +113,10 @@ export class AreaEffects {
           })
         ),
         catchError(({ status, error: message }) => {
-            const srvError = (message as ServerError),
-                  tmpMessage = this.translateService.instant('map.user-area.create.error.' + srvError.errorCode,
+            const srvError = (message as ServerError), translateKey = 'map.user-area.create.error.' + srvError.errorCode,
+                  tmpMessage = this.translateService.instant(translateKey,
                     { areaName: name });
-            if(tmpMessage !== srvError.errorCode) {
+            if(tmpMessage !== translateKey) {
               (message as ServerError).errorMessage = tmpMessage;
             }
             return of(AreaActions.createUserDefinedAreaFailure({error: { status, message }}))
