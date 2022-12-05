@@ -30,6 +30,20 @@ export class CalculationEffects {
   );
 
   @Effect()
+  deleteCalculation$ = this.actions$.pipe(
+    ofType(CalculationActions.deleteCalculation),
+    mergeMap(({ calculationToBeDeleted }) => {
+        return this.calcService.delete(calculationToBeDeleted.id).pipe(
+          map(() => CalculationActions.deleteCalculationSuccess()),
+          catchError(({ status, error: message }) =>
+            of(CalculationActions.deleteCalculationFailure({ error: { status, message } }))
+          )
+        )
+      }
+    )
+  );
+
+  @Effect()
   fetchLegend$ = this.actions$.pipe(
     ofType(CalculationActions.fetchLegend),
     mergeMap(({ legendType }) =>

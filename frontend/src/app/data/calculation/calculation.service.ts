@@ -147,6 +147,10 @@ export class CalculationService implements OnDestroy {
     return this.http.get<PercentileResponse>(`${env.apiBaseUrl}/calibration/percentile-value`);
   }
 
+  delete(id: string) {
+    return this.http.delete(`${env.apiBaseUrl}/calculation/${id}`);
+  }
+
   ngOnDestroy() {
     if (this.bandNumbersSubscription$) {
       this.bandNumbersSubscription$.unsubscribe();

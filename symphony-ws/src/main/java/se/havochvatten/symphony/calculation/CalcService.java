@@ -52,6 +52,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.*;
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.NotFoundException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -187,6 +189,30 @@ public class CalcService {
                 if (transaction.getStatus() == Status.STATUS_ACTIVE)
                     transaction.rollback();
             } catch (Throwable e) {/* ignore */}
+        }
+    }
+
+    public synchronized void delete(Principal principal, int id) {
+        var calc = getCalculation(id);
+
+        if (calc == null)
+            throw new NotFoundException();
+        if (calc == null || !calc.getOwner().equals(principal.getName()))
+            throw new NotAuthorizedException(principal.getName());
+        else {
+            try {
+                transaction.begin();
+                em.remove(getCalculation(id));
+                transaction.commit();
+            } catch (Exception e) {
+                throw new SymphonyStandardSystemException(SymphonyModelErrorCode.OTHER_ERROR, e, "CalculationResult " +
+                    "persistence error");
+            } finally {
+                try {
+                    if (transaction.getStatus() == Status.STATUS_ACTIVE)
+                        transaction.rollback();
+                } catch (Throwable e) {/* ignore */}
+            }
         }
     }
 

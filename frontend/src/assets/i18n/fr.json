@@ -177,7 +177,15 @@
             "loading": "Calcul du résultat...",
             "baseline-calculations": "Résultat du scénario de référence",
             "previous-calculations": "Résultat précédent",
-            "placeholder": "Aucun résultat calculé"
+            "placeholder": "Aucun résultat calculé",
+            "show-report": "Ouvrir le rapport de calcul “{{ calculationName }}”",
+            "delete": "Supprimer le résultat “{{ calculationName }}”",
+            "delete-modal" : {
+                "header": "Supprimer résultat",
+                "message": "Confirmer la suppression du résultat: <em>“{{ calculationName }}”</em>",
+                "cancel": "Annuler",
+                "confirm": "Supprimer"
+            }
         },
         "compare": {
             "title": "Comparez les scénarios",
