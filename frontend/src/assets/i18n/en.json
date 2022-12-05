@@ -177,7 +177,15 @@
             "loading": "Loading calculations...",
             "baseline-calculations": "Baseline Calculations",
             "previous-calculations": "Previous Calculations",
-            "placeholder": "No calculations performed"
+            "placeholder": "No calculations performed",
+            "show-report": "Open calculation report “{{ calculationName }}”",
+            "delete": "Delete saved calculation result “{{ calculationName }}”",
+            "delete-modal" : {
+                "header": "Delete calculation",
+                "message": "Confirm deletion of previously saved calculation result: <em>“{{ calculationName }}”</em>",
+                "cancel": "Cancel",
+                "confirm": "Delete"
+            }
         },
         "compare": {
             "title": "Compare calculations",

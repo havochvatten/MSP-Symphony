@@ -177,7 +177,15 @@
             "loading": "Laddar beräkningar...",
             "baseline-calculations": "Nuvärdesanalys",
             "previous-calculations": "Tidigare beräkningar",
-            "placeholder": "Inga tidigare beräkningar"
+            "placeholder": "Inga tidigare beräkningar",
+            "show-report": "Öppna rapport “{{ calculationName }}”",
+            "delete": "Radera sparad beräkning “{{ calculationName }}”",
+            "delete-modal" : {
+                "header": "Radera sparad beräkning",
+                "message": "Bekräfta borttagning av tidigare sparad beräkning: <em>“{{ calculationName }}”</em>",
+                "cancel": "Avbryt",
+                "confirm": "Radera"
+            }
         },
         "compare": {
             "title": "Jämför scenario",

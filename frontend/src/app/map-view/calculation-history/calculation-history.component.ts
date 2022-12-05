@@ -1,17 +1,21 @@
 import { Component, ElementRef, NgModuleRef, ViewChild } from '@angular/core';
+import { Observable } from 'rxjs';
+import { retry, tap } from "rxjs/operators";
 import { select, Store } from '@ngrx/store';
+import { environment } from "@src/environments/environment";
 import { State } from '@src/app/app-reducer';
 import { DialogService } from '@src/app/shared/dialog/dialog.service';
 import { CalculationActions, CalculationSelectors } from '@data/calculation';
-import { CalculationSlice } from '@data/calculation/calculation.interfaces';
-import { Observable } from 'rxjs';
 import { CalculationService } from "@data/calculation/calculation.service";
-import { retry, tap } from "rxjs/operators";
+import { CalculationSlice } from '@data/calculation/calculation.interfaces';
+import { ScenarioActions } from "@data/scenario";
 import { UserSelectors } from "@data/user";
 import { Baseline } from "@data/user/user.interfaces";
-import { environment } from "@src/environments/environment";
 import { CalculationReportModalComponent } from "@shared/report-modal/calculation-report-modal.component";
 import { HttpErrorResponse } from "@angular/common/http";
+import {
+  DeleteCalculationConfirmationDialogComponent
+} from "@src/app/map-view/calculation-history/delete-calculation-confirmation-dialog/delete-calculation-confirmation-dialog.component";
 
 @Component({
   selector: 'app-history',
@@ -77,6 +81,19 @@ export class CalculationHistoryComponent {
         catch(error => console.error(error));
   }
 
+  async confirmDelete(calculation: CalculationSlice) {
+    const deletionConfirmed = await this.dialogService.open(DeleteCalculationConfirmationDialogComponent, this.moduleRef,
+                          { data: { calculationName: calculation.name } });
+
+    if (deletionConfirmed) {
+      await this.store.dispatch(CalculationActions.deleteCalculation({
+        calculationToBeDeleted: calculation
+      }));
+      this.store.dispatch(CalculationActions.fetchCalculations());
+      this.store.dispatch(ScenarioActions.fetchScenarios());
+    }
+  }
+
   editName($event: MouseEvent, id: string) {
     this.editingName = id;
     setTimeout(() => {
@@ -89,8 +106,8 @@ export class CalculationHistoryComponent {
     this.store.dispatch(     // optimistically set new name
       CalculationActions.updateName({ index, newName: $event.target.value }));
 
-    const that = this;
-    let oldName = calc.name;
+    const that = this,
+          oldName = calc.name;
     this.calcService.updateName(calc.id, $event.target.value).pipe(
       retry(2),
     ).subscribe({

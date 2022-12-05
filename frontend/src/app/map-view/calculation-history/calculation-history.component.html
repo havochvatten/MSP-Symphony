@@ -35,8 +35,15 @@
         </div>
         <span>{{ calculation.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
       </div>
-      <app-icon *ngIf="!calculation.loading" iconType="report" (click)="showReport(calculation.id)">
-      </app-icon>
+      <div class="actions" *ngIf="!calculation.loading">
+        <app-icon iconType="delete" (click)="confirmDelete(calculation)"
+          title="{{ 'map.history.delete' | translate: { calculationName: calculation.name } }}"
+        >
+        </app-icon>
+        <app-icon iconType="report" (click)="showReport(calculation.id)"
+          title="{{ 'map.history.show-report' | translate: { calculationName: calculation.name } }}">
+        </app-icon>
+      </div>
       <hav-spinner *ngIf="calculation.loading" spinnerSize="small"></hav-spinner>
     </button>
     <ng-container *ngIf="!$any(calculations$ | async).length" [ngTemplateOutlet]="noCalculations">
