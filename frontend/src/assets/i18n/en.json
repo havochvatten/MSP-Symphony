@@ -65,6 +65,7 @@
             "matrix": {
                 "sensitivity-matrix": "Sensitivity Matrix",
                 "default-matrix": "Default matrix",
+                "alt-matrix": "Alternate matrix",
                 "user-matrix": "User-defined matrix",
                 "choose-matrix": "Choose matrix",
                 "choose-area-type": "Choose area type (optional)",

@@ -160,7 +160,9 @@ public class ReportService {
         try {
             var matrixParams = mapper.treeToValue(scenario.getMatrix(), MatrixParameters.class);
             if (matrixParams.userDefinedMatrixId != null) {
-                report.matrix = matrixService.getSensMatrixbyId(matrixParams.userDefinedMatrixId).getName();
+                var mx = matrixService.getSensMatrixbyId(matrixParams.userDefinedMatrixId);
+                report.matrix = mx.getName();
+                report.altMatrix = mx.getOwner() == null;
             } else {
                 Map<Integer, AreaType> areaTypes =
                         areaTypeService.findAll().stream().collect(toMap(AreaType::getId,

@@ -62,7 +62,7 @@ public class AreaSelectionResponseDtoMapperTest {
 				AreaSelectionResponseDtoMapper.mapToAreaTypeDto(areaTypes.get(0), calculationAreasA1);
         areaTypeDtos.add(areaTypeDto);
         AreaSelectionResponseDto respDto = AreaSelectionResponseDtoMapper.mapToDto(defaultArea,
-				areaTypeDtos, userDefinedCalcAreaSensMatrices);
+				areaTypeDtos, userDefinedCalcAreaSensMatrices, new ArrayList<>());
         assertThat(respDto.getDefaultArea().getId(), is(defaultArea.getId()));
         assertThat(respDto.getDefaultArea().getName(), is(defaultArea.getName()));
         assertThat(respDto.getDefaultArea().getDefaultMatrix().getId(),

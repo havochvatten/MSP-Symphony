@@ -52,6 +52,14 @@ public class CalcAreaSensMatrixService {
         return calcAreaSensMatrixDto;
     }
 
+    public List<CalcAreaSensMatrix> findByBaselineAndArea(String baselineName, int calcAreaId) {
+        List<CalcAreaSensMatrix> calcAreaSensMatrices =
+            em.createNamedQuery("CalcAreaSensMatrix.findByBaselineAndArea")
+                .setParameter("baseline", baselineName)
+                .setParameter("calcAreaId", calcAreaId)
+                .getResultList();
+        return calcAreaSensMatrices;
+    }
 
     public List<CalcAreaSensMatrixDto> findByBaselineAndOwner(String baselineName, Principal principal) {
         List<CalcAreaSensMatrix> calcAreaSensMatrices =
