@@ -11,6 +11,7 @@ import java.io.Serializable;
 @XmlRootElement
 @NamedQueries({
 	@NamedQuery(name = "CalcAreaSensMatrix.findAll", query = "SELECT c FROM CalcAreaSensMatrix c"),
+    @NamedQuery(name = "CalcAreaSensMatrix.findByBaselineAndArea", query = "SELECT c FROM CalcAreaSensMatrix c WHERE c.sensitivityMatrix.baselineVersion.name = :baseline AND c.calculationArea.id = :calcAreaId AND c.sensitivityMatrix.owner IS NULL"),
 	@NamedQuery(name = "CalcAreaSensMatrix.findByBaselineAndOwner", query = "SELECT c FROM CalcAreaSensMatrix c WHERE c.sensitivityMatrix.baselineVersion.name = :baseline AND c.sensitivityMatrix.owner = :owner"),
 	@NamedQuery(name = "CalcAreaSensMatrix.findByBaselineAndOwnerAndArea", query = "SELECT c FROM CalcAreaSensMatrix c WHERE c.sensitivityMatrix.baselineVersion.name = :baselineName AND c.sensitivityMatrix.owner = :owner AND c.calculationArea.id = :calcAreaId"),
 	@NamedQuery(name = "CalcAreaSensMatrix.findByMatrixIdAndOwner", query = "SELECT c FROM CalcAreaSensMatrix c WHERE c.sensitivityMatrix.id = :matrixId AND c.sensitivityMatrix.owner = :owner")

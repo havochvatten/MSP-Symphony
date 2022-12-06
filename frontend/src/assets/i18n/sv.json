@@ -65,8 +65,9 @@
             "matrix": {
                 "sensitivity-matrix": "Känslighetsmatris",
                 "default-matrix": "Standardmatris",
+                "alt-matrix": "Alternativ matris",
                 "user-matrix": "Egen matris",
-                "choose-matrix": "Välj matrix",
+                "choose-matrix": "Välj matris",
                 "choose-area-type": "Välj områdestyp (valfritt)",
                 "choose-area-type-matrix": "Välj matris för områdestyp",
                 "edited-matrixes": "Tidigare justerade matriser",

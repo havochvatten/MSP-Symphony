@@ -17,6 +17,7 @@ public class EntityToSensMatrixDtoMapper {
         SensMatrixDto dto = new SensMatrixDto();
         dto.setId(sensMatrix.getId());
         dto.setName(sensMatrix.getName());
+        dto.setOwner(sensMatrix.getOwner());
         Comparator<Sensitivity> compP = Comparator.comparing(s -> s.getPresMetadata().getBandNumber());
         Comparator<Sensitivity> compE = Comparator.comparing(s -> s.getEcoMetadata().getBandNumber());
         List<Sensitivity> sortedSensitivities =

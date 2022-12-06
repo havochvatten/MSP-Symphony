@@ -28,6 +28,14 @@
         width: 100%;
       }
 
+      hav-select-control {
+        position: relative;
+
+        hav-select-menu {
+         z-index: 2;
+        }
+      }
+
       ::ng-deep hav-button button {
         position: relative;
         hav-spinner {

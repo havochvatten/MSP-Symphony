@@ -13,6 +13,7 @@ export interface Area {
 
 export interface DefaultArea extends Area {
   userDefinedMatrices: MatrixRef[];
+  commonBaselineMatrices: MatrixRef[];
 }
 
 export interface AreaTypeMatrixMapping {

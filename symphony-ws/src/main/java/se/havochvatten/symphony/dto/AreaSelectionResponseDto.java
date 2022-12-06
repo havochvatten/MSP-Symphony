@@ -66,6 +66,7 @@ public class AreaSelectionResponseDto {
 
     public static class DefaultArea extends Area {
         List<Matrix> userDefinedMatrices;
+        List<Matrix> commonBaselineMatrices;
 
         public void setAreaAttributes(Area area) {
             this.setId(area.getId());
@@ -79,6 +80,13 @@ public class AreaSelectionResponseDto {
                 userDefinedMatrices = new ArrayList<>();
             }
             return userDefinedMatrices;
+        }
+
+        public List<Matrix> getCommonBaselineMatrices() {
+            if (commonBaselineMatrices == null) {
+                commonBaselineMatrices = new ArrayList<>();
+            }
+            return commonBaselineMatrices;
         }
     }
 

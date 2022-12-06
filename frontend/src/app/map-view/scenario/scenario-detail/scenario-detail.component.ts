@@ -167,7 +167,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     }));
   }
 
-  /** @param matrixId - id to use as user-defined matrix, or undefined to use area's default matrix */
+  /** @param matrixId - id to use as user-defined or alternative matrix, or undefined to use area's default matrix */
   onMatrixOverride(matrixId: number|undefined) {
     this.store.dispatch(ScenarioActions.changeScenarioAttribute({ attribute: 'matrix',
       value: {

@@ -65,6 +65,7 @@
             "matrix": {
                 "sensitivity-matrix": "Matrice de sensibilité",
                 "default-matrix": "Matrice par défaut",
+                "alt-matrix": "Matrice alternative",
                 "user-matrix": "Matrice sélectionnée par l'utilisateur",
                 "choose-matrix": "Choisir la matrice",
                 "choose-area-type": "Choisir le type de zone (facultatif)",
