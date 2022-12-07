@@ -45,6 +45,7 @@ import {
 import { ConfirmResetComponent } from './confirm-reset/confirm-reset.component';
 import { MetaInfoComponent } from './meta-info/meta-info.component';
 import { AnchorPipe } from "@shared/anchor.pipe";
+import { DeleteCalculationConfirmationDialogComponent } from './calculation-history/delete-calculation-confirmation-dialog/delete-calculation-confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -72,6 +73,7 @@ import { AnchorPipe } from "@shared/anchor.pipe";
     MatrixTableComponent,
     ConfirmResetComponent,
     MetaInfoComponent,
+    DeleteCalculationConfirmationDialogComponent,
   ],
     imports: [
         SharedModule,

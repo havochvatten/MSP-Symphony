@@ -65,8 +65,9 @@
             "matrix": {
                 "sensitivity-matrix": "Känslighetsmatris",
                 "default-matrix": "Standardmatris",
+                "alt-matrix": "Alternativ matris",
                 "user-matrix": "Egen matris",
-                "choose-matrix": "Välj matrix",
+                "choose-matrix": "Välj matris",
                 "choose-area-type": "Välj områdestyp (valfritt)",
                 "choose-area-type-matrix": "Välj matris för områdestyp",
                 "edited-matrixes": "Tidigare justerade matriser",
@@ -177,7 +178,15 @@
             "loading": "Laddar beräkningar...",
             "baseline-calculations": "Nuvärdesanalys",
             "previous-calculations": "Tidigare beräkningar",
-            "placeholder": "Inga tidigare beräkningar"
+            "placeholder": "Inga tidigare beräkningar",
+            "show-report": "Öppna rapport “{{ calculationName }}”",
+            "delete": "Radera sparad beräkning “{{ calculationName }}”",
+            "delete-modal" : {
+                "header": "Radera sparad beräkning",
+                "message": "Bekräfta borttagning av tidigare sparad beräkning: <em>“{{ calculationName }}”</em>",
+                "cancel": "Avbryt",
+                "confirm": "Radera"
+            }
         },
         "compare": {
             "title": "Jämför scenario",
@@ -195,6 +204,9 @@
                     "placeholder": "Mitt område 1",
                     "save": "Spara",
                     "close": "Avbryt"
+                },
+                "error": {
+                    "USER_DEF_AREA_NAME_EXISTS" : "Du har redan sparat ett område med namnet <em>{{ areaName }}</em>.\n\nTag bort eller byt namn på det tidigare sparade området, eller välj ett annat namn och försök igen."
                 }
             },
             "upload": {

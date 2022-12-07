@@ -65,6 +65,7 @@
             "matrix": {
                 "sensitivity-matrix": "Sensitivity Matrix",
                 "default-matrix": "Default matrix",
+                "alt-matrix": "Alternate matrix",
                 "user-matrix": "User-defined matrix",
                 "choose-matrix": "Choose matrix",
                 "choose-area-type": "Choose area type (optional)",
@@ -177,7 +178,15 @@
             "loading": "Loading calculations...",
             "baseline-calculations": "Baseline Calculations",
             "previous-calculations": "Previous Calculations",
-            "placeholder": "No calculations performed"
+            "placeholder": "No calculations performed",
+            "show-report": "Open calculation report “{{ calculationName }}”",
+            "delete": "Delete saved calculation result “{{ calculationName }}”",
+            "delete-modal" : {
+                "header": "Delete calculation",
+                "message": "Confirm deletion of previously saved calculation result: <em>“{{ calculationName }}”</em>",
+                "cancel": "Cancel",
+                "confirm": "Delete"
+            }
         },
         "compare": {
             "title": "Compare calculations",
@@ -195,6 +204,9 @@
                     "placeholder": "My area 1",
                     "save": "Save",
                     "close": "Close"
+                },
+                "error": {
+                    "USER_DEF_AREA_NAME_EXISTS" : "You have already saved an area by the name <em>{{ areaName }}</em>.\n\nDelete or rename the previously saved area, or choose another name, and try again."
                 }
             },
             "upload": {

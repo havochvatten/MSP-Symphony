@@ -13,6 +13,7 @@ import se.havochvatten.symphony.dto.CalculationResultSlice;
 import se.havochvatten.symphony.dto.ScenarioDto;
 import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
+import se.havochvatten.symphony.exception.SymphonyStandardSystemException;
 import se.havochvatten.symphony.scenario.Scenario;
 import se.havochvatten.symphony.scenario.ScenarioService;
 import se.havochvatten.symphony.service.PropertiesService;
@@ -131,6 +132,28 @@ public class CalculationREST {
                 return status(Response.Status.UNAUTHORIZED).build();
         } else
             return ok(Response.Status.NOT_IMPLEMENTED).build();
+    }
+
+    @DELETE
+    @ApiOperation(value = "Delete calculation result")
+    @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response deleteCalculation(@Context HttpServletRequest req, @PathParam("id") int id) {
+        var principal = req.getUserPrincipal();
+        if (principal == null)
+            throw new NotAuthorizedException("Null principal");
+
+        try {
+            calcService.delete(req.getUserPrincipal(), id);
+            return ok().build();
+        } catch (NotFoundException nx) {
+            return status(Response.Status.NOT_FOUND).build();
+        } catch (NotAuthorizedException ax) {
+            return status(Response.Status.UNAUTHORIZED).build();
+        } catch (SymphonyStandardSystemException px) {
+            return status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GET

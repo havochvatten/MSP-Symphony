@@ -34,6 +34,8 @@ public class ReportResponseDto {
 
     public Object matrix; // Runtime type is DefaultMatrixData|Integer. TODO: Just use MatrixParameters?
 
+    public boolean altMatrix;
+
     public NormalizationOptions normalization;
 
     public Map<Integer, Double> impactPerPressure; // N.B: accumulated total, not percentage

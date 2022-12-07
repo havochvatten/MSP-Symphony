@@ -30,6 +30,7 @@ export interface Report {
   calculatedPixels: number;
   gridResolution: number; // [m]
   matrix: DefaultMatrixData | string;
+  altMatrix: boolean;
   normalization: NormalizationOptions;
   impactPerPressure: Record<number, number>;
   impactPerEcoComponent: Record<number, number>;

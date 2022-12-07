@@ -8,9 +8,28 @@
     radioButtonSize="medium"
     [label]="standardLabel"
     [checked]="matrixOption === 'STANDARD'"
-    (check)="check('STANDARD')"
+    (check)="check('STANDARD', null)"
   >
   </hav-radio-button>
+  <section *ngIf="hasOptionalMatrices()">
+    <hav-radio-button
+      radioButtonSize="medium"
+      label="{{'map.editor.matrix.alt-matrix' | translate}}"
+      [checked]="matrixOption === 'OPTIONAL'"
+      (check)="check('OPTIONAL', altMx)"
+    >
+    </hav-radio-button>
+    <article>
+      <hav-select #altMx
+                  [disabled]="matrixOption !== 'OPTIONAL'"
+                  (selectedChanged)="optionalSelect($event)"
+                  [noItemSelectedLabel]="'map.editor.matrix.choose-matrix' | translate">
+        <hav-select-item *ngFor="let matrix of commonOptionalMatrices" [value]="matrix">
+          {{ matrix.name }}
+        </hav-select-item>
+      </hav-select>
+    </article>
+  </section>
   <article *ngIf="hasAreaTypes()">
     <hav-select [disabled]="matrixOption !== 'STANDARD'"
                 noItemSelectedLabel="{{ 'map.editor.matrix.choose-area-type' | translate }}"
@@ -20,7 +39,8 @@
       </hav-select-item>
     </hav-select>
 
-    <hav-select *ngIf="hasAreaTypes()" [disabled]="matrixOption !== 'STANDARD' || !selectedAreaType"
+    <hav-select #typeMx
+                *ngIf="hasAreaTypes()" [disabled]="matrixOption !== 'STANDARD' || !selectedAreaType"
                 noItemSelectedLabel="{{ 'map.editor.matrix.choose-area-type-matrix' | translate }}"
                 (selectedChanged)="areaTypeMatrixSelect($event)">
       <hav-select-item *ngFor="let matrix of areaTypeMatrixOptions" [value]="matrix">
@@ -35,11 +55,12 @@
     radioButtonSize="medium"
     label="{{'map.editor.matrix.user-matrix' | translate}}"
     [checked]="matrixOption === 'CUSTOM'"
-    (check)="check('CUSTOM')"
+    (check)="check('CUSTOM', usrMx)"
   >
   </hav-radio-button>
   <article>
-    <hav-select [disabled]="matrixOption !== 'CUSTOM'"
+    <hav-select #usrMx
+                [disabled]="matrixOption !== 'CUSTOM'"
                 (selectedChanged)="customSelect($event)"
                 [noItemSelectedLabel]="'map.editor.matrix.choose-matrix' | translate">
       <hav-select-item *ngFor="let matrix of matrixOptions" [value]="matrix">
