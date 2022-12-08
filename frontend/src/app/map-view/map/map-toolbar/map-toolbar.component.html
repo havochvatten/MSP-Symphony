@@ -12,6 +12,11 @@
   [label]="'map.toolbar.draw-area' | translate"
   [active]="drawIsActive"
   (click)="onToggleDraw()"></app-toolbar-button>
+<app-toolbar-button
+  icon="anti-alias"
+  [label]="'map.toolbar.anti-alias-' + (hasImageSmoothing ? 'off' : 'on') | translate"
+  [active]="hasImageSmoothing"
+  (click)="onToggleSmooth()"></app-toolbar-button>
 <div style="position: relative;">
   <app-map-opacity-slider (change)="onClickSetMapOpacity($event)"></app-map-opacity-slider>
 </div>
