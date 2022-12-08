@@ -37,6 +37,7 @@ import { DataLayerService } from "@src/app/map-view/map/layers/data-layer.servic
 export class MapComponent implements AfterViewInit, OnDestroy {
   @Input() mapCenter?: Coordinate;
   drawIsActive = false;
+  layerAliasing = true;
 
   private map?: OLMap;
   private storeSubscription?: Subscription;
@@ -244,5 +245,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     // in an input event, which makes the opacity reset to 1
     if (typeof opacity === 'number' && this.background)
       this.background.setOpacity(opacity);
+  }
+
+  public toggleSmooth() {
+    this.resultLayerGroup.toggleImageSmoothing();
+    this.layerAliasing = this.resultLayerGroup.antialias;
   }
 }

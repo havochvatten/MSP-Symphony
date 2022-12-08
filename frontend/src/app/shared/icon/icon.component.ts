@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 
 export const ICONS = [
+  'anti-alias',
   'calculate',
   'compare',
   'chevron-down',

@@ -141,6 +141,8 @@
             "zoom-in": "Zoom +",
             "zoom-out": "Zoom -",
             "clear-results": "Effacer les résultats",
+            "anti-alias-on": "Activer le lissage des contours",
+            "anti-alias-off": "Désactiver le lissage des contours",
             "search-area": "Chercher une zone",
             "draw-area": "Dessiner une zone",
             "open-area": "Ouvrir une zone sauvegardée",
