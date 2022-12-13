@@ -30,6 +30,7 @@ export interface NormalizationOptions {
 })
 export class CalculationService implements OnDestroy {
   public resultReady$ = new EventEmitter<StaticImageOptions>();
+  public resultRemoved$ = new EventEmitter<number>();
   private ecoBands: number[] = [];
   private pressureBands: number[] = [];
   private bandNumbersSubscription$: Subscription;
@@ -102,6 +103,7 @@ export class CalculationService implements OnDestroy {
           if (extentHeader) {
             that.resultReady$.emit({
               url: URL.createObjectURL(response.body),
+              calculationId: +id,
               imageExtent: JSON.parse(extentHeader),
               projection: AppSettings.CLIENT_SIDE_PROJECTION ? AppSettings.DATALAYER_RASTER_CRS : AppSettings.MAP_PROJECTION
             });
@@ -116,6 +118,20 @@ export class CalculationService implements OnDestroy {
           reject('Error fetching result image at ' +err.url);
         }
       });
+    });
+  }
+
+  public removeResult(id: string){
+    const that = this;
+    return new Promise((resolve, reject) => {
+      this.delete(id).subscribe({
+        next(response) {
+          that.resultRemoved$.emit(+id);
+          resolve();
+        },
+        error(err: HttpErrorResponse) {
+          reject('Server error');
+        }});
     });
   }
 

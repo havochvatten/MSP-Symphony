@@ -4,6 +4,7 @@ import { ProjectionLike } from "ol/proj";
 import { NormalizationOptions, NormalizationType } from "@data/calculation/calculation.service";
 import { BandType } from "@data/metadata/metadata.interfaces";
 import { GeoJSONFeatureCollection } from "ol/format/GeoJSON";
+import ImageLayer from "ol/layer/Image";
 
 // TODO Move calculation element to Scenario state
 export interface State {
@@ -64,6 +65,7 @@ export interface ScenarioChange {
 
 export interface StaticImageOptions {
   url: string;
+  calculationId: number;
   imageExtent: Extent;
   projection: ProjectionLike
 }

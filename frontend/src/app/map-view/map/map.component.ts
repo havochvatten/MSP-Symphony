@@ -43,6 +43,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private storeSubscription?: Subscription;
   private areaSubscription?: Subscription;
   private resultSubscription?: Subscription;
+  private resultDeletedSubscription?: Subscription;
   private userSubscription?: Subscription;
   private activeScenario$: Observable<Scenario | undefined>;
   private scenarioSubscription: Subscription;
@@ -119,6 +120,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.resultSubscription = this.calcService.resultReady$.subscribe((result: StaticImageOptions) => {
       this.resultLayerGroup.addResult(result);
     });
+
+    this.resultDeletedSubscription = this.calcService.resultRemoved$.subscribe((removedId: number) => {
+      this.resultLayerGroup.removeResult(removedId);
+    });
   }
 
   ngAfterViewInit() {
@@ -188,6 +193,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }
     if (this.resultSubscription) {
       this.resultSubscription.unsubscribe();
+    }
+    if (this.resultDeletedSubscription) {
+      this.resultDeletedSubscription.unsubscribe();
     }
     if (this.userSubscription) {
       this.userSubscription.unsubscribe();

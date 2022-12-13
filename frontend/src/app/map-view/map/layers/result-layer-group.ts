@@ -3,12 +3,13 @@ import { Collection } from 'ol';
 import ImageLayer from 'ol/layer/Image';
 import ImageStatic from 'ol/source/ImageStatic';
 import BaseLayer from 'ol/layer/Base';
-import { StaticImageOptions } from '@data/calculation/calculation.interfaces';
+import { StaticImageOptions} from '@data/calculation/calculation.interfaces';
 import RenderEvent from "ol/render/Event";
 
 export class ResultLayerGroup extends LayerGroup {
 
   public antialias = true;
+  private calculationLayers = new Map<number, ImageLayer>();
 
   // TODO Clip result to scenario boundaries? Perhaps like so:
   // https://gis.stackexchange.com/questions/185881/clipping-tilelayer-with-georeferenced-polygon-clipping-mask
@@ -17,9 +18,22 @@ export class ResultLayerGroup extends LayerGroup {
           cpl = new ImageLayer({
             source: new ImageStatic(result)
           });
+    const cl = this.calculationLayers.get(result.calculationId);
 
-    cpl.on('postrender', this.renderHandler);
-    imageLayers.push(cpl);
+    if(result.calculationId > -1 && !cl) {
+      this.calculationLayers.set(result.calculationId, cpl);
+      cpl.on('postrender', this.renderHandler);
+      imageLayers.push(cpl);
+      this.setLayers(imageLayers);
+    }
+  }
+
+  public removeResult(id : number) {
+    const imageLayers = this.getLayers(),
+          cl = this.calculationLayers.get(id);
+    if(cl) {
+      imageLayers.remove(cl);
+    }
     this.setLayers(imageLayers);
   }
 
