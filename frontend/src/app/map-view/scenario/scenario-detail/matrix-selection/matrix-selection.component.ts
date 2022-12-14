@@ -87,7 +87,7 @@ export class MatrixSelectionComponent implements OnDestroy {
 
   get matrixOptions() {
     if (this.defaultArea) { // loaded?
-      return [this.defaultArea.defaultMatrix, ...this.defaultArea.userDefinedMatrices];
+      return [this.defaultArea.defaultMatrix, ...this.defaultArea.commonBaselineMatrices, ...this.defaultArea.userDefinedMatrices];
     }
     return [];
   }
@@ -162,11 +162,12 @@ export class MatrixSelectionComponent implements OnDestroy {
           area: this.defaultArea?.name,
           areaId: this.defaultArea?.id,
           matrixData: sensitivityMatrix,
-          immutable: this.selectedCustomMatrix?.id === this.defaultArea?.defaultMatrix.id
+          immutable: this.selectedCustomMatrix?.id === this.defaultArea?.defaultMatrix.id ||
+                     this.selectedCustomMatrix?.immutable
         }
       });
       if (savedAsNew) {
-        this.store.dispatch(AreaActions.addUserDefinedMatrix({ matrix: {id: id!, name} }));
+        this.store.dispatch(AreaActions.addUserDefinedMatrix({ matrix: {id: id!, name, immutable: false } }));
       }
     } catch (error) {
       this.loadingMatrix = false;

@@ -73,6 +73,7 @@ public class AreaSelectionResponseDtoMapper {
         AreaSelectionResponseDto.Matrix dto = new AreaSelectionResponseDto.Matrix();
         dto.setId(calcAreaSensMatrix.getSensitivityMatrix().getId());
         dto.setName(calcAreaSensMatrix.getSensitivityMatrix().getName());
+        dto.setImmutable(calcAreaSensMatrix.getSensitivityMatrix().getOwner() == null);
         return dto;
     }
 
@@ -82,6 +83,7 @@ public class AreaSelectionResponseDtoMapper {
         if (sensitivityMatrix != null) {
             dto.setId(sensitivityMatrix.getId());
             dto.setName(sensitivityMatrix.getName());
+            dto.setImmutable(sensitivityMatrix.getOwner() == null);
         }
         return dto;
     }

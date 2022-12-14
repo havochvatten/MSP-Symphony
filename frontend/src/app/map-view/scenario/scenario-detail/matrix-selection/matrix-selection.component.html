@@ -63,8 +63,11 @@
                 [disabled]="matrixOption !== 'CUSTOM'"
                 (selectedChanged)="customSelect($event)"
                 [noItemSelectedLabel]="'map.editor.matrix.choose-matrix' | translate">
-      <hav-select-item *ngFor="let matrix of matrixOptions" [value]="matrix">
-        {{ matrix.name }}
+      <hav-select-item *ngFor="let matrix of matrixOptions" [value]="matrix" class="{{ matrix.immutable ? 'locked' : '' }}">
+        <span>
+          {{ matrix.name }}
+        </span>
+        <app-icon iconType="padlock" *ngIf="matrix.immutable"></app-icon>
       </hav-select-item>
     </hav-select>
     <hav-button

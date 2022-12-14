@@ -28,6 +28,7 @@ export const ICONS = [
   'normalization',
   'opacity',
   'open-folder',
+  'padlock',
   'play-arrow',
   'plus',
   'polygon',
