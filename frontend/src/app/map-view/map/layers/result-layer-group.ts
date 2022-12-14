@@ -20,7 +20,12 @@ export class ResultLayerGroup extends LayerGroup {
           });
     const cl = this.calculationLayers.get(result.calculationId);
 
-    if(result.calculationId > -1 && !cl) {
+    // Comparison layers use a dummy negative number obtained
+    // by concatenating the respective calculation ids.
+    // This way we may utilize the same method to render both
+    // types of results.
+
+    if(!isNaN(result.calculationId)  && !cl) {
       this.calculationLayers.set(result.calculationId, cpl);
       cpl.on('postrender', this.renderHandler);
       imageLayers.push(cpl);
@@ -43,6 +48,7 @@ export class ResultLayerGroup extends LayerGroup {
   }
 
   public clearResult() {
+    this.calculationLayers = new Map<number, ImageLayer>();
     this.setLayers(new Collection<BaseLayer>());
   }
 
