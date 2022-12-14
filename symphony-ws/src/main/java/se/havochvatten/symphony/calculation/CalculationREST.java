@@ -3,6 +3,7 @@ package se.havochvatten.symphony.calculation;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.time.StopWatch;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.awt.image.RenderedImage;
+import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -252,32 +254,25 @@ public class CalculationREST {
     public Response getDifferenceImage(@Context HttpServletRequest req,
                                        @PathParam("a") int baseId, @PathParam("b") int scenarioId)
             throws Exception {
-        logger.info("Diffing base line calculations " + baseId + " against calculation " + scenarioId);
+        try {
+            var diff = getDiffCoverageFromCalcIds(calcService, req, baseId, scenarioId);
 
-        var base = CalcUtil.getCalculationResultFromSessionOrDb(baseId, req.getSession(),
-            calcService).orElseThrow(javax.ws.rs.BadRequestException::new);
-        var scenario =
-            CalcUtil.getCalculationResultFromSessionOrDb(scenarioId, req.getSession(),
-                calcService).orElseThrow(javax.ws.rs.BadRequestException::new);
-        if (!hasAccess(base, req.getUserPrincipal()) || !hasAccess(scenario, req.getUserPrincipal()))
-            return status(Response.Status.UNAUTHORIZED).build();
-
-        var diff = calcService.relativeDifference(base.getCoverage(), scenario.getCoverage());
-        // TODO Store coverage in user session? (and recalc if necessary?)
-
-        Envelope targetEnvelope = new ReferencedEnvelope(diff.getEnvelope());
-        RenderedImage image = WebUtil.render(diff, diff.getCoordinateReferenceSystem2D(),
+            Envelope targetEnvelope = new ReferencedEnvelope(diff.getEnvelope());
+            RenderedImage image = WebUtil.render(diff, diff.getCoordinateReferenceSystem2D(),
                 targetEnvelope,
                 WebUtil.getSLD(CalculationREST.class.getClassLoader().getResourceAsStream(
-                        props.getProperty("data.styles.comparison"))));
+                    props.getProperty("data.styles.comparison"))));
 
-        logger.info("Encoding result in PNG format...");
-        var baos = WebUtil.encode(image, "png");
-        logger.log(Level.INFO, "DONE ({0} bytes)", baos.size());
+            logger.info("Encoding result in PNG format...");
+            var baos = WebUtil.encode(image, "png");
+            logger.log(Level.INFO, "DONE ({0} bytes)", baos.size());
 
-        return ok(baos.toByteArray(), "image/png")
+            return ok(baos.toByteArray(), "image/png")
                 .header("SYM-Image-Extent", WebUtil.createExtent(targetEnvelope).toString())
                 .build();
+        } catch (AccessDeniedException ax) {
+            return status(Response.Status.UNAUTHORIZED).build();
+        }
     }
 
     @GET
@@ -304,6 +299,22 @@ public class CalculationREST {
         if (session == null)
             return Response.status(Response.Status.NO_CONTENT).build();
         return ok(session.getAttribute("mask"), "image/png").build();
+    }
+
+    public static GridCoverage2D getDiffCoverageFromCalcIds(CalcService calcService, HttpServletRequest req, int baseId, int relativeId) {
+        logger.info("Diffing base line calculations " + baseId + " against calculation " + relativeId);
+
+        var base = CalcUtil.getCalculationResultFromSessionOrDb(baseId, req.getSession(),
+            calcService).orElseThrow(javax.ws.rs.BadRequestException::new);
+        var scenario =
+            CalcUtil.getCalculationResultFromSessionOrDb(relativeId, req.getSession(),
+                calcService).orElseThrow(javax.ws.rs.BadRequestException::new);
+
+        if (!hasAccess(base, req.getUserPrincipal()) || !hasAccess(scenario, req.getUserPrincipal()))
+            throw new NotAuthorizedException("Unauthorized");
+
+        return calcService.relativeDifference(base.getCoverage(), scenario.getCoverage());
+        // TODO Store coverage in user session? (and recalc if necessary?)
     }
 
     public static boolean hasAccess(CalculationResult calc, Principal user) {

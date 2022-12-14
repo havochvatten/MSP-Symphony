@@ -197,7 +197,7 @@ public class CalcService {
 
         if (calc == null)
             throw new NotFoundException();
-        if (calc == null || !calc.getOwner().equals(principal.getName()))
+        if (!calc.getOwner().equals(principal.getName()))
             throw new NotAuthorizedException(principal.getName());
         else {
             try {
@@ -216,7 +216,7 @@ public class CalcService {
         }
     }
 
-    byte[] writeGeoTiff(GridCoverage2D coverage) throws IOException {
+    public byte[] writeGeoTiff(GridCoverage2D coverage) throws IOException {
         String type = props.getProperty("calc.result.compression.type");
         var quality = props.getProperty("calc.result.compression.quality");
 
