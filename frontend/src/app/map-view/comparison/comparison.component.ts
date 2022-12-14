@@ -52,10 +52,12 @@ export class ComparisonComponent implements AfterViewInit {
   }
 
   submit() {
-    let a = this.compareForm.value.a, b = this.compareForm.value.b
+    const a = this.compareForm.value.a, b = this.compareForm.value.b;
     this.dialogService.open(ComparisonReportModalComponent, this.moduleRef, {
       data: { a, b }
     });
+    this.calcService.addComparisonResult(a, b)
+      .catch(e => console.warn(e));
   }
 
   async changeBase(id: string) {

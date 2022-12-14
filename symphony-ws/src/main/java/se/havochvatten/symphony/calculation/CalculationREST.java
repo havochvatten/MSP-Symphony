@@ -204,36 +204,9 @@ public class CalculationREST {
         var scenario = calc.getScenarioSnapshot();
 
         RasterNormalizer normalizer = normalizationFactory.getNormalizer(scenario.getNormalization().type);
-        double normalizationValue = normalizer.apply(coverage, calc.getNormalizationValue());
+        Double normalizationValue = normalizer.apply(coverage, calc.getNormalizationValue());
 
-        Envelope dataEnvelope = new ReferencedEnvelope(coverage.getEnvelope());
-        CoordinateReferenceSystem targetCRS;
-        Envelope targetEnvelope;
-        if (crs == null) {
-            targetCRS = coverage.getCoordinateReferenceSystem2D();
-            targetEnvelope = dataEnvelope;
-        } else {
-            targetCRS = CRS.getAuthorityFactory(true).createCoordinateReferenceSystem(crs);
-            MathTransform transform = CRS.findMathTransform(
-                    coverage.getGridGeometry().getCoordinateReferenceSystem(), targetCRS);
-            targetEnvelope = JTS.transform(dataEnvelope, transform);
-        }
-
-        RenderedImage image = WebUtil.renderNormalized(coverage, targetCRS, targetEnvelope,
-                WebUtil.getSLD(CalculationREST.class.getClassLoader().getResourceAsStream(
-                        props.getProperty("data.styles.result"))), normalizationValue);
-
-        logger.info("Encoding result in PNG format...");
-        var baos = WebUtil.encode(image, "png");
-        logger.log(Level.INFO, "DONE ({0} bytes)", baos.size());
-
-        // Revving caching strategy
-        var cc = new CacheControl();
-        cc.setMaxAge(WebUtil.ONE_YEAR_IN_SECONDS);
-        return ok(baos.toByteArray(), "image/png")
-                .header("SYM-Image-Extent", WebUtil.createExtent(targetEnvelope).toString())
-                .cacheControl(cc)
-                .build();
+        return projectedPNGImageResponse(coverage, crs, normalizationValue);
     }
 
     @GET
@@ -252,24 +225,11 @@ public class CalculationREST {
     @RolesAllowed("GRP_SYMPHONY")
     @ApiOperation(value = "Computes the difference between two calculations", response = byte[].class)
     public Response getDifferenceImage(@Context HttpServletRequest req,
-                                       @PathParam("a") int baseId, @PathParam("b") int scenarioId)
+                                       @PathParam("a") int baseId, @PathParam("b") int scenarioId, @QueryParam("crs") String crs)
             throws Exception {
         try {
             var diff = getDiffCoverageFromCalcIds(calcService, req, baseId, scenarioId);
-
-            Envelope targetEnvelope = new ReferencedEnvelope(diff.getEnvelope());
-            RenderedImage image = WebUtil.render(diff, diff.getCoordinateReferenceSystem2D(),
-                targetEnvelope,
-                WebUtil.getSLD(CalculationREST.class.getClassLoader().getResourceAsStream(
-                    props.getProperty("data.styles.comparison"))));
-
-            logger.info("Encoding result in PNG format...");
-            var baos = WebUtil.encode(image, "png");
-            logger.log(Level.INFO, "DONE ({0} bytes)", baos.size());
-
-            return ok(baos.toByteArray(), "image/png")
-                .header("SYM-Image-Extent", WebUtil.createExtent(targetEnvelope).toString())
-                .build();
+            return projectedPNGImageResponse(diff, crs, null);
         } catch (AccessDeniedException ax) {
             return status(Response.Status.UNAUTHORIZED).build();
         }
@@ -315,6 +275,45 @@ public class CalculationREST {
 
         return calcService.relativeDifference(base.getCoverage(), scenario.getCoverage());
         // TODO Store coverage in user session? (and recalc if necessary?)
+    }
+
+    private Response projectedPNGImageResponse(GridCoverage2D coverage, String crs, Double normalizationValue) throws Exception {
+        Envelope dataEnvelope = new ReferencedEnvelope(coverage.getEnvelope());
+        CoordinateReferenceSystem targetCRS;
+        Envelope targetEnvelope;
+        RenderedImage image;
+
+        if (crs == null) {
+            targetCRS = coverage.getCoordinateReferenceSystem2D();
+            targetEnvelope = dataEnvelope;
+        } else {
+            targetCRS = CRS.getAuthorityFactory(true).createCoordinateReferenceSystem(crs);
+            MathTransform transform = CRS.findMathTransform(
+                coverage.getGridGeometry().getCoordinateReferenceSystem(), targetCRS);
+            targetEnvelope = JTS.transform(dataEnvelope, transform);
+        }
+
+        if(normalizationValue != null) {
+            image = WebUtil.renderNormalized(coverage, targetCRS, targetEnvelope,
+                WebUtil.getSLD(CalculationREST.class.getClassLoader().getResourceAsStream(
+                    props.getProperty("data.styles.result"))), normalizationValue);
+        } else {
+            image = WebUtil.render(coverage, targetCRS, targetEnvelope,
+                WebUtil.getSLD(CalculationREST.class.getClassLoader().getResourceAsStream(
+                    props.getProperty("data.styles.comparison"))));
+        }
+
+        logger.info("Encoding result in PNG format...");
+        var baos = WebUtil.encode(image, "png");
+        logger.log(Level.INFO, "DONE ({0} bytes)", baos.size());
+
+        // Revving caching strategy
+        var cc = new CacheControl();
+        cc.setMaxAge(WebUtil.ONE_YEAR_IN_SECONDS);
+        return ok(baos.toByteArray(), "image/png")
+            .header("SYM-Image-Extent", WebUtil.createExtent(targetEnvelope).toString())
+            .cacheControl(cc)
+            .build();
     }
 
     public static boolean hasAccess(CalculationResult calc, Principal user) {
