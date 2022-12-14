@@ -1,6 +1,7 @@
 export interface MatrixRef {
   id: number;
   name: string;
+  readonly immutable: boolean;
 }
 
 // se.havochvatten.symphony.metadata.dto.AreaSelectionResponseDto.Area

@@ -141,6 +141,8 @@
             "zoom-in": "Zoom in",
             "zoom-out": "Zoom ut",
             "clear-results": "Remove results from map",
+            "anti-alias-on": "Enable edge smoothing",
+            "anti-alias-off": "Disable edge smoothing",
             "search-area": "Search for area",
             "draw-area": "Draw area",
             "open-area": "Open saved area",

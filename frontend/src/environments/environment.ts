@@ -14,7 +14,7 @@ export const environment = {
   map: {
     center: [39.0, -11.0], // Suitable starting center for WIO region
     initialZoom: 4.5,
-    maxZoom: 10,
+    maxZoom: 18,
     minZoom: 3,
     zoomPadding: 20,
     disableBackgroundMap: false,
