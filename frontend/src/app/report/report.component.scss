@@ -108,6 +108,10 @@
         grid-column: 1 / 3;
       }
     }
+
+    app-report-bottom {
+      grid-row: 12 / 13;
+    }
   }
 
   .closing-matter {
