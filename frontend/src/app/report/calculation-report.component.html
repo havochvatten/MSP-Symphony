@@ -23,7 +23,6 @@
     [locale]="locale"
   >
   </app-histogram>
-  <app-result-color-scale [locale]="locale"></app-result-color-scale>
   <app-highest-impacts
     class="pressure-impacts"
     [title]="'report.highest-impact.pressure' | translate"
@@ -40,6 +39,7 @@
     [total]="report.total"
     [locale]="locale"
   ></app-highest-impacts>
+  <app-result-color-scale [locale]="locale"></app-result-color-scale>
   <!--TODO Avoid calling expensive function in template-->
   <app-pressure-chart
     [data]="formatChartData(report.chartData, metadata$ | async)"
