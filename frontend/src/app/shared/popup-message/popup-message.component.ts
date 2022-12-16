@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
 })
 export class PopupMessageComponent implements OnInit, OnDestroy {
   messages: Message[] = [];
+  isHtmlRx = /<(?:.|\n)*?>/;
   private messageSubscription$?: Subscription;
 
   constructor(private store: Store<State>) {}
@@ -22,6 +23,10 @@ export class PopupMessageComponent implements OnInit, OnDestroy {
       .subscribe(messages => {
         this.messages = messages;
       });
+  }
+
+  isHtml(s: string): boolean {
+    return this.isHtmlRx.test(s);
   }
 
   removeMessage(uuid: string) {
