@@ -57,6 +57,20 @@ export const fetchPercentileFailure = createAction(
   props<{ error: ErrorMessage }>()
 );
 
+export const deleteCalculation = createAction(
+  '[Calculation] Delete calculation',
+  props<{ calculationToBeDeleted: CalculationSlice }>()
+)
+
+export const deleteCalculationSuccess = createAction(
+  '[Calculation] Delete calculation success'
+);
+
+export const deleteCalculationFailure = createAction(
+  '[Calculation] Delete calculation failure',
+  props<{ error: ErrorMessage }>()
+);
+
 export const updateName = createAction(
   '[Calculation] Update calculation name',
   props<{ index: number, newName: string }>()

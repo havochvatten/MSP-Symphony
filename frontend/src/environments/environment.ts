@@ -11,7 +11,7 @@ export const environment = {
   map: {
     center: [10, -10],
     initialZoom: 4,
-    maxZoom: 10,
+    maxZoom: 18,
     minZoom: 3,
     zoomPadding: 20,
     disableBackgroundMap: false,

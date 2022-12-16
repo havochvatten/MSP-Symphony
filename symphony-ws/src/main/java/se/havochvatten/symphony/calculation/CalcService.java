@@ -52,6 +52,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.*;
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.NotFoundException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -133,8 +135,8 @@ public class CalcService {
                 getResultList();
     }
 
-    public List<CalculationResult> findAllFullByUser(Principal principal) {
-        return em.createNamedQuery("CalculationResult.findFullByOwner", CalculationResult.class).
+    public List<CalculationResultSlice> findAllCmpByUser(Principal principal) {
+        return em.createNamedQuery("CalculationResult.findCmpByOwner", CalculationResultSlice.class).
                 setParameter("username", principal.getName()).
                 getResultList();
     }
@@ -143,14 +145,14 @@ public class CalcService {
             Principal principal, CalculationResult base) {
         // Ideally we would do a spatial query to the database, but since areas are not stored as proper
         // PostGIS geometries this is not possible at it stands.
-        var candidates = findAllFullByUser(principal);
+
+        var candidates = findAllCmpByUser(principal);
         var baseFeature = base.getFeature();
         return candidates.stream()
-                .filter(c -> !c.getId().equals(base.getId())) // omit the calculation whose matches we are
+                .filter(c -> !base.getId().equals(c.id)) // omit the calculation whose matches we are
                 // searching for
                 .filter(c -> geometryEquals(baseFeature, c.getFeature()))
-                .map(CalculationResultSlice::new)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -190,7 +192,31 @@ public class CalcService {
         }
     }
 
-    byte[] writeGeoTiff(GridCoverage2D coverage) throws IOException {
+    public synchronized void delete(Principal principal, int id) {
+        var calc = getCalculation(id);
+
+        if (calc == null)
+            throw new NotFoundException();
+        if (!calc.getOwner().equals(principal.getName()))
+            throw new NotAuthorizedException(principal.getName());
+        else {
+            try {
+                transaction.begin();
+                em.remove(getCalculation(id));
+                transaction.commit();
+            } catch (Exception e) {
+                throw new SymphonyStandardSystemException(SymphonyModelErrorCode.OTHER_ERROR, e, "CalculationResult " +
+                    "persistence error");
+            } finally {
+                try {
+                    if (transaction.getStatus() == Status.STATUS_ACTIVE)
+                        transaction.rollback();
+                } catch (Throwable e) {/* ignore */}
+            }
+        }
+    }
+
+    public byte[] writeGeoTiff(GridCoverage2D coverage) throws IOException {
         String type = props.getProperty("calc.result.compression.type");
         var quality = props.getProperty("calc.result.compression.quality");
 
@@ -311,6 +337,7 @@ public class CalcService {
         var ecosystemsToInclude = scenario.getEcosystemsToInclude();
         GridCoverage2D coverage;
         if (operationName.equals("RarityAdjustedCumulativeImpact")) {
+            final int[] tmpEcoSystems = ecosystemsToInclude;
             var domain = operationOptions.get("domain");
             var indices = switch (domain) {
                 case "GLOBAL":
@@ -328,14 +355,17 @@ public class CalcService {
             // Filter out small layers that would cause division by zero, i.e. infinite impact.
             final var COMMONNESS_THRESHOLD = props.getPropertyAsDouble("calc.rarity_index.threshold", 0);
             DoublePredicate indexThresholdPredicate = (index) -> index > COMMONNESS_THRESHOLD;
-            ecosystemsToInclude = IntStream.range(0, ecosystemsToInclude.length)
-                .filter(i -> {
+            int[] ecosystemsToIncludeFiltered = IntStream.range(0, ecosystemsToInclude.length)
+                .map(i -> {
                     var keep = indexThresholdPredicate.test(indices[i]);
                     if (!keep)
                         LOG.warn("Removing band {} since value is below or equal to commonness threshold {}", i,
                             COMMONNESS_THRESHOLD);
-                    return keep;
-                }).toArray();
+                    return keep ? tmpEcoSystems[i] : -1;
+            }).filter(e -> e >= 0).toArray();
+
+            ecosystemsToInclude = ecosystemsToIncludeFiltered;
+
             var nonZeroIndices = Arrays.stream(indices).filter(indexThresholdPredicate).toArray();
             // TODO report this information to the user and show in a dialog on frontend?
 

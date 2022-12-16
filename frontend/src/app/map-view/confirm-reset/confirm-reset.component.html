@@ -1,0 +1,11 @@
+<h4>{{ 'map.confirm-reset.modal.header' | translate }}</h4>
+<p *ngIf="!activeScenario">{{ 'map.confirm-reset.modal.message' | translate }}</p>
+<p *ngIf="activeScenario">{{ 'map.confirm-reset.modal.message-scenario' | translate: { scenario: activeScenario.name } }}</p>
+<div>
+  <hav-button buttonType="secondary" (click)="close()">{{
+    'map.confirm-reset.modal.cancel' | translate
+    }}</hav-button>
+  <hav-button (click)="confirm()">{{
+    'map.confirm-reset.modal.confirm' | translate
+    }}</hav-button>
+</div>

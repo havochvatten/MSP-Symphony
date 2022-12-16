@@ -14,4 +14,12 @@
   svg {
     margin: auto;
   }
+
+  @media print {
+    svg {
+      margin: auto 0;
+      height: 93vh;
+      width: 100%;
+    }
+  }
 }

@@ -21,6 +21,17 @@
         "pressures": "Belastningar",
         "matrix": "Matris",
         "no-selected-area": "Inget valt område",
+        "reset-preselected": "Återställ",
+        "reset-preselected-description": "Återställ valda naturvärden och belastningar till standardurvalet och nollställ ändringar",
+        "confirm-reset": {
+            "modal": {
+                "header": "Bekräfta återställning",
+                "message": "Vill du återställa urvalet av naturvärden och belastningar?",
+                "message-scenario": "Vill du återställa urvalet av naturvärden och belastningar och nollställa all ändring av förekomst för aktivt scenario ({{ scenario }})?",
+                "cancel": "Avbryt",
+                "confirm": "Återställ"
+            }
+        },
         "editor": {
             "title": "Scenarion",
             "operation": {
@@ -54,8 +65,9 @@
             "matrix": {
                 "sensitivity-matrix": "Känslighetsmatris",
                 "default-matrix": "Standardmatris",
+                "alt-matrix": "Alternativ matris",
                 "user-matrix": "Egen matris",
-                "choose-matrix": "Välj matrix",
+                "choose-matrix": "Välj matris",
                 "choose-area-type": "Välj områdestyp (valfritt)",
                 "choose-area-type-matrix": "Välj matris för områdestyp",
                 "edited-matrixes": "Tidigare justerade matriser",
@@ -112,9 +124,25 @@
             },
             "calculate": "Beräkna"
         },
+        "metadata": {
+            "label": "Visa metadata",
+            "header": "Metadata avseende {{ layerType }}: {{ layerName }}",
+            "method-summary": "Metodsammanfattning",
+            "known-limitations": "Begränsningar",
+            "value-range": "Värdeintervall",
+            "data-processing": "Databehandling",
+            "data-sources": "Datakällor",
+            "close": "Stäng",
+            "ecosystem": "naturvärde",
+            "pressure": "belastning",
+            "no-info": "Uppgift saknas."
+        },
         "toolbar": {
             "zoom-in": "Zooma in",
             "zoom-out": "Zooma ut",
+            "clear-results": "Rensa kartbilden",
+            "anti-alias-on": "Kantutjämna resultat",
+            "anti-alias-off": "Kantutjämna ej resultat",
             "search-area": "Sök område",
             "draw-area": "Rita eget område",
             "open-area": "Öppna sparat område",
@@ -127,6 +155,7 @@
             "protected": "Skyddade områden",
             "surface-water": "Vattendirektivets ytvattenförekomst i Sverige",
             "user-created": "Mina områden",
+            "no-areas": "Inga områden",
             "search": {
                 "label": "Sökresultat",
                 "placeholder": "Sök område",
@@ -151,7 +180,15 @@
             "loading": "Laddar beräkningar...",
             "baseline-calculations": "Nuvärdesanalys",
             "previous-calculations": "Tidigare beräkningar",
-            "placeholder": "Inga tidigare beräkningar"
+            "placeholder": "Inga tidigare beräkningar",
+            "show-report": "Öppna rapport “{{ calculationName }}”",
+            "delete": "Radera sparad beräkning “{{ calculationName }}”",
+            "delete-modal" : {
+                "header": "Radera sparad beräkning",
+                "message": "Bekräfta borttagning av tidigare sparad beräkning: <em>“{{ calculationName }}”</em>",
+                "cancel": "Avbryt",
+                "confirm": "Radera"
+            }
         },
         "compare": {
             "title": "Jämför scenario",
@@ -169,6 +206,27 @@
                     "placeholder": "Mitt område 1",
                     "save": "Spara",
                     "close": "Avbryt"
+                },
+                "error": {
+                    "USER_DEF_AREA_NAME_EXISTS" : "Du har redan sparat ett område med namnet <em>{{ areaName }}</em>.\n\nTag bort eller byt namn på det tidigare sparade området, eller välj ett annat namn och försök igen."
+                }
+            },
+            "upload": {
+                "label": "Importera områdespolygon",
+                "modal": {
+                    "title": "Importera område",
+                    "fileformat-note": "Filer i <a href='https://www.geopackage.org/' target='_blank'>OGC GeoPackage</a>-format stöds.",
+                    "notice": {
+                        "WGS84-reprojection": "Områdets koordinater kommer att projiceras om till <em>EPSG:4326 (WGS 84)",
+                        "first-area-only": "GeoPackage-arkivet innehåller flera lager. Endast <em>{{ firstFeature }}</em> kommer att importeras!"
+                    },
+                    "import": "Bekräfta import",
+                    "cancel": "Avbryt"
+                },
+                "error": {
+                    "NOT_A_GEOPACKAGE": "Filen är inte ett GeoPackage-arkiv!",
+                    "GEOPACKAGE_NO_FEATURES": "GeoPackage-arkivet innehåller inga områden.",
+                    "USER_DEF_AREA_NAME_EXISTS": "Ett område med detta namn finns redan."
                 }
             },
             "rename": {
@@ -193,24 +251,6 @@
             },
             "share": {
                 "label": "Dela"
-            },
-            "upload": {
-                "label": "Importera områdespolygon",
-                "modal": {
-                    "title": "Importera område",
-                    "fileformat-note": "Filer i <a href='https://www.geopackage.org/' target='_blank'>OGC GeoPackage</a>-format stöds.",
-                    "notice": {
-                        "WGS84-reprojection": "Områdets koordinater kommer att projiceras om till <em>EPSG:4326 (WGS 84)",
-                        "first-area-only": "GeoPackage-arkivet innehåller flera lager. Endast <em>{{ firstFeature }}</em> kommer att importeras!"
-                    },
-                    "import": "Bekräfta import",
-                    "cancel": "Avbryt"
-                },
-                "error": {
-                    "NOT_A_GEOPACKAGE": "Filen är inte ett GeoPackage-arkiv!",
-                    "GEOPACKAGE_NO_FEATURES": "GeoPackage-arkivet innehåller inga områden.",
-                    "USER_DEF_AREA_NAME_EXISTS": "Ett område med detta namn finns redan."
-                }
             }
         },
         "color-scale": {
@@ -265,6 +305,8 @@
             "std-dev": "Standardavvikelse",
             "calculated-area": "Beräknad area",
             "km2": "km²",
+            "no-area": "(kan ej beräknas)",
+            "no-area-desc": "Områdets omfattning kan ej bestämmas",
             "normalization": {
                 "title": "Färgkodning maxvärde",
                 "domain": "{{ ordinalPercentileValue }} percentilen",

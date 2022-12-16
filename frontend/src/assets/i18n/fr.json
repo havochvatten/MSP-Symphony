@@ -21,10 +21,22 @@
         "pressures": "Pressions",
         "matrix": "Matrice",
         "no-selected-area": "Aucune région sélectionnée.",
+        "reset-preselected": "Réinitialiser",
+        "reset-preselected-description": "Réinitialiser les composants et les pressions sélectionnés à la sélection par défaut, supprimez tous les changements d'intensité pour le scénario actif",
+        "confirm-reset": {
+            "modal": {
+                "header": "Confirmer réinitialisation",
+                "message": "Voulez-vous réinitialiser les composants et les pressions sélectionnés à la sélection par défaut?",
+                "message-scenario": "Voulez-vous réinitialiser les composants et les pressions sélectionnés à la sélection par défaut, supprimez tous les changements d'intensité pour le scénario actif ({{ scenario }})?",
+                "cancel": "Annuler",
+                "confirm": "Réinitialiser"
+            }
+        },
         "editor": {
             "title": "Scénarios",
             "operation": {
                 "title": "Algorithme",
+                "choose": "Choisissez l'algorithme",
                 "CumulativeImpact": {
                     "title": "Impact cumulé"
                 },
@@ -53,6 +65,7 @@
             "matrix": {
                 "sensitivity-matrix": "Matrice de sensibilité",
                 "default-matrix": "Matrice par défaut",
+                "alt-matrix": "Matrice alternative",
                 "user-matrix": "Matrice sélectionnée par l'utilisateur",
                 "choose-matrix": "Choisir la matrice",
                 "choose-area-type": "Choisir le type de zone (facultatif)",
@@ -111,10 +124,25 @@
             },
             "calculate": "Calculer"
         },
+        "metadata": {
+            "label": "Voir les métadonnées",
+            "header": "Métadonnées concernant {{ layerType }}: {{ layerName }}",
+            "method-summary": "Résumé de la méthode",
+            "known-limitations": "Limites connues",
+            "value-range": "Plage de valeurs",
+            "data-processing": "Traitement de l'information",
+            "data-sources": "Source de données",
+            "close": "Fermer",
+            "ecosystem": "écosystème",
+            "pressure": "pression",
+            "no-info": "Métadonnée manquante."
+        },
         "toolbar": {
             "zoom-in": "Zoom +",
             "zoom-out": "Zoom -",
             "clear-results": "Effacer les résultats",
+            "anti-alias-on": "Activer le lissage des contours",
+            "anti-alias-off": "Désactiver le lissage des contours",
             "search-area": "Chercher une zone",
             "draw-area": "Dessiner une zone",
             "open-area": "Ouvrir une zone sauvegardée",
@@ -152,7 +180,15 @@
             "loading": "Calcul du résultat...",
             "baseline-calculations": "Résultat du scénario de référence",
             "previous-calculations": "Résultat précédent",
-            "placeholder": "Aucun résultat calculé"
+            "placeholder": "Aucun résultat calculé",
+            "show-report": "Ouvrir le rapport de calcul “{{ calculationName }}”",
+            "delete": "Supprimer le résultat “{{ calculationName }}”",
+            "delete-modal" : {
+                "header": "Supprimer résultat",
+                "message": "Confirmer la suppression du résultat: <em>“{{ calculationName }}”</em>",
+                "cancel": "Annuler",
+                "confirm": "Supprimer"
+            }
         },
         "compare": {
             "title": "Comparez les scénarios",
@@ -170,6 +206,9 @@
                     "placeholder": "Zone 1",
                     "save": "Sauvegarder",
                     "close": "Fermer"
+                },
+                "error": {
+                    "USER_DEF_AREA_NAME_EXISTS" : "Vous avez déjà enregistré une zone nommée <em>{{ areaName }}</em>.\n\nSupprimez ou renommez la zone précédemment enregistrée, ou choisissez un autre nom et réessayez."
                 }
             },
             "upload": {
@@ -257,7 +296,6 @@
         "cumulative-effect-etc": {
             "baseline": "Version de référence",
             "operation": "Algorithme",
-            "choose": "Choisissez l'algorithme",
             "title": "Impact cumulé",
             "relative-diff": "Changement relatif",
             "total": "Total",
@@ -267,9 +305,10 @@
             "std-dev": "Ecart type",
             "calculated-area": "Surface",
             "km2": "km²",
+            "no-area": "N/A",
+            "no-area-desc": "Étendue indéterminable",
             "normalization": {
                 "title": "Palette de couleurs",
-                "description": "Définir la valeur maximale en tant que:",
                 "domain": "{{ ordinalPercentileValue }} centile",
                 "area": "Valeur maximale dans la zone de calcul",
                 "custom": "Valeur définie par l'utilisateur",

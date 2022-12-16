@@ -7,7 +7,9 @@
   <hav-button id="open-in-new-tab" buttonType="tertiary" (click)="open()">
     {{ 'report.toolbar.open-in-new-tab' | translate }}
   </hav-button>
-  <!--Add geotiff download? (Store last diff image in user session) -->
+  <hav-button buttonType="secondary" (click)="downloadGeotiff()">
+    {{ 'report.toolbar.export-geotiff' | translate }}
+  </hav-button>
   <hav-button (click)="print()">
     {{ 'report.toolbar.print' | translate }}
   </hav-button>

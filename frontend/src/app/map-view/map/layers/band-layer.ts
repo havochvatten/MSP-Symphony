@@ -23,7 +23,9 @@ class BandLayer extends LayerGroup {
     pressures: new Map<number, Layer>()
   };
 
-  constructor(private baseline: string, private dataLayerService: DataLayerService) {
+  constructor(private baseline: string,
+              private dataLayerService: DataLayerService)
+  {
     super();
   }
 
@@ -43,33 +45,28 @@ class BandLayer extends LayerGroup {
     bands.forEach((band: Band) => {
       if (!layerBands.get(band.bandNumber)) {
         const type = layerBands === this.visibleBands.ecoComponents ? 'ECOSYSTEM' : 'PRESSURE';
-        this.dataLayerService
-          .getDataLayer(this.baseline, type, band.bandNumber)
-          .subscribe(response => {
-            const extentHeader = response.headers.get('SYM-Image-Extent');
-            if (extentHeader) {
-              if (!response.body) {
-                return;
-              }
-              const imageOpts = {
-                url: URL.createObjectURL(response.body),
-                imageExtent: JSON.parse(extentHeader),
-                projection: AppSettings.CLIENT_SIDE_PROJECTION
-                  ? AppSettings.DATALAYER_RASTER_CRS
-                  : AppSettings.MAP_PROJECTION,
-                attributions: band.mapAknowledgement ?? band.authorOrganisation ?? ''
-              };
-
-              const layer = new DataLayer(imageOpts);
-              this.getLayers().push(layer);
-              layerBands.set(band.bandNumber, layer);
-              this.setBandLayerOpacity(bandType, band.bandNumber, (band.layerOpacity ?? 100) / 100);
-            } else {
-              console.error(
-                'Image for band ' + band.bandNumber + ' does not have any extent header ignoring.'
-              );
+        this.dataLayerService.getDataLayer(this.baseline, type, band.bandNumber).subscribe(response => {
+          const extentHeader = response.headers.get('SYM-Image-Extent');
+          if (extentHeader) {
+            if (!response.body) {
+              return;
             }
-          });
+            const imageOpts = {
+              url: URL.createObjectURL(response.body),
+              imageExtent: JSON.parse(extentHeader),
+              calculationId: NaN,
+              projection: AppSettings.CLIENT_SIDE_PROJECTION ? AppSettings.DATALAYER_RASTER_CRS : AppSettings.MAP_PROJECTION,
+              attributions: band.mapAcknowledgement ?? band.authorOrganisation ?? ''
+            };
+
+            const layer = new DataLayer(imageOpts);
+            this.getLayers().push(layer);
+            layerBands.set(band.bandNumber, layer);
+            this.setBandLayerOpacity(bandType, band.bandNumber, (band.layerOpacity ?? 100)/100);
+          } else {
+            console.error("Image for band "+band.bandNumber+" does not have any extent header ignoring.");
+          }
+        });
       }
     });
   }

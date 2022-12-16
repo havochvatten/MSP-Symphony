@@ -21,10 +21,22 @@
         "pressures": "Pressures",
         "matrix": "Matrix",
         "no-selected-area": "No area selected",
+        "reset-preselected": "Reset",
+        "reset-preselected-description": "Reset selected components/pressures and intensity values",
+        "confirm-reset": {
+            "modal": {
+                "header": "Confirm reset",
+                "message": "Reset selected components/pressures?",
+                "message-scenario": "Reset selected components/pressures and any changes to intensity in the active scenario ({{ scenario }})?",
+                "cancel": "Cancel",
+                "confirm": "Reset"
+            }
+        },
         "editor": {
             "title": "Scenarios",
             "operation": {
                 "title": "Algorithm",
+                "choose": "Choose algorithm",
                 "CumulativeImpact": {
                     "title": "Cumulative impact"
                 },
@@ -53,6 +65,7 @@
             "matrix": {
                 "sensitivity-matrix": "Sensitivity Matrix",
                 "default-matrix": "Default matrix",
+                "alt-matrix": "Alternate matrix",
                 "user-matrix": "User-defined matrix",
                 "choose-matrix": "Choose matrix",
                 "choose-area-type": "Choose area type (optional)",
@@ -111,10 +124,25 @@
             },
             "calculate": "Calculate"
         },
+        "metadata": {
+            "label": "Show metadata",
+            "header": "Metadata regarding {{ layerType }}: {{ layerName }}",
+            "method-summary": "Method summary",
+            "known-limitations": "Known limitations",
+            "value-range": "Value range",
+            "data-processing": "Data processing",
+            "data-sources": "Data sources",
+            "close": "Close",
+            "ecosystem": "ecosystem",
+            "pressure": "pressure",
+            "no-info": "Metadatum missing."
+        },
         "toolbar": {
             "zoom-in": "Zoom in",
             "zoom-out": "Zoom ut",
             "clear-results": "Remove results from map",
+            "anti-alias-on": "Enable edge smoothing",
+            "anti-alias-off": "Disable edge smoothing",
             "search-area": "Search for area",
             "draw-area": "Draw area",
             "open-area": "Open saved area",
@@ -124,7 +152,7 @@
         "area": {
             "sea-plan": "MSP areas",
             "county": "Municipalities and Counties",
-            "protected": "Protectad areas",
+            "protected": "Protected areas",
             "surface-water": "Swedish waterbodies managed under the EU Water Framework Directive",
             "user-created": "User-created Areas",
             "no-areas": "No areas",
@@ -152,7 +180,15 @@
             "loading": "Loading calculations...",
             "baseline-calculations": "Baseline Calculations",
             "previous-calculations": "Previous Calculations",
-            "placeholder": "No calculations performed"
+            "placeholder": "No calculations performed",
+            "show-report": "Open calculation report “{{ calculationName }}”",
+            "delete": "Delete saved calculation result “{{ calculationName }}”",
+            "delete-modal" : {
+                "header": "Delete calculation",
+                "message": "Confirm deletion of previously saved calculation result: <em>“{{ calculationName }}”</em>",
+                "cancel": "Cancel",
+                "confirm": "Delete"
+            }
         },
         "compare": {
             "title": "Compare calculations",
@@ -170,6 +206,9 @@
                     "placeholder": "My area 1",
                     "save": "Save",
                     "close": "Close"
+                },
+                "error": {
+                    "USER_DEF_AREA_NAME_EXISTS" : "You have already saved an area by the name <em>{{ areaName }}</em>.\n\nDelete or rename the previously saved area, or choose another name, and try again."
                 }
             },
             "upload": {
@@ -257,7 +296,6 @@
         "cumulative-effect-etc": {
             "baseline": "Baseline version",
             "operation": "Algorithm",
-            "choose": "Choose algorithm",
             "title": "Cumulative effect",
             "relative-diff": "Relative change",
             "total": "Total",
@@ -267,9 +305,10 @@
             "std-dev": "Std. Dev",
             "calculated-area": "Calculated area",
             "km2": "km²",
+            "no-area": "N/A",
+            "no-area-desc": "Area cannot be measured",
             "normalization": {
                 "title": "Result colorscale",
-                "description": "Set maximum value based on",
                 "domain": "{{ ordinalPercentileValue }} percentile",
                 "area": "Maximum value in area",
                 "custom": "User-defined value",

@@ -13,13 +13,17 @@ import java.util.List;
 public class AreaSelectionResponseDtoMapper {
     public static AreaSelectionResponseDto mapToDto(CalculationArea defaultArea,
 													List<AreaSelectionResponseDto.AreaTypeArea> areaTypeDtos,
-                                                    List<CalcAreaSensMatrix> userDefinedMatrices) throws SymphonyStandardAppException {
+                                                    List<CalcAreaSensMatrix> userDefinedMatrices,
+                                                    List<CalcAreaSensMatrix> commonBaselineMatrices) throws SymphonyStandardAppException {
         AreaSelectionResponseDto resp = new AreaSelectionResponseDto();
         List<AreaSelectionResponseDto.Matrix> userDefinedMatrixDtos =
 				mapToCalcAreaSensMatrixDtos(userDefinedMatrices, false);
+        List<AreaSelectionResponseDto.Matrix> commonBaselineMatrixDtos =
+                mapToCalcAreaSensMatrixDtos(commonBaselineMatrices, true);
         AreaSelectionResponseDto.DefaultArea defaultAreaDto = new AreaSelectionResponseDto.DefaultArea();
         defaultAreaDto.setAreaAttributes(mapToAreaDto(defaultArea));
         defaultAreaDto.getUserDefinedMatrices().addAll(userDefinedMatrixDtos);
+        defaultAreaDto.getCommonBaselineMatrices().addAll(commonBaselineMatrixDtos);
         resp.setDefaultArea(defaultAreaDto);
         resp.getAreaTypes().addAll(areaTypeDtos);
 
@@ -69,6 +73,7 @@ public class AreaSelectionResponseDtoMapper {
         AreaSelectionResponseDto.Matrix dto = new AreaSelectionResponseDto.Matrix();
         dto.setId(calcAreaSensMatrix.getSensitivityMatrix().getId());
         dto.setName(calcAreaSensMatrix.getSensitivityMatrix().getName());
+        dto.setImmutable(calcAreaSensMatrix.getSensitivityMatrix().getOwner() == null);
         return dto;
     }
 
@@ -78,6 +83,7 @@ public class AreaSelectionResponseDtoMapper {
         if (sensitivityMatrix != null) {
             dto.setId(sensitivityMatrix.getId());
             dto.setName(sensitivityMatrix.getName());
+            dto.setImmutable(sensitivityMatrix.getOwner() == null);
         }
         return dto;
     }

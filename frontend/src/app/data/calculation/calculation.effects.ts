@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { of } from 'rxjs';
+import { from, of } from 'rxjs';
 import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
 import { CalculationActions } from './';
 import { CalculationService } from './calculation.service';
@@ -24,6 +24,19 @@ export class CalculationEffects {
               error: { status, message }
             })
           )
+        )
+      )
+    )
+  );
+
+  @Effect()
+  deleteCalculation$ = this.actions$.pipe(
+    ofType(CalculationActions.deleteCalculation),
+    mergeMap(({ calculationToBeDeleted }) =>
+      from(this.calcService.removeResult(calculationToBeDeleted.id)).pipe(
+        map(() => CalculationActions.deleteCalculationSuccess()),
+        catchError(({status, error: message}) =>
+          of(CalculationActions.deleteCalculationFailure({error: {status, message}}))
         )
       )
     )
