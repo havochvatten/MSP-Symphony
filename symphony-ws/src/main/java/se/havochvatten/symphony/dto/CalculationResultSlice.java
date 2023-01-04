@@ -48,7 +48,7 @@ public class CalculationResultSlice {
         this.timestamp = timestamp.getTime();
     }
 
-    @JsonCreator
+
     public CalculationResultSlice(int id, String name, Date timestamp, String feature) {
         this.id = id;
         this.name = name;
