@@ -3,8 +3,8 @@ package se.havochvatten.symphony.dto;
 public class SensMatrixDto {
     Integer id;
     String name;
+    String owner;
     SensitivityDto sensMatrix;
-
     public Integer getId() {
         return id;
     }
@@ -19,6 +19,14 @@ public class SensMatrixDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     public SensitivityDto getSensMatrix() {

@@ -65,8 +65,9 @@
             "matrix": {
                 "sensitivity-matrix": "Känslighetsmatris",
                 "default-matrix": "Standardmatris",
+                "alt-matrix": "Alternativ matris",
                 "user-matrix": "Egen matris",
-                "choose-matrix": "Välj matrix",
+                "choose-matrix": "Välj matris",
                 "choose-area-type": "Välj områdestyp (valfritt)",
                 "choose-area-type-matrix": "Välj matris för områdestyp",
                 "edited-matrixes": "Tidigare justerade matriser",
@@ -126,11 +127,11 @@
         "metadata": {
             "label": "Visa metadata",
             "header": "Metadata avseende {{ layerType }}: {{ layerName }}",
-            "method-summary": "Method summary",
-            "known-limitations": "Known limitations",
-            "value-range": "Value range",
-            "data-processing": "Data processing",
-            "data-sources": "Data sources",
+            "method-summary": "Metodsammanfattning",
+            "known-limitations": "Begränsningar",
+            "value-range": "Värdeintervall",
+            "data-processing": "Databehandling",
+            "data-sources": "Datakällor",
             "close": "Stäng",
             "ecosystem": "naturvärde",
             "pressure": "belastning",
@@ -140,6 +141,8 @@
             "zoom-in": "Zooma in",
             "zoom-out": "Zooma ut",
             "clear-results": "Rensa kartbilden",
+            "anti-alias-on": "Kantutjämna resultat",
+            "anti-alias-off": "Kantutjämna ej resultat",
             "search-area": "Sök område",
             "draw-area": "Rita eget område",
             "open-area": "Öppna sparat område",
@@ -177,7 +180,15 @@
             "loading": "Laddar beräkningar...",
             "baseline-calculations": "Nuvärdesanalys",
             "previous-calculations": "Tidigare beräkningar",
-            "placeholder": "Inga tidigare beräkningar"
+            "placeholder": "Inga tidigare beräkningar",
+            "show-report": "Öppna rapport “{{ calculationName }}”",
+            "delete": "Radera sparad beräkning “{{ calculationName }}”",
+            "delete-modal" : {
+                "header": "Radera sparad beräkning",
+                "message": "Bekräfta borttagning av tidigare sparad beräkning: <em>“{{ calculationName }}”</em>",
+                "cancel": "Avbryt",
+                "confirm": "Radera"
+            }
         },
         "compare": {
             "title": "Jämför scenario",
@@ -195,6 +206,9 @@
                     "placeholder": "Mitt område 1",
                     "save": "Spara",
                     "close": "Avbryt"
+                },
+                "error": {
+                    "USER_DEF_AREA_NAME_EXISTS" : "Du har redan sparat ett område med namnet <em>{{ areaName }}</em>.\n\nTag bort eller byt namn på det tidigare sparade området, eller välj ett annat namn och försök igen."
                 }
             },
             "upload": {

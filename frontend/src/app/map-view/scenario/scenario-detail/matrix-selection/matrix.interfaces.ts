@@ -1,6 +1,7 @@
 export interface MatrixRef {
   id: number;
   name: string;
+  readonly immutable: boolean;
 }
 
 // se.havochvatten.symphony.metadata.dto.AreaSelectionResponseDto.Area
@@ -13,6 +14,7 @@ export interface Area {
 
 export interface DefaultArea extends Area {
   userDefinedMatrices: MatrixRef[];
+  commonBaselineMatrices: MatrixRef[];
 }
 
 export interface AreaTypeMatrixMapping {

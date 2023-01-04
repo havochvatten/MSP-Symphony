@@ -8,6 +8,7 @@ public class AreaSelectionResponseDto {
     public static class Matrix {
         Integer id;
         String name;
+        boolean immutable;
 
         public Integer getId() {
             return id;
@@ -24,6 +25,10 @@ public class AreaSelectionResponseDto {
         public void setName(String name) {
             this.name = name;
         }
+
+        public boolean isImmutable() { return immutable; }
+
+        public void setImmutable(boolean immutable) { this.immutable = immutable; }
     }
 
     public static class Area {
@@ -66,6 +71,7 @@ public class AreaSelectionResponseDto {
 
     public static class DefaultArea extends Area {
         List<Matrix> userDefinedMatrices;
+        List<Matrix> commonBaselineMatrices;
 
         public void setAreaAttributes(Area area) {
             this.setId(area.getId());
@@ -79,6 +85,13 @@ public class AreaSelectionResponseDto {
                 userDefinedMatrices = new ArrayList<>();
             }
             return userDefinedMatrices;
+        }
+
+        public List<Matrix> getCommonBaselineMatrices() {
+            if (commonBaselineMatrices == null) {
+                commonBaselineMatrices = new ArrayList<>();
+            }
+            return commonBaselineMatrices;
         }
     }
 

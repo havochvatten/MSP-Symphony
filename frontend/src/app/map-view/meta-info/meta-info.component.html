@@ -12,9 +12,7 @@
   <div *ngIf="bandMetadataSources.length > 0 && bandMetadataSources[0].length > 0">
     <h5>{{ 'map.metadata.data-sources' | translate }}</h5>
     <ul>
-      <li *ngFor="let mdSource of bandMetadataSources">
-        {{ mdSource }}
-      </li>
+      <li *ngFor="let mdSource of bandMetadataSources" [innerHTML]="mdSource | anchor"></li>
     </ul>
   </div>
 </div>

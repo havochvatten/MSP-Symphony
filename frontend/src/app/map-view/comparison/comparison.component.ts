@@ -52,10 +52,12 @@ export class ComparisonComponent implements AfterViewInit {
   }
 
   submit() {
-    let a = this.compareForm.value.a, b = this.compareForm.value.b
+    const a = this.compareForm.value.a, b = this.compareForm.value.b;
     this.dialogService.open(ComparisonReportModalComponent, this.moduleRef, {
       data: { a, b }
     });
+    this.calcService.addComparisonResult(a, b)
+      .catch(e => console.warn(e));
   }
 
   async changeBase(id: string) {
@@ -64,10 +66,10 @@ export class ComparisonComponent implements AfterViewInit {
 
     this.candidates$ = this.calcService.getMatchingCalculations(id).pipe(
       withLatestFrom(this.translate.get('map.compare.choose-scenario')),
-      tap(([_, trans]) => {
+      tap(([res, trans]) => {
         this.loadingCandidates = false;
         this.bSelect.noItemSelectedLabel = trans;
-        this.bSelect.disabled = false;
+        this.bSelect.disabled = res.length === 0;
       }),
       map(([res, _]) => res)
     );

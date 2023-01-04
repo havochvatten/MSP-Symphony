@@ -65,6 +65,7 @@
             "matrix": {
                 "sensitivity-matrix": "Matrice de sensibilité",
                 "default-matrix": "Matrice par défaut",
+                "alt-matrix": "Matrice alternative",
                 "user-matrix": "Matrice sélectionnée par l'utilisateur",
                 "choose-matrix": "Choisir la matrice",
                 "choose-area-type": "Choisir le type de zone (facultatif)",
@@ -140,6 +141,8 @@
             "zoom-in": "Zoom +",
             "zoom-out": "Zoom -",
             "clear-results": "Effacer les résultats",
+            "anti-alias-on": "Activer le lissage des contours",
+            "anti-alias-off": "Désactiver le lissage des contours",
             "search-area": "Chercher une zone",
             "draw-area": "Dessiner une zone",
             "open-area": "Ouvrir une zone sauvegardée",
@@ -177,7 +180,15 @@
             "loading": "Calcul du résultat...",
             "baseline-calculations": "Résultat du scénario de référence",
             "previous-calculations": "Résultat précédent",
-            "placeholder": "Aucun résultat calculé"
+            "placeholder": "Aucun résultat calculé",
+            "show-report": "Ouvrir le rapport de calcul “{{ calculationName }}”",
+            "delete": "Supprimer le résultat “{{ calculationName }}”",
+            "delete-modal" : {
+                "header": "Supprimer résultat",
+                "message": "Confirmer la suppression du résultat: <em>“{{ calculationName }}”</em>",
+                "cancel": "Annuler",
+                "confirm": "Supprimer"
+            }
         },
         "compare": {
             "title": "Comparez les scénarios",
@@ -195,6 +206,9 @@
                     "placeholder": "Zone 1",
                     "save": "Sauvegarder",
                     "close": "Fermer"
+                },
+                "error": {
+                    "USER_DEF_AREA_NAME_EXISTS" : "Vous avez déjà enregistré une zone nommée <em>{{ areaName }}</em>.\n\nSupprimez ou renommez la zone précédemment enregistrée, ou choisissez un autre nom et réessayez."
                 }
             },
             "upload": {

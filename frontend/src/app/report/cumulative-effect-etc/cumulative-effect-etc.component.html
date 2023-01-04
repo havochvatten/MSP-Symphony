@@ -78,7 +78,8 @@
           <td>{{ matrix.defaultMatrix }}</td>
         </ng-container>
         <ng-container *ngSwitchCase="'string'">
-          <th>{{'map.editor.matrix.user-matrix' | translate}}:</th>
+          <th *ngIf="reports[0].altMatrix">{{'map.editor.matrix.alt-matrix' | translate}}:</th>
+          <th *ngIf="!reports[0].altMatrix">{{'map.editor.matrix.user-matrix' | translate}}:</th>
           <td>{{ matrix }}</td>
         </ng-container>
         <ng-container *ngSwitchCase="undefined"></ng-container>

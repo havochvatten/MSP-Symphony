@@ -28,6 +28,37 @@
         width: 100%;
       }
 
+      ::ng-deep > hav-select {
+        position: relative;
+
+        .hav-select-control {
+          .hav-select-menu {
+            z-index: 2;
+
+            .hav-select-menu-items {
+              hav-select-item {
+                position: relative;
+
+                &.locked {
+                  font-weight: 700;
+                  color: dimgray;
+
+                  .hav-select-menu-items-item {
+                    background-color: #f3f3f3;
+                  }
+
+                  app-icon {
+                    position: absolute;
+                    right: 1rem;
+                    top: 1rem;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
       ::ng-deep hav-button button {
         position: relative;
         hav-spinner {

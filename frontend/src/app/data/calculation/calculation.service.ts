@@ -30,6 +30,7 @@ export interface NormalizationOptions {
 })
 export class CalculationService implements OnDestroy {
   public resultReady$ = new EventEmitter<StaticImageOptions>();
+  public resultRemoved$ = new EventEmitter<number>();
   private ecoBands: number[] = [];
   private pressureBands: number[] = [];
   private bandNumbersSubscription$: Subscription;
@@ -93,15 +94,28 @@ export class CalculationService implements OnDestroy {
     });
   }
 
-  public addResult(id: string) {
+  public addComparisonResult(idA: string, idB: string){
+    //  Bit "hacky" but workable "faux" id constructed as a negative number
+    //  to guarantee uniqueness without demanding a separate interface.
+    //  note + is intended here as concat, not addition, although both ids
+    //  are numeric eg. 654 + 321 = -654321
+    return this.addResultImage("-" + idA + idB, `diff/${idA}/${idB}`);
+  }
+
+  public addResult(id: string){
+    return this.addResultImage(id, `${id}/image`);
+  }
+
+  private addResultImage(id: string, epFragment: string) {
     const that = this;
     return new Promise((resolve, reject) => {
-      this.getStaticImage(`${env.apiBaseUrl}/calculation/${id}/image`).subscribe({
+      this.getStaticImage(`${env.apiBaseUrl}/calculation/` + epFragment).subscribe({
         next(response) {
           const extentHeader = response.headers.get('SYM-Image-Extent');
           if (extentHeader) {
             that.resultReady$.emit({
               url: URL.createObjectURL(response.body),
+              calculationId: +id,
               imageExtent: JSON.parse(extentHeader),
               projection: AppSettings.CLIENT_SIDE_PROJECTION ? AppSettings.DATALAYER_RASTER_CRS : AppSettings.MAP_PROJECTION
             });
@@ -116,6 +130,20 @@ export class CalculationService implements OnDestroy {
           reject('Error fetching result image at ' +err.url);
         }
       });
+    });
+  }
+
+  public removeResult(id: string){
+    const that = this;
+    return new Promise((resolve, reject) => {
+      this.delete(id).subscribe({
+        next(response) {
+          that.resultRemoved$.emit(+id);
+          resolve();
+        },
+        error(err: HttpErrorResponse) {
+          reject('Server error');
+        }});
     });
   }
 
@@ -145,6 +173,10 @@ export class CalculationService implements OnDestroy {
 
   public getPercentileValue() {
     return this.http.get<PercentileResponse>(`${env.apiBaseUrl}/calibration/percentile-value`);
+  }
+
+  delete(id: string) {
+    return this.http.delete(`${env.apiBaseUrl}/calculation/${id}`);
   }
 
   ngOnDestroy() {

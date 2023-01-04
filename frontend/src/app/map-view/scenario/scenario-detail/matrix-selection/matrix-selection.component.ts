@@ -1,4 +1,4 @@
-import { Component, EventEmitter, NgModuleRef, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, NgModuleRef, OnDestroy, Output, ViewChild } from '@angular/core';
 import {
   Area,
   AreaTypeMatrixMapping,
@@ -14,10 +14,10 @@ import { AreaActions, AreaSelectors } from "@data/area";
 import { TranslateService } from "@ngx-translate/core";
 import { MatrixService } from './matrix.service';
 import { ScenarioSelectors } from "@data/scenario";
-import { filter, skip } from "rxjs/operators";
 import { Subscription } from "rxjs";
+import { SelectComponent } from "hav-components";
 
-type MatrixOption = 'STANDARD' | 'CUSTOM';
+type MatrixOption = 'STANDARD' | 'CUSTOM' | 'OPTIONAL';
 
 @Component({
   selector: 'app-matrix-selection',
@@ -38,6 +38,9 @@ export class MatrixSelectionComponent implements OnDestroy {
   selectedCustomMatrix?: MatrixRef;
   @Output() areaTypeSelected = new EventEmitter<MatrixParameterResponse>();
   @Output() matrixOverridden = new EventEmitter<number|undefined>(); // id of user-defined matrix
+  @ViewChild('altMx') altMatrixSelect: SelectComponent | undefined;
+  @ViewChild('usrMx') userMatrixSelect: SelectComponent | undefined;
+  @ViewChild('typeMx') typeMatrixSelect: SelectComponent | undefined;
   private defaultMatrixTranslation?: string;
   private matrixDataLoadingSubcription: Subscription;
   private matrixDataSubcription: Subscription;
@@ -84,20 +87,38 @@ export class MatrixSelectionComponent implements OnDestroy {
 
   get matrixOptions() {
     if (this.defaultArea) { // loaded?
-      return [this.defaultArea.defaultMatrix, ...this.defaultArea.userDefinedMatrices];
+      return [this.defaultArea.defaultMatrix, ...this.defaultArea.commonBaselineMatrices, ...this.defaultArea.userDefinedMatrices];
     }
     return [];
   }
 
-  check(value: MatrixOption) {
+  get commonOptionalMatrices() {
+    if(this.defaultArea) {
+      return [...this.defaultArea.commonBaselineMatrices];
+    }
+    return [];
+  }
+
+  check(value: MatrixOption, control: SelectComponent | null) {
     this.matrixOption = value;
 
     if (this.matrixOption === 'STANDARD') {
       this.matrixOverridden.emit(undefined);
     }
+
+    [this.altMatrixSelect, this.userMatrixSelect, this.typeMatrixSelect].forEach(
+      dd => {
+        if(dd && dd !== control) {
+          dd.items.forEach(i => i.selected = false)
+        } else if (dd === control && dd.items.length === 1) {
+          dd.writeValue(dd.items.first.value);
+        }
+      });
   }
 
   hasAreaTypes = () => Boolean(this.areaTypes?.length);
+
+  hasOptionalMatrices = () => Boolean(this.defaultArea?.commonBaselineMatrices.length) || false;
 
   areaTypeSelect(event: AreaTypeMatrixMapping) {
     this.selectedAreaType = event;
@@ -124,6 +145,10 @@ export class MatrixSelectionComponent implements OnDestroy {
     this.matrixOverridden.emit(this.selectedCustomMatrix.id);
   }
 
+  optionalSelect(matrix: MatrixRef) {
+    this.matrixOverridden.emit(matrix.id);
+  }
+
   async editMatrix() {
     const matrixId = this.selectedCustomMatrix ? this.selectedCustomMatrix.id : this.defaultArea?.defaultMatrix.id;
 
@@ -137,11 +162,12 @@ export class MatrixSelectionComponent implements OnDestroy {
           area: this.defaultArea?.name,
           areaId: this.defaultArea?.id,
           matrixData: sensitivityMatrix,
-          immutable: this.selectedCustomMatrix?.id === this.defaultArea?.defaultMatrix.id
+          immutable: this.selectedCustomMatrix?.id === this.defaultArea?.defaultMatrix.id ||
+                     this.selectedCustomMatrix?.immutable
         }
       });
       if (savedAsNew) {
-        this.store.dispatch(AreaActions.addUserDefinedMatrix({ matrix: {id: id!, name} }));
+        this.store.dispatch(AreaActions.addUserDefinedMatrix({ matrix: {id: id!, name, immutable: false } }));
       }
     } catch (error) {
       this.loadingMatrix = false;

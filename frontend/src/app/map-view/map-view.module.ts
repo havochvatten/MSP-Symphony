@@ -44,6 +44,8 @@ import {
 } from "@src/app/map-view/scenario/scenario-detail/delete-scenario-confirmation-dialog/delete-scenario-confirmation-dialog.component";
 import { ConfirmResetComponent } from './confirm-reset/confirm-reset.component';
 import { MetaInfoComponent } from './meta-info/meta-info.component';
+import { AnchorPipe } from "@shared/anchor.pipe";
+import { DeleteCalculationConfirmationDialogComponent } from './calculation-history/delete-calculation-confirmation-dialog/delete-calculation-confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -71,6 +73,7 @@ import { MetaInfoComponent } from './meta-info/meta-info.component';
     MatrixTableComponent,
     ConfirmResetComponent,
     MetaInfoComponent,
+    DeleteCalculationConfirmationDialogComponent,
   ],
     imports: [
         SharedModule,
@@ -84,6 +87,7 @@ import { MetaInfoComponent } from './meta-info/meta-info.component';
         FormsModule,
         ScenarioEditorModule
     ],
+  providers: [AnchorPipe],
   exports: [MainViewComponent]
 })
 export class MapViewModule {}

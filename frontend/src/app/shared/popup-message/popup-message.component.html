@@ -16,7 +16,12 @@
         </ng-container>
       </ng-container>
       <h3>{{ messages[0].title || ('popup-message.'+messages[0].type | translate)}}</h3>
-      <p [innerHTML]="messages[0].message"></p>
+      <ng-container *ngIf="isHtml(messages[0].message)">
+        <div [innerHTML]="messages[0].message"></div>
+      </ng-container>
+      <ng-container *ngIf="!isHtml(messages[0].message)">
+        <p *ngFor="let message of messages[0].message.split('\n')" [innerHTML]="message"></p>
+      </ng-container>
     </div>
     <hav-button (click)="removeMessage(messages[0].uuid)">Ok</hav-button>
   </article>

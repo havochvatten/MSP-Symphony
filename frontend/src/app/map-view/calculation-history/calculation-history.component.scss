@@ -69,7 +69,8 @@ section {
         cursor: pointer;
         background-color: $hav-turquoise;
 
-        .calculation-info h4, .calculation-info span, app-icon {
+        .calculation-info h4, .calculation-info span,
+        .actions app-icon, .actions app-icon[icontype='delete'] {
           color: white;
         }
       }
@@ -78,8 +79,8 @@ section {
         display: flex;
         flex-direction: column;
         box-sizing: border-box;
-        padding: 0 1rem;
-        max-width: calc(100% - 4rem);
+        padding: 0 0.2rem 0 1rem;
+        max-width: calc(100% - 5.1rem);
 
         h4 {
           margin: 0;
@@ -122,15 +123,30 @@ section {
         }
       }
 
-      app-icon {
-        color: $hav-turquoise;
-        font-size: 4rem;
-      }
+      .actions {
+        display: flex;
 
-      ::ng-deep app-status-icon svg {
-        height: 3rem;
-        width: 3rem;
-        margin-right: 0.5rem;
+        app-icon {
+          color: $hav-turquoise;
+          font-size: 2.3rem;
+
+
+          &[icontype='delete'] {
+            color: $red;
+            opacity: 0.3;
+            margin-right: 0.3rem;
+
+            &:hover {
+              opacity: 1;
+            }
+          }
+        }
+
+        ::ng-deep app-status-icon svg {
+          height: 3rem;
+          width: 3rem;
+          margin-right: 0.5rem;
+        }
       }
     }
   }

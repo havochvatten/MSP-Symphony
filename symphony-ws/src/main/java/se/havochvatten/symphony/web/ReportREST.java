@@ -2,6 +2,9 @@ package se.havochvatten.symphony.web;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.locationtech.jts.geom.Envelope;
+import org.opengis.filter.Not;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import se.havochvatten.symphony.calculation.CalcUtil;
@@ -17,10 +20,13 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.util.logging.Logger;
 
 import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.status;
+import static se.havochvatten.symphony.calculation.CalculationREST.hasAccess;
 
 
 @Path("/report")
@@ -48,7 +54,7 @@ public class ReportREST {
         var calc = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
             calcService).orElseThrow(NotFoundException::new);
 
-        if (CalculationREST.hasAccess(calc, req.getUserPrincipal()))
+        if (hasAccess(calc, req.getUserPrincipal()))
             return ok(reportService.generateReportData(calc, true)).build();
         else
             return status(Response.Status.UNAUTHORIZED).build();
@@ -76,7 +82,26 @@ public class ReportREST {
         else
             return status(Response.Status.UNAUTHORIZED).build();
     }
-    // TODO: Add Geotiff of diff?
+
+    @GET
+    @Path("/comparison/{a}/{b}/geotiff")
+    @Produces({"image/geotiff"})
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Returns calculation result image")
+    public Response getResultGeoTIFFImage(@Context HttpServletRequest req, @PathParam("a") int baseId, @PathParam("b") int relativeId) throws IOException {
+
+        try {
+            var diff = CalculationREST.getDiffCoverageFromCalcIds(calcService, req, baseId, relativeId);
+
+            return ok(calcService.writeGeoTiff(diff)).
+                header("Content-Disposition",
+                    "attachment; filename=\"" +
+                        "Comparison_report-calculationIDs_-_" + baseId + "-" + relativeId + ".tiff\"").
+                build();
+        } catch (NotAuthorizedException ax) {
+            return status(Response.Status.UNAUTHORIZED).build();
+        }
+    }
 
     @GET
     @Path("/{id}/csv")
@@ -88,7 +113,7 @@ public class ReportREST {
             throws SymphonyStandardAppException {
         var calc = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
             calcService).orElseThrow(BadRequestException::new);
-        if (CalculationREST.hasAccess(calc, req.getUserPrincipal()))
+        if (hasAccess(calc, req.getUserPrincipal()))
             return ok(reportService.generateCSVReport(calc, req.getLocale())).
                     header("Content-Disposition",
                             "attachment; filename=\""+calc.getId()+"-"+escapeFilename(calc.getCalculationName())+
@@ -117,7 +142,7 @@ public class ReportREST {
                 CalcUtil.getCalculationResultFromSessionOrDb(scenarioId, req.getSession(), calcService)
                     .orElseThrow(javax.ws.rs.BadRequestException::new);
 
-            if (CalculationREST.hasAccess(baseRes, req.getUserPrincipal()) && CalculationREST.hasAccess(scenarioRes, req.getUserPrincipal()) )
+            if (hasAccess(baseRes, req.getUserPrincipal()) && hasAccess(scenarioRes, req.getUserPrincipal()) )
                 return ok(reportService.generateComparisonReportData(baseRes, scenarioRes)).build();
             else
                 return status(Response.Status.UNAUTHORIZED).build();

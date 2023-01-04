@@ -72,8 +72,11 @@ public class CalculationAreaService {
             List<CalcAreaSensMatrix> userDefinedMatrices =
                     calcAreaSensMatrixService.findByBaselineAndOwnerAndArea(baselineVersion.getName(),
                             principal, defaultArea.getId());
+            List<CalcAreaSensMatrix> commonBaselineMatrices =
+                calcAreaSensMatrixService.findByBaselineAndArea(baselineVersion.getName(), defaultArea.getId());
+            commonBaselineMatrices.removeIf(m -> m.getSensitivityMatrix().getId() == defaultArea.getdefaultSensitivityMatrix().getId());
             AreaSelectionResponseDto resp = AreaSelectionResponseDtoMapper.mapToDto(defaultArea,
-                    areaTypeDtos, userDefinedMatrices);
+                    areaTypeDtos, userDefinedMatrices, commonBaselineMatrices);
             return resp;
         } catch (IOException e) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.MAPPING_OBJECT_TO_POLYGON_STRING_ERROR);

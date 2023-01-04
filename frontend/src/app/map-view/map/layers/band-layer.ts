@@ -50,6 +50,7 @@ class BandLayer extends LayerGroup {
             const imageOpts = {
               url: URL.createObjectURL(response.body),
               imageExtent: JSON.parse(extentHeader),
+              calculationId: NaN,
               projection: AppSettings.CLIENT_SIDE_PROJECTION ? AppSettings.DATALAYER_RASTER_CRS : AppSettings.MAP_PROJECTION,
               attributions: band.mapAcknowledgement ?? band.authorOrganisation ?? ''
             };
