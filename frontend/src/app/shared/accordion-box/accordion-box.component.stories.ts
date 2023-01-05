@@ -1,6 +1,5 @@
 import { storiesOf, moduleMetadata } from '@storybook/angular';
 import { text, withKnobs } from '@storybook/addon-knobs';
-import { withA11y } from '@storybook/addon-a11y';
 
 import {
   AccordionBoxComponent,
@@ -16,7 +15,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 const stories = storiesOf('Base | Accordion Box', module);
 
 stories.addDecorator(withKnobs);
-stories.addDecorator(withA11y);
 stories.addDecorator(
   moduleMetadata({
     declarations: [

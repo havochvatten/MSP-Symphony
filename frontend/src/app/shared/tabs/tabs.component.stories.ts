@@ -1,6 +1,5 @@
 import { storiesOf, moduleMetadata } from '@storybook/angular';
 import { withKnobs, text } from '@storybook/addon-knobs';
-import { withA11y } from '@storybook/addon-a11y';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HavCoreModule } from 'hav-components';
 
@@ -13,7 +12,6 @@ import markdownNotes from './tabs.component.stories.md';
 const stories = storiesOf('Base | Tabs', module);
 
 stories.addDecorator(withKnobs);
-stories.addDecorator(withA11y);
 stories.addDecorator(
   moduleMetadata({
     declarations: [TabsComponent, TabComponent, IconComponent],
