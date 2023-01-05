@@ -50,7 +50,7 @@ export class ComparisonComponent implements AfterViewInit {
   }
 
   submit() {
-    const a = this.compareForm.value.a, b = this.compareForm.value.b;
+    const a =  this.compareForm.value.a as string, b = this.compareForm.value.b as string;
     this.dialogService.open(ComparisonReportModalComponent, this.moduleRef, {
       data: { a, b }
     });

@@ -108,13 +108,13 @@ export class CalculationService implements OnDestroy {
 
   private addResultImage(id: string, epFragment: string) {
     const that = this;
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.getStaticImage(`${env.apiBaseUrl}/calculation/` + epFragment).subscribe({
         next(response) {
           const extentHeader = response.headers.get('SYM-Image-Extent');
           if (extentHeader) {
             that.resultReady$.emit({
-              url: URL.createObjectURL(response.body),
+              url: URL.createObjectURL(response.body!),
               calculationId: +id,
               imageExtent: JSON.parse(extentHeader),
               projection: AppSettings.CLIENT_SIDE_PROJECTION ? AppSettings.DATALAYER_RASTER_CRS : AppSettings.MAP_PROJECTION
@@ -137,7 +137,7 @@ export class CalculationService implements OnDestroy {
 
   public removeResult(id: string){
     const that = this;
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.delete(id).subscribe({
         next(response) {
           that.resultRemoved$.emit(+id);

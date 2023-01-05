@@ -103,7 +103,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       if (scenario.changes)
         this.scenarioLayer.addScenarioChangeAreas(scenario.changes);
 
-      this.zoomToExtent(this.scenarioLayer.getBoundaryFeature()!.getGeometry().getExtent(),
+      this.zoomToExtent(this.scenarioLayer.getBoundaryFeature()!.getGeometry()!.getExtent(),
         500);
     });
 
@@ -223,11 +223,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   };
 
   public zoomIn() {
-    this.setZoom(this.map!.getView().getZoom() + 1);
+    this.setZoom(this.map!.getView()!.getZoom()! + 1);
   };
 
   public zoomOut() {
-    this.setZoom(this.map!.getView().getZoom() - 1);
+    this.setZoom(this.map!.getView()!.getZoom()! - 1);
   };
 
   private setZoom = (zoomLevel: number, duration = 250, center?: Coordinate) => {
