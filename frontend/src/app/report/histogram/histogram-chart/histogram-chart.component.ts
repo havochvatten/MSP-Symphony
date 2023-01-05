@@ -54,7 +54,7 @@ export class HistogramChartComponent implements OnInit, OnChanges {
             this.bmax < 1000000 ? 100000 :
             500000;
 
-    let acc = this.bins[0];
+    let acc = 0;
 
     this.max = this.bmax < 10 ? 10 :
       (Math.trunc(this.bmax / ystep) + 1) * ystep;
