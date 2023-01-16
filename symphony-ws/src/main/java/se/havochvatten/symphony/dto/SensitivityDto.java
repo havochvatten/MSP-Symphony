@@ -5,10 +5,15 @@ import java.util.Vector;
 
 public class SensitivityDto {
     public static class SensCol {
+        int sensId;
         int ecoMetaId;
         String name;
         String nameLocal;
         BigDecimal value;
+
+        public int getSensId() { return sensId; }
+
+        public void setSensId(int id) { this.sensId = id; }
 
         public int getEcoMetaId() {
             return ecoMetaId;
