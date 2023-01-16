@@ -32,6 +32,8 @@ public class EntityToSensMatrixDtoMapper {
         Map<Integer, SensitivityDto.SensRow> rowMap = new HashMap<>();
         for (Sensitivity sens : sensitivities) {
             SensitivityDto.SensCol scolumn = new SensitivityDto.SensCol();
+
+            scolumn.setSensId(sens.getId());
             scolumn.setEcoMetaId(sens.getEcoMetadata().getId());
             scolumn.setName(sens.getEcoMetadata().getTitle());
             scolumn.setNameLocal(sens.getEcoMetadata().getTitleLocal());
