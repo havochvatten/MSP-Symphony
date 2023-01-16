@@ -33,7 +33,7 @@ public class EntityToSensMatrixDtoMapper {
         for (Sensitivity sens : sensitivities) {
             SensitivityDto.SensCol scolumn = new SensitivityDto.SensCol();
 
-            scolumn.setSensId(sens.getId());
+            scolumn.setSensId(Optional.ofNullable(sens.getId()).orElse(-1));
             scolumn.setEcoMetaId(sens.getEcoMetadata().getId());
             scolumn.setName(sens.getEcoMetadata().getTitle());
             scolumn.setNameLocal(sens.getEcoMetadata().getTitleLocal());
