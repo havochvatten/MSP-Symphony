@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { NormalizationSelectionComponent } from './normalization-selection.component';
-import { HavButtonModule, HavRadioButtonModule } from 'hav-components';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 
 function setUp() {
@@ -15,7 +14,7 @@ function setUp() {
 describe('NormalizationSelectionComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [HavButtonModule, HavRadioButtonModule, TranslationSetupModule],
+      imports: [TranslationSetupModule],
       declarations: [NormalizationSelectionComponent]
     }).compileComponents();
   }));

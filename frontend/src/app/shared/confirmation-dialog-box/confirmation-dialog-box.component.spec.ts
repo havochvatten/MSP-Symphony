@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ConfirmationDialogBoxComponent } from './confirmation-dialog-box.component';
 import { IconButtonComponent } from '../icon-button/icon-button.component';
-import { HavButtonModule, HavCoreModule } from 'hav-components';
 import { IconComponent } from '../icon/icon.component';
 
 function setUp() {
@@ -14,7 +13,6 @@ function setUp() {
 describe('ConfirmationDialogBoxComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [HavCoreModule, HavButtonModule],
       declarations: [ConfirmationDialogBoxComponent, IconButtonComponent, IconComponent]
     }).compileComponents();
   }));

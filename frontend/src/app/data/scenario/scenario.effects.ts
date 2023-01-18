@@ -14,7 +14,7 @@ import { ScenarioActions, ScenarioSelectors } from '@data/scenario/index';
 import { of } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
-import { getIn, removeIn, setIn, updateIn } from 'immutable';
+import { getIn, removeIn } from 'immutable';
 import { UserSelectors } from '@data/user';
 import { AreaMatrixData } from '@src/app/map-view/scenario/scenario-detail/matrix-selection/matrix.interfaces';
 import {

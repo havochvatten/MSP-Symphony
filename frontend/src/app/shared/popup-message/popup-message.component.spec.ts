@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { HavButtonModule } from 'hav-components';
 import { provideMockStore } from '@ngrx/store/testing';
 import { PopupMessageComponent } from './popup-message.component';
 
@@ -14,7 +13,6 @@ describe('PopupMessageComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ PopupMessageComponent ],
-      imports: [HavButtonModule],
       providers: [provideMockStore()]
     })
     .compileComponents();

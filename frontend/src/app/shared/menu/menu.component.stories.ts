@@ -9,7 +9,6 @@ import {
   faUserCircle,
   faDoorClosed
 } from '@fortawesome/free-solid-svg-icons';
-import { HavCoreModule } from 'hav-components';
 
 import { MenuComponent } from './menu.component';
 import markdownNotes from './menu.component.stories.md';
@@ -21,7 +20,7 @@ stories.addDecorator(withKnobs);
 stories.addDecorator(
   moduleMetadata({
     declarations: [MenuComponent],
-    imports: [TranslationSetupModule, FontAwesomeModule, HavCoreModule, RouterTestingModule],
+    imports: [TranslationSetupModule, FontAwesomeModule, RouterTestingModule],
     providers: [{ provide: APP_BASE_HREF, useValue: '/' }]
   })
 );

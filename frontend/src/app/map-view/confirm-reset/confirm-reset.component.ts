@@ -35,19 +35,27 @@ export class ConfirmResetComponent implements OnInit {
         .select(ScenarioSelectors.selectActiveScenarioChangeFeatures)
         .pipe(first())
         .subscribe(features => {
-          features?.map((f, fx) => {
-            const changes = Object.entries<BandChange>(f.properties?.changes);
-            if(changes.length > 1) {
-              (changes.reverse()).forEach(
-                ([bId,]) => {
-                  this.store.dispatch(ScenarioActions.deleteBandChangeOrChangeFeature({ featureIndex: fx, bandId: bId }));
-                });
-            } else if(changes.length === 1) {
-              this.store.dispatch(ScenarioActions.deleteBandChangeOrChangeFeature({featureIndex: fx, bandId: changes[0][0] }));
-            }
+          if(features) {
+            Object.values(features).map((f, fx) => {
+              const changes = Object.entries<BandChange>(f.properties?.changes);
+              if (changes.length > 1) {
+                (changes.reverse()).forEach(
+                  ([bId,]) => {
+                    this.store.dispatch(ScenarioActions.deleteBandChangeOrChangeFeature({
+                      featureIndex: fx,
+                      bandId: bId
+                    }));
+                  });
+              } else if (changes.length === 1) {
+                this.store.dispatch(ScenarioActions.deleteBandChangeOrChangeFeature({
+                  featureIndex: fx,
+                  bandId: changes[0][0]
+                }));
+              }
             });
-            this.store.dispatch(ScenarioActions.saveActiveScenario({ scenarioToBeSaved: this.activeScenario! }));
-          });
+            this.store.dispatch(ScenarioActions.saveActiveScenario({scenarioToBeSaved: this.activeScenario!}));
+          }
+        });
     }
     this.dialog.close();
   }

@@ -5,7 +5,6 @@ import { DialogConfig } from '@shared/dialog/dialog-config';
 import { MatrixTableComponent } from './matrix-table.component';
 import { HttpClientModule } from '@angular/common/http';
 import { provideMockStore } from '@ngrx/store/testing';
-import { HavCoreModule, HavButtonModule } from 'hav-components';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 
 function setUp() {
@@ -18,7 +17,7 @@ describe('MatrixTableComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [MatrixTableComponent],
-      imports: [HttpClientModule, HavCoreModule, HavButtonModule, TranslationSetupModule],
+      imports: [HttpClientModule, TranslationSetupModule],
       providers: [
         {
           provide: DialogRef,

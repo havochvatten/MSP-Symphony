@@ -1,0 +1,177 @@
+@import "hav-colors";
+
+button.mat-flat-button {
+  color: white;
+  height: 48px;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  border: 2px solid $primary-border-blue;
+  border-radius: 2px;
+  padding: 0 16px;
+  margin-left: 1rem;
+
+  &.mat-button-disabled:not(.secondary) {
+    border-color: white;
+
+    &.mat-warn {
+      background-color: $alert-disabled-bg-red;
+      color: $alert-disabled-text-red;
+    }
+
+    &:hover {
+      color: $primary-disabled-text-blue !important;
+      &.mat-warn {
+        color: $alert-disabled-text-red !important;
+      }
+    }
+  }
+
+  &.mat-warn {
+    background-color: $alert-bg-red;
+    border-color: $alert-bg-red;
+  }
+
+  &.green {
+    background-color: $success-bg-green;
+    border-color: $success-bg-green;
+  }
+
+  &.basic, &.basic.secondary {
+    border-color: white;
+  }
+
+  &:hover, &.secondary:hover, &.basic:hover {
+    background-color: $primary-hover-bg-blue;
+    border-color: $primary-border-blue;
+    color: white !important;
+
+    &.mat-warn:not(.mat-button-disabled) {
+      background-color: $alert-hover-bg-red;
+      border-color: $alert-hover-bg-red;
+    }
+
+    &.green {
+      background-color: $success-hover-bg-green;
+      border-color: $success-hover-bg-green;
+    }
+  }
+
+  &.secondary, &.basic {
+    background-color: white;
+    color: $primary-border-blue;
+
+    &.mat-warn {
+      border-color: $alert-bg-red;
+      color: $alert-bg-red;
+    }
+  }
+
+  &.secondary.mat-button-disabled, &.secondary.mat-button-disabled:hover {
+    background-color: white !important;
+    border-color: $primary-disabled-text-grey;
+    color: $primary-disabled-text-grey !important;
+  }
+}
+
+mat-select {
+  display: flex !important;
+  height: 44px;
+  align-items: center;
+  border: 2px solid $primary-bg-blue;
+  padding-left: 7px;
+  font-size: 15px;
+  color: black;
+
+  .mat-select-value {
+    .mat-select-placeholder {
+      color: black;
+    }
+  }
+
+  &.mat-select-disabled {
+    border-color: $primary-disabled-border-grey;
+
+    .mat-select-value {
+      .mat-select-placeholder {
+        color: $primary-disabled-text-blue;
+      }
+    }
+  }
+
+  .mat-select-arrow-wrapper {
+
+    .mat-select-arrow {
+      display: none;
+    }
+
+    &:after {
+      content: url("../assets/chevron-down.svg");
+      zoom: 0.65;
+      width: 40px;
+    }
+  }
+
+  &.tiny {
+    height: 28px;
+    font-size: 10px;
+
+    .mat-select-arrow-wrapper:after {
+      zoom: 0.38;
+      width: 50px;
+    }
+  }
+
+  &[aria-expanded="true"] {
+    .mat-select-arrow-wrapper:after {
+      transform: scaleY(-1) translateY(4px);
+    }
+  }
+}
+
+mat-checkbox {
+  .mat-checkbox-layout {
+    .mat-checkbox-label {
+      font-size: 13px;
+    }
+  }
+}
+
+mat-radio-button {
+  display: flex;
+  height: 3rem;
+  margin: 0.25rem 0;
+  padding: 0 0.625rem;
+  font-size: 16px;
+}
+
+.ddPanel {
+  margin: 34px 0 0 7px;
+  min-width: calc(100% + 8px) !important;
+  border: 1px solid $primary-bg-blue;
+  border-radius: 0 !important;
+
+  mat-option {
+    &.mat-active {
+      background: white !important;
+      .mat-option-text {
+        color: $primary-bg-blue;
+        font-weight: 600;
+      }
+    }
+
+    &:not(.mat-active):hover {
+      .mat-option-text {
+        color: $primary-bg-blue;
+      }
+    }
+  }
+
+  &.tiny {
+    margin-top: 32px;
+
+    mat-option {
+      font-size: 10px;
+    }
+  }
+}

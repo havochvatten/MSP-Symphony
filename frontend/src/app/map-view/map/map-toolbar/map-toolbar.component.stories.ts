@@ -1,7 +1,6 @@
 import { storiesOf, moduleMetadata } from '@storybook/angular';
 import { withKnobs } from '@storybook/addon-knobs';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HavCoreModule } from 'hav-components';
 
 import { MapToolbarComponent } from './map-toolbar.component';
 import { ToolbarZoomButtonsComponent, ToolbarButtonComponent } from '../toolbar-button/toolbar-button.component';
@@ -14,7 +13,7 @@ stories.addDecorator(withKnobs);
 stories.addDecorator(
   moduleMetadata({
     declarations: [MapToolbarComponent, ToolbarZoomButtonsComponent, ToolbarButtonComponent],
-    imports: [SharedModule, TranslationSetupModule, HavCoreModule, RouterTestingModule]
+    imports: [SharedModule, TranslationSetupModule, RouterTestingModule]
   })
 );
 

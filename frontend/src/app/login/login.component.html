@@ -1,21 +1,24 @@
 <img class="duck" src="assets/long-tailed-duck.svg" alt="Alfågel" />
 <h1>Symphony</h1>
 <form class="login-form" [formGroup]="loginForm">
-  <hav-form-field
-    formControlName="username"
-    [label]="'login.username' | translate"
-    autocomplete="on"
-  ></hav-form-field>
-  <hav-form-field
-    formControlName="password"
-    [label]="'login.password' | translate"
-    type="password"
-    autocomplete="current-password"
-  ></hav-form-field>
+  <mat-form-field>
+    <input matInput
+      type="text"
+      formControlName="username"
+      autocomplete="on" />
+    <mat-label>{{ 'login.username' | translate }}</mat-label>
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput
+      type="password"
+      formControlName="password"
+      autocomplete="current-password"/>
+    <mat-label>{{ 'login.password' | translate }}</mat-label>
+  </mat-form-field>
   <p *ngIf="errorMessage" class="error">{{ errorMessage | translate }}</p>
-  <hav-button [isSubmitButton]="true" (click)="login()" [disabled]="!loginForm.valid">{{
+  <button type="submit" mat-flat-button (click)="login()" [disabled]="!loginForm.valid">{{
     'login.login' | translate
-  }}</hav-button>
+  }}</button>
 </form>
 <div class="login-options">
   <nav>

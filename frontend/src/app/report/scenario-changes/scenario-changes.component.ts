@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { BandMap } from '../calculation-report.component';
-import { FeatureCollection } from "geojson";
+import { GeoJSONFeatureCollection } from "ol/format/geojson";
 
 // TODO Show addition or removal of non-default layer selection (i.e. climate)?
 @Component({
@@ -10,6 +10,6 @@ import { FeatureCollection } from "geojson";
 })
 export class ScenarioChangesComponent {
   @Input() name = '';
-  @Input() scenarioChanges?: FeatureCollection;
+  @Input() scenarioChanges?: GeoJSONFeatureCollection;
   @Input() bandMap: BandMap = { b: {}, e: {} }; // Not used
 }

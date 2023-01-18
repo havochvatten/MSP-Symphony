@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { UploadFilesComponent } from './upload-files.component';
 import { IconComponent } from '../icon/icon.component';
 import { IconButtonComponent } from '../icon-button/icon-button.component';
-import { HavCoreModule } from 'hav-components';
 import { DragDropDirective } from '../drag-drop.directive';
 
 function setUp() {
@@ -17,8 +16,7 @@ function setUp() {
 describe('UploadFilesComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [UploadFilesComponent, IconComponent, IconButtonComponent, DragDropDirective],
-      imports: [HavCoreModule]
+      declarations: [UploadFilesComponent, IconComponent, IconButtonComponent, DragDropDirective]
     }).compileComponents();
   }));
 

@@ -1,7 +1,6 @@
 import { storiesOf, moduleMetadata } from '@storybook/angular';
 import { withKnobs, text } from '@storybook/addon-knobs';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HavCoreModule } from 'hav-components';
 
 import { TabsComponent } from './tabs.component';
 import { TabComponent } from './tab/tab.component';
@@ -15,7 +14,7 @@ stories.addDecorator(withKnobs);
 stories.addDecorator(
   moduleMetadata({
     declarations: [TabsComponent, TabComponent, IconComponent],
-    imports: [HavCoreModule, RouterTestingModule]
+    imports: [RouterTestingModule]
   })
 );
 

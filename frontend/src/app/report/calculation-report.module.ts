@@ -9,7 +9,7 @@ import { ImpactTableComponent } from './impact-table/impact-table.component';
 import { SharedModule } from '../shared/shared.module';
 import { HighestImpactsComponent } from './highest-impacts/highest-impacts.component';
 import { CalculationImageComponent } from './calculation-image/calculation-image.component';
-import { HavSpinnerModule } from 'hav-components';
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ScenarioChangesComponent } from './scenario-changes/scenario-changes.component';
 import { ComparisonReportComponent } from "@src/app/report/comparison-report.component";
 import { OrdinalPipe } from "@shared/ordinal.pipe";
@@ -29,7 +29,7 @@ import { HistogramChartComponent } from './histogram/histogram-chart/histogram-c
     HistogramComponent,
     HistogramChartComponent
   ],
-  imports: [CommonModule, SharedModule, CalculationReportRoutingModule, HavSpinnerModule],
+  imports: [CommonModule, SharedModule, CalculationReportRoutingModule, MatProgressSpinnerModule],
   providers: [DecimalPipe, OrdinalPipe]
 })
 export class CalculationReportModule {}

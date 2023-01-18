@@ -5,7 +5,7 @@
 <input type="file" [accept]="requiredFileType" (change)="onFileSelect($event)" #fileUpload/>
 
 <div class="loading" *ngIf="loading">
-  <hav-spinner></hav-spinner>
+  <mat-spinner></mat-spinner>
 </div>
 
 <ng-container>
@@ -28,10 +28,10 @@
 </ng-container>
 
 <div id="toolbar">
-  <hav-button stateType="alert" buttonType="tertiary" (click)="cancel()">{{
+  <button mat-flat-button color="warn" (click)="cancel()">{{
     'map.user-area.upload.modal.cancel' | translate
-  }}</hav-button>
-  <hav-button (click)="confirmImport()" [disabled]="!uploadedArea">{{
+  }}</button>
+  <button mat-flat-button (click)="confirmImport()" [disabled]="!uploadedArea">{{
     'map.user-area.upload.modal.import' | translate
-  }}</hav-button>
+  }}</button>
 </div>

@@ -34,10 +34,16 @@
   }
 
   article {
-    h3>hav-spinner {
+    h3>mat-spinner {
       float: right;
-    }
+      width: 42px !important;
+      height: 42px !important;
 
+      ::ng-deep svg {
+        width: 42px !important;
+        height: 42px !important;
+      }
+    }
   }
 
   .toolbar {
@@ -49,3 +55,6 @@
   }
 }
 
+::ng-deep .ddPanel.cmp {
+  margin-top: 48px;
+}

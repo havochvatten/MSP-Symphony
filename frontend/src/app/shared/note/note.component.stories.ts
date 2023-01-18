@@ -3,7 +3,6 @@ import { withKnobs, text } from '@storybook/addon-knobs';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faFish, faShip, faBraille } from '@fortawesome/free-solid-svg-icons';
-import { HavCoreModule } from 'hav-components';
 
 import { IconComponent } from '../icon/icon.component';
 import { NoteComponent } from './note.component';
@@ -15,7 +14,7 @@ stories.addDecorator(withKnobs);
 stories.addDecorator(
   moduleMetadata({
     declarations: [NoteComponent, IconComponent],
-    imports: [FontAwesomeModule, HavCoreModule, RouterTestingModule]
+    imports: [FontAwesomeModule, RouterTestingModule]
   })
 );
 

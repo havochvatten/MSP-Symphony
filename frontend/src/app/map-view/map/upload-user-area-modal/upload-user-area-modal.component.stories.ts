@@ -1,6 +1,5 @@
 import { storiesOf, moduleMetadata } from '@storybook/angular';
 import { withKnobs } from '@storybook/addon-knobs';
-import { ButtonComponent, HavButtonModule, HavCoreModule } from 'hav-components';
 
 import { SharedModule } from '@shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
@@ -19,7 +18,7 @@ stories.addDecorator(withKnobs);
 stories.addDecorator(
   moduleMetadata({
     declarations: [UploadUserAreaModalComponent],
-    imports: [HavCoreModule, TranslationSetupModule, HavButtonModule, SharedModule],
+    imports: [TranslationSetupModule, SharedModule],
     providers: [
       { provide: DialogRef, useClass: MockDialogRef }
     ]

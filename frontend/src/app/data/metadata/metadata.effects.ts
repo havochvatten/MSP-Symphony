@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
-import { catchError, concatMap, debounceTime, map, mergeMap, withLatestFrom } from 'rxjs/operators';
+import { Actions, concatLatestFrom, Effect, ofType } from '@ngrx/effects';
+import { catchError, concatMap, debounceTime, map, mergeMap, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import MetadataService from './metadata.service';
 import { MetadataActions, MetadataSelectors } from './';
@@ -63,24 +63,24 @@ export class MetadataEffects {
     debounceTime(200),
     concatMap(action =>
       of(action).pipe(
-        withLatestFrom(this.store.select(MetadataSelectors.selectMetadataState)) // for NgRx 11+, use concatLatestFrom
+        concatLatestFrom((action) => this.store.select(MetadataSelectors.selectMetadataState))
       )
     ),
-    map(([{ area, bandPath, value }, metadata]) => {
+    switchMap(([{ area, bandPath, value }, metadata]) => {
       // Here we could fetch the state from the actual map feature using a Promise or such
       let getBand = getIn(metadata, [...bandPath, 'bandNumber'], NaN);
       if (typeof getBand !== 'number') {
-        return;
+        return of();
       }
 
-      ScenarioActions.updateBandAttribute({
+      return of(ScenarioActions.updateBandAttribute({
         area, // FIXME make sure we can only change when selected
         componentType: getComponentType(bandPath),
         bandId: bandPath[bandPath.length - 1] as string,
         band: getBand,
         attribute: 'multiplier',
-        value
-      });
+        value: value
+      })).pipe();
     })
   );
 

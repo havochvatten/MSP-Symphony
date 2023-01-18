@@ -1,12 +1,11 @@
 <li *ngIf="band">
   <div class="controls">
-    <hav-checkbox
-      [label]="band.displayName"
+    <mat-checkbox
       [checked]="band.selected"
       [disabled]="!selectedArea"
-      (check)="onSelect($event, band.statePath)"
+      (change)="onSelect($event, band.statePath)"
       checkboxSize="small"
-    ></hav-checkbox>
+    >{{ band.displayName }}</mat-checkbox>
     <div class="editing">
       <button
         *ngIf="hasPublicMeta"

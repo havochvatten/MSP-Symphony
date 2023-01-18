@@ -199,7 +199,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(ScenarioActions.saveActiveScenario({ scenarioToBeSaved: this.scenario }));
   }
 
-  hasChanges = () => this.scenario.changes?.features.length>0;
+  hasChanges = () => this.scenario.changes?.features?.length>0;
 
   // Can be used as condition for accordion box "open" attribute
   featureHasChanges(feature: GeoJSONFeature) {

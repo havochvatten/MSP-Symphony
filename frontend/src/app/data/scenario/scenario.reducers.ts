@@ -2,7 +2,7 @@ import { createReducer, on } from '@ngrx/store';
 import { ScenarioActions, ScenarioInterfaces } from '@data/scenario/index';
 import { CalculationActions } from '@data/calculation';
 import { removeIn, setIn, updateIn } from 'immutable';
-import { Feature, GeoJsonProperties } from 'geojson';
+import { Feature, GeoJsonProperties } from "geojson"
 import { AreaActions } from '@data/area';
 import { Polygon } from '@data/area/area.interfaces';
 import {
@@ -11,6 +11,7 @@ import {
   fetchAreaMatricesSuccess
 } from '@data/scenario/scenario.actions';
 import { isEqual } from 'lodash';
+import { Scenario } from "@data/scenario/scenario.interfaces";
 
 export const initialState: ScenarioInterfaces.State = {
   scenarios: [],
@@ -28,12 +29,8 @@ export const scenarioReducer = createReducer(
   on(ScenarioActions.openScenario, (state, { scenario, index }) => ({
     ...state,
     active: index,
-    scenarios: updateIn(state.scenarios, [index, 'changes', 'features'], features => {
-      const feat = Object(features);
-      if (Symbol.iterator in feat) {
-        feat.map((feature: unknown) => setIn(feature, ['properties', 'visible'], true));
-      }
-    })
+    scenarios: updateIn(state.scenarios, [index, 'changes', 'features'], [], (features) =>
+      (features as Feature[]).map(feature => setIn(feature, ['properties', 'visible'], true)))
   })),
   on(ScenarioActions.closeActiveScenario, state => ({
     ...state,
@@ -67,7 +64,7 @@ export const scenarioReducer = createReducer(
   on(AreaActions.updateSelectedArea, (state, { statePath }) => {
     if (state.active === undefined) return state;
     else {
-      const featureIndex = state.scenarios[state.active].changes.features.findIndex((f: Feature) =>
+      const featureIndex = state.scenarios[state.active].changes?.features?.findIndex((f: Feature) =>
         isEqual(f.properties!.statePath, statePath)
       ); // or just check id?
       return {
@@ -81,9 +78,9 @@ export const scenarioReducer = createReducer(
     (state, { area, componentType, bandId, band, attribute, value }) => {
       const featureIndex =
         state.activeFeature ?? // activeFeature is wrong!
-        state.scenarios[state.active!].changes.features.findIndex(
+        state.scenarios[state.active!].changes.features?.findIndex(
           (f: Feature) => f!.id == area.feature.properties.id
-        );
+        ) ?? -1;
 
       if (featureIndex == -1) {
         const isWholeScenarioFeature =
@@ -104,48 +101,29 @@ export const scenarioReducer = createReducer(
 
         return {
           ...state,
-          scenarios: updateIn(
-            state.scenarios,
-            [state.active, 'changes', 'features'],
-            (features: unknown) => {
-              // check for iterable: change uknown to object
-              // then if it has Symbol.iterator, it is type of iterable
-              // so spread operator (...) can be used
-              const feat = Object(features);
-              if (Symbol.iterator in Object(features)) {
-                isWholeScenarioFeature ? [featureToBeAdded, ...feat] : [...feat, featureToBeAdded];
-              }
-            }
-          ),
-          activeFeature: isWholeScenarioFeature
-            ? 0
-            : state.scenarios[state.active!].changes.features.length - 1 + 1
+          scenarios: updateIn(state.scenarios, [state.active, 'changes', 'features'],
+            features => isWholeScenarioFeature ?
+              [featureToBeAdded, ...(features as Feature[])] :
+              [...(features as Feature[]), featureToBeAdded]),
+          activeFeature: isWholeScenarioFeature ? 0 : state.scenarios[state.active!].changes.features.length
         };
       } else
         return {
           ...state,
           // TODO delete if all area changes are neutral?
-          scenarios: updateIn(
+
+          scenarios: state.scenarios[state.active!].changes.features !== undefined ?
+            updateIn(
             state.scenarios,
             [state.active, 'changes', 'features', featureIndex, 'properties', 'changes', bandId],
             change => {
-              if (typeof change === 'object') {
-                return {
+              return {
                   change,
                   type: componentType,
                   band,
                   [attribute]: value
                 };
-              } else {
-                return {
-                  change,
-                  type: componentType,
-                  band,
-                  [attribute]: value
-                };
-              }
-            }
-          ),
+            }) : state.scenarios,
           activeFeature: featureIndex
         };
     }

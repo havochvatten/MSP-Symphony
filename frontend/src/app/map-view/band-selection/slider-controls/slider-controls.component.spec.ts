@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 
-import { HavAccordionModule } from 'hav-components';
 import { SliderControlsComponent } from './slider-controls.component';
 import { EcoSliderComponent } from '../eco-slider/eco-slider.component';
 import { SharedModule } from '@src/app/shared/shared.module';
@@ -18,7 +17,6 @@ describe('SliderControlsComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
-        HavAccordionModule,
         TranslationSetupModule
       ],
       declarations: [SliderControlsComponent, EcoSliderComponent],

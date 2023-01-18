@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { HavButtonModule, HavCoreModule } from 'hav-components';
 
 import { CalculationReportModalComponent } from './calculation-report-modal.component';
 import { IconButtonComponent } from '../icon-button/icon-button.component';
@@ -21,7 +20,7 @@ describe('CalculationReportModalComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CalculationReportModalComponent, IconButtonComponent, IconComponent],
-      imports: [HavButtonModule, HavCoreModule, HttpClientModule, TranslationSetupModule],
+      imports: [HttpClientModule, TranslationSetupModule],
       providers: [
         {
           provide: DialogRef,

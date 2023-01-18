@@ -8,7 +8,6 @@ import {
 } from './accordion-box.component';
 import { IconComponent } from '../icon/icon.component';
 import { IconButtonComponent } from '../icon-button/icon-button.component';
-import { HavCoreModule } from 'hav-components';
 import { ToggleComponent } from '../toggle/toggle.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -26,7 +25,6 @@ stories.addDecorator(
       ToggleComponent
     ],
     imports: [
-      HavCoreModule,
       BrowserAnimationsModule
     ]
   })

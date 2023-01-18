@@ -3,7 +3,6 @@ import { text, withKnobs } from '@storybook/addon-knobs';
 
 import { PopupMessageComponent } from './popup-message.component';
 import {provideMockStore} from "@ngrx/store/testing";
-import {HavButtonModule, HavCoreModule} from "hav-components";
 import {TranslationSetupModule} from "@src/app/app-translation-setup.module";
 
 const stories = storiesOf('Base | Popup Message', module);
@@ -12,7 +11,7 @@ stories.addDecorator(withKnobs);
 stories.addDecorator(
   moduleMetadata({
     declarations: [PopupMessageComponent],
-    imports: [HavCoreModule, HavButtonModule, TranslationSetupModule],
+    imports: [TranslationSetupModule],
     providers: [provideMockStore({
       initialState: {
           message: {

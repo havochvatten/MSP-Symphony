@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CheckboxAccordionComponent } from './checkbox-accordion.component';
-import { HavCheckboxModule, HavCoreModule } from 'hav-components';
 import {
   AccordionBoxComponent,
   AccordionBoxHeaderComponent,
@@ -26,8 +25,7 @@ describe('CheckboxAccordionComponent', () => {
         AccordionBoxContentComponent,
         IconButtonComponent,
         IconComponent
-      ],
-      imports: [HavCheckboxModule, HavCoreModule]
+      ]
     }).compileComponents();
   }));
 

@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { AreaSelectionComponent } from './area-selection.component';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { SharedModule } from '@src/app/shared/shared.module';
-import { HavCheckboxModule } from 'hav-components';
 import { provideMockStore } from '@ngrx/store/testing';
 import { SelectionLayoutComponent } from '../selection-layout/selection-layout.component';
 import { AreaGroupComponent } from './area-group/area-group.component';
@@ -18,7 +17,7 @@ describe('AreaSelectionComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [AreaSelectionComponent, SelectionLayoutComponent, AreaGroupComponent],
-      imports: [SharedModule, HavCheckboxModule, TranslationSetupModule],
+      imports: [SharedModule, TranslationSetupModule],
       providers: [provideMockStore()]
     }).compileComponents();
   }));

@@ -1,6 +1,5 @@
 import { storiesOf, moduleMetadata } from '@storybook/angular';
 import { withKnobs, text } from '@storybook/addon-knobs';
-import { HavButtonModule, HavCoreModule } from 'hav-components';
 import { AboutDialogComponent } from "@src/app/core/about/about-dialog.component";
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { DialogRef } from "@shared/dialog/dialog-ref";
@@ -16,7 +15,7 @@ stories.addDecorator(withKnobs);
 stories.addDecorator(
   moduleMetadata({
     declarations: [AboutDialogComponent],
-    imports: [HavCoreModule, TranslationSetupModule, HavButtonModule, SharedModule],
+    imports: [TranslationSetupModule, SharedModule],
     providers: [
       { provide: DialogRef, useClass: MockDialogRef }
     ]

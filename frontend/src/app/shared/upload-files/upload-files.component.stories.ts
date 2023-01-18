@@ -4,7 +4,6 @@ import { withKnobs } from '@storybook/addon-knobs';
 import { UploadFilesComponent } from './upload-files.component';
 import { IconComponent } from '../icon/icon.component';
 import { IconButtonComponent } from '../icon-button/icon-button.component';
-import { HavCoreModule } from 'hav-components';
 import { DragDropDirective } from '../drag-drop.directive';
 
 const stories = storiesOf('Base | Upload Files', module);
@@ -12,8 +11,7 @@ const stories = storiesOf('Base | Upload Files', module);
 stories.addDecorator(withKnobs);
 stories.addDecorator(
   moduleMetadata({
-    declarations: [UploadFilesComponent, IconComponent, IconButtonComponent, DragDropDirective],
-    imports: [HavCoreModule]
+    declarations: [UploadFilesComponent, IconComponent, IconButtonComponent, DragDropDirective]
   })
 );
 

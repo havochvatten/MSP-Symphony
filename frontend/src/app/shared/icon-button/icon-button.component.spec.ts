@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { IconButtonComponent } from './icon-button.component';
-import { HavCoreModule } from 'hav-components';
 import { IconComponent } from '../icon/icon.component';
 
 function setUp() {
@@ -15,7 +14,6 @@ function setUp() {
 describe('IconButtonComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [HavCoreModule],
       declarations: [IconButtonComponent, IconComponent]
     }).compileComponents();
   }));

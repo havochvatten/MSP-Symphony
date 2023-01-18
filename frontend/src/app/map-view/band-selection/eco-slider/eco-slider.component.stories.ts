@@ -2,7 +2,6 @@ import { storiesOf, moduleMetadata } from '@storybook/angular';
 import { withKnobs } from '@storybook/addon-knobs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { StoreModule } from '@ngrx/store';
-import { HavCoreModule } from 'hav-components';
 
 import { SharedModule } from 'src/app/shared/shared.module';
 import { EcoSliderComponent } from './eco-slider.component';
@@ -14,7 +13,7 @@ stories.addDecorator(withKnobs);
 stories.addDecorator(
   moduleMetadata({
     declarations: [EcoSliderComponent],
-    imports: [TranslationSetupModule, FontAwesomeModule, HavCoreModule, SharedModule, StoreModule.forRoot({})]
+    imports: [TranslationSetupModule, FontAwesomeModule, SharedModule, StoreModule.forRoot({})]
   })
 );
 

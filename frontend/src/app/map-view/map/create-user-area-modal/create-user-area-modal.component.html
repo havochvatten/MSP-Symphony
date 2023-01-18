@@ -5,10 +5,10 @@
   [placeholder]="'map.user-area.create.modal.placeholder' | translate"
 />
 <div>
-  <hav-button stateType="alert" buttonType="secondary" (click)="close()">{{
+  <button mat-flat-button color="warn" (click)="close()">{{
     'map.user-area.create.modal.close' | translate
-  }}</hav-button>
-  <hav-button (click)="save()" [disabled]="areaName.length === 0">{{
+  }}</button>
+  <button mat-flat-button (click)="save()" [disabled]="areaName.length === 0">{{
     'map.user-area.create.modal.save' | translate
-  }}</hav-button>
+  }}</button>
 </div>

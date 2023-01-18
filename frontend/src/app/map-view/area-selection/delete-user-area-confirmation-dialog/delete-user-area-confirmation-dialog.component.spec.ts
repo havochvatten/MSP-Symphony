@@ -4,7 +4,6 @@ import { DialogConfig } from '@src/app/shared/dialog/dialog-config';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 
 import { DeleteUserAreaConfirmationDialogComponent } from './delete-user-area-confirmation-dialog.component';
-import { HavButtonModule } from 'hav-components';
 
 function setUp() {
   const fixture: ComponentFixture<DeleteUserAreaConfirmationDialogComponent> = TestBed.createComponent(
@@ -18,7 +17,7 @@ describe('DeleteUserAreaConfirmationDialogComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [DeleteUserAreaConfirmationDialogComponent],
-      imports: [TranslationSetupModule, HavButtonModule],
+      imports: [TranslationSetupModule],
       providers: [
         {
           provide: DialogRef,

@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CheckboxGroupComponent } from './checkbox-group.component';
-import { HavCheckboxModule } from 'hav-components';
 import { IconComponent } from '../icon/icon.component';
 
 function setUp() {
@@ -13,7 +12,6 @@ function setUp() {
 describe('CheckboxGroupComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [HavCheckboxModule],
       declarations: [CheckboxGroupComponent, IconComponent]
     }).compileComponents();
   }));

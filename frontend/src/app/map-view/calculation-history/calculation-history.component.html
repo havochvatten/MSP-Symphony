@@ -44,7 +44,7 @@
           title="{{ 'map.history.show-report' | translate: { calculationName: calculation.name } }}">
         </app-icon>
       </div>
-      <hav-spinner *ngIf="calculation.loading" spinnerSize="small"></hav-spinner>
+      <mat-spinner *ngIf="calculation.loading" diameter="10"></mat-spinner>
     </button>
     <ng-container *ngIf="!$any(calculations$ | async).length" [ngTemplateOutlet]="noCalculations">
     </ng-container>
@@ -54,7 +54,7 @@
 
 <ng-template #loading>
   <div class="loading">
-    <hav-spinner spinnerSize="medium"></hav-spinner>
+    <mat-spinner diameter="20"></mat-spinner>
     <h4>{{ 'map.history.loading' | translate }}</h4>
   </div>
 </ng-template>

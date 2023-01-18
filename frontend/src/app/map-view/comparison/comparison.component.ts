@@ -9,8 +9,8 @@ import { DialogService } from '@shared/dialog/dialog.service';
 import { ComparisonReportModalComponent } from '@shared/report-modal/comparison-report-modal.component';
 import { CalculationService } from '@data/calculation/calculation.service';
 import { map, tap, withLatestFrom } from 'rxjs/operators';
-import { SelectComponent } from 'hav-components';
 import { TranslateService } from "@ngx-translate/core";
+import { MatSelect } from "@angular/material/select";
 
 /*export const sameCalculationsValidator: ValidatorFn = (control: AbstractControl):
   ValidationErrors | null => {
@@ -31,7 +31,7 @@ export class ComparisonComponent implements AfterViewInit {
     a: ['', Validators.required],
     b: ['', Validators.required]
   });
-  @ViewChild('candidates') bSelect!: SelectComponent;
+  @ViewChild('candidates') bSelect!: MatSelect;
   loadingCandidates?: boolean;
 
   constructor(
@@ -66,7 +66,7 @@ export class ComparisonComponent implements AfterViewInit {
       withLatestFrom(this.translate.get('map.compare.choose-scenario')),
       tap(([res, trans]) => {
         this.loadingCandidates = false;
-        this.bSelect.noItemSelectedLabel = trans;
+        this.bSelect.placeholder = trans;
         this.bSelect.disabled = res.length === 0;
       }),
       map(([res, _]) => res)

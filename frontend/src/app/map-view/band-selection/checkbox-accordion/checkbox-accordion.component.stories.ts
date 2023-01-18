@@ -8,7 +8,6 @@ import {
 } from '../../../shared/accordion-box/accordion-box.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { IconButtonComponent } from '../../../shared/icon-button/icon-button.component';
-import { HavCoreModule } from 'hav-components';
 import { ToggleComponent } from '../../../shared/toggle/toggle.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CheckboxAccordionComponent } from './checkbox-accordion.component';
@@ -28,7 +27,6 @@ stories.addDecorator(
       ToggleComponent
     ],
     imports: [
-      HavCoreModule,
       BrowserAnimationsModule
     ]
   })

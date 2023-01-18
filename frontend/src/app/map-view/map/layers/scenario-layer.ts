@@ -82,18 +82,20 @@ export class ScenarioLayer extends VectorLayer<VectorSource> implements OnDestro
 
   // Fast-path for adding existing feature changes */
   addScenarioChangeAreas(changes: GeoJSONFeatureCollection) {
-    const features = this.format.readFeatures(changes);
+    if(changes && changes.features) {
+      const features = this.format.readFeatures(changes);
 
-    if (environment.map.colorCodeIntensityChanges)
-      features
-        // .filter(olFeature => olFeature.get("visible"))
-        .forEach(olFeature => {
-          const bandChanges = Object.values(olFeature.getProperties()['changes']) as BandChange[];
-          const colorCodedStyle = this.getColorCodedStyle(bandChanges);
-          olFeature.setStyle(colorCodedStyle);
-        });
+      if (environment.map.colorCodeIntensityChanges)
+        features
+          // .filter(olFeature => olFeature.get("visible"))
+          .forEach(olFeature => {
+            const bandChanges = Object.values(olFeature.getProperties()['changes']) as BandChange[];
+            const colorCodedStyle = this.getColorCodedStyle(bandChanges);
+            olFeature.setStyle(colorCodedStyle);
+          });
 
-    this.getSource()?.addFeatures(features);
+      this.getSource()?.addFeatures(features);
+    }
   }
 
   addOrChangeColorCodedFeature(feature: GeoJSONFeature) {
