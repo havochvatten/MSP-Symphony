@@ -1,5 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { HavCoreModule, HavButtonModule } from 'hav-components';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { DialogRef } from '@src/app/shared/dialog/dialog-ref';
 import { DialogConfig } from '@src/app/shared/dialog/dialog-config';
@@ -15,10 +14,10 @@ function setUp() {
 }
 
 describe('CreateUserAreaModalComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CreateUserAreaModalComponent],
-      imports: [TranslationSetupModule, HavCoreModule, HavButtonModule],
+      imports: [TranslationSetupModule],
       providers: [
         {
           provide: DialogRef,

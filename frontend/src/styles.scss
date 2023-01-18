@@ -1,3 +1,48 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+@use 'styles/mat-hav-palette' as mat-hav;
+
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$symphony-fe-primary: mat.define-palette(mat-hav.$symphony-palette);
+$symphony-fe-accent: mat.define-palette(mat-hav.$symphony-accent-palette, A200, A100, A400);
+$symphony-fe-basic: mat.define-palette(mat-hav.$symphony-basic-palette);
+
+//$light-theme-foreground-palette: mat-hav.$symphony-foreground-palette;
+
+// The warn palette is optional (defaults to red).
+$symphony-fe-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$symphony-fe-theme: mat.define-light-theme((
+  color: (
+    primary: $symphony-fe-primary,
+    accent: $symphony-fe-accent,
+    warn: $symphony-fe-warn,
+    basic: $symphony-fe-basic
+  )
+));
+
+$symphony-fe-theme: map.set(
+  $symphony-fe-theme,
+  color,
+  foreground,
+  mat-hav.$symphony-foreground-palette
+);
+
+$symphony-fe-theme: map.set(
+    $symphony-fe-theme,
+    color,
+    background,
+    mat-hav.$symphony-background-palette
+);
+
+@include mat.all-component-themes($symphony-fe-theme);
+
 /* You can add global styles to this file, and also import other style files */
 html {
   box-sizing: border-box;
@@ -100,3 +145,8 @@ html {
     }
   }
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+@import 'styles/mat-hav-component';

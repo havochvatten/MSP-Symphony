@@ -1,8 +1,7 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 
 import { LoginComponent } from './login.component';
-import { HavFormFieldModule, HavButtonModule } from 'hav-components';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -15,12 +14,10 @@ function setUp() {
 }
 
 describe('LoginComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
-        HavFormFieldModule,
-        HavButtonModule,
         ReactiveFormsModule,
         TranslationSetupModule,
         RouterTestingModule

@@ -1,32 +1,30 @@
 import { Component, ElementRef, Input, NgModuleRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Scenario } from "@data/scenario/scenario.interfaces";
-import { ScenarioActions, ScenarioSelectors } from "@data/scenario";
-import { CalculationReportModalComponent } from "@shared/report-modal/calculation-report-modal.component";
+import { Scenario } from '@data/scenario/scenario.interfaces';
+import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
+import { CalculationReportModalComponent } from '@shared/report-modal/calculation-report-modal.component';
 import {
   AreaTypeMatrixMapping,
   AreaTypeRef,
   MatrixParameterResponse
-} from "@src/app/map-view/scenario/scenario-detail/matrix-selection/matrix.interfaces";
-import { CalculationActions, CalculationSelectors } from "@data/calculation";
-import { MetadataSelectors } from "@data/metadata";
-import { Observable, OperatorFunction, Subscription } from "rxjs";
-import { Store } from "@ngrx/store";
-import { environment } from "@src/environments/environment";
-import { State } from "@src/app/app-reducer";
-import { CalculationService, NormalizationOptions } from "@data/calculation/calculation.service";
-import { Band } from "@data/metadata/metadata.interfaces";
-import { DialogService } from "@shared/dialog/dialog.service";
-import { convertMultiplierToPercent } from "@data/metadata/metadata.selectors";
-import { debounceTime, filter, take, tap } from "rxjs/operators";
-import { GeoJSONFeature } from "ol/format/GeoJSON";
-import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
-import { AreaSelectors } from "@data/area";
-import {
-  DeleteScenarioConfirmationDialogComponent
-} from "@src/app/map-view/scenario/scenario-detail/delete-scenario-confirmation-dialog/delete-scenario-confirmation-dialog.component";
-import { Feature } from "geojson";
-import { FormControl, Validators } from "@angular/forms";
-import { OperationParams } from "@data/calculation/calculation.interfaces";
+} from '@src/app/map-view/scenario/scenario-detail/matrix-selection/matrix.interfaces';
+import { CalculationActions, CalculationSelectors } from '@data/calculation';
+import { MetadataSelectors } from '@data/metadata';
+import { Observable, OperatorFunction, Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { environment } from '@src/environments/environment';
+import { State } from '@src/app/app-reducer';
+import { CalculationService, NormalizationOptions } from '@data/calculation/calculation.service';
+import { Band } from '@data/metadata/metadata.interfaces';
+import { DialogService } from '@shared/dialog/dialog.service';
+import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
+import { debounceTime, filter, take, tap } from 'rxjs/operators';
+import { GeoJSONFeature } from 'ol/format/GeoJSON';
+import { fetchAreaMatrices } from '@data/scenario/scenario.actions';
+import { AreaSelectors } from '@data/area';
+import { DeleteScenarioConfirmationDialogComponent } from '@src/app/map-view/scenario/scenario-detail/delete-scenario-confirmation-dialog/delete-scenario-confirmation-dialog.component';
+import { Feature } from 'geojson';
+import { FormControl, Validators } from '@angular/forms';
+import { OperationParams } from '@data/calculation/calculation.interfaces';
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 
@@ -66,11 +64,14 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   ) {
     // https://stackoverflow.com/questions/59684733/how-to-access-previous-state-and-current-state-and-compare-them-when-you-subscri
     if (AUTO_SAVE_TIMEOUT) {
-      this.autoSaveSubscription$ = this.store.select(ScenarioSelectors.selectActiveScenario).pipe(
-        filter(s => s !== undefined) as OperatorFunction<Scenario | undefined, Scenario>,
-        debounceTime(AUTO_SAVE_TIMEOUT*1000), // TODO use fixed interval instead
-        tap((s: Scenario) => console.debug("Auto-saving scenario "+s.name))
-      ).subscribe((_: Scenario) => this.save());
+      this.autoSaveSubscription$ = this.store
+        .select(ScenarioSelectors.selectActiveScenario)
+        .pipe(
+          filter(s => s !== undefined) as OperatorFunction<Scenario | undefined, Scenario>,
+          debounceTime(AUTO_SAVE_TIMEOUT * 1000), // TODO use fixed interval instead
+          tap((s: Scenario) => console.debug('Auto-saving scenario ' + s.name))
+        )
+        .subscribe((_: Scenario) => this.save());
     }
 
     this.store.select(AreaSelectors.selectAreaMatrixData).subscribe(matrixData => {
@@ -128,7 +129,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
               (this.scenario.matrix!.areaTypes ?? [])
           }
         },
-        this.operation.value,
+        this.operation.value ?? '',
         this.operation.value === 'RarityAdjustedCumulativeImpact' ?
           this.operationParams : {}
       );
@@ -198,7 +199,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(ScenarioActions.saveActiveScenario({ scenarioToBeSaved: this.scenario }));
   }
 
-  hasChanges = () => this.scenario.changes?.features.length>0;
+  hasChanges = () => this.scenario.changes?.features?.length>0;
 
   // Can be used as condition for accordion box "open" attribute
   featureHasChanges(feature: GeoJSONFeature) {

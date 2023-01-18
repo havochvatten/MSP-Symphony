@@ -1,6 +1,5 @@
 import { storiesOf, moduleMetadata } from '@storybook/angular';
 import { withKnobs, select } from '@storybook/addon-knobs';
-import { withA11y } from '@storybook/addon-a11y';
 
 import { CumulativeEffectEtcComponent } from './cumulative-effect-etc.component';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
@@ -8,7 +7,6 @@ import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 const stories = storiesOf('Report | Cumulative Effect', module);
 
 stories.addDecorator(withKnobs);
-stories.addDecorator(withA11y);
 stories.addDecorator(
   moduleMetadata({
     declarations: [CumulativeEffectEtcComponent],

@@ -79,7 +79,7 @@ export class MatrixTableComponent {
       .deleteSensitivityMatrix(this.matrixData.id as number)
       .pipe(
         tap(() => {
-          this.dialog.close();
+          this.dialog.close({deleted: true});
         }),
         catchError(error => of(console.error(error)))
       )

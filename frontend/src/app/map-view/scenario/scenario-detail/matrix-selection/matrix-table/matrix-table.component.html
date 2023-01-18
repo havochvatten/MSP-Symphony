@@ -46,18 +46,18 @@
   </table>
 </main>
 <section class="buttons">
-  <hav-button buttonType="secondary" stateType="alert" (click)="close()">{{
+  <button mat-flat-button color="warn" (click)="close()" [ngClass]="'secondary'">{{
     'map.editor.matrix.table.cancel' | translate
-    }}</hav-button>
+    }}</button>
   <div class="right">
-    <hav-button [disabled]="immutable" stateType="alert" (click)="deleteMatrix()">{{
+    <button mat-flat-button color="warn" [disabled]="immutable" (click)="deleteMatrix()">{{
       'map.editor.matrix.table.delete' | translate
-      }}</hav-button>
-    <hav-button [disabled]="immutable" (click)="save()">{{
+      }}</button>
+    <button mat-flat-button [disabled]="immutable" (click)="save()">{{
       'map.editor.matrix.table.save' | translate
-    }}</hav-button>
-    <hav-button [disabled]="!hasChangedName" (click)="saveAsNew()">{{
+    }}</button>
+    <button mat-flat-button [disabled]="!hasChangedName" (click)="saveAsNew()">{{
       'map.editor.matrix.table.save-as' | translate
-    }}</hav-button>
+    }}</button>
   </div>
 </section>

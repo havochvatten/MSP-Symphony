@@ -5,11 +5,9 @@
 ></app-icon-button>
 <ng-content select="app-confirmation-dialog-text"></ng-content>
 <div class="confirmation-dialog-buttons">
-  <hav-button
-    buttonType="secondary"
+  <button mat-flat-button
     class="confirmation-dialog-undo-button"
     (click)="onCancel($event)"
-    >{{ cancelButtonText }}</hav-button
-  >
-  <hav-button (click)="onConfirm($event)">{{ confirmButtonText }}</hav-button>
+    >{{ cancelButtonText }}</button>
+  <button mat-flat-button (click)="onConfirm($event)">{{ confirmButtonText }}</button>
 </div>

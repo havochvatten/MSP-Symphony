@@ -184,31 +184,25 @@ $buttons-row-gap: 1rem;
     margin: 0 -0.5rem;
     border-top: 1px solid #dfe0e4;
 
-    #exit {
-      width: 4.6rem; // same as report button
-    }
+    button {
+      flex: 0 0 auto;
+      min-width: 0;
+      width: auto;
+      margin: 0 10px 0 0;
 
-    #delete {
-      flex: 1;
-    }
+      &#exit {
+        min-width: 12px;
+      }
 
-    #calculate {
-      flex: 1;
-    }
+      &#delete, &#calculate {
+        flex: 1 auto;
+      }
 
-    ::ng-deep hav-button {
-      width: 100%;
-      margin: 0 0.5rem;
-
-      &.report-button {
-        flex: 0;
+      &#report-button {
+        width: 46px;
         display: flex;
         justify-content: center;
-
-        button {
-          padding: 0;
-          width: 4.6rem;
-        }
+        align-items: center;
 
         app-icon {
           font-size: 3rem;

@@ -1,6 +1,5 @@
 import { storiesOf, moduleMetadata } from '@storybook/angular';
 import { text, withKnobs } from '@storybook/addon-knobs';
-import { withA11y } from '@storybook/addon-a11y';
 
 import {
   AccordionBoxComponent,
@@ -9,14 +8,12 @@ import {
 } from './accordion-box.component';
 import { IconComponent } from '../icon/icon.component';
 import { IconButtonComponent } from '../icon-button/icon-button.component';
-import { HavCoreModule } from 'hav-components';
 import { ToggleComponent } from '../toggle/toggle.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 const stories = storiesOf('Base | Accordion Box', module);
 
 stories.addDecorator(withKnobs);
-stories.addDecorator(withA11y);
 stories.addDecorator(
   moduleMetadata({
     declarations: [
@@ -28,7 +25,6 @@ stories.addDecorator(
       ToggleComponent
     ],
     imports: [
-      HavCoreModule,
       BrowserAnimationsModule
     ]
   })

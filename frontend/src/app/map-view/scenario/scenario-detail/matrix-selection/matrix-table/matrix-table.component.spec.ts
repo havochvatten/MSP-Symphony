@@ -1,11 +1,10 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { DialogRef } from '@shared/dialog/dialog-ref';
 import { DialogConfig } from '@shared/dialog/dialog-config';
 
 import { MatrixTableComponent } from './matrix-table.component';
 import { HttpClientModule } from '@angular/common/http';
 import { provideMockStore } from '@ngrx/store/testing';
-import { HavCoreModule, HavButtonModule } from 'hav-components';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 
 function setUp() {
@@ -15,10 +14,10 @@ function setUp() {
 }
 
 describe('MatrixTableComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [MatrixTableComponent],
-      imports: [HttpClientModule, HavCoreModule, HavButtonModule, TranslationSetupModule],
+      imports: [HttpClientModule, TranslationSetupModule],
       providers: [
         {
           provide: DialogRef,

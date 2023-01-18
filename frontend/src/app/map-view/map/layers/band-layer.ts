@@ -1,13 +1,14 @@
 import { Layer } from 'ol/layer';
 import { Band, BandType } from '@data/metadata/metadata.interfaces';
-import ImageLayer from "ol/layer/Image";
+import ImageLayer from 'ol/layer/Image';
 import LayerGroup from 'ol/layer/Group';
-import { ImageStatic } from "ol/source";
-import { AppSettings } from "@src/app/app.settings";
-import { StaticImageOptions } from "@data/calculation/calculation.interfaces";
-import { DataLayerService } from "@src/app/map-view/map/layers/data-layer.service";
+import { ImageStatic } from 'ol/source';
+import { AppSettings } from '@src/app/app.settings';
+import { StaticImageOptions } from '@data/calculation/calculation.interfaces';
+import { DataLayerService } from '@src/app/map-view/map/layers/data-layer.service';
+import ImageSource from 'ol/source/Image';
 
-class DataLayer extends ImageLayer {
+class DataLayer extends ImageLayer<ImageSource> {
   constructor(opts: StaticImageOptions) {
     super({
       // TODO: It would be more convenient to make use of a tiled protocol here: => WM(T)S?
@@ -47,6 +48,9 @@ class BandLayer extends LayerGroup {
         this.dataLayerService.getDataLayer(this.baseline, type, band.bandNumber).subscribe(response => {
           const extentHeader = response.headers.get('SYM-Image-Extent');
           if (extentHeader) {
+            if (!response.body) {
+              return;
+            }
             const imageOpts = {
               url: URL.createObjectURL(response.body),
               imageExtent: JSON.parse(extentHeader),

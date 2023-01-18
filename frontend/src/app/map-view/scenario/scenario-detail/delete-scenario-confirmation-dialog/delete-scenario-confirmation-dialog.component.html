@@ -1,9 +1,9 @@
 <h3>{{ 'map.editor.delete.modal.title' | translate }} {{ name }}?</h3>
 <div>
-  <hav-button buttonType="secondary" (click)="cancel()">{{
+  <button mat-flat-button (click)="cancel()">{{
     'map.editor.delete.modal.cancel' | translate
-  }}</hav-button>
-  <hav-button stateType="alert" (click)="delete()">{{
+  }}</button>
+  <button mat-flat-button color="warn" (click)="delete()">{{
     'map.editor.delete.modal.delete' | translate
-  }}</hav-button>
+  }}</button>
 </div>

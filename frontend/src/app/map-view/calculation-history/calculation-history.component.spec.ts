@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { CalculationHistoryComponent } from './calculation-history.component';
 import { provideMockStore } from '@ngrx/store/testing';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
@@ -12,7 +12,7 @@ function setUp() {
 }
 
 describe('CalculationHistoryComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CalculationHistoryComponent],
       imports: [TranslationSetupModule],

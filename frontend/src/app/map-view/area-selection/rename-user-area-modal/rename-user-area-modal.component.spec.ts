@@ -1,10 +1,9 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { DialogRef } from '@src/app/shared/dialog/dialog-ref';
 import { DialogConfig } from '@src/app/shared/dialog/dialog-config';
 
 import { RenameUserAreaModalComponent } from './rename-user-area-modal.component';
-import { HavButtonModule } from 'hav-components';
 
 function setUp() {
   const fixture: ComponentFixture<RenameUserAreaModalComponent> = TestBed.createComponent(
@@ -15,10 +14,10 @@ function setUp() {
 }
 
 describe('RenameUserAreaModalComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [RenameUserAreaModalComponent],
-      imports: [TranslationSetupModule, HavButtonModule],
+      imports: [TranslationSetupModule],
       providers: [
         {
           provide: DialogRef,

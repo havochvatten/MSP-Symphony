@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { HighestImpactsComponent } from './highest-impacts.component';
 
@@ -9,7 +9,7 @@ function setUp() {
 }
 
 describe('HighestImpactsComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ HighestImpactsComponent ]
     })

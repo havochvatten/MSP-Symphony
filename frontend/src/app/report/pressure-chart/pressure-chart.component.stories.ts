@@ -1,6 +1,5 @@
 import { storiesOf, moduleMetadata } from '@storybook/angular';
 import { withKnobs } from '@storybook/addon-knobs';
-import { withA11y } from '@storybook/addon-a11y';
 import { DecimalPipe } from '@angular/common';
 
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
@@ -9,7 +8,6 @@ import { PressureChartComponent } from './pressure-chart.component';
 const stories = storiesOf('Report | Pressure Chart', module);
 
 stories.addDecorator(withKnobs);
-stories.addDecorator(withA11y);
 stories.addDecorator(
   moduleMetadata({
     declarations: [PressureChartComponent],

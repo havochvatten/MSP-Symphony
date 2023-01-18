@@ -1,8 +1,7 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { HavButtonModule, HavAccordionModule, HavCheckboxModule } from 'hav-components';
 import { MainViewComponent } from './main-view.component';
 import { SharedModule } from '../shared/shared.module';
 import { MapComponent } from './map/map.component';
@@ -30,16 +29,13 @@ function setUp() {
 }
 
 describe('MapViewComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
         CoreModule,
-        HavButtonModule,
-        HavAccordionModule,
         TranslationSetupModule,
         RouterTestingModule,
-        HavCheckboxModule
       ],
       declarations: [
         MainViewComponent,

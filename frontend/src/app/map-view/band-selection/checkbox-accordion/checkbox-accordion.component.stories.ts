@@ -1,6 +1,5 @@
 import { storiesOf, moduleMetadata } from '@storybook/angular';
 import { text, withKnobs } from '@storybook/addon-knobs';
-import { withA11y } from '@storybook/addon-a11y';
 
 import {
   AccordionBoxComponent,
@@ -9,7 +8,6 @@ import {
 } from '../../../shared/accordion-box/accordion-box.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { IconButtonComponent } from '../../../shared/icon-button/icon-button.component';
-import { HavCoreModule } from 'hav-components';
 import { ToggleComponent } from '../../../shared/toggle/toggle.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CheckboxAccordionComponent } from './checkbox-accordion.component';
@@ -17,7 +15,6 @@ import { CheckboxAccordionComponent } from './checkbox-accordion.component';
 const stories = storiesOf('Base | Checkbox Accordion', module);
 
 stories.addDecorator(withKnobs);
-stories.addDecorator(withA11y);
 stories.addDecorator(
   moduleMetadata({
     declarations: [
@@ -30,7 +27,6 @@ stories.addDecorator(
       ToggleComponent
     ],
     imports: [
-      HavCoreModule,
       BrowserAnimationsModule
     ]
   })

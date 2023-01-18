@@ -13,8 +13,8 @@ import {
   Boundary
 } from './area.interfaces';
 import { getIn } from 'immutable';
-import { selectBaseline } from '@data/user/user.selectors';
-import { Baseline } from '@data/user/user.interfaces';
+// import { selectBaseline } from '@data/user/user.selectors';
+// import { Baseline } from '@data/user/user.interfaces';
 
 export const selectAreaState = createFeatureSelector<AppState, State>('area');
 
@@ -27,41 +27,35 @@ export const selectSelectedArea = createSelector(
 export const selectSelectedAreaData = createSelector(
   selectAreaState,
   selectSelectedArea,
-  (area: State, selectedArea) => selectedArea ? getIn(area, selectedArea, undefined) : undefined
+  (area: State, selectedArea) => (selectedArea ? getIn(area, selectedArea, undefined) : undefined)
 );
 
-export const selectSelectedAreaDataAndBaseline = createSelector(
-  selectSelectedAreaData,
-  selectBaseline,
-  (area?: Area, baseline?: Baseline) => ({ area, baseline })
+// Not used anywhere.. also problem with type of the selectSelectedAreaData
+// export const selectSelectedAreaDataAndBaseline = createSelector(
+//   selectSelectedAreaData,
+//   selectBaseline,
+//   (area?: Area, baseline?: Baseline) => ({ area, baseline })
+// );
+
+export const selectNationalAreas = createSelector(selectAreaState, (state: State) => {
+  const { area } = state;
+  const areaTypes = state.areaTypes.filter(areaType => Object.keys(area).includes(areaType));
+  return areaTypes
+    .map(areaType => area[areaType])
+    .map(nationalArea => ({
+      ...nationalArea,
+      groups: Object.values(nationalArea.groups).map(group => ({
+        ...group,
+        areas: Object.values(group.areas)
+      }))
+    }));
+});
+
+export const selectUserAreas = createSelector(selectAreaState, (state: State) =>
+  Object.values(state.userArea)
 );
 
-export const selectNationalAreas = createSelector(
-  selectAreaState,
-  (state: State) => {
-    const { area } = state;
-    const areaTypes = state.areaTypes.filter(areaType => Object.keys(area).includes(areaType));
-    return areaTypes
-      .map(areaType => area[areaType])
-      .map(nationalArea => ({
-        ...nationalArea,
-        groups: Object.values(nationalArea.groups).map(group => ({
-          ...group,
-          areas: Object.values(group.areas)
-        }))
-      }));
-  }
-);
-
-export const selectUserAreas = createSelector(
-  selectAreaState,
-  (state: State) => Object.values(state.userArea)
-);
-
-export const selectBoundaries = createSelector(
-  selectAreaState,
-  state => state.boundaries
-);
+export const selectBoundaries = createSelector(selectAreaState, state => state.boundaries);
 
 export const selectAreaMatrixData = createSelector(
   selectAreaState,

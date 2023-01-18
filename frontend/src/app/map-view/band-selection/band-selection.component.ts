@@ -6,6 +6,7 @@ import { MetadataActions } from '@data/metadata';
 import { Observable } from 'rxjs';
 import { AreaSelectors } from '@data/area';
 import { Area } from '@data/area/area.interfaces';
+import { map } from 'lodash';
 
 //=== SEARCH UTILITIES ===
 
@@ -53,7 +54,7 @@ export class BandSelectionComponent implements OnInit, OnChanges {
   @Input() bandType: BandType = 'ecoComponents';
   search = '';
   filteredGroups: BandGroup[] = [];
-  selectedArea?: Observable<Area | undefined>;
+  selectedArea?: Observable<Area | undefined | unknown>;
 
   constructor(private store: Store<State>) {}
 

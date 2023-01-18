@@ -63,9 +63,7 @@ export class AreaGroupComponent {
         (click)="toggleOpen()"
       ></app-icon-button>
       <ul *ngIf="open" class="edit-options">
-        <li (click)="onEditUserArea($event)">{{ 'map.user-area.edit.label' | translate }}</li>
         <li (click)="onRenameUserArea($event)">{{ 'map.user-area.rename.label' | translate }}</li>
-<!--        <li (click)="onShareUserArea($event)">{{ 'map.user-area.share.label' | translate }}</li>-->
         <li class="delete" (click)="onDeleteUserArea($event)">
           {{ 'map.user-area.delete.label' | translate }}
         </li>
@@ -101,12 +99,4 @@ export class EditAreaComponent {
       this.renameUserArea();
     }
   }
-
-  onEditUserArea(event: any) {
-    this.onClick(event);
-  }
-
-  // onShareUserArea(event: any) {
-  //   this.onClick(event);
-  // }
 }

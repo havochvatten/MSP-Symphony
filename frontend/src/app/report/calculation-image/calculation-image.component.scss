@@ -21,6 +21,6 @@
 
 @media print {
   .image-background {
-    color-adjust: exact;
+    print-color-adjust: exact;
   }
 }

@@ -2,7 +2,6 @@ import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { DialogComponent } from './dialog/dialog.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { HavCoreModule, HavButtonModule, HavRadioButtonModule, HavCheckboxModule } from 'hav-components';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconButtonComponent } from './icon-button/icon-button.component';
@@ -36,9 +35,11 @@ import { ResultColorScaleComponent } from './result-color-scale/result-color-sca
 import { PressureColorScaleComponent } from './pressure-color-scale/pressure-color-scale.component';
 import { PopupMessageComponent } from './popup-message/popup-message.component';
 import { StatusIconComponent } from './status-icon/status-icon.component';
-import { ComparisonReportModalComponent } from "@shared/report-modal/comparison-report-modal.component";
-import { OrdinalPipe } from "@shared/ordinal.pipe";
-import { AnchorPipe } from "@shared/anchor.pipe";
+import { ComparisonReportModalComponent } from '@shared/report-modal/comparison-report-modal.component';
+import { OrdinalPipe } from '@shared/ordinal.pipe';
+import { AnchorPipe } from '@shared/anchor.pipe';
+import { MatButtonModule } from "@angular/material/button";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 
 @NgModule({
   declarations: [
@@ -80,14 +81,12 @@ import { AnchorPipe } from "@shared/anchor.pipe";
   ],
   imports: [
     CommonModule,
-    HavCoreModule,
     FontAwesomeModule,
-    HavButtonModule,
-    HavCheckboxModule,
-    HavRadioButtonModule,
     ReactiveFormsModule,
     RouterModule,
-    TranslateModule
+    TranslateModule,
+    MatButtonModule,
+    MatCheckboxModule
   ],
   exports: [
     CommonModule,

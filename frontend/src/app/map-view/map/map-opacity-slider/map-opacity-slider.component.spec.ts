@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { MapOpacitySliderComponent } from './map-opacity-slider.component';
 import { SharedModule } from '@src/app/shared/shared.module';
@@ -11,7 +11,7 @@ function setUp() {
 }
 
 describe('MapOpacitySliderComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,

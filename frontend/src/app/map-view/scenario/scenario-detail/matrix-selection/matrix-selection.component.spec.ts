@@ -1,6 +1,5 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
-import { HavButtonModule } from 'hav-components';
 import { SharedModule } from '@shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
@@ -15,11 +14,10 @@ function setUp() {
 }
 
 describe('MatrixSelectionComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
-        HavButtonModule,
         TranslationSetupModule
       ],
       declarations: [MatrixSelectionComponent],

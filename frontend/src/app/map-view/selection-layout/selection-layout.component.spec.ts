@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SelectionLayoutComponent } from './selection-layout.component';
 import { SharedModule } from '@src/app/shared/shared.module';
@@ -11,7 +11,7 @@ function setUp() {
 }
 
 describe('SelectionLayoutComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [SelectionLayoutComponent],
       imports: [SharedModule, TranslationSetupModule]

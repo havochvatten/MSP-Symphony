@@ -1,8 +1,7 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { HavButtonModule, HavAccordionModule } from 'hav-components';
 import { ScenarioEditorComponent } from './scenario-editor.component';
 import { SharedModule } from '@src/app/shared/shared.module';
 import { SliderControlsComponent } from '../band-selection/slider-controls/slider-controls.component';
@@ -18,12 +17,10 @@ function setUp() {
 }
 
 describe('EcoEditorComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
-        HavButtonModule,
-        HavAccordionModule,
         TranslationSetupModule,
         RouterTestingModule
       ],

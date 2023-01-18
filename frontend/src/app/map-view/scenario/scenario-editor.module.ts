@@ -9,14 +9,11 @@ import {
 import {
   NormalizationSelectionComponent
 } from "@src/app/map-view/scenario/scenario-detail/normalization-selection/normalization-selection.component";
-import {
-  HavAccordionModule,
-  HavButtonModule,
-  HavCheckboxModule,
-  HavRadioButtonModule,
-  HavSelectModule,
-  HavSpinnerModule
-} from "hav-components";
+import { MatButtonModule } from "@angular/material/button";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatRadioModule } from "@angular/material/radio";
+import { MatSelectModule } from "@angular/material/select";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 import { FormsModule } from "@angular/forms";
 
 @NgModule({
@@ -29,13 +26,12 @@ import { FormsModule } from "@angular/forms";
   ],
   imports: [
     SharedModule,
-    HavButtonModule,
-    HavAccordionModule,
-    HavCheckboxModule,
-    HavRadioButtonModule,
-    HavSpinnerModule,
-    HavSelectModule,
     FormsModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatRadioModule,
+    MatSelectModule,
+    MatCheckboxModule,
   ],
   exports: [ScenarioEditorComponent]
 })

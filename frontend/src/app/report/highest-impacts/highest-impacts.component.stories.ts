@@ -1,6 +1,5 @@
 import { storiesOf, moduleMetadata } from '@storybook/angular';
 import { withKnobs, select } from '@storybook/addon-knobs';
-import { withA11y } from '@storybook/addon-a11y';
 
 import { HighestImpactsComponent } from './highest-impacts.component';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
@@ -47,7 +46,6 @@ const impacts: number[] = [0.34, 0.23, 0.03, 0.8, 0.05, 0.123];
 const stories = storiesOf('Report | Highest Impacts', module);
 
 stories.addDecorator(withKnobs);
-stories.addDecorator(withA11y);
 stories.addDecorator(
   moduleMetadata({
     declarations: [HighestImpactsComponent],

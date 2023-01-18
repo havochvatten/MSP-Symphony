@@ -5,6 +5,7 @@ import { State } from "@src/app/app-reducer";
 import { ScenarioSelectors } from "@data/scenario";
 import { intersection } from "@src/util/set-operations";
 import { ChangesProperty } from "@data/scenario/scenario.interfaces";
+import { MatCheckboxChange } from "@angular/material/checkbox";
 
 @Component({
   selector: 'app-checkbox-accordion',
@@ -38,12 +39,11 @@ export class CheckboxAccordionComponent implements AfterViewInit {
   private changeAll(checked: boolean) {
     this.bands.forEach(band => {
       const { statePath } = band;
-      this.onChange(checked, statePath);
+      this.change(checked, statePath);
     })
   }
 
-  onChange = (checked: boolean, statePath: StatePath) =>
-    this.change(checked, statePath);
+  onChange = (evt: MatCheckboxChange, statePath: StatePath) => this.change(evt.checked, statePath);
 
   onChangeVisible = (visible: boolean, statePath: StatePath) =>
     this.changeVisible(visible, statePath);

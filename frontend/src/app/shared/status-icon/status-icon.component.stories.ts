@@ -1,6 +1,5 @@
 import { storiesOf, moduleMetadata } from '@storybook/angular';
 import { withKnobs, select } from '@storybook/addon-knobs';
-import { withA11y } from '@storybook/addon-a11y';
 
 import { StatusIconComponent } from './status-icon.component';
 
@@ -16,7 +15,6 @@ const status: Status[] = [
 const stories = storiesOf('Base | Status Icon', module);
 
 stories.addDecorator(withKnobs);
-stories.addDecorator(withA11y);
 stories.addDecorator(
   moduleMetadata({
     declarations: [StatusIconComponent]

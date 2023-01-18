@@ -1,8 +1,7 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AccordionBoxComponent } from './accordion-box.component';
 import { IconButtonComponent } from '../icon-button/icon-button.component';
-import { HavCoreModule } from 'hav-components';
 import { IconComponent } from '../icon/icon.component';
 
 function setUp() {
@@ -12,10 +11,9 @@ function setUp() {
 }
 
 describe('AccordionBoxComponent', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [AccordionBoxComponent, IconButtonComponent, IconComponent],
-      imports: [HavCoreModule]
+      declarations: [AccordionBoxComponent, IconButtonComponent, IconComponent]
     }).compileComponents();
   }));
 
