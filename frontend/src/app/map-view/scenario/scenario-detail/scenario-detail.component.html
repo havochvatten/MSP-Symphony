@@ -13,12 +13,11 @@
     <section class="algorithm">
       <h3>{{ 'map.editor.operation.title' | translate }}</h3>
       <article>
-        <mat-select [placeholder]="'map.editor.operation.choose' | translate"
-                    [formControl]="operation" disableOptionCentering panelClass="ddPanel">
-          <mat-option *ngFor="let op of availableOperations" [value]="op">
+        <mat-radio-group [formControl]="operation">
+          <mat-radio-button *ngFor="let op of availableOperations" [value]="op">
             {{ 'map.editor.operation.'+op+'.title' | translate }}
-          </mat-option>
-        </mat-select>
+          </mat-radio-button>
+        </mat-radio-group>
       </article>
       <article *ngIf="operation.value == 'RarityAdjustedCumulativeImpact'">
         <p>{{ 'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.description' | translate}}</p>
