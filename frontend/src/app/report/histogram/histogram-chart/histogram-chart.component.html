@@ -7,12 +7,11 @@
     <path
       class="histogram_info"
       [attr.d]="phDraw(i, true)">
-      <title>{{
-        ('report.histogram.interval' | translate) + ': '
+      <title [innerHTML]="('report.histogram.interval' | translate) + ': '
       + binInfo[i].lowerBound + ' &ndash; ' + binInfo[i + 1].lowerBound + ' : '
       + (bVal | number: '1.0':locale) + '\n'
       + ('report.histogram.cumulative-proportion' | translate) + ' ≤ ' + binInfo[i].cumulativeQuantity + '\n'
-      + ('report.histogram.middle-of-range' | translate) + ' = ' + (binInfo[i].middle | number:'.0':locale ) }}
+      + ('report.histogram.middle-of-range' | translate) + ' = ' + (binInfo[i].middle | number:'.0':locale )">
       </title>
     </path>
   </ng-container>
