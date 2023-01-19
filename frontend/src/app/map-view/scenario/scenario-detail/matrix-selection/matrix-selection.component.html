@@ -11,10 +11,9 @@
   </mat-radio-button>
   <section *ngIf="hasOptionalMatrices()">
     <mat-radio-button
-      label="{{'map.editor.matrix.alt-matrix' | translate}}"
       [checked]="matrixOption === 'OPTIONAL'"
       (change)="check('OPTIONAL', altMx)"
-    >
+    >{{ 'map.editor.matrix.alt-matrix' | translate }}
     </mat-radio-button>
     <article>
       <mat-select #altMx
