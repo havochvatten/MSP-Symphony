@@ -46,6 +46,5 @@ The file `attributions.ts` contains a list of 3rd-party components. The informat
 about-dialog. The list (in particular the version numbers) needs to be kept up to date.
 
 ## Good ideas for improvement in frontend:
-- Replace orphaned hav-components library with Material Elements
 - Enable strict template checking (strictTemplates = true in tsconfig)
 - Migrate from ngx-translate to Angular's standard i18n framework
