@@ -5,15 +5,10 @@ import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 
 import { DeleteUserAreaConfirmationDialogComponent } from './delete-user-area-confirmation-dialog.component';
 
-function setUp() {
-  const fixture: ComponentFixture<DeleteUserAreaConfirmationDialogComponent> = TestBed.createComponent(
-    DeleteUserAreaConfirmationDialogComponent
-  );
-  const component: DeleteUserAreaConfirmationDialogComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('DeleteUserAreaConfirmationDialogComponent', () => {
+  let fixture: ComponentFixture<DeleteUserAreaConfirmationDialogComponent>,
+      component: DeleteUserAreaConfirmationDialogComponent;
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [DeleteUserAreaConfirmationDialogComponent],
@@ -33,10 +28,12 @@ describe('DeleteUserAreaConfirmationDialogComponent', () => {
         }
       ]
     }).compileComponents();
+    fixture = TestBed.createComponent(DeleteUserAreaConfirmationDialogComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

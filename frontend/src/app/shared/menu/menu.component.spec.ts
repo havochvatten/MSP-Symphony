@@ -5,13 +5,10 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MenuComponent } from './menu.component';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 
-function setUp() {
-  const fixture: ComponentFixture<MenuComponent> = TestBed.createComponent(MenuComponent);
-  const component: MenuComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('MenuComponent', () => {
+  let fixture: ComponentFixture<MenuComponent>,
+      component: MenuComponent
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -21,10 +18,12 @@ describe('MenuComponent', () => {
       ],
       declarations: [MenuComponent]
     }).compileComponents();
+    fixture = TestBed.createComponent(MenuComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

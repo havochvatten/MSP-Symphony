@@ -5,15 +5,10 @@ import { DialogConfig } from '@src/app/shared/dialog/dialog-config';
 
 import { CreateUserAreaModalComponent } from './create-user-area-modal.component';
 
-function setUp() {
-  const fixture: ComponentFixture<CreateUserAreaModalComponent> = TestBed.createComponent(
-    CreateUserAreaModalComponent
-  );
-  const component: CreateUserAreaModalComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('CreateUserAreaModalComponent', () => {
+  let fixture: ComponentFixture<CreateUserAreaModalComponent>,
+      component: CreateUserAreaModalComponent;
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CreateUserAreaModalComponent],
@@ -33,10 +28,12 @@ describe('CreateUserAreaModalComponent', () => {
         }
       ]
     }).compileComponents();
+    fixture = TestBed.createComponent(CreateUserAreaModalComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

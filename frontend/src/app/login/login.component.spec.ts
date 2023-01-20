@@ -6,29 +6,36 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TranslationSetupModule } from '../app-translation-setup.module';
-
-function setUp() {
-  const fixture: ComponentFixture<LoginComponent> = TestBed.createComponent(LoginComponent);
-  const component: LoginComponent = fixture.componentInstance;
-  return { component, fixture };
-}
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from "@angular/material/input";
+import { provideAnimations } from "@angular/platform-browser/animations";
 
 describe('LoginComponent', () => {
+  let fixture: ComponentFixture<LoginComponent>,
+      component: LoginComponent;
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
         ReactiveFormsModule,
         TranslationSetupModule,
-        RouterTestingModule
+        RouterTestingModule,
+        MatFormFieldModule,
+        MatInputModule
       ],
       declarations: [LoginComponent],
-      providers: [provideMockStore()]
+      providers: [provideMockStore({
+        initialState: { user: { baseline: undefined } }
+      }),
+      provideAnimations()]
     }).compileComponents();
+    fixture = TestBed.createComponent(LoginComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

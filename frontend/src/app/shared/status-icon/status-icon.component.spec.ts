@@ -2,24 +2,21 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { StatusIconComponent } from './status-icon.component';
 
-function setUp() {
-  const fixture: ComponentFixture<StatusIconComponent> = TestBed.createComponent(
-    StatusIconComponent
-  );
-  const component: StatusIconComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('StatusIconComponent', () => {
+  let fixture: ComponentFixture<StatusIconComponent>,
+      component: StatusIconComponent;
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ StatusIconComponent ]
     })
     .compileComponents();
+    fixture = TestBed.createComponent(StatusIconComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

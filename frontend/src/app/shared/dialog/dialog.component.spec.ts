@@ -2,21 +2,20 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { DialogComponent } from './dialog.component';
 
-function setUp() {
-  const fixture: ComponentFixture<DialogComponent> = TestBed.createComponent(DialogComponent);
-  const component: DialogComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('DialogComponent', () => {
+  let fixture: ComponentFixture<DialogComponent>,
+      component: DialogComponent;
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [DialogComponent]
     }).compileComponents();
+    fixture = TestBed.createComponent(DialogComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

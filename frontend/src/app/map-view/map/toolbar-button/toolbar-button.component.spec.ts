@@ -3,26 +3,37 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ToolbarButtonComponent } from './toolbar-button.component';
 import { SharedModule } from '@src/app/shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
-
-function setUp() {
-  const fixture: ComponentFixture<ToolbarButtonComponent> = TestBed.createComponent(ToolbarButtonComponent);
-  const component: ToolbarButtonComponent = fixture.componentInstance;
-  return { component, fixture };
-}
+import { provideMockStore } from "@ngrx/store/testing";
+import { initialState as scenario } from "@data/scenario/scenario.reducers";
+import { StoreModule } from "@ngrx/store";
 
 describe('ToolbarButtonComponent', () => {
+  let fixture: ComponentFixture<ToolbarButtonComponent>,
+      component: ToolbarButtonComponent;
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
-        TranslationSetupModule
+        TranslationSetupModule,
+        StoreModule.forRoot({}, {})
+      ],
+      providers: [
+        provideMockStore({
+          initialState:{
+            scenario: scenario,
+            user: { baseline: undefined }
+          }
+        })
       ],
       declarations: [ToolbarButtonComponent]
-    }).compileComponents();
+    }).compileComponents()
+    fixture = TestBed.createComponent(ToolbarButtonComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

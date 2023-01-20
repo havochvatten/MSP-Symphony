@@ -6,17 +6,15 @@ import { MatrixTableComponent } from './matrix-table.component';
 import { HttpClientModule } from '@angular/common/http';
 import { provideMockStore } from '@ngrx/store/testing';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
-
-function setUp() {
-  const fixture: ComponentFixture<MatrixTableComponent> = TestBed.createComponent(MatrixTableComponent);
-  const component: MatrixTableComponent = fixture.componentInstance;
-  return { component, fixture };
-}
+import { IconComponent } from "@shared/icon/icon.component";
 
 describe('MatrixTableComponent', () => {
+  let fixture: ComponentFixture<MatrixTableComponent>,
+      component: MatrixTableComponent;
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [MatrixTableComponent],
+      declarations: [MatrixTableComponent, IconComponent],
       imports: [HttpClientModule, TranslationSetupModule],
       providers: [
         {
@@ -36,10 +34,11 @@ describe('MatrixTableComponent', () => {
         provideMockStore({ initialState: { user: { baseline: undefined } } })
       ]
     }).compileComponents();
+    fixture = TestBed.createComponent(MatrixTableComponent);
+    component = fixture.componentInstance;
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

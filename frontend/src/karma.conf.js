@@ -13,7 +13,11 @@ module.exports = function(config) {
       require('@angular-devkit/build-angular/plugins/karma')
     ],
     client: {
-      clearContext: false // leave Jasmine Spec Runner output visible in browser
+      clearContext: false, // leave Jasmine Spec Runner output visible in browser
+      verboseDeprecations: true,
+      // jasmine: {
+      //   timeoutInterval: 10000   // useful setting: jasmine.DEFAULT_TIMEOUT_INTERVAL (default: 5000)
+      // }
     },
     coverageReporter: {
       dir: require('path').join(__dirname, '../coverage/symphony-fe'),

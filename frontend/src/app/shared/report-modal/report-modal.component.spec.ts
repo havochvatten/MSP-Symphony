@@ -10,13 +10,10 @@ import { provideMockStore } from '@ngrx/store/testing';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 
-function setUp() {
-  const fixture: ComponentFixture<CalculationReportModalComponent> = TestBed.createComponent(CalculationReportModalComponent);
-  const component: CalculationReportModalComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('CalculationReportModalComponent', () => {
+  let fixture: ComponentFixture<CalculationReportModalComponent>,
+      component: CalculationReportModalComponent;
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CalculationReportModalComponent, IconButtonComponent, IconComponent],
@@ -41,10 +38,12 @@ describe('CalculationReportModalComponent', () => {
         })
       ]
     }).compileComponents();
+    fixture = TestBed.createComponent(CalculationReportModalComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

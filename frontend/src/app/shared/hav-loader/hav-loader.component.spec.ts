@@ -2,22 +2,21 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { HavLoaderComponent } from './hav-loader.component';
 
-function setUp() {
-  const fixture: ComponentFixture<HavLoaderComponent> = TestBed.createComponent(HavLoaderComponent);
-  const component: HavLoaderComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('HavLoaderComponent', () => {
+  let fixture: ComponentFixture<HavLoaderComponent>,
+      component: HavLoaderComponent;
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ HavLoaderComponent ]
     })
     .compileComponents();
+    fixture = TestBed.createComponent(HavLoaderComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

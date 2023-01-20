@@ -3,21 +3,20 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { CheckboxGroupComponent } from './checkbox-group.component';
 import { IconComponent } from '../icon/icon.component';
 
-function setUp() {
-  const fixture: ComponentFixture<CheckboxGroupComponent> = TestBed.createComponent(CheckboxGroupComponent);
-  const component: CheckboxGroupComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('CheckboxGroupComponent', () => {
+  let fixture: ComponentFixture<CheckboxGroupComponent>,
+      component: CheckboxGroupComponent;
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CheckboxGroupComponent, IconComponent]
     }).compileComponents();
+    fixture = TestBed.createComponent(CheckboxGroupComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

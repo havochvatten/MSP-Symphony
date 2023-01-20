@@ -3,23 +3,22 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ScenarioChangesComponent } from './scenario-changes.component';
 import { TranslationSetupModule } from "@src/app/app-translation-setup.module";
 
-function setUp() {
-  const fixture: ComponentFixture<ScenarioChangesComponent> = TestBed.createComponent(ScenarioChangesComponent);
-  const component: ScenarioChangesComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('ScenarioChangesComponent', () => {
+  let fixture: ComponentFixture<ScenarioChangesComponent>,
+      component: ScenarioChangesComponent;
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ScenarioChangesComponent ],
       imports: [TranslationSetupModule]
     })
     .compileComponents();
+    fixture = TestBed.createComponent(ScenarioChangesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

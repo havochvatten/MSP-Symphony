@@ -20,27 +20,37 @@ import { AreaSelectionComponent } from './area-selection/area-selection.componen
 import { BandSelectionComponent } from './band-selection/band-selection.component';
 import { SelectionLayoutComponent } from './selection-layout/selection-layout.component';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
+import { initialState as area } from '@data/area/area.reducers';
+import { initialState as calculation } from '@data/calculation/calculation.reducers';
+import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { ScenarioEditorComponent } from "@src/app/map-view/scenario/scenario-editor.component";
+import { StoreModule } from "@ngrx/store";
+import { CalculationHistoryComponent } from "@src/app/map-view/calculation-history/calculation-history.component";
+import { ComparisonComponent } from "@src/app/map-view/comparison/comparison.component";
+import { FormBuilder } from "@angular/forms";
+import { MatSelectModule } from "@angular/material/select";
+import { AreaGroupComponent } from "@src/app/map-view/area-selection/area-group/area-group.component";
+import { ScenarioListComponent } from "@src/app/map-view/scenario/scenario-list/scenario-list.component";
 
-function setUp() {
-  const fixture: ComponentFixture<MainViewComponent> = TestBed.createComponent(MainViewComponent);
-  const component: MainViewComponent = fixture.componentInstance;
-  return { component, fixture };
-}
+describe('MainViewComponent', () => {
+  let fixture: ComponentFixture<MainViewComponent>,
+      component: MainViewComponent;
 
-describe('MapViewComponent', () => {
-  beforeEach(waitForAsync(() => {
+  beforeEach((() => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
         CoreModule,
         TranslationSetupModule,
         RouterTestingModule,
+        MatSelectModule,
+        StoreModule.forRoot({},{}),
       ],
       declarations: [
         MainViewComponent,
         MapComponent,
         ScenarioEditorComponent,
+        ScenarioListComponent,
         MapToolbarComponent,
         MapOpacitySliderComponent,
         SliderControlsComponent,
@@ -48,20 +58,30 @@ describe('MapViewComponent', () => {
         ToolbarZoomButtonsComponent,
         ToolbarButtonComponent,
         EcoSliderComponent,
+        AreaGroupComponent,
         AreaSelectionComponent,
         BandSelectionComponent,
-        SelectionLayoutComponent
+        SelectionLayoutComponent,
+        CalculationHistoryComponent,
+        ComparisonComponent
       ],
-      providers: [provideMockStore({
+      providers: [
+        FormBuilder,
+        provideMockStore({
         initialState: {
-          metadata
-        }
-      })]
+            user: { baseline: undefined },
+            metadata: metadata,
+            calculation: calculation,
+            area: area,
+            scenario: scenario
+        }})]
     }).compileComponents();
+    fixture = TestBed.createComponent(MainViewComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
-  /*it('should create', () => {
-    const { component } = setUp();
+  it('should create', () => {
     expect(component).toBeTruthy();
-  });*/
+  });
 });

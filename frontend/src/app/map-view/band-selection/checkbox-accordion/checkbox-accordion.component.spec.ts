@@ -8,16 +8,19 @@ import {
 } from '../../../shared/accordion-box/accordion-box.component';
 import { IconButtonComponent } from '../../../shared/icon-button/icon-button.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
-
-function setUp() {
-  const fixture: ComponentFixture<CheckboxAccordionComponent> = TestBed.createComponent(CheckboxAccordionComponent);
-  const component: CheckboxAccordionComponent = fixture.componentInstance;
-  return { component, fixture };
-}
+import { StoreModule } from "@ngrx/store";
+import { provideMockStore } from "@ngrx/store/testing";
+import { initialState as scenario } from '@data/scenario/scenario.reducers';
 
 describe('CheckboxAccordionComponent', () => {
+  let fixture: ComponentFixture<CheckboxAccordionComponent>,
+      component: CheckboxAccordionComponent;
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
+      imports: [
+        StoreModule.forRoot({},{})
+      ],
       declarations: [
         CheckboxAccordionComponent,
         AccordionBoxComponent,
@@ -25,12 +28,17 @@ describe('CheckboxAccordionComponent', () => {
         AccordionBoxContentComponent,
         IconButtonComponent,
         IconComponent
-      ]
+      ],
+      providers: [provideMockStore({
+        initialState: { scenario: scenario }
+      })]
     }).compileComponents();
+    fixture = TestBed.createComponent(CheckboxAccordionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

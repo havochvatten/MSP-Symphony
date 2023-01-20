@@ -4,25 +4,27 @@ import { provideMockStore } from '@ngrx/store/testing';
 import { HeaderComponent } from './header.component';
 import { SharedModule } from '@src/app/shared/shared.module';
 import { UserMenuToggleComponent } from './user-menu-toggle/user-menu-toggle.component';
-
-function setUp() {
-  const fixture: ComponentFixture<HeaderComponent> = TestBed.createComponent(HeaderComponent);
-  const component: HeaderComponent = fixture.componentInstance;
-  return { component, fixture };
-}
+import { StoreModule } from "@ngrx/store";
 
 describe('HeaderComponent', () => {
+  let fixture: ComponentFixture<HeaderComponent>,
+      component: HeaderComponent;
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule],
+      imports: [SharedModule, StoreModule.forRoot({}, {})],
       declarations: [HeaderComponent, UserMenuToggleComponent],
-      providers: [provideMockStore()]
+      providers: [provideMockStore({
+        initialState : { user: { baseline: undefined } }
+      })]
     }).compileComponents();
+    fixture = TestBed.createComponent(HeaderComponent);
+    component = fixture.componentInstance;
+    component.title = 'Symphony'
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
-    component.title = 'Symphony'
     expect(component).toBeTruthy();
   });
 });

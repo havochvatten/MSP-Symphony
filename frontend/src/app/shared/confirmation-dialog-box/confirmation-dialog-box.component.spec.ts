@@ -4,21 +4,20 @@ import { ConfirmationDialogBoxComponent } from './confirmation-dialog-box.compon
 import { IconButtonComponent } from '../icon-button/icon-button.component';
 import { IconComponent } from '../icon/icon.component';
 
-function setUp() {
-  const fixture: ComponentFixture<ConfirmationDialogBoxComponent> = TestBed.createComponent(ConfirmationDialogBoxComponent);
-  const component: ConfirmationDialogBoxComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('ConfirmationDialogBoxComponent', () => {
+  let fixture: ComponentFixture<ConfirmationDialogBoxComponent>,
+      component: ConfirmationDialogBoxComponent;
+
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ConfirmationDialogBoxComponent, IconButtonComponent, IconComponent]
     }).compileComponents();
+    fixture = TestBed.createComponent(ConfirmationDialogBoxComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

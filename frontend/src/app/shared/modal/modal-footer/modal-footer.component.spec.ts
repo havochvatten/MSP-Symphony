@@ -2,21 +2,19 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ModalFooterComponent } from './modal-footer.component';
 
-function setUp() {
-  const fixture: ComponentFixture<ModalFooterComponent> = TestBed.createComponent(ModalFooterComponent);
-  const component: ModalFooterComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('ModalFooterComponent', () => {
+  let fixture: ComponentFixture<ModalFooterComponent>,
+      component: ModalFooterComponent;
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ModalFooterComponent]
     }).compileComponents();
+    fixture = TestBed.createComponent(ModalFooterComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

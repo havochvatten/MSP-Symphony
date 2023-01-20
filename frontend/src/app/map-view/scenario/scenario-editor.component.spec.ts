@@ -8,38 +8,49 @@ import { SliderControlsComponent } from '../band-selection/slider-controls/slide
 import { MatrixSelectionComponent } from './scenario-detail/matrix-selection/matrix-selection.component';
 import { EcoSliderComponent } from '../band-selection/eco-slider/eco-slider.component';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
-import { initialState } from '@data/metadata/metadata.reducers';
+import { StoreModule } from "@ngrx/store";
+import { ScenarioListComponent } from "@src/app/map-view/scenario/scenario-list/scenario-list.component";
+import { initialState as metadata } from "@data/metadata/metadata.reducers";
+import { initialState as area } from "@data/area/area.reducers";
+import { initialState as scenario } from "@data/scenario/scenario.reducers";
+import { NO_ERRORS_SCHEMA } from "@angular/core";
 
-function setUp() {
-  const fixture: ComponentFixture<ScenarioEditorComponent> = TestBed.createComponent(ScenarioEditorComponent);
-  const component: ScenarioEditorComponent = fixture.componentInstance;
-  return { component, fixture };
-}
+describe('ScenarioEditorComponent', () => {
+  let component: ScenarioEditorComponent;
+  let fixture: ComponentFixture<ScenarioEditorComponent>;
 
-describe('EcoEditorComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
         TranslationSetupModule,
-        RouterTestingModule
+        RouterTestingModule,
+        StoreModule.forRoot({},{})
       ],
       declarations: [
         ScenarioEditorComponent,
         SliderControlsComponent,
         EcoSliderComponent,
-        MatrixSelectionComponent
+        MatrixSelectionComponent,
+        ScenarioListComponent
       ],
-      providers: [provideMockStore({
-        initialState: {
-          metadata: initialState
-        }
-      })]
+      providers: [
+        provideMockStore({
+          initialState: {
+            user: { baseline: undefined },
+            metadata: metadata,
+            area: area,
+            scenario: scenario
+          }})
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
+    fixture = TestBed.createComponent(ScenarioEditorComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
-  // it('should create', () => {
-  //   const { component } = setUp();
-  //   expect(component).toBeTruthy();
-  // });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 });
