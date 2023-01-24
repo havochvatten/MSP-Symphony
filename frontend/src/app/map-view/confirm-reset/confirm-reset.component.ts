@@ -53,7 +53,6 @@ export class ConfirmResetComponent implements OnInit {
                 }));
               }
             });
-            this.store.dispatch(ScenarioActions.saveActiveScenario({scenarioToBeSaved: this.activeScenario!}));
           }
         });
     }
