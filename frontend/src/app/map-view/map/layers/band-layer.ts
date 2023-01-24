@@ -7,6 +7,7 @@ import { AppSettings } from '@src/app/app.settings';
 import { StaticImageOptions } from '@data/calculation/calculation.interfaces';
 import { DataLayerService } from '@src/app/map-view/map/layers/data-layer.service';
 import ImageSource from 'ol/source/Image';
+import { SymphonyLayerGroup } from "@src/app/map-view/map/layers/symphony-layer";
 
 class DataLayer extends ImageLayer<ImageSource> {
   constructor(opts: StaticImageOptions) {
@@ -17,7 +18,7 @@ class DataLayer extends ImageLayer<ImageSource> {
   }
 }
 
-class BandLayer extends LayerGroup {
+class BandLayer extends SymphonyLayerGroup {
   private visibleBands = {
     ecoComponents: new Map<number, Layer>(),
     pressures: new Map<number, Layer>()
@@ -62,6 +63,7 @@ class BandLayer extends LayerGroup {
             const layer = new DataLayer(imageOpts);
             this.getLayers().push(layer);
             layerBands.set(band.bandNumber, layer);
+            layer.on('prerender', this.renderHandler);
             this.setBandLayerOpacity(bandType, band.bandNumber, (band.layerOpacity ?? 100)/100);
           } else {
             console.error("Image for band "+band.bandNumber+" does not have any extent header ignoring.");

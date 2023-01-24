@@ -257,6 +257,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   public toggleSmooth() {
     this.resultLayerGroup.toggleImageSmoothing();
+    this.bandLayer?.toggleImageSmoothing();
     this.layerAliasing = this.resultLayerGroup.antialias;
   }
 }
