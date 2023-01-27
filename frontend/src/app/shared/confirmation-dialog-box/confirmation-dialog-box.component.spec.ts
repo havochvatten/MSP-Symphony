@@ -1,26 +1,23 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ConfirmationDialogBoxComponent } from './confirmation-dialog-box.component';
 import { IconButtonComponent } from '../icon-button/icon-button.component';
-import { HavButtonModule, HavCoreModule } from 'hav-components';
 import { IconComponent } from '../icon/icon.component';
 
-function setUp() {
-  const fixture: ComponentFixture<ConfirmationDialogBoxComponent> = TestBed.createComponent(ConfirmationDialogBoxComponent);
-  const component: ConfirmationDialogBoxComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('ConfirmationDialogBoxComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<ConfirmationDialogBoxComponent>,
+      component: ConfirmationDialogBoxComponent;
+
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [HavCoreModule, HavButtonModule],
       declarations: [ConfirmationDialogBoxComponent, IconButtonComponent, IconComponent]
     }).compileComponents();
+    fixture = TestBed.createComponent(ConfirmationDialogBoxComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

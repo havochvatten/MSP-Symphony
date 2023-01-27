@@ -1,17 +1,14 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { MapOpacitySliderComponent } from './map-opacity-slider.component';
 import { SharedModule } from '@src/app/shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 
-function setUp() {
-  const fixture: ComponentFixture<MapOpacitySliderComponent> = TestBed.createComponent(MapOpacitySliderComponent);
-  const component: MapOpacitySliderComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('MapOpacitySliderComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<MapOpacitySliderComponent>,
+      component: MapOpacitySliderComponent;
+
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
@@ -20,10 +17,12 @@ describe('MapOpacitySliderComponent', () => {
       declarations: [MapOpacitySliderComponent]
     })
     .compileComponents();
+    fixture = TestBed.createComponent(MapOpacitySliderComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

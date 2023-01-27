@@ -4,13 +4,13 @@
 </nav>
 <iframe #frame [src]="getSafeUrl()"></iframe>
 <div class="toolbar">
-  <hav-button id="open-in-new-tab" buttonType="tertiary" (click)="open()">
+  <button mat-flat-button id="open-in-new-tab" (click)="open()" [ngClass]="'basic'">
     {{ 'report.toolbar.open-in-new-tab' | translate }}
-  </hav-button>
-  <hav-button buttonType="secondary" (click)="downloadGeotiff()">
+  </button>
+  <button mat-flat-button (click)="downloadGeotiff()" [ngClass]="'secondary'">
     {{ 'report.toolbar.export-geotiff' | translate }}
-  </hav-button>
-  <hav-button (click)="print()">
+  </button>
+  <button mat-flat-button (click)="print()">
     {{ 'report.toolbar.print' | translate }}
-  </hav-button>
+  </button>
 </div>

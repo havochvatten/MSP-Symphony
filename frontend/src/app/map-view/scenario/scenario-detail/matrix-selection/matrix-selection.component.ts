@@ -1,4 +1,4 @@
-import { Component, EventEmitter, NgModuleRef, OnDestroy, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, NgModuleRef, OnDestroy, Output, ViewChild } from '@angular/core';
 import {
   Area,
   AreaTypeMatrixMapping,
@@ -13,9 +13,10 @@ import { State } from '@src/app/app-reducer';
 import { AreaActions, AreaSelectors } from "@data/area";
 import { TranslateService } from "@ngx-translate/core";
 import { MatrixService } from './matrix.service';
-import { ScenarioSelectors } from "@data/scenario";
+import { ScenarioActions, ScenarioSelectors } from "@data/scenario";
 import { Subscription } from "rxjs";
-import { SelectComponent } from "hav-components";
+import { MatSelect } from "@angular/material/select";
+import { GeoJSONFeature } from "ol/format/GeoJSON";
 
 type MatrixOption = 'STANDARD' | 'CUSTOM' | 'OPTIONAL';
 
@@ -36,11 +37,12 @@ export class MatrixSelectionComponent implements OnDestroy {
   firstAreaOfSelectedAreaType?: Area;
   areaTypeMatrixOptions: MatrixRef[] = [];
   selectedCustomMatrix?: MatrixRef;
+  @Input() feature!: GeoJSONFeature; // needed as parameter for refreshing matrices after deletion
   @Output() areaTypeSelected = new EventEmitter<MatrixParameterResponse>();
   @Output() matrixOverridden = new EventEmitter<number|undefined>(); // id of user-defined matrix
-  @ViewChild('altMx') altMatrixSelect: SelectComponent | undefined;
-  @ViewChild('usrMx') userMatrixSelect: SelectComponent | undefined;
-  @ViewChild('typeMx') typeMatrixSelect: SelectComponent | undefined;
+  @ViewChild('altMx') altMatrixSelect: MatSelect | undefined;
+  @ViewChild('usrMx') userMatrixSelect: MatSelect| undefined;
+  @ViewChild('typeMx') typeMatrixSelect: MatSelect | undefined;
   private defaultMatrixTranslation?: string;
   private matrixDataLoadingSubcription: Subscription;
   private matrixDataSubcription: Subscription;
@@ -99,7 +101,7 @@ export class MatrixSelectionComponent implements OnDestroy {
     return [];
   }
 
-  check(value: MatrixOption, control: SelectComponent | null) {
+  check(value: MatrixOption, control: MatSelect | null) {
     this.matrixOption = value;
 
     if (this.matrixOption === 'STANDARD') {
@@ -109,9 +111,12 @@ export class MatrixSelectionComponent implements OnDestroy {
     [this.altMatrixSelect, this.userMatrixSelect, this.typeMatrixSelect].forEach(
       dd => {
         if(dd && dd !== control) {
-          dd.items.forEach(i => i.selected = false)
-        } else if (dd === control && dd.items.length === 1) {
-          dd.writeValue(dd.items.first.value);
+          dd.options.forEach(i => i.deselect())
+        } else if (dd === control && dd.options.length === 1) {
+          dd.writeValue(dd.options.first.value);
+          if(dd === this.userMatrixSelect || dd === this.altMatrixSelect){
+            this.customSelect(dd.options.first.value);
+          }
         }
       });
   }
@@ -157,17 +162,19 @@ export class MatrixSelectionComponent implements OnDestroy {
       const sensitivityMatrix = await this.matrixService.getSensitivityMatrix(matrixId as number).toPromise();
       this.loadingMatrix = false;
 
-      const {id, name, savedAsNew} = await this.dialogService.open<SensitivityMatrix & {savedAsNew: boolean}>(MatrixTableComponent, this.moduleRef, {
+      const {id, name, savedAsNew, deleted} = await this.dialogService.open<SensitivityMatrix & {savedAsNew: boolean, deleted: boolean}>(MatrixTableComponent, this.moduleRef, {
         data: {
           area: this.defaultArea?.name,
           areaId: this.defaultArea?.id,
           matrixData: sensitivityMatrix,
-          immutable: this.selectedCustomMatrix?.id === this.defaultArea?.defaultMatrix.id ||
-                     this.selectedCustomMatrix?.immutable
+          immutable: this.selectedCustomMatrix?.immutable || this.selectedCustomMatrix?.id === this.defaultArea?.defaultMatrix.id || false
         }
       });
       if (savedAsNew) {
         this.store.dispatch(AreaActions.addUserDefinedMatrix({ matrix: {id: id!, name, immutable: false } }));
+      }
+      if(deleted) {
+        this.store.dispatch(ScenarioActions.fetchAreaMatrices({ geometry: this.feature.geometry }))
       }
     } catch (error) {
       this.loadingMatrix = false;

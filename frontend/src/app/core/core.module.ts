@@ -5,11 +5,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FooterComponent } from './footer/footer.component';
 import { UserMenuToggleComponent } from './header/user-menu-toggle/user-menu-toggle.component';
 import { AboutDialogComponent } from './about/about-dialog.component';
-import { HavButtonModule } from "hav-components";
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [HeaderComponent, FooterComponent, UserMenuToggleComponent, AboutDialogComponent],
-  imports: [SharedModule, BrowserAnimationsModule, HavButtonModule],
+  imports: [SharedModule, BrowserAnimationsModule, MatButtonModule],
   exports: [HeaderComponent, FooterComponent]
 })
 export class CoreModule {

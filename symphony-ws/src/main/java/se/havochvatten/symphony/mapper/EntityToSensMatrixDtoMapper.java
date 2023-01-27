@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class EntityToSensMatrixDtoMapper {
@@ -32,6 +33,8 @@ public class EntityToSensMatrixDtoMapper {
         Map<Integer, SensitivityDto.SensRow> rowMap = new HashMap<>();
         for (Sensitivity sens : sensitivities) {
             SensitivityDto.SensCol scolumn = new SensitivityDto.SensCol();
+
+            scolumn.setSensId(Optional.ofNullable(sens.getId()).orElse(-1));
             scolumn.setEcoMetaId(sens.getEcoMetadata().getId());
             scolumn.setName(sens.getEcoMetadata().getTitle());
             scolumn.setNameLocal(sens.getEcoMetadata().getTitleLocal());

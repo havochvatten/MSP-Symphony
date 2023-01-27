@@ -1,26 +1,23 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ImpactTableComponent } from './impact-table.component';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 
-function setUp() {
-  const fixture: ComponentFixture<ImpactTableComponent> = TestBed.createComponent(
-    ImpactTableComponent
-  );
-  const component: ImpactTableComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('ImpactTableComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<ImpactTableComponent>,
+      component: ImpactTableComponent;
+
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ImpactTableComponent],
       imports: [TranslationSetupModule]
     }).compileComponents();
+    fixture = TestBed.createComponent(ImpactTableComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

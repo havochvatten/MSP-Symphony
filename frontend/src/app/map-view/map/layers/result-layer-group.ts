@@ -1,15 +1,14 @@
-import { Group as LayerGroup } from 'ol/layer';
 import { Collection } from 'ol';
 import ImageLayer from 'ol/layer/Image';
 import ImageStatic from 'ol/source/ImageStatic';
 import BaseLayer from 'ol/layer/Base';
 import { StaticImageOptions} from '@data/calculation/calculation.interfaces';
-import RenderEvent from "ol/render/Event";
+import Static from "ol/source/ImageStatic";
+import { SymphonyLayerGroup } from "@src/app/map-view/map/layers/symphony-layer";
 
-export class ResultLayerGroup extends LayerGroup {
+export class ResultLayerGroup extends SymphonyLayerGroup {
 
-  public antialias = true;
-  private calculationLayers = new Map<number, ImageLayer>();
+  private calculationLayers = new Map<number, ImageLayer<Static>>();
 
   // TODO Clip result to scenario boundaries? Perhaps like so:
   // https://gis.stackexchange.com/questions/185881/clipping-tilelayer-with-georeferenced-polygon-clipping-mask
@@ -27,7 +26,7 @@ export class ResultLayerGroup extends LayerGroup {
 
     if(!isNaN(result.calculationId)  && !cl) {
       this.calculationLayers.set(result.calculationId, cpl);
-      cpl.on('postrender', this.renderHandler);
+      cpl.on('prerender', this.renderHandler);
       imageLayers.push(cpl);
       this.setLayers(imageLayers);
     }
@@ -42,16 +41,9 @@ export class ResultLayerGroup extends LayerGroup {
     this.setLayers(imageLayers);
   }
 
-  public toggleImageSmoothing() {
-    this.antialias = !this.antialias;
-    this.changed();
-  }
-
   public clearResult() {
-    this.calculationLayers = new Map<number, ImageLayer>();
+    this.calculationLayers = new Map<number, ImageLayer<Static>>();
     this.setLayers(new Collection<BaseLayer>());
   }
-
-  private renderHandler = (evt: RenderEvent) => evt.context.imageSmoothingEnabled = this.antialias;
 
 }

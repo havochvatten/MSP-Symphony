@@ -1,24 +1,22 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { UserMenuToggleComponent } from './user-menu-toggle.component';
 import { SharedModule } from '@src/app/shared/shared.module';
 
-function setUp() {
-  const fixture: ComponentFixture<UserMenuToggleComponent> = TestBed.createComponent(UserMenuToggleComponent);
-  const component: UserMenuToggleComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('UserMenuToggleComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<UserMenuToggleComponent>,
+      component: UserMenuToggleComponent;
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [SharedModule],
       declarations: [UserMenuToggleComponent]
     }).compileComponents();
+    fixture = TestBed.createComponent(UserMenuToggleComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

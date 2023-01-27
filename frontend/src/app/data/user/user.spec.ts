@@ -6,11 +6,8 @@ const testUser: User = {
   username: 'Test',
 };
 
-function setUp() {
-  const user: User = { ...testUser };
-  const state: State = { ...initialState };
-  return { user, state };
-}
+const user: User = { ...testUser };
+const state: State = { ...initialState };
 
 describe('UserReducer', () => {
 
@@ -21,7 +18,6 @@ describe('UserReducer', () => {
   });
 
   it('should set isLoggedIn to true on login success', () => {
-    const { user } = setUp();
     expect(initialState.isLoggedIn).toEqual(false);
     const state = userReducer(initialState, UserActions.loginUserSuccess({ user }));
     expect(state.loading).toEqual(false);
@@ -34,7 +30,6 @@ describe('UserReducer', () => {
 describe('UserSelectors', () => {
 
   it('should return islogged in', () => {
-    const { state } = setUp();
     expect(UserSelectors.selectIsLoggedIn.projector(state)).toEqual(false);
     expect(
       UserSelectors.selectIsLoggedIn.projector({
@@ -45,7 +40,6 @@ describe('UserSelectors', () => {
   });
 
   it('should return user', () => {
-    const { user, state } = setUp();
     expect(
       UserSelectors.selectUser.projector({
         ...state,

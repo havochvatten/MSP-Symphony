@@ -12,7 +12,7 @@ export const selectScenarios = createSelector(
 
 export const selectActiveScenario = createSelector(
   selectScenarioState,
-  (state) => state.active !== undefined ? state.scenarios[state.active] : undefined
+  (state) => state?.active !== undefined ? state?.scenarios[state?.active] : undefined
 );
 
 export const selectActiveScenarioChangeFeatures = createSelector(
@@ -22,7 +22,10 @@ export const selectActiveScenarioChangeFeatures = createSelector(
 
 export const selectActiveFeature = createSelector(
   selectScenarioState,
-  (state) => state.active !== undefined && state.activeFeature !== undefined ?
+  (state) =>
+      state.active !== undefined &&
+      state.activeFeature !== undefined &&
+      state.scenarios[state.active].changes.features !== undefined ?
     state.scenarios[state.active].changes.features[state.activeFeature] :
     undefined
 );

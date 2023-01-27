@@ -1,23 +1,22 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ResultColorScaleComponent } from './result-color-scale.component';
 
-function setUp() {
-  const fixture: ComponentFixture<ResultColorScaleComponent> = TestBed.createComponent(ResultColorScaleComponent);
-  const component: ResultColorScaleComponent = fixture.componentInstance;
-  return { fixture, component };
-}
-
 describe('ResultColorScaleComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<ResultColorScaleComponent>,
+      component: ResultColorScaleComponent;
+
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ResultColorScaleComponent ]
     })
     .compileComponents();
+    fixture = TestBed.createComponent(ResultColorScaleComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

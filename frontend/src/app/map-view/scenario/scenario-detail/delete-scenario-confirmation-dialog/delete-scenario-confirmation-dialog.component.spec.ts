@@ -1,24 +1,18 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { DialogRef } from '@src/app/shared/dialog/dialog-ref';
 import { DialogConfig } from '@src/app/shared/dialog/dialog-config';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 
 import { DeleteScenarioConfirmationDialogComponent } from './delete-scenario-confirmation-dialog.component';
-import { HavButtonModule } from 'hav-components';
-
-function setUp() {
-  const fixture: ComponentFixture<DeleteScenarioConfirmationDialogComponent> = TestBed.createComponent(
-    DeleteScenarioConfirmationDialogComponent
-  );
-  const component: DeleteScenarioConfirmationDialogComponent = fixture.componentInstance;
-  return { component, fixture };
-}
 
 describe('DeleteUserAreaConfirmationDialogComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<DeleteScenarioConfirmationDialogComponent>,
+      component: DeleteScenarioConfirmationDialogComponent;
+
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [DeleteScenarioConfirmationDialogComponent],
-      imports: [TranslationSetupModule, HavButtonModule],
+      imports: [TranslationSetupModule],
       providers: [
         {
           provide: DialogRef,
@@ -34,10 +28,12 @@ describe('DeleteUserAreaConfirmationDialogComponent', () => {
         }
       ]
     }).compileComponents();
+    fixture = TestBed.createComponent(DeleteScenarioConfirmationDialogComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

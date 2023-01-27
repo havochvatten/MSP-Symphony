@@ -1,11 +1,9 @@
 <div class="area-toggle">
-  <hav-checkbox
+  <mat-checkbox
     *ngIf="title"
-    [label]="title"
     [checked]="checked === undefined ? allBoxesAreChecked : checked"
-    (check)="checked === undefined ? updateAll() : onChange($event, title, statePath)"
-    checkboxSize="small"
-  ></hav-checkbox>
+    (change)="checked === undefined ? updateAll() : onChange($event.checked, title, statePath)"
+  >{{ title }}</mat-checkbox>
   <app-icon
     [iconType]="showItems ? 'chevron-up' : 'chevron-down'"
     (click)="toggleItems()"
@@ -13,11 +11,9 @@
 </div>
 <ul *ngIf="showItems">
   <li *ngFor="let item of items">
-    <hav-checkbox
-      [label]="item.label"
+    <mat-checkbox
       [checked]="item.checked"
-      (check)="onChange($event, item.label, item.statePath)"
-      checkboxSize="small"
-    ></hav-checkbox>
+      (change)="onChange($event.checked, item.label, item.statePath)"
+    >{{ item.label }}</mat-checkbox>
   </li>
 </ul>

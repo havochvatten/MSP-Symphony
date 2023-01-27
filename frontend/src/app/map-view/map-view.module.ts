@@ -1,14 +1,10 @@
 import { NgModule } from '@angular/core';
 import { EcoSliderComponent } from './band-selection/eco-slider/eco-slider.component';
 import { SharedModule } from '../shared/shared.module';
-import {
-  HavAccordionModule,
-  HavButtonModule,
-  HavCheckboxModule,
-  HavRadioButtonModule,
-  HavSelectModule,
-  HavSpinnerModule
-} from 'hav-components';
+import { MatSelectModule } from "@angular/material/select";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatButtonModule } from "@angular/material/button";
 import { MainViewComponent } from './main-view.component';
 import { MapComponent } from './map/map.component';
 import { SliderControlsComponent } from './band-selection/slider-controls/slider-controls.component';
@@ -77,15 +73,13 @@ import { DeleteCalculationConfirmationDialogComponent } from './calculation-hist
   ],
     imports: [
         SharedModule,
-        HavButtonModule,
-        HavAccordionModule,
-        HavCheckboxModule,
-        HavRadioButtonModule,
         CoreModule,
-        HavSpinnerModule,
-        HavSelectModule,
         FormsModule,
-        ScenarioEditorModule
+        ScenarioEditorModule,
+        MatSelectModule,
+        MatProgressSpinnerModule,
+        MatCheckboxModule,
+        MatButtonModule
     ],
   providers: [AnchorPipe],
   exports: [MainViewComponent]

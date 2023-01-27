@@ -10,24 +10,24 @@ import { CalculationService } from '@data/calculation/calculation.service';
 import { StaticImageOptions } from '@data/calculation/calculation.interfaces';
 import { DialogService } from '@src/app/shared/dialog/dialog.service';
 import { CreateUserAreaModalComponent } from './create-user-area-modal/create-user-area-modal.component';
-import { UserSelectors } from "@data/user";
-import { ScenarioSelectors } from "@data/scenario";
-import { Scenario } from "@data/scenario/scenario.interfaces";
-import { distinctUntilChanged, filter, skip } from "rxjs/operators";
-import { Feature, Map as OLMap, View } from "ol";
-import { isNotNullOrUndefined } from "@src/util/rxjs";
-import { TranslateService } from "@ngx-translate/core";
-import { ScenarioService } from "@data/scenario/scenario.service";
-import { environment as env } from "@src/environments/environment";
-import { BackgroundLayer } from "@src/app/map-view/map/layers/background-layer";
-import { Attribution, ScaleLine } from "ol/control";
-import * as proj from "ol/proj";
-import BandLayer from "@src/app/map-view/map/layers/band-layer";
-import { ResultLayerGroup } from "@src/app/map-view/map/layers/result-layer-group";
-import { ScenarioLayer } from "@src/app/map-view/map/layers/scenario-layer";
-import AreaLayer from "@src/app/map-view/map/layers/area-layer";
-import { Extent } from "ol/extent";
-import { DataLayerService } from "@src/app/map-view/map/layers/data-layer.service";
+import { UserSelectors } from '@data/user';
+import { ScenarioSelectors } from '@data/scenario';
+import { Scenario } from '@data/scenario/scenario.interfaces';
+import { distinctUntilChanged, filter, skip } from 'rxjs/operators';
+import { Feature, Map as OLMap, View } from 'ol';
+import { isNotNullOrUndefined } from '@src/util/rxjs';
+import { TranslateService } from '@ngx-translate/core';
+import { ScenarioService } from '@data/scenario/scenario.service';
+import { environment as env } from '@src/environments/environment';
+import { BackgroundLayer } from '@src/app/map-view/map/layers/background-layer';
+import { Attribution, ScaleLine } from 'ol/control';
+import * as proj from 'ol/proj';
+import BandLayer from '@src/app/map-view/map/layers/band-layer';
+import { ResultLayerGroup } from '@src/app/map-view/map/layers/result-layer-group';
+import { ScenarioLayer } from '@src/app/map-view/map/layers/scenario-layer';
+import AreaLayer from '@src/app/map-view/map/layers/area-layer';
+import { Extent } from 'ol/extent';
+import { DataLayerService } from '@src/app/map-view/map/layers/data-layer.service';
 
 @Component({
   selector: 'app-map',
@@ -103,7 +103,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       if (scenario.changes)
         this.scenarioLayer.addScenarioChangeAreas(scenario.changes);
 
-      this.zoomToExtent(this.scenarioLayer.getBoundaryFeature()!.getGeometry().getExtent(),
+      this.zoomToExtent(this.scenarioLayer.getBoundaryFeature()!.getGeometry()!.getExtent(),
         500);
     });
 
@@ -220,14 +220,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       };
       this.store.dispatch(AreaActions.createUserDefinedArea(newArea));
     }
-  }
+  };
 
   public zoomIn() {
-    this.setZoom(this.map!.getView().getZoom() + 1);
+    this.setZoom(this.map!.getView()!.getZoom()! + 1);
   };
 
   public zoomOut() {
-    this.setZoom(this.map!.getView().getZoom() - 1);
+    this.setZoom(this.map!.getView()!.getZoom()! - 1);
   };
 
   private setZoom = (zoomLevel: number, duration = 250, center?: Coordinate) => {
@@ -236,7 +236,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   public zoomToArea = (statePath: StatePath) => {
     this.areaLayer.zoomToArea(statePath);
-  }
+  };
 
   public zoomToExtent(extent: Extent, duration: number) {
     const padding = env.map.zoomPadding;
@@ -244,7 +244,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       padding: [padding, padding, padding, /*40 rem=*/400], // TODO: set last element to width of left side panel, if
       // open
       // TODO observe state of sidebar toggle
-      duration,
+      duration
     });
   }
 
@@ -257,6 +257,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   public toggleSmooth() {
     this.resultLayerGroup.toggleImageSmoothing();
+    this.bandLayer?.toggleImageSmoothing();
     this.layerAliasing = this.resultLayerGroup.antialias;
   }
 }

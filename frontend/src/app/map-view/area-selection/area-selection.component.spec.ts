@@ -1,30 +1,36 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AreaSelectionComponent } from './area-selection.component';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { SharedModule } from '@src/app/shared/shared.module';
-import { HavCheckboxModule } from 'hav-components';
 import { provideMockStore } from '@ngrx/store/testing';
 import { SelectionLayoutComponent } from '../selection-layout/selection-layout.component';
 import { AreaGroupComponent } from './area-group/area-group.component';
-
-function setUp() {
-  const fixture: ComponentFixture<AreaSelectionComponent> = TestBed.createComponent(AreaSelectionComponent);
-  const component: AreaSelectionComponent = fixture.componentInstance;
-  return { component, fixture };
-}
+import { initialState as area } from "@data/area/area.reducers";
 
 describe('AreaSelectionComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<AreaSelectionComponent>,
+      component: AreaSelectionComponent;
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [AreaSelectionComponent, SelectionLayoutComponent, AreaGroupComponent],
-      imports: [SharedModule, HavCheckboxModule, TranslationSetupModule],
-      providers: [provideMockStore()]
+      declarations: [
+        AreaSelectionComponent,
+        SelectionLayoutComponent,
+        AreaGroupComponent
+      ],
+      imports: [SharedModule, TranslationSetupModule],
+      providers: [provideMockStore({
+        initialState: {
+          area : area
+        }
+      })]
     }).compileComponents();
+    fixture = TestBed.createComponent(AreaSelectionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

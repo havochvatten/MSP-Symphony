@@ -87,7 +87,7 @@ public class ReportREST {
     @Path("/comparison/{a}/{b}/geotiff")
     @Produces({"image/geotiff"})
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Returns calculation result image")
+    @ApiOperation(value = "Returns comparison result image")
     public Response getResultGeoTIFFImage(@Context HttpServletRequest req, @PathParam("a") int baseId, @PathParam("b") int relativeId) throws IOException {
 
         try {

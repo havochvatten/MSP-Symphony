@@ -1,24 +1,19 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { DialogRef } from '@src/app/shared/dialog/dialog-ref';
 import { DialogConfig } from '@src/app/shared/dialog/dialog-config';
 
 import { RenameUserAreaModalComponent } from './rename-user-area-modal.component';
-import { HavButtonModule } from 'hav-components';
-
-function setUp() {
-  const fixture: ComponentFixture<RenameUserAreaModalComponent> = TestBed.createComponent(
-    RenameUserAreaModalComponent
-  );
-  const component: RenameUserAreaModalComponent = fixture.componentInstance;
-  return { component, fixture };
-}
+import { formatPrefix } from "d3";
 
 describe('RenameUserAreaModalComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<RenameUserAreaModalComponent>,
+      component: RenameUserAreaModalComponent;
+
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [RenameUserAreaModalComponent],
-      imports: [TranslationSetupModule, HavButtonModule],
+      imports: [TranslationSetupModule],
       providers: [
         {
           provide: DialogRef,
@@ -34,10 +29,12 @@ describe('RenameUserAreaModalComponent', () => {
         }
       ]
     }).compileComponents();
+    fixture = TestBed.createComponent(RenameUserAreaModalComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } =setUp();
     expect(component).toBeTruthy();
   });
 });

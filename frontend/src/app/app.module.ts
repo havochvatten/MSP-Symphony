@@ -8,13 +8,6 @@ import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import {
-  HavCheckboxModule,
-  HavButtonModule,
-  HavAccordionModule,
-  HavRadioButtonModule,
-  HavCoreModule
-} from 'hav-components';
 import { environment } from '../environments/environment';
 import { MapViewModule } from './map-view/map-view.module';
 import { StoreModule } from '@ngrx/store';
@@ -26,7 +19,12 @@ import { AreaEffects } from '@data/area/area.effects';
 import { TranslationSetupModule } from './app-translation-setup.module';
 import { MessageEffects } from '@data/message/message.effects';
 import { CalculationEffects } from '@data/calculation/calculation.effects';
-import { ScenarioEffects } from "@data/scenario/scenario.effects";
+import { ScenarioEffects } from '@data/scenario/scenario.effects';
+import { CalculationReportModule } from './report/calculation-report.module';
+import { LoginModule } from './login/login.module';
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatButtonModule } from "@angular/material/button";
+import { MatRadioModule } from "@angular/material/radio";
 
 @NgModule({
   declarations: [AppComponent],
@@ -35,12 +33,10 @@ import { ScenarioEffects } from "@data/scenario/scenario.effects";
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    HavCheckboxModule,
-    HavButtonModule,
-    HavRadioButtonModule,
-    HavAccordionModule,
+    MatCheckboxModule,
+    MatButtonModule,
+    MatRadioModule,
     SharedModule,
-    HavCoreModule,
     CoreModule,
     MapViewModule,
     StoreModule.forRoot(reducers, {
@@ -61,7 +57,9 @@ import { ScenarioEffects } from "@data/scenario/scenario.effects";
       ScenarioEffects
     ]),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
-    TranslationSetupModule
+    TranslationSetupModule,
+    CalculationReportModule,
+    LoginModule
   ],
   providers: [],
   bootstrap: [AppComponent]

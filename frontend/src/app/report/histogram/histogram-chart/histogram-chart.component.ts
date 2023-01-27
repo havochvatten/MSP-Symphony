@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Injectable, Input, OnChanges, OnInit } from '@angular/core';
 import { DecimalPipe } from "@angular/common";
 import { formatPercentage } from "@data/calculation/calculation.util";
 
@@ -40,7 +40,7 @@ export class HistogramChartComponent implements OnInit, OnChanges {
     this.binSz = this.reportMax / 100;
     this.isRarityAdjusted = this.algorithm === 'RarityAdjustedCumulativeImpact';
 
-    const count = this.bins.reduce((a, b) => a + b),
+    const count = this.bins.reduce((a, b) => a + b, 0),
           ystep =       // suitable vertical measure interval
             this.bmax < 10 ? 1 :
             this.bmax < 30 ? 5 :
@@ -54,7 +54,7 @@ export class HistogramChartComponent implements OnInit, OnChanges {
             this.bmax < 1000000 ? 100000 :
             500000;
 
-    let acc = this.bins[0];
+    let acc = 0;
 
     this.max = this.bmax < 10 ? 10 :
       (Math.trunc(this.bmax / ystep) + 1) * ystep;
