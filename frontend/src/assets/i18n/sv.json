@@ -196,7 +196,9 @@
             "base-scenario": "Grundscenario",
             "what-if-scenario": "What-if scenario",
             "choose-scenario": "Välj scenario",
-            "choose-base-scenario-first": "Välj grundscenario först"
+            "choose-base-scenario-first": "Välj grundscenario först",
+            "base-scenario-suggestion": "(vanligtvis basvärdeanalysen)",
+            "what-if-scenario-suggestion": "(vanligtvis den prognostiserade analysen)"
         },
         "user-area": {
             "create": {

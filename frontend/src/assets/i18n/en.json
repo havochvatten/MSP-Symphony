@@ -196,7 +196,9 @@
             "base-scenario": "Calculation A",
             "what-if-scenario": "Calculation B",
             "choose-scenario": "Choose a calculation",
-            "choose-base-scenario-first": "Choose calculation A first"
+            "choose-base-scenario-first": "Choose calculation A first",
+            "base-scenario-suggestion": "(typically your baseline analysis)",
+            "what-if-scenario-suggestion": "(typically your new scenario analysis)"
         },
         "user-area": {
             "create": {

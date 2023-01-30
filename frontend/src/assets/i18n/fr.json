@@ -196,7 +196,9 @@
             "base-scenario": "Résultat du scénario de référence",
             "what-if-scenario": "Résultat du scénario anticipé",
             "choose-scenario": "Choisissez un scénario",
-            "choose-base-scenario-first": "Choisissez un scénario de référence avant"
+            "choose-base-scenario-first": "Choisissez un scénario de référence avant",
+            "base-scenario-suggestion": "",
+            "what-if-scenario-suggestion": ""
         },
         "user-area": {
             "create": {
