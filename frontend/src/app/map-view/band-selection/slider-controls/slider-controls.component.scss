@@ -54,5 +54,12 @@
         cursor: pointer;
       }
     }
+
+    ::ng-deep mat-checkbox .mat-checkbox-layout {
+      .mat-checkbox-label {
+        white-space: pre-wrap;
+        line-height: 16px;
+      }
+    }
   }
 }
