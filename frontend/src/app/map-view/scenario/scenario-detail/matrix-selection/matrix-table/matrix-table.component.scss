@@ -63,15 +63,36 @@
     max-height: calc(100vh - 9rem - 23rem);
   }
   table {
+    position: relative;
+    table-layout: fixed;
     border-spacing: unset;
-    border-collapse: collapse;
+    border-collapse: separate;
 
     tr {
+      &:nth-child(odd) {
+        background-color: white;
+        th[scope='row'], td {
+          background-color: white;
+          border-color: white $light-gray $light-gray white;
+        }
+        th[scope='row']{
+          border-right-color: $darker-gray;
+        }
+      }
+
       &:nth-child(even) {
         background-color: $hav-coldgrey;
+        th[scope='row'], th.empty, td {
+          background-color: $hav-coldgrey;
+          border-color: $hav-coldgrey $light-gray $light-gray $hav-coldgrey;
+        }
+        th[scope='row'] {
+          border-right-color: $darker-gray;
+        }
       }
 
       th {
+        position: sticky;
         font-size: 1.4rem;
         line-height: 1.9rem;
         font-weight: bold;
@@ -79,14 +100,19 @@
         padding: 0.5rem 0.6rem;
 
         &[scope='row'], &.empty {
+          left: 0;
           text-align: right;
           padding-left: 3rem;
-          white-space: nowrap;
-          border-right: 1px solid #707070;
+          white-space: pre-wrap;
+          min-width: 248px;
+          border: 1px solid;
+          border-color: white $light-gray $light-gray white;
         }
 
-        &[scope='col'], &.empty {
-          border-bottom: 1px solid #707070;
+        &[scope='col'] {
+          top: 0;
+          background-color: white;
+          border-color: white $light-gray $darker-gray white;
         }
       }
 
@@ -101,7 +127,7 @@
         min-width: 7rem;
         vertical-align: middle;
         text-align: center;
-        border: 1px solid #adadad;
+        border: 1px solid;
 
         input {
           display: flex;
