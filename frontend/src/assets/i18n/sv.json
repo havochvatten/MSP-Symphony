@@ -77,9 +77,23 @@
                 "table": {
                     "edit-name": "Redigera",
                     "delete": "Radera matris",
-                    "cancel": "Avbryt",
+                    "close": "Stäng",
                     "save": "Spara matris",
-                    "save-as": "Spara som ny matris"
+                    "save-as": "Spara som ny matris",
+                    "name-exists": "Kan ej spara.\nMatrisnamnet (\"{{ takenName }}\") finns redan.",
+                    "confirm-delete": {
+                        "header": "Radera matris",
+                        "message": "Bekräfta borttagning av känslighetsmatrisen \"{{ matrixToDelete }}\".<br>Åtgärden kan inte ångras.",
+                        "confirm": "Radera"
+                    },
+                    "changes": {
+                        "header": "Spara förändrad matris",
+                        "message": "Vill du spara eller förkasta ändringarna i matrisen \"{{ matrixName }}\"{{ newNotice }}?",
+                        "immutable-message": "Matrisen innehåller osparade ändringar.<br>Vill du spara matrisen som \"{{ suggestedName }}\", eller förkasta ändringarna?",
+                        "new-notice": "(skapar ny matris)",
+                        "save": "Spara",
+                        "abandon": "Förkasta"
+                    }
                 }
             },
             "normalization": {
@@ -283,6 +297,10 @@
         "SUCCESS": "Processen lyckades",
         "ERROR": "Ett fel inträffade",
         "WARNING": "Långsam process"
+    },
+    "confirmation-modal": {
+        "cancel": "Avbryt",
+        "confirm": "OK"
     },
     "report": {
         "calculation": {

@@ -5,10 +5,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconButtonComponent } from './icon-button/icon-button.component';
-import {
-  ConfirmationDialogBoxComponent,
-  ConfirmationDialogTextComponent
-} from './confirmation-dialog-box/confirmation-dialog-box.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { InsertionDirective } from './dialog/insertion.directive';
 import { SlideViewComponent, SlideViewTabComponent } from './slide-view/slide-view.component';
@@ -40,12 +36,11 @@ import { OrdinalPipe } from '@shared/ordinal.pipe';
 import { AnchorPipe } from '@shared/anchor.pipe';
 import { MatButtonModule } from "@angular/material/button";
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal.component';
 
 @NgModule({
   declarations: [
     IconButtonComponent,
-    ConfirmationDialogBoxComponent,
-    ConfirmationDialogTextComponent,
     InsertionDirective,
     DialogComponent,
     SlideViewComponent,
@@ -77,7 +72,8 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
     PopupMessageComponent,
     StatusIconComponent,
     OrdinalPipe,
-    AnchorPipe
+    AnchorPipe,
+    ConfirmationModalComponent
   ],
   imports: [
     CommonModule,
@@ -91,8 +87,6 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
   exports: [
     CommonModule,
     IconButtonComponent,
-    ConfirmationDialogBoxComponent,
-    ConfirmationDialogTextComponent,
     FontAwesomeModule,
     ReactiveFormsModule,
     DialogComponent,

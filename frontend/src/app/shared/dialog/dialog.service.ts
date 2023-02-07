@@ -15,7 +15,7 @@ import { DialogComponent } from './dialog.component';
 
 @Injectable({ providedIn: 'root' })
 export class DialogService {
-  dialogComponentRef?: ComponentRef<DialogComponent>;
+  dialogRefs = new Map<DialogRef, ComponentRef<DialogComponent>>;
   constructor(
     private appRef: ApplicationRef,
     private componentFactoryResolver: ComponentFactoryResolver
@@ -31,7 +31,7 @@ export class DialogService {
     map.set(DialogRef, dialogRef);
 
     const subscription = dialogRef.afterClosed.subscribe(() => {
-      this.removeDialogComponentFromBody();
+      this.removeDialogComponentFromBody(dialogRef);
       subscription.unsubscribe();
     });
 
@@ -44,27 +44,29 @@ export class DialogService {
     const domElement = (componentRef.hostView as EmbeddedViewRef<any>).rootNodes[0] as HTMLElement;
     document.body.appendChild(domElement);
 
-    this.dialogComponentRef = componentRef;
+    this.dialogRefs.set(dialogRef, componentRef);
 
-    this.dialogComponentRef.instance.onClose.subscribe(() => {
-      this.removeDialogComponentFromBody();
+    componentRef.instance.onClose.subscribe(() => {
+      this.removeDialogComponentFromBody(dialogRef);
     });
 
     return dialogRef;
   };
 
-  private removeDialogComponentFromBody = () => {
-    if (this.dialogComponentRef) {
-      this.appRef.detachView(this.dialogComponentRef.hostView);
-      this.dialogComponentRef.destroy();
+  private removeDialogComponentFromBody = (dialog: DialogRef) => {
+    const dialogComponentRef = this.dialogRefs.get(dialog);
+
+    if (dialogComponentRef) {
+      this.appRef.detachView(dialogComponentRef.hostView);
+      dialogComponentRef.destroy();
     }
   };
 
   public open<T>(componentType: Type<any>, moduleRef: NgModuleRef<any>, config?: DialogConfig) {
     const injector = moduleRef.injector;
     const dialogRef = this.appendDialogComponentToBody(injector, config);
-    if (this.dialogComponentRef) {
-      this.dialogComponentRef.instance.childComponentType = componentType;
+    if (this.dialogRefs.get(dialogRef)) {
+      this.dialogRefs.get(dialogRef)!.instance.childComponentType = componentType;
     }
     return new Promise<T>((resolve, _) => {
       dialogRef.afterClosed.subscribe(resolve);

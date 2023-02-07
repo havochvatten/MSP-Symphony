@@ -1,6 +1,7 @@
 @import "hav-colors";
 
-button.mat-flat-button {
+button.mat-flat-button,
+button.mat-flat-button.mat-primary {
   color: white;
   height: 48px;
   font-size: 16px;

@@ -77,9 +77,23 @@
                 "table": {
                     "edit-name": "Modifier",
                     "delete": "Supprimer la matrice",
-                    "cancel": "Annuler",
+                    "close": "Fermer",
                     "save": "Enregistrer la matrice",
-                    "save-as": "Enregistrer en tant que nouvelle matrice"
+                    "save-as": "Enregistrer en tant que nouvelle matrice",
+                    "name-exists": "Ne peut pas enregistrer.\nLe nom de matrice spécifié existe déjà."
+                    "confirm-delete": {
+                        "header": "Supprimer cette matrice",
+                        "message": "Confirmez la suppression de la matrice de sensibilité \"{{ matrixToDelete }}\".<br>Cette action ne peut pas être annulée.",
+                        "confirm": "Supprimer"
+                    },
+                    "changes": {
+                        "header": "Modifications non enregistrées",
+                        "message": "Enregistrez ou ignorez les modifications indiquées dans \"{{ matrixName }}\"{{ newNotice }}?",
+                        "immutable-message": "La matrice contient des modifications non enregistrées. Voulez-vous enregistrer la matrice sous \"{{ suggestedName }}\" ou ignorez toutes les modifications?",
+                        "new-notice": "(nouvelle matrice)",
+                        "confirm": "Enregistrer",
+                        "abandon": "Ignorez"
+                    }
                 }
             },
             "normalization": {
@@ -283,6 +297,10 @@
         "SUCCESS": "Succès",
         "ERROR": "Une erreur est survenue",
         "WARNING": "Attention, processus lent"
+    },
+    "confirmation-modal": {
+        "cancel": "Annuler",
+        "confirm": "Confirmer"
     },
     "report": {
         "calculation": {

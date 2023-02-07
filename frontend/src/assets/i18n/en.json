@@ -77,9 +77,23 @@
                 "table": {
                     "edit-name": "Edit",
                     "delete": "Delete matrix",
-                    "cancel": "Cancel",
+                    "close": "Close",
                     "save": "Save matrix",
-                    "save-as": "Save as new matrix"
+                    "save-as": "Save as new matrix",
+                    "name-exists": "Cannot save.\nThe matrix name specified (\"{{ takenName }}\") is in use.",
+                    "confirm-delete": {
+                        "header": "Delete matrix",
+                        "message": "Confirm removal of the sensitivity matrix \"{{ matrixToDelete }}\".<br>This action cannot be undone.",
+                        "confirm": "Delete"
+                    },
+                    "changes": {
+                        "header": "Unsaved changes",
+                        "message": "Save or abandon the stated changes to \"{{ matrixName }}\"{{ newNotice }}?",
+                        "immutable-message": "The editor has unsaved changes.<br>Save the modified matrix as \"{{ suggestedName }}\", or abandon current changes?",
+                        "new-notice": "(new matrix)",
+                        "confirm": "Save",
+                        "abandon": "Abandon"
+                    }
                 }
             },
             "normalization": {
@@ -283,6 +297,10 @@
         "SUCCESS": "Process succeeded",
         "ERROR": "An Error Occurred",
         "WARNING": "Slow process"
+    },
+    "confirmation-modal": {
+        "cancel": "Cancel",
+        "confirm": "OK"
     },
     "report": {
         "calculation": {

@@ -12,6 +12,10 @@
       margin-bottom: 1.6rem;
     }
 
+    &:not(:first-child) {
+      margin-top: 1rem;
+    }
+
     ::ng-deep {
       label {
         padding-left: 0.4rem;

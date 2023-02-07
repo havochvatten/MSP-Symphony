@@ -25,7 +25,8 @@
         </th>
       </tr>
       <tr *ngFor="let row of matrixData.sensMatrix.rows; index as i">
-        <th scope="row">{{ getName(row) }}</th>
+        <th scope="row" title="{{ getName(row) }}">{{ getName(row)
+            // FIXME: ugly duplicate call, refactorise. See comment in getName method. }}</th>
         <td *ngFor="let column of row.columns; index as j" [attr.data-pressure]="column.value > 0">
           <input
             type="number"
@@ -46,17 +47,17 @@
   </table>
 </main>
 <section class="buttons">
-  <button mat-flat-button color="warn" (click)="close()" [ngClass]="'secondary'">{{
-    'map.editor.matrix.table.cancel' | translate
+  <button mat-flat-button (click)="confirmClose()" [ngClass]="'secondary'">{{
+    'map.editor.matrix.table.close' | translate
     }}</button>
   <div class="right">
     <button mat-flat-button color="warn" [disabled]="immutable" (click)="deleteMatrix()">{{
       'map.editor.matrix.table.delete' | translate
       }}</button>
-    <button mat-flat-button [disabled]="immutable" (click)="save()">{{
+    <button mat-flat-button [disabled]="immutable || !dirty" [title]="nameExists() ? ('map.editor.matrix.table.name-exists' | translate:{ takenName: matrixData.name }) : ''" (click)="save(initClean.bind(this))">{{
       'map.editor.matrix.table.save' | translate
     }}</button>
-    <button mat-flat-button [disabled]="!hasChangedName" (click)="saveAsNew()">{{
+    <button mat-flat-button [disabled]="!hasChangedName || nameExists() || matrixData.name === initialName" [title]="nameExists() ? ('map.editor.matrix.table.name-exists' | translate:{ takenName: matrixData.name }) : ''" (click)="saveAsNew(initClean.bind(this))">{{
       'map.editor.matrix.table.save-as' | translate
     }}</button>
   </div>

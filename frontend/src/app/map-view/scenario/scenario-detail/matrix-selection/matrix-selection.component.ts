@@ -167,7 +167,8 @@ export class MatrixSelectionComponent implements OnDestroy {
           area: this.defaultArea?.name,
           areaId: this.defaultArea?.id,
           matrixData: sensitivityMatrix,
-          immutable: this.selectedCustomMatrix?.immutable || this.selectedCustomMatrix?.id === this.defaultArea?.defaultMatrix.id || false
+          immutable: this.selectedCustomMatrix?.immutable || this.selectedCustomMatrix?.id === this.defaultArea?.defaultMatrix.id || false,
+          matrixNames: this.matrixOptions.map((m) => m.name)
         }
       });
       if (savedAsNew) {

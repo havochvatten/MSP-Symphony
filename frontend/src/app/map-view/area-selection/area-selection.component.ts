@@ -13,7 +13,7 @@ import { State } from '@src/app/app-reducer';
 import { AreaActions, AreaSelectors } from '@data/area';
 import { DialogService } from '@src/app/shared/dialog/dialog.service';
 import { RenameUserAreaModalComponent } from './rename-user-area-modal/rename-user-area-modal.component';
-import { DeleteUserAreaConfirmationDialogComponent } from './delete-user-area-confirmation-dialog/delete-user-area-confirmation-dialog.component';
+import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 import { Observable } from 'rxjs';
 import {
   UploadUserAreaModalComponent
@@ -21,6 +21,7 @@ import {
 import { MessageActions } from "@data/message";
 import * as uuid from "uuid/v4";
 import { createFeature } from "@data/area/area.effects";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
   selector: 'app-area-selection',
@@ -42,6 +43,7 @@ export class AreaSelectionComponent implements OnChanges {
   constructor(
     private store: Store<State>,
     private dialogService: DialogService,
+    private translateService: TranslateService,
     private moduleRef: NgModuleRef<any>
   ) {
     this.selectedArea$ = this.store.select(AreaSelectors.selectSelectedArea);
@@ -90,10 +92,19 @@ export class AreaSelectionComponent implements OnChanges {
   };
 
   deleteUserArea = async (userAreaId: number, userAreaName: string) => {
-    const deleteArea = await this.dialogService.open(DeleteUserAreaConfirmationDialogComponent, this.moduleRef, {
-      data: { areaName: userAreaName }
-    });
-    if (typeof deleteArea === 'boolean' && deleteArea) {
+
+    const deleteArea = await this.dialogService.open<boolean>(
+      ConfirmationModalComponent, this.moduleRef, {
+        data: {
+          header: `${ this.translateService.instant('map.user-area.delete.modal.title')} &laquo;&nbsp;${ userAreaName }&nbsp;&raquo;&nbsp;?`,
+          confirmText: this.translateService.instant('map.user-area.delete.modal.delete'),
+          confirmColor: 'warn',
+          cancelClass: 'primary',
+          dialogClass: 'center'
+        }
+      });
+
+    if (deleteArea) {
       this.store.dispatch(AreaActions.deleteUserDefinedArea({ userAreaId }));
     }
   };
