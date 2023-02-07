@@ -32,7 +32,6 @@ export class MatrixTableComponent {
   savedAsNewId: number|undefined;
   savedAsNewName: string|undefined;
   editName = false;
-  that: MatrixTableComponent;
   locale = 'en';
 
   constructor(
@@ -50,7 +49,6 @@ export class MatrixTableComponent {
     this.matrixNames = this.config.data.matrixNames;
     this.locale = this.translateService.currentLang;
     this.initialName = this.matrixData.name;
-    this.that = this;
     this.initClean();
   }
 
