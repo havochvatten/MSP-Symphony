@@ -52,7 +52,7 @@ export class MatrixTableComponent {
     this.initClean();
   }
 
-  protected initClean():void {
+  public initClean():void {
     this.dirty = false;
     this.matrixDataRef = this.matrixData.sensMatrix.rows.flatMap((r) => r.columns.map((c) => +c.value));
   }
@@ -75,9 +75,11 @@ export class MatrixTableComponent {
       .createSensitivityMatrixForArea(this.areaId, this.matrixData)
       .pipe(
         tap(response => {
+          this.matrixData = response;
           this.savedAsNewId = response.id;
           this.savedAsNewName = response.name;
           this.initialName = response.name;
+          this.immutable = false;
           then();
         }),
         catchError(error => of(console.error(error)))

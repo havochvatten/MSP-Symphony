@@ -81,6 +81,8 @@
                     "save": "Save matrix",
                     "save-as": "Save as new matrix",
                     "name-exists": "Cannot save.\nThe matrix name specified (\"{{ takenName }}\") is in use.",
+                    "immutable-note": "The matrix \"{{ immutableName }}\" is read-only.",
+                    "save-as-tip": "First change the matrix name to allow saving as new",
                     "confirm-delete": {
                         "header": "Delete matrix",
                         "message": "Confirm removal of the sensitivity matrix \"{{ matrixToDelete }}\".<br>This action cannot be undone.",

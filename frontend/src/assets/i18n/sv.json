@@ -81,6 +81,8 @@
                     "save": "Spara matris",
                     "save-as": "Spara som ny matris",
                     "name-exists": "Kan ej spara.\nMatrisnamnet (\"{{ takenName }}\") finns redan.",
+                    "immutable-note": "Matrisen \"{{ immutableName }}\" är skrivskyddad.",
+                    "save-as-tip": "Ändra matrisnamnet för att göra det möjligt att spara som ny.",
                     "confirm-delete": {
                         "header": "Radera matris",
                         "message": "Bekräfta borttagning av känslighetsmatrisen \"{{ matrixToDelete }}\".<br>Åtgärden kan inte ångras.",

@@ -80,7 +80,9 @@
                     "close": "Fermer",
                     "save": "Enregistrer la matrice",
                     "save-as": "Enregistrer en tant que nouvelle matrice",
-                    "name-exists": "Ne peut pas enregistrer.\nLe nom de matrice spécifié existe déjà."
+                    "name-exists": "Ne peut pas enregistrer.\nLe nom de matrice spécifié existe déjà.",
+                    "immutable-note": "La matrice \"{{ immutableName }}\" est immuable.",
+                    "save-as-tip": "Modifiez le nom de la matrice pour permettre l'enregistrement en tant que nouvelle",
                     "confirm-delete": {
                         "header": "Supprimer cette matrice",
                         "message": "Confirmez la suppression de la matrice de sensibilité \"{{ matrixToDelete }}\".<br>Cette action ne peut pas être annulée.",

@@ -51,14 +51,21 @@
     'map.editor.matrix.table.close' | translate
     }}</button>
   <div class="right">
-    <button mat-flat-button color="warn" [disabled]="immutable" (click)="deleteMatrix()">{{
-      'map.editor.matrix.table.delete' | translate
-      }}</button>
-    <button mat-flat-button [disabled]="immutable || !dirty" [title]="nameExists() ? ('map.editor.matrix.table.name-exists' | translate:{ takenName: matrixData.name }) : ''" (click)="save(initClean.bind(this))">{{
-      'map.editor.matrix.table.save' | translate
-    }}</button>
-    <button mat-flat-button [disabled]="!hasChangedName || nameExists() || matrixData.name === initialName" [title]="nameExists() ? ('map.editor.matrix.table.name-exists' | translate:{ takenName: matrixData.name }) : ''" (click)="saveAsNew(initClean.bind(this))">{{
-      'map.editor.matrix.table.save-as' | translate
-    }}</button>
+    <button mat-flat-button color="warn"
+            [disabled]="immutable"
+            [title]="immutable ? ('map.editor.matrix.table.immutable-note' | translate:{ immutableName: initialName }) : ''" (click)="deleteMatrix()">
+      {{ 'map.editor.matrix.table.delete' | translate }}</button>
+    <button mat-flat-button
+            [disabled]="immutable || !dirty"
+            [title]="immutable                        ? ('map.editor.matrix.table.immutable-note' | translate:{ immutableName: initialName }) :
+                     hasChangedName() && nameExists() ? ('map.editor.matrix.table.name-exists'    | translate:{ takenName: matrixData.name }) : ''"
+            (click)="save(initClean.bind(this))">
+      {{ 'map.editor.matrix.table.save' | translate }}</button>
+    <button mat-flat-button
+            [disabled]="!hasChangedName() || nameExists()"
+            [title]="!hasChangedName()  ? ('map.editor.matrix.table.save-as-tip' | translate) :
+                      nameExists()      ? ('map.editor.matrix.table.name-exists' | translate:{ takenName: matrixData.name }) : ''"
+            (click)="saveAsNew(initClean.bind(this))">
+      {{ 'map.editor.matrix.table.save-as' | translate }}</button>
   </div>
 </section>
