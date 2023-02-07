@@ -138,7 +138,7 @@ export class MatrixTableComponent {
       let i = mxNameResult ? +mxNameResult[1] : 0, nextName: string;
 
       do {
-        nextName = `${this.matrixData.name} ${++i}`
+        nextName = `${this.matrixData.name} (${++i})`
       } while (this.nameExists(nextName))
 
       closeModal.message = this.translateService.instant('map.editor.matrix.table.changes.immutable-message', { suggestedName: nextName });
