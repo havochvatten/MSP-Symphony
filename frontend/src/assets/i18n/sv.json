@@ -383,10 +383,5 @@
         "fetching-report": "Hämtar rapport",
         "error-message": "Ett fel inträffade. Det finns ingen rapport att visa för tillfället – var god testa att göra en ny beräkning."
     },
-    "hav-components": {
-        "select": {
-            "search": "Sök"
-        }
-    },
     "footer": "Havs och Vattenmyndigheten"
 }

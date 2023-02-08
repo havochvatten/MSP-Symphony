@@ -383,10 +383,5 @@
         "fetching-report": "Assemblage du rapport",
         "error-message": "Une erreur est survenue. Aucun rapport n'a pu être produit. Veuillez vérifier les paramètres et réessayer."
     },
-    "hav-components": {
-        "select": {
-            "search": "Chercher"
-        }
-    },
     "footer": "Agence Suédoise pour la Gestion de l'Eau et des Zones Maritimes (Havs och Vattenmyndigheten)"
 }
