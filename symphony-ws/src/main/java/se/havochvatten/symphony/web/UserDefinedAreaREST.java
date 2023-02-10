@@ -6,6 +6,7 @@ import org.apache.commons.io.IOUtils;
 import org.geotools.geopkg.GeoPackage;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+import se.havochvatten.symphony.dto.AreaImportResponse;
 import se.havochvatten.symphony.dto.UploadedUserDefinedAreaDto;
 import se.havochvatten.symphony.dto.UserDefinedAreaDto;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
@@ -121,8 +122,7 @@ public class UserDefinedAreaREST {
         }
 
         try {
-            var dto = userDefinedAreaService.inspectGeoPackage(req.getUserPrincipal(),
-                packageFile);
+            var dto = userDefinedAreaService.inspectGeoPackage(packageFile);
             req.getSession().setAttribute(dto.key, packagePath.toFile());
             return Response.ok(dto).build();
         } catch (SymphonyStandardAppException|java.lang.reflect.UndeclaredThrowableException e) {
@@ -135,29 +135,25 @@ public class UserDefinedAreaREST {
     @Path("/import/{key}")
     @ApiOperation(value = "Confirm import of previously uploaded GeoPackage",
         response = UserDefinedAreaDto.class)
-    @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
     public Response actuallyImportUserDefinedArea(@Context HttpServletRequest req,
                                                   @Context UriInfo uriInfo,
-                                                  @PathParam("key") String key,
-                                                  String areaName)
+                                                  @PathParam("key") String key)
         throws SymphonyStandardAppException {
         var pkgFile = (java.io.File) req.getSession(false).getAttribute(key);
 
-        UserDefinedAreaDto dto;
+        AreaImportResponse response;
         try (var pkg = new GeoPackage(pkgFile)) {
             LOG.info("Importing uploaded GeoPackage "+pkgFile+" for user "+req.getUserPrincipal().getName());
-            dto = userDefinedAreaService.importUserDefinedAreaFromPackage(req.getUserPrincipal(), pkg, areaName);
+            response = userDefinedAreaService.importUserDefinedAreaFromPackage(req.getUserPrincipal(), pkg);
         } catch (IOException e) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.GEOPACKAGE_READ_FEATURE_FAILURE);
         }
 
         req.getSession().removeAttribute(key);
 //        Files.deleteIfExists(pkgPath); // fails since file is still used by other process?? how to close?
-        var uri = uriInfo.getBaseUriBuilder().path(UserDefinedAreaREST.class).path(String.valueOf(dto.getId()))
-            .build(); // these will be based on the application server port (8443), not the proxy...
-        return Response.created(uri).entity(dto).build();
+        return Response.ok().entity(response).build();
     }
 
     /**

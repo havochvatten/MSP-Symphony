@@ -69,8 +69,7 @@ export class UploadUserAreaModalComponent {
   }
 
   confirmImport() {
-    // TODO allow changing the areaName argument in the UI
-    this.areaService.confirmUserAreaImport(this.uploadedArea!.key, this.uploadedArea!.featureIdentifiers[0])
+    this.areaService.confirmUserAreaImport(this.uploadedArea!.key)
       .subscribe(
       importedArea => this.dialog.close(importedArea),
       ({ status, error: message }) => {

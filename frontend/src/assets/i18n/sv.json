@@ -226,7 +226,7 @@
                     "close": "Avbryt"
                 },
                 "error": {
-                    "USER_DEF_AREA_NAME_EXISTS" : "Du har redan sparat ett område med namnet <em>{{ areaName }}</em>.\n\nTag bort eller byt namn på det tidigare sparade området, eller välj ett annat namn och försök igen."
+                    "USER_DEF_AREA_NAME_EXISTS" : "<p>Du har redan sparat ett område med namnet <em>\"{{ areaName }}\".</em></p><p>Tag bort eller byt namn på det tidigare sparade området, eller välj ett annat namn och försök igen.</p>"
                 }
             },
             "upload": {
@@ -235,8 +235,9 @@
                     "title": "Importera område",
                     "fileformat-note": "Filer i <a href='https://www.geopackage.org/' target='_blank'>OGC GeoPackage</a>-format stöds.",
                     "notice": {
-                        "WGS84-reprojection": "Områdets koordinater kommer att projiceras om till <em>EPSG:4326 (WGS 84)",
-                        "first-area-only": "GeoPackage-arkivet innehåller flera lager. Endast <em>{{ firstFeature }}</em> kommer att importeras!"
+                        "WGS84-reprojection": "Importerade koordinater kommer att projiceras om till <em>EPSG:4326 (WGS 84)",
+                        "multi-layer-pre": "GeoPackage-arkivet innehåller dessa lager:",
+                        "multi-layer-all": "Samtliga lager kommer att importeras som separata områden."
                     },
                     "import": "Bekräfta import",
                     "cancel": "Avbryt"
@@ -262,7 +263,8 @@
             "delete": {
                 "label": "Radera",
                 "modal": {
-                    "title": "Är du säker på att du vill radera",
+                    "title": "Bekräfta radera område",
+                    "message": "Är du säker på att du vill radera området<br>&laquo;&nbsp;{{ userAreaName }}&nbsp;&raquo;&nbsp;?",
                     "delete": "Radera",
                     "close": "Avbryt"
                 }
@@ -383,5 +385,15 @@
         "fetching-report": "Hämtar rapport",
         "error-message": "Ett fel inträffade. Det finns ingen rapport att visa för tillfället – var god testa att göra en ny beräkning."
     },
-    "footer": "Havs och Vattenmyndigheten"
+    "footer": "Havs och Vattenmyndigheten",
+    "api-messages": {
+        "areas": {
+            "import-success" : {
+                "title": "Importen lyckades",
+                "message-single" : "Importerat område: \"{{ topLayerName }}\"",
+                "message-multi" : "Importerade {{ layersCount }} områden."
+            }
+
+        }
+    }
 }

@@ -226,7 +226,7 @@
                     "close": "Close"
                 },
                 "error": {
-                    "USER_DEF_AREA_NAME_EXISTS" : "You have already saved an area by the name <em>{{ areaName }}</em>.\n\nDelete or rename the previously saved area, or choose another name, and try again."
+                    "USER_DEF_AREA_NAME_EXISTS" : "<p>You have already saved an area by the name <em>\"{{ areaName }}\".</em></p><p>Delete or rename the previously saved area, or choose another name, and try again.</p>"
                 }
             },
             "upload": {
@@ -235,8 +235,9 @@
                     "title": "Import area",
                     "fileformat-note": "Files in <a href='https://www.geopackage.org/' target='_blank'>OGC GeoPackage</a>-format are supported.",
                     "notice": {
-                        "WGS84-reprojection": "The area coordinates will be reprojected to <em>EPSG:4326 (WGS 84)",
-                        "first-area-only": "The GeoPackage contains several layers. Only <em>{{ firstFeature }}</em> will be imported!"
+                        "WGS84-reprojection": "Imported coordinates will be reprojected to <em>EPSG:4326 (WGS 84)",
+                        "multi-layer-pre": "The selected GeoPackage contains these layers:",
+                        "multi-layer-all": "They will be imported as separate areas."
                     },
                     "import": "Confirm import",
                     "cancel": "Cancel"
@@ -262,7 +263,8 @@
             "delete": {
                 "label": "Delete",
                 "modal": {
-                    "title": "Are you sure you want to delete",
+                    "title": "Confirm area deletion",
+                    "message": "Are you sure you want to delete &laquo;&nbsp;{{ userAreaName }}&nbsp;&raquo;&nbsp;?",
                     "delete": "Delete",
                     "cancel": "Cancel"
                 }
@@ -383,5 +385,15 @@
         "fetching-report": "Fetching report",
         "error-message": "An error occurred. There is no report to show now. Please check options and try a calculation again."
     },
-    "footer": "Swedish Agency for Marine and Water Management"
+    "footer": "Swedish Agency for Marine and Water Management",
+    "api-messages": {
+        "areas": {
+            "import-success" : {
+                "title": "Import successful",
+                "message-single" : "Imported area: \"{{ topLayerName }}\"",
+                "message-multi" : "Imported {{ layersCount }} areas"
+            }
+
+        }
+    }
 }

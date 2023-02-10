@@ -30,6 +30,10 @@
   .loading {
     text-align: center;
     padding: 1rem 0;
+
+    mat-spinner {
+      margin: 0 auto;
+    }
   }
 
   p {
@@ -45,6 +49,19 @@
       color: $hav-turquoise;
       font-size: 5rem;
     }
+  }
+
+  ul.layer-list {
+    font-size: 1.3rem;
+    line-height: 1.7rem;
+    margin: 0 0 0.8rem;
+    overflow-y: scroll;
+    max-height: calc(100vh - 440px);
+  }
+
+  p.import-all {
+    font-size: 1.3rem;
+    padding-left: 2.2rem;
   }
 
   .error {

@@ -226,7 +226,7 @@
                     "close": "Fermer"
                 },
                 "error": {
-                    "USER_DEF_AREA_NAME_EXISTS" : "Vous avez déjà enregistré une zone nommée <em>{{ areaName }}</em>.\n\nSupprimez ou renommez la zone précédemment enregistrée, ou choisissez un autre nom et réessayez."
+                    "USER_DEF_AREA_NAME_EXISTS" : "<p>Vous avez déjà enregistré une zone nommée <em>\"{{ areaName }}\"</em>.</p><p>Supprimez ou renommez la zone précédemment enregistrée, ou choisissez un autre nom et réessayez.</p>"
                 }
             },
             "upload": {
@@ -236,7 +236,8 @@
                     "fileformat-note": "Fichiers type <a href='https://www.geopackage.org/' target='_blank'>OGC GeoPackage</a> acceptés.",
                     "notice": {
                         "WGS84-reprojection": "La projection des coordonnées sera transformée vers <em>EPSG:4326 (WGS 84)",
-                        "first-area-only": "Le fichier GeoPackage contient plusieurs couches de données. Seule la couche <em>{{ firstFeature }}</em> sera importée!"
+                        "multi-layer-pre": "Le fichier GeoPackage contient ces zones:",
+                        "multi-layer-all": "Toutes seront importé si vous confirmez."
                     },
                     "import": "Confirmer",
                     "cancel": "Annuler"
@@ -262,7 +263,8 @@
             "delete": {
                 "label": "Supprimer",
                 "modal": {
-                    "title": "Êtes-vous sûr de vouloir supprimer",
+                    "title": "Confirmer la suppression",
+                    "message": "Êtes-vous sûr de vouloir supprimer &laquo;&nbsp;{{ userAreaName }}&nbsp;&raquo;&nbsp;?",
                     "delete": "Supprimer",
                     "cancel": "Annuler"
                 }
@@ -383,5 +385,15 @@
         "fetching-report": "Assemblage du rapport",
         "error-message": "Une erreur est survenue. Aucun rapport n'a pu être produit. Veuillez vérifier les paramètres et réessayer."
     },
-    "footer": "Agence Suédoise pour la Gestion de l'Eau et des Zones Maritimes (Havs och Vattenmyndigheten)"
+    "footer": "Agence Suédoise pour la Gestion de l'Eau et des Zones Maritimes (Havs och Vattenmyndigheten)",
+    "api-messages": {
+        "areas": {
+            "import-success" : {
+                "title": "L'importation a réussi",
+                "message-single" : "Zone importée: \"{{ topLayerName }}\"",
+                "message-multi" : "Importé {{ layersCount }} zones"
+            }
+
+        }
+    }
 }

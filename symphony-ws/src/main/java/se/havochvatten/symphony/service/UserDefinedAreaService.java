@@ -1,18 +1,19 @@
 package se.havochvatten.symphony.service;
 
 import org.geotools.data.geojson.GeoJSONWriter;
+import org.geotools.data.simple.SimpleFeatureReader;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geopkg.FeatureEntry;
 import org.geotools.geopkg.GeoPackage;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteException;
+import se.havochvatten.symphony.dto.AreaImportResponse;
 import se.havochvatten.symphony.dto.UploadedUserDefinedAreaDto;
 import se.havochvatten.symphony.dto.UserDefinedAreaDto;
 import se.havochvatten.symphony.entity.UserDefinedArea;
@@ -26,9 +27,8 @@ import javax.persistence.PersistenceContext;
 import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
+import java.util.ArrayList; 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Stateless
 public class UserDefinedAreaService {
@@ -109,23 +109,29 @@ public class UserDefinedAreaService {
     /**
      * @return The dto, or empty if inspection failed
      */
-    public UploadedUserDefinedAreaDto inspectGeoPackage(Principal principal, File file) throws SymphonyStandardAppException {
+    public UploadedUserDefinedAreaDto inspectGeoPackage(File file) throws SymphonyStandardAppException {
         // https://docs.geotools.org/latest/userguide/library/data/geopackage.html
         try (GeoPackage pkg = new GeoPackage(file)) {
             var features = pkg.features();
             if (features.size() > 0) {
-                var featureIdentifiers = pkg.features()
-                    .stream()
-                    .map(f -> f.getIdentifier())
-                    .collect(Collectors.toList());
 
-                // TODO Do away with this constraint
-                var featureToBeImportedName = featureIdentifiers.get(0);
-                if (getUserDefinedAreaByName(principal, featureToBeImportedName) != null)
-                    throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_NAME_EXISTS);
+                SimpleFeatureReader sfReader;
+                List<String> featureIdentifiers = new ArrayList<>();
 
-                var srid = features.get(0).getSrid();
-                return new UploadedUserDefinedAreaDto(featureIdentifiers, srid, file.getName());
+                // Add only layers that have geometric (polygonal) features.
+                for(FeatureEntry fe : features) {
+                    sfReader = pkg.reader(fe, null, null);
+                    if(sfReader.hasNext() && sfReader.next().getDefaultGeometry() != null) {
+                        featureIdentifiers.add(fe.getIdentifier());
+                    }
+                }
+
+                if(featureIdentifiers.size() > 0) {
+                    var srid = features.get(0).getSrid();
+                    return new UploadedUserDefinedAreaDto(featureIdentifiers, srid, file.getName());
+                } else {
+                    throw new SymphonyStandardAppException(SymphonyModelErrorCode.GEOPACKAGE_MISSING_GEOMETRY);
+                }
             }
             else throw new SymphonyStandardAppException(SymphonyModelErrorCode.GEOPACKAGE_NO_FEATURES);
         } catch (IOException e) {
@@ -136,50 +142,66 @@ public class UserDefinedAreaService {
         }
     }
 
+
+
     /**
      * Import a user-supplied GeoPackage as a user-defined area
      */
-    public UserDefinedAreaDto importUserDefinedAreaFromPackage(Principal principal, GeoPackage pkg,
-                                                               String areaName)
+    public AreaImportResponse importUserDefinedAreaFromPackage(Principal principal, GeoPackage pkg)
         throws SymphonyStandardAppException {
 
-        FeatureEntry featureToImport = null;
-        SimpleFeature theFeature = null;
         try {
             var features = pkg.features();
-            featureToImport = features.get(0); // TODO support multiple features
-            var reader = pkg.reader(featureToImport, null, null);
-            assert (reader.hasNext());
-            theFeature = reader.next();
+
+            Geometry tmpGeometry;
+            UserDefinedArea areaToImport;
+            SimpleFeatureReader sfReader;
+            List<String> persistedAreas = new ArrayList<>();
+
+            for(FeatureEntry tmpEntry: features) {
+                sfReader = pkg.reader(tmpEntry, null, null);
+
+                tmpGeometry = null;
+                Geometry addGeometry;
+
+                while(sfReader.hasNext()) {
+                    addGeometry = (Geometry) sfReader.next().getDefaultGeometry();
+
+                    if (addGeometry != null) {
+                        if (addGeometry.getSRID() != 4326) {
+                            try {
+                                var sourceCRS = CRS.decode("EPSG:" + addGeometry.getSRID(), true);
+                                var transform = CRS.findMathTransform(sourceCRS, DefaultGeographicCRS.WGS84);
+                                addGeometry = JTS.transform(addGeometry, transform);
+                            } catch (FactoryException | TransformException e) {
+                                throw new SymphonyStandardAppException(SymphonyModelErrorCode.GEOPACKAGE_REPROJECTION_FAILED);
+                            }
+                        }
+                        tmpGeometry = (tmpGeometry == null) ? addGeometry : tmpGeometry.union(addGeometry);
+                    }
+                }
+
+                if(tmpGeometry != null) {
+                    persistedAreas.add(tmpEntry.getIdentifier());
+                    areaToImport = new UserDefinedArea();
+                    areaToImport.setPolygon(GeoJSONWriter.toGeoJSON(tmpGeometry));
+                    areaToImport.setOwner(principal.getName());
+                    areaToImport.setName(tmpEntry.getIdentifier());
+                    areaToImport.setDescription(tmpEntry.getDescription());
+                    em.persist(areaToImport);
+                } else {
+                    throw new SymphonyStandardAppException(SymphonyModelErrorCode.GEOPACKAGE_MISSING_GEOMETRY);
+                }
+            }
+            return new AreaImportResponse() {{
+                setAreaNames(
+                    persistedAreas.toArray(new String[0])
+                );
+            }};
+
         } catch (IOException e) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.GEOPACKAGE_READ_FEATURE_FAILURE);
         }
-
-        // TODO Do away with this constraint
-        if (getUserDefinedAreaByName(principal, featureToImport.getIdentifier()) != null)
-            throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_NAME_EXISTS);
-
-        var geometry = (Geometry)theFeature.getDefaultGeometry();
-        if (geometry != null) {
-            if (geometry.getSRID() != 4326) {
-                try {
-                    var sourceCRS = CRS.decode("EPSG:"+geometry.getSRID(), true);
-                    var transform = CRS.findMathTransform(sourceCRS, DefaultGeographicCRS.WGS84);
-                        geometry = JTS.transform(geometry, transform);
-                } catch (FactoryException|TransformException e) {
-                    throw new SymphonyStandardAppException(SymphonyModelErrorCode.GEOPACKAGE_REPROJECTION_FAILED);
-                }
-            }
-
-            UserDefinedArea areaToImport = new UserDefinedArea();
-            areaToImport.setPolygon(GeoJSONWriter.toGeoJSON(geometry));
-            areaToImport.setOwner(principal.getName());
-            areaToImport.setName(areaName != null ? areaName : featureToImport.getIdentifier());
-            areaToImport.setDescription(featureToImport.getDescription());
-            em.persist(areaToImport);
-            return UserDefinedAreaDtoMapper.mapToDto(areaToImport);
-        } else
-            throw new SymphonyStandardAppException(SymphonyModelErrorCode.GEOPACKAGE_MISSING_GEOMETRY);
     }
 
 
