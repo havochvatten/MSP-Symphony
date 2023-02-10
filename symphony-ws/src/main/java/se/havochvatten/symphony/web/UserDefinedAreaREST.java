@@ -153,7 +153,7 @@ public class UserDefinedAreaREST {
 
         req.getSession().removeAttribute(key);
 //        Files.deleteIfExists(pkgPath); // fails since file is still used by other process?? how to close?
-        return Response.ok().entity(response).build();
+        return Response.status(201).entity(response).build();
     }
 
     /**
