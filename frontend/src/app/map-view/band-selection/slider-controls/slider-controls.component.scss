@@ -58,6 +58,8 @@
     ::ng-deep mat-checkbox .mat-checkbox-layout {
       .mat-checkbox-label {
         white-space: pre-wrap;
+        word-wrap: break-word;
+        max-width: 216px;
         line-height: 16px;
       }
     }
