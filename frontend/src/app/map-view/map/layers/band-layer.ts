@@ -1,7 +1,6 @@
 import { Layer } from 'ol/layer';
 import { Band, BandType } from '@data/metadata/metadata.interfaces';
 import ImageLayer from 'ol/layer/Image';
-import LayerGroup from 'ol/layer/Group';
 import { ImageStatic } from 'ol/source';
 import { AppSettings } from '@src/app/app.settings';
 import { StaticImageOptions } from '@data/calculation/calculation.interfaces';

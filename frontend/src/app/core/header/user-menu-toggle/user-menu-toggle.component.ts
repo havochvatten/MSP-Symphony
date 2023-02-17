@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { IconType } from '@shared/icon/icon.component';
 import { User } from "@data/user/user.interfaces";
 
 @Component({

@@ -8,7 +8,6 @@ import {
   Feature,
   NationalArea,
   AreaGroup,
-  Area,
   StatePath,
   Boundary
 } from './area.interfaces';

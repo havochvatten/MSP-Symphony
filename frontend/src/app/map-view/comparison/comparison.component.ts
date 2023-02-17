@@ -4,7 +4,7 @@ import { State } from '@src/app/app-reducer';
 import { Observable } from 'rxjs';
 import { CalculationSlice } from '@data/calculation/calculation.interfaces';
 import { CalculationSelectors } from '@data/calculation';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms'; //ValidationErrors, ValidatorFn
+import { FormBuilder, Validators } from '@angular/forms'; //ValidationErrors, ValidatorFn
 import { DialogService } from '@shared/dialog/dialog.service';
 import { ComparisonReportModalComponent } from '@shared/report-modal/comparison-report-modal.component';
 import { CalculationService } from '@data/calculation/calculation.service';

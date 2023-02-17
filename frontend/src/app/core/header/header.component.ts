@@ -1,10 +1,10 @@
-import { Component, Input, OnInit, OnDestroy, NgModuleRef } from '@angular/core';
+import { Component, Input, OnInit, NgModuleRef } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
   faInfoCircle,
   faDoorClosed,
 } from '@fortawesome/free-solid-svg-icons';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { trigger, style, transition, animate, keyframes } from '@angular/animations';
 
 import { State } from '@src/app/app-reducer';

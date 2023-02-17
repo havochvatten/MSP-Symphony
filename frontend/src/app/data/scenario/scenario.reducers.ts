@@ -11,7 +11,6 @@ import {
   fetchAreaMatricesSuccess
 } from '@data/scenario/scenario.actions';
 import { isEqual } from 'lodash';
-import { Scenario } from "@data/scenario/scenario.interfaces";
 
 export const initialState: ScenarioInterfaces.State = {
   scenarios: [],

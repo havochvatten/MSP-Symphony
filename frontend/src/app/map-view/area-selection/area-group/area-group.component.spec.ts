@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { SharedModule } from '@src/app/shared/shared.module';
 
 import { AreaGroupComponent } from './area-group.component';
-import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { TranslationSetupModule } from "@src/app/app-translation-setup.module";
 
 describe('AreaGroupComponent', () => {

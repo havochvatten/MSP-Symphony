@@ -1,5 +1,5 @@
 import { storiesOf, moduleMetadata } from '@storybook/angular';
-import { text, withKnobs } from '@storybook/addon-knobs';
+import { withKnobs } from '@storybook/addon-knobs';
 
 import { PopupMessageComponent } from './popup-message.component';
 import {provideMockStore} from "@ngrx/store/testing";

@@ -1,5 +1,5 @@
 import { Component, Input, NgModuleRef } from '@angular/core';
-import { StatePath, AreaGroup, UserArea, Area } from '@data/area/area.interfaces';
+import { StatePath, AreaGroup, UserArea } from '@data/area/area.interfaces';
 import { DialogService } from "@shared/dialog/dialog.service";
 import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
 

@@ -6,7 +6,6 @@ import { SharedModule } from '@src/app/shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { provideMockStore } from '@ngrx/store/testing';
 import { initialState } from '@data/metadata/metadata.reducers';
-import { ElementRef } from "@angular/core";
 
 describe('EcoSliderComponent', () => {
   let fixture: ComponentFixture<EcoSliderComponent>,

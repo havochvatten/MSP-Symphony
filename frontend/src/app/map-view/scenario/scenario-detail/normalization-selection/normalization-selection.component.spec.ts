@@ -4,7 +4,6 @@ import { NormalizationSelectionComponent } from './normalization-selection.compo
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { OrdinalPipe } from "@shared/ordinal.pipe";
 import { MatRadioModule } from "@angular/material/radio";
-import { TranslateModule, TranslateService } from "@ngx-translate/core";
 
 describe('NormalizationSelectionComponent', () => {
   let component: NormalizationSelectionComponent;

@@ -1,4 +1,4 @@
-import { Component, Input, EventEmitter } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { StatePath } from '@data/metadata/metadata.interfaces';
 
 export interface CheckboxItem {
