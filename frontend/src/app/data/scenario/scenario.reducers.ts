@@ -116,14 +116,11 @@ export const scenarioReducer = createReducer(
             updateIn(
             state.scenarios,
             [state.active, 'changes', 'features', featureIndex, 'properties', 'changes', bandId],
-            change => {
-              return {
-                  change,
+            change => ({
                   type: componentType,
                   band,
                   [attribute]: value
-                };
-            }) : state.scenarios,
+                })) : state.scenarios,
           activeFeature: featureIndex
         };
     }
