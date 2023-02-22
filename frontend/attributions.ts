@@ -9,7 +9,7 @@ export default [
   ['core-js', 'https://github.com/zloirock/core-js#readme', '2.5.4'],
   ['tslib', 'https://www.typescriptlang.org/', '1.11.0'],
   ['RxJS', 'https://rxjs.dev/', '6.5.4'],
-  ['GeoTools', "https://www.geotools.org/", "26.5"],
+  ['GeoTools', "https://www.geotools.org/", "27.4"],
   ['Jakarta EE', 'https://jakarta.ee/', '8.0.0'],
   ['JAI', "https://www.oracle.com/java/technologies/advanced-imaging-api.html", "1.1.3"],
   ['Commons Lang', 'https://commons.apache.org/proper/commons-lang/', '3.9'],
