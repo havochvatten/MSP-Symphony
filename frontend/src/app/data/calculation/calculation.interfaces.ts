@@ -3,7 +3,7 @@ import { Extent } from 'ol/extent';
 import { ProjectionLike } from "ol/proj";
 import { NormalizationOptions } from "@data/calculation/calculation.service";
 import { BandType } from "@data/metadata/metadata.interfaces";
-import { GeoJSONFeatureCollection } from "ol/format/GeoJSON";
+import { GeoJSONFeatureCollection, GeoJSONGeometry } from "ol/format/GeoJSON";
 
 // TODO Move calculation element to Scenario state
 export interface State {
@@ -29,6 +29,8 @@ export interface Report {
   geographicalArea: number; // m^2
   calculatedPixels: number;
   gridResolution: number; // [m]
+  polygon: GeoJSONGeometry;
+  projectionId: string;
   matrix: DefaultMatrixData | string;
   altMatrix: boolean;
   normalization: NormalizationOptions;

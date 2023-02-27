@@ -5,7 +5,11 @@
   <div class="logo">
     <img  src="../../assets/hav-logotype.png" />
   </div>
-  <app-calculation-image [imageURL]="imageUrl"></app-calculation-image>
+  <app-calculation-image
+    [imageURL]="imageUrl"
+    [polygon]="report.a.polygon"
+    [projectionId]="report.a.projectionId"
+  ></app-calculation-image>
   <app-cumulative-effect-etc [reports]="[report.a, report.b]"
                              [area]="area"
                              [footnote]="'report.cumulative-effect-etc.comparison.legend-desc' | translate"

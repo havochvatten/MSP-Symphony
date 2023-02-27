@@ -2,14 +2,18 @@ package se.havochvatten.symphony.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import it.geosolutions.jaiext.stats.HistogramMode;
 import it.geosolutions.jaiext.stats.Statistics;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
+import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.geometry.jts.JTS;
+import org.geotools.metadata.iso.citation.Citations;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import se.havochvatten.symphony.calculation.Operations;
@@ -39,7 +43,9 @@ import static java.util.stream.Collectors.toMap;
 
 @Singleton
 public class ReportService {
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new JsonMapper();
+
+    private static final GeometryJSON geoJson = new GeometryJSON();
 
     // The CSV standard (RFC 4180) actually says to use comma, but tab is MS Excel default. Or use TSV?
     private static final char CSV_FIELD_SEPARATOR = '\t';
@@ -121,7 +127,7 @@ public class ReportService {
     }
 
     public ReportResponseDto generateReportData(CalculationResult calc, boolean computeChart)
-            throws FactoryException, TransformException {
+        throws FactoryException, TransformException, JsonProcessingException {
         var scenario = calc.getScenarioSnapshot();
         var coverage = calc.getCoverage();
         var stats = getStatistics(coverage);
@@ -133,6 +139,11 @@ public class ReportService {
         double[] esTotal = new double[esLen];
         // N.B: Will set pTotal and esTotal as side effect!
         double total = getComponentTotals(impactMatrix, pTotal, esTotal);
+
+        var crs = coverage.getCoordinateReferenceSystem2D();
+
+        Geometry projectedGeometry = JTS.transform(scenario.getGeometry(),
+            CRS.findMathTransform(DefaultGeographicCRS.WGS84, crs));
 
         ReportResponseDto report = new ReportResponseDto();
 
@@ -196,19 +207,20 @@ public class ReportService {
                 props.getPropertyAsDouble("calc.sankey_chart.link_weight_threshold", 0.001)
             ).getChartData();
 
-        report.geographicalArea = JTS.transform(scenario.getGeometry(),
-                CRS.findMathTransform(DefaultGeographicCRS.WGS84,
-                        coverage.getCoordinateReferenceSystem2D())).getArea();
+        report.geographicalArea = projectedGeometry.getArea();
 
         report.scenarioChanges = scenario.getChanges();
         report.timestamp = calc.getTimestamp().getTime();
+
+        report.polygon = mapper.readTree(geoJson.toString(projectedGeometry));
+        report.projectionId = "EPSG:" + CRS.lookupIdentifier(Citations.EPSG, crs, false);
 
         return report;
     }
 
     public ComparisonReportResponseDto generateComparisonReportData(CalculationResult calcA,
                                                                     CalculationResult calcB)
-            throws FactoryException, TransformException {
+        throws FactoryException, TransformException, JsonProcessingException {
         var report = new ComparisonReportResponseDto();
         report.a = generateReportData(calcA, false);
         report.b = generateReportData(calcB, false);
