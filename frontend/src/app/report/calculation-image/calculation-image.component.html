@@ -1,3 +1,10 @@
 <div class="image-background">
+  <app-inline-map
+    [polygon]="polygon"
+    [backgroundMap]="false"
+    [padding]="0"
+    [vectorStyle]="outlineStyle"
+    [projectionId]="projectionId">
+  </app-inline-map>
   <img [src]="imageURL" alt="" />
 </div>

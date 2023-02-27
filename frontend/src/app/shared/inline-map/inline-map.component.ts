@@ -6,7 +6,6 @@ import TileLayer from "ol/layer/Tile";
 import { OSM } from "ol/source";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
-import { getArea } from "ol/sphere";
 import { getCenter } from "ol/extent";
 import { Stroke } from "ol/style";
 import { GeoJSON } from "ol/format";
@@ -18,15 +17,16 @@ import * as proj from "ol/proj";
 
 export class InlineMapComponent implements OnInit {
 
+  @Input() backgroundMap = true;
+  @Input() projectionId = 'EPSG:3857';
+  @Input() maxZoom = Infinity;
+  @Input() padding: number | number[] = 10;
   @Input() polygon!: any;
   @Input() vectorStyle = new Style({
     stroke: new Stroke({ width: 2, color: 'black'})
   });
 
-  private map?: Map;
   private readonly domElement: HTMLElement;
-  private readonly view = new View({ maxZoom: 9 })
-  private readonly source = new VectorSource({ format : new GeoJSON({ featureProjection: 'EPSG:3857' }) });
 
   myPolygon() : Polygon  {
     return this.polygon as Polygon;
@@ -38,26 +38,38 @@ export class InlineMapComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.source.addFeatures(
-      (this.source.getFormat() as GeoJSON).readFeatures(this.myPolygon())
-    );
-    const geometry = this.source.getFeatures()[0].getGeometry(),
-          extent = geometry!.getExtent();
-    this.view.setCenter(proj.fromLonLat(getCenter(extent)));
+    const fmt = new GeoJSON({ featureProjection: this.projectionId }),
+          source = new VectorSource({ format : fmt }),
+          view = new View({ maxZoom: this.maxZoom });
 
-    this.map = new Map({
+    source.addFeatures(
+      fmt.readFeatures(this.myPolygon())
+    );
+    const geometry = source.getFeatures()[0].getGeometry(),
+          extent = geometry!.getExtent();
+
+    view.setCenter(proj.fromLonLat(getCenter(extent)));
+
+    const map = new Map({
       controls: [], interactions: [],
       layers: [
-        new TileLayer({ source: new OSM() }),
         new VectorLayer({
-          source: this.source,
+          source: source,
           style: this.vectorStyle
         })
       ],
       target: this.domElement,
-      view: this.view,
+      view: view,
     });
 
-    this.map.getView().fit(extent, { padding: [10, 10, 10, 10] });
+    if(this.backgroundMap) {
+      map.getLayers().insertAt(0, new TileLayer({ source: new OSM() }));
+    }
+
+    map.getView().fit(extent,
+      { padding: typeof this.padding === 'number' ?
+                  Array(4).fill(this.padding) :
+                  this.padding }
+    );
   }
 }

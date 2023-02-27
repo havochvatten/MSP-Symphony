@@ -6,7 +6,11 @@
   <div class="logo">
     <img  src="../../assets/hav-logotype.png" />
   </div>
-  <app-calculation-image [imageURL]="imageUrl"></app-calculation-image>
+  <app-calculation-image
+    [imageURL]="imageUrl"
+    [polygon]="report.polygon"
+    [projectionId]="report.projectionId">
+  </app-calculation-image>
   <app-cumulative-effect-etc [reports]="report ? [report] : undefined"
     [area]="area"
     [normalization]="report.normalization"
