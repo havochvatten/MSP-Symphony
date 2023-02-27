@@ -138,6 +138,12 @@
                 "title": "Coastal Areas",
                 "include-coast": "Include coast"
             },
+            "select-intersection": {
+                "header": "Multiple default matrix couplings",
+                "message": "The selected area has ambiguous couplings to default sensitivity matrices.<br>Please select which area to analyze.",
+                "default-matrix": "Default matrix for this area:",
+                "confirm-selection": "Use selected area"
+            },
             "calculate": "Calculate"
         },
         "metadata": {

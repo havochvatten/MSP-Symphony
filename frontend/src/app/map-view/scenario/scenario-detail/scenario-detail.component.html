@@ -84,7 +84,7 @@
     <section class="sensitivity-matrix">
       <h3>{{ 'map.editor.matrix.sensitivity-matrix' | translate }}</h3>
       <app-matrix-selection
-        [feature]="this.scenario.feature"
+        [scenario]="this.scenario"
         (areaTypeSelected)="onAreaTypeSelection($event)"
         (matrixOverridden)="onMatrixOverride($event)"
       >

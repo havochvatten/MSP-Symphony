@@ -37,6 +37,7 @@ import { AnchorPipe } from '@shared/anchor.pipe';
 import { MatButtonModule } from "@angular/material/button";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal.component';
+import { InlineMapComponent } from './inline-map/inline-map.component';
 
 @NgModule({
   declarations: [
@@ -73,7 +74,8 @@ import { ConfirmationModalComponent } from './confirmation-modal/confirmation-mo
     StatusIconComponent,
     OrdinalPipe,
     AnchorPipe,
-    ConfirmationModalComponent
+    ConfirmationModalComponent,
+    InlineMapComponent
   ],
   imports: [
     CommonModule,
@@ -116,7 +118,8 @@ import { ConfirmationModalComponent } from './confirmation-modal/confirmation-mo
     RouterModule,
     TranslateModule,
     OrdinalPipe,
-    AnchorPipe
+    AnchorPipe,
+    InlineMapComponent
   ]
 })
 export class SharedModule {}

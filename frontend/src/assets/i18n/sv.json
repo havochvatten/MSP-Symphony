@@ -138,6 +138,12 @@
                 "title": "Kustområden",
                 "include-coast": "Inkludera kustområde"
             },
+            "select-intersection": {
+                "header": "Flera standardmatriskopplingar",
+                "message": "Det valda området omfattar flera olika standardmatriskopplingar.<br>Välj det område du vill analysera.",
+                "default-matrix": "Områdets standardmatriskoppling:",
+                "confirm-selection": "Använd valt område"
+            },
             "calculate": "Beräkna"
         },
         "metadata": {

@@ -28,6 +28,7 @@ import { ScenarioLayer } from '@src/app/map-view/map/layers/scenario-layer';
 import AreaLayer from '@src/app/map-view/map/layers/area-layer';
 import { Extent } from 'ol/extent';
 import { DataLayerService } from '@src/app/map-view/map/layers/data-layer.service';
+import { isEqual } from "lodash";
 
 @Component({
   selector: 'app-map',
@@ -40,11 +41,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   layerAliasing = true;
 
   private map?: OLMap;
-  private storeSubscription?: Subscription;
-  private areaSubscription?: Subscription;
-  private resultSubscription?: Subscription;
-  private resultDeletedSubscription?: Subscription;
-  private userSubscription?: Subscription;
+  private readonly storeSubscription?: Subscription;
+  private readonly areaSubscription?: Subscription;
+  private readonly resultSubscription?: Subscription;
+  private readonly resultDeletedSubscription?: Subscription;
+  private readonly userSubscription?: Subscription;
   private activeScenario$: Observable<Scenario | undefined>;
   private scenarioSubscription: Subscription;
   private scenarioCloseSubscription: Subscription;
@@ -94,7 +95,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.activeScenario$ = this.store.select(ScenarioSelectors.selectActiveScenario);
 
     this.scenarioSubscription = this.activeScenario$.pipe(
-      distinctUntilChanged((prev: Scenario|undefined, curr: Scenario|undefined) => prev?.id === curr?.id),
+      distinctUntilChanged((prev: Scenario|undefined, curr: Scenario|undefined) => prev?.id === curr?.id && isEqual(prev?.feature.geometry, curr?.feature.geometry)),
       isNotNullOrUndefined(),
     ).subscribe((scenario: Scenario) => {
       this.scenarioLayer.clearLayers();

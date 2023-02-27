@@ -15,6 +15,7 @@ import { MatRadioModule } from "@angular/material/radio";
 import { MatSelectModule } from "@angular/material/select";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { FormsModule } from "@angular/forms";
+import { SelectIntersectionComponent } from './select-intersection/select-intersection.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { FormsModule } from "@angular/forms";
     ScenarioDetailComponent,
     MatrixSelectionComponent,
     NormalizationSelectionComponent,
+    SelectIntersectionComponent,
   ],
   imports: [
     SharedModule,
