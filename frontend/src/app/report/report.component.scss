@@ -61,10 +61,13 @@
 
     app-result-color-scale {
       grid-column-start: 1;
-      grid-row: 8 / 9;
       width: 150%;
       margin: -8mm 0 0 8mm;
       align-self: end;
+
+      &.calc-report-legend {
+        grid-row: 8 / 9;
+      }
     }
 
     app-highest-impacts {

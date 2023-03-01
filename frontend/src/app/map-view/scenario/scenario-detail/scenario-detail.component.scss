@@ -22,6 +22,7 @@ $buttons-row-gap: 1rem;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    overflow-x: hidden;
 
     .title {
       display: flex;
