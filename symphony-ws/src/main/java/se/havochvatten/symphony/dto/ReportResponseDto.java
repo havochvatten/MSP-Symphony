@@ -42,7 +42,5 @@ public class ReportResponseDto {
     public Map<Integer, Double> impactPerEcoComponent;
     public Map<String, List> chartData;
     public JsonNode scenarioChanges;
-    public JsonNode polygon;
-    public String projectionId;
     public long timestamp;
 }

@@ -6,7 +6,6 @@ import { CalculationReportModule } from "@src/app/report/calculation-report.modu
 import { Report } from "@data/calculation/calculation.interfaces";
 import { NormalizationType } from "@data/calculation/calculation.service";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
-import { Polygon } from "ol/geom";
 
 describe('HistogramComponent', () => {
   let component: HistogramComponent;
@@ -48,9 +47,7 @@ describe('HistogramComponent', () => {
       stddev: 0,
       timestamp: 0,
       total: 0,
-      baselineName : "",
-      polygon: { type:"Polygon", coordinates: [] },
-      projectionId: "",
+      baselineName : ""
     };
     component.report = report;
     fixture.detectChanges();

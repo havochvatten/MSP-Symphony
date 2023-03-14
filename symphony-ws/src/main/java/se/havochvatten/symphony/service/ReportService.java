@@ -9,7 +9,6 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.geometry.jts.JTS;
-import org.geotools.metadata.iso.citation.Citations;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
@@ -128,7 +127,7 @@ public class ReportService {
     }
 
     public ReportResponseDto generateReportData(CalculationResult calc, boolean computeChart)
-        throws FactoryException, TransformException, JsonProcessingException {
+        throws FactoryException, TransformException {
         var scenario = calc.getScenarioSnapshot();
         var coverage = calc.getCoverage();
         var stats = getStatistics(coverage);
@@ -142,9 +141,6 @@ public class ReportService {
         double total = getComponentTotals(impactMatrix, pTotal, esTotal);
 
         var crs = coverage.getCoordinateReferenceSystem2D();
-
-        Geometry projectedGeometry = JTS.transform(scenario.getGeometry(),
-            CRS.findMathTransform(DefaultGeographicCRS.WGS84, crs));
 
         ReportResponseDto report = new ReportResponseDto();
 
@@ -208,13 +204,12 @@ public class ReportService {
                 props.getPropertyAsDouble("calc.sankey_chart.link_weight_threshold", 0.001)
             ).getChartData();
 
-        report.geographicalArea = projectedGeometry.getArea();
+        report.geographicalArea =  JTS.transform(scenario.getGeometry(),
+                CRS.findMathTransform(DefaultGeographicCRS.WGS84,
+                    coverage.getCoordinateReferenceSystem2D())).getArea();
 
         report.scenarioChanges = scenario.getChanges();
         report.timestamp = calc.getTimestamp().getTime();
-
-        report.polygon = mapper.readTree(geoJson.toString(projectedGeometry));
-        report.projectionId = "EPSG:" + CRS.lookupIdentifier(Citations.EPSG, crs, false);
 
         return report;
     }

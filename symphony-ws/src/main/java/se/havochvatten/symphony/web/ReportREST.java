@@ -1,6 +1,5 @@
 package se.havochvatten.symphony.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.opengis.referencing.FactoryException;
@@ -47,7 +46,7 @@ public class ReportREST {
     public Response getReport(@Context HttpServletRequest req,
                               @PathParam("id") int id,
                               @Context UriInfo uriInfo)
-        throws FactoryException, TransformException, JsonProcessingException {
+        throws FactoryException, TransformException {
         logger.info("Fetching report "+id);
         var calc = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
             calcService).orElseThrow(NotFoundException::new);
