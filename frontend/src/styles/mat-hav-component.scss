@@ -21,6 +21,7 @@ button.mat-flat-button.mat-primary {
     }
 
     &:hover {
+      background-color: $primary-disabled-bg-grey;
       color: $primary-disabled-text-blue !important;
       &.mat-warn {
         color: $alert-disabled-text-red !important;
@@ -52,7 +53,7 @@ button.mat-flat-button.mat-primary {
       border-color: $alert-hover-bg-red;
     }
 
-    &.green {
+    &.green:not(.mat-button-disabled) {
       background-color: $success-hover-bg-green;
       border-color: $success-hover-bg-green;
     }
