@@ -103,7 +103,8 @@
                 "description": "Définir la valeur maximale en tant que:",
                 "area": "Valeur maximale dans la zone de calcul",
                 "domain": "Normalisé au {{ ordinalPercentileValue }} centile dans la zone MSP",
-                "custom": "Valeur définie par l'utilisateur",
+                "mean-plus-stddev": "Moyenne +/- \nmultiple de l'écart type:",
+                "custom": "Valeur définie par l'utilisateur:",
                 "custom-value": "Valeur"
             },
             "changes": {
@@ -342,6 +343,7 @@
                 "domain": "{{ ordinalPercentileValue }} centile",
                 "area": "Valeur maximale dans la zone de calcul",
                 "custom": "Valeur définie par l'utilisateur",
+                "mean-plus-stddev": "La moyenne {{ positiveOrNegative }} l'ecart type ⨯ {{ stddevMultiplier }}",
                 "domain-desc": "Le résultat est normalisé afin que {{ percentileValue }}% des données dans la zone d'aménagement maritime soient sous le seuil."
             },
             "sensitivity-matrices": {

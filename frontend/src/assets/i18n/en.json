@@ -103,7 +103,8 @@
                 "description": "Set maximum value based on",
                 "area": "Maximum value in computed area",
                 "domain": "{{ ordinalPercentileValue }} percentile in MSP area",
-                "custom": "User-defined value",
+                "mean-plus-stddev": "Mean +/- \nmultiple of standard deviation:",
+                "custom": "User-defined value:",
                 "custom-value": "Value"
             },
             "changes": {
@@ -342,6 +343,7 @@
                 "domain": "{{ ordinalPercentileValue }} percentile",
                 "area": "Maximum value in area",
                 "custom": "User-defined value",
+                "mean-plus-stddev": "Average {{ positiveOrNegative }} standard deviation ⨯ {{ stddevMultiplier }}",
                 "domain-desc": "The result is normalized with regard to the range that {{ percentileValue }}% of data points in the respective marine spatial planning area belong to (including coastal areas)."
             },
             "sensitivity-matrices": {

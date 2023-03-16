@@ -33,6 +33,8 @@ public class NormalizerService {
                 return new AreaNormalizer(operations);
             case DOMAIN:
                 return new DomainNormalizer();
+            case STANDARD_DEVIATION:
+                return new StandardDeviationNormalizer(operations);
             case USER_DEFINED:
                 return new UserDefinedValueNormalizer();
             case PERCENTILE:
@@ -58,10 +60,18 @@ abstract class RasterNormalizer implements BiFunction<GridCoverage2D, Double, Do
     }
 }
 
-class AreaNormalizer extends RasterNormalizer {
-    Operations operations;
+abstract class StatsNormalizer extends RasterNormalizer {
+    protected Operations operations;
+    public StatsNormalizer(Operations ops) {
+        this.operations = ops;
+    }
+}
 
-    AreaNormalizer(Operations ops) { this.operations = ops; }
+
+class AreaNormalizer extends StatsNormalizer {
+    AreaNormalizer(Operations ops) {
+        super(ops);
+    }
 
     @Override
     public Double apply(GridCoverage2D coverage, Double ignored) {
@@ -69,6 +79,23 @@ class AreaNormalizer extends RasterNormalizer {
             (double[]) ((Statistics[][])
                 ((GridCoverage2D) operations.extrema(coverage)).getProperty(Statistics.STATS_PROPERTY))[0][0].getResult();
         return extrema[1];
+    }
+}
+
+class StandardDeviationNormalizer extends StatsNormalizer {
+    StandardDeviationNormalizer(Operations ops) {
+        super(ops);
+    }
+    @Override
+    public Double apply(GridCoverage2D coverage, Double multiplier) {
+
+        Statistics[] stats = operations.stats(coverage, new int[]{0}, new Statistics.StatsType[]{
+            Statistics.StatsType.MEAN, Statistics.StatsType.DEV_STD })[0] ;
+
+        double mean     = (double) stats[0].getResult(),
+               stdDev   = (double) stats[1].getResult();
+
+        return Math.max(mean + stdDev * multiplier, 0);
     }
 }
 

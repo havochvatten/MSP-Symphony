@@ -103,7 +103,8 @@
                 "description": "Sätt maximalt värde baserat på",
                 "area": "Maximalt värde i valt område",
                 "domain": "{{ ordinalPercentileValue }} percentil i havsplaneområde",
-                "custom": "Egendefinierat värde",
+                "mean-plus-stddev": "Medelvärde +/- \nmultipel av standardavvikelsen:",
+                "custom": "Egendefinierat värde:",
                 "custom-value": "Värde"
             },
             "changes": {
@@ -342,6 +343,7 @@
                 "domain": "{{ ordinalPercentileValue }} percentilen",
                 "area": "Maximalt värde i område",
                 "custom": "Egendefinerat värde",
+                "mean-plus-stddev": "Genomsnitt {{ positiveOrNegative }} standdardavvikelsen ⨯ {{ stddevMultiplier }}",
                 "domain-desc": "Resultatet är normaliserat med avseende på det värde som {{ percentileValue }}% av datapunkterna i tillhörande havsplaneområdet ligger inom (inklusive värden för kustområden)."
             },
             "sensitivity-matrices": {

@@ -17,6 +17,7 @@ export class CumulativeEffectEtcComponent implements OnInit {
   @Input() percentileValue = 0;
   @Input() locale = 'en';
 
+  jsMath = Math; // make Math available to template
   type = NormalizationType; // make enum available to template
   validArea: boolean;
 
