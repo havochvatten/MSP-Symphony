@@ -269,6 +269,9 @@ public class CalculationAreaService {
                 if (caOpt.isPresent())
                     maxValue = caOpt.get().getMaxValue() == null ? 0 : caOpt.get().getMaxValue();
                 break;
+            case STANDARD_DEVIATION:
+                maxValue = normalization.stdDevMultiplier;
+                break;
             case USER_DEFINED:
                 maxValue = normalization.userDefinedValue;
                 break;
