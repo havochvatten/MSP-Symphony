@@ -9,7 +9,7 @@
         [disabled]="button.value === NormalizationType.Domain && algorithm === 'RarityAdjustedCumulativeImpact'"
         (change)="check(button.value)"
       ><span class="normalization-label-text">{{ button.label | translate: { ordinalPercentileValue: this.percentileValue | ordinal:locale } }}</span>
-        <input *ngIf="button.value === NormalizationType.UserDefined" type="number" id="user-defined-value" [step]="1" max="9999999" min="0"
+        <input *ngIf="button.value === NormalizationType.UserDefined" #userDefinedValue type="number" id="user-defined-value" [step]="1" max="9999999" min="1"
                [value]="options.userDefinedValue" (input)="onChangeValue(NormalizationType.UserDefined, $event)" [disabled]="!showValueField(button.value)"
         />
         <input *ngIf="button.value === NormalizationType.StandardDeviation" type="number" id="stddev-multiplier" [step]="0.01" max="9999.99" min="0"

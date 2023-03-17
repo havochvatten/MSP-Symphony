@@ -4,8 +4,8 @@ import { TranslateService } from "@ngx-translate/core";
 
 export const DEFAULT_OPTIONS: NormalizationOptions = {
   type: NormalizationType.Domain,
-  stdDevMultiplier: 1.0,
-  userDefinedValue: 0
+  stdDevMultiplier: 0,
+  userDefinedValue: 1
 }
 
 @Component({
