@@ -44,6 +44,9 @@ public class ScenarioDto {
     public ScenarioDto() {}
 
     public ScenarioDto(Scenario s) {
+        super();
+        if(s == null)   // may happen in named query list comprehension
+            return;
         id = s.getId();
         owner = s.getOwner();
         timestamp = s.getTimestamp();

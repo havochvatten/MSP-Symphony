@@ -36,7 +36,7 @@
         <span>{{ calculation.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
       </div>
       <div class="actions" *ngIf="!calculation.loading">
-        <app-icon iconType="delete" (click)="confirmDelete(calculation)"
+        <app-icon iconType="delete" (click)="confirmDelete(calculation, $event)"
           title="{{ 'map.history.delete' | translate: { calculationName: calculation.name } }}"
         >
         </app-icon>

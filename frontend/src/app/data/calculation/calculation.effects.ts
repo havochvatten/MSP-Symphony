@@ -4,6 +4,7 @@ import { from, of } from 'rxjs';
 import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
 import { CalculationActions } from './';
 import { CalculationService } from './calculation.service';
+import { ScenarioActions } from "@data/scenario";
 
 @Injectable()
 export class CalculationEffects {
@@ -34,7 +35,10 @@ export class CalculationEffects {
     ofType(CalculationActions.deleteCalculation),
     mergeMap(({ calculationToBeDeleted }) =>
       from(this.calcService.removeResult(calculationToBeDeleted.id)).pipe(
-        map(() => CalculationActions.deleteCalculationSuccess()),
+        mergeMap((_a,_i) => {
+          CalculationActions.deleteCalculationSuccess();
+          return of(CalculationActions.fetchCalculations(), ScenarioActions.fetchScenarios());
+        }),
         catchError(({status, error: message}) =>
           of(CalculationActions.deleteCalculationFailure({error: {status, message}}))
         )
