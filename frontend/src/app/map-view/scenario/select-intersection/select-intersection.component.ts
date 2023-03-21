@@ -1,4 +1,4 @@
-import { Component, ElementRef, QueryList, ViewChildren } from '@angular/core';
+import { Component } from '@angular/core';
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { AreaOverlapFragment } from "@src/app/map-view/scenario/scenario-detail/matrix-selection/matrix.interfaces";
 import { DialogConfig } from "@shared/dialog/dialog-config";
