@@ -41,7 +41,9 @@
               "lru-cache",
               "rbush",
               "web-worker",
-              "earcut"
+              "earcut",
+              "geojson-equality",
+              "polygon-clipping"
             ],
             "vendorChunk": true,
             "extractLicenses": false,
