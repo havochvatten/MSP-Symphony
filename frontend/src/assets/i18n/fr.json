@@ -231,9 +231,6 @@
                     "placeholder": "Zone 1",
                     "save": "Sauvegarder",
                     "close": "Fermer"
-                },
-                "error": {
-                    "USER_DEF_AREA_NAME_EXISTS" : "<p>Vous avez déjà enregistré une zone nommée <em>\"{{ areaName }}\"</em>.</p><p>Supprimez ou renommez la zone précédemment enregistrée, ou choisissez un autre nom et réessayez.</p>"
                 }
             },
             "upload": {
@@ -251,8 +248,7 @@
                 },
                 "error": {
                     "NOT_A_GEOPACKAGE": "Le fichier n'es pas un fichier GeoPackage",
-                    "GEOPACKAGE_NO_FEATURES": "Le fichier GeoPackage ne contient pas de zones correspondantes.",
-                    "USER_DEF_AREA_NAME_EXISTS": "Une zone avec ce nom existe déjà."
+                    "GEOPACKAGE_NO_FEATURES": "Le fichier GeoPackage ne contient pas de zones correspondantes."
                 }
             },
             "rename": {

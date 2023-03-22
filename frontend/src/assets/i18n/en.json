@@ -231,9 +231,6 @@
                     "placeholder": "My area 1",
                     "save": "Save",
                     "close": "Close"
-                },
-                "error": {
-                    "USER_DEF_AREA_NAME_EXISTS" : "<p>You have already saved an area by the name <em>\"{{ areaName }}\".</em></p><p>Delete or rename the previously saved area, or choose another name, and try again.</p>"
                 }
             },
             "upload": {
@@ -251,8 +248,7 @@
                 },
                 "error": {
                     "NOT_A_GEOPACKAGE": "The chosen file is not a GeoPackage",
-                    "GEOPACKAGE_NO_FEATURES": "GeoPackage does not contain any areas.",
-                    "USER_DEF_AREA_NAME_EXISTS": "An area with this name already exists."
+                    "GEOPACKAGE_NO_FEATURES": "GeoPackage does not contain any areas."
                 }
             },
             "rename": {
