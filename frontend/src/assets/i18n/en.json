@@ -32,6 +32,16 @@
                 "confirm": "Reset"
             }
         },
+        "split-area": {
+            "modal": {
+                "header": "Differential zoning tool",
+                "message": "Select which slices to save as new areas.",
+                "message-single": "Confirm saving this slice as a new area.",
+                "confirm": "Save selected areas",
+                "confirm-single": "Save to \"User-created Areas\"",
+                "meta-description": "Will be named:"
+            }
+        },
         "editor": {
             "title": "Scenarios",
             "operation": {

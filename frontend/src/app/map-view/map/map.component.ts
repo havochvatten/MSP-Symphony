@@ -29,6 +29,11 @@ import AreaLayer from '@src/app/map-view/map/layers/area-layer';
 import { Extent } from 'ol/extent';
 import { DataLayerService } from '@src/app/map-view/map/layers/data-layer.service';
 import { isEqual } from "lodash";
+import { dieCutPolygons } from "@shared/turf-helper/turf-helper";
+import { SelectIntersectionComponent } from "@shared/select-intersection/select-intersection.component";
+import { MultiPolygon, Polygon as OLPolygon } from "ol/geom";
+import GeoJSON from "ol/format/GeoJSON";
+import { Geometry } from "geojson";
 
 @Component({
   selector: 'app-map',
@@ -58,6 +63,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private scenarioLayer!: ScenarioLayer;
 
   public baselineName = '';
+  private geoJson?: GeoJSON;
 
   constructor(
     private store: Store<State>,
@@ -161,11 +167,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     });
     this.resultLayerGroup = new ResultLayerGroup();
     this.map.addLayer(this.resultLayerGroup);
+    this.geoJson = new GeoJSON({
+      featureProjection: this.map.getView().getProjection()
+    });
 
     this.scenarioLayer = new ScenarioLayer(this.scenarioService, this.map.getView().getProjection().getCode(), this.store);
 
-    this.areaLayer = new AreaLayer(this.map, this.dispatchSelectionUpdate, this.zoomToExtent, this.onDrawEnd,
-      this.scenarioLayer, this.translateService); // Will add itself to the map
+    this.areaLayer = new AreaLayer(this.map, this.dispatchSelectionUpdate, this.zoomToExtent, this.onDrawEnd, this.onSplitClick,
+      this.scenarioLayer, this.translateService, this.geoJson); // Will add itself to the map
     this.map.addLayer(this.areaLayer);
 
     this.map.addLayer(this.scenarioLayer);
@@ -223,6 +232,58 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }
   };
 
+  // Alt key + select area interaction
+  onSplitClick = async (feature: Feature, prevFeature: Feature) => {
+    const diff = dieCutPolygons(feature, prevFeature), prevName = prevFeature.get('name');
+    if(diff.length > 0) {
+      const areaConf = diff.map( (p, ix) =>
+        { return {
+          polygon: this.convert6326(p),
+          metaDescription: '« ' +  areaSliceName(prevName, ix) + ' »'};
+        }),
+
+        polygonsToSave = await this.dialogService.open(SelectIntersectionComponent, this.moduleRef, {
+          data: {
+            areas: areaConf,
+            multi: true,
+            projection: 'EPSG:4326',
+            reprojection: 'EPSG:3857',
+            headerTextKey: 'map.split-area.modal.header',
+            messageTextKey: diff.length > 1 ? 'map.split-area.modal.message' : 'map.split-area.modal.message-single',
+            confirmTextKey: diff.length > 1 ? 'map.split-area.modal.confirm' : 'map.split-area.modal.confirm-single',
+            metaDescriptionTextKey: 'map.split-area.modal.meta-description'
+          }
+        }) as boolean[];
+
+      polygonsToSave.forEach((p, ix) => {
+        if(p) {
+          const gtype = areaConf[ix].polygon.type,
+            transformed = gtype === 'MultiPolygon' ?
+              new MultiPolygon((areaConf[ix].polygon as any).coordinates) :
+              new OLPolygon((areaConf[ix].polygon as any).coordinates);
+          transformed.transform('EPSG:3857', 'EPSG:4326');
+
+          this.store.dispatch(AreaActions.createUserDefinedArea({
+            name: areaSliceName(prevFeature.get('name'), ix),
+            polygon: {
+              type: gtype,
+              coordinates: transformed.getCoordinates()
+            },
+            description: ''
+          }));
+        }
+      });
+    }
+  }
+
+  // The virtual transform methods on OpenLayers Geometry subclasses
+  // apparently does not support the EPSG:6326 projection used by turfjs
+  convert6326(polygon: Polygon): Geometry {
+    return this.geoJson!.writeGeometryObject(
+      this.geoJson!.readGeometry(polygon, { featureProjection: 'EPSG:4326', dataProjection: 'EPSG:6326'}),
+      { featureProjection: 'EPSG:4326'})
+  }
+
   public zoomIn() {
     this.setZoom(this.map!.getView()!.getZoom()! + 1);
   };
@@ -261,4 +322,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.bandLayer?.toggleImageSmoothing();
     this.layerAliasing = this.resultLayerGroup.antialias;
   }
+}
+
+function areaSliceName(areaName: string, index: number): string {
+  return areaName + ' slice - ' + (index + 1);
 }

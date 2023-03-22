@@ -18,7 +18,7 @@ import { Subscription } from "rxjs";
 import { MatSelect } from "@angular/material/select";
 import {
   SelectIntersectionComponent
-} from "@src/app/map-view/scenario/select-intersection/select-intersection.component";
+} from "@src/app/shared/select-intersection/select-intersection.component";
 import { Scenario } from "@data/scenario/scenario.interfaces";
 
 type MatrixOption = 'STANDARD' | 'CUSTOM' | 'OPTIONAL';
@@ -73,7 +73,17 @@ export class MatrixSelectionComponent implements OnDestroy {
         } else if(data.overlap.length > 0) {
           const selectedArea = await this.dialogService.open(SelectIntersectionComponent, this.moduleRef, {
             data: {
-              overlap: data.overlap
+              areas: data.overlap.map(overlap => {
+                return {
+                  polygon: overlap.polygon,
+                  metaDescription: overlap.defaultMatrix.name
+                }
+              }),
+              multi: false,
+              headerTextKey: 'map.editor.select-intersection.header',
+              messageTextKey: 'map.editor.select-intersection.message',
+              confirmTextKey: 'map.editor.select-intersection.confirm-selection',
+              metaDescriptionTextKey: 'map.editor.select-intersection.default-matrix'
             }
           }) as number;
           if(selectedArea in data.overlap) {

@@ -1,4 +1,4 @@
-@import '/src/styles/hav-colors';
+@import 'src/styles/hav-colors';
 
 :host {
   display: flex;
@@ -38,7 +38,7 @@
           height: 256px;
         }
 
-        .matrix-cpl-label {
+        .meta-cpl-label {
           display: inline-block;
           font-size: 1.3rem;
           margin-top: 0.5rem;
@@ -58,14 +58,20 @@
           font-size: 1.1rem;
         }
 
-        ::ng-deep mat-radio-button {
+        ::ng-deep mat-radio-button,
+        ::ng-deep mat-checkbox {
           position: absolute;
           top: 1.3rem;
           left: 1rem;
 
-          .mat-radio-label {
+          .mat-radio-label, .mat-checkbox-label {
             width: unset;
           }
+        }
+
+        ::ng-deep mat-checkbox {
+          top: 1.7rem;
+          left: 1.7rem;
         }
 
         &:hover {

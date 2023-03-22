@@ -32,6 +32,16 @@
                 "confirm": "Réinitialiser"
             }
         },
+        "split-area": {
+            "modal": {
+                "header": "Outil de zonage différentiel",
+                "message": "Sélectionnez les sections à enregistrer en tant que nouvelles zones.",
+                "message-single": "Confirmez pour enregistrer cette section en tant que nouvelle région.",
+                "confirm": "Enregistrer les zones sélectionnées",
+                "confirm-single": "Enregistré cette section",
+                "meta-description": "Enregistré comme:"
+            }
+        },
         "editor": {
             "title": "Scénarios",
             "operation": {

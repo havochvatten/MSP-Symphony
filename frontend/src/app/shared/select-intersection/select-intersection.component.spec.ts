@@ -25,7 +25,7 @@ describe('SelectIntersectionComponent', () => {
           provide: DialogConfig,
           useValue: {
             data: {
-              overlap: []
+              areas: [],
             }
           }
         }

@@ -32,6 +32,16 @@
                 "confirm": "Återställ"
             }
         },
+        "split-area": {
+            "modal": {
+                "header": "Differentiell områdesindelning",
+                "message": "Markera de områden från det aktuella utsnittet som skall sparas som nya områden.",
+                "message-single": "Bekräfta att utsnittet skall sparas som ett nytt område.",
+                "confirm": "Spara markerade områden",
+                "confirm-single": "Spara till mina områden",
+                "meta-description": "Sparas som:"
+            }
+        },
         "editor": {
             "title": "Scenarion",
             "operation": {

@@ -94,15 +94,17 @@ class AreaLayer extends VectorLayer<VectorSource> {
   private drawInteractionActive = false;
   private boundaryLayer: VectorLayer<VectorSource>;
   private boundaries?: FeatureLike[];
-  private geoJson: GeoJSON;
+  private previousSelectedFeature?: Feature;
 
   constructor(
     private map: OLMap,
     private setSelection: (feature?: Feature) => void,
     private zoomToExtent: (extent: Extent, duration: number) => void,
     onDrawEnd = (polygon: Polygon) => {},
+    onSplitClick = (feature: Feature, prevFeature: Feature) => {},
     private scenarioLayer: ScenarioLayer,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private geoJson: GeoJSON
   ) {
     super({
       source: new VectorSource({ format: new GeoJSON() }),
@@ -120,9 +122,7 @@ class AreaLayer extends VectorLayer<VectorSource> {
       this.checkDrawCondition,
       onDrawEnd
     );
-    this.geoJson = new GeoJSON({
-      featureProjection: map.getView().getProjection()
-    });
+
 
     this.onClickInteraction = new (class extends Select {
       constructor(that: AreaLayer) {
@@ -154,8 +154,14 @@ class AreaLayer extends VectorLayer<VectorSource> {
         });
         this.on('select', event => {
           const feature = event.selected[0];
-          if (feature !== undefined) console.log('dispatching selection ' + feature.get('id'));
-          that.setSelection(feature);
+          if(event.mapBrowserEvent.originalEvent.altKey && that.previousSelectedFeature && feature) {
+            onSplitClick(feature, that.previousSelectedFeature);
+          }
+          if (feature !== undefined) {
+            console.log('dispatching selection ' + feature.get('id'))
+            that.previousSelectedFeature = feature;
+          }
+          that.setSelection(feature)
         });
       }
     })(this);
