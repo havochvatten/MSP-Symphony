@@ -5,6 +5,7 @@ import { MainViewComponent } from './map-view/main-view.component';
 import { environment } from "@src/environments/environment.prod";
 import { ComparisonReportComponent } from './report/comparison-report.component';
 import { CalculationReportComponent } from './report/calculation-report.component';
+import { LoginComponent } from "@src/app/login/login.component";
 
 const routes: Routes = [
   {
