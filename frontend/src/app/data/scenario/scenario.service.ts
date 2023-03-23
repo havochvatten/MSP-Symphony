@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Store } from '@ngrx/store';
 import { environment as env } from '@src/environments/environment';
-import { State } from '../../app-reducer';
 import { Scenario } from "@data/scenario/scenario.interfaces";
 import { Baseline } from "@data/user/user.interfaces";
 import { NormalizationOptions } from "@data/calculation/calculation.service";

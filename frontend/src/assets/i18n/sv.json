@@ -77,9 +77,25 @@
                 "table": {
                     "edit-name": "Redigera",
                     "delete": "Radera matris",
-                    "cancel": "Avbryt",
+                    "close": "Stäng",
                     "save": "Spara matris",
-                    "save-as": "Spara som ny matris"
+                    "save-as": "Spara som ny matris",
+                    "name-exists": "Kan ej spara.\nMatrisnamnet (\"{{ takenName }}\") finns redan.",
+                    "immutable-note": "Matrisen \"{{ immutableName }}\" är skrivskyddad.",
+                    "save-as-tip": "Ändra matrisnamnet för att göra det möjligt att spara som ny.",
+                    "confirm-delete": {
+                        "header": "Radera matris",
+                        "message": "Bekräfta borttagning av känslighetsmatrisen \"{{ matrixToDelete }}\".<br>Åtgärden kan inte ångras.",
+                        "confirm": "Radera"
+                    },
+                    "changes": {
+                        "header": "Spara förändrad matris",
+                        "message": "Vill du spara eller förkasta ändringarna i matrisen \"{{ matrixName }}\"{{ newNotice }}?",
+                        "immutable-message": "Matrisen innehåller osparade ändringar.<br>Vill du spara matrisen som \"{{ suggestedName }}\", eller förkasta ändringarna?",
+                        "new-notice": "(skapar ny matris)",
+                        "save": "Spara",
+                        "abandon": "Förkasta"
+                    }
                 }
             },
             "normalization": {
@@ -196,7 +212,9 @@
             "base-scenario": "Grundscenario",
             "what-if-scenario": "What-if scenario",
             "choose-scenario": "Välj scenario",
-            "choose-base-scenario-first": "Välj grundscenario först"
+            "choose-base-scenario-first": "Välj grundscenario först",
+            "base-scenario-suggestion": "(vanligtvis basvärdeanalysen)",
+            "what-if-scenario-suggestion": "(vanligtvis den prognostiserade analysen)"
         },
         "user-area": {
             "create": {
@@ -208,7 +226,7 @@
                     "close": "Avbryt"
                 },
                 "error": {
-                    "USER_DEF_AREA_NAME_EXISTS" : "Du har redan sparat ett område med namnet <em>{{ areaName }}</em>.\n\nTag bort eller byt namn på det tidigare sparade området, eller välj ett annat namn och försök igen."
+                    "USER_DEF_AREA_NAME_EXISTS" : "<p>Du har redan sparat ett område med namnet <em>\"{{ areaName }}\".</em></p><p>Tag bort eller byt namn på det tidigare sparade området, eller välj ett annat namn och försök igen.</p>"
                 }
             },
             "upload": {
@@ -217,8 +235,9 @@
                     "title": "Importera område",
                     "fileformat-note": "Filer i <a href='https://www.geopackage.org/' target='_blank'>OGC GeoPackage</a>-format stöds.",
                     "notice": {
-                        "WGS84-reprojection": "Områdets koordinater kommer att projiceras om till <em>EPSG:4326 (WGS 84)",
-                        "first-area-only": "GeoPackage-arkivet innehåller flera lager. Endast <em>{{ firstFeature }}</em> kommer att importeras!"
+                        "WGS84-reprojection": "Importerade koordinater kommer att projiceras om till <em>EPSG:4326 (WGS 84)",
+                        "multi-layer-pre": "GeoPackage-arkivet innehåller dessa lager:",
+                        "multi-layer-all": "Samtliga lager kommer att importeras som separata områden."
                     },
                     "import": "Bekräfta import",
                     "cancel": "Avbryt"
@@ -244,7 +263,8 @@
             "delete": {
                 "label": "Radera",
                 "modal": {
-                    "title": "Är du säker på att du vill radera",
+                    "title": "Bekräfta radera område",
+                    "message": "Är du säker på att du vill radera området<br>&laquo;&nbsp;{{ userAreaName }}&nbsp;&raquo;&nbsp;?",
                     "delete": "Radera",
                     "close": "Avbryt"
                 }
@@ -281,6 +301,10 @@
         "SUCCESS": "Processen lyckades",
         "ERROR": "Ett fel inträffade",
         "WARNING": "Långsam process"
+    },
+    "confirmation-modal": {
+        "cancel": "Avbryt",
+        "confirm": "OK"
     },
     "report": {
         "calculation": {
@@ -361,10 +385,15 @@
         "fetching-report": "Hämtar rapport",
         "error-message": "Ett fel inträffade. Det finns ingen rapport att visa för tillfället – var god testa att göra en ny beräkning."
     },
-    "hav-components": {
-        "select": {
-            "search": "Sök"
+    "footer": "Havs och Vattenmyndigheten",
+    "api-messages": {
+        "areas": {
+            "import-success" : {
+                "title": "Importen lyckades",
+                "message-single" : "Importerat område: \"{{ topLayerName }}\"",
+                "message-multi" : "Importerade {{ layersCount }} områden."
+            }
+
         }
-    },
-    "footer": "Havs och Vattenmyndigheten"
+    }
 }

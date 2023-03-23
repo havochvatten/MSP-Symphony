@@ -11,7 +11,6 @@ import {
   fetchAreaMatricesSuccess
 } from '@data/scenario/scenario.actions';
 import { isEqual } from 'lodash';
-import { Scenario } from "@data/scenario/scenario.interfaces";
 
 export const initialState: ScenarioInterfaces.State = {
   scenarios: [],
@@ -116,14 +115,11 @@ export const scenarioReducer = createReducer(
             updateIn(
             state.scenarios,
             [state.active, 'changes', 'features', featureIndex, 'properties', 'changes', bandId],
-            change => {
-              return {
-                  change,
+            change => ({
                   type: componentType,
                   band,
                   [attribute]: value
-                };
-            }) : state.scenarios,
+                })) : state.scenarios,
           activeFeature: featureIndex
         };
     }

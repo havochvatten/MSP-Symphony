@@ -19,6 +19,10 @@ export class ImpactTableComponent {
   }
 
   formatPercentage(value: number, ersatz: string, relative: boolean) {
-    return isNaN(value) ? "" : formatPercentage(value / 100, 2, this.locale, ersatz, relative);
+    return isNaN(value) ? "" : formatPercentage(value / (this.isComparative() ? 1 : 100), 2, this.locale, ersatz, relative);
+  }
+
+  isComparative(): boolean {
+    return this.scenarioImpacts.length > 2;
   }
 }

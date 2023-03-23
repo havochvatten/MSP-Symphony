@@ -34,15 +34,27 @@
   }
 
   article {
-    h3>mat-spinner {
-      float: right;
-      width: 42px !important;
-      height: 42px !important;
+    h3 {
+      margin-bottom: 0;
 
-      ::ng-deep svg {
+      mat-spinner {
+        float: right;
         width: 42px !important;
         height: 42px !important;
+
+        ::ng-deep svg {
+          width: 42px !important;
+          height: 42px !important;
+        }
       }
+    }
+
+    span.suggestion {
+      display: inline-block;
+      margin: 0.5rem 0 1rem;
+      font-size: 13px;
+      font-style: oblique;
+      color: $darker-gray;
     }
   }
 

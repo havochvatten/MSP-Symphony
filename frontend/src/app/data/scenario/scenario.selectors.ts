@@ -1,7 +1,6 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store";
 import { State as AppState } from "@src/app/app-reducer";
 import { State } from "@data/scenario/scenario.interfaces";
-import { selectAreaState } from "@data/area/area.selectors";
 
 export const selectScenarioState = createFeatureSelector<AppState, State>('scenario');
 

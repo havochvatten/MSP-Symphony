@@ -1,4 +1,4 @@
-import { Component, Injectable, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { DecimalPipe } from "@angular/common";
 import { formatPercentage } from "@data/calculation/calculation.util";
 

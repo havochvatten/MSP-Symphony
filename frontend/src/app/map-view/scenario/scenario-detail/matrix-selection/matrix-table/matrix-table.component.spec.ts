@@ -26,7 +26,8 @@ describe('MatrixTableComponent', () => {
           useValue: {
             data: {
               matrixData: {
-                name: ''
+                name: '',
+                sensMatrix: { rows: [] }
               }
             }
           }

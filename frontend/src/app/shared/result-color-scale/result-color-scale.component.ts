@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
 import { LegendColor } from '@data/calculation/calculation.interfaces';
-import { Language } from "@src/app/app-translation-setup.module";
 
 @Component({
   selector: 'app-result-color-scale',

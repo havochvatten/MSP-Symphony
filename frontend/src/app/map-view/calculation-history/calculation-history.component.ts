@@ -13,9 +13,8 @@ import { UserSelectors } from "@data/user";
 import { Baseline } from "@data/user/user.interfaces";
 import { CalculationReportModalComponent } from "@shared/report-modal/calculation-report-modal.component";
 import { HttpErrorResponse } from "@angular/common/http";
-import {
-  DeleteCalculationConfirmationDialogComponent
-} from "@src/app/map-view/calculation-history/delete-calculation-confirmation-dialog/delete-calculation-confirmation-dialog.component";
+import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
   selector: 'app-history',
@@ -35,6 +34,7 @@ export class CalculationHistoryComponent {
     private store: Store<State>,
     private calcService: CalculationService,
     private dialogService: DialogService,
+    private translateService: TranslateService,
     private moduleRef: NgModuleRef<any>
   ) {
     this.store.dispatch(CalculationActions.fetchCalculations());
@@ -82,8 +82,16 @@ export class CalculationHistoryComponent {
   }
 
   async confirmDelete(calculation: CalculationSlice) {
-    const deletionConfirmed = await this.dialogService.open(DeleteCalculationConfirmationDialogComponent, this.moduleRef,
-                          { data: { calculationName: calculation.name } });
+
+    const deletionConfirmed = await this.dialogService.open(ConfirmationModalComponent, this.moduleRef,
+      { data: {
+                header: this.translateService.instant('map.history.delete-modal.header'),
+                message: this.translateService.instant('map.history.delete-modal.message', { calculationName: calculation.name }),
+                confirmText: this.translateService.instant('map.history.delete-modal.confirm'),
+                confirmColor: 'warn',
+                buttonsClass: 'right'
+              }
+            });
 
     if (deletionConfirmed) {
       await this.store.dispatch(CalculationActions.deleteCalculation({

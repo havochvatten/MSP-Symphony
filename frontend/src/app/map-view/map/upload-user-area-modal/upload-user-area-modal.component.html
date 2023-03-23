@@ -14,12 +14,16 @@
     <p [innerHTML]="'map.user-area.upload.modal.notice.WGS84-reprojection' | translate"></p>
   </div>
 
-  <div *ngIf="packageHasMultipleFeatures" class="notice">
-    <app-icon iconType="info-circle"></app-icon>
-    <p [innerHTML]="'map.user-area.upload.modal.notice.first-area-only' | translate: {
-    firstFeature: firstFeatureId
-    }"></p>
-  </div>
+  <ng-container *ngIf="packageHasMultipleFeatures">
+    <div class="notice">
+      <app-icon iconType="info-circle"></app-icon>
+      <p [innerHTML]="'map.user-area.upload.modal.notice.multi-layer-pre' | translate"></p>
+    </div>
+      <ul class="layer-list">
+        <li *ngFor="let layerName of uploadedArea.featureIdentifiers">{{ layerName }}</li>
+      </ul>
+      <p class="import-all" [innerHTML]="'map.user-area.upload.modal.notice.multi-layer-all' | translate"></p>
+  </ng-container>
 
   <div *ngIf="inspectionError" class="notice error">
     <app-icon iconType="info-circle"></app-icon>
@@ -28,7 +32,7 @@
 </ng-container>
 
 <div id="toolbar">
-  <button mat-flat-button color="warn" (click)="cancel()">{{
+  <button mat-flat-button [ngClass]="'secondary'" (click)="cancel()">{{
     'map.user-area.upload.modal.cancel' | translate
   }}</button>
   <button mat-flat-button (click)="confirmImport()" [disabled]="!uploadedArea">{{

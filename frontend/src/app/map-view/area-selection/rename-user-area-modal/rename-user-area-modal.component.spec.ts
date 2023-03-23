@@ -4,7 +4,6 @@ import { DialogRef } from '@src/app/shared/dialog/dialog-ref';
 import { DialogConfig } from '@src/app/shared/dialog/dialog-config';
 
 import { RenameUserAreaModalComponent } from './rename-user-area-modal.component';
-import { formatPrefix } from "d3";
 
 describe('RenameUserAreaModalComponent', () => {
   let fixture: ComponentFixture<RenameUserAreaModalComponent>,

@@ -6,7 +6,6 @@ import { MetadataActions } from '@data/metadata';
 import { Observable } from 'rxjs';
 import { AreaSelectors } from '@data/area';
 import { Area } from '@data/area/area.interfaces';
-import { map } from 'lodash';
 
 //=== SEARCH UTILITIES ===
 

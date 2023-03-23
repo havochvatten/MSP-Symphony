@@ -21,10 +21,11 @@ import { debounceTime, filter, take, tap } from 'rxjs/operators';
 import { GeoJSONFeature } from 'ol/format/GeoJSON';
 import { fetchAreaMatrices } from '@data/scenario/scenario.actions';
 import { AreaSelectors } from '@data/area';
-import { DeleteScenarioConfirmationDialogComponent } from '@src/app/map-view/scenario/scenario-detail/delete-scenario-confirmation-dialog/delete-scenario-confirmation-dialog.component';
+import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 import { Feature } from 'geojson';
 import { FormControl, Validators } from '@angular/forms';
 import { OperationParams } from '@data/calculation/calculation.interfaces';
+import { TranslateService } from "@ngx-translate/core";
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 
@@ -60,6 +61,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     private store: Store<State>,
     private calcService: CalculationService,
     private dialogService: DialogService,
+    private translateService: TranslateService,
     private moduleRef: NgModuleRef<any>
   ) {
     // https://stackoverflow.com/questions/59684733/how-to-access-previous-state-and-current-state-and-compare-them-when-you-subscri
@@ -219,9 +221,15 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   }
 
   async delete() {
-    const confirmation = await this.dialogService.open<boolean>(DeleteScenarioConfirmationDialogComponent, this.moduleRef, {
-      data: { name: this.scenario.name }
-    });
+    const confirmation = await this.dialogService.open<boolean>(
+      ConfirmationModalComponent, this.moduleRef,
+      { data: {
+                header: `${ this.translateService.instant('map.editor.delete.modal.title') } &laquo;&nbsp;${ this.scenario.name }&nbsp;&raquo;`,
+                confirmText: this.translateService.instant('map.editor.delete.modal.delete'),
+                confirmColor: 'warn',
+                dialogClass: 'center'
+              }
+            });
     if (confirmation)
       this.store.dispatch(ScenarioActions.deleteScenario({
         scenarioToBeDeleted: this.scenario

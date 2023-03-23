@@ -25,9 +25,6 @@ import { CreateUserAreaModalComponent } from './map/create-user-area-modal/creat
 import {
   RenameUserAreaModalComponent
 } from './area-selection/rename-user-area-modal/rename-user-area-modal.component';
-import {
-  DeleteUserAreaConfirmationDialogComponent
-} from './area-selection/delete-user-area-confirmation-dialog/delete-user-area-confirmation-dialog.component';
 import { CheckboxAccordionComponent } from './band-selection/checkbox-accordion/checkbox-accordion.component';
 import {
   MatrixTableComponent
@@ -35,13 +32,10 @@ import {
 import { FormsModule } from "@angular/forms";
 import { UploadUserAreaModalComponent } from "@src/app/map-view/map/upload-user-area-modal/upload-user-area-modal.component";
 import { ScenarioEditorModule } from "@src/app/map-view/scenario/scenario-editor.module";
-import {
-  DeleteScenarioConfirmationDialogComponent
-} from "@src/app/map-view/scenario/scenario-detail/delete-scenario-confirmation-dialog/delete-scenario-confirmation-dialog.component";
 import { ConfirmResetComponent } from './confirm-reset/confirm-reset.component';
 import { MetaInfoComponent } from './meta-info/meta-info.component';
 import { AnchorPipe } from "@shared/anchor.pipe";
-import { DeleteCalculationConfirmationDialogComponent } from './calculation-history/delete-calculation-confirmation-dialog/delete-calculation-confirmation-dialog.component';
+import { DialogService } from "@shared/dialog/dialog.service";
 
 @NgModule({
   declarations: [
@@ -63,13 +57,10 @@ import { DeleteCalculationConfirmationDialogComponent } from './calculation-hist
     CreateUserAreaModalComponent,
     UploadUserAreaModalComponent,
     RenameUserAreaModalComponent,
-    DeleteUserAreaConfirmationDialogComponent,
-    DeleteScenarioConfirmationDialogComponent,
     CheckboxAccordionComponent,
     MatrixTableComponent,
     ConfirmResetComponent,
     MetaInfoComponent,
-    DeleteCalculationConfirmationDialogComponent,
   ],
     imports: [
         SharedModule,
@@ -81,7 +72,7 @@ import { DeleteCalculationConfirmationDialogComponent } from './calculation-hist
         MatCheckboxModule,
         MatButtonModule
     ],
-  providers: [AnchorPipe],
+  providers: [AnchorPipe, DialogService],
   exports: [MainViewComponent]
 })
 export class MapViewModule {}

@@ -1,0 +1,40 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 4px;
+  padding: 2rem;
+  width: 36rem;
+
+  &.center {
+    text-align: center;
+
+    .buttonPane {
+      justify-content: center;
+    }
+  }
+
+  h4 {
+    font-weight: 600;
+    font-size: 2rem;
+    margin: 0;
+
+    &.no-message {
+      margin: 0 0 2rem;
+    }
+  }
+
+  div.buttonPane {
+      display: flex;
+
+    &.left {
+      -webkit-box-pack: start;
+      justify-content: flex-start;
+    }
+
+    &.right {
+      -webkit-box-pack: end;
+      justify-content: flex-end;
+    }
+  }
+}

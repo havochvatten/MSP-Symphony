@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { ComparisonReport, Report } from "@data/calculation/calculation.interfaces";
 import { environment as env } from "@src/environments/environment";

@@ -40,7 +40,7 @@
           font-weight: 500;
         }
 
-        p {
+        ::ng-deep p {
           margin: 1rem 0 0;
         }
       }

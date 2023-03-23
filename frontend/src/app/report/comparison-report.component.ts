@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { State } from '../app-reducer';
 import { MetadataActions, MetadataSelectors } from '@data/metadata';
 import { TranslateService } from '@ngx-translate/core';
-import { Report, ComparisonReport, LegendColor, Legend } from '@data/calculation/calculation.interfaces';
+import { Report, ComparisonReport, Legend } from '@data/calculation/calculation.interfaces';
 import { environment as env } from "@src/environments/environment";
 import { HttpClient } from "@angular/common/http";
 import { filter } from "rxjs/operators";

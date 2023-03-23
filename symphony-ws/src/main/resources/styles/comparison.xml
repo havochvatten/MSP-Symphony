@@ -9,21 +9,17 @@ http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd" version="1.0.0">
 		<Rule>
 		  <RasterSymbolizer>
 			  <ColorMap>
-				  <ColorMapEntry color="#005500" quantity="-0.15"/>
-<!--
-				  <ColorMapEntry color="#000088" quantity="-0.10"/>
--->
-				  <ColorMapEntry color="#00ff00" quantity="-0.05"/>
-				  <ColorMapEntry color="#ccffcc" quantity="-0.01"/>
+				  <ColorMapEntry color="#000080" quantity="-0.45"/>
+				  <ColorMapEntry color="#3399cc" quantity="-0.30"/>
+				  <ColorMapEntry color="#00cc66" quantity="-0.15"/>
+				  <ColorMapEntry color="#66ffcc" quantity="-0.05"/>
+				  <ColorMapEntry color="#ccffff" quantity="-0.01"/>
 				  <ColorMapEntry color="#ffffff" quantity="0.0"/>
-				  <ColorMapEntry color="#ffcccc" quantity="0.01"/>
-				  <ColorMapEntry color="#ff0000" quantity="0.05"/>
-<!--
-				  <ColorMapEntry color="#999999" quantity="0.10"/>
-				  <ColorMapEntry color="#666666" quantity="0.15"/>
-				  <ColorMapEntry color="#333333" quantity="0.20"/>
--->
-				  <ColorMapEntry color="#550000" quantity="0.25"/>
+				  <ColorMapEntry color="#ffffcc" quantity="0.01"/>
+				  <ColorMapEntry color="#ffcc66" quantity="0.05"/>
+				  <ColorMapEntry color="#ff6600" quantity="0.15"/>
+				  <ColorMapEntry color="#cc0000" quantity="0.30"/>
+				  <ColorMapEntry color="#800000" quantity="0.45"/>
 			  </ColorMap>
 		  </RasterSymbolizer>
 		</Rule>

@@ -5,7 +5,7 @@ import {
   StatePath,
   UserArea,
   AreaGroup,
-  Area
+  Area, AreaImport
 } from '@data/area/area.interfaces';
 import { filterNationalAreas, filterUserAreas } from './area-selection.util';
 import { Store } from '@ngrx/store';
@@ -13,14 +13,14 @@ import { State } from '@src/app/app-reducer';
 import { AreaActions, AreaSelectors } from '@data/area';
 import { DialogService } from '@src/app/shared/dialog/dialog.service';
 import { RenameUserAreaModalComponent } from './rename-user-area-modal/rename-user-area-modal.component';
-import { DeleteUserAreaConfirmationDialogComponent } from './delete-user-area-confirmation-dialog/delete-user-area-confirmation-dialog.component';
+import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 import { Observable } from 'rxjs';
 import {
   UploadUserAreaModalComponent
 } from "@src/app/map-view/map/upload-user-area-modal/upload-user-area-modal.component";
 import { MessageActions } from "@data/message";
 import * as uuid from "uuid/v4";
-import { createFeature } from "@data/area/area.effects";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
   selector: 'app-area-selection',
@@ -42,6 +42,7 @@ export class AreaSelectionComponent implements OnChanges {
   constructor(
     private store: Store<State>,
     private dialogService: DialogService,
+    private translateService: TranslateService,
     private moduleRef: NgModuleRef<any>
   ) {
     this.selectedArea$ = this.store.select(AreaSelectors.selectSelectedArea);
@@ -90,10 +91,20 @@ export class AreaSelectionComponent implements OnChanges {
   };
 
   deleteUserArea = async (userAreaId: number, userAreaName: string) => {
-    const deleteArea = await this.dialogService.open(DeleteUserAreaConfirmationDialogComponent, this.moduleRef, {
-      data: { areaName: userAreaName }
-    });
-    if (typeof deleteArea === 'boolean' && deleteArea) {
+
+    const deleteArea = await this.dialogService.open<boolean>(
+      ConfirmationModalComponent, this.moduleRef, {
+        data: {
+          header: this.translateService.instant('map.user-area.delete.modal.title'),
+          message: this.translateService.instant('map.user-area.delete.modal.message', { userAreaName }),
+          confirmText: this.translateService.instant('map.user-area.delete.modal.delete'),
+          confirmColor: 'warn',
+          cancelClass: 'primary',
+          dialogClass: 'center'
+        }
+      });
+
+    if (deleteArea) {
       this.store.dispatch(AreaActions.deleteUserDefinedArea({ userAreaId }));
     }
   };
@@ -104,21 +115,18 @@ export class AreaSelectionComponent implements OnChanges {
     });
 
     if (result) {
-      const importedArea = result as UserArea;
-      const statePath = ['userArea', importedArea.id as number];
-      this.store.dispatch(AreaActions.createUserDefinedAreaSuccess({ userArea: {
-        ...importedArea,
-        visible: true,
-        displayName: importedArea.name,
-        statePath,
-        feature: createFeature(importedArea.name, importedArea.name, importedArea.name,
-          statePath, importedArea.polygon)
-        } }));
+      this.store.dispatch(AreaActions.fetchUserDefinedAreas());
+      const areaImport = result as AreaImport;
+
       this.store.dispatch(MessageActions.addPopupMessage({
         message: {
           type: 'SUCCESS',
-          title: 'Import successful',
-          message: `Import of area ${importedArea.name} successful.`,
+          title: this.translateService.instant('api-messages.areas.import-success.title'),
+          message: this.translateService.instant(
+            (areaImport.areaNames.length > 1 ?
+              'api-messages.areas.import-success.message-multi' :
+              'api-messages.areas.import-success.message-single'),
+            { topLayerName: areaImport.areaNames[0], layersCount: areaImport.areaNames.length }),
           uuid: uuid()
         }
       }));

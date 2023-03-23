@@ -1,5 +1,5 @@
-import { BandChange, BandType } from "@data/metadata/metadata.interfaces";
-import { GeoJSONFeature, GeoJSONFeatureCollection, GeoJSONGeometry } from "ol/format/GeoJSON";
+import { BandChange } from "@data/metadata/metadata.interfaces";
+import { GeoJSONFeature, GeoJSONFeatureCollection } from "ol/format/GeoJSON";
 import { NormalizationOptions } from "@data/calculation/calculation.service";
 import { MatrixParameters } from "@src/app/map-view/scenario/scenario-detail/matrix-selection/matrix.interfaces";
 

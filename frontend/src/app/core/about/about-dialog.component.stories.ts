@@ -1,5 +1,5 @@
 import { storiesOf, moduleMetadata } from '@storybook/angular';
-import { withKnobs, text } from '@storybook/addon-knobs';
+import { withKnobs } from '@storybook/addon-knobs';
 import { AboutDialogComponent } from "@src/app/core/about/about-dialog.component";
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { DialogRef } from "@shared/dialog/dialog-ref";
