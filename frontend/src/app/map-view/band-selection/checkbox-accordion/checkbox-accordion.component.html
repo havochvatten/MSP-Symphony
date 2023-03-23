@@ -1,14 +1,13 @@
 <!-- FIXME open if child bands has changes -->
 <app-accordion-box [open]="open || (searching && bands.length > 0)" [toggle]="toggle">
   <app-accordion-box-header>
-    <hav-checkbox
+    <mat-checkbox
       *ngIf="title"
-      [label]="title"
       [checked]="checked !== undefined ? checked : allBoxesAreChecked"
       [disabled]="!selectedArea"
-      (check)="checked === undefined ? updateAll() : onChange($event, title)"
+      (change)="checked === undefined ? updateAll() : onChange($event, title)"
       checkboxSize="small"
-    ></hav-checkbox>
+    >{{ title }}</mat-checkbox>
   </app-accordion-box-header>
   <app-accordion-box-content>
     <ul>

@@ -1,5 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component } from '@angular/core';
 import { Scenario } from "@data/scenario/scenario.interfaces";
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";

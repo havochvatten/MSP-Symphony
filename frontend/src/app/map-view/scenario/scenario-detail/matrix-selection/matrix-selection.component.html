@@ -1,83 +1,77 @@
 <div class="loading" *ngIf="!loaded">
-  <hav-spinner spinnerSize="medium"></hav-spinner>
+  <mat-spinner diameter="30"></mat-spinner>
   <h4>{{ 'map.editor.fetching-matrices' | translate}}</h4>
 </div>
 
 <section *ngIf="loaded">
-  <hav-radio-button
-    radioButtonSize="medium"
-    [label]="standardLabel"
+  <mat-radio-button
     [checked]="matrixOption === 'STANDARD'"
-    (check)="check('STANDARD', null)"
-  >
-  </hav-radio-button>
+    (change)="check('STANDARD', null)"
+  > {{ standardLabel }}
+  </mat-radio-button>
   <section *ngIf="hasOptionalMatrices()">
-    <hav-radio-button
-      radioButtonSize="medium"
-      label="{{'map.editor.matrix.alt-matrix' | translate}}"
+    <mat-radio-button
       [checked]="matrixOption === 'OPTIONAL'"
-      (check)="check('OPTIONAL', altMx)"
-    >
-    </hav-radio-button>
+      (change)="check('OPTIONAL', altMx)"
+    >{{ 'map.editor.matrix.alt-matrix' | translate }}
+    </mat-radio-button>
     <article>
-      <hav-select #altMx
+      <mat-select #altMx
                   [disabled]="matrixOption !== 'OPTIONAL'"
-                  (selectedChanged)="optionalSelect($event)"
-                  [noItemSelectedLabel]="'map.editor.matrix.choose-matrix' | translate">
-        <hav-select-item *ngFor="let matrix of commonOptionalMatrices" [value]="matrix">
+                  [placeholder]="'map.editor.matrix.choose-matrix' | translate"
+                  (valueChange)="optionalSelect($event)" [className]="'tiny'" panelClass="ddPanel tiny mxDrop">
+        <mat-option *ngFor="let matrix of commonOptionalMatrices" [value]="matrix">
           {{ matrix.name }}
-        </hav-select-item>
-      </hav-select>
+        </mat-option>
+      </mat-select>
     </article>
   </section>
   <article *ngIf="hasAreaTypes()">
-    <hav-select [disabled]="matrixOption !== 'STANDARD'"
-                noItemSelectedLabel="{{ 'map.editor.matrix.choose-area-type' | translate }}"
-                (selectedChanged)="areaTypeSelect($event)">
-      <hav-select-item *ngFor="let areaType of areaTypes" [value]="areaType">
+    <mat-select [disabled]="matrixOption !== 'STANDARD'"
+                [placeholder]="'map.editor.matrix.choose-area-type' | translate"
+                (valueChange)="areaTypeSelect($event)" [className]="'tiny'" panelClass="ddPanel tiny mxDrop">
+      <mat-option *ngFor="let areaType of areaTypes" [value]="areaType">
         {{ areaType.name }}
-      </hav-select-item>
-    </hav-select>
+      </mat-option>
+    </mat-select>
 
-    <hav-select #typeMx
+    <mat-select #typeMx
                 *ngIf="hasAreaTypes()" [disabled]="matrixOption !== 'STANDARD' || !selectedAreaType"
-                noItemSelectedLabel="{{ 'map.editor.matrix.choose-area-type-matrix' | translate }}"
-                (selectedChanged)="areaTypeMatrixSelect($event)">
-      <hav-select-item *ngFor="let matrix of areaTypeMatrixOptions" [value]="matrix">
+                [placeholder]="'map.editor.matrix.choose-area-type-matrix' | translate"
+                (valueChange)="areaTypeMatrixSelect($event)" [className]="'tiny'" panelClass="ddPanel tiny mxDrop">
+      <mat-option *ngFor="let matrix of areaTypeMatrixOptions" [value]="matrix">
         {{ matrix.name }}
-      </hav-select-item>
-    </hav-select>
+      </mat-option>
+    </mat-select>
   </article>
 </section>
 
 <section *ngIf="loaded">
-  <hav-radio-button
-    radioButtonSize="medium"
-    label="{{'map.editor.matrix.user-matrix' | translate}}"
+  <mat-radio-button
     [checked]="matrixOption === 'CUSTOM'"
-    (check)="check('CUSTOM', usrMx)"
-  >
-  </hav-radio-button>
+    (change)="check('CUSTOM', usrMx)"
+  >{{ 'map.editor.matrix.user-matrix' | translate }}
+  </mat-radio-button>
   <article>
-    <hav-select #usrMx
+    <mat-select #usrMx
                 [disabled]="matrixOption !== 'CUSTOM'"
-                (selectedChanged)="customSelect($event)"
-                [noItemSelectedLabel]="'map.editor.matrix.choose-matrix' | translate">
-      <hav-select-item *ngFor="let matrix of matrixOptions" [value]="matrix" class="{{ matrix.immutable ? 'locked' : '' }}">
+                [placeholder]="'map.editor.matrix.choose-matrix' | translate"
+                (valueChange)="customSelect($event)" [className]="'tiny'" panelClass="ddPanel tiny mxDrop">
+      <mat-option *ngFor="let matrix of matrixOptions" [value]="matrix" class="{{ matrix.immutable ? 'locked' : '' }}">
         <span>
           {{ matrix.name }}
         </span>
         <app-icon iconType="padlock" *ngIf="matrix.immutable"></app-icon>
-      </hav-select-item>
-    </hav-select>
-    <hav-button
-      buttonType="secondary"
-      [disabled]="matrixOption !== 'CUSTOM'"
+      </mat-option>
+    </mat-select>
+    <button mat-flat-button
+      [ngClass]="'secondary'"
+      [disabled]="matrixOption !== 'CUSTOM' || !(userMatrixSelect?.value)"
       (click)="editMatrix()"
     >
       {{'map.editor.matrix.edit-matrix' | translate}}
-      <hav-spinner *ngIf="loadingMatrix" spinnerSize="small"></hav-spinner>
-    </hav-button>
+      <mat-spinner *ngIf="loadingMatrix" diameter="20"></mat-spinner>
+    </button>
   </article>
 </section>
 

@@ -1,22 +1,29 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { FooterComponent } from './footer.component';
-
-function setUp() {
-  const fixture: ComponentFixture<FooterComponent> = TestBed.createComponent(FooterComponent);
-  const component: FooterComponent = fixture.componentInstance;
-  return { component, fixture };
-}
+import {
+  TranslateModule,
+  TranslateService
+} from "@ngx-translate/core";
 
 describe('FooterComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<FooterComponent>,
+      component: FooterComponent;
+
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [FooterComponent]
+      imports: [ TranslateModule.forRoot() ],
+      providers:[
+        TranslateService,
+      ],
+      declarations: [ FooterComponent ]
     }).compileComponents();
+    fixture = TestBed.createComponent(FooterComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

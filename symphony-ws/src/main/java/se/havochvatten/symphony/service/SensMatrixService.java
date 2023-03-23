@@ -60,7 +60,7 @@ public class SensMatrixService {
 
     public SensMatrixDto createSensMatrix(SensMatrixDto sensMatrixDto, String baseLineName,
 										  Principal principal) throws SymphonyStandardAppException {
-        List<Sensitivity> sensitivities = getEntitySensitivities(sensMatrixDto);
+        List<Sensitivity> sensitivities = getEntitySensitivities(sensMatrixDto, false);
         BaselineVersion baselineVersion = baselineVersionService.getVersionByName(baseLineName);
         SensitivityMatrix sensitivityMatrix = SensMatrixDtoToEntityMapper.mapToEntity(sensMatrixDto,
 				sensitivities, baselineVersion);
@@ -83,7 +83,7 @@ public class SensMatrixService {
         checkMatrixName(sensMatrixDto.getName(), sensMatrixFound.getBaselineVersion().getName(),
 				sensMatrixDto.getId(), principal.getName());
 
-        List<Sensitivity> sensitivities = getEntitySensitivities(sensMatrixDto);
+        List<Sensitivity> sensitivities = getEntitySensitivities(sensMatrixDto, true);
         BaselineVersion baselineVersion =
 				baselineVersionService.getVersionByName(sensMatrixFound.getBaselineVersion().getName());
         SensitivityMatrix sensitivityMatrix = SensMatrixDtoToEntityMapper.mapToEntity(sensMatrixDto,
@@ -106,13 +106,16 @@ public class SensMatrixService {
         em.remove(sensitivityMatrix);
     }
 
-    private List<Sensitivity> getEntitySensitivities(SensMatrixDto sensMatrixDto) throws SymphonyStandardAppException {
+    private List<Sensitivity> getEntitySensitivities(SensMatrixDto sensMatrixDto, boolean forUpdate) throws SymphonyStandardAppException {
         List<Sensitivity> sensitivities = new ArrayList<>();
         Sensitivity sens;
         for (SensitivityDto.SensRow r : sensMatrixDto.getSensMatrix().getRows()) {
             Metadata presMetadata = metaDataService.getMetadataById(r.getPresMetaId());
             for (SensitivityDto.SensCol c : r.getColumns()) {
                 sens = new Sensitivity();
+                if(forUpdate) { /* merge/update */
+                    sens.setId(c.getSensId());
+                }
                 sens.setPresMetadata(presMetadata);
                 sens.setEcoMetadata(metaDataService.getMetadataById(c.getEcoMetaId()));
                 sens.setValue(c.getValue());

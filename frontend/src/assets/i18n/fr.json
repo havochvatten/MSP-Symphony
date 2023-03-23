@@ -77,9 +77,25 @@
                 "table": {
                     "edit-name": "Modifier",
                     "delete": "Supprimer la matrice",
-                    "cancel": "Annuler",
+                    "close": "Fermer",
                     "save": "Enregistrer la matrice",
-                    "save-as": "Enregistrer en tant que nouvelle matrice"
+                    "save-as": "Enregistrer en tant que nouvelle matrice",
+                    "name-exists": "Ne peut pas enregistrer.\nLe nom de matrice spécifié existe déjà.",
+                    "immutable-note": "La matrice \"{{ immutableName }}\" est immuable.",
+                    "save-as-tip": "Modifiez le nom de la matrice pour permettre l'enregistrement en tant que nouvelle",
+                    "confirm-delete": {
+                        "header": "Supprimer cette matrice",
+                        "message": "Confirmez la suppression de la matrice de sensibilité \"{{ matrixToDelete }}\".<br>Cette action ne peut pas être annulée.",
+                        "confirm": "Supprimer"
+                    },
+                    "changes": {
+                        "header": "Modifications non enregistrées",
+                        "message": "Enregistrez ou ignorez les modifications indiquées dans \"{{ matrixName }}\"{{ newNotice }}?",
+                        "immutable-message": "La matrice contient des modifications non enregistrées. Voulez-vous enregistrer la matrice sous \"{{ suggestedName }}\" ou ignorez toutes les modifications?",
+                        "new-notice": "(nouvelle matrice)",
+                        "confirm": "Enregistrer",
+                        "abandon": "Ignorez"
+                    }
                 }
             },
             "normalization": {
@@ -196,7 +212,9 @@
             "base-scenario": "Résultat du scénario de référence",
             "what-if-scenario": "Résultat du scénario anticipé",
             "choose-scenario": "Choisissez un scénario",
-            "choose-base-scenario-first": "Choisissez un scénario de référence avant"
+            "choose-base-scenario-first": "Choisissez un scénario de référence avant",
+            "base-scenario-suggestion": "",
+            "what-if-scenario-suggestion": ""
         },
         "user-area": {
             "create": {
@@ -208,7 +226,7 @@
                     "close": "Fermer"
                 },
                 "error": {
-                    "USER_DEF_AREA_NAME_EXISTS" : "Vous avez déjà enregistré une zone nommée <em>{{ areaName }}</em>.\n\nSupprimez ou renommez la zone précédemment enregistrée, ou choisissez un autre nom et réessayez."
+                    "USER_DEF_AREA_NAME_EXISTS" : "<p>Vous avez déjà enregistré une zone nommée <em>\"{{ areaName }}\"</em>.</p><p>Supprimez ou renommez la zone précédemment enregistrée, ou choisissez un autre nom et réessayez.</p>"
                 }
             },
             "upload": {
@@ -218,7 +236,8 @@
                     "fileformat-note": "Fichiers type <a href='https://www.geopackage.org/' target='_blank'>OGC GeoPackage</a> acceptés.",
                     "notice": {
                         "WGS84-reprojection": "La projection des coordonnées sera transformée vers <em>EPSG:4326 (WGS 84)",
-                        "first-area-only": "Le fichier GeoPackage contient plusieurs couches de données. Seule la couche <em>{{ firstFeature }}</em> sera importée!"
+                        "multi-layer-pre": "Le fichier GeoPackage contient ces zones:",
+                        "multi-layer-all": "Toutes seront importé si vous confirmez."
                     },
                     "import": "Confirmer",
                     "cancel": "Annuler"
@@ -244,7 +263,8 @@
             "delete": {
                 "label": "Supprimer",
                 "modal": {
-                    "title": "Êtes-vous sûr de vouloir supprimer",
+                    "title": "Confirmer la suppression",
+                    "message": "Êtes-vous sûr de vouloir supprimer &laquo;&nbsp;{{ userAreaName }}&nbsp;&raquo;&nbsp;?",
                     "delete": "Supprimer",
                     "cancel": "Annuler"
                 }
@@ -282,6 +302,10 @@
         "ERROR": "Une erreur est survenue",
         "WARNING": "Attention, processus lent"
     },
+    "confirmation-modal": {
+        "cancel": "Annuler",
+        "confirm": "Confirmer"
+    },
     "report": {
         "calculation": {
             "title": "Rapport de calcul"
@@ -291,8 +315,7 @@
             "vs": "vs."
         },
         "common" : {
-            "not-measurable": "(non mesurable)",
-            "date-and-time": "La date et l'heure:"
+            "not-measurable": "(non mesurable)"
         },
         "cumulative-effect-etc": {
             "baseline": "Version de référence",
@@ -369,9 +392,15 @@
         "fetching-report": "Assemblage du rapport",
         "error-message": "Une erreur est survenue. Aucun rapport n'a pu être produit. Veuillez vérifier les paramètres et réessayer."
     },
-    "hav-components": {
-        "select": {
-            "search": "Chercher"
+    "footer": "Agence Suédoise pour la Gestion de l'Eau et des Zones Maritimes (Havs och Vattenmyndigheten)",
+    "api-messages": {
+        "areas": {
+            "import-success" : {
+                "title": "L'importation a réussi",
+                "message-single" : "Zone importée: \"{{ topLayerName }}\"",
+                "message-multi" : "Importé {{ layersCount }} zones"
+            }
+
         }
     },
     "wio": {

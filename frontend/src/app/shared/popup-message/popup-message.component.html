@@ -23,7 +23,7 @@
         <p *ngFor="let message of messages[0].message.split('\n')" [innerHTML]="message"></p>
       </ng-container>
     </div>
-    <hav-button (click)="removeMessage(messages[0].uuid)">Ok</hav-button>
+    <button mat-flat-button (click)="removeMessage(messages[0].uuid)">Ok</button>
   </article>
 </div>
 

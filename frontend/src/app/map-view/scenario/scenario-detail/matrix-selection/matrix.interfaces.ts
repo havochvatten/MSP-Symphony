@@ -36,6 +36,7 @@ export interface AreaMatrixMapping {
 }
 
 export interface MatrixColumn {
+  sensId: number;
   ecoMetaId: number;
   name: string;
   nameLocal: string,

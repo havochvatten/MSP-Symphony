@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import se.havochvatten.symphony.dto.AreaImportResponse;
 import se.havochvatten.symphony.dto.FrontendErrorDto;
 import se.havochvatten.symphony.dto.UploadedUserDefinedAreaDto;
 import se.havochvatten.symphony.dto.UserDefinedAreaDto;
@@ -124,15 +125,20 @@ public class UserDefinedAreaRESTTest extends RESTTest {
         return userDefinedAreaDto;
     }
 
-    private void cleanUp() {
+    private Response deleteUserDefinedAreaByName(String name) {
         Response response = given().
             auth().
             preemptive().
             basic(getAdminUsername(), getAdminPassword()).
-            pathParam("name", areaName).
+            pathParam("name", name).
             when().
             delete(endpoint("/testutilapi/userdefinedarea/{name}"));
 
+        return response;
+    }
+
+    private void cleanUp() {
+        Response response = deleteUserDefinedAreaByName(areaName);
         assertThat(response.getStatusCode(), is(200));
     }
 
@@ -232,7 +238,6 @@ public class UserDefinedAreaRESTTest extends RESTTest {
             auth().
             preemptive().
             basic(getUsername(), getPassword()).
-            body("my-area-name").
             when().
             put(endpoint("/userdefinedarea/import/"+dto.key)).
             then().
@@ -240,9 +245,12 @@ public class UserDefinedAreaRESTTest extends RESTTest {
             extract();
         ;
 
-        var importedArea = result2.body().as(UserDefinedAreaDto.class);
+        var importedArea = result2.body().as(AreaImportResponse.class);
 
-        deleteUserDefinedArea(importedArea.getId());
-        assertEquals("my-area-name", importedArea.getName());
+        /* clean up db */
+        deleteUserDefinedAreaByName("epsg3006");
+        deleteUserDefinedAreaByName("espg4326");
+
+        assertEquals("epsg3006", importedArea.areaNames[0]);
 	}
 }

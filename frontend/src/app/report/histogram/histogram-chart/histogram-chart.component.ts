@@ -40,7 +40,7 @@ export class HistogramChartComponent implements OnInit, OnChanges {
     this.binSz = this.reportMax / 100;
     this.isRarityAdjusted = this.algorithm === 'RarityAdjustedCumulativeImpact';
 
-    const count = this.bins.reduce((a, b) => a + b),
+    const count = this.bins.reduce((a, b) => a + b, 0),
           ystep =       // suitable vertical measure interval
             this.bmax < 10 ? 1 :
             this.bmax < 30 ? 5 :

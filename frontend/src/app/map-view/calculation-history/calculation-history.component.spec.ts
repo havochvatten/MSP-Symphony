@@ -1,37 +1,35 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { CalculationHistoryComponent } from './calculation-history.component';
 import { provideMockStore } from '@ngrx/store/testing';
+import { initialState as metadata } from '@data/metadata/metadata.reducers';
+import { initialState as calculation } from '@data/calculation/calculation.reducers';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
-
-function setUp() {
-  const fixture: ComponentFixture<CalculationHistoryComponent> = TestBed.createComponent(
-    CalculationHistoryComponent
-  );
-  const component: CalculationHistoryComponent = fixture.componentInstance;
-  return { component, fixture };
-}
+import { IconComponent } from "@shared/icon/icon.component";
 
 describe('CalculationHistoryComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<CalculationHistoryComponent>,
+      component: CalculationHistoryComponent;
+
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CalculationHistoryComponent],
+      declarations: [CalculationHistoryComponent, IconComponent],
       imports: [TranslationSetupModule],
       providers: [
         provideMockStore({
           initialState: {
-            calculation: {
-              calculations: []
-            },
-            metadata: {},
-            area: {}
+            metadata: metadata,
+            calculation: calculation,
+            user: { baseline: undefined }
           }
         })
       ]
     }).compileComponents();
+    fixture = TestBed.createComponent(CalculationHistoryComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
-  it('should create', () => {
-    const { component } = setUp();
+  it('should create', () => {;
     expect(component).toBeTruthy();
   });
 });

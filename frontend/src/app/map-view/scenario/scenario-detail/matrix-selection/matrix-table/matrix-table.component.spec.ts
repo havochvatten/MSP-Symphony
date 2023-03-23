@@ -1,24 +1,21 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { DialogRef } from '@shared/dialog/dialog-ref';
 import { DialogConfig } from '@shared/dialog/dialog-config';
 
 import { MatrixTableComponent } from './matrix-table.component';
 import { HttpClientModule } from '@angular/common/http';
 import { provideMockStore } from '@ngrx/store/testing';
-import { HavCoreModule, HavButtonModule } from 'hav-components';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
-
-function setUp() {
-  const fixture: ComponentFixture<MatrixTableComponent> = TestBed.createComponent(MatrixTableComponent);
-  const component: MatrixTableComponent = fixture.componentInstance;
-  return { component, fixture };
-}
+import { IconComponent } from "@shared/icon/icon.component";
 
 describe('MatrixTableComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<MatrixTableComponent>,
+      component: MatrixTableComponent;
+
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [MatrixTableComponent],
-      imports: [HttpClientModule, HavCoreModule, HavButtonModule, TranslationSetupModule],
+      declarations: [MatrixTableComponent, IconComponent],
+      imports: [HttpClientModule, TranslationSetupModule],
       providers: [
         {
           provide: DialogRef,
@@ -29,7 +26,8 @@ describe('MatrixTableComponent', () => {
           useValue: {
             data: {
               matrixData: {
-                name: ''
+                name: '',
+                sensMatrix: { rows: [] }
               }
             }
           }
@@ -37,10 +35,11 @@ describe('MatrixTableComponent', () => {
         provideMockStore({ initialState: { user: { baseline: undefined } } })
       ]
     }).compileComponents();
+    fixture = TestBed.createComponent(MatrixTableComponent);
+    component = fixture.componentInstance;
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

@@ -1,23 +1,22 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { HighestImpactsComponent } from './highest-impacts.component';
 
-function setUp() {
-  const fixture: ComponentFixture<HighestImpactsComponent> = TestBed.createComponent(HighestImpactsComponent);
-  const component: HighestImpactsComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('HighestImpactsComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<HighestImpactsComponent>,
+      component: HighestImpactsComponent;
+
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ HighestImpactsComponent ]
     })
     .compileComponents();
+    fixture = TestBed.createComponent(HighestImpactsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

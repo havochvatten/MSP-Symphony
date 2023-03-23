@@ -2,7 +2,6 @@ import { Component, Input, OnChanges } from '@angular/core';
 import * as d3 from 'd3';
 import * as d3Sankey from 'd3-sankey';
 import { DecimalPipe } from '@angular/common';
-import { Language } from "@src/app/app-translation-setup.module";
 
 interface SNodeExtra {
   nodeId: number;

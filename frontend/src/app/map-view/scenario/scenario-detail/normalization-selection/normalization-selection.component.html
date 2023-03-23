@@ -2,16 +2,15 @@
   <p>{{ 'map.editor.normalization.description' | translate }}:</p>
 
   <div class="normalization-form">
-    <hav-radio-button
-      *ngFor="let button of radioButtons"
-      radioButtonSize="medium"
-      label="{{ button.label | translate: { ordinalPercentileValue: this.percentileValue | ordinal:locale } }}"
-      [value]="button.value"
-      [checked]="button.value == options.type"
-      [disabled]="button.value === NormalizationType.Domain && algorithm === 'RarityAdjustedCumulativeImpact'"
-      (check)="check(button.value)"
-    >
-    </hav-radio-button>
+    <mat-radio-group [value]="this.options.type">
+      <mat-radio-button
+        *ngFor="let button of radioButtons"
+        [value]="button.value"
+        [disabled]="button.value === NormalizationType.Domain && algorithm === 'RarityAdjustedCumulativeImpact'"
+        (change)="check(button.value)"
+      >{{ button.label | translate: { ordinalPercentileValue: this.percentileValue | ordinal:locale } }}
+      </mat-radio-button>
+    </mat-radio-group>
 
     <div *ngIf="showUserDefinedValueField()" class="user-defined">
       <label for="user-defined-value">{{ 'map.editor.normalization.custom-value' | translate }}</label>

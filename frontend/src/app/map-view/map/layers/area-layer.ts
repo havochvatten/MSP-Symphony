@@ -5,15 +5,14 @@ import GeoJSON from 'ol/format/GeoJSON';
 import Feature, { FeatureLike } from 'ol/Feature';
 import { Draw, Select, Snap } from 'ol/interaction';
 import { Fill, Stroke, Style } from 'ol/style';
-import GeometryType from 'ol/geom/GeometryType';
 import Point from 'ol/geom/Point';
 import { Coordinate } from 'ol/coordinate';
 import { FeatureCollection, Polygon, StatePath } from '@data/area/area.interfaces';
 import { Extent, getCenter } from 'ol/extent';
-import * as condition from "ol/events/condition";
-import { getFeatureByStatePath } from "@src/util/ol";
-import { ScenarioLayer } from "@src/app/map-view/map/layers/scenario-layer";
-import { TranslateService } from "@ngx-translate/core";
+import * as condition from 'ol/events/condition';
+import { getFeatureByStatePath } from '@src/util/ol';
+import { ScenarioLayer } from '@src/app/map-view/map/layers/scenario-layer';
+import { TranslateService } from '@ngx-translate/core';
 
 // const boundaryStyle = new Style({
 //   stroke: new Stroke({
@@ -28,7 +27,7 @@ function unique<T>(value: T, index: number, self: T[]) {
 }
 
 function getPolygon(feature: Feature): Polygon {
-  const geometry: Point = <Point>feature.getGeometry().transform('EPSG:3857', 'EPSG:4326');
+  const geometry: Point = <Point>feature.getGeometry()?.transform('EPSG:3857', 'EPSG:4326');
   return {
     type: 'Polygon',
     coordinates: geometry.getCoordinates()
@@ -55,12 +54,13 @@ class DrawAreaInteraction extends Draw {
   constructor(
     map: OLMap,
     source: VectorSource,
-    condition: (event: MapBrowserEvent) => boolean,
+    condition: (event: MapBrowserEvent<UIEvent>) => boolean,
     onDrawEnd: (polygon: Polygon) => Polygon | void
   ) {
     super({
       source: source,
-      type: GeometryType.POLYGON,
+      // GeometryType.POLYGON is no longer exported ... https://github.com/openlayers/openlayers/issues/5241
+      type: 'Polygon',
       condition
     });
     const snap = new Snap({
@@ -88,11 +88,11 @@ class DrawAreaInteraction extends Draw {
   }
 }
 
-class AreaLayer extends VectorLayer {
+class AreaLayer extends VectorLayer<VectorSource> {
   private onClickInteraction: Select;
   private drawAreaInteraction: DrawAreaInteraction;
   private drawInteractionActive = false;
-  private boundaryLayer: VectorLayer;
+  private boundaryLayer: VectorLayer<VectorSource>;
   private boundaries?: FeatureLike[];
   private geoJson: GeoJSON;
 
@@ -124,42 +124,46 @@ class AreaLayer extends VectorLayer {
       featureProjection: map.getView().getProjection()
     });
 
-    this.onClickInteraction = new class extends Select {
+    this.onClickInteraction = new (class extends Select {
       constructor(that: AreaLayer) {
         super({
           style: new AreaStyle(true),
           layers: [that, scenarioLayer],
-          condition: (event) => {
-            return condition.singleClick(event) &&
-              that.scenarioLayer.isScenarioActiveAndPointInsideScenario(event.coordinate);
+          condition: event => {
+            return (
+              condition.singleClick(event) &&
+              that.scenarioLayer.isScenarioActiveAndPointInsideScenario(event.coordinate)
+            );
           },
           filter: (feature, layer) => {
             console.debug('filter', feature.get('title') ?? feature.get('id'), layer.get('name'));
-            if (feature === that.scenarioLayer.getBoundaryFeature())
-              return false; // don't allow selection of whole scenario for now
+            if (feature === that.scenarioLayer.getBoundaryFeature()) return false; // don't allow selection of whole scenario for now
 
-            if (layer === that && getFeatureByStatePath(that.scenarioLayer.getSource(), feature.get('statePath'))) {
-              console.debug("Preventing double selection since feature exists in scenario")
+            const source = that.scenarioLayer.getSource();
+            if (
+              layer === that &&
+              source &&
+              getFeatureByStatePath(source, feature.get('statePath'))
+            ) {
+              console.debug('Preventing double selection since feature exists in scenario');
               return false;
-            }
-            else {
+            } else {
               return true;
             }
           }
         });
         this.on('select', event => {
           const feature = event.selected[0];
-          if (feature !== undefined)
-            console.log('dispatching selection '+feature.get('id'));
+          if (feature !== undefined) console.log('dispatching selection ' + feature.get('id'));
           that.setSelection(feature);
         });
       }
-    }(this);
+    })(this);
 
     this.map.addInteraction(this.onClickInteraction);
   }
 
-  private async addHoverInteraction(map: OLMap, areaLayer: VectorLayer) {
+  private async addHoverInteraction(map: OLMap, areaLayer: VectorLayer<VectorSource>) {
     const container = document.getElementById('popup') as HTMLElement;
     const content = document.getElementById('popup-title') as HTMLElement;
     const body = document.getElementById('popup-body') as HTMLElement;
@@ -170,11 +174,15 @@ class AreaLayer extends VectorLayer {
     });
     map.addOverlay(overlay);
 
-    const { 'map.click-area': clickArea, 'map.location-outside-scenario': pointOutsideScenario } =
-      await this.translateService.get(['map.click-area', 'map.location-outside-scenario']).toPromise();
+    const {
+      'map.click-area': clickArea,
+      'map.location-outside-scenario': pointOutsideScenario
+    } = await this.translateService
+      .get(['map.click-area', 'map.location-outside-scenario'])
+      .toPromise();
     map.on('pointermove', event => {
       const detectedFeatures = map.getFeaturesAtPixel(event.pixel);
-      const hit = detectedFeatures.length>0;
+      const hit = detectedFeatures.length > 0;
 
       if (hit) {
         map.getTargetElement().style.cursor = 'pointer';
@@ -185,17 +193,18 @@ class AreaLayer extends VectorLayer {
           .filter(unique) // scenario layer can contain duplicated feature
           .join(', ');
 
-        if (!this.scenarioLayer.hasActiveScenario())
-          body.innerText = clickArea;
+        if (!this.scenarioLayer.hasActiveScenario()) body.innerText = clickArea;
         else {
           if (this.scenarioLayer.isPointInsideScenario(event.coordinate))
             body.innerText = clickArea;
-          else
-            body.innerText = pointOutsideScenario;
+          else body.innerText = pointOutsideScenario;
         }
 
         // FIXME index 0 is not always correct (can contain scenario layer)
-        overlay.setPosition(getCenter(detectedFeatures[0].getGeometry().getExtent()));
+        const extent = detectedFeatures[0].getGeometry()?.getExtent();
+        if (extent) {
+          overlay.setPosition(getCenter(extent));
+        }
       } else {
         map.getTargetElement().style.cursor = '';
         overlay.setPosition(undefined);
@@ -217,43 +226,48 @@ class AreaLayer extends VectorLayer {
     map.addInteraction(areaHover);
   }
 
-  private checkDrawCondition = (event: MapBrowserEvent) => {
+  private checkDrawCondition = (event: MapBrowserEvent<UIEvent>) => {
     if (this.boundaries) {
       const boundaryGeometries = <Point[]>this.boundaries.map(feature => feature.getGeometry());
       const drawnPointCoordinate = event.coordinate;
       const drawnCoordinates = [...this.drawAreaInteraction.getCoordinates(), drawnPointCoordinate];
       for (const boundary of boundaryGeometries) {
-        const isInsideBoundary = drawnCoordinates.every(geometry => boundary.intersectsCoordinate(geometry));
+        const isInsideBoundary = drawnCoordinates.every(geometry =>
+          boundary.intersectsCoordinate(geometry)
+        );
         if (isInsideBoundary) {
           this.drawAreaInteraction.addCoordinate(drawnPointCoordinate);
           return true;
         }
       }
       return false;
-    } else
-      return true;
+    } else return true;
   };
 
   // FIXME: This is called each time an area is selected!
-  setAreaLayers(
-    featureCollections: FeatureCollection[],
-    selected: StatePath | undefined
-  ) {
-    this.getSource().clear();
+  setAreaLayers(featureCollections: FeatureCollection[], selected: StatePath | undefined) {
+    const source = this.getSource();
+    if (!source) {
+      return;
+    }
+    source.clear();
     // TODO: The different kinds of areas should probably go to different layers, so we do not need to read them
     //  all after an area group visibility change...
     featureCollections.forEach((featureCollection: FeatureCollection) =>
-      this.getSource().addFeatures(this.geoJson.readFeatures(featureCollection)));
+      source.addFeatures(this.geoJson.readFeatures(featureCollection))
+    );
 
     if (selected) {
-      const feature = getFeatureByStatePath(this.getSource(), selected);
-      if (feature)
-        this.onClickInteraction.getFeatures().push(feature);
+      const feature = getFeatureByStatePath(source, selected);
+      if (feature) this.onClickInteraction.getFeatures().push(feature);
     }
   }
 
   setBoundaries(boundaryCollection: FeatureCollection) {
     const source = this.boundaryLayer.getSource();
+    if (!source) {
+      return;
+    }
     source.clear();
     source.addFeatures(this.geoJson.readFeatures(boundaryCollection));
     this.boundaries = source.getFeatures();
@@ -261,8 +275,15 @@ class AreaLayer extends VectorLayer {
 
   zoomToArea(statePath: StatePath) {
     // The below is pretty expensive (linear search), we would like to make use of getFeatureById instead...
-    const f = getFeatureByStatePath(this.getSource(), statePath);
-    return this.zoomToExtent(f!.getGeometry().getExtent(), 1000), true;
+    const source = this.getSource();
+    if (!source) {
+      return;
+    }
+    const geo = getFeatureByStatePath(source, statePath)?.getGeometry();
+    if (!geo) {
+      return;
+    }
+    return this.zoomToExtent(geo.getExtent(), 1000), true;
   }
 
   toggleDrawInteraction(): boolean {
@@ -279,7 +300,7 @@ class AreaLayer extends VectorLayer {
   }
 }
 
-class BoundaryLayer extends VectorLayer {
+class BoundaryLayer extends VectorLayer<VectorSource> {
   constructor() {
     super({
       source: new VectorSource({ format: new GeoJSON() }),

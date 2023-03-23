@@ -1,22 +1,21 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SliderComponent } from './slider.component';
 
-function setUp() {
-  const fixture: ComponentFixture<SliderComponent> = TestBed.createComponent(SliderComponent);
-  const component: SliderComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('SliderComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<SliderComponent>,
+      component: SliderComponent;
+
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [SliderComponent]
     }).compileComponents();
+    fixture = TestBed.createComponent(SliderComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

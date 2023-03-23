@@ -3,6 +3,7 @@ import { Pipe, PipeTransform } from "@angular/core";
 @Pipe({name: 'ordinal'})
 export class OrdinalPipe implements PipeTransform {
   transform(value: number, locale: string): string {
+    locale = locale ?? '';
     const lang = locale.substr(0,2);
 
     // Concise approach found at https://stackoverflow.com/a/39466341

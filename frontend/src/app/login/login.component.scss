@@ -56,27 +56,59 @@
     display: flex;
     flex-direction: column;
 
-    hav-form-field {
-      margin-bottom: $s-margin;
+    ::ng-deep mat-form-field {
+      font-size: 16px;
+      margin-bottom: 0;
+      min-width: 25.5rem;
 
-      label {
-        color: #ffffff;
-      }
+      .mat-form-field-wrapper {
+        position: relative;
+        padding: 0;
 
-      input {
-        height: 32px;
-        width: 300px;
-        border: 1px solid #e6e8ed;
-        border-radius: 4px;
-        background-color: #ffffff;
+        .mat-form-field-infix {
+          display: flex;
+          flex-flow: column;
+          margin: 4px 0 0;
+          padding: 0;
+
+          .mat-form-field-label-wrapper {
+            display: inline-block;
+            position: relative;
+            top: 0;
+            padding: 0 0 6px;
+            order: 1;
+
+            label.mat-form-field-label {
+              color: black;
+              font-size: 16px;
+              position: relative;
+              transform: none !important;
+              top: 0;
+
+              .mat-form-field-required-marker {
+                display: none;
+              }
+            }
+          }
+
+          input {
+            display: inline-block;
+            box-sizing: border-box;
+            order: 2;
+            border: 1px solid #000;
+            height: 46px;
+            padding: 0 8px;
+            caret-color: unset;
+          }
+        }
+
+        .mat-form-field-underline {
+          display: none;
+        }
       }
     }
 
-    & ::ng-deep hav-form-field {
-      min-width: 16rem;
-    }
-
-    hav-button {
+    button.mat-flat-button {
       margin-top: calc(#{$s-margin} + #{$xs-margin});
     }
   }

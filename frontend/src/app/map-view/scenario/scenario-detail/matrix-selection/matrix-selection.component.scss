@@ -1,72 +1,49 @@
+@import "/src/styles/hav-colors";
+
 :host {
   display: grid;
-  row-gap: 0.6rem;
   padding-bottom: 1.5rem;
 
   section {
     display: grid;
-    row-gap: 0.6rem;
 
     h5 {
       margin-top: 0;
       margin-bottom: 1.6rem;
     }
 
-    &::ng-deep {
+    &:not(:first-child) {
+      margin-top: 1rem;
+    }
+
+    ::ng-deep {
       label {
         padding-left: 0.4rem;
         font-size: 1.6rem;
       }
-    }
 
-    article {
-      padding-left: 3.2rem;
-      display: grid;
-      row-gap: 1rem;
-
-      hav-button {
-        width: 100%;
+      mat-radio-button {
+        line-height: 3rem;
       }
 
-      ::ng-deep > hav-select {
-        position: relative;
+      button {
+        .mat-button-wrapper mat-spinner.mat-progress-spinner {
+          position: absolute;
+          top: 12px;
+          right: 14px;
 
-        .hav-select-control {
-          .hav-select-menu {
-            z-index: 2;
-
-            .hav-select-menu-items {
-              hav-select-item {
-                position: relative;
-
-                &.locked {
-                  font-weight: 700;
-                  color: dimgray;
-
-                  .hav-select-menu-items-item {
-                    background-color: #f3f3f3;
-                  }
-
-                  app-icon {
-                    position: absolute;
-                    right: 1rem;
-                    top: 1rem;
-                  }
-                }
-              }
-            }
+          circle {
+            stroke: $hav-cyan;
           }
         }
       }
+    }
 
-      ::ng-deep hav-button button {
-        position: relative;
-        hav-spinner {
-          position: absolute;
-          right: 1rem;
-          top: 1px;
-        }
-      }
+    article {
+      margin-top: 0.8rem;
+      padding-left: 3.2rem;
+      display: grid;
+      row-gap: 1rem;
     }
   }
 
@@ -84,6 +61,25 @@
 
     h4 {
       text-align: center;
+    }
+  }
+}
+
+::ng-deep .ddPanel {
+
+  mat-option {
+    &.locked, &.locked.mat-active {
+      font-weight: 700;
+      color: dimgray;
+      background-color: $hav-web-lightgrey !important;
+
+      .mat-option-text {
+        app-icon {
+          position: absolute;
+          right: 1rem;
+          top: 1rem;
+        }
+      }
     }
   }
 }

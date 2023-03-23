@@ -20,7 +20,7 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--configuration="production"` option for a production build.
 
 ## Running unit tests
 
@@ -46,6 +46,5 @@ The file `attributions.ts` contains a list of 3rd-party components. The informat
 about-dialog. The list (in particular the version numbers) needs to be kept up to date.
 
 ## Good ideas for improvement in frontend:
-- Replace orphaned hav-components library with Material Elements
 - Enable strict template checking (strictTemplates = true in tsconfig)
 - Migrate from ngx-translate to Angular's standard i18n framework

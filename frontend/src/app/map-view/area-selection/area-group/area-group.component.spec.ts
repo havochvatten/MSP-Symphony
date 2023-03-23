@@ -1,24 +1,24 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { SharedModule } from '@src/app/shared/shared.module';
 
 import { AreaGroupComponent } from './area-group.component';
-
-function setUp() {
-  const fixture: ComponentFixture<AreaGroupComponent> = TestBed.createComponent(AreaGroupComponent);
-  const component: AreaGroupComponent = fixture.componentInstance;
-  return { component, fixture };
-}
+import { TranslationSetupModule } from "@src/app/app-translation-setup.module";
 
 describe('AreaGroupComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<AreaGroupComponent>,
+      component: AreaGroupComponent;
+
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [AreaGroupComponent],
-      imports: [SharedModule]
+      declarations: [ AreaGroupComponent ],
+      imports: [ SharedModule, TranslationSetupModule ]
     }).compileComponents();
+    fixture = TestBed.createComponent(AreaGroupComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

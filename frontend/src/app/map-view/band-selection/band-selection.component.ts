@@ -53,7 +53,7 @@ export class BandSelectionComponent implements OnInit, OnChanges {
   @Input() bandType: BandType = 'ecoComponents';
   search = '';
   filteredGroups: BandGroup[] = [];
-  selectedArea?: Observable<Area | undefined>;
+  selectedArea?: Observable<Area | undefined | unknown>;
 
   constructor(private store: Store<State>) {}
 

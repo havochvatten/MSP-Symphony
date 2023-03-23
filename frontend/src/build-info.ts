@@ -1,6 +1,6 @@
 // This file should be updated by CI system with actual build information
 export default {
-  version: '1.6.0-wio',
+  version: '1.8.0',
   buildNumber: '<unknown>',
-  gitSha: 'af4a910' // Deeplink to source repo?
+  gitSha: '5a96c1d' // Deeplink to source repo?
 };

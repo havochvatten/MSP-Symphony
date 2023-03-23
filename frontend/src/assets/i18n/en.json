@@ -77,9 +77,25 @@
                 "table": {
                     "edit-name": "Edit",
                     "delete": "Delete matrix",
-                    "cancel": "Cancel",
+                    "close": "Close",
                     "save": "Save matrix",
-                    "save-as": "Save as new matrix"
+                    "save-as": "Save as new matrix",
+                    "name-exists": "Cannot save.\nThe matrix name specified (\"{{ takenName }}\") is in use.",
+                    "immutable-note": "The matrix \"{{ immutableName }}\" is read-only.",
+                    "save-as-tip": "First change the matrix name to allow saving as new",
+                    "confirm-delete": {
+                        "header": "Delete matrix",
+                        "message": "Confirm removal of the sensitivity matrix \"{{ matrixToDelete }}\".<br>This action cannot be undone.",
+                        "confirm": "Delete"
+                    },
+                    "changes": {
+                        "header": "Unsaved changes",
+                        "message": "Save or abandon the stated changes to \"{{ matrixName }}\"{{ newNotice }}?",
+                        "immutable-message": "The editor has unsaved changes.<br>Save the modified matrix as \"{{ suggestedName }}\", or abandon current changes?",
+                        "new-notice": "(new matrix)",
+                        "confirm": "Save",
+                        "abandon": "Abandon"
+                    }
                 }
             },
             "normalization": {
@@ -196,7 +212,9 @@
             "base-scenario": "Calculation A",
             "what-if-scenario": "Calculation B",
             "choose-scenario": "Choose a calculation",
-            "choose-base-scenario-first": "Choose calculation A first"
+            "choose-base-scenario-first": "Choose calculation A first",
+            "base-scenario-suggestion": "(typically your baseline analysis)",
+            "what-if-scenario-suggestion": "(typically your new scenario analysis)"
         },
         "user-area": {
             "create": {
@@ -208,7 +226,7 @@
                     "close": "Close"
                 },
                 "error": {
-                    "USER_DEF_AREA_NAME_EXISTS" : "You have already saved an area by the name <em>{{ areaName }}</em>.\n\nDelete or rename the previously saved area, or choose another name, and try again."
+                    "USER_DEF_AREA_NAME_EXISTS" : "<p>You have already saved an area by the name <em>\"{{ areaName }}\".</em></p><p>Delete or rename the previously saved area, or choose another name, and try again.</p>"
                 }
             },
             "upload": {
@@ -217,8 +235,9 @@
                     "title": "Import area",
                     "fileformat-note": "Files in <a href='https://www.geopackage.org/' target='_blank'>OGC GeoPackage</a>-format are supported.",
                     "notice": {
-                        "WGS84-reprojection": "The area coordinates will be reprojected to <em>EPSG:4326 (WGS 84)",
-                        "first-area-only": "The GeoPackage contains several layers. Only <em>{{ firstFeature }}</em> will be imported!"
+                        "WGS84-reprojection": "Imported coordinates will be reprojected to <em>EPSG:4326 (WGS 84)",
+                        "multi-layer-pre": "The selected GeoPackage contains these layers:",
+                        "multi-layer-all": "They will be imported as separate areas."
                     },
                     "import": "Confirm import",
                     "cancel": "Cancel"
@@ -244,7 +263,8 @@
             "delete": {
                 "label": "Delete",
                 "modal": {
-                    "title": "Are you sure you want to delete",
+                    "title": "Confirm area deletion",
+                    "message": "Are you sure you want to delete &laquo;&nbsp;{{ userAreaName }}&nbsp;&raquo;&nbsp;?",
                     "delete": "Delete",
                     "cancel": "Cancel"
                 }
@@ -282,6 +302,10 @@
         "ERROR": "An Error Occurred",
         "WARNING": "Slow process"
     },
+    "confirmation-modal": {
+        "cancel": "Cancel",
+        "confirm": "OK"
+    },
     "report": {
         "calculation": {
             "title": "Calculation Report"
@@ -291,8 +315,7 @@
             "vs": "and"
         },
         "common" : {
-            "not-measurable": "(not measurable)",
-            "date-and-time": "Date and time:"
+            "not-measurable": "(not measurable)"
         },
         "cumulative-effect-etc": {
             "baseline": "Baseline version",
@@ -369,9 +392,15 @@
         "fetching-report": "Fetching report",
         "error-message": "An error occurred. There is no report to show now. Please check options and try a calculation again."
     },
-    "hav-components": {
-        "select": {
-            "search": "Search"
+    "footer": "Swedish Agency for Marine and Water Management",
+    "api-messages": {
+        "areas": {
+            "import-success" : {
+                "title": "Import successful",
+                "message-single" : "Imported area: \"{{ topLayerName }}\"",
+                "message-multi" : "Imported {{ layersCount }} areas"
+            }
+
         }
     },
     "wio": {

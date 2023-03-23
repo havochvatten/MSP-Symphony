@@ -8,10 +8,10 @@ import { MessageActions } from '@data/message';
 import { MetadataSelectors } from '@data/metadata';
 import { CalculationSlice, Legend, LegendType, OperationParams, PercentileResponse, StaticImageOptions } from './calculation.interfaces';
 import { CalculationActions } from '.';
-import { AppSettings } from "@src/app/app.settings";
-import { register } from "ol/proj/proj4";
+import { AppSettings } from '@src/app/app.settings';
+import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
-import { Scenario } from "@data/scenario/scenario.interfaces";
+import { Scenario } from '@data/scenario/scenario.interfaces';
 
 export enum NormalizationType {
   Area = 'AREA',
@@ -108,20 +108,22 @@ export class CalculationService implements OnDestroy {
 
   private addResultImage(id: string, epFragment: string) {
     const that = this;
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.getStaticImage(`${env.apiBaseUrl}/calculation/` + epFragment).subscribe({
         next(response) {
           const extentHeader = response.headers.get('SYM-Image-Extent');
           if (extentHeader) {
             that.resultReady$.emit({
-              url: URL.createObjectURL(response.body),
+              url: URL.createObjectURL(response.body!),
               calculationId: +id,
               imageExtent: JSON.parse(extentHeader),
               projection: AppSettings.CLIENT_SIDE_PROJECTION ? AppSettings.DATALAYER_RASTER_CRS : AppSettings.MAP_PROJECTION
             });
             resolve();
           } else {
-            console.error("Result image for calculation " + id + " does not have any extent header, ignoring.");
+            console.error(
+              'Result image for calculation ' + id + ' does not have any extent header, ignoring.'
+            );
             reject();
           }
         },
@@ -135,7 +137,7 @@ export class CalculationService implements OnDestroy {
 
   public removeResult(id: string){
     const that = this;
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.delete(id).subscribe({
         next(response) {
           that.resultRemoved$.emit(+id);

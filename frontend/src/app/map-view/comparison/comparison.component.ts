@@ -1,16 +1,16 @@
 import { AfterViewInit, Component, NgModuleRef, ViewChild } from '@angular/core';
 import { Store } from "@ngrx/store";
 import { State } from '@src/app/app-reducer';
-import { Observable } from "rxjs";
-import { CalculationSlice } from "@data/calculation/calculation.interfaces";
-import { CalculationSelectors } from "@data/calculation";
-import { FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
-import { DialogService } from "@shared/dialog/dialog.service";
-import { ComparisonReportModalComponent } from "@shared/report-modal/comparison-report-modal.component";
-import { CalculationService } from "@data/calculation/calculation.service";
-import { map, tap, withLatestFrom } from "rxjs/operators";
-import { SelectComponent } from 'hav-components';
+import { Observable } from 'rxjs';
+import { CalculationSlice } from '@data/calculation/calculation.interfaces';
+import { CalculationSelectors } from '@data/calculation';
+import { FormBuilder, Validators } from '@angular/forms'; //ValidationErrors, ValidatorFn
+import { DialogService } from '@shared/dialog/dialog.service';
+import { ComparisonReportModalComponent } from '@shared/report-modal/comparison-report-modal.component';
+import { CalculationService } from '@data/calculation/calculation.service';
+import { map, tap, withLatestFrom } from 'rxjs/operators';
 import { TranslateService } from "@ngx-translate/core";
+import { MatSelect } from "@angular/material/select";
 
 /*export const sameCalculationsValidator: ValidatorFn = (control: AbstractControl):
   ValidationErrors | null => {
@@ -27,8 +27,11 @@ import { TranslateService } from "@ngx-translate/core";
 export class ComparisonComponent implements AfterViewInit {
   calculations$?: Observable<CalculationSlice[]>;
   candidates$?: Observable<CalculationSlice[]>;
-  compareForm: FormGroup;
-  @ViewChild('candidates') bSelect!: SelectComponent;
+  compareForm = this.builder.group({
+    a: ['', Validators.required],
+    b: ['', Validators.required]
+  });
+  @ViewChild('candidates') bSelect!: MatSelect;
   loadingCandidates?: boolean;
 
   constructor(
@@ -39,11 +42,6 @@ export class ComparisonComponent implements AfterViewInit {
     private builder: FormBuilder,
     private moduleRef: NgModuleRef<any>
   ) {
-    this.compareForm = this.builder.group({
-      a: ['', Validators.required],
-      b: ['', Validators.required]
-    });
-
     this.calculations$ = this.store.select(CalculationSelectors.selectCalculations);
   }
 
@@ -52,7 +50,7 @@ export class ComparisonComponent implements AfterViewInit {
   }
 
   submit() {
-    const a = this.compareForm.value.a, b = this.compareForm.value.b;
+    const a =  this.compareForm.value.a as string, b = this.compareForm.value.b as string;
     this.dialogService.open(ComparisonReportModalComponent, this.moduleRef, {
       data: { a, b }
     });
@@ -68,7 +66,7 @@ export class ComparisonComponent implements AfterViewInit {
       withLatestFrom(this.translate.get('map.compare.choose-scenario')),
       tap(([res, trans]) => {
         this.loadingCandidates = false;
-        this.bSelect.noItemSelectedLabel = trans;
+        this.bSelect.placeholder = trans;
         this.bSelect.disabled = res.length === 0;
       }),
       map(([res, _]) => res)

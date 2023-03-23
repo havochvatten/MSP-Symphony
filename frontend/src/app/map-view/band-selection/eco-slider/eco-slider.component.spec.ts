@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { EcoSliderComponent } from './eco-slider.component';
@@ -7,14 +7,11 @@ import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { provideMockStore } from '@ngrx/store/testing';
 import { initialState } from '@data/metadata/metadata.reducers';
 
-function setUp() {
-  const fixture: ComponentFixture<EcoSliderComponent> = TestBed.createComponent(EcoSliderComponent);
-  const component: EcoSliderComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('EcoSliderComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<EcoSliderComponent>,
+      component: EcoSliderComponent;
+
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
@@ -26,10 +23,12 @@ describe('EcoSliderComponent', () => {
         metadata: initialState
       }})]
     }).compileComponents();
+    fixture = TestBed.createComponent(EcoSliderComponent);
+    component = fixture.componentInstance;
+    component.ngOnInit();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

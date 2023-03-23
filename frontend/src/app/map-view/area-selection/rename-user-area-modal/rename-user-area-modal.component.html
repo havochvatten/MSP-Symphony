@@ -5,12 +5,11 @@
   [placeholder]="'map.user-area.rename.modal.placeholder' | translate"
 />
 <div>
-  <hav-button stateType="alert" buttonType="secondary" (click)="close()">{{
+  <button mat-flat-button color="warn" (click)="close()">{{
     'map.user-area.rename.modal.close' | translate
-  }}</hav-button>
-  <hav-button
+  }}</button>
+  <button mat-flat-button
     (click)="save()"
     [disabled]="areaName.length === 0 || !hasChanged"
-    >{{ 'map.user-area.rename.modal.save' | translate }}</hav-button
-  >
+    >{{ 'map.user-area.rename.modal.save' | translate }}</button>
 </div>

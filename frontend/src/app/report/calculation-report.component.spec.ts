@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CalculationReportComponent } from './calculation-report.component';
 import { SharedModule } from '../shared/shared.module';
@@ -11,17 +11,13 @@ import { HttpClientModule } from '@angular/common/http';
 import { TranslationSetupModule } from '../app-translation-setup.module';
 import { PressureChartComponent } from './pressure-chart/pressure-chart.component';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
-
-function setUp() {
-  const fixture: ComponentFixture<CalculationReportComponent> = TestBed.createComponent(
-    CalculationReportComponent
-  );
-  const component: CalculationReportComponent = fixture.componentInstance;
-  return { component, fixture };
-}
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 describe('CalculationReportComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<CalculationReportComponent>,
+      component: CalculationReportComponent;
+
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         CalculationReportComponent,
@@ -30,7 +26,7 @@ describe('CalculationReportComponent', () => {
         CumulativeEffectEtcComponent,
         PressureChartComponent
       ],
-      imports: [SharedModule, RouterTestingModule, HttpClientModule, TranslationSetupModule],
+      imports: [SharedModule, RouterTestingModule, HttpClientModule, TranslationSetupModule, MatProgressSpinnerModule],
       providers: [
         provideMockStore({
           initialState: {
@@ -39,10 +35,12 @@ describe('CalculationReportComponent', () => {
         })
       ]
     }).compileComponents();
+    fixture = TestBed.createComponent(CalculationReportComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

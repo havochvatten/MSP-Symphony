@@ -1,27 +1,30 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { HavButtonModule } from 'hav-components';
 import { provideMockStore } from '@ngrx/store/testing';
 import { PopupMessageComponent } from './popup-message.component';
-
-function setUp() {
-  const fixture: ComponentFixture<PopupMessageComponent> = TestBed.createComponent(PopupMessageComponent);
-  const component: PopupMessageComponent = fixture.componentInstance;
-  return { component, fixture };
-}
+import { StoreModule } from "@ngrx/store";
 
 describe('PopupMessageComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<PopupMessageComponent>,
+      component: PopupMessageComponent;
+
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
+      imports: [StoreModule.forRoot({}, {})],
       declarations: [ PopupMessageComponent ],
-      imports: [HavButtonModule],
-      providers: [provideMockStore()]
+      providers: [provideMockStore({
+        initialState: {
+          message : { popup: [] }
+        }
+      })]
     })
     .compileComponents();
+    fixture = TestBed.createComponent(PopupMessageComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

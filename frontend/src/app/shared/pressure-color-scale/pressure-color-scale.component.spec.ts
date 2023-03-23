@@ -1,23 +1,22 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { PressureColorScaleComponent } from './pressure-color-scale.component';
 
-function setUp() {
-  const fixture: ComponentFixture<PressureColorScaleComponent> = TestBed.createComponent(PressureColorScaleComponent);
-  const component: PressureColorScaleComponent = fixture.componentInstance;
-  return { component, fixture };
-}
-
 describe('PressureColorScaleComponent', () => {
-  beforeEach(async(() => {
+  let fixture: ComponentFixture<PressureColorScaleComponent>,
+      component: PressureColorScaleComponent;
+
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ PressureColorScaleComponent ]
     })
     .compileComponents();
+    fixture = TestBed.createComponent(PressureColorScaleComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   }));
 
   it('should create', () => {
-    const { component } = setUp();
     expect(component).toBeTruthy();
   });
 });

@@ -28,6 +28,10 @@ export interface UserArea extends SelectableArea {
   description: string;
 }
 
+export interface AreaImport {
+  areaNames: string[];
+}
+
 export interface AreaGroup {
   en: string;
   name: string;

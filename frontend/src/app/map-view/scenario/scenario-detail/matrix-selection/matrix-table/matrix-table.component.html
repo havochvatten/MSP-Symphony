@@ -25,7 +25,8 @@
         </th>
       </tr>
       <tr *ngFor="let row of matrixData.sensMatrix.rows; index as i">
-        <th scope="row">{{ getName(row) }}</th>
+        <th scope="row" title="{{ getName(row) }}">{{ getName(row)
+            // FIXME: ugly duplicate call, refactorise. See comment in getName method. }}</th>
         <td *ngFor="let column of row.columns; index as j" [attr.data-pressure]="column.value > 0">
           <input
             type="number"
@@ -46,18 +47,25 @@
   </table>
 </main>
 <section class="buttons">
-  <hav-button buttonType="secondary" stateType="alert" (click)="close()">{{
-    'map.editor.matrix.table.cancel' | translate
-    }}</hav-button>
+  <button mat-flat-button (click)="confirmClose()" [ngClass]="'secondary'">{{
+    'map.editor.matrix.table.close' | translate
+    }}</button>
   <div class="right">
-    <hav-button [disabled]="immutable" stateType="alert" (click)="deleteMatrix()">{{
-      'map.editor.matrix.table.delete' | translate
-      }}</hav-button>
-    <hav-button [disabled]="immutable" (click)="save()">{{
-      'map.editor.matrix.table.save' | translate
-    }}</hav-button>
-    <hav-button [disabled]="!hasChangedName" (click)="saveAsNew()">{{
-      'map.editor.matrix.table.save-as' | translate
-    }}</hav-button>
+    <button mat-flat-button color="warn"
+            [disabled]="immutable"
+            [title]="immutable ? ('map.editor.matrix.table.immutable-note' | translate:{ immutableName: initialName }) : ''" (click)="deleteMatrix()">
+      {{ 'map.editor.matrix.table.delete' | translate }}</button>
+    <button mat-flat-button
+            [disabled]="immutable || !dirty"
+            [title]="immutable                        ? ('map.editor.matrix.table.immutable-note' | translate:{ immutableName: initialName }) :
+                     hasChangedName() && nameExists() ? ('map.editor.matrix.table.name-exists'    | translate:{ takenName: matrixData.name }) : ''"
+            (click)="save(initClean.bind(this))">
+      {{ 'map.editor.matrix.table.save' | translate }}</button>
+    <button mat-flat-button
+            [disabled]="!hasChangedName() || nameExists()"
+            [title]="!hasChangedName()  ? ('map.editor.matrix.table.save-as-tip' | translate) :
+                      nameExists()      ? ('map.editor.matrix.table.name-exists' | translate:{ takenName: matrixData.name }) : ''"
+            (click)="saveAsNew(initClean.bind(this))">
+      {{ 'map.editor.matrix.table.save-as' | translate }}</button>
   </div>
 </section>

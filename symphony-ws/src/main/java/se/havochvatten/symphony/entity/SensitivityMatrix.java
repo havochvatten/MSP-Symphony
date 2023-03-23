@@ -1,5 +1,8 @@
 package se.havochvatten.symphony.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -50,6 +53,7 @@ public class SensitivityMatrix implements Serializable {
     private String name;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "sensitivityMatrix")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Sensitivity> sensitivityList;
 
     @OneToMany(mappedBy = "sensitivityMatrix")

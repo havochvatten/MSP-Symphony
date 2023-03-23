@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
-import { mergeDeep, setIn } from 'immutable';
-import { Selection, State, StatePath } from './metadata.interfaces';
+import { setIn } from 'immutable';
+import { Selection, State } from './metadata.interfaces';
 import { MetadataActions, MetadataInterfaces } from './';
 import { ScenarioActions } from "@data/scenario";
 

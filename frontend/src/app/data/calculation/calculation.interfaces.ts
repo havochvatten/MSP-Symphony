@@ -1,10 +1,9 @@
 import { ChartData } from '@src/app/report/pressure-chart/pressure-chart.component';
 import { Extent } from 'ol/extent';
 import { ProjectionLike } from "ol/proj";
-import { NormalizationOptions, NormalizationType } from "@data/calculation/calculation.service";
+import { NormalizationOptions } from "@data/calculation/calculation.service";
 import { BandType } from "@data/metadata/metadata.interfaces";
 import { GeoJSONFeatureCollection } from "ol/format/GeoJSON";
-import ImageLayer from "ol/layer/Image";
 
 // TODO Move calculation element to Scenario state
 export interface State {

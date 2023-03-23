@@ -49,7 +49,6 @@ export class CalculationReportComponent {
     private metadataService: MetadataService
   ) {
     this.locale = this.translate.currentLang;
-    this.store.dispatch(CalculationActions.fetchPercentile());
 
     const that = this;
     route.paramMap
@@ -58,25 +57,24 @@ export class CalculationReportComponent {
         filter(calcId => calcId !== null),
         tap(calcId => {
           this.imageUrl = `${env.apiBaseUrl}/calculation/${calcId}/image`;
-          reportService.getReport(calcId as string)
-            .subscribe({
-              next(report) {
-                that.report = report;
-                that.area = reportService.calculateArea(report);
-                that.loadingReport = false;
+          reportService.getReport(calcId as string).subscribe({
+            next(report) {
+              that.report = report;
+              that.area = reportService.calculateArea(report);
+              that.loadingReport = false;
 
-                that.store.dispatch(MetadataActions.fetchMetadata({ baseline: report.baselineName }));
-              },
-              error() {
-                that.loadingReport = false;
-              }
-            })
-        })).subscribe();
+              that.store.dispatch(MetadataActions.fetchMetadata({ baseline: report.baselineName }));
+            },
+            error() {
+              that.loadingReport = false;
+            }
+          });
+        })
+      )
+      .subscribe();
 
     this.metadata$ = this.store.select(MetadataSelectors.selectMetadata);
-    this.metadata$.pipe(
-      filter(data => data.ecoComponent.length>0)
-    ).subscribe((layerData) => {
+    this.metadata$.pipe(filter(data => data.ecoComponent.length > 0)).subscribe(layerData => {
       this.bandMap = {
         b: this.metadataService.flattenBandGroups(layerData.pressureComponent),
         e: this.metadataService.flattenBandGroups(layerData.ecoComponent)
@@ -84,11 +82,11 @@ export class CalculationReportComponent {
     });
 
     this.percentileValue$ = this.store.select(CalculationSelectors.selectPercentileValue);
+    this.store.dispatch(CalculationActions.fetchPercentile());
   }
 
   formatChartData(data: ChartData, metadata: LayerData) {
-    if (!metadata.ecoComponent.length || !data)
-      return undefined;
+    if (!metadata.ecoComponent.length || !data) return undefined;
 
     const changeName = (node: any) => {
       try {
@@ -101,7 +99,7 @@ export class CalculationReportComponent {
       } catch (error) {
         return { ...node };
       }
-    }
+    };
 
     // Needed to make the object extensible
     const _data = cloneDeep(data);
@@ -115,9 +113,9 @@ export class CalculationReportComponent {
     return report.normalization.type === NormalizationType.Domain;
   }
 
-  calculatePercentOfTotal(components: Record<number, number> , total: number) {
+  calculatePercentOfTotal(components: Record<number, number>, total: number) {
     return fromJS(components)
-      .map((x:number) => total && 100*x/total)
+      .map(x => total && (100 * (x as number)) / total)
       .toJS();
   }
 }
