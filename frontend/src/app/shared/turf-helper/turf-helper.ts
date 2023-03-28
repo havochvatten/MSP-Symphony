@@ -21,8 +21,9 @@ function turfAsSymphonyPoly(turfPolygon: TFeature<TPolygon|MultiPolygon>): Polyg
 }
 
 function turfSubtract(polygon: Feature, intersector: Feature): Polygon | null {
-  const turfDiff = difference(extractTurfPolygon(polygon), extractTurfPolygon(intersector));
-  return turfDiff ? turfAsSymphonyPoly(turfDiff) : null;
+  const tFeature = extractTurfPolygon(polygon),
+        turfDiff = difference(tFeature, extractTurfPolygon(intersector));
+  return turfDiff && !booleanEqual(tFeature, turfDiff) ? turfAsSymphonyPoly(turfDiff) : null;
 }
 
 function turfIntersect(polygon: Feature, intersector: Feature): Polygon | null {
