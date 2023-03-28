@@ -42,6 +42,16 @@
                 "meta-description": "Sparas som:"
             }
         },
+        "merge-areas": {
+            "modal": {
+                "header": "Sammanfoga områden",
+                "message": "Bekräfta att spara det sammanfogade området.",
+                "message-alts": "Spara det sammanfogade området som ett nytt område, eller skriv över ett befintligt område.",
+                "confirm": "Sammanfoga områden",
+                "save-new": "Spara som nytt område",
+                "save-overwrite": "Ersätt befintligt område: « {{ name }} »"
+            }
+        },
         "editor": {
             "title": "Scenarion",
             "operation": {

@@ -44,6 +44,7 @@
     "@turf/difference": "^6.5.0",
     "@turf/helpers": "^6.5.0",
     "@turf/intersect": "^6.5.0",
+    "@turf/union": "^6.5.0",
     "@types/arcgis-rest-api": "^10.4.5",
     "@types/ol": "^6.5.3",
     "@types/proj4": "^2.5.0",

@@ -79,7 +79,6 @@ export class MatrixSelectionComponent implements OnDestroy {
                   metaDescription: overlap.defaultMatrix.name
                 }
               }),
-              multi: false,
               headerTextKey: 'map.editor.select-intersection.header',
               messageTextKey: 'map.editor.select-intersection.message',
               confirmTextKey: 'map.editor.select-intersection.confirm-selection',

@@ -42,6 +42,16 @@
                 "meta-description": "Enregistré comme:"
             }
         },
+        "merge-areas": {
+            "modal": {
+                "header": "Unifier deux zones",
+                "message": "Confirmer l'enregistrement de la zone unifiée",
+                "message-alts": "Enregistrez la zone unifiée en tant que nouvelle zone, ou écrasez une zone existante.",
+                "confirm": "Unifier les zones",
+                "save-new": "Enregistrer comme une nouvelle zone",
+                "save-overwrite": "Écraser la zone existante: « {{ name }} »"
+            }
+        },
         "editor": {
             "title": "Scénarios",
             "operation": {

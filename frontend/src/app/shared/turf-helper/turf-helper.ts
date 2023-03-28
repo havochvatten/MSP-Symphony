@@ -6,6 +6,7 @@ import { polygon, multiPolygon, MultiPolygon} from "@turf/helpers";
 import intersect from "@turf/intersect";
 import booleanEqual from "@turf/boolean-equal";
 import difference from "@turf/difference";
+import union from "@turf/union";
 
 function extractTurfPolygon(feature: Feature): TFeature<TPolygon|MultiPolygon> {
   const geometry = feature.getGeometry() as SimpleGeometry,
@@ -24,6 +25,11 @@ function turfSubtract(polygon: Feature, intersector: Feature): Polygon | null {
   const tFeature = extractTurfPolygon(polygon),
         turfDiff = difference(tFeature, extractTurfPolygon(intersector));
   return turfDiff && !booleanEqual(tFeature, turfDiff) ? turfAsSymphonyPoly(turfDiff) : null;
+}
+
+export function turfMerge(polygon: Feature, extension: Feature): Polygon | null {
+  const merged = union(extractTurfPolygon(polygon), extractTurfPolygon(extension));
+  return merged ? turfAsSymphonyPoly(merged) : null;
 }
 
 function turfIntersect(polygon: Feature, intersector: Feature): Polygon | null {

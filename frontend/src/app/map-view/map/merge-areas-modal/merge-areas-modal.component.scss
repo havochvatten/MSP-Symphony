@@ -1,0 +1,15 @@
+:host {
+  max-width: 540px;
+
+  .intersection-alt.merged app-inline-map {
+    width: 384px;
+    height: 384px;
+    margin: 0 auto;
+  }
+
+  .merged-area-options {
+    .mat-radio-button {
+      display: block;
+    }
+  }
+}

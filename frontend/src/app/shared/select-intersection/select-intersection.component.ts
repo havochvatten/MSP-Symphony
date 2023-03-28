@@ -27,9 +27,9 @@ export class SelectIntersectionComponent {
   constructor( private dialog: DialogRef,
                private conf: DialogConfig ) {
     this.areas                  = conf.data.areas;
-    this.multi                  = conf.data.multi;
     this.headerTextKey          = conf.data.headerTextKey;
     this.messageTextKey         = conf.data.messageTextKey;
+    this.multi                  = conf.data.multi           || false;
     this.confirmTextKey         = conf.data.confirmTextKey  || 'confirmation-modal.confirm'
     this.cancelTextKey          = conf.data.cancelTextKey   || 'confirmation-modal.cancel';
     this.metaDescriptionTextKey = conf.data.metaDescriptionTextKey || null;

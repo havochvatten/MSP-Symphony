@@ -29,11 +29,14 @@ import AreaLayer from '@src/app/map-view/map/layers/area-layer';
 import { Extent } from 'ol/extent';
 import { DataLayerService } from '@src/app/map-view/map/layers/data-layer.service';
 import { isEqual } from "lodash";
-import { dieCutPolygons } from "@shared/turf-helper/turf-helper";
+import { dieCutPolygons, turfMerge } from "@shared/turf-helper/turf-helper";
 import { SelectIntersectionComponent } from "@shared/select-intersection/select-intersection.component";
-import { MultiPolygon, Polygon as OLPolygon } from "ol/geom";
+import { MultiPolygon, Polygon as OLPolygon, SimpleGeometry } from "ol/geom";
 import GeoJSON from "ol/format/GeoJSON";
 import { Geometry } from "geojson";
+import { MergeAreasModalComponent } from "@src/app/map-view/map/merge-areas-modal/merge-areas-modal.component";
+import { AreaOverlapFragment } from "@src/app/map-view/scenario/scenario-detail/matrix-selection/matrix.interfaces";
+import { AreaSelectionConfig } from "@shared/select-intersection/select-intersection.interfaces";
 
 @Component({
   selector: 'app-map',
@@ -173,8 +176,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     this.scenarioLayer = new ScenarioLayer(this.scenarioService, this.map.getView().getProjection().getCode(), this.store);
 
-    this.areaLayer = new AreaLayer(this.map, this.dispatchSelectionUpdate, this.zoomToExtent, this.onDrawEnd, this.onSplitClick,
-      this.scenarioLayer, this.translateService, this.geoJson); // Will add itself to the map
+    this.areaLayer = new AreaLayer(
+        this.map, this.dispatchSelectionUpdate, this.zoomToExtent,
+        this.onDrawEnd, this.onSplitClick, this.onMergeClick,
+        this.scenarioLayer, this.translateService, this.geoJson); // Will add itself to the map
     this.map.addLayer(this.areaLayer);
 
     this.map.addLayer(this.scenarioLayer);
@@ -235,12 +240,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   // Alt key + select area interaction
   onSplitClick = async (feature: Feature, prevFeature: Feature) => {
     const diff = dieCutPolygons(feature, prevFeature), prevName = prevFeature.get('name');
-    if(diff.length > 0) {
+    if (diff.length > 0) {
       const areaConf = diff.map( (p, ix) =>
-        { return {
-          polygon: this.convert6326(p),
-          metaDescription: '« ' +  areaSliceName(prevName, ix) + ' »'};
-        }),
+        this.reprojectAsFragment(p, ['«', areaSliceName(prevName, ix),'»'].join(' ')) ),
 
         polygonsToSave = await this.dialogService.open(SelectIntersectionComponent, this.moduleRef, {
           data: {
@@ -257,22 +259,58 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
       polygonsToSave.forEach((p, ix) => {
         if(p) {
-          const gtype = areaConf[ix].polygon.type,
-            transformed = gtype === 'MultiPolygon' ?
-              new MultiPolygon((areaConf[ix].polygon as any).coordinates) :
-              new OLPolygon((areaConf[ix].polygon as any).coordinates);
-          transformed.transform('EPSG:3857', 'EPSG:4326');
-
           this.store.dispatch(AreaActions.createUserDefinedArea({
             name: areaSliceName(prevFeature.get('name'), ix),
-            polygon: {
-              type: gtype,
-              coordinates: transformed.getCoordinates()
-            },
+            polygon: MapComponent.convertToSave(areaConf[ix].polygon),
             description: ''
           }));
         }
       });
+    }
+  }
+
+  // (Alt + Shift) keys + select area interaction
+  onMergeClick = async (feature: Feature, prevFeature: Feature) => {
+
+    // Some readability may have been sacrificed for the convenience of
+    // utilizing existing component logic (and versatility of integers).
+    // The MergeAreasModal component will return either:
+    // the numeric index of the input areas + 1,
+    // 0 if the user opts to save the merged area as a new area,
+    // -1 if the user cancels the operation
+    //
+    // To access the input arrays we, however arbitrarily, subtract 1
+    // from the return value and treat -1 as the special case to indicate
+    // new area creation.
+
+    const paths = [prevFeature.get('statePath'), feature.get('statePath')],
+          names = [prevFeature.get('name'), feature.get('name')],
+          merged = turfMerge(feature, prevFeature);
+    if(merged !== null) {
+      const areaIndexToSave = await this.dialogService.open(MergeAreasModalComponent, this.moduleRef, {
+        data : {
+          areas: [this.reprojectAsFragment(merged, '')],
+          paths: paths,
+          names: names
+        }
+      }) as number - 1;
+
+      if (areaIndexToSave >= -1) {
+
+        const areaToSave = {
+          id: areaIndexToSave === -1 ? 0 : paths[areaIndexToSave][1],
+          name: areaIndexToSave === -1 ?
+            names[0] + ' extension' : names[areaIndexToSave],
+          polygon: MapComponent.convertToSave(merged!),
+          description: ['"', names[0], '" extended by "', names[1], '"' ].join('')
+        }
+
+        if (areaIndexToSave === -1) {
+          this.store.dispatch(AreaActions.createUserDefinedArea(areaToSave));
+        } else {
+          this.store.dispatch(AreaActions.updateUserDefinedArea(areaToSave));
+        }
+      }
     }
   }
 
@@ -282,6 +320,23 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     return this.geoJson!.writeGeometryObject(
       this.geoJson!.readGeometry(polygon, { featureProjection: 'EPSG:4326', dataProjection: 'EPSG:6326'}),
       { featureProjection: 'EPSG:4326'})
+  }
+
+  reprojectAsFragment(p: Polygon, description: string) : AreaSelectionConfig {
+    return {
+      polygon: this.convert6326(p),
+      metaDescription: description
+    };
+  }
+
+  static convertToSave(polygon : any): Polygon {
+     const transformed = polygon.type === 'MultiPolygon' ?
+        new MultiPolygon((polygon).coordinates) :
+        new OLPolygon((polygon).coordinates);
+    transformed.transform('EPSG:3857', 'EPSG:4326');
+
+    return {  type:        transformed.getType().toString(),
+              coordinates: transformed.getCoordinates() };
   }
 
   public zoomIn() {

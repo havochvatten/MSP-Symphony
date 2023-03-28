@@ -102,6 +102,7 @@ class AreaLayer extends VectorLayer<VectorSource> {
     private zoomToExtent: (extent: Extent, duration: number) => void,
     onDrawEnd = (polygon: Polygon) => {},
     onSplitClick = (feature: Feature, prevFeature: Feature) => {},
+    onMergeClick = (feature: Feature, prevFeature: Feature) => {},
     private scenarioLayer: ScenarioLayer,
     private translateService: TranslateService,
     private geoJson: GeoJSON
@@ -155,7 +156,11 @@ class AreaLayer extends VectorLayer<VectorSource> {
         this.on('select', event => {
           const feature = event.selected[0];
           if(event.mapBrowserEvent.originalEvent.altKey && that.previousSelectedFeature && feature) {
-            onSplitClick(feature, that.previousSelectedFeature);
+            if(event.mapBrowserEvent.originalEvent.shiftKey) {
+              onMergeClick(feature, that.previousSelectedFeature);
+            } else {
+              onSplitClick(feature, that.previousSelectedFeature);
+            }
           }
           if (feature !== undefined) {
             console.log('dispatching selection ' + feature.get('id'))

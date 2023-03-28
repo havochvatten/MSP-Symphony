@@ -15,4 +15,5 @@ export default [
   ['Commons Lang', 'https://commons.apache.org/proper/commons-lang/', '3.9'],
   ['Jackson', 'https://github.com/FasterXML/jackson', '2.12.6'],
   ['RESTEasy', 'https://resteasy.dev/', '3.9.0.Final'],
+  ['Turf.js', 'https://turfjs.org/', '6.5.0'],
 ];

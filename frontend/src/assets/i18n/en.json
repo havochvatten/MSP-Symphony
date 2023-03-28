@@ -42,6 +42,16 @@
                 "meta-description": "Will be named:"
             }
         },
+        "merge-areas": {
+            "modal": {
+                "header": "Merge two areas",
+                "message": "Confirm saving the merged area.",
+                "message-alts": "Save the merged area as a new area, or overwrite an existing area.",
+                "confirm": "Merge areas",
+                "save-new": "Save new area",
+                "save-overwrite": "Overwrite existing area: « {{ name }} »"
+            }
+        },
         "editor": {
             "title": "Scenarios",
             "operation": {
