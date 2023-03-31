@@ -25,7 +25,7 @@ export const scenarioReducer = createReducer(
     ...state,
     scenarios
   })),
-  on(ScenarioActions.openScenario, (state, { scenario, index }) => ({
+  on(ScenarioActions.openScenario, (state, { index }) => ({
     ...state,
     active: index,
     scenarios: updateIn(state.scenarios, [index, 'changes', 'features'], [], (features) =>
@@ -47,6 +47,11 @@ export const scenarioReducer = createReducer(
     // Optimistically close scenario to reduce latency
     active: undefined,
     activeFeature: undefined
+  })),
+  on(ScenarioActions.saveScenarioSuccessUpdate, (state, { savedScenario }) => ({
+    ...state,
+    scenarios: updateIn(state.scenarios, [state.active], () => savedScenario),
+    matricesLoading: true
   })),
   on(CalculationActions.calculationSucceeded, (state, { calculation }) => ({
     ...state,
@@ -160,7 +165,7 @@ export const scenarioReducer = createReducer(
   })),
   on(fetchAreaMatricesSuccess, (state, { matrixData }) => ({
     ...state,
-    matricesLoading: false
+    matricesLoading: matrixData.overlap.length !== 0
   })),
   on(fetchAreaMatricesFailure, state => ({
     ...state,

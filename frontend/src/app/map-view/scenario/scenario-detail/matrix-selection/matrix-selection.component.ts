@@ -16,7 +16,10 @@ import { MatrixService } from './matrix.service';
 import { ScenarioActions, ScenarioSelectors } from "@data/scenario";
 import { Subscription } from "rxjs";
 import { MatSelect } from "@angular/material/select";
-import { GeoJSONFeature } from "ol/format/GeoJSON";
+import {
+  SelectIntersectionComponent
+} from "@src/app/shared/select-intersection/select-intersection.component";
+import { Scenario } from "@data/scenario/scenario.interfaces";
 
 type MatrixOption = 'STANDARD' | 'CUSTOM' | 'OPTIONAL';
 
@@ -37,15 +40,15 @@ export class MatrixSelectionComponent implements OnDestroy {
   firstAreaOfSelectedAreaType?: Area;
   areaTypeMatrixOptions: MatrixRef[] = [];
   selectedCustomMatrix?: MatrixRef;
-  @Input() feature!: GeoJSONFeature; // needed as parameter for refreshing matrices after deletion
+  @Input() scenario!: Scenario;
   @Output() areaTypeSelected = new EventEmitter<MatrixParameterResponse>();
   @Output() matrixOverridden = new EventEmitter<number|undefined>(); // id of user-defined matrix
   @ViewChild('altMx') altMatrixSelect: MatSelect | undefined;
   @ViewChild('usrMx') userMatrixSelect: MatSelect| undefined;
   @ViewChild('typeMx') typeMatrixSelect: MatSelect | undefined;
   private defaultMatrixTranslation?: string;
-  private matrixDataLoadingSubcription: Subscription;
-  private matrixDataSubcription: Subscription;
+  private matrixDataLoadingSubscription: Subscription;
+  private matrixDataSubscription: Subscription;
 
   constructor(
     private translateService: TranslateService,
@@ -57,19 +60,46 @@ export class MatrixSelectionComponent implements OnDestroy {
     this.translateService.get('map.editor.matrix.default-matrix').subscribe(res => {
       this.defaultMatrixTranslation = res;
     });
-
-    this.matrixDataSubcription = this.store.select(AreaSelectors.selectAreaMatrixData).subscribe(data => {
+    this.loadingMatrix = true;
+    this.matrixDataSubscription = this.store.select(AreaSelectors.selectAreaMatrixData).subscribe(async data => {
       if (data) {
-        this.defaultArea = data.defaultArea;
-        this.areaTypeSelected.emit({
-          defaultMatrixId: this.defaultArea.defaultMatrix.id,
-          areaTypes: []});
-        this.areaTypes = data.areaTypes.filter(type => !type.coastalArea);
+        if(data.defaultArea) {
+          this.defaultArea = data.defaultArea;
+          this.areaTypeSelected.emit({
+            defaultMatrixId: this.defaultArea.defaultMatrix.id,
+            areaTypes: []
+          });
+          this.areaTypes = data.areaTypes.filter(type => !type.coastalArea);
+        } else if(data.overlap.length > 0 && !this.loadingMatrix) {
+          const selectedArea = await this.dialogService.open(SelectIntersectionComponent, this.moduleRef, {
+            data: {
+              areas: data.overlap.map(overlap => {
+                return {
+                  polygon: overlap.polygon,
+                  metaDescription: overlap.defaultMatrix.name
+                }
+              }),
+              headerTextKey: 'map.editor.select-intersection.header',
+              messageTextKey: 'map.editor.select-intersection.message',
+              confirmTextKey: 'map.editor.select-intersection.confirm-selection',
+              metaDescriptionTextKey: 'map.editor.select-intersection.default-matrix'
+            }
+          }) as number;
+          if(selectedArea in data.overlap) {
+            this.store.dispatch(ScenarioActions.saveActiveScenario({ scenarioToBeSaved:{ ...this.scenario,
+                feature: { type:'Feature', geometry: data.overlap[selectedArea].polygon, properties: {} }
+              }, updateState: true }));
+            this.store.dispatch(ScenarioActions.fetchAreaMatrices({ geometry: data.overlap[selectedArea].polygon }));
+          } else {
+            this.store.dispatch(ScenarioActions.closeActiveScenario());
+          }
+        }
       }
     });
 
-    this.matrixDataLoadingSubcription = this.store.select(ScenarioSelectors.selectAreaMatrixDataLoading).subscribe(loading => {
+    this.matrixDataLoadingSubscription = this.store.select(ScenarioSelectors.selectAreaMatrixDataLoading).subscribe(loading => {
       this.loaded = !loading;
+      this.loadingMatrix = !loading;
     });
   }
 
@@ -175,7 +205,7 @@ export class MatrixSelectionComponent implements OnDestroy {
         this.store.dispatch(AreaActions.addUserDefinedMatrix({ matrix: {id: id!, name, immutable: false } }));
       }
       if(deleted) {
-        this.store.dispatch(ScenarioActions.fetchAreaMatrices({ geometry: this.feature.geometry }))
+        this.store.dispatch(ScenarioActions.fetchAreaMatrices({ geometry: this.scenario.feature.geometry }))
       }
     } catch (error) {
       this.loadingMatrix = false;
@@ -184,7 +214,7 @@ export class MatrixSelectionComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.matrixDataLoadingSubcription.unsubscribe();
-    this.matrixDataSubcription.unsubscribe();
+    this.matrixDataLoadingSubscription.unsubscribe();
+    this.matrixDataSubscription.unsubscribe();
   }
 }

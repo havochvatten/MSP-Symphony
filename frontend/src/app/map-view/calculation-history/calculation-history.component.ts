@@ -81,7 +81,11 @@ export class CalculationHistoryComponent {
         catch(error => console.error(error));
   }
 
-  async confirmDelete(calculation: CalculationSlice) {
+  async confirmDelete(calculation: CalculationSlice, event: Event) {
+
+    event.stopPropagation();   // prevent "click-through" on the list entry as it
+    event.preventDefault();    // would draw the calculation result selected for
+                               // deletion to the map
 
     const deletionConfirmed = await this.dialogService.open(ConfirmationModalComponent, this.moduleRef,
       { data: {
@@ -94,11 +98,9 @@ export class CalculationHistoryComponent {
             });
 
     if (deletionConfirmed) {
-      await this.store.dispatch(CalculationActions.deleteCalculation({
+      this.store.dispatch(CalculationActions.deleteCalculation({
         calculationToBeDeleted: calculation
       }));
-      this.store.dispatch(CalculationActions.fetchCalculations());
-      this.store.dispatch(ScenarioActions.fetchScenarios());
     }
   }
 

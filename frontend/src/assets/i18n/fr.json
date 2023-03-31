@@ -32,6 +32,26 @@
                 "confirm": "Réinitialiser"
             }
         },
+        "split-area": {
+            "modal": {
+                "header": "Outil de zonage différentiel",
+                "message": "Sélectionnez les sections à enregistrer en tant que nouvelles zones.",
+                "message-single": "Confirmez pour enregistrer cette section en tant que nouvelle région.",
+                "confirm": "Enregistrer les zones sélectionnées",
+                "confirm-single": "Enregistré cette section",
+                "meta-description": "Enregistré comme:"
+            }
+        },
+        "merge-areas": {
+            "modal": {
+                "header": "Unifier deux zones",
+                "message": "Confirmer l'enregistrement de la zone unifiée",
+                "message-alts": "Enregistrez la zone unifiée en tant que nouvelle zone, ou écrasez une zone existante.",
+                "confirm": "Unifier les zones",
+                "save-new": "Enregistrer comme une nouvelle zone",
+                "save-overwrite": "Écraser la zone existante: « {{ name }} »"
+            }
+        },
         "editor": {
             "title": "Scénarios",
             "operation": {
@@ -103,7 +123,8 @@
                 "description": "Définir la valeur maximale en tant que:",
                 "area": "Valeur maximale dans la zone de calcul",
                 "domain": "Normalisé au {{ ordinalPercentileValue }} centile dans la zone MSP",
-                "custom": "Valeur définie par l'utilisateur",
+                "mean-plus-stddev": "Moyenne +/- \nmultiple de l'écart type:",
+                "custom": "Valeur définie par l'utilisateur:",
                 "custom-value": "Valeur"
             },
             "changes": {
@@ -137,6 +158,12 @@
             "coastal-areas": {
                 "title": "Zones côtières",
                 "include-coast": "Inclure la côte"
+            },
+            "select-intersection": {
+                "header": "Couplages ambigus aux matrices de sensibilité",
+                "message": "La zone sélectionnée a des couplages ambigus avec les matrices de sensibilité par défaut.<br>Veuillez sélectionner la zone à analyser.",
+                "default-matrix": "Matrice par défaut pour cette zone:",
+                "confirm-selection": "Analyser la zone sélectionnée"
             },
             "calculate": "Calculer"
         },
@@ -224,9 +251,6 @@
                     "placeholder": "Zone 1",
                     "save": "Sauvegarder",
                     "close": "Fermer"
-                },
-                "error": {
-                    "USER_DEF_AREA_NAME_EXISTS" : "<p>Vous avez déjà enregistré une zone nommée <em>\"{{ areaName }}\"</em>.</p><p>Supprimez ou renommez la zone précédemment enregistrée, ou choisissez un autre nom et réessayez.</p>"
                 }
             },
             "upload": {
@@ -244,8 +268,7 @@
                 },
                 "error": {
                     "NOT_A_GEOPACKAGE": "Le fichier n'es pas un fichier GeoPackage",
-                    "GEOPACKAGE_NO_FEATURES": "Le fichier GeoPackage ne contient pas de zones correspondantes.",
-                    "USER_DEF_AREA_NAME_EXISTS": "Une zone avec ce nom existe déjà."
+                    "GEOPACKAGE_NO_FEATURES": "Le fichier GeoPackage ne contient pas de zones correspondantes."
                 }
             },
             "rename": {
@@ -336,6 +359,7 @@
                 "domain": "{{ ordinalPercentileValue }} centile",
                 "area": "Valeur maximale dans la zone de calcul",
                 "custom": "Valeur définie par l'utilisateur",
+                "mean-plus-stddev": "La moyenne {{ positiveOrNegative }} l'ecart type ⨯ {{ stddevMultiplier }}",
                 "domain-desc": "Le résultat est normalisé afin que {{ percentileValue }}% des données dans la zone d'aménagement maritime soient sous le seuil."
             },
             "sensitivity-matrices": {

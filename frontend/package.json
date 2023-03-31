@@ -1,6 +1,6 @@
 {
   "name": "symphony-fe",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --ssl",
@@ -40,6 +40,11 @@
     "@ngrx/store-devtools": "^14.3.2",
     "@ngx-translate/core": "^14.0.0",
     "@ngx-translate/http-loader": "^7.0.0",
+    "@turf/boolean-equal": "^6.5.0",
+    "@turf/difference": "^6.5.0",
+    "@turf/helpers": "^6.5.0",
+    "@turf/intersect": "^6.5.0",
+    "@turf/union": "^6.5.0",
     "@types/arcgis-rest-api": "^10.4.5",
     "@types/ol": "^6.5.3",
     "@types/proj4": "^2.5.0",

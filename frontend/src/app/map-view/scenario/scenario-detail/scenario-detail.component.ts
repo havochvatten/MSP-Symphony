@@ -198,7 +198,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   }
 
   save() {
-    this.store.dispatch(ScenarioActions.saveActiveScenario({ scenarioToBeSaved: this.scenario }));
+    this.store.dispatch(ScenarioActions.saveActiveScenario({ scenarioToBeSaved: this.scenario, updateState: false }));
   }
 
   hasChanges = () => this.scenario.changes?.features?.length>0;

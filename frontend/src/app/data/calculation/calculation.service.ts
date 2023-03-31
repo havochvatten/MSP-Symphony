@@ -17,12 +17,14 @@ export enum NormalizationType {
   Area = 'AREA',
   Domain = 'DOMAIN',
   UserDefined = 'USER_DEFINED',
+  StandardDeviation = 'STANDARD_DEVIATION',
   Percentile = 'PERCENTILE' // Only used on backend for calibration
 }
 
 export interface NormalizationOptions {
   type: NormalizationType;
   userDefinedValue?: number;
+  stdDevMultiplier?: number;
 }
 
 @Injectable({

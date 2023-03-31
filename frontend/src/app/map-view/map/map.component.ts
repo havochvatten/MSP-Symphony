@@ -28,6 +28,15 @@ import { ScenarioLayer } from '@src/app/map-view/map/layers/scenario-layer';
 import AreaLayer from '@src/app/map-view/map/layers/area-layer';
 import { Extent } from 'ol/extent';
 import { DataLayerService } from '@src/app/map-view/map/layers/data-layer.service';
+import { isEqual } from "lodash";
+import { dieCutPolygons, turfMerge } from "@shared/turf-helper/turf-helper";
+import { SelectIntersectionComponent } from "@shared/select-intersection/select-intersection.component";
+import { MultiPolygon, Polygon as OLPolygon, SimpleGeometry } from "ol/geom";
+import GeoJSON from "ol/format/GeoJSON";
+import { Geometry } from "geojson";
+import { MergeAreasModalComponent } from "@src/app/map-view/map/merge-areas-modal/merge-areas-modal.component";
+import { AreaOverlapFragment } from "@src/app/map-view/scenario/scenario-detail/matrix-selection/matrix.interfaces";
+import { AreaSelectionConfig } from "@shared/select-intersection/select-intersection.interfaces";
 
 @Component({
   selector: 'app-map',
@@ -40,11 +49,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   layerAliasing = true;
 
   private map?: OLMap;
-  private storeSubscription?: Subscription;
-  private areaSubscription?: Subscription;
-  private resultSubscription?: Subscription;
-  private resultDeletedSubscription?: Subscription;
-  private userSubscription?: Subscription;
+  private readonly storeSubscription?: Subscription;
+  private readonly areaSubscription?: Subscription;
+  private readonly resultSubscription?: Subscription;
+  private readonly resultDeletedSubscription?: Subscription;
+  private readonly userSubscription?: Subscription;
   private activeScenario$: Observable<Scenario | undefined>;
   private scenarioSubscription: Subscription;
   private scenarioCloseSubscription: Subscription;
@@ -57,6 +66,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private scenarioLayer!: ScenarioLayer;
 
   public baselineName = '';
+  private geoJson?: GeoJSON;
 
   constructor(
     private store: Store<State>,
@@ -94,7 +104,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.activeScenario$ = this.store.select(ScenarioSelectors.selectActiveScenario);
 
     this.scenarioSubscription = this.activeScenario$.pipe(
-      distinctUntilChanged((prev: Scenario|undefined, curr: Scenario|undefined) => prev?.id === curr?.id),
+      distinctUntilChanged((prev: Scenario|undefined, curr: Scenario|undefined) => prev?.id === curr?.id && isEqual(prev?.feature.geometry, curr?.feature.geometry)),
       isNotNullOrUndefined(),
     ).subscribe((scenario: Scenario) => {
       this.scenarioLayer.clearLayers();
@@ -160,11 +170,16 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     });
     this.resultLayerGroup = new ResultLayerGroup();
     this.map.addLayer(this.resultLayerGroup);
+    this.geoJson = new GeoJSON({
+      featureProjection: this.map.getView().getProjection()
+    });
 
     this.scenarioLayer = new ScenarioLayer(this.scenarioService, this.map.getView().getProjection().getCode(), this.store);
 
-    this.areaLayer = new AreaLayer(this.map, this.dispatchSelectionUpdate, this.zoomToExtent, this.onDrawEnd,
-      this.scenarioLayer, this.translateService); // Will add itself to the map
+    this.areaLayer = new AreaLayer(
+        this.map, this.dispatchSelectionUpdate, this.zoomToExtent,
+        this.onDrawEnd, this.onSplitClick, this.onMergeClick,
+        this.scenarioLayer, this.translateService, this.geoJson); // Will add itself to the map
     this.map.addLayer(this.areaLayer);
 
     this.map.addLayer(this.scenarioLayer);
@@ -222,6 +237,108 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }
   };
 
+  // Alt key + select area interaction
+  onSplitClick = async (feature: Feature, prevFeature: Feature) => {
+    const diff = dieCutPolygons(feature, prevFeature), prevName = prevFeature.get('name');
+    if (diff.length > 0) {
+      const areaConf = diff.map( (p, ix) =>
+        this.reprojectAsFragment(p, ['«', areaSliceName(prevName, ix),'»'].join(' ')) ),
+
+        polygonsToSave = await this.dialogService.open(SelectIntersectionComponent, this.moduleRef, {
+          data: {
+            areas: areaConf,
+            multi: true,
+            projection: 'EPSG:4326',
+            reprojection: 'EPSG:3857',
+            headerTextKey: 'map.split-area.modal.header',
+            messageTextKey: diff.length > 1 ? 'map.split-area.modal.message' : 'map.split-area.modal.message-single',
+            confirmTextKey: diff.length > 1 ? 'map.split-area.modal.confirm' : 'map.split-area.modal.confirm-single',
+            metaDescriptionTextKey: 'map.split-area.modal.meta-description'
+          }
+        }) as boolean[];
+
+      polygonsToSave.forEach((p, ix) => {
+        if(p) {
+          this.store.dispatch(AreaActions.createUserDefinedArea({
+            name: areaSliceName(prevFeature.get('name'), ix),
+            polygon: MapComponent.convertToSave(areaConf[ix].polygon),
+            description: ''
+          }));
+        }
+      });
+    }
+  }
+
+  // (Alt + Shift) keys + select area interaction
+  onMergeClick = async (feature: Feature, prevFeature: Feature) => {
+
+    // Some readability may have been sacrificed for the convenience of
+    // utilizing existing component logic (and versatility of integers).
+    // The MergeAreasModal component will return either:
+    // the numeric index of the input areas + 1,
+    // 0 if the user opts to save the merged area as a new area,
+    // -1 if the user cancels the operation
+    //
+    // To access the input arrays we, however arbitrarily, subtract 1
+    // from the return value and treat -1 as the special case to indicate
+    // new area creation.
+
+    const paths = [prevFeature.get('statePath'), feature.get('statePath')],
+          names = [prevFeature.get('name'), feature.get('name')],
+          merged = turfMerge(feature, prevFeature);
+    if(merged !== null) {
+      const areaIndexToSave = await this.dialogService.open(MergeAreasModalComponent, this.moduleRef, {
+        data : {
+          areas: [this.reprojectAsFragment(merged, '')],
+          paths: paths,
+          names: names
+        }
+      }) as number - 1;
+
+      if (areaIndexToSave >= -1) {
+
+        const areaToSave = {
+          id: areaIndexToSave === -1 ? 0 : paths[areaIndexToSave][1],
+          name: areaIndexToSave === -1 ?
+            names[0] + ' extension' : names[areaIndexToSave],
+          polygon: MapComponent.convertToSave(merged!),
+          description: ['"', names[0], '" extended by "', names[1], '"' ].join('')
+        }
+
+        if (areaIndexToSave === -1) {
+          this.store.dispatch(AreaActions.createUserDefinedArea(areaToSave));
+        } else {
+          this.store.dispatch(AreaActions.updateUserDefinedArea(areaToSave));
+        }
+      }
+    }
+  }
+
+  // The virtual transform methods on OpenLayers Geometry subclasses
+  // apparently does not support the EPSG:6326 projection used by turfjs
+  convert6326(polygon: Polygon): Geometry {
+    return this.geoJson!.writeGeometryObject(
+      this.geoJson!.readGeometry(polygon, { featureProjection: 'EPSG:4326', dataProjection: 'EPSG:6326'}),
+      { featureProjection: 'EPSG:4326'})
+  }
+
+  reprojectAsFragment(p: Polygon, description: string) : AreaSelectionConfig {
+    return {
+      polygon: this.convert6326(p),
+      metaDescription: description
+    };
+  }
+
+  static convertToSave(polygon : any): Polygon {
+     const transformed = polygon.type === 'MultiPolygon' ?
+        new MultiPolygon((polygon).coordinates) :
+        new OLPolygon((polygon).coordinates);
+    transformed.transform('EPSG:3857', 'EPSG:4326');
+
+    return {  type:        transformed.getType().toString(),
+              coordinates: transformed.getCoordinates() };
+  }
+
   public zoomIn() {
     this.setZoom(this.map!.getView()!.getZoom()! + 1);
   };
@@ -260,4 +377,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.bandLayer?.toggleImageSmoothing();
     this.layerAliasing = this.resultLayerGroup.antialias;
   }
+}
+
+function areaSliceName(areaName: string, index: number): string {
+  return areaName + ' slice - ' + (index + 1);
 }

@@ -2,10 +2,12 @@ package se.havochvatten.symphony.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import it.geosolutions.jaiext.stats.HistogramMode;
 import it.geosolutions.jaiext.stats.Statistics;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
+import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -18,6 +20,7 @@ import se.havochvatten.symphony.dto.*;
 import se.havochvatten.symphony.entity.AreaType;
 import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
+import se.havochvatten.symphony.scenario.Scenario;
 import se.havochvatten.symphony.util.Util;
 import si.uom.SI;
 import tech.units.indriya.quantity.Quantities;
@@ -39,7 +42,9 @@ import static java.util.stream.Collectors.toMap;
 
 @Singleton
 public class ReportService {
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new JsonMapper();
+
+    private static final GeometryJSON geoJson = new GeometryJSON();
 
     // The CSV standard (RFC 4180) actually says to use comma, but tab is MS Excel default. Or use TSV?
     private static final char CSV_FIELD_SEPARATOR = '\t';
@@ -121,7 +126,7 @@ public class ReportService {
     }
 
     public ReportResponseDto generateReportData(CalculationResult calc, boolean computeChart)
-            throws FactoryException, TransformException {
+        throws FactoryException, TransformException {
         var scenario = calc.getScenarioSnapshot();
         var coverage = calc.getCoverage();
         var stats = getStatistics(coverage);
@@ -133,6 +138,8 @@ public class ReportService {
         double[] esTotal = new double[esLen];
         // N.B: Will set pTotal and esTotal as side effect!
         double total = getComponentTotals(impactMatrix, pTotal, esTotal);
+
+        var crs = coverage.getCoordinateReferenceSystem2D();
 
         ReportResponseDto report = new ReportResponseDto();
 
@@ -196,9 +203,9 @@ public class ReportService {
                 props.getPropertyAsDouble("calc.sankey_chart.link_weight_threshold", 0.001)
             ).getChartData();
 
-        report.geographicalArea = JTS.transform(scenario.getGeometry(),
+        report.geographicalArea =  JTS.transform(scenario.getGeometry(),
                 CRS.findMathTransform(DefaultGeographicCRS.WGS84,
-                        coverage.getCoordinateReferenceSystem2D())).getArea();
+                    coverage.getCoordinateReferenceSystem2D())).getArea();
 
         report.scenarioChanges = scenario.getChanges();
         report.timestamp = calc.getTimestamp().getTime();
@@ -208,7 +215,7 @@ public class ReportService {
 
     public ComparisonReportResponseDto generateComparisonReportData(CalculationResult calcA,
                                                                     CalculationResult calcB)
-            throws FactoryException, TransformException {
+        throws FactoryException, TransformException, JsonProcessingException {
         var report = new ComparisonReportResponseDto();
         report.a = generateReportData(calcA, false);
         report.b = generateReportData(calcB, false);
@@ -226,6 +233,15 @@ public class ReportService {
     private MetadataPropertyDto[] flattenAndSort(MetadataComponentDto component) {
         return component.getSymphonyTeams().stream().flatMap(team -> team.getProperties().stream()).sorted(Comparator.comparingInt(MetadataPropertyDto::getBandNumber)).toArray(MetadataPropertyDto[]::new);
     }
+
+    static int[] uniqueIntersection(int[] a, int[] b) {
+        Set<Integer> s_a = Arrays.stream(a).boxed().collect(Collectors.toSet()),
+                     s_b = Arrays.stream(b).boxed().collect(Collectors.toSet());
+        s_a.retainAll(s_b);
+        return s_a.stream().mapToInt(i -> i).toArray();
+    }
+
+    static final String rptRowFormat = "%s" + CSV_FIELD_SEPARATOR + "%.2f%%";
 
     public String generateCSVReport(CalculationResult calc, Locale locale) throws SymphonyStandardAppException {
         var metadata = metaDataService.findMetadata(calc.getBaselineVersion().getName());
@@ -271,24 +287,87 @@ public class ReportService {
 
             // Impact per pressure
             writer.println("PRESSURE" + CSV_FIELD_SEPARATOR + "Impact per Pressure");
-            IntStream.range(0, featuredPressures.length).forEach(i -> {
-                writer.print(pressureMetadata[featuredPressures[i]].getTitle());
-                writer.print(CSV_FIELD_SEPARATOR);
-                writer.format(locale, "%.2f%%", 100 * pTotal[i] / total);
-                writer.println();
-            });
+            writeReportRows(locale, pressureMetadata, featuredPressures, pTotal, total, writer);
             writer.println();
 
             // Impact per pressure
             writer.println("ECOSYSTEM" + CSV_FIELD_SEPARATOR + "Impact per Ecosystem");
-            IntStream.range(0, featuredEcosystems.length).forEach(i -> {
-                writer.print(pressureMetadata[featuredEcosystems[i]].getTitle());
-                writer.print(CSV_FIELD_SEPARATOR);
-                writer.format(locale, "%.2f%%", 100 * esTotal[i] / total);
-                writer.println();
-            });
+            writeReportRows(locale, ecocomponentMetadata, featuredEcosystems, esTotal, total, writer);
         }
         string.flush();
         return string.toString();
+    }
+
+    static final String cmpRowFormat = "%s" + CSV_FIELD_SEPARATOR + "%.2f" + CSV_FIELD_SEPARATOR + "%.2f" + CSV_FIELD_SEPARATOR + "%.2f%%";
+
+    public String generateCSVComparisonReport(CalculationResult calcA, CalculationResult calcB, Locale locale) throws SymphonyStandardAppException {
+        MetadataDto metadata = metaDataService.findMetadata(calcA.getBaselineVersion().getName());
+        MetadataPropertyDto[]   ecocomponentMetadata = flattenAndSort(metadata.getEcoComponent()),
+                                pressureMetadata = flattenAndSort(metadata.getPressureComponent());
+
+        Scenario scenarioA = calcA.getScenarioSnapshot(), scenarioB = calcB.getScenarioSnapshot();
+        int[] featuredEcosystems = uniqueIntersection(  scenarioA.getEcosystemsToInclude(),
+                                                        scenarioB.getEcosystemsToInclude()),
+              featuredPressures = uniqueIntersection(   scenarioA.getPressuresToInclude(),
+                                                        scenarioB.getPressuresToInclude());
+
+        double[][] impactMatrixA = calcA.getImpactMatrix(), impactMatrixB = calcB.getImpactMatrix();;
+        double[] pTotalA = new double[impactMatrixA.length], pTotalB = new double[impactMatrixB.length];
+        double[] esTotalA = new double[impactMatrixA[0].length], esTotalB = new double[impactMatrixB[0].length];
+        double totalA = getComponentTotals(impactMatrixA, pTotalA, esTotalA),
+               totalB = getComponentTotals(impactMatrixB, pTotalB, esTotalB),
+               totalDiff = totalB - totalA;
+
+        StringWriter string = new StringWriter();
+
+        try (PrintWriter writer = new PrintWriter(string)) {
+            writer.println("Comparing:"                     + CSV_FIELD_SEPARATOR +
+                "\"" +  calcA.getCalculationName() + "\""   + CSV_FIELD_SEPARATOR +
+                "\"" +  calcB.getCalculationName() + "\""   + CSV_FIELD_SEPARATOR);
+
+            writer.println();
+            writer.println("TOTAL" +
+                            CSV_FIELD_SEPARATOR + "Total impact (Scenario A)" +
+                            CSV_FIELD_SEPARATOR + "Total impact (Scenario B)" +
+                            CSV_FIELD_SEPARATOR + "Relative change");
+            writer.format(locale, cmpRowFormat, "All", totalA, totalB, totalDiff == 0 ? 0 : 100 * (totalDiff / totalA));
+
+            writer.println();
+            writer.println();
+            writer.println("PRESSURE" +
+                            CSV_FIELD_SEPARATOR + "Impact per Pressure (Scenario A)" +
+                            CSV_FIELD_SEPARATOR + "Impact per Pressure (Scenario B)" +
+                            CSV_FIELD_SEPARATOR + "Relative change");
+
+            writeComparisonRows(locale, pressureMetadata, featuredPressures, pTotalA, pTotalB, writer);
+
+            writer.println();
+            writer.println("ECOSYSTEM" +
+                CSV_FIELD_SEPARATOR + "Impact per Ecosystem (Scenario A)" +
+                CSV_FIELD_SEPARATOR + "Impact per Ecosystem (Scenario B)" +
+                CSV_FIELD_SEPARATOR + "Relative change");
+
+            writeComparisonRows(locale, ecocomponentMetadata, featuredEcosystems, esTotalA, esTotalB, writer);
+        }
+        string.flush();
+        return string.toString();
+    }
+
+    static void writeReportRows(Locale locale, MetadataPropertyDto[] meta, int[] featured, double[] total, double sum, PrintWriter writer) {
+        IntStream.range(0, featured.length).forEach(i -> {
+            writer.format(locale, rptRowFormat,
+                meta[featured[i]].getTitle(),
+                sum == 0 ? 0 : 100 * (total[i] / sum));
+            writer.println();
+        });
+    }
+
+    static void writeComparisonRows(Locale locale, MetadataPropertyDto[] meta, int[] featured, double[] totalA, double[] totalB, PrintWriter writer) {
+        IntStream.range(0, featured.length).forEach(i -> {
+                writer.format(locale, cmpRowFormat,
+                    meta[featured[i]].getTitle(), totalA[i], totalB[i],
+                    totalA[i] == 0 ? 0 : 100 * ((totalB[i] - totalA[i]) / totalA[i]));
+                writer.println();
+        });
     }
 }

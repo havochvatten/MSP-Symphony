@@ -1,5 +1,6 @@
 package se.havochvatten.symphony.dto;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -133,8 +134,14 @@ public class AreaSelectionResponseDto {
         }
     }
 
+    public static class AreaOverlapFragment {
+        public JsonNode polygon;
+        public Matrix defaultMatrix;
+    }
+
     DefaultArea defaultArea;
     List<AreaTypeArea> areaTypes;
+    List<AreaOverlapFragment> overlap;
 
     public DefaultArea getDefaultArea() {
         return defaultArea;
@@ -144,10 +151,21 @@ public class AreaSelectionResponseDto {
         this.defaultArea = defaultArea;
     }
 
+    public void setOverlap(List<AreaOverlapFragment> areaOverlapFragments) {
+        this.overlap = areaOverlapFragments;
+    }
+
     public List<AreaTypeArea> getAreaTypes() {
         if (areaTypes == null) {
             areaTypes = new ArrayList<>();
         }
         return areaTypes;
+    }
+
+    public List<AreaOverlapFragment> getOverlap() {
+        if (overlap == null) {
+            overlap = new ArrayList<>();
+        }
+        return overlap;
     }
 }

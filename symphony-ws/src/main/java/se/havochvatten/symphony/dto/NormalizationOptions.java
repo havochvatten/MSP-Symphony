@@ -8,6 +8,8 @@ public class NormalizationOptions {
     public NormalizationType type;
     public double userDefinedValue; // for type == USER_DEFINED
 
+    public double stdDevMultiplier;             // for type == STANDARD_DEVIATION
+
     public NormalizationOptions() {}
 
     public NormalizationOptions(NormalizationType type) {
@@ -17,5 +19,11 @@ public class NormalizationOptions {
     public NormalizationOptions(double value) {
         this.type = NormalizationType.USER_DEFINED;
         this.userDefinedValue = value;
+    }
+
+    public NormalizationOptions(NormalizationType type, double value) {
+        this.type = type;
+        this.userDefinedValue = type != NormalizationType.STANDARD_DEVIATION ? value : this.userDefinedValue;
+        this.stdDevMultiplier = type == NormalizationType.STANDARD_DEVIATION ? value : this.stdDevMultiplier;
     }
 }

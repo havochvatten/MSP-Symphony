@@ -8,8 +8,6 @@ public enum SymphonyModelErrorCode implements SymphonyErrorCode {
     LOGIN_FAILED_ERROR("LOGIN_FAILED_ERROR", "Login failed."),
     USER_DEF_AREA_BY_ID_ERROR("USER_DEF_AREA_BY_ID_ERROR", "Error searching UserDefinedAreaById."),
     USER_DEF_AREA_ID_ERROR("USER_DEF_AREA_ID_ERROR", "Id can not be set when creating a UserDefinedArea."),
-    USER_DEF_AREA_NAME_EXISTS("USER_DEF_AREA_NAME_EXISTS", "The name of UserDefinedArea already exists."),
-    USER_DEF_AREA_NAME_EXISTS_ON_OTHER("USER_DEF_AREA_NAME_EXISTS_ON_OTHER", "Name already exists on another UserDefinedArea."),
     USER_DEF_AREA_NOT_FOUND("USER_DEF_AREA_NOT_FOUND", "UserDefinedArea not found."),
     USER_DEF_AREA_POLYGON_MAPPING_ERROR("USER_DEF_AREA_POLYGON_MAPPING_ERROR", "Error when mapping polygon for UserDefinedArea"),
     USER_DEF_AREA_NOT_OWNED_BY_USER("USER_DEF_AREA_NOT_OWNED_BY_USER", "The requested UserDefinedArea is not owned by logged in user"),
