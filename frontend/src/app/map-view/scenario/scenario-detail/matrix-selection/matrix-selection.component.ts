@@ -47,8 +47,8 @@ export class MatrixSelectionComponent implements OnDestroy {
   @ViewChild('usrMx') userMatrixSelect: MatSelect| undefined;
   @ViewChild('typeMx') typeMatrixSelect: MatSelect | undefined;
   private defaultMatrixTranslation?: string;
-  private matrixDataLoadingSubcription: Subscription;
-  private matrixDataSubcription: Subscription;
+  private matrixDataLoadingSubscription: Subscription;
+  private matrixDataSubscription: Subscription;
 
   constructor(
     private translateService: TranslateService,
@@ -60,8 +60,8 @@ export class MatrixSelectionComponent implements OnDestroy {
     this.translateService.get('map.editor.matrix.default-matrix').subscribe(res => {
       this.defaultMatrixTranslation = res;
     });
-
-    this.matrixDataSubcription = this.store.select(AreaSelectors.selectAreaMatrixData).subscribe(async data => {
+    this.loadingMatrix = true;
+    this.matrixDataSubscription = this.store.select(AreaSelectors.selectAreaMatrixData).subscribe(async data => {
       if (data) {
         if(data.defaultArea) {
           this.defaultArea = data.defaultArea;
@@ -70,7 +70,7 @@ export class MatrixSelectionComponent implements OnDestroy {
             areaTypes: []
           });
           this.areaTypes = data.areaTypes.filter(type => !type.coastalArea);
-        } else if(data.overlap.length > 0) {
+        } else if(data.overlap.length > 0 && !this.loadingMatrix) {
           const selectedArea = await this.dialogService.open(SelectIntersectionComponent, this.moduleRef, {
             data: {
               areas: data.overlap.map(overlap => {
@@ -97,8 +97,9 @@ export class MatrixSelectionComponent implements OnDestroy {
       }
     });
 
-    this.matrixDataLoadingSubcription = this.store.select(ScenarioSelectors.selectAreaMatrixDataLoading).subscribe(loading => {
+    this.matrixDataLoadingSubscription = this.store.select(ScenarioSelectors.selectAreaMatrixDataLoading).subscribe(loading => {
       this.loaded = !loading;
+      this.loadingMatrix = !loading;
     });
   }
 
@@ -213,7 +214,7 @@ export class MatrixSelectionComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.matrixDataLoadingSubcription.unsubscribe();
-    this.matrixDataSubcription.unsubscribe();
+    this.matrixDataLoadingSubscription.unsubscribe();
+    this.matrixDataSubscription.unsubscribe();
   }
 }
