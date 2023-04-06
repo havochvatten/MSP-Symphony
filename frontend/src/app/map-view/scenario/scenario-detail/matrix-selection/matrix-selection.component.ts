@@ -34,6 +34,7 @@ export class MatrixSelectionComponent implements OnDestroy {
   matrixOption: MatrixOption = 'STANDARD';
   loaded = false;
   loadingMatrix = false;
+  overlapDetermined = false;
   areaTypes: AreaTypeMatrixMapping[] = []; // get from input?
   defaultArea?: DefaultArea;
   selectedAreaType?: AreaTypeMatrixMapping;
@@ -60,17 +61,18 @@ export class MatrixSelectionComponent implements OnDestroy {
     this.translateService.get('map.editor.matrix.default-matrix').subscribe(res => {
       this.defaultMatrixTranslation = res;
     });
-    this.loadingMatrix = true;
     this.matrixDataSubscription = this.store.select(AreaSelectors.selectAreaMatrixData).subscribe(async data => {
       if (data) {
         if(data.defaultArea) {
+          this.overlapDetermined = true;
           this.defaultArea = data.defaultArea;
           this.areaTypeSelected.emit({
             defaultMatrixId: this.defaultArea.defaultMatrix.id,
             areaTypes: []
           });
           this.areaTypes = data.areaTypes.filter(type => !type.coastalArea);
-        } else if(data.overlap.length > 0 && !this.loadingMatrix) {
+        } else if(data.overlap.length > 0 && !this.overlapDetermined) {
+          this.overlapDetermined = true;
           const selectedArea = await this.dialogService.open(SelectIntersectionComponent, this.moduleRef, {
             data: {
               areas: data.overlap.map(overlap => {
@@ -99,7 +101,6 @@ export class MatrixSelectionComponent implements OnDestroy {
 
     this.matrixDataLoadingSubscription = this.store.select(ScenarioSelectors.selectAreaMatrixDataLoading).subscribe(loading => {
       this.loaded = !loading;
-      this.loadingMatrix = !loading;
     });
   }
 
