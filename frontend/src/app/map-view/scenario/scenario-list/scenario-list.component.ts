@@ -73,7 +73,7 @@ export class ScenarioListComponent {
   }
 
   open(s: Scenario, index: number) {
-    this.store.dispatch(ScenarioActions.openScenario({ scenario: s, index: index }));
+    this.store.dispatch(ScenarioActions.openScenario({ index: index }));
   }
 
   showReport(id: string) {

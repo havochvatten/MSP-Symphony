@@ -39,7 +39,7 @@
     [total]="report.total"
     [locale]="locale"
   ></app-highest-impacts>
-  <app-result-color-scale [locale]="locale"></app-result-color-scale>
+  <app-result-color-scale [locale]="locale" class="calc-report-legend"></app-result-color-scale>
   <!--TODO Avoid calling expensive function in template-->
   <app-pressure-chart
     [data]="formatChartData(report.chartData, metadata$ | async)"

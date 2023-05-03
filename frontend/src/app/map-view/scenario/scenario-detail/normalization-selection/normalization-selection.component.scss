@@ -15,7 +15,33 @@
       }
 
       mat-radio-button {
-        line-height: 3rem;
+        display: inline-flex;
+        margin: 0.5rem 0;
+        align-items: center;
+
+        .mat-radio-label-content {
+          width: 31.3rem;
+          display: flex;
+          justify-content: space-between;
+
+          > * {
+            display: inline-flex;
+          }
+
+          .normalization-label-text {
+            width: 23.7rem;
+            white-space: break-spaces;
+            line-height: 1.8rem;
+            align-self: center;
+          }
+
+          input {
+            width: 6.8rem;
+            height: 2.5rem;
+          }
+        }
+
+
       }
     }
 

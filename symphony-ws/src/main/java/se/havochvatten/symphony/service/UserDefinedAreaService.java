@@ -68,9 +68,7 @@ public class UserDefinedAreaService {
 		if (userDefinedArea.getId() != null && !userDefinedArea.getId().equals(0) ){
 			 throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_ID_ERROR);
 		}
-		if  (getUserDefinedAreaByName(principal, userDefinedArea.getName()) != null){
-			throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_NAME_EXISTS);
-		}
+
 		userDefinedArea.setId(null);
 		em.persist(userDefinedArea);
 		return UserDefinedAreaDtoMapper.mapToDto(userDefinedArea);
@@ -98,10 +96,6 @@ public class UserDefinedAreaService {
         }
         if (userDefinedArea == null || userDefinedAreaToUpdate == null) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_NOT_FOUND);
-        }
-        UserDefinedArea existingUserDefinedAreaByName = getUserDefinedAreaByName(principal, userDefinedArea.getName());
-        if (existingUserDefinedAreaByName != null && !existingUserDefinedAreaByName.getId().equals(userDefinedArea.getId())) {
-            throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_NAME_EXISTS_ON_OTHER);
         }
         return UserDefinedAreaDtoMapper.mapToDto(em.merge(userDefinedArea));
     }

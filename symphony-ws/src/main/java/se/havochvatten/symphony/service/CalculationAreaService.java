@@ -1,6 +1,7 @@
 package se.havochvatten.symphony.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import se.havochvatten.symphony.entity.*;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.mapper.AreaSelectionResponseDtoMapper;
+import se.havochvatten.symphony.dto.AreaSelectionResponseDto.AreaOverlapFragment;
 import se.havochvatten.symphony.mapper.CalculationAreaMapper;
 import se.havochvatten.symphony.scenario.Scenario;
 
@@ -22,6 +24,8 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static se.havochvatten.symphony.mapper.AreaSelectionResponseDtoMapper.mapSensitivityMatrixToDto;
 
 @Stateless
 public class CalculationAreaService {
@@ -58,26 +62,54 @@ public class CalculationAreaService {
             BaselineVersion baselineVersion = baselineVersionService.getVersionByName(baselineName);
             List<CalculationArea> calcAreasWithinRoi = getAreasWithinPolygon(geoRoi,
                     baselineVersion.getId()); // expensive?
-            CalculationArea defaultArea = getDefaultArea(calcAreasWithinRoi);
-            List<AreaType> areaTypes = getAreaTypes(calcAreasWithinRoi);
-            List<AreaSelectionResponseDto.AreaTypeArea> areaTypeDtos = new ArrayList<>();
-            for (AreaType aType : areaTypes) {
-                List<CalculationArea> calculationAreas = getNonDefaultAreasForAreaType(aType.getId(),
+
+            List<CalculationArea> defaultAreas = calcAreasWithinRoi
+                .stream()
+                .filter((ca) -> ca.isCareaDefault())
+                .collect(Collectors.toList());
+
+            if(defaultAreas.size() > 1) {
+                GeometryJSON geoJson = new GeometryJSON();
+                ObjectMapper mapper = new JsonMapper();
+                List<AreaOverlapFragment> fragmentMap = new ArrayList<>();
+
+                for(CalculationArea dca : defaultAreas) {
+                    List<String> daPolygons = dca.getCaPolygonList()
+                        .stream().map(CaPolygon::getPolygon).toList();
+                    for (String dapStr : daPolygons) {
+                        Geometry daPolygon = jsonToGeometry(dapStr);
+                        if (daPolygon.intersects(geoRoi)) {
+                            var defMatrixFragment = new AreaOverlapFragment();
+                            defMatrixFragment.polygon = mapper.readTree(geoJson.toString(geoRoi.intersection(daPolygon)));
+                            defMatrixFragment.defaultMatrix = mapSensitivityMatrixToDto(dca.getdefaultSensitivityMatrix());
+                            fragmentMap.add(defMatrixFragment);
+                        }
+                    }
+                }
+                return new AreaSelectionResponseDto(){{
+                    setOverlap(fragmentMap);
+                }};
+            } else {
+                CalculationArea defaultArea = defaultAreas.get(0);
+                List<AreaType> areaTypes = getAreaTypes(calcAreasWithinRoi);
+                List<AreaSelectionResponseDto.AreaTypeArea> areaTypeDtos = new ArrayList<>();
+                for (AreaType aType : areaTypes) {
+                    List<CalculationArea> calculationAreas = getNonDefaultAreasForAreaType(aType.getId(),
                         calcAreasWithinRoi);
-                AreaSelectionResponseDto.AreaTypeArea areaTypeDto =
+                    AreaSelectionResponseDto.AreaTypeArea areaTypeDto =
                         AreaSelectionResponseDtoMapper.mapToAreaTypeDto(aType, calculationAreas);
-                areaTypeDtos.add(areaTypeDto);
-            }
-            ;
-            List<CalcAreaSensMatrix> userDefinedMatrices =
+                    areaTypeDtos.add(areaTypeDto);
+                }
+                List<CalcAreaSensMatrix> userDefinedMatrices =
                     calcAreaSensMatrixService.findByBaselineAndOwnerAndArea(baselineVersion.getName(),
-                            principal, defaultArea.getId());
-            List<CalcAreaSensMatrix> commonBaselineMatrices =
-                calcAreaSensMatrixService.findByBaselineAndArea(baselineVersion.getName(), defaultArea.getId());
-            commonBaselineMatrices.removeIf(m -> m.getSensitivityMatrix().getId() == defaultArea.getdefaultSensitivityMatrix().getId());
-            AreaSelectionResponseDto resp = AreaSelectionResponseDtoMapper.mapToDto(defaultArea,
+                        principal, defaultArea.getId());
+                List<CalcAreaSensMatrix> commonBaselineMatrices =
+                    calcAreaSensMatrixService.findByBaselineAndArea(baselineVersion.getName(), defaultArea.getId());
+                commonBaselineMatrices.removeIf(m -> m.getSensitivityMatrix().getId() == defaultArea.getdefaultSensitivityMatrix().getId());
+                AreaSelectionResponseDto resp = AreaSelectionResponseDtoMapper.mapToDto(defaultArea,
                     areaTypeDtos, userDefinedMatrices, commonBaselineMatrices);
-            return resp;
+                return resp;
+            }
         } catch (IOException e) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.MAPPING_OBJECT_TO_POLYGON_STRING_ERROR);
         }
@@ -213,12 +245,12 @@ public class CalculationAreaService {
     /**
      * @return calculation areas within the selected polygon
      */
-    List<CalculationArea> getAreasWithinPolygon(Geometry selectePolygon, int baseDataVersionId) throws SymphonyStandardAppException {
+    List<CalculationArea> getAreasWithinPolygon(Geometry selectedPolygon, int baseDataVersionId) throws SymphonyStandardAppException {
         Set<CalculationArea> matchingCalcAreaSet = new HashSet<>();
         List<CaPolygon> allCaPolygons = em.createNamedQuery("CaPolygon.findForBaselineVersionId",
                 CaPolygon.class).setParameter("versionId", baseDataVersionId).getResultList();
         for (CaPolygon cap : allCaPolygons) {
-            if (jsonToGeometry(cap.getPolygon()).intersects(selectePolygon)) {
+            if (jsonToGeometry(cap.getPolygon()).intersects(selectedPolygon)) {
                 matchingCalcAreaSet.add(cap.getCalculationArea());
             }
         }
@@ -236,6 +268,9 @@ public class CalculationAreaService {
                         defaultAreas.stream().filter(d -> d.isCareaDefault()).findFirst();
                 if (caOpt.isPresent())
                     maxValue = caOpt.get().getMaxValue() == null ? 0 : caOpt.get().getMaxValue();
+                break;
+            case STANDARD_DEVIATION:
+                maxValue = normalization.stdDevMultiplier;
                 break;
             case USER_DEFINED:
                 maxValue = normalization.userDefinedValue;
@@ -386,25 +421,6 @@ public class CalculationAreaService {
     List<CalculationArea> getNonDefaultAreasForAreaType(Integer areaTypeId,
                                                         List<CalculationArea> calulationAreas) throws SymphonyStandardAppException {
         return calulationAreas.stream().filter((ca) -> !ca.isCareaDefault() && ca.getAreaType() != null && ca.getAreaType().getId().equals(areaTypeId)).collect(Collectors.toList());
-    }
-
-    /**
-     * @return Default area from calculationAreas
-     */
-    private CalculationArea getDefaultArea(List<CalculationArea> calculationAreas) throws SymphonyStandardAppException {
-        CalculationArea defaultArea = null;
-        List<CalculationArea> defaultAreas = calculationAreas
-                .stream()
-                .filter((ca) -> ca.isCareaDefault())
-                .collect(Collectors.toList());
-
-        if (defaultAreas.size() > 1) {
-            throw new SymphonyStandardAppException(SymphonyModelErrorCode.CALCULATION_AREA_MULTIPLE_DEFAULT_AREAS);
-        }
-        if (defaultAreas.size() == 1) {
-            defaultArea = defaultAreas.get(0);
-        }
-        return defaultArea;
     }
 
     /**

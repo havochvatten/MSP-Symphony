@@ -1,22 +1,21 @@
 <section>
   <p>{{ 'map.editor.normalization.description' | translate }}:</p>
 
-  <div class="normalization-form">
+  <div class="normalization-form" (click)="outerCheck($event)">
     <mat-radio-group [value]="this.options.type">
       <mat-radio-button
         *ngFor="let button of radioButtons"
         [value]="button.value"
         [disabled]="button.value === NormalizationType.Domain && algorithm === 'RarityAdjustedCumulativeImpact'"
         (change)="check(button.value)"
-      >{{ button.label | translate: { ordinalPercentileValue: this.percentileValue | ordinal:locale } }}
+      ><span class="normalization-label-text">{{ button.label | translate: { ordinalPercentileValue: this.percentileValue | ordinal:locale } }}</span>
+        <input *ngIf="button.value === NormalizationType.UserDefined" #userDefinedValue type="number" id="user-defined-value" [step]="1" max="9999999" min="1"
+               [value]="options.userDefinedValue" (input)="onChangeValue(NormalizationType.UserDefined, $event)" [disabled]="!showValueField(button.value)"
+        />
+        <input *ngIf="button.value === NormalizationType.StandardDeviation" type="number" id="stddev-multiplier" [step]="0.01" max="9999.99" min="0"
+               [value]="options.stdDevMultiplier" (input)="onChangeValue(NormalizationType.StandardDeviation, $event)" [disabled]="!showValueField(button.value)"
+        />
       </mat-radio-button>
     </mat-radio-group>
-
-    <div *ngIf="showUserDefinedValueField()" class="user-defined">
-      <label for="user-defined-value">{{ 'map.editor.normalization.custom-value' | translate }}</label>
-      <input #userDefinedValue type="number" id="user-defined-value"
-        [value]="options.userDefinedValue" (input)="onChangeUserDefinedValue(userDefinedValue.value)"
-      />
-    </div>
   </div>
 </section>

@@ -3,7 +3,9 @@ import { NormalizationOptions, NormalizationType } from "@data/calculation/calcu
 import { TranslateService } from "@ngx-translate/core";
 
 export const DEFAULT_OPTIONS: NormalizationOptions = {
-  type: NormalizationType.Area
+  type: NormalizationType.Domain,
+  stdDevMultiplier: 0,
+  userDefinedValue: 1
 }
 
 @Component({
@@ -33,24 +35,37 @@ export class NormalizationSelectionComponent implements OnChanges {
       value: NormalizationType.Area
     },
     {
+      label: 'map.editor.normalization.mean-plus-stddev',
+      value: NormalizationType.StandardDeviation
+    },
+    {
       label: 'map.editor.normalization.custom',
       value: NormalizationType.UserDefined
     }
   ];
 
-  showUserDefinedValueField = () => this.options.type === NormalizationType.UserDefined;
+  showValueField(ntype :  NormalizationType): boolean {
+    return ntype === this.options.type;
+  }
 
   check(target: NormalizationType) {
     this.modeSelectionEvent.emit({
       type: target,
-      userDefinedValue: this.options.userDefinedValue
+      userDefinedValue: this.options.userDefinedValue,
+      stdDevMultiplier: this.options.stdDevMultiplier
     });
   }
 
-  onChangeUserDefinedValue(value: any) {
+  onChangeValue(ntype: NormalizationType, event: Event) {
+    const opts = this.options,
+          val = parseFloat((event.target! as HTMLInputElement).value);
+
     this.modeSelectionEvent.emit({
-      type: this.options.type,
-      userDefinedValue: value
+      type: ntype,
+      userDefinedValue: ntype === NormalizationType.UserDefined ?
+                        val : opts.userDefinedValue,
+      stdDevMultiplier: ntype === NormalizationType.StandardDeviation ?
+                        val : opts.stdDevMultiplier,
     });
   }
 
@@ -59,8 +74,19 @@ export class NormalizationSelectionComponent implements OnChanges {
       this.options.type === NormalizationType.Domain) {
       this.modeSelectionEvent.emit({
         type: NormalizationType.Area,
-        userDefinedValue: this.options.userDefinedValue
+        userDefinedValue: this.options.userDefinedValue,
+        stdDevMultiplier: this.options.stdDevMultiplier
       });
+    }
+  }
+
+  outerCheck(event: InputEvent) {
+    const target = event.target! as HTMLInputElement
+    if(target.tagName === 'INPUT') {
+      this.check(target.id === 'user-defined-value' ?
+                  NormalizationType.UserDefined :
+                  NormalizationType.StandardDeviation)
+      target.select(); // refocus and select
     }
   }
 }

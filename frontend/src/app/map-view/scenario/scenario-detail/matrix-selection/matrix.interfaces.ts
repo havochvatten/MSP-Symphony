@@ -1,3 +1,5 @@
+import { GeoJSONGeometry } from "ol/format/GeoJSON";
+
 export interface MatrixRef {
   id: number;
   name: string;
@@ -25,8 +27,14 @@ export interface AreaTypeMatrixMapping {
 }
 
 export interface AreaMatrixData {
-  defaultArea: DefaultArea,
-  areaTypes: AreaTypeMatrixMapping[]
+  defaultArea: DefaultArea | null,
+  areaTypes: AreaTypeMatrixMapping[];
+  overlap: AreaOverlapFragment[];
+}
+
+export interface AreaOverlapFragment {
+  polygon: GeoJSONGeometry,
+  defaultMatrix: MatrixRef,
 }
 
 // se.havochvatten.symphony.dto.AreaMatrixMapping

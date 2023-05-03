@@ -48,10 +48,12 @@ export class ScenarioEffects {
   @Effect()
   saveScenario$ = this.actions$.pipe(
     ofType(ScenarioActions.saveActiveScenario),
-    mergeMap(({ scenarioToBeSaved }) => {
+    mergeMap(({ scenarioToBeSaved, updateState }) => {
       return this.scenarioService.save(scenarioToBeSaved).pipe(
         retry(2),
-        map(savedScenario => ScenarioActions.saveScenarioSuccess({ savedScenario })),
+        map(savedScenario => updateState ?
+          ScenarioActions.saveScenarioSuccessUpdate({ savedScenario }) :
+          ScenarioActions.saveScenarioSuccess({ savedScenario })),
         catchError(({ status, error: message }) =>
           of(ScenarioActions.saveScenarioFailure({ error: { status, message } }))
         )

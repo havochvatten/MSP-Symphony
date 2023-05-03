@@ -77,7 +77,7 @@ public class AreaSelectionResponseDtoMapper {
         return dto;
     }
 
-    private static AreaSelectionResponseDto.Matrix mapSensitivityMatrixToDto(SensitivityMatrix sensitivityMatrix) {
+    public static AreaSelectionResponseDto.Matrix mapSensitivityMatrixToDto(SensitivityMatrix sensitivityMatrix) {
         AreaSelectionResponseDto.Matrix dto = new AreaSelectionResponseDto.Matrix();
         ;
         if (sensitivityMatrix != null) {

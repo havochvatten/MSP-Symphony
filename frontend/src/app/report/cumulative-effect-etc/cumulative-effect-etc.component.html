@@ -22,6 +22,11 @@
         <ng-container *ngSwitchCase="type.Area">
           {{ 'report.cumulative-effect-etc.normalization.area' | translate }}
         </ng-container>
+        <ng-container *ngSwitchCase="type.StandardDeviation">
+          {{ 'report.cumulative-effect-etc.normalization.mean-plus-stddev' | translate:
+          { stddevMultiplier: jsMath.abs(normalization.stdDevMultiplier),
+            positiveOrNegative: normalization.stdDevMultiplier > 0 ? '+' : '-' } }}
+        </ng-container>
         <ng-container *ngSwitchCase="type.UserDefined">
           {{ 'report.cumulative-effect-etc.normalization.custom' | translate }} = {{
           normalization.userDefinedValue | number: '1.0-4':locale }}

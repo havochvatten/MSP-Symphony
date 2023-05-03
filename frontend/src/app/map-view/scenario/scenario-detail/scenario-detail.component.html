@@ -84,7 +84,7 @@
     <section class="sensitivity-matrix">
       <h3>{{ 'map.editor.matrix.sensitivity-matrix' | translate }}</h3>
       <app-matrix-selection
-        [feature]="this.scenario.feature"
+        [scenario]="this.scenario"
         (areaTypeSelected)="onAreaTypeSelection($event)"
         (matrixOverridden)="onMatrixOverride($event)"
       >
@@ -129,7 +129,7 @@
     {{ 'map.editor.calculate' | translate }}
   </button>
 
-  <button mat-flat-button id="report-button" [ngClass]="'green'"
+  <button mat-flat-button id="report-button" [ngClass]="{'green' : !(calculating$ | async), 'mat-button-disabled' : calculating$ | async }"
           (click)="showReport(scenario.latestCalculation)"
           [disabled]="!scenario.latestCalculation">
     <mat-spinner *ngIf="calculating$ | async" diameter="20" color="#22bb00"></mat-spinner>

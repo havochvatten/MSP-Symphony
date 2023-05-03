@@ -36,6 +36,8 @@ import { ConfirmResetComponent } from './confirm-reset/confirm-reset.component';
 import { MetaInfoComponent } from './meta-info/meta-info.component';
 import { AnchorPipe } from "@shared/anchor.pipe";
 import { DialogService } from "@shared/dialog/dialog.service";
+import { MergeAreasModalComponent } from './map/merge-areas-modal/merge-areas-modal.component';
+import { MatRadioModule } from "@angular/material/radio";
 
 @NgModule({
   declarations: [
@@ -61,6 +63,7 @@ import { DialogService } from "@shared/dialog/dialog.service";
     MatrixTableComponent,
     ConfirmResetComponent,
     MetaInfoComponent,
+    MergeAreasModalComponent,
   ],
     imports: [
         SharedModule,
@@ -70,7 +73,8 @@ import { DialogService } from "@shared/dialog/dialog.service";
         MatSelectModule,
         MatProgressSpinnerModule,
         MatCheckboxModule,
-        MatButtonModule
+        MatButtonModule,
+        MatRadioModule
     ],
   providers: [AnchorPipe, DialogService],
   exports: [MainViewComponent]
