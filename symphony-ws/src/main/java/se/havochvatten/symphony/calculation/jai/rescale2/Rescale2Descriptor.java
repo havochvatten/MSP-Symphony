@@ -234,23 +234,8 @@ public class Rescale2Descriptor extends OperationDescriptorImpl {
 
     /** Constructor. */
     public Rescale2Descriptor() {
+        //super();
         super(resources, 1, paramClasses, paramNames, paramDefaults);
-    }
-
-    /** Returns <code>true</code> since renderable operation is supported. */
-    public boolean isRenderableSupported() {
-        return true;
-    }
-
-    /**
-     * Returns an array of <code>PropertyGenerators</code> implementing property inheritance for the "Rescale" operation
-     *
-     * @return An array of property generators.
-     */
-    public PropertyGenerator[] getPropertyGenerators() {
-        PropertyGenerator[] pg = new PropertyGenerator[1];
-        pg[0] = new Rescale2PropertyGenerator();
-        return pg;
     }
 
     /**
@@ -261,19 +246,19 @@ public class Rescale2Descriptor extends OperationDescriptorImpl {
      * {@link JAI#create(String,ParameterBlock,RenderingHints)}.
      *
      * @param source0 <code>RenderedImage</code> source 0.
-     * @param scales The per-band scale factors to multiply by.
+     * @param constants The per-band scale factors to multiply by.
      * @param offsets The per-band offsets to be added.
      * @param roi Optional ROI used for computations.
-     * @param noData Optional No Data range used for computations.
+     * @param rangeND Optional No Data range used for computations.
      * @param clamp Optional Maximum value to clamp values to (only implemented for bytes at the moment)
      * @param useROIAccessor Boolean indicating if ROI RasterAccessor must be used.
-     * @param destinationNoData Destination value for No Data.
+     * @param destNoData Destination value for No Data.
      * @param hints The <code>RenderingHints</code> to use.
      * @return The <code>RenderedOp</code> destination.
      * @throws IllegalArgumentException if <code>source0</code> is <code>null</code>.
      */
     public static RenderedOp create(RenderedImage source0, double[] constants, double[] offsets,
-                                    ROI roi, Range rangeND, double clamp, boolean useRoiAccessor, double destNoData,
+                                    ROI roi, Range rangeND, double clamp, boolean useROIAccessor, double destNoData,
                                     RenderingHints hints) {
         // Creation of the parameterBlock object associated to the operation
         ParameterBlockJAI pb = new ParameterBlockJAI("se.havochvatten.Rescale", RenderedRegistryMode.MODE_NAME);
@@ -284,7 +269,7 @@ public class Rescale2Descriptor extends OperationDescriptorImpl {
         pb.setParameter("offsets", offsets);
         pb.setParameter("ROI", roi);
         pb.setParameter("noData", rangeND);
-        pb.setParameter("useRoiAccessor", useRoiAccessor);
+        pb.setParameter("useRoiAccessor", useROIAccessor);
         pb.setParameter("destNoData", destNoData);
         pb.setParameter("clamp", clamp);
 
@@ -299,18 +284,18 @@ public class Rescale2Descriptor extends OperationDescriptorImpl {
      * {@link JAI#createRenderable(String, ParameterBlock, RenderingHints)}.
      *
      * @param source0 <code>RenderedImage</code> source 0.
-     * @param scales The per-band scale factors to multiply by.
+     * @param constants The per-band scale factors to multiply by.
      * @param offsets The per-band offsets to be added.
      * @param roi Optional ROI used for computations.
-     * @param noData Optional No Data range used for computations.
+     * @param rangeND Optional No Data range used for computations.
      * @param useROIAccessor Boolean indicating if ROI RasterAccessor must be used.
-     * @param destinationNoData Destination value for No Data.
+     * @param destNoData Destination value for No Data.
      * @param hints The <code>RenderingHints</code> to use.
      * @return The <code>RenderedOp</code> destination.
      * @throws IllegalArgumentException if <code>source0</code> is <code>null</code>.
      */
     public static RenderableOp createRenderable(RenderableImage source0, double[] constants,
-                                                double[] offsets, ROI roi, Range rangeND, boolean useRoiAccessor, double destNoData,
+                                                double[] offsets, ROI roi, Range rangeND, boolean useROIAccessor, double destNoData,
                                                 RenderingHints hints) {
         // Creation of the parameterBlock object associated to the operation
         ParameterBlockJAI pb = new ParameterBlockJAI("se.havochvatten.Rescale", RenderableRegistryMode.MODE_NAME);
@@ -321,7 +306,7 @@ public class Rescale2Descriptor extends OperationDescriptorImpl {
         pb.setParameter("offsets", offsets);
         pb.setParameter("ROI", roi);
         pb.setParameter("noData", rangeND);
-        pb.setParameter("useRoiAccessor", useRoiAccessor);
+        pb.setParameter("useRoiAccessor", useROIAccessor);
         pb.setParameter("destNoData", destNoData);
 
         return JAI.createRenderable("se.havochvatten.Rescale", pb, hints);

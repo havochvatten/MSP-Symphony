@@ -10,6 +10,10 @@ public enum NormalizationType {
      */
     DOMAIN,
     /**
+     * Normalize wrt a max value set as the mean + some multiple of the standard deviation.
+     */
+    STANDARD_DEVIATION,
+    /**
      * Normalize wrt to user-specified value
      */
     USER_DEFINED,

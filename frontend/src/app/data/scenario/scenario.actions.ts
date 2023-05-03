@@ -23,7 +23,7 @@ export const fetchScenariosFailure = createAction(
 
 export const openScenario = createAction(
   '[Scenario] Open scenario',
-  props<{ scenario: Scenario, index: number }>()
+  props<{ index: number }>()
 );
 
 export const closeActiveScenario = createAction(
@@ -46,11 +46,16 @@ export const deleteScenarioFailure = createAction(
 
 export const saveActiveScenario = createAction(
   '[Scenario] Save active scenario',
-  props<{ scenarioToBeSaved: Scenario }>()
+  props<{ scenarioToBeSaved: Scenario, updateState: boolean }>()
 );
 
 export const saveScenarioSuccess = createAction(
   '[Scenario] Save scenario success',
+  props<{ savedScenario: Scenario }>()
+);
+
+export const saveScenarioSuccessUpdate = createAction(
+  '[Scenario] Save scenario success and update active state',
   props<{ savedScenario: Scenario }>()
 );
 

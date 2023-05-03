@@ -2,15 +2,13 @@ package se.havochvatten.symphony.web;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.locationtech.jts.geom.Envelope;
-import org.opengis.filter.Not;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import se.havochvatten.symphony.calculation.CalcUtil;
 import se.havochvatten.symphony.calculation.CalculationREST;
 import se.havochvatten.symphony.dto.ComparisonReportResponseDto;
 import se.havochvatten.symphony.dto.ReportResponseDto;
+import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.calculation.CalcService;
 import se.havochvatten.symphony.service.ReportService;
@@ -21,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
 import java.util.logging.Logger;
 
 import static javax.ws.rs.core.Response.ok;
@@ -151,6 +148,31 @@ public class ReportREST {
         }
 
         // Image is available at /calculation/comparison/{a}/{b}. (computed on the fly, and cached client-side)
+    }
+
+    @GET
+    @Path("/comparison/{a}/{b}/csv")
+    @Produces(MediaType.TEXT_PLAIN)
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Return comparison report as CSV file")
+    public Response getComparisonReport(@Context HttpServletRequest req,
+                                        @PathParam("a") int baseId,
+                                        @PathParam("b") int scenarioId)
+            throws SymphonyStandardAppException {
+        CalculationResult
+            calcA = CalcUtil.getCalculationResultFromSessionOrDb(baseId, req.getSession(),
+            calcService).orElseThrow(BadRequestException::new),
+            calcB = CalcUtil.getCalculationResultFromSessionOrDb(scenarioId, req.getSession(),
+                        calcService).orElseThrow(BadRequestException::new);
+
+        if (hasAccess(calcA, req.getUserPrincipal()) && hasAccess(calcB, req.getUserPrincipal()))
+            return ok(reportService.generateCSVComparisonReport(calcA, calcB, req.getLocale())).
+                header("Content-Disposition",
+                    "attachment; filename=\"Comparison_report-calculationIDs_-_" + baseId + "-" + scenarioId +
+                        "_-utf8.csv\"").
+                build();
+        else
+            return status(Response.Status.UNAUTHORIZED).build();
     }
 
 }

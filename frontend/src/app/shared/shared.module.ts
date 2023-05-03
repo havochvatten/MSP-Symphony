@@ -5,7 +5,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconButtonComponent } from './icon-button/icon-button.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InsertionDirective } from './dialog/insertion.directive';
 import { SlideViewComponent, SlideViewTabComponent } from './slide-view/slide-view.component';
 import { MenuComponent } from './menu/menu.component';
@@ -37,6 +37,10 @@ import { AnchorPipe } from '@shared/anchor.pipe';
 import { MatButtonModule } from "@angular/material/button";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal.component';
+import { InlineMapComponent } from './inline-map/inline-map.component';
+import { SelectIntersectionComponent} from "@shared/select-intersection/select-intersection.component";
+import { MatRadioModule } from "@angular/material/radio";
+import { MatInputModule } from "@angular/material/input";
 
 @NgModule({
   declarations: [
@@ -73,7 +77,9 @@ import { ConfirmationModalComponent } from './confirmation-modal/confirmation-mo
     StatusIconComponent,
     OrdinalPipe,
     AnchorPipe,
-    ConfirmationModalComponent
+    ConfirmationModalComponent,
+    InlineMapComponent,
+    SelectIntersectionComponent
   ],
   imports: [
     CommonModule,
@@ -82,7 +88,10 @@ import { ConfirmationModalComponent } from './confirmation-modal/confirmation-mo
     RouterModule,
     TranslateModule,
     MatButtonModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatRadioModule,
+    MatInputModule,
+    FormsModule
   ],
   exports: [
     CommonModule,
@@ -116,7 +125,9 @@ import { ConfirmationModalComponent } from './confirmation-modal/confirmation-mo
     RouterModule,
     TranslateModule,
     OrdinalPipe,
-    AnchorPipe
+    AnchorPipe,
+    InlineMapComponent,
+    SelectIntersectionComponent
   ]
 })
 export class SharedModule {}

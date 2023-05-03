@@ -11,7 +11,6 @@ import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.LiteShape2;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.util.factory.Hints;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
@@ -25,7 +24,6 @@ import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.ScenarioDto;
 import se.havochvatten.symphony.util.Util;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.media.jai.ROI;
@@ -65,9 +63,13 @@ public class ScenarioService {
     }
 
     public List<ScenarioDto> findAllByOwner(Principal principal) {
-        return em.createNamedQuery("Scenario.findAllByOwner", ScenarioDto.class)
+        try {
+            return em.createNamedQuery("Scenario.findAllByOwner", ScenarioDto.class)
                 .setParameter("owner", principal.getName())
-                .getResultList();
+                .getResultList().stream().filter(s -> s.id != null).collect(Collectors.toList());
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public Scenario create(Scenario scenario, Principal principal) {
