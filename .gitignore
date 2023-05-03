@@ -22,3 +22,6 @@ target
 .history/*
 *.code-workspace
 *.war
+
+# filesystem specific
+.DS_Store
