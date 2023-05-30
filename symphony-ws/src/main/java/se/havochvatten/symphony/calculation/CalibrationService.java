@@ -92,13 +92,13 @@ public class CalibrationService {
      * Calculate local rarity indices (or actually its inverse, i.e. "commonness")
      **/
     public double[] calculateLocalCommonnessIndices(GridCoverage2D ecoComponents, int[] ecosystemBands,
-                                                    SimpleFeature projectedRoi) {
+                                                    List<SimpleFeature> zoneList) {
         logger.info("Calculating local rarity indices for coverage {}", ecoComponents.getName());
         // TODO: Cache indices? (based on feature hash?)
         var watch = new StopWatch();
         watch.start();
         var theZone = operations.zonalStats(ecoComponents, ecosystemBands,
-            new Statistics.StatsType[]{ Statistics.StatsType.SUM }, projectedRoi);
+            new Statistics.StatsType[]{ Statistics.StatsType.SUM }, zoneList);
         watch.stop();
         logger.info("DONE. ({} ms)", watch.getTime());
 
@@ -126,9 +126,9 @@ public class CalibrationService {
             .collect(Collectors.toMap(bandTitles::get, i -> Double.valueOf(values[i])));
     }
 
-    public double calcPercentileNormalizationValue(HttpServletRequest req, Scenario scenario, String operation)
+    public double calcPercentileNormalizationValue(HttpServletRequest req, Scenario scenario)
         throws FactoryException, SymphonyStandardAppException, TransformException, IOException {
-        CalculationResult result = calcService.calculateScenarioImpact(req, scenario, operation, null);
+        CalculationResult result = calcService.calculateScenarioImpact(req, scenario);
         var coverage = result.getCoverage();
 
         PercentileNormalizer normalizer = (PercentileNormalizer) normalizationFactory.getNormalizer(NormalizationType.PERCENTILE);

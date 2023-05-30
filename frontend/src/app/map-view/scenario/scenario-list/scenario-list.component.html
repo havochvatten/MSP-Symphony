@@ -1,18 +1,22 @@
 <section class="padded-container">
   <div>
     <h2>{{ 'map.editor.title' | translate }}</h2>
-    <p *ngIf="selectedArea; else noAreaSelected" class="area-name">{{ selectedArea.displayName }}</p>
+    <p *ngFor="let selectedArea of selectedAreas" class="area-name">{{ selectedArea.displayName }}</p>
+    <p *ngIf="selectedAreas.length === 0" class="area-name">{{ 'map.no-selected-area' | translate }}</p>
     <!--TODO Add more prominent button to create new scenario? -->
     <div class="title-container">
-      <!--Perhaps system-global scenario will be available later? -->
       <h3>{{ 'map.editor.list.user-scenarios' | translate }}</h3>
       <app-icon-button
-        icon="plus" [disabled]="!selectedArea || !baseline"
-        [title]="selectedArea
-         ? ('map.editor.list.add-scenario-label' | translate: { area: selectedArea?.name })
-         : 'map.editor.list.select-area-first-label' | translate"
-        [label]="'map.editor.list.add-scenario-label' | translate: { area: selectedArea?.name }"
-        (click)="createScenario(selectedArea!)"
+        icon="plus" [disabled]="selectedAreas.length === 0 || !baseline"
+        [title]="
+        !(selectedAreas && selectedAreas.length > 0) ?
+          ('map.editor.list.select-area-first-label' | translate) :
+          selectedAreas.length === 1 ?
+          ('map.editor.list.add-scenario-label-single' | translate: { area: selectedAreas![0].name }) :
+          ('map.editor.list.add-scenario-label' | translate)"
+        [label]="selectedAreas && selectedAreas.length > 0 ? ('map.editor.list.add-scenario-label' | translate :
+        { area: selectedAreas![0].name }) : ('map.editor.list.select-area-first-label' | translate)"
+        (click)="createScenario(selectedAreas!)"
       ></app-icon-button>
     </div>
   </div>
@@ -20,18 +24,28 @@
   <div class="divider"></div>
 
   <main *ngIf="(scenarios$ | async)?.length">
-    <button *ngFor="let scenario of scenarios$ | async; index as scenarioIndex" class="scenario"
-            (click)="open(scenario, scenarioIndex)" [title]="scenario.name">
+    <div *ngFor="let scenario of scenarios$ | async; index as scenarioIndex"
+         [ngClass]="{'scenario': true, 'hasCalculation': scenario.latestCalculationId }"
+            (click)="open(scenarioIndex)" [title]="scenario.name">
       <div class="scenario-info">
         <div class="name">
           <h4>{{ scenario.name }}</h4>
         </div>
         <span>{{ scenario.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
       </div>
-      <app-icon *ngIf="scenario.latestCalculation" iconType="report"
-                (click)="showReport(scenario.latestCalculation); $event.stopPropagation()">
+      <ul class="scenario-areas">
+        <li *ngFor="let area of scenario.areas; index as aix"
+            [title]="'map.editor.list.scenario-area' | translate: { scenario: scenario.name, 'area-feature': area.feature.properties['name'] }">
+          <span class="feature-name">{{ area.feature.properties['name'] }}</span>
+        </li>
+      </ul>
+      <app-icon iconType="delete" [title]="'map.editor.delete.label' | translate"
+                (click)="deleteScenario(scenario); $event.stopPropagation()">
       </app-icon>
-    </button>
+      <app-icon *ngIf="scenario.latestCalculationId" iconType="report" [title]="'map.editor.list.show-report-label' | translate"
+                (click)="showReport(scenario.latestCalculationId); $event.stopPropagation()">
+      </app-icon>
+    </div>
   </main>
 
   <div *ngIf="!(scenarios$ | async)?.length" id="no-scenarios">
@@ -39,16 +53,12 @@
       <app-icon iconType="info-circle"></app-icon>
       {{ 'map.editor.list.no-scenarios' | translate }}
     </span>
-    <p *ngIf="selectedArea">
+    <p *ngIf="selectedAreas.length > 0">
       {{ 'map.editor.list.add-scenarios-hint' | translate }}
     </p>
-    <p *ngIf="!selectedArea">
+    <p *ngIf="selectedAreas.length === 0">
       {{ 'map.editor.list.select-area-first-label' | translate }}
     </p>
     <!-- TODO Add animation around plus button? -->
   </div>
 </section>
-
-<ng-template #noAreaSelected>
-  <p class="area-name">{{ 'map.no-selected-area' | translate }}</p>
-</ng-template>

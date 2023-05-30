@@ -1,42 +1,44 @@
 package se.havochvatten.symphony.scenario;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.LiteShape2;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.havochvatten.symphony.calculation.CalcUtil;
 import se.havochvatten.symphony.calculation.Operations;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.ScenarioDto;
+import se.havochvatten.symphony.entity.CalculationResult;
+import se.havochvatten.symphony.service.CalculationAreaService;
 import se.havochvatten.symphony.util.Util;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.media.jai.ROI;
 import javax.media.jai.ROIShape;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 @Stateless
@@ -58,8 +60,15 @@ public class ScenarioService {
         this.operations = operations;
     }
 
+    @EJB
+    private CalculationAreaService calculationAreaService;
+
     public Scenario findById(int id) {
         return em.find(Scenario.class, id); // null if not found
+    }
+
+    public ScenarioArea findAreaById(int id) {
+        return em.find(ScenarioArea.class, id);
     }
 
     public List<ScenarioDto> findAllByOwner(Principal principal) {
@@ -85,6 +94,13 @@ public class ScenarioService {
         return em.merge(updated);
     }
 
+    @Transactional
+    public ScenarioArea updateArea(ScenarioArea updated) {
+        em.merge(updated);
+        em.flush();
+        return updated;
+    }
+
     public void delete(Principal principal, int id) {
         var s = em.find(Scenario.class, id);
 
@@ -106,15 +122,15 @@ public class ScenarioService {
      **/
     public Pair<GridCoverage2D, GridCoverage2D> applyScenario(GridCoverage2D ecosystems,
                                                               GridCoverage2D pressures,
-                                                              FeatureCollection changes) throws FactoryException {
+                                                              Scenario scenario) throws FactoryException, TransformException {
         // We assume GeoJSON is in WGS84 and that ecosystem and pressures coverages are of the same CRS
         assert (ecosystems.getCoordinateReferenceSystem().equals(pressures.getCoordinateReferenceSystem()));
         MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
                 ecosystems.getCoordinateReferenceSystem());
 
         return Pair.of(
-                apply(ecosystems, ecosystems.getGridGeometry(), changes, LayerType.ECOSYSTEM, WGS84toTarget),
-                apply(pressures, pressures.getGridGeometry(), changes, LayerType.PRESSURE, WGS84toTarget)
+                apply(ecosystems, ecosystems.getGridGeometry(), scenario, LayerType.ECOSYSTEM, WGS84toTarget),
+                apply(pressures, pressures.getGridGeometry(), scenario, LayerType.PRESSURE, WGS84toTarget)
         );
     }
 
@@ -122,64 +138,48 @@ public class ScenarioService {
      * @return coverage containing scenario changes
      */
     GridCoverage2D apply(GridCoverage2D coverage,
-                         GridGeometry2D gridGeometry,
-                         FeatureCollection scenarioChanges,
-                         LayerType changeType,
-                         MathTransform roiTransform) {
+               GridGeometry2D gridGeometry,
+               Scenario scenario,
+               LayerType changeType,
+               MathTransform roiTransform) {
         final int numBands = coverage.getNumSampleDimensions();
 
-        /*
-         *  It would be more efficient (and more work to implement) to create a scenario mask containing all
-         *  changes which could be applied in one go. Or perhaps make use of parallel stream.reduce.
-         */
-        return reduceFeatures(scenarioChanges.features(), // iterate over features
-                coverage,
-                (GridCoverage2D state, Feature changeFeature) -> {
-                    try {
-                        // Reproject ROI to coverage CRS
-                        var featureGeometry =
-                                (Geometry) changeFeature.getDefaultGeometryProperty().getValue();
-                        Geometry projectedROI = JTS.transform(featureGeometry, roiTransform);
+        return Util.reduce(scenario.getAreas(), coverage, (state, area) -> {
+            try {
+                // Reproject ROI to coverage CRS
+                var areaGeometry = area.getGeometry();
+                Geometry projectedROI = JTS.transform(areaGeometry, roiTransform);
 
-                        // Transform ROI to grid coordinates
-                        var gridROI = (ROI) new ROIShape(
-                                new LiteShape2(projectedROI, gridGeometry.getCRSToGrid2D(), null, false));
+                // Transform ROI to grid coordinates
+                var gridROI = (ROI) new ROIShape(
+                    new LiteShape2(projectedROI, gridGeometry.getCRSToGrid2D(), null, false));
 
-                        var bandChanges = getBandChangesFromFeatureProperty(
-                                changeFeature.getProperty("changes"), changeType);
-                        return Util.reduce(bandChanges, // iterate over band changes
-                                state,
-                                (GridCoverage2D innerState, BandChange bandChange) -> {
-                                    LOG.info("Applying changes for feature {}: " + bandChange,
-                                            changeFeature.getProperty("title").getValue().toString());
+                List<BandChange> bandChanges = Arrays.stream(area.getAllChanges())
+                    .filter(c -> c.type == changeType)
+                    .collect(Collectors.toList());
 
-                                    var multipliers = new double[numBands];
-                                    Arrays.fill(multipliers, 1.0);  // default to no change
-                                    multipliers[bandChange.band] = bandChange.multiplier;
+                return Util.reduce(bandChanges, // iterate over band changes
+                    state,
+                    (GridCoverage2D innerState, BandChange bandChange) -> {
+                        LOG.info("Applying changes for feature {}: " + bandChange,
+                            area.getFeature().getProperty("name").getValue().toString());
 
-                                    var offsets = new double[numBands];
-                                    // No need to fill since array is initialized to zero by default
-                                    offsets[bandChange.band] = bandChange.offset;
+                        var multipliers = new double[numBands];
+                        Arrays.fill(multipliers, 1.0);  // default to no change
+                        multipliers[bandChange.band] = bandChange.multiplier;
 
-                                    return (GridCoverage2D) operations.rescale(innerState, multipliers, offsets,
-                                        gridROI, MAX_IMPACT_VALUE);
-                                });
-                    } catch (TransformException | FactoryException e) {
-                        LOG.error("Error transforming change ROI: " + e);
-                        return state;
-                    }
-                }
-        );
-    }
+                        var offsets = new double[numBands];
+                        // No need to fill since array is initialized to zero by default
+                        offsets[bandChange.band] = bandChange.offset;
 
-    private static <U> U reduceFeatures(FeatureIterator iter, U identity,
-                                        BiFunction<U, Feature, U> accumulator) {
-        U result = identity;
-        try (FeatureIterator fs = iter) {
-            while (fs.hasNext())
-                result = accumulator.apply(result, fs.next());
-        }
-        return result;
+                        return (GridCoverage2D) operations.rescale(innerState, multipliers, offsets,
+                            gridROI, MAX_IMPACT_VALUE);
+                    });
+            } catch (TransformException | FactoryException e) {
+                LOG.error("Error transforming change ROI: " + e);
+                return state;
+            }
+        });
     }
 
     /**
@@ -194,5 +194,22 @@ public class ScenarioService {
                 .map(entry -> mapper.convertValue(entry.getValue(), BandChange.class))
                 .filter(change -> change.type == type)
                 .collect(Collectors.toUnmodifiableList());
+    }
+
+    public void deleteArea(Principal userPrincipal, int areaId) {
+        ScenarioArea area = em.find(ScenarioArea.class, areaId);
+        Scenario scenario = area.getScenario();
+
+        if (area == null)
+            throw new NotFoundException();
+        if (!scenario.getOwner().equals(userPrincipal.getName()))
+            throw new NotAuthorizedException(userPrincipal.getName());
+        else
+            scenario.getAreas().remove(area);
+            em.remove(area);
+            em.merge(scenario);
+
+        if(scenario.getAreas().isEmpty())
+            em.remove(scenario);
     }
 }

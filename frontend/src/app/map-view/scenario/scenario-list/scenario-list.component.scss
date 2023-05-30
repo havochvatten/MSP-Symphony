@@ -15,16 +15,18 @@ $buttons-row-gap: 1rem;
     flex-direction: column;
 
     h2 {
-      margin: 0;
+      margin: 0 0 0.5em;
     }
 
     .area-name {
       color: #818181;
+      margin: 0 0 0.4rem;
     }
 
     .title-container {
       display: flex;
       justify-content: space-between;
+      margin-top: 1.5rem;
 
       h3 {
         margin: 0;
@@ -58,36 +60,38 @@ $buttons-row-gap: 1rem;
 
       .scenario {
         box-sizing: border-box;
-        background: none;
+        position: relative;
+        background-color: white;
         border: 1px solid #707070;
-        padding: 0.4rem;
+        padding: 1.2rem;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: nowrap;
-        height: $button-height;
+        flex-direction: column;
         max-width: 100%;
+        align-items: stretch;
 
         &:hover {
           cursor: pointer;
-          background-color: $hav-turquoise;
+          background-color: $hav-coldgrey;
 
           .scenario-info h4, .scenario-info span, app-icon {
-            color: white;
+            //color: white;
           }
+
+          //&:has(li:hover) {
+          //  background-color: white;
+          //}
         }
 
         .scenario-info {
           display: flex;
           flex-direction: column;
           box-sizing: border-box;
-          padding: 0 1rem;
-          max-width: calc(100% - 4rem);
+          max-width: 91.5%;
 
           h4 {
             margin: 0;
             text-align: left;
-            font: Medium 1.4rem/1.3rem;
+            font-size: 1.4rem;
             line-height: 1.9rem;
             color: #232323;
             text-overflow: ellipsis;
@@ -123,15 +127,78 @@ $buttons-row-gap: 1rem;
           }
         }
 
-        app-icon {
-          color: $hav-turquoise;
-          font-size: 4rem;
+        ul.scenario-areas {
+          display: flex;
+          flex-direction: column;
+          list-style: none;
+          padding: 0;
+          margin: 1rem 0 0;
+
+          li {
+            display: flex;
+            background-color: white;
+            padding: 1rem;
+            margin: 0 0 0.5rem;
+            border: 1px dotted black;
+            font-size: 1.4rem;
+            align-items: center;
+            line-height: 2rem;
+            flex: 1;
+
+            //&:hover {
+            //  background-color: $lighter-yellow;
+            //}
+
+            .feature-name {
+
+            }
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
         }
 
-        ::ng-deep app-status-icon svg {
-          height: 3rem;
-          width: 3rem;
-          margin-right: 0.5rem;
+        app-icon {
+          position: absolute;
+          background-color: $hav-turquoise;
+          color: white;
+          font-size: 4rem;
+          height: 2.8rem;
+          width: 2.8rem;
+          border-radius: 50%;
+          right: 1.4rem;
+
+          ::ng-deep svg {
+            height: 1.75rem;
+            width: 1.75rem;
+          }
+
+          &:hover {
+            background-color: transparent;
+            color: $hav-turquoise;
+          }
+
+          &[icontype='delete'] {
+            background-color: transparent;
+            color: $red;
+            opacity: 0.3;
+            margin-right: 0.3rem;
+
+            &:hover {
+              opacity: 1;
+            }
+          }
+        }
+
+        &.hasCalculation {
+          .scenario-info {
+            max-width: 83.5%;
+          }
+
+          app-icon[icontype='delete'] {
+            right: 4rem;
+          }
         }
       }
     }

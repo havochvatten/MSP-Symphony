@@ -15,6 +15,7 @@ import se.havochvatten.symphony.mapper.AreaSelectionResponseDtoMapper;
 import se.havochvatten.symphony.dto.AreaSelectionResponseDto.AreaOverlapFragment;
 import se.havochvatten.symphony.mapper.CalculationAreaMapper;
 import se.havochvatten.symphony.scenario.Scenario;
+import se.havochvatten.symphony.scenario.ScenarioArea;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -31,6 +32,7 @@ import static se.havochvatten.symphony.mapper.AreaSelectionResponseDtoMapper.map
 public class CalculationAreaService {
     private static final Logger LOG = LoggerFactory.getLogger(CalculationAreaService.class);
     private static ObjectMapper mapper = new ObjectMapper();
+    private static GeometryJSON geometryJSON = new GeometryJSON();
 
     @PersistenceContext(unitName = "symphonyPU")
     public EntityManager em;
@@ -50,15 +52,21 @@ public class CalculationAreaService {
                 .getResultList();
     }
 
+    public List<CalculationArea> findCalculationAreas(List<Integer> ids) {
+        return em.createNamedQuery("CalculationArea.findByIds")
+                .setParameter("ids", ids)
+                .getResultList();
+    }
+
     /**
      * @return AreaSelectionResponseDto with information to frontend about Area tyes, areas and sensitivity
      * matrices for selection/input to calculation
      */
-    public AreaSelectionResponseDto areaSelect(String baselineName, Object polygon, Principal principal)
+    public AreaSelectionResponseDto areaSelect(String baselineName, int areaId, Principal principal)
             throws SymphonyStandardAppException {
         try {
-            String roi = mapper.writeValueAsString(polygon);
-            Geometry geoRoi = jsonToGeometry(roi);
+            ScenarioArea scenarioArea = em.find(ScenarioArea.class, areaId);
+            Geometry geoRoi = scenarioArea.getGeometry();
             BaselineVersion baselineVersion = baselineVersionService.getVersionByName(baselineName);
             List<CalculationArea> calcAreasWithinRoi = getAreasWithinPolygon(geoRoi,
                     baselineVersion.getId()); // expensive?
@@ -81,7 +89,7 @@ public class CalculationAreaService {
                         if (daPolygon.intersects(geoRoi)) {
                             var defMatrixFragment = new AreaOverlapFragment();
                             defMatrixFragment.polygon = mapper.readTree(geoJson.toString(geoRoi.intersection(daPolygon)));
-                            defMatrixFragment.defaultMatrix = mapSensitivityMatrixToDto(dca.getdefaultSensitivityMatrix());
+                            defMatrixFragment.defaultMatrix = mapSensitivityMatrixToDto(dca.getDefaultSensitivityMatrix());
                             fragmentMap.add(defMatrixFragment);
                         }
                     }
@@ -105,7 +113,7 @@ public class CalculationAreaService {
                         principal, defaultArea.getId());
                 List<CalcAreaSensMatrix> commonBaselineMatrices =
                     calcAreaSensMatrixService.findByBaselineAndArea(baselineVersion.getName(), defaultArea.getId());
-                commonBaselineMatrices.removeIf(m -> m.getSensitivityMatrix().getId() == defaultArea.getdefaultSensitivityMatrix().getId());
+                commonBaselineMatrices.removeIf(m -> m.getSensitivityMatrix().getId() == defaultArea.getDefaultSensitivityMatrix().getId());
                 AreaSelectionResponseDto resp = AreaSelectionResponseDtoMapper.mapToDto(defaultArea,
                     areaTypeDtos, userDefinedMatrices, commonBaselineMatrices);
                 return resp;
@@ -114,6 +122,19 @@ public class CalculationAreaService {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.MAPPING_OBJECT_TO_POLYGON_STRING_ERROR);
         }
     }
+
+    public ScenarioAreaSelectionResponseDto scenarioAreaSelect(String baselineName, int scenarioId, Principal principal) throws SymphonyStandardAppException {
+        Scenario scenario = em.find(Scenario.class, scenarioId);
+        int[] areaIds = scenario.getAreas().stream().mapToInt(ScenarioArea::getId).toArray();
+        ScenarioAreaSelectionResponseDto resp = new ScenarioAreaSelectionResponseDto();
+
+        for(Integer areaId : areaIds) {
+            resp.matrixData.put(areaId, areaSelect(baselineName, areaId, principal));
+        }
+
+        return resp;
+    }
+
 
     /**
      * @return CalculationAreaDto having id
@@ -179,67 +200,45 @@ public class CalculationAreaService {
         em.remove(calculationArea);
     }
 
-    /**
-     * Get the selected areas for the calculation that are within the selected polygon together with their
-     * sensitivity matrices. The area/areas that are not explicitly selected but are within the selected
-     * polygon and registered as default area will be the default area/areas with their sensitivity
-     * matrix/matrices.
-     */
-    public MatrixResponse getAreaCalcMatrices(Scenario scenario) throws SymphonyStandardAppException,
-            IOException {
-        // TODO make use of L2 cache?
-        var matrixParameters = scenario.getMatrixParameters();
+    public MatrixResponse getAreaCalcMatrices(Scenario scenario) throws SymphonyStandardAppException {
 
-        List<AreaMatrixMapping> areaMatrices = new ArrayList<>();
-        if (matrixParameters.userDefinedMatrixId == null) {
-            areaMatrices =
-                    ((MatrixParameters) matrixParameters).areaTypes.stream()
-                            .flatMap(areaType -> areaType.areaMatrices.stream())
-                            .collect(Collectors.toList());
-        }
+        Integer areaId, defaultSensMatrixId = null;
+        CalculationArea calculationArea;
+        List<ScenarioArea> areas = scenario.getAreas();
+        MatrixResponse areaMatrixMap = new MatrixResponse(areas.stream().mapToInt(ScenarioArea::getId).toArray());
 
-        var roi = scenario.getGeometry();
         BaselineVersion baseline = baselineVersionService.getBaselineVersionById(scenario.getBaselineId());
-        List<CalculationArea> careasMatching = getAreasWithinPolygon(roi, baseline.getId());
-        List<Integer> careasMatchingIds =
-                careasMatching.stream().map(CalculationArea::getId).collect(Collectors.toList());
+        List<CaPolygon> defaultCalcAreaPolygons = getDefaultCalcAreaPolygonsForBaseline(baseline.getId());
 
-        List<Integer> reqAreaIds =
-                areaMatrices.stream().map(AreaMatrixMapping::getAreaId).collect(Collectors.toList());
-
-        List<AreaMatrixMapping> relevantSelectedAreaMatrices =
-                areaMatrices.stream().filter((a) -> careasMatchingIds.contains(a.getAreaId())).collect(Collectors.toList());
-
-        List<CalculationArea> defaultAreas =
-                careasMatching.stream().filter((cm) -> cm.isCareaDefault()).collect(Collectors.toList());
-
-        List<CalculationArea> relevantNonDefaultCalcAreas =
-                careasMatching.stream().filter((cm) -> !cm.isCareaDefault() && reqAreaIds.contains(cm.getId())).collect(Collectors.toList());
-
-        MatrixResponse resp = new MatrixResponse();
-        resp.areaMatrixResponses = getAreaMatrixResponseDtos(roi, relevantSelectedAreaMatrices,
-                defaultAreas, relevantNonDefaultCalcAreas);
-        resp.sensitivityMatrices = getMatrixList(relevantSelectedAreaMatrices, defaultAreas,
-                baseline.getId());
-        resp.normalizationValue = getNormalization(defaultAreas, scenario.getNormalization());
-
-        if (matrixParameters.userDefinedMatrixId != null) {
-            overrideMatrixIds(resp, matrixParameters.userDefinedMatrixId, baseline.getId());
+        for(ScenarioArea area : areas) {
+            areaId = area.getId();
+            var areaMatrixParameters = area.getMatrixParameters();
+            for(CaPolygon defaultAreaPoly : defaultCalcAreaPolygons){
+                if (jsonToGeometry(defaultAreaPoly.getPolygon()).intersects(area.getGeometry())) {
+                    calculationArea = defaultAreaPoly.getCalculationArea();
+                    defaultSensMatrixId = calculationArea.getDefaultSensitivityMatrix().getId();
+                    areaMatrixMap.setAreaNormalizationValue(areaId, defaultAreaPoly.getCalculationArea().getMaxValue());
+                    break;
+                }
+            }
+            if(areaMatrixParameters.matrixId != null) {
+                areaMatrixMap.setAreaMatrixId(areaId, areaMatrixParameters.matrixId);
+            } else {
+                if (areaMatrixParameters.matrixType == MatrixParameters.MatrixType.STANDARD && defaultSensMatrixId != null) {
+                    areaMatrixMap.setAreaMatrixId(areaId, defaultSensMatrixId);
+                } else {
+                    throw new SymphonyStandardAppException(SymphonyModelErrorCode.MATRIX_NOT_SET);
+                }
+            }
         }
 
-        return resp;
+        return areaMatrixMap;
     }
 
-    void overrideMatrixIds(MatrixResponse matrixResponse, Integer overridingMatrixId,
-                           int baseDataVersionId) throws SymphonyStandardAppException {
-        matrixResponse.areaMatrixResponses.forEach(a -> {
-            a.setMatrixId(overridingMatrixId);
-        });
-        SensitivityMatrix sensitivityMatrix = new SensitivityMatrix(overridingMatrixId,
-                getSensitivityMatrix(overridingMatrixId, baseDataVersionId));
-        // The areas only reference to one matrix in this case
-        matrixResponse.sensitivityMatrices.clear();
-        matrixResponse.sensitivityMatrices.add(sensitivityMatrix);
+    private List<CaPolygon> getDefaultCalcAreaPolygonsForBaseline(Integer id) {
+        return em.createNamedQuery("CaPolygon.findDefaultForBaselineVersionId", CaPolygon.class)
+                    .setParameter("versionId", id)
+                    .getResultList();
     }
 
     /**
@@ -296,8 +295,8 @@ public class CalculationAreaService {
         for (CalculationArea defaultArea : defaultAreas) {
             AreaMatrixResponse areaMatrixResponseDto = new AreaMatrixResponse();
             areaMatrixResponseDto.setDefaultArea(true);
-            areaMatrixResponseDto.setMatrixId(defaultArea.getdefaultSensitivityMatrix() == null ? null :
-                    defaultArea.getdefaultSensitivityMatrix().getId());
+            areaMatrixResponseDto.setMatrixId(defaultArea.getDefaultSensitivityMatrix() == null ? null :
+                    defaultArea.getDefaultSensitivityMatrix().getId());
             List<String> polygons =
                     defaultArea.getCaPolygonList().stream().map(p -> p.getPolygon()).collect(Collectors.toList());
             areaMatrixResponseDto.getPolygons().addAll(withinSelectedPolygon(selectedPolygon, polygons));
@@ -331,8 +330,8 @@ public class CalculationAreaService {
 
         for (CalculationArea defaultArea : defaultAreas) {
             SensitivityMatrix sensitivityMatrix =
-                    new SensitivityMatrix(defaultArea.getdefaultSensitivityMatrix().getId(),
-                            getSensitivityMatrix(defaultArea.getdefaultSensitivityMatrix().getId(),
+                    new SensitivityMatrix(defaultArea.getDefaultSensitivityMatrix().getId(),
+                            getSensitivityMatrix(defaultArea.getDefaultSensitivityMatrix().getId(),
                                     baseDataVersionId));
             sensitivityMatrices.add(sensitivityMatrix);
         }
@@ -350,7 +349,7 @@ public class CalculationAreaService {
      * @return The array of sensitivity values for the matrix with matrixId. Ordered by band number in
      * metadata for pressures (vertically) and eco components (horizontally)
      */
-    double[][] getSensitivityMatrix(Integer matrixId, int baseDataVersionId) throws SymphonyStandardAppException {
+    public double[][] getSensitivityMatrix(Integer matrixId, int baseDataVersionId) throws SymphonyStandardAppException {
         if (em.find(se.havochvatten.symphony.entity.SensitivityMatrix.class, matrixId) == null) {
             return new double[][]{};
         }
@@ -426,11 +425,10 @@ public class CalculationAreaService {
     /**
      * @return A Geometry object created from the string geoJSON
      */
-    private Geometry jsonToGeometry(String geoJSON) throws SymphonyStandardAppException {
-        GeometryJSON g = new GeometryJSON();
+    public static Geometry jsonToGeometry(String geoJSON) throws SymphonyStandardAppException {
         Geometry geometry = null;
         try {
-            geometry = g.read(geoJSON);
+            geometry = geometryJSON.read(geoJSON);
         } catch (IOException e) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.GEOJSON_TO_GEOMETRY_CONVERSION_ERROR);
         }
@@ -440,7 +438,7 @@ public class CalculationAreaService {
     /**
      * @return A list of geometries (List<Geometry>) from the geoJSON list of strings geoJSONList
      */
-    private List<Geometry> jsonListToGeometryList(List<String> geoJSONList) throws SymphonyStandardAppException {
+    public static List<Geometry> jsonListToGeometryList(List<String> geoJSONList) throws SymphonyStandardAppException {
         List<Geometry> geometries = new ArrayList<>();
         for (String geoJSON : geoJSONList) {
             geometries.add(jsonToGeometry(geoJSON));

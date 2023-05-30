@@ -3,7 +3,7 @@ import { Extent } from 'ol/extent';
 import { ProjectionLike } from "ol/proj";
 import { NormalizationOptions } from "@data/calculation/calculation.service";
 import { BandType } from "@data/metadata/metadata.interfaces";
-import { GeoJSONFeatureCollection } from "ol/format/GeoJSON";
+import { ChangesProperty } from '@data/scenario/scenario.interfaces';
 
 // TODO Move calculation element to Scenario state
 export interface State {
@@ -29,14 +29,20 @@ export interface Report {
   geographicalArea: number; // m^2
   calculatedPixels: number;
   gridResolution: number; // [m]
-  matrix: DefaultMatrixData | string;
-  altMatrix: boolean;
+  areaMatrices: AreaMatrix[];
   normalization: NormalizationOptions;
   impactPerPressure: Record<number, number>;
   impactPerEcoComponent: Record<number, number>;
-  scenarioChanges: GeoJSONFeatureCollection;
+  scenarioChanges: ReportChanges;
   chartData: ChartData;
   timestamp: number;
+}
+
+export interface ReportChanges {
+  baseChanges: ChangesProperty,
+  areaChanges: {
+    [key: number]: ChangesProperty
+  };
 }
 
 export interface ComparisonReport {
@@ -72,7 +78,7 @@ export interface StaticImageOptions {
 export interface CalculationSlice {
   name: string;
   // The below are set upon calculation completion
-  id: string;
+  id: number;
   timestamp: number;
   loading?: boolean;
 }
@@ -100,4 +106,9 @@ export type LegendState = {
 
 export interface OperationParams {
   [param: string]: string;
+}
+
+export interface AreaMatrix {
+  areaName: string;
+  matrix: string;
 }

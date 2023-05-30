@@ -6,7 +6,7 @@ import { environment as env } from '@src/environments/environment';
 import { State } from '../../app-reducer';
 import { MessageActions } from '@data/message';
 import { MetadataSelectors } from '@data/metadata';
-import { CalculationSlice, Legend, LegendType, OperationParams, PercentileResponse, StaticImageOptions } from './calculation.interfaces';
+import { CalculationSlice, Legend, LegendType, PercentileResponse, StaticImageOptions } from './calculation.interfaces';
 import { CalculationActions } from '.';
 import { AppSettings } from '@src/app/app.settings';
 import { register } from 'ol/proj/proj4';
@@ -19,6 +19,10 @@ export enum NormalizationType {
   UserDefined = 'USER_DEFINED',
   StandardDeviation = 'STANDARD_DEVIATION',
   Percentile = 'PERCENTILE' // Only used on backend for calibration
+}
+
+export enum CalcOperation {
+  Cumulative, RarityAdjusted,
 }
 
 export interface NormalizationOptions {
@@ -53,30 +57,28 @@ export class CalculationService implements OnDestroy {
       });
   }
 
-  public calculate(scenario: Scenario, operation: string, params: OperationParams) {
+  public calculate(scenario: Scenario) {
     const that = this;
     // TODO Consider making it a simple request (not subject to CORS)
     // TODO make NgRx effect?
-    this.http.post<CalculationSlice>(env.apiBaseUrl+'/calculation/sum/'+operation, scenario, {
-      params: new HttpParams({ fromObject: params })
-    }).subscribe({
+
+    this.http.post<CalculationSlice>(env.apiBaseUrl+'/calculation/sum', scenario.id).
+    subscribe({
       next(response) {
         that.addResult(response.id).then(() => {
           that.store.dispatch(CalculationActions.calculationSucceeded({
             calculation: response
           }));
-          // TODO hide areas?
         });
       },
       error(err) {
-        // FIXME set calculating to false for the correct area after areas rework
         that.store.dispatch(CalculationActions.calculationFailed());
         that.store.dispatch(
           MessageActions.addPopupMessage({
             message: {
               type: 'ERROR',
               message: `${scenario.name} could not be calculated!`,
-              uuid: scenario.name
+              uuid: scenario.id + '_' + scenario.name
             }
           })
         );
@@ -88,7 +90,7 @@ export class CalculationService implements OnDestroy {
   public getStaticImage(url:string) {
     const params = AppSettings.CLIENT_SIDE_PROJECTION ?
       undefined :
-      new HttpParams().set('crs', AppSettings.MAP_PROJECTION);
+      new HttpParams().set('crs', encodeURIComponent(AppSettings.MAP_PROJECTION));
     return this.http.get(url, {
       responseType: 'blob',
       observe: 'response',
@@ -101,14 +103,14 @@ export class CalculationService implements OnDestroy {
     //  to guarantee uniqueness without demanding a separate interface.
     //  note + is intended here as concat, not addition, although both ids
     //  are numeric eg. 654 + 321 = -654321
-    return this.addResultImage("-" + idA + idB, `diff/${idA}/${idB}`);
+    return this.addResultImage(parseInt(idA + idB) * -1, `diff/${idA}/${idB}`);
   }
 
-  public addResult(id: string){
+  public addResult(id: number){
     return this.addResultImage(id, `${id}/image`);
   }
 
-  private addResultImage(id: string, epFragment: string) {
+  private addResultImage(id: number, epFragment: string) {
     const that = this;
     return new Promise<void>((resolve, reject) => {
       this.getStaticImage(`${env.apiBaseUrl}/calculation/` + epFragment).subscribe({
@@ -117,7 +119,7 @@ export class CalculationService implements OnDestroy {
           if (extentHeader) {
             that.resultReady$.emit({
               url: URL.createObjectURL(response.body!),
-              calculationId: +id,
+              calculationId: id,
               imageExtent: JSON.parse(extentHeader),
               projection: AppSettings.CLIENT_SIDE_PROJECTION ? AppSettings.DATALAYER_RASTER_CRS : AppSettings.MAP_PROJECTION
             });
@@ -137,7 +139,7 @@ export class CalculationService implements OnDestroy {
     });
   }
 
-  public removeResult(id: string){
+  public removeResult(id: number){
     const that = this;
     return new Promise<void>((resolve, reject) => {
       this.delete(id).subscribe({
@@ -163,7 +165,7 @@ export class CalculationService implements OnDestroy {
     return this.http.get<CalculationSlice[]>(`${env.apiBaseUrl}/calculation/matching/${id}`);
   }
 
-  public updateName(id: String, newName: String) {
+  public updateName(id: number, newName: String) {
     return this.http.post<CalculationSlice>(`${env.apiBaseUrl}/calculation/${id}`,
       newName,
       {
@@ -179,7 +181,7 @@ export class CalculationService implements OnDestroy {
     return this.http.get<PercentileResponse>(`${env.apiBaseUrl}/calibration/percentile-value`);
   }
 
-  delete(id: string) {
+  delete(id: number) {
     return this.http.delete(`${env.apiBaseUrl}/calculation/${id}`);
   }
 

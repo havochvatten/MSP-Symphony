@@ -5,6 +5,7 @@ import BaseLayer from 'ol/layer/Base';
 import { StaticImageOptions} from '@data/calculation/calculation.interfaces';
 import Static from "ol/source/ImageStatic";
 import { SymphonyLayerGroup } from "@src/app/map-view/map/layers/symphony-layer";
+import RenderEvent from "ol/render/Event";
 
 export class ResultLayerGroup extends SymphonyLayerGroup {
 

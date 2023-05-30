@@ -31,12 +31,13 @@ import { DataLayerService } from '@src/app/map-view/map/layers/data-layer.servic
 import { isEqual } from "lodash";
 import { dieCutPolygons, turfMerge } from "@shared/turf-helper/turf-helper";
 import { SelectIntersectionComponent } from "@shared/select-intersection/select-intersection.component";
-import { MultiPolygon, Polygon as OLPolygon, SimpleGeometry } from "ol/geom";
+import { MultiPolygon, Polygon as OLPolygon } from "ol/geom";
 import GeoJSON from "ol/format/GeoJSON";
 import { Geometry } from "geojson";
 import { MergeAreasModalComponent } from "@src/app/map-view/map/merge-areas-modal/merge-areas-modal.component";
-import { AreaOverlapFragment } from "@src/app/map-view/scenario/scenario-detail/matrix-selection/matrix.interfaces";
 import { AreaSelectionConfig } from "@shared/select-intersection/select-intersection.interfaces";
+import { MessageActions } from "@data/message";
+import uuid from "uuid/v4";
 
 @Component({
   selector: 'app-map',
@@ -54,7 +55,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private readonly resultSubscription?: Subscription;
   private readonly resultDeletedSubscription?: Subscription;
   private readonly userSubscription?: Subscription;
-  private activeScenario$: Observable<Scenario | undefined>;
+  protected activeScenario$: Observable<Scenario | undefined>;
   private scenarioSubscription: Subscription;
   private scenarioCloseSubscription: Subscription;
 
@@ -104,7 +105,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.activeScenario$ = this.store.select(ScenarioSelectors.selectActiveScenario);
 
     this.scenarioSubscription = this.activeScenario$.pipe(
-      distinctUntilChanged((prev: Scenario|undefined, curr: Scenario|undefined) => prev?.id === curr?.id && isEqual(prev?.feature.geometry, curr?.feature.geometry)),
+      distinctUntilChanged(
+        (prev: Scenario|undefined, curr: Scenario|undefined) => prev?.id === curr?.id && isEqual(prev?.areas[0].feature.geometry, curr?.areas[0].feature.geometry)),
       isNotNullOrUndefined(),
     ).subscribe((scenario: Scenario) => {
       this.scenarioLayer.clearLayers();
@@ -123,7 +125,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     ).subscribe(_ => {  // A scenario was closed
       // TODO: Remove result layer if loadResultLayerOnOpen is true
       this.scenarioLayer.clearLayers();
-      this.zoomOut(); // visual cue that scenario has been exited
+
+      this.setZoom(env.map.initialZoom); // visual cue that scenario has been exited
     });
 
     // Use store instead?
@@ -178,7 +181,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     this.areaLayer = new AreaLayer(
         this.map, this.dispatchSelectionUpdate, this.zoomToExtent,
-        this.onDrawEnd, this.onSplitClick, this.onMergeClick,
+        this.onDrawEnd, this.onSplitClick, this.onMergeClick, () => this.warnOnOverlap(this.store),
         this.scenarioLayer, this.translateService, this.geoJson); // Will add itself to the map
     this.map.addLayer(this.areaLayer);
 
@@ -195,8 +198,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  private dispatchSelectionUpdate = (feature?: Feature) => {
-    this.store.dispatch(AreaActions.updateSelectedArea({ statePath: feature?.get('statePath') }));
+  private dispatchSelectionUpdate = (features?: Feature[]) => {
+    this.store.dispatch(AreaActions.updateSelectedArea({ statePaths: features?.map(f => f.get('statePath')) }));
   };
 
   ngOnDestroy() {
@@ -314,6 +317,18 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  // store unavailable outside class context
+  warnOnOverlap(store: Store<State>) {
+    store.dispatch(
+      MessageActions.addPopupMessage({
+        message: {
+          type: 'INFO',
+          message: this.translateService.instant('map.selection-overlap'),
+          uuid: uuid()
+        }
+      }));
+  }
+
   // The virtual transform methods on OpenLayers Geometry subclasses
   // apparently does not support the EPSG:6326 projection used by turfjs
   convert6326(polygon: Polygon): Geometry {
@@ -339,6 +354,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
               coordinates: transformed.getCoordinates() };
   }
 
+  public center() {
+    this.map!.getView().animate({ center: env.map.center, duration: 250 });
+  }
+
   public zoomIn() {
     this.setZoom(this.map!.getView()!.getZoom()! + 1);
   };
@@ -351,8 +370,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.map!.getView().animate({ zoom: zoomLevel, duration }, { center });
   };
 
-  public zoomToArea = (statePath: StatePath) => {
-    this.areaLayer.zoomToArea(statePath);
+  public zoomToArea = (statePaths: StatePath[]) => {
+    this.areaLayer.zoomToArea(statePaths);
   };
 
   public zoomToExtent(extent: Extent, duration: number) {

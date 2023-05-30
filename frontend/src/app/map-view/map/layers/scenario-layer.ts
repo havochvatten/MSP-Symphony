@@ -10,13 +10,14 @@ import { State } from '@src/app/app-reducer';
 import { AreaStyle } from '@src/app/map-view/map/layers/area-layer';
 import { ScenarioSelectors } from '@data/scenario';
 import { isNotNullOrUndefined } from '@src/util/rxjs';
-import { ChangesProperty, Scenario } from '@data/scenario/scenario.interfaces';
+import { ChangesProperty, Scenario, ScenarioArea } from '@data/scenario/scenario.interfaces';
 import { Fill, Stroke, Style } from 'ol/style';
 import { GeoJSONFeature, GeoJSONFeatureCollection } from 'ol/format/GeoJSON';
 import { Coordinate } from 'ol/coordinate';
 import { environment } from '@src/environments/environment';
 import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
 import { ScenarioService } from '@data/scenario/scenario.service';
+import { MultiPolygon, Polygon, SimpleGeometry } from "ol/geom";
 
 // Move to environment?
 export enum ChangeState {
@@ -39,11 +40,10 @@ const THE_EMPTY_STYLE = new Style({}); // This style will cause the feature to n
 
 @Directive()
 export class ScenarioLayer extends VectorLayer<VectorSource> implements OnDestroy {
-  // Two layers? One for total area, one for features part of scenario? (need to be able to highlight active
-  // sub-feature)
+
   private activeFeatureSub: Subscription;
   private boundaryFeature?: Feature;
-  private format: GeoJSON;
+  private readonly format: GeoJSON;
 
   constructor(
     private scenarioService: ScenarioService,
@@ -71,49 +71,65 @@ export class ScenarioLayer extends VectorLayer<VectorSource> implements OnDestro
   }
 
   setScenarioBoundary(scenario: Scenario) {
+    const boundary = new Feature(this.format);
+    let poly: MultiPolygon | undefined;
+
     // TODO remove whole scenario layer when exiting scenario and create new one upon entering -- immutable
-    const feature = this.format.readFeature(scenario.feature);
-    feature.setId(undefined); // So as not to find it when using getFeatureById for locating change areas
-    feature.unset('id');
-    this.boundaryFeature = feature;
-    feature.setStyle(SCENARIO_BOUNDARY_STYLE);
-    this.getSource()?.addFeature(feature); // TODO: Add this in a separate layer part of a scenario group
+    scenario.areas.forEach(a => {
+      const feature = this.format.readFeature(a.feature),
+            featurePoly = feature.getGeometry() as SimpleGeometry,
+            isSingle = featurePoly.getType() === 'Polygon';
+      if(!poly) {
+        poly = isSingle ? new MultiPolygon([featurePoly as Polygon]) : featurePoly as MultiPolygon;
+      } else {
+        if(isSingle) {
+          poly.appendPolygon(featurePoly as Polygon);
+        } else {
+          for (const innerPolygon of (featurePoly as MultiPolygon).getPolygons()) {
+            poly.appendPolygon(innerPolygon as Polygon);
+          }
+        }
+      }
+      this.getSource()?.addFeature(feature);
+    });
+
+    if(poly) {
+      boundary.setGeometry(poly);
+      this.getSource()?.addFeature(boundary);
+      boundary.setStyle(SCENARIO_BOUNDARY_STYLE);
+      this.boundaryFeature = boundary;
+    }
   }
 
   // Fast-path for adding existing feature changes */
-  addScenarioChangeAreas(changes: GeoJSONFeatureCollection) {
-    if(changes && changes.features) {
-      const features = this.format.readFeatures(changes);
+  addScenarioChangeAreas(changes: ChangesProperty) {
+    if (changes) {
 
-      if (environment.map.colorCodeIntensityChanges)
-        features
-          // .filter(olFeature => olFeature.get("visible"))
-          .forEach(olFeature => {
-            const bandChanges = Object.values(olFeature.getProperties()['changes']) as BandChange[];
-            const colorCodedStyle = this.getColorCodedStyle(bandChanges);
-            olFeature.setStyle(colorCodedStyle);
-          });
+      if (environment.map.colorCodeIntensityChanges) {
 
-      this.getSource()?.addFeatures(features);
+        this.getColorCodedStyle(Object.values(changes));
+
+        //this.getSource()?.addFeatures(features);
+      }
     }
   }
 
   addOrChangeColorCodedFeature(feature: GeoJSONFeature) {
-    const bandChanges = Object.values(feature.properties!['changes'] as ChangesProperty);
-
-    const olFeature = this.getSource()?.getFeatureById(feature.id!);
-    if (olFeature) {
-      if (environment.map.colorCodeIntensityChanges)
-        // FIXME add borders
-        olFeature.setStyle(this.getColorCodedStyle(bandChanges));
-    } else {
-      const newOlFeature = this.format.readFeature(feature);
-
-      if (environment.map.colorCodeIntensityChanges)
-        newOlFeature.setStyle(this.getColorCodedStyle(bandChanges));
-
-      this.getSource()?.addFeature(newOlFeature);
-    }
+    // const bandChanges = Object.values(feature.properties!['changes'] as ChangesProperty);
+    //
+    // const olFeature = this.getSource()?.getFeatureById(feature.id!);
+    // if (olFeature) {
+    //   if (environment.map.colorCodeIntensityChanges)
+    //     // FIXME add borders
+    //     olFeature.setStyle(this.getColorCodedStyle(bandChanges));
+    // } else {
+    //   const newOlFeature = this.format.readFeature(feature);
+    //
+    //   if (environment.map.colorCodeIntensityChanges)
+    //     newOlFeature.setStyle(this.getColorCodedStyle(bandChanges));
+    //
+    //   this.getSource()?.addFeature(newOlFeature);
+    // }
   }
 
   // TODO override fill style

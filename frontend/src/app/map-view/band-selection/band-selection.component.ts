@@ -4,8 +4,8 @@ import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { MetadataActions } from '@data/metadata';
 import { Observable } from 'rxjs';
-import { AreaSelectors } from '@data/area';
-import { Area } from '@data/area/area.interfaces';
+import { ScenarioSelectors } from "@data/scenario";
+import { ScenarioDisplayMeta } from "@data/scenario/scenario.interfaces";
 
 //=== SEARCH UTILITIES ===
 
@@ -53,12 +53,12 @@ export class BandSelectionComponent implements OnInit, OnChanges {
   @Input() bandType: BandType = 'ecoComponents';
   search = '';
   filteredGroups: BandGroup[] = [];
-  selectedArea?: Observable<Area | undefined | unknown>;
+  scenarioDisplayNames?: Observable<ScenarioDisplayMeta>;
 
   constructor(private store: Store<State>) {}
 
   ngOnInit() {
-    this.selectedArea = this.store.select(AreaSelectors.selectSelectedAreaData);
+    this.scenarioDisplayNames = this.store.select(ScenarioSelectors.selectActiveScenarioDisplayMeta);
   }
 
   ngOnChanges(changes: SimpleChanges) {

@@ -26,6 +26,7 @@ export const ICONS = [
   'minus',
   'move',
   'normalization',
+  'not-equal',
   'opacity',
   'open-folder',
   'padlock',

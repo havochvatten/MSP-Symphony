@@ -32,6 +32,8 @@ import java.awt.image.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
 import static javax.ws.rs.core.Response.ok;
@@ -89,18 +91,16 @@ public class DataLayerREST {
             Envelope dataEnvelope = new ReferencedEnvelope(coverage.getEnvelope());
             CoordinateReferenceSystem targetCRS;
             Envelope targetEnvelope;
-            if (crs == null) {
-                targetCRS = coverage.getCoordinateReferenceSystem2D();
-                targetEnvelope = dataEnvelope;
-            } else {
-                CRSAuthorityFactory factory = CRS.getAuthorityFactory(true);
-                targetCRS = factory.createCoordinateReferenceSystem(crs);
-                logger.finer(coverage.getCoordinateReferenceSystem2D().toWKT());
-                GridGeometry2D gridGeometry = coverage.getGridGeometry();
-                MathTransform transform = CRS.findMathTransform(gridGeometry.getCoordinateReferenceSystem(),
-                    targetCRS);
-                targetEnvelope = JTS.transform(dataEnvelope, null, transform, 10);
-            }
+            crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8.toString()) : "EPSG:3035";
+
+
+            CRSAuthorityFactory factory = CRS.getAuthorityFactory(true);
+            targetCRS = factory.createCoordinateReferenceSystem(crs);
+            logger.finer(coverage.getCoordinateReferenceSystem2D().toWKT());
+            GridGeometry2D gridGeometry = coverage.getGridGeometry();
+            MathTransform transform = CRS.findMathTransform(gridGeometry.getCoordinateReferenceSystem(),
+                targetCRS);
+            targetEnvelope = JTS.transform(dataEnvelope, null, transform, 10);
 
             // TODO create indexed image if not already indexed
             RenderedImage img = WebUtil.render(coverage, targetCRS, targetEnvelope,

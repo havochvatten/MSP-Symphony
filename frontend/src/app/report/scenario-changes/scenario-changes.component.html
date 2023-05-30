@@ -1,20 +1,36 @@
-<h4>{{ 'report.scenario-changes.title' | translate:{ 'name': name } }}</h4>
-<div *ngIf="scenarioChanges?.features.length>0; else noChanges">
+<h4>{{ 'report.scenario-changes.title' | translate }}&nbsp;<span class="scenario-name" *ngIf="name">{{ name }}</span></h4>
+<div *ngIf="anyChanges(); else noChanges">
   <!--TODO make this span two columns. Multicol?-->
-  <table *ngFor="let area of scenarioChanges.features">
-    <tr class="title-row"><th colspan="2">{{ area.properties['title'] }}</th></tr>
-    <tr *ngFor="let change of area.properties['changes'] | keyvalue">
-      <th>{{ change.key }}</th>
+  <table>
+    <tr *ngIf="anyScenarioChanges()" class="title-row scenario-wide"><th colspan="2">{{ 'report.scenario-changes.base-changes' | translate }}</th></tr>
+    <tr *ngFor="let s_change of scenarioChanges.baseChanges | keyvalue">
+      <th class="change-label">{{ s_change.key }}</th>
       <td>
         <ng-container
-          [ngTemplateOutlet]="change.value['multiplier'] && change.value['multiplier'] !== 1 &&
-          change.value['offset'] && change.value['offset'] !== 0 ?
+          [ngTemplateOutlet]="s_change.value['multiplier'] && s_change.value['multiplier'] !== 1 &&
+          s_change.value['offset'] && s_change.value['offset'] !== 0 ?
           compoundChange :
            singleChange"
-          [ngTemplateOutletContext]="{change: change.value}">
+          [ngTemplateOutletContext]="{change: s_change.value}">
         </ng-container>
       </td>
     </tr>
+    <tr *ngIf="anyAreaChanges()" class="title-row area-change"><th colspan="2">{{ 'report.scenario-changes.area-changes' | translate }}</th></tr>
+    <ng-container *ngFor="let area of scenarioChanges.areaChanges | keyvalue">
+      <tr class="area-row" *ngIf="!isEmpty(area.value)"><th colspan="2">{{ areaDict.get(+area.key) }}</th></tr>
+      <tr *ngFor="let a_change of area.value | keyvalue">
+        <th class="change-label">{{ a_change.key }}</th>
+        <td>
+          <ng-container
+            [ngTemplateOutlet]="a_change.value['multiplier'] && a_change.value['multiplier'] !== 1 &&
+            a_change.value['offset'] && a_change.value['offset'] !== 0 ?
+            compoundChange :
+             singleChange"
+            [ngTemplateOutletContext]="{change: a_change.value}">
+          </ng-container>
+        </td>
+      </tr>
+    </ng-container>
   </table>
 </div>
 

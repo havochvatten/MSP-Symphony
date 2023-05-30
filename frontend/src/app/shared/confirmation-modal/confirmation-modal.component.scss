@@ -14,6 +14,17 @@
     }
   }
 
+  &.wide1 {
+    width: 48rem;
+  }
+
+  &.small-font {
+    p {
+      font-size: 1.3rem;
+      line-height: 1.8rem;
+    }
+  }
+
   h4 {
     font-weight: 600;
     font-size: 2rem;

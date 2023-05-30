@@ -5,7 +5,7 @@ import { ScenarioListComponent } from "@src/app/map-view/scenario/scenario-list/
 import { SharedModule } from "@shared/shared.module";
 import {
   MatrixSelectionComponent
-} from "@src/app/map-view/scenario/scenario-detail/matrix-selection/matrix-selection.component";
+} from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix-selection.component";
 import {
   NormalizationSelectionComponent
 } from "@src/app/map-view/scenario/scenario-detail/normalization-selection/normalization-selection.component";
@@ -15,6 +15,8 @@ import { MatRadioModule } from "@angular/material/radio";
 import { MatSelectModule } from "@angular/material/select";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { FormsModule } from "@angular/forms";
+import { ScenarioAreaDetailComponent } from './scenario-area-detail/scenario-area-detail.component';
+import { ChangesListComponent } from './scenario-detail/changes-list/changes-list.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +25,8 @@ import { FormsModule } from "@angular/forms";
     ScenarioDetailComponent,
     MatrixSelectionComponent,
     NormalizationSelectionComponent,
+    ScenarioAreaDetailComponent,
+    ChangesListComponent,
   ],
   imports: [
     SharedModule,

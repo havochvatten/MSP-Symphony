@@ -1,31 +1,38 @@
 import { Component, ElementRef, Input, NgModuleRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Scenario } from '@data/scenario/scenario.interfaces';
+import { ChangesProperty, Scenario } from '@data/scenario/scenario.interfaces';
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
 import { CalculationReportModalComponent } from '@shared/report-modal/calculation-report-modal.component';
 import {
   AreaTypeMatrixMapping,
-  AreaTypeRef,
-  MatrixParameterResponse
-} from '@src/app/map-view/scenario/scenario-detail/matrix-selection/matrix.interfaces';
+  AreaTypeRef
+} from '@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces';
 import { CalculationActions, CalculationSelectors } from '@data/calculation';
-import { MetadataSelectors } from '@data/metadata';
 import { Observable, OperatorFunction, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { environment } from '@src/environments/environment';
 import { State } from '@src/app/app-reducer';
-import { CalculationService, NormalizationOptions } from '@data/calculation/calculation.service';
-import { Band } from '@data/metadata/metadata.interfaces';
+import {
+  CalcOperation,
+  CalculationService,
+  NormalizationOptions,
+  NormalizationType
+} from '@data/calculation/calculation.service';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
 import { debounceTime, filter, take, tap } from 'rxjs/operators';
-import { GeoJSONFeature } from 'ol/format/GeoJSON';
-import { fetchAreaMatrices } from '@data/scenario/scenario.actions';
-import { AreaSelectors } from '@data/area';
 import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 import { Feature } from 'geojson';
 import { FormControl, Validators } from '@angular/forms';
 import { OperationParams } from '@data/calculation/calculation.interfaces';
+import { availableOperations } from "@data/calculation/calculation.util";
 import { TranslateService } from "@ngx-translate/core";
+import { MetadataSelectors } from "@data/metadata";
+import { Band } from "@data/metadata/metadata.interfaces";
+import { ScenarioService } from "@data/scenario/scenario.service";
+import { SelectIntersectionComponent } from "@shared/select-intersection/select-intersection.component";
+import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
+import { some } from "lodash";
+import { deleteScenario } from "@src/app/map-view/scenario/scenario-common";
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 
@@ -37,31 +44,27 @@ const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 export class ScenarioDetailComponent implements OnInit, OnDestroy {
   env = environment;
   autoSaveSubscription$?: Subscription;
+  changesText: { [key: number]: string; } = {};
 
   @Input() scenario!: Scenario;
+  @Input() deleteAreaDelegate!: ((a:number, e:MouseEvent, s:Scenario) => void);
   @ViewChild('name') nameElement!: ElementRef;
   editName = false;
 
   calculating$?: Observable<boolean>;
-  // Ambitiously we would query the backend for these
-  availableOperations = ['CumulativeImpact', 'RarityAdjustedCumulativeImpact'];
+  availableOperations = availableOperations;
   operation = new FormControl('', Validators.required);
-  operationParams: OperationParams = {
-    domain: 'GLOBAL'
-  }; // TODO: Use FormGroup and reactive form
-
-  showIncludeCoastCheckbox = environment.showIncludeCoastCheckbox;
-  associatedCoastalArea?: AreaTypeMatrixMapping;
-
-  areaCoastMatrices?: AreaTypeRef; // AreaMatrixMapping[] = [];
+  private matrixDataSubscription$: Subscription | undefined;
 
   percentileValue$: Observable<number>;
+  areaMatricesLoading$: Observable<boolean>;
 
   constructor(
     private store: Store<State>,
     private calcService: CalculationService,
     private dialogService: DialogService,
     private translateService: TranslateService,
+    private scenarioService: ScenarioService,
     private moduleRef: NgModuleRef<any>
   ) {
     // https://stackoverflow.com/questions/59684733/how-to-access-previous-state-and-current-state-and-compare-them-when-you-subscri
@@ -76,82 +79,110 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
         .subscribe((_: Scenario) => this.save());
     }
 
-    this.store.select(AreaSelectors.selectAreaMatrixData).subscribe(matrixData => {
-      if (matrixData) {
-        const coastAreaType = matrixData.areaTypes.find(type => type.coastalArea);
-        if (coastAreaType) {
-          this.associatedCoastalArea = coastAreaType;//.areas[0];
-        }
-      }
-    });
-
+    this.areaMatricesLoading$ = this.store.select(ScenarioSelectors.selectAreaMatrixDataLoading);
     this.calculating$ = this.store.select(CalculationSelectors.selectCalculating);
     this.percentileValue$ = this.store.select(CalculationSelectors.selectPercentileValue);
     this.store.dispatch(CalculationActions.fetchPercentile());
   }
 
-  convertMultiplierToPercent = convertMultiplierToPercent;
+  changes(): ChangesProperty {
+    return this.scenario.changes;
+  }
 
   ngOnInit() {
     if (!this.scenario)
       throw new Error("Attribute 'scenario' is required");
 
-    // IDEA: Only to do this the first time a scenario is created?
-    this.store.dispatch(fetchAreaMatrices({ geometry: this.scenario.feature.geometry }));
-
-    // this.store.select(CalculationSelectors.selectCalculations).pipe(take(1)).subscribe(calculations => {
-    if (this.scenario.latestCalculation && environment.editor.loadLatestCalculation) {
-      // const latestCalc = calculations.find(c => c.id === this.scenario.latestCalculation)!;
-      // if (latestCalc.timestamp>=this.scenario.timestamp)
-      this.calcService.addResult(this.scenario.latestCalculation);
-    }
-    // });
-
     setTimeout(() => {
-      this.operation.setValue(this.availableOperations[0]);
+      this.operation.setValue([...availableOperations.keys()][this.scenario.operation]);
     });
+
+    this.setChangesText();
+
+    this.matrixDataSubscription$ = this.store.select(ScenarioSelectors.selectAreaMatrixData).subscribe(
+      async data => {
+      if(data !== null && !some(data, d => d === null)) {
+        for(const area_id of Object.keys(data).map(id => parseInt(id))) {
+          const area_ix = this.scenario.areas.findIndex(a => a.id == area_id),
+                matrixData = data[area_id];
+          if (!matrixData.defaultArea && matrixData.overlap.length > 0) {
+            const selectedArea = await this.dialogService.open(SelectIntersectionComponent, this.moduleRef, {
+              data: {
+                areas: matrixData.overlap.map(overlap => {
+                  return {
+                    polygon: overlap.polygon,
+                    metaDescription: overlap.defaultMatrix.name
+                  }
+                }),
+                headerTextKey: 'map.editor.select-intersection.header',
+                messageTextKey: 'map.editor.select-intersection.message',
+                confirmTextKey: 'map.editor.select-intersection.confirm-selection',
+                metaDescriptionTextKey: 'map.editor.select-intersection.default-matrix'
+              }
+            }) as number;
+            if (selectedArea in matrixData.overlap) {
+              this.store.dispatch(ScenarioActions.saveScenarioArea(
+                { areaToBeSaved: { ...this.scenario.areas[area_ix],
+                    feature: { ...this.scenario.areas[area_ix].feature, geometry: matrixData.overlap[selectedArea].polygon }
+                  }}));
+            } else {
+              this.store.dispatch(ScenarioActions.closeActiveScenario());
+            }
+          }
+        }
+      }
+    });
+
+    this.store.dispatch(fetchAreaMatrices({ scenarioId: this.scenario.id }));
+  }
+
+  setChangesText():void {
+    for(const [ix, a] of this.scenario.areas.entries()) {
+      this.changesText[ix] = '';
+      for(const c in a.changes) {
+        let change = a.changes[c];
+        this.changesText[ix] += '\n' + c + ': ';
+        if (change['multiplier']) {
+          this.changesText[ix] +=
+            (change['multiplier'] > 1 ? '+' : '') +
+            Number(convertMultiplierToPercent(change['multiplier']) * 100).toFixed(2) + '%';
+        } else if (change['offset']) {
+          this.changesText[ix] += change['offset'];
+        }
+      }
+    }
   }
 
   calculate() {
     this.store.dispatch(CalculationActions.startCalculation());
+
     this.store.select(MetadataSelectors.selectSelectedComponents).pipe(
-      take(1)
-    ).subscribe((selectedComponents: { ecoComponent: Band[]; pressureComponent: Band[]; }) => {
-      const getSortedBandNumbers = (bands: Band[]) => bands
-        .map(band => band.bandNumber)
-        .sort((a, b) => a - b);
-      this.calcService.calculate({
-          ...this.scenario,
+      take(1))
+      .subscribe((selectedComponents: { ecoComponent: Band[]; pressureComponent: Band[]; }) => {
+        const getSortedBandNumbers = (bands: Band[]) => bands
+          .map(band => band.bandNumber)
+          .sort((a, b) => a - b);
+        this.scenarioService.save({...this.scenario,
           ecosystemsToInclude: getSortedBandNumbers(selectedComponents.ecoComponent),
-          pressuresToInclude: getSortedBandNumbers(selectedComponents.pressureComponent),
-          matrix: {
-            ...this.scenario.matrix,
-            areaTypes: this.areaCoastMatrices ?
-              [...(this.scenario.matrix!.areaTypes ?? []), this.areaCoastMatrices] :
-              (this.scenario.matrix!.areaTypes ?? [])
-          }
-        },
-        this.operation.value ?? '',
-        this.operation.value === 'RarityAdjustedCumulativeImpact' ?
-          this.operationParams : {}
-      );
-    })
+          pressuresToInclude: getSortedBandNumbers(selectedComponents.pressureComponent)}).pipe(
+          take(1))
+          .subscribe(() => {
+              this.calcService.calculate(this.scenario);
+            }
+          );
+      });
   }
 
   onCheckRarityIndicesDomain(domain: string) {
-    this.operationParams = { domain };
+    this.store.dispatch(ScenarioActions.changeScenarioOperationParams({ operationParams: { domain } }));
   }
 
-  onCheckIncludeCoast(checked: boolean) {
-    if (checked) {
-      this.areaCoastMatrices = {
-        id: this.associatedCoastalArea!.id,
-        areaMatrices:  this.associatedCoastalArea!.areas.map(area => ({
-          areaId: area.id,
-          matrixId: area.defaultMatrix.id
-        }))
-      };
-    }
+  getParams() : OperationParams {
+    return this.scenario.operationOptions ?? { 'domain' : 'GLOBAL' };
+  }
+
+  getNormalizationOptions() : NormalizationOptions {
+    return this.scenario.normalization;
   }
 
   showReport(id: string) {
@@ -160,25 +191,6 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  onAreaTypeSelection(params: MatrixParameterResponse) {
-    // N.B: Ignore defaultMatrixId in response
-    this.store.dispatch(ScenarioActions.changeScenarioAttribute({ attribute: 'matrix',
-      value: {
-        areaTypes: params.areaTypes,
-        userDefinedMatrixId: undefined
-      }
-    }));
-  }
-
-  /** @param matrixId - id to use as user-defined or alternative matrix, or undefined to use area's default matrix */
-  onMatrixOverride(matrixId: number|undefined) {
-    this.store.dispatch(ScenarioActions.changeScenarioAttribute({ attribute: 'matrix',
-      value: {
-        areaTypes: undefined,
-        userDefinedMatrixId: matrixId
-      }
-    }));
-  }
 
   editTheName() {
     this.editName = !this.editName;
@@ -191,49 +203,53 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   }
 
   setNormalizationOptions(opts: NormalizationOptions) {
-    this.store.dispatch(ScenarioActions.changeScenarioAttribute({
-      attribute: 'normalization',
-      value: opts
-    }));
+    this.store.dispatch(ScenarioActions.changeScenarioNormalization({ normalizationOptions: opts }));
+
+    // TODO: investigate and fix to get rid of the "nudge" below.
+    // Angular seems to be having some trouble with updating nested components
+    // through input properties after programmatically triggered events.
+    // In this case we emit a custom modeSelectionEvent to disallow the domain
+    // normalization by percentage option for rarity adjusted calculations.
+
+    // Sort of an anti-pattern anyway, also a little unclear why we don't simply
+    // dispatch directly instead of emitting a synthetic event.
+
+    setTimeout(() => {
+      this.scenario = this.scenario;
+    });
   }
 
   save() {
-    this.store.dispatch(ScenarioActions.saveActiveScenario({ scenarioToBeSaved: this.scenario, updateState: false }));
+    this.store.dispatch(ScenarioActions.saveActiveScenario({ scenarioToBeSaved: this.scenario }));
   }
 
-  hasChanges = () => this.scenario.changes?.features?.length>0;
-
-  // Can be used as condition for accordion box "open" attribute
-  featureHasChanges(feature: GeoJSONFeature) {
-    return feature.properties?.changes && Object.keys(feature.properties['changes']).length>0;
-  }
-
-  featureId = (index: number, item: GeoJSONFeature) => item.id!;
-
-  deleteChange(featureIndex: number, bandId: string) {
-    this.store.dispatch(ScenarioActions.deleteBandChangeOrChangeFeature({ featureIndex, bandId}));
+  deleteChange = (bandId: string) => {
+    this.store.dispatch(ScenarioActions.deleteBandChange({ bandId }));
   }
 
   close() {
     this.save();
     this.store.dispatch(ScenarioActions.closeActiveScenario());
-    // cancel in-progress calculation??? - or popup confirmation dialog? - or just keep running in bg?
   }
 
-  async delete() {
-    const confirmation = await this.dialogService.open<boolean>(
-      ConfirmationModalComponent, this.moduleRef,
-      { data: {
-                header: `${ this.translateService.instant('map.editor.delete.modal.title') } &laquo;&nbsp;${ this.scenario.name }&nbsp;&raquo;`,
-                confirmText: this.translateService.instant('map.editor.delete.modal.delete'),
-                confirmColor: 'warn',
-                dialogClass: 'center'
-              }
-            });
-    if (confirmation)
-      this.store.dispatch(ScenarioActions.deleteScenario({
-        scenarioToBeDeleted: this.scenario
-      }));
+  async delete () {
+    await deleteScenario(this.dialogService, this.translateService, this.store, this.moduleRef, this.scenario);
+
+    // const confirmDelete = await this.dialogService.open<boolean>(
+    //   ConfirmationModalComponent, this.moduleRef,
+    //   { data: {
+    //             header: `${ this.translateService.instant('map.editor.delete.modal.title', { scenario: this.scenario.name })}`,
+    //             confirmText: this.translateService.instant('map.editor.delete.modal.delete'),
+    //             confirmColor: 'warn',
+    //             dialogClass: 'center'
+    //           }
+    //         });
+    // if (confirmDelete) {
+    //   this.store.dispatch(ScenarioActions.closeActiveScenarioArea());
+    //   this.store.dispatch(ScenarioActions.deleteScenario({
+    //     scenarioToBeDeleted: this.scenario
+    //   }));
+    // }
   }
 
   toggleFeatureVisibility(feature: Feature, featureIndex: number) {
@@ -242,5 +258,26 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.autoSaveSubscription$?.unsubscribe();
+    this.matrixDataSubscription$?.unsubscribe();
   }
+
+  openScenarioArea(areaIndex: number) {
+    this.store.dispatch(ScenarioActions.openScenarioArea({ index: areaIndex, scenarioIndex: null }));
+  }
+
+  setOperation() {
+    const operation = availableOperations.get(this.operation.value!)!;
+    this.store.dispatch(ScenarioActions.changeScenarioOperation({ operation: operation }));
+    if(operation === CalcOperation.RarityAdjusted) {
+      const normalizationOptions = this.getNormalizationOptions();
+      this.store.dispatch(ScenarioActions.changeScenarioOperationParams({operationParams: this.getParams() ? this.getParams() : {'domain': 'GLOBAL'}}));
+      if(normalizationOptions.type === NormalizationType.Domain) {
+        this.store.dispatch(ScenarioActions.changeScenarioNormalization(
+          { normalizationOptions: {...normalizationOptions, type: NormalizationType.Area } }
+        ));
+      }
+    }
+  }
+
+
 }

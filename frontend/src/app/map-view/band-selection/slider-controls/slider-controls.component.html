@@ -2,7 +2,7 @@
   <div class="controls">
     <mat-checkbox
       [checked]="band.selected"
-      [disabled]="!selectedArea"
+      [disabled]="disabled"
       (change)="onSelect($event, band.statePath)"
       checkboxSize="small"
     >{{ band.displayName }}</mat-checkbox>
@@ -17,7 +17,7 @@
       </button>
       <button
         (click)="toggleOpen()"
-        [disabled]="!selectedArea || !scenario"
+        [disabled]="disabled || !scenario"
         [attr.data-active]="open"
         [attr.aria-label]="'map.editor.band-pressures.intensity-label' | translate"
         [title]="!scenario ?( 'map.editor.band-pressures.no-scenario-selected' | translate) : ''"
@@ -33,12 +33,14 @@
     </div>
   </div>
   <app-eco-slider
-    *ngIf="open && (selectedArea || band.visible)"
+    *ngIf="open && (!disabled || band.visible)"
     [band]="band"
-    [multiplier]="multiplier"
-    [offset]="offset"
+    [multiplier]="getMultiplier()"
+    [offset]="getOffset()"
+    [overridden] = "!isEmpty(overriddenChange)"
     [statePath]="band.statePath"
-    [selectedArea]="selectedArea"
+    [disabled]="disabled"
     [areaIsVisible]="band.visible"
+    [groupSetting]="getGroupSetting()"
   ></app-eco-slider>
 </li>

@@ -35,12 +35,11 @@ public class CalculationParametersREST {
     @RolesAllowed("GRP_SYMPHONY")
     public Response getAreaMatrices(@Context HttpServletRequest req,
 									@PathParam("baselineName") String baselineName,
-                                    Object polygon)
-			throws SymphonyStandardAppException {
+                                    int scenarioId) {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
         try {
-            return Response.ok(calculationAreaService.areaSelect(baselineName, polygon, req.getUserPrincipal()))
+            return Response.ok(calculationAreaService.scenarioAreaSelect(baselineName, scenarioId, req.getUserPrincipal()))
                     .build();
         } catch (SymphonyStandardAppException ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

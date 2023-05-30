@@ -1,6 +1,9 @@
 <div class="result-info-panel"></div>
 <!--TODO Migrate to use routerLinks instead-->
-<app-slide-view position="left" [open]="leftSidebarIsOpen" (toggle)="toggleLeftSidebar()">
+<app-slide-view position="left"
+                [open]="leftSidebarIsOpen"
+                (toggle)="toggleLeftSidebar()"
+                (navigate)="onNavigate($event)">
   <app-slide-view-tab [title]="'map.areas' | translate" icon="globe">
     <app-area-selection
       [areas]="areas | async"
@@ -8,21 +11,21 @@
       [zoomToArea]="zoomToArea"
     ></app-area-selection>
   </app-slide-view-tab>
-  <app-slide-view-tab [title]="'map.ecosystems' | translate" icon="fish">
+  <app-slide-view-tab [title]="'map.intensity.ecosystems' | translate" icon="fish">
     <app-band-selection
       bandType="ecoComponents"
-      [title]="'map.ecosystems' | translate"
+      [title]="'map.intensity.ecosystems' | translate"
       [bandGroups]="$any(metadata | async).ecoComponent"
     ></app-band-selection>
   </app-slide-view-tab>
-  <app-slide-view-tab [title]="'map.pressures' | translate" icon="human">
+  <app-slide-view-tab [title]="'map.intensity.pressures' | translate" icon="human">
     <app-band-selection
       bandType="pressures"
-      [title]="'map.pressures' | translate"
+      [title]="'map.intensity.pressures' | translate"
       [bandGroups]="$any(metadata | async).pressureComponent"
     ></app-band-selection>
   </app-slide-view-tab>
-  <app-slide-view-tab [title]="'map.editor.title' | translate" icon="calculate">
+  <app-slide-view-tab [id]="'scenario'" [title]="'map.editor.title' | translate" icon="calculate">
 <!--    <router-outlet></router-outlet>-->
     <app-scenario-editor></app-scenario-editor> <!-- Add [named?] router-outlet?-->
   </app-slide-view-tab>
@@ -33,6 +36,11 @@
     <app-comparison></app-comparison>
   </app-slide-view-tab>
   <div id="map-overlay">
+    <app-active-scenario-display *ngIf="activeScenario$ | async"
+                                 [scenario]="activeScenario$ | async"
+                                 [area]="activeScenarioArea$ | async"
+                                 (exit)="exitScenario()">
+    </app-active-scenario-display>
     <div
       *ngIf="
         (legends$ | async).result || (legends$ | async).ecosystem || (legends$ | async).pressure
@@ -62,3 +70,9 @@
   </div>
 </app-slide-view>
 <app-map [mapCenter]="center"></app-map>
+<div id="scenario-area-selection-hint" *ngIf="scenarioAreaSelection && !(activeScenario$ | async)">
+      <span>
+        <strong>{{ 'map.area-selection-hint.emphasis' | translate}}</strong>
+        {{ 'map.area-selection-hint.detail' | translate}}
+      </span>
+</div>

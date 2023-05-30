@@ -6,7 +6,7 @@ import javax.persistence.Embeddable;
 // TODO Create separate subclasses for each type?
 public class NormalizationOptions {
     public NormalizationType type;
-    public double userDefinedValue; // for type == USER_DEFINED
+    public double userDefinedValue;             // for type == USER_DEFINED
 
     public double stdDevMultiplier;             // for type == STANDARD_DEVIATION
 

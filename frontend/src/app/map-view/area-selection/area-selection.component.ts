@@ -31,13 +31,13 @@ export class AreaSelectionComponent implements OnChanges {
   @Input() areas?: AllAreas;
   search = '';
   matchingResults = 0;
-  selectedArea$?: Observable<StatePath | undefined>
+  selectedAreas$?: Observable<StatePath[] | undefined>
   private nationalAreas: NationalArea[] = [];
   private userAreas: UserArea[] = [];
   filteredNationalAreas: NationalArea[] = [];
   filteredUserAreas: UserArea[] = [];
   @Input() drawUserArea: () => void = () => {};
-  @Input() zoomToArea: (statePath: StatePath) => void = () => {};
+  @Input() zoomToArea: (statePaths: StatePath[]) => void = () => {};
 
   constructor(
     private store: Store<State>,
@@ -45,7 +45,7 @@ export class AreaSelectionComponent implements OnChanges {
     private translateService: TranslateService,
     private moduleRef: NgModuleRef<any>
   ) {
-    this.selectedArea$ = this.store.select(AreaSelectors.selectSelectedArea);
+    this.selectedAreas$ = this.store.select(AreaSelectors.selectSelectedArea);
   }
 
   ngOnChanges() {
@@ -67,12 +67,12 @@ export class AreaSelectionComponent implements OnChanges {
     }
   };
 
-  selectArea = (statePath: StatePath, visible: boolean, groupStatePath: StatePath) => {
+  selectArea = (statePaths: StatePath[], visible: boolean, groupStatePath: StatePath) => {
     if (!visible) {
       this.toggleVisibleArea(groupStatePath);
     }
-    this.store.dispatch(AreaActions.updateSelectedArea({ statePath }));
-    this.zoomToArea(statePath); // listen for this in map instead?
+    this.store.dispatch(AreaActions.updateSelectedArea({ statePaths }));
+    this.zoomToArea(statePaths); // listen for this in map instead?
   }
 
   renameUserArea = async (userArea: UserArea) => {

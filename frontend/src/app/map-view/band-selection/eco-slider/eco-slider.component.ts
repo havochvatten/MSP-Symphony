@@ -15,7 +15,6 @@ import { Band, StatePath } from '@data/metadata/metadata.interfaces';
 import { MetadataActions } from '@data/metadata';
 import { convertMultiplierToPercent, getComponentType } from '@data/metadata/metadata.selectors';
 import { formatPercentage } from "@data/calculation/calculation.util";
-import { SelectableArea } from "@data/area/area.interfaces";
 import { ScenarioActions } from "@data/scenario";
 import { debounceTime, map } from "rxjs/operators";
 
@@ -28,16 +27,21 @@ export class EcoSliderComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() multiplier!: number;
   @Input() offset!: number;
   @Input() band!: Band;
+  @Input() groupSetting!: boolean;
+  @Input() overridden!: boolean;
   @Input() statePath: StatePath = [];
   @Input() areaIsVisible = false;
-  @Input() selectedArea?: SelectableArea = undefined;
+  @Input() disabled = false
   @Input() locale = 'en';
 
   @ViewChild("constant") constantEl!: ElementRef;
   convertMultiplierToPercent = convertMultiplierToPercent;
   formatPercentage = formatPercentage;
 
-  constructor(private store: Store<State>) {}
+
+  constructor(private store: Store<State>) {
+
+  }
 
   ngOnInit() {
     if (this.statePath === undefined || this.statePath.length === 0)
@@ -62,7 +66,6 @@ export class EcoSliderComponent implements OnInit, OnChanges, AfterViewInit {
       debounceTime(300)
     ).subscribe(value =>
       this.store.dispatch(ScenarioActions.updateBandAttribute({
-        area: this.selectedArea!,
         componentType: getComponentType(this.statePath),
         bandId: this.band.title,
         band: this.band.bandNumber,
@@ -73,10 +76,21 @@ export class EcoSliderComponent implements OnInit, OnChanges, AfterViewInit {
 
   updateMultiplier(value: number) {
     this.store.dispatch(MetadataActions.updateMultiplier({
-      area: this.selectedArea!,
       bandPath: this.statePath,
       value
     }))
+  }
+
+  setOverride(setOverride: boolean) {
+    if(setOverride) {
+      this.updateMultiplier(1);
+    } else {
+      this.store.dispatch(ScenarioActions.deleteAreaBandChange({ bandId: this.band.title }));
+    }
+  }
+
+  getDisabled() {
+    return !(this.overridden || this.groupSetting);
   }
 
   updateLayerOpacity(value: number) {

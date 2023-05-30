@@ -9,7 +9,7 @@ import { MapToolbarComponent } from './map/map-toolbar/map-toolbar.component';
 import { MapOpacitySliderComponent } from './map/map-opacity-slider/map-opacity-slider.component';
 import { CoreModule } from '../core/core.module';
 import { SliderControlsComponent } from './band-selection/slider-controls/slider-controls.component';
-import { MatrixSelectionComponent } from './scenario/scenario-detail/matrix-selection/matrix-selection.component';
+import { MatrixSelectionComponent } from './scenario/scenario-area-detail/matrix-selection/matrix-selection.component';
 import {
   ToolbarZoomButtonsComponent,
   ToolbarButtonComponent

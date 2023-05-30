@@ -17,12 +17,18 @@
         "click-area": "Click to select area.",
         "location-outside-scenario": "Location is outside of active scenario",
         "areas": "Areas",
-        "ecosystems": "Ecosystem Components",
-        "pressures": "Pressures",
         "matrix": "Matrix",
+        "no-active-scenario": "Activate a scenario to make changes",
+        "scenariowide-settings": "Scenario-wide settings",
         "no-selected-area": "No area selected",
         "reset-preselected": "Reset",
         "reset-preselected-description": "Reset selected components/pressures and intensity values",
+        "selection-overlap": "Unable to select overlapping areas",
+        "intensity": {
+            "ecosystems": "Ecosystem Components",
+            "pressures": "Pressures",
+            "override": "Override group setting"
+        },
         "confirm-reset": {
             "modal": {
                 "header": "Confirm reset",
@@ -52,8 +58,28 @@
                 "save-overwrite": "Overwrite existing area: « {{ name }} »"
             }
         },
+        "active-scenario": {
+            "header": "Active scenario",
+            "area": "Area:",
+            "exit": "Exit"
+        },
         "editor": {
             "title": "Scenarios",
+            "areas": {
+                "title": "Scenario areas",
+                "remove": {
+                    "button" : "Remove area",
+                    "label": "Remove this area from the current scenario",
+                    "modal": {
+                        "title": "Remove area from scenario",
+                        "message": "Är du säker på att du vill ta bort området &ldquo;{{ area }}&rdquo; från scenario &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;&nbsp;?",
+                        "message-last": "&ldquo;{{ area }}&rdquo; är det enda området som omfattas av det aktuella scenariot. Om du tar bort det tas därmed även scenariot: &laquo;&nbsp;{{ scenario }}&nbsp;&raquo; bort.",
+                        "confirm": "Remove"
+                    }
+                },
+                "specific-settings": "Specific settings have been made for this area: {{ feature-changes }}",
+                "loading-matrices": "Loading sensitivity matrices"
+            },
             "operation": {
                 "title": "Algorithm",
                 "choose": "Choose algorithm",
@@ -90,6 +116,7 @@
                 "choose-matrix": "Choose matrix",
                 "choose-area-type": "Choose area type (optional)",
                 "choose-area-type-matrix": "Select matrix for area type",
+                "no-area-type": "( none )",
                 "edited-matrixes": "Previously edited matrices",
                 "edit-matrix": "Edit matrix",
                 "upload-file": "Upload file",
@@ -130,27 +157,36 @@
             "changes": {
                 "title": "Scenario Changes",
                 "no-changes": "No scenario changes",
-                "make-changes-hint": "Select an area and make changes in the Ecosystems Components or Pressures tabs.",
+                "make-changes-hint": "Make changes in the Ecosystem or Pressures tabs.",
                 "clear-change": "Clear change",
-                "units": "u."
+                "units": "u.",
+                "collapse": "Hide changes",
+                "collapsed-count": "Show {{ count }} changes"
+            },
+            "area-changes": {
+                "title": "Scenario Area Changes"
             },
             "select-area-message": "Select an area to calculate. Start with selecting an area and then make any adjustments to nature values or pressures in the left panel.",
             "fetching-matrices": "Fetching information on area's sensitivity matrices...",
             "map-layer": "Map layer",
             "list": {
                 "user-scenarios": "User Scenarios",
-                "add-scenario-label": "Create new scenario for {{area}}",
+                "add-scenario-label": "Create new grouped scenario",
+                "add-scenario-label-single": "Create new scenario for {{area}}",
+                "scenario-name": "Untitled scenario",
                 "scenario-name-template": "Scenario {{area}}",
-                "select-area-first-label": "Start by selecting an area for the scenario.",
+                "select-area-first-label": "Start by selecting areas for the scenario.",
                 "no-scenarios": "No scenarios",
-                "add-scenarios-hint": "Create a scenario by clicking on the + above."
+                "add-scenarios-hint": "Create a scenario by clicking on the + above.",
+                "scenario-area": "{{ scenario }}\nArea: {{ area-feature }}",
+                "show-report-label": "Open the latest calculation report"
             },
             "clear": "Clear",
             "close": "❮",
             "delete": {
                 "label": "Delete",
                 "modal": {
-                    "title": "Are you sure you want to delete",
+                    "title": "Are you sure you want to delete &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
                     "delete": "Delete",
                     "cancel": "Cancel"
                 }
@@ -300,6 +336,10 @@
             "result": "Cumulative impact",
             "ecosystem": "Ecosystem value",
             "pressure": "Pressure intensity"
+        },
+        "area-selection-hint": {
+            "emphasis": "Select / deselect multiple areas",
+            "detail": "using Ctrl + click or ⌘ + click."
         }
     },
     "main-menu": {
@@ -362,13 +402,14 @@
                 "mean-plus-stddev": "Average {{ positiveOrNegative }} standard deviation ⨯ {{ stddevMultiplier }}",
                 "domain-desc": "The result is normalized with regard to the range that {{ percentileValue }}% of data points in the respective marine spatial planning area belong to (including coastal areas)."
             },
-            "sensitivity-matrices": {
-                "title": "Sensitivity matrix",
-                "area-type-matrices": "Matrices per area type"
-            },
             "comparison": {
                 "legend-desc": "The image shows the relative difference in total cumulative impact between the base and what-if scenario."
             }
+        },
+        "sensitivity-matrices": {
+            "title": "Sensitivity matrix",
+            "area-type-matrices": "Matrices per area type",
+            "all-areas": "All areas"
         },
         "histogram": {
             "caption": "Histogram",
@@ -389,6 +430,8 @@
             "percent-change-with": "Percent change with <strong>{{percent}}%</strong>",
             "constant-offset-with": "Constant offset of <strong>{{offset}}</strong> units",
             "and": "and",
+            "base-changes": "Common changes",
+            "area-changes": "Area-specific changes",
             "no-changes": "No changes"
         },
         "impact-table": {

@@ -8,105 +8,70 @@
       <app-icon iconType="edit"></app-icon>
     </button>
   </div>
+  <span class="scenario-timestamp">{{ scenario.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
 
   <main>
+    <section class="scenario-areas">
+      <h3>{{ 'map.editor.areas.title' | translate }}</h3>
+      <div class="scenario-areas-wrap">
+        <div class="pendingMatricesOverlay" *ngIf="areaMatricesLoading$ | async">
+          <mat-spinner diameter="32"></mat-spinner>
+          <span class="loadingMessage">{{ 'map.editor.areas.loading-matrices' | translate }}</span>
+        </div>
+        <ul [class]="(areaMatricesLoading$ | async) ? 'pendingMatrices' : ''">
+          <li *ngFor="let area of scenario.areas; let aix = index" (click)="openScenarioArea(aix)">
+            <span class="feature-name">{{ area.feature.properties['name'] }}</span>
+            <div class="actions">
+              <ng-container *ngIf="area.changes">
+                <app-icon iconType="not-equal" *ngIf="area.changes"
+                          title="{{ 'map.editor.areas.specific-settings'
+                          | translate: { 'feature-changes': changesText[aix] }  }}">
+                </app-icon>
+              </ng-container>
+              <app-icon iconType="delete" (click)="deleteAreaDelegate(area.id, $event, scenario)"
+                        title="{{ 'map.editor.areas.remove.label' | translate }}">
+              </app-icon>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="scenario-changes">
+      <h3>{{ 'map.editor.changes.title' | translate }}</h3>
+      <app-changes-list
+        [changes]="changes()"
+        [onDelete]="deleteChange">
+      </app-changes-list>
+    </section>
+
     <section class="algorithm">
       <h3>{{ 'map.editor.operation.title' | translate }}</h3>
       <article>
-        <mat-radio-group [formControl]="operation">
-          <mat-radio-button *ngFor="let op of availableOperations" [value]="op">
-            {{ 'map.editor.operation.'+op+'.title' | translate }}
+        <mat-radio-group [formControl]="operation" (change)="setOperation()">
+          <mat-radio-button *ngFor="let op of availableOperations | keyvalue" [value]="op.key">
+            {{ 'map.editor.operation.'+op.key+'.title' | translate }}
           </mat-radio-button>
         </mat-radio-group>
       </article>
       <article *ngIf="operation.value == 'RarityAdjustedCumulativeImpact'">
         <p>{{ 'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.description' | translate}}</p>
         <mat-radio-button *ngFor="let paramValue of ['GLOBAL', 'LOCAL']"
-                          value="{{paramValue}}" [checked]="operationParams.domain == paramValue"
+                          value="{{paramValue}}" [checked]="getParams().domain == paramValue"
                           (change)="onCheckRarityIndicesDomain(paramValue)">
           {{ 'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.' + paramValue | translate }}
         </mat-radio-button>
       </article>
     </section>
 
-    <section class="scenario-changes">
-      <h3>{{ 'map.editor.changes.title' | translate }}</h3>
-      <!--    TODO show reset button on hover, like user-defined areas-->
-      <ng-container *ngIf="hasChanges(); else noChanges">
-        <div id="areas-list">
-          <app-accordion-box
-            *ngFor="let feature of scenario.changes.features; index as featureIndex; trackBy: featureId">
-            <!--open="{{ featureHasChanges(feature) }}">-->
-            <!--TODO flash/shade area on map on hover here -->
-            <app-accordion-box-header>
-              <div class="area-title">{{ feature.properties['title'] }}</div>
-              <app-icon *ngIf="env.map.colorCodeIntensityChanges" class="toggle-visibility-icon"
-                        [iconType]="feature.properties['visible'] ? 'eye' : 'eye-slash'"
-                        (click)="toggleFeatureVisibility(feature, featureIndex)">
-              </app-icon>
-            </app-accordion-box-header>
-            <!-- And select scenario area on click and move to tab? -->
-            <app-accordion-box-content>
-              <div *ngFor="let change of feature.properties['changes'] | keyvalue" class="change">
-                <div class="band-name">{{ change.key }}</div>
-                <div class="spec">
-                      <span *ngIf="change.value['multiplier']" class="multiplier">
-                        {{ change.value.multiplier - 1 > 0 ? '+' : '' }}{{
-                        convertMultiplierToPercent(change.value.multiplier) | percent: '.0' }}
-                      </span>
-                  <span *ngIf="change.value['offset']" class="offset">
-                        {{ change.value.offset > 0 ? '+' : '' }}{{ change.value.offset | number: '.0' }}
-                      </span>
-                </div>
-                <div class="icons">
-                  <app-icon class="delete-change-icon" iconType="times"
-                            [title]="'map.editor.changes.clear-change' | translate"
-                            (click)="deleteChange(featureIndex, change.key)">
-                  </app-icon>
-                </div>
-              </div>
-            </app-accordion-box-content>
-          </app-accordion-box>
-        </div>
-      </ng-container>
-      <ng-template #noChanges>
-        <div id="no-changes">
-          <span style="font-style: italic">
-            <app-icon iconType="info-circle"></app-icon>
-            {{ 'map.editor.changes.no-changes' | translate }}
-          </span>
-          <!-- Todo links to jump to respective tabs? -->
-          <p>{{ 'map.editor.changes.make-changes-hint' | translate }}</p>
-        </div>
-      </ng-template>
-    </section>
-
-    <section class="sensitivity-matrix">
-      <h3>{{ 'map.editor.matrix.sensitivity-matrix' | translate }}</h3>
-      <app-matrix-selection
-        [scenario]="this.scenario"
-        (areaTypeSelected)="onAreaTypeSelection($event)"
-        (matrixOverridden)="onMatrixOverride($event)"
-      >
-      </app-matrix-selection>
-    </section>
-
     <section class="normalization"> <!--Wrap in accordion-box?-->
       <h3>{{ 'map.editor.normalization.title' | translate }}</h3>
-      <app-normalization-selection [options]="scenario.normalization" [algorithm]="operation.value"
+      <app-normalization-selection [options]="getNormalizationOptions()" [algorithm]="operation.value"
                                    [percentileValue]="this.percentileValue$ | async"
         (modeSelectionEvent)="setNormalizationOptions($event)">
       </app-normalization-selection>
     </section>
 
-    <section class="coastal-area" *ngIf="associatedCoastalArea">
-      <h3>{{ 'map.editor.coastal-areas.title' | translate }}</h3>
-      <mat-checkbox id="coast-checkbox"
-                    [checked]="this.areaCoastMatrices !== undefined"
-                    (change)="onCheckIncludeCoast($event.checked)">
-        {{ 'map.editor.coastal-areas.include-coast' | translate }}
-      </mat-checkbox>
-    </section>
   </main>
 
 </section>
@@ -121,17 +86,16 @@
     {{ 'map.editor.delete.label' | translate }}
   </button>
 
-  <!-- TODO disable if no parameter changes made since last calculation? -->
   <button mat-flat-button id="calculate"
-          [disabled]="!scenario.matrix || (calculating$ | async)"
+          [disabled]="(calculating$ | async) || (areaMatricesLoading$ | async)"
           (click)="calculate()"
   >
     {{ 'map.editor.calculate' | translate }}
   </button>
 
   <button mat-flat-button id="report-button" [ngClass]="{'green' : !(calculating$ | async), 'mat-button-disabled' : calculating$ | async }"
-          (click)="showReport(scenario.latestCalculation)"
-          [disabled]="!scenario.latestCalculation">
+          (click)="showReport(scenario.latestCalculationId+'')"
+          [disabled]="!scenario.latestCalculationId">
     <mat-spinner *ngIf="calculating$ | async" diameter="20" color="#22bb00"></mat-spinner>
     <app-icon *ngIf="!(calculating$ | async)" iconType="report"></app-icon>
   </button>
