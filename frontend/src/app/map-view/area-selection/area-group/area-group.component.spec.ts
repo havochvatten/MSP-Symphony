@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { SharedModule } from '@src/app/shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 
 import { AreaGroupComponent } from './area-group.component';
 import { TranslationSetupModule } from "@src/app/app-translation-setup.module";

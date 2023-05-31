@@ -8,7 +8,7 @@ import { AreaActions, AreaSelectors } from '@data/area';
 import { Polygon, StatePath } from '@data/area/area.interfaces';
 import { CalculationService } from '@data/calculation/calculation.service';
 import { StaticImageOptions } from '@data/calculation/calculation.interfaces';
-import { DialogService } from '@src/app/shared/dialog/dialog.service';
+import { DialogService } from '@shared/dialog/dialog.service';
 import { CreateUserAreaModalComponent } from './create-user-area-modal/create-user-area-modal.component';
 import { UserSelectors } from '@data/user';
 import { ScenarioSelectors } from '@data/scenario';

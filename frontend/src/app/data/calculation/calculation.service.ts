@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { environment as env } from '@src/environments/environment';
-import { State } from '../../app-reducer';
+import { State } from '@src/app/app-reducer';
 import { MessageActions } from '@data/message';
 import { MetadataSelectors } from '@data/metadata';
 import { CalculationSlice, Legend, LegendType, PercentileResponse, StaticImageOptions } from './calculation.interfaces';

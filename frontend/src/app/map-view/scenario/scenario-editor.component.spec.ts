@@ -3,7 +3,7 @@ import { provideMockStore } from '@ngrx/store/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { ScenarioEditorComponent } from './scenario-editor.component';
-import { SharedModule } from '@src/app/shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { SliderControlsComponent } from '../band-selection/slider-controls/slider-controls.component';
 import { MatrixSelectionComponent } from './scenario-area-detail/matrix-selection/matrix-selection.component';
 import { EcoSliderComponent } from '../band-selection/eco-slider/eco-slider.component';

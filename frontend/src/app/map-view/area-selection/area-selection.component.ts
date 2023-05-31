@@ -11,7 +11,7 @@ import { filterNationalAreas, filterUserAreas } from './area-selection.util';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { AreaActions, AreaSelectors } from '@data/area';
-import { DialogService } from '@src/app/shared/dialog/dialog.service';
+import { DialogService } from '@shared/dialog/dialog.service';
 import { RenameUserAreaModalComponent } from './rename-user-area-modal/rename-user-area-modal.component';
 import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 import { Observable } from 'rxjs';

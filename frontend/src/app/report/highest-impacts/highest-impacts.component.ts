@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { BandGroup, Band } from '@data/metadata/metadata.interfaces';
-import { colors } from '@src/app/shared/pressure-color-scale/pressure-color-scale.component';
+import { colors } from '@shared/pressure-color-scale/pressure-color-scale.component';
 
 @Component({
   selector: 'app-highest-impacts',

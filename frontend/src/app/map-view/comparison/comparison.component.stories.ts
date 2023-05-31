@@ -4,7 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 // import markdownNotes from './map-button.component.stories.md';
-import { SharedModule } from '@src/app/shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { ComparisonComponent } from "@src/app/map-view/comparison/comparison.component";
 
 const stories = storiesOf('Map | Comparison tab', module);

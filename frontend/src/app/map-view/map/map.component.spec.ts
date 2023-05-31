@@ -6,7 +6,7 @@ import { MapToolbarComponent } from './map-toolbar/map-toolbar.component';
 import { MapOpacitySliderComponent } from './map-opacity-slider/map-opacity-slider.component';
 import { CoreModule } from '@src/app/core/core.module';
 import { ToolbarButtonComponent, ToolbarZoomButtonsComponent } from './toolbar-button/toolbar-button.component';
-import { SharedModule } from '@src/app/shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as area } from '@data/area/area.reducers';

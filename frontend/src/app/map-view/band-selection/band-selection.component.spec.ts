@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { BandSelectionComponent } from './band-selection.component';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
-import { SharedModule } from '@src/app/shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { provideMockStore } from '@ngrx/store/testing';
 import { initialState as area } from '@data/area/area.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';

@@ -5,10 +5,10 @@ import {
   AccordionBoxComponent,
   AccordionBoxHeaderComponent,
   AccordionBoxContentComponent
-} from '../../../shared/accordion-box/accordion-box.component';
-import { IconComponent } from '../../../shared/icon/icon.component';
-import { IconButtonComponent } from '../../../shared/icon-button/icon-button.component';
-import { ToggleComponent } from '../../../shared/toggle/toggle.component';
+} from '@shared/accordion-box/accordion-box.component';
+import { IconComponent } from '@shared/icon/icon.component';
+import { IconButtonComponent } from '@shared/icon-button/icon-button.component';
+import { ToggleComponent } from '@shared/toggle/toggle.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CheckboxAccordionComponent } from './checkbox-accordion.component';
 

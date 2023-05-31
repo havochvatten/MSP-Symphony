@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { UserMenuToggleComponent } from './user-menu-toggle.component';
-import { SharedModule } from '@src/app/shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 
 describe('UserMenuToggleComponent', () => {
   let fixture: ComponentFixture<UserMenuToggleComponent>,
