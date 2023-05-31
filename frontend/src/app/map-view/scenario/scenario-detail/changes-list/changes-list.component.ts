@@ -11,7 +11,7 @@ import { AccordionBoxComponent } from "@shared/accordion-box/accordion-box.compo
 export class ChangesListComponent {
 
   @Input() changes!: ChangesProperty | null;
-  @Input() onDelete!: (bandId: string) => void;
+  @Input() deleteChange!: (bandId: string) => void;
 
   @ViewChild('changesAccordion') changesAccordion: AccordionBoxComponent | undefined;
 

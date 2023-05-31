@@ -2,10 +2,6 @@ import { Component, ElementRef, Input, NgModuleRef, OnDestroy, OnInit, ViewChild
 import { ChangesProperty, Scenario } from '@data/scenario/scenario.interfaces';
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
 import { CalculationReportModalComponent } from '@shared/report-modal/calculation-report-modal.component';
-import {
-  AreaTypeMatrixMapping,
-  AreaTypeRef
-} from '@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces';
 import { CalculationActions, CalculationSelectors } from '@data/calculation';
 import { Observable, OperatorFunction, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -20,7 +16,6 @@ import {
 import { DialogService } from '@shared/dialog/dialog.service';
 import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
 import { debounceTime, filter, take, tap } from 'rxjs/operators';
-import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 import { Feature } from 'geojson';
 import { FormControl, Validators } from '@angular/forms';
 import { OperationParams } from '@data/calculation/calculation.interfaces';

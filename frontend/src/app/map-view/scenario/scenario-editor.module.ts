@@ -15,6 +15,7 @@ import { MatRadioModule } from "@angular/material/radio";
 import { MatSelectModule } from "@angular/material/select";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { FormsModule } from "@angular/forms";
+import { OrdinalPipe } from "@shared/ordinal.pipe";
 import { ScenarioAreaDetailComponent } from './scenario-area-detail/scenario-area-detail.component';
 import { ChangesListComponent } from './scenario-detail/changes-list/changes-list.component';
 
@@ -35,8 +36,9 @@ import { ChangesListComponent } from './scenario-detail/changes-list/changes-lis
     MatProgressSpinnerModule,
     MatRadioModule,
     MatSelectModule,
-    MatCheckboxModule,
+    MatCheckboxModule
   ],
+  providers: [ OrdinalPipe ],
   exports: [ScenarioEditorComponent]
 })
 export class ScenarioEditorModule {}
