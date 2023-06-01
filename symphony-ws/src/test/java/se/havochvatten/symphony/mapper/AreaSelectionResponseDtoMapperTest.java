@@ -66,9 +66,9 @@ public class AreaSelectionResponseDtoMapperTest {
         assertThat(respDto.getDefaultArea().getId(), is(defaultArea.getId()));
         assertThat(respDto.getDefaultArea().getName(), is(defaultArea.getName()));
         assertThat(respDto.getDefaultArea().getDefaultMatrix().getId(),
-				is(defaultArea.getdefaultSensitivityMatrix().getId()));
+				is(defaultArea.getDefaultSensitivityMatrix().getId()));
         assertThat(respDto.getDefaultArea().getDefaultMatrix().getName(),
-				is(defaultArea.getdefaultSensitivityMatrix().getName()));
+				is(defaultArea.getDefaultSensitivityMatrix().getName()));
         assertThat(respDto.getDefaultArea().getMatrices().size(),
 				is(defaultArea.getCalcAreaSensMatrixList().size()));
         assertThat(respDto.getDefaultArea().getMatrices().get(0).getId(),
@@ -93,8 +93,8 @@ public class AreaSelectionResponseDtoMapperTest {
         CalculationArea carea = areaType.getCalculationAreas().get(0);
         assertThat(areaDto.getId(), is(carea.getId()));
         assertThat(areaDto.getName(), is(carea.getName()));
-        assertThat(areaDto.getDefaultMatrix().getId(), is(carea.getdefaultSensitivityMatrix().getId()));
-        assertThat(areaDto.getDefaultMatrix().getName(), is(carea.getdefaultSensitivityMatrix().getName()));
+        assertThat(areaDto.getDefaultMatrix().getId(), is(carea.getDefaultSensitivityMatrix().getId()));
+        assertThat(areaDto.getDefaultMatrix().getName(), is(carea.getDefaultSensitivityMatrix().getName()));
 
         assertThat(areaDto.getMatrices().size(), is(carea.getCalcAreaSensMatrixList().size()));
         AreaSelectionResponseDto.Matrix areaMatrixDto = areaDto.getMatrices().get(0);

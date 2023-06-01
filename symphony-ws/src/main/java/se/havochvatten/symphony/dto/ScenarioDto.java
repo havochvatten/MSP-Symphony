@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import se.havochvatten.symphony.calculation.CalcService;
 import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.scenario.Scenario;
+import se.havochvatten.symphony.scenario.ScenarioArea;
 
 import java.io.IOException;
 import java.util.Date;
@@ -66,13 +67,14 @@ public class ScenarioDto {
     }
 
     public static ScenarioDto createWithoutId(String name, BaselineVersion baseline,
-                                              JsonNode polygon,
+                                              ScenarioAreaDto area,
                                               NormalizationOptions normalization) throws IOException {
         var s = new ScenarioDto();
         s.name = name;
         s.baselineId = baseline.getId();
         s.normalization = normalization;
         s.changes = mapper.readTree("{}");
+        s.areas = new ScenarioAreaDto[] { area };
         return s;
     }
 }

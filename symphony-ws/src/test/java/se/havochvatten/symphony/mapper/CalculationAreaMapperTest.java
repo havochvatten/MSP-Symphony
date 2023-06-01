@@ -68,8 +68,8 @@ public class CalculationAreaMapperTest {
 				is(calculationArea.getCaPolygonList().get(0).getId()));
         assertThat(entity.getCaPolygonList().get(0).getPolygon(),
 				is(calculationArea.getCaPolygonList().get(0).getPolygon()));
-        assertThat(entity.getdefaultSensitivityMatrix().getId(),
-				is(calculationArea.getdefaultSensitivityMatrix().getId()));
+        assertThat(entity.getDefaultSensitivityMatrix().getId(),
+				is(calculationArea.getDefaultSensitivityMatrix().getId()));
     }
 
     @Test

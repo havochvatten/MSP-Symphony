@@ -1,6 +1,5 @@
 package se.havochvatten.symphony.scenario;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
@@ -17,11 +16,9 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.havochvatten.symphony.calculation.CalcUtil;
 import se.havochvatten.symphony.calculation.Operations;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.ScenarioDto;
-import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.service.CalculationAreaService;
 import se.havochvatten.symphony.util.Util;
 

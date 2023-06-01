@@ -4,9 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
 import org.junit.Test;
-import se.havochvatten.symphony.dto.AreaMatrixResponse;
-import se.havochvatten.symphony.dto.AreaSelectionResponseDto;
-import se.havochvatten.symphony.dto.SensitivityMatrix;
+import se.havochvatten.symphony.dto.*;
+import se.havochvatten.symphony.scenario.ScenarioRESTTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +18,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static se.havochvatten.symphony.scenario.ScenarioRESTTest.getTestArea;
 
 public class CalculationParametersRESTTest extends RESTTest {
 
@@ -26,7 +26,12 @@ public class CalculationParametersRESTTest extends RESTTest {
     public void testGetAreaSelectionParam() throws IOException {
         String endpoint = endpoint("/calculationparams/areamatrices/{baselineName}");
         String baselineName = "BASELINE2019";
-        JsonNode jsNode = lysekilPolygon();
+
+        var resp = ScenarioRESTTest.create(ScenarioDto.createWithoutId("TEST-SCENARIO",
+            makeBaseline(),
+            getTestArea("Lysekil"),
+            getAreaNormalization()));
+        ScenarioDto testScenario = resp.as(ScenarioDto.class);
 
         Response response = given().
                 auth().
@@ -35,14 +40,15 @@ public class CalculationParametersRESTTest extends RESTTest {
                 pathParam("baselineName", baselineName).
                 when().
                 header("Content-Type", "application/json").
-                body(jsNode).
+                body(testScenario.id).
                 post(endpoint);
 
         assertThat(response.getStatusCode(), is(200));
 
-        AreaSelectionResponseDto areaTypeResp = response.getBody().jsonPath().getObject("",
-				AreaSelectionResponseDto.class);
-        assertTrue(areaTypeResp.getAreaTypes().size() > 0);
+        ScenarioAreaSelectionResponseDto scenarioAreaSlcResp = response.getBody().jsonPath().getObject("",
+				ScenarioAreaSelectionResponseDto.class);
+        assertTrue(scenarioAreaSlcResp.matrixData.size() > 0);
+        AreaSelectionResponseDto areaTypeResp = scenarioAreaSlcResp.matrixData.get(testScenario.areas[0].id);
         assertTrue(areaTypeResp.getAreaTypes().stream().anyMatch((a) -> "Kustområde".equals(a.getName())));
         assertTrue(areaTypeResp.getAreaTypes().stream().anyMatch((a) -> "n-område".equals(a.getName())));
     }
