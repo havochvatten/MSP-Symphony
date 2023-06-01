@@ -48,6 +48,7 @@ import uuid from "uuid/v4";
 export class MapComponent implements AfterViewInit, OnDestroy {
   @Input() mapCenter?: Coordinate;
   @Output() resultLayerGroupChange: EventEmitter<number> = new EventEmitter<number>();
+  @Output() resultLayerGroupChangeCmp: EventEmitter<number> = new EventEmitter<number>();
   drawIsActive = false;
   layerAliasing = true;
 
@@ -193,8 +194,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.resultLayerGroup.clearResult();
   }
 
-  public emitLayerChange(count: number):void {
-    this.resultLayerGroupChange.emit(count);
+  public emitLayerChange(resultCount: number, cmpCount: number):void {
+    this.resultLayerGroupChange.emit(resultCount);
+    this.resultLayerGroupChangeCmp.emit(cmpCount);
   }
 
   @HostListener('window:keydown', ['$event'])

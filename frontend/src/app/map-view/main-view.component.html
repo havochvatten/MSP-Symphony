@@ -43,7 +43,10 @@
     </app-active-scenario-display>
     <div
       *ngIf="
-        ((legends$ | async).result && this.getVisibleImpact()) || (legends$ | async).ecosystem || (legends$ | async).pressure
+        ((legends$ | async).result && this.getVisibleImpact()) ||
+        ((legends$ | async).comparison && this.getVisibleComparison()) ||
+         (legends$ | async).ecosystem ||
+         (legends$ | async).pressure
       "
       class="color-scale-container"
     >
@@ -52,6 +55,12 @@
         [title]="'map.color-scale.result' | translate"
         [colors]="(legends$ | async).result.colorMap"
         [unit]="(legends$ | async).result.unit"
+      ></app-result-color-scale>
+      <app-result-color-scale
+        *ngIf="(legends$ | async).comparison && this.getVisibleComparison()"
+        [title]="'map.color-scale.comparison' | translate"
+        [colors]="(legends$ | async).comparison.colorMap"
+        [unit]="(legends$ | async).comparison.unit"
       ></app-result-color-scale>
       <app-result-color-scale
         *ngIf="(legends$ | async).ecosystem"
@@ -69,7 +78,10 @@
     <div id="scale-container"></div>
   </div>
 </app-slide-view>
-<app-map [mapCenter]="center" (resultLayerGroupChange)="setVisibleImpact($event)"></app-map>
+<app-map [mapCenter]="center"
+         (resultLayerGroupChange)="setVisibleImpact($event)"
+         (resultLayerGroupChangeCmp)="setVisibleComparison($event)">
+</app-map>
 <div id="scenario-area-selection-hint" *ngIf="scenarioAreaSelection && !(activeScenario$ | async)">
       <span>
         <strong>{{ 'map.area-selection-hint.emphasis' | translate}}</strong>

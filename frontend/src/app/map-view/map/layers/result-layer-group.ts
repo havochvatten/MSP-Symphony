@@ -34,7 +34,7 @@ export class ResultLayerGroup extends SymphonyLayerGroup {
       this.setLayers(imageLayers);
     }
 
-    this.map.emitLayerChange(this.calculationLayers.size)
+    this.layerChange();
   }
 
   public removeResult(id : number) {
@@ -44,13 +44,19 @@ export class ResultLayerGroup extends SymphonyLayerGroup {
       imageLayers.remove(cl);
     }
     this.setLayers(imageLayers);
-    this.map.emitLayerChange(this.calculationLayers.size)
+    this.layerChange();
   }
 
   public clearResult() {
     this.calculationLayers = new Map<number, ImageLayer<Static>>();
     this.setLayers(new Collection<BaseLayer>());
-    this.map.emitLayerChange(0);
+    this.layerChange();
+  }
+
+  private layerChange() {
+    const layerIds = [...this.calculationLayers.keys()];
+    this.map.emitLayerChange(layerIds.filter(layerId => layerId > 0).length,
+                             layerIds.filter(layerId => layerId < 0).length);
   }
 
 }

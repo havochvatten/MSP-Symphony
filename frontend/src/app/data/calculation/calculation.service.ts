@@ -101,9 +101,16 @@ export class CalculationService implements OnDestroy {
   public addComparisonResult(idA: string, idB: string){
     //  Bit "hacky" but workable "faux" id constructed as a negative number
     //  to guarantee uniqueness without demanding a separate interface.
-    //  note + is intended here as concat, not addition, although both ids
-    //  are numeric eg. 654 + 321 = -654321
-    return this.addResultImage(parseInt(idA + idB) * -1, `diff/${idA}/${idB}`);
+    //  Note that this artficially imposes a virtual maximum for calculation
+    //  results ids to 2^26 - 1 (around 67 million).
+    //  The limit is chosen specifically in relation to Number.MIN_SAFE_INTEGER
+    //  which is -2^53
+
+    return this.addResultImage(this.cmpId(+idA, +idB), `diff/${idA}/${idB}`);
+  }
+
+  cmpId(a:number, b:number): number {
+    return (a * Math.pow(2, 26) + (b & 0x3ffffff)) * -1;
   }
 
   public addResult(id: number){
@@ -173,7 +180,7 @@ export class CalculationService implements OnDestroy {
         params: new HttpParams({ fromObject: { action: "update-name"}})});
   }
 
-  public getLegend(type: LegendType|'comparison') {
+  public getLegend(type: LegendType) {
     return this.http.get<Legend>(`${env.apiBaseUrl}/legend/${type}`);
   }
 

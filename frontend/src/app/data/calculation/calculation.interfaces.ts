@@ -83,7 +83,7 @@ export interface CalculationSlice {
   loading?: boolean;
 }
 
-export type LegendType = 'result' | 'ecosystem' | 'pressure';
+export type LegendType = 'result' | 'comparison' | 'ecosystem' | 'pressure';
 
 export interface LegendColor {
   color: string;

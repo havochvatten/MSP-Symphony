@@ -334,6 +334,7 @@
         },
         "color-scale": {
             "result": "Cumulative impact",
+            "comparison": "Relative pressure difference",
             "ecosystem": "Ecosystem value",
             "pressure": "Pressure intensity"
         },

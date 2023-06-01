@@ -33,6 +33,7 @@ export class MainViewComponent implements OnInit, AfterViewInit {
   legends$?: Observable<LegendState>;
   center = environment.map.center;
   visibleImpact = false;
+  visibleComparison = false;
 
   protected activeScenario$: Observable<Scenario | undefined>;
   protected activeScenarioArea$: Observable<number | undefined>;
@@ -89,7 +90,15 @@ export class MainViewComponent implements OnInit, AfterViewInit {
     return this.visibleImpact;
   }
 
+  getVisibleComparison() {
+    return this.visibleComparison;
+  }
+
   setVisibleImpact(value: number) {
     this.visibleImpact = value > 0;
+  }
+
+  setVisibleComparison(value: number) {
+    this.visibleComparison = value > 0;
   }
 }

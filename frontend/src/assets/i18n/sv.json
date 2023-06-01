@@ -334,6 +334,7 @@
         },
         "color-scale": {
             "result": "Kumulativ belastning",
+            "comparison": "Relativ skillnad i belastning",
             "ecosystem": "Naturvärden",
             "pressure": "Belastningsintensitet"
         },
