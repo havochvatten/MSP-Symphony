@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, HostListener, Input, NgModuleRef, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, HostListener, Input, NgModuleRef, OnDestroy, Output
+} from '@angular/core';
 import { Coordinate } from 'ol/coordinate';
 import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -46,6 +47,7 @@ import uuid from "uuid/v4";
 })
 export class MapComponent implements AfterViewInit, OnDestroy {
   @Input() mapCenter?: Coordinate;
+  @Output() resultLayerGroupChange: EventEmitter<number> = new EventEmitter<number>();
   drawIsActive = false;
   layerAliasing = true;
 
@@ -171,7 +173,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       }),
       pixelRatio: 1 // to fix tile size to 256x256
     });
-    this.resultLayerGroup = new ResultLayerGroup();
+    this.resultLayerGroup = new ResultLayerGroup(this);
     this.map.addLayer(this.resultLayerGroup);
     this.geoJson = new GeoJSON({
       featureProjection: this.map.getView().getProjection()
@@ -189,6 +191,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
   public clearResult() {
     this.resultLayerGroup.clearResult();
+  }
+
+  public emitLayerChange(count: number):void {
+    this.resultLayerGroupChange.emit(count);
   }
 
   @HostListener('window:keydown', ['$event'])

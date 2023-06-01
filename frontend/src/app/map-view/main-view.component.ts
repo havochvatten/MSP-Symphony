@@ -32,6 +32,7 @@ export class MainViewComponent implements OnInit, AfterViewInit {
   areas?: Observable<AllAreas>;
   legends$?: Observable<LegendState>;
   center = environment.map.center;
+  visibleImpact = false;
 
   protected activeScenario$: Observable<Scenario | undefined>;
   protected activeScenarioArea$: Observable<number | undefined>;
@@ -82,5 +83,13 @@ export class MainViewComponent implements OnInit, AfterViewInit {
 
   onNavigate(tabId: string) {
     this.scenarioAreaSelection = tabId === 'scenario';
+  }
+
+  getVisibleImpact(): boolean {
+    return this.visibleImpact;
+  }
+
+  setVisibleImpact(value: number) {
+    this.visibleImpact = value > 0;
   }
 }

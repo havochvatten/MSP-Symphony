@@ -5,11 +5,13 @@ import BaseLayer from 'ol/layer/Base';
 import { StaticImageOptions} from '@data/calculation/calculation.interfaces';
 import Static from "ol/source/ImageStatic";
 import { SymphonyLayerGroup } from "@src/app/map-view/map/layers/symphony-layer";
-import RenderEvent from "ol/render/Event";
+import { MapComponent } from "@src/app/map-view/map/map.component";
 
 export class ResultLayerGroup extends SymphonyLayerGroup {
 
   private calculationLayers = new Map<number, ImageLayer<Static>>();
+
+  constructor(private map: MapComponent) { super(); }
 
   // TODO Clip result to scenario boundaries? Perhaps like so:
   // https://gis.stackexchange.com/questions/185881/clipping-tilelayer-with-georeferenced-polygon-clipping-mask
@@ -31,6 +33,8 @@ export class ResultLayerGroup extends SymphonyLayerGroup {
       imageLayers.push(cpl);
       this.setLayers(imageLayers);
     }
+
+    this.map.emitLayerChange(this.calculationLayers.size)
   }
 
   public removeResult(id : number) {
@@ -40,11 +44,13 @@ export class ResultLayerGroup extends SymphonyLayerGroup {
       imageLayers.remove(cl);
     }
     this.setLayers(imageLayers);
+    this.map.emitLayerChange(this.calculationLayers.size)
   }
 
   public clearResult() {
     this.calculationLayers = new Map<number, ImageLayer<Static>>();
     this.setLayers(new Collection<BaseLayer>());
+    this.map.emitLayerChange(0);
   }
 
 }
