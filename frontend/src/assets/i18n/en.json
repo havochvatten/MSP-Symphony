@@ -140,7 +140,7 @@
                         "message": "Save or abandon the stated changes to \"{{ matrixName }}\"{{ newNotice }}?",
                         "immutable-message": "The editor has unsaved changes.<br>Save the modified matrix as \"{{ suggestedName }}\", or abandon current changes?",
                         "new-notice": "(new matrix)",
-                        "confirm": "Save",
+                        "save": "Save",
                         "abandon": "Abandon"
                     }
                 }

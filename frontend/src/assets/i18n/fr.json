@@ -140,7 +140,7 @@
                         "message": "Enregistrez ou ignorez les modifications indiquées dans \"{{ matrixName }}\"{{ newNotice }}?",
                         "immutable-message": "La matrice contient des modifications non enregistrées. Voulez-vous enregistrer la matrice sous \"{{ suggestedName }}\" ou ignorez toutes les modifications?",
                         "new-notice": "(nouvelle matrice)",
-                        "confirm": "Enregistrer",
+                        "save": "Enregistrer",
                         "abandon": "Ignorez"
                     }
                 }
