@@ -59,6 +59,7 @@ public class LegendREST {
             }
             legend.colorMap =
 					Arrays.stream(symbolizer.getColorMap().getColorMapEntries())
+                            .skip(type != LegendDto.Type.COMPARISON ? 1 : 0)
 							.map(entry -> new LegendDto.ColorMapEntry(entry, type))
 							.toArray(LegendDto.ColorMapEntry[]::new);
 
