@@ -7,6 +7,7 @@ export const ICONS = [
   'chevron-down',
   'chevron-up',
   'circle',
+  'cross',
   'delete',
   'dropdown-arrow',
   'edit',
