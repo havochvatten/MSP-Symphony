@@ -6,18 +6,12 @@
     <!--TODO Add more prominent button to create new scenario? -->
     <div class="title-container">
       <h3>{{ 'map.editor.list.user-scenarios' | translate }}</h3>
-      <app-icon-button
-        icon="plus" [disabled]="selectedAreas.length === 0 || !baseline"
-        [title]="
-        !(selectedAreas && selectedAreas.length > 0) ?
-          ('map.editor.list.select-area-first-label' | translate) :
-          selectedAreas.length === 1 ?
-          ('map.editor.list.add-scenario-label-single' | translate: { area: selectedAreas![0].name }) :
-          ('map.editor.list.add-scenario-label' | translate)"
-        [label]="selectedAreas && selectedAreas.length > 0 ? ('map.editor.list.add-scenario-label' | translate :
-        { area: selectedAreas![0].name }) : ('map.editor.list.select-area-first-label' | translate)"
-        (click)="createScenario(selectedAreas!)"
-      ></app-icon-button>
+      <app-add-scenario-areas
+        [noneSelectedTipKey]="'map.editor.list.select-area-first-label'"
+        [singleSelectedTipKey]="'map.editor.list.add-scenario-label-single'"
+        [multipleSelectedTipKey]="'map.editor.list.add-scenario-label'"
+        [clickDelegate]="this.createScenario"
+      ></app-add-scenario-areas>
     </div>
   </div>
 
@@ -33,10 +27,16 @@
         </div>
         <span>{{ scenario.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
       </div>
-      <ul class="scenario-areas">
-        <li *ngFor="let area of scenario.areas; index as aix"
+      <ul [ngClass]="{'scenario-areas' : true, 'abundant' : scenario.areas.length > ABUNDANT_AREA_COUNT}">
+        <li *ngFor="let area of scenario.areas.slice(0, MAX_AREAS); index as aix"
             [title]="'map.editor.list.scenario-area' | translate: { scenario: scenario.name, 'area-feature': area.feature.properties['name'] }">
           <span class="feature-name">{{ area.feature.properties['name'] }}</span>
+        </li>
+        <li *ngIf="scenario.areas.length === MAX_AREAS + 1" class="more-areas">
+          <span class="feature-name">{{ 'map.editor.list.more-areas-single' | translate }}</span>
+        </li>
+        <li *ngIf="scenario.areas.length > MAX_AREAS + 1" class="more-areas">
+          <span class="feature-name">{{ 'map.editor.list.more-areas' | translate: { more: scenario.areas.length - MAX_AREAS } }}</span>
         </li>
       </ul>
       <app-icon iconType="delete" [title]="'map.editor.delete.label' | translate"

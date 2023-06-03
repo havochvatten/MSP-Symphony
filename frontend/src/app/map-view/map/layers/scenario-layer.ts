@@ -194,9 +194,9 @@ export class ScenarioLayer extends VectorLayer<VectorSource> implements OnDestro
     );
   }
 
-  isScenarioActiveAndPointInsideScenario(coord: Coordinate): boolean {
+  isScenarioActiveAndPointOutsideScenario(coord: Coordinate): boolean {
     return (
-      !this.boundaryFeature || !!this.boundaryFeature.getGeometry()?.intersectsCoordinate(coord)
+      !this.boundaryFeature || !this.boundaryFeature.getGeometry()?.intersectsCoordinate(coord)
     );
   }
 

@@ -109,7 +109,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     this.scenarioSubscription = this.activeScenario$.pipe(
       distinctUntilChanged(
-        (prev: Scenario|undefined, curr: Scenario|undefined) => prev?.id === curr?.id && isEqual(prev?.areas[0].feature.geometry, curr?.areas[0].feature.geometry)),
+        (prev: Scenario|undefined, curr: Scenario|undefined) => prev?.id === curr?.id &&
+          isEqual(prev?.areas.map(a => a.id), curr?.areas.map(a => a.id))),
       isNotNullOrUndefined(),
     ).subscribe((scenario: Scenario) => {
       this.scenarioLayer.clearLayers();
@@ -283,7 +284,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   // (Alt + Shift) keys + select area interaction
   onMergeClick = async (feature: Feature, prevFeature: Feature) => {
 
-    // Some readability may have been sacrificed for the convenience of
+    // Some readability have been sacrificed for the convenience of
     // utilizing existing component logic (and versatility of integers).
     // The MergeAreasModal component will return either:
     // the numeric index of the input areas + 1,

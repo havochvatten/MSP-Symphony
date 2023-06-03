@@ -128,7 +128,7 @@ class AreaLayer extends VectorLayer<VectorSource> {
           condition: event => {
             return (
               condition.singleClick(event) &&
-              that.scenarioLayer.isScenarioActiveAndPointInsideScenario(event.coordinate)
+              that.scenarioLayer.isScenarioActiveAndPointOutsideScenario(event.coordinate)
             );
           },
           filter: (feature, layer) => {
@@ -159,7 +159,7 @@ class AreaLayer extends VectorLayer<VectorSource> {
                 onSplitClick(feature, that.selectedFeatures[0]);
               }
             } else {
-              // Expand selection
+              // Expand selection (Ctrl key pressed)
               if (event.mapBrowserEvent.originalEvent.ctrlKey) {
                 if (that.selectedFeatures.some(f => intersects(f, feature))) {
                   overlapWarning();
@@ -207,9 +207,9 @@ class AreaLayer extends VectorLayer<VectorSource> {
 
     const {
       'map.click-area': clickArea,
-      'map.location-outside-scenario': pointOutsideScenario
+      'map.location-within-scenario': pointWithinScenario
     } = await this.translateService
-      .get(['map.click-area', 'map.location-outside-scenario'])
+      .get(['map.click-area', 'map.location-within-scenario'])
       .toPromise();
     map.on('pointermove', event => {
       const detectedFeatures = map.getFeaturesAtPixel(event.pixel);
@@ -227,11 +227,10 @@ class AreaLayer extends VectorLayer<VectorSource> {
         if (!this.scenarioLayer.hasActiveScenario()) body.innerText = clickArea;
         else {
           if (this.scenarioLayer.isPointInsideScenario(event.coordinate))
-            body.innerText = clickArea;
-          else body.innerText = pointOutsideScenario;
+            body.innerText = pointWithinScenario;
+          else body.innerText = clickArea;
         }
 
-        // FIXME index 0 is not always correct (can contain scenario layer)
         const extent = detectedFeatures[0].getGeometry()?.getExtent();
         if (extent) {
           overlay.setPosition(getCenter(extent));

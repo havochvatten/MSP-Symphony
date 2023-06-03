@@ -6,6 +6,8 @@ import { Baseline } from "@data/user/user.interfaces";
 import { NormalizationOptions } from "@data/calculation/calculation.service";
 import { GeoJSONFeature } from 'ol/format/GeoJSON';
 import { ScenarioLayer } from "@src/app/map-view/map/layers/scenario-layer";
+import { Area } from "@data/area/area.interfaces";
+import { AreaMatrixData } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +25,16 @@ export class ScenarioService {
 
   getUserScenarios() {
     return this.http.get<Scenario[]>(this.scenarioApiBaseUrl);
+  }
+
+  convertAreas(areas: Area[]): ScenarioArea[] {
+    return areas.map(area => ({
+      id: -1,
+      feature: area.feature,
+      changes: null,
+      excludedCoastal: -1, // "magic" number to prevent inclusion by default
+      matrix: { matrixType: 'STANDARD', matrixId: undefined },
+      scenarioId: -1 })) as ScenarioArea[]
   }
 
   create(baseline: Baseline, name: string, areas: ScenarioArea[], normalization: NormalizationOptions,
@@ -51,15 +63,19 @@ export class ScenarioService {
     return this.scenarioLayer!.toggleChangeAreaVisibility(feature);
   }
 
-  hideScenarioChanges() {
-    this.scenarioLayer?.hideChangeAreas();
+  getAreaMatrixParams(scenarioId: number, baseline: string) {
+    return this.http.get<ScenarioMatrixDataMap>(env.apiBaseUrl+ '/calculationparams/areamatrices/'+baseline+'/'+scenarioId);
   }
 
-  getAreaMatrixParams(scenarioId: number, baseline: string) {
-    return this.http.post<ScenarioMatrixDataMap>(env.apiBaseUrl+ '/calculationparams/areamatrices/'+baseline, scenarioId);
+  getSingleAreaMatrixParams(scenarioAreaId: number, baseline: string) {
+    return this.http.get<AreaMatrixData>(env.apiBaseUrl+ '/calculationparams/areamatrix/'+baseline+'/'+scenarioAreaId);
   }
 
   deleteArea(areaId: any) {
     return this.http.delete(this.scenarioApiBaseUrl+'/area/'+areaId);
+  }
+
+  addScenarioAreas(scenarioId: number, areas: ScenarioArea[]) {
+    return this.http.post<ScenarioArea[]>(this.scenarioApiBaseUrl + '/' + scenarioId + '/areas' , areas);
   }
 }

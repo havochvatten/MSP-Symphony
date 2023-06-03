@@ -18,7 +18,7 @@ import { UserSelectors } from '@data/user';
 import {
   fetchAreaMatrices,
   fetchAreaMatricesFailure,
-  fetchAreaMatricesSuccess
+  fetchAreaMatricesSuccess, fetchAreaMatrixSuccess
 } from '@data/scenario/scenario.actions';
 
 @Injectable()
@@ -100,6 +100,25 @@ export class ScenarioEffects {
   );
 
   @Effect()
+  addScenarioAreas$ = this.actions$.pipe(
+    ofType(ScenarioActions.addAreasToActiveScenario),
+    concatMap(action =>
+      of(action).pipe(withLatestFrom(this.store.select(ScenarioSelectors.selectActiveScenario)))
+    ),
+      mergeMap(([{ areas }, scenario]) => {
+          return this.scenarioService.addScenarioAreas(scenario!.id, areas).pipe(
+            map((newAreas) => {
+              return ScenarioActions.addScenarioAreasSuccess({ newAreas });
+            }),
+            catchError(({status, error: message}) =>
+              of(ScenarioActions.saveScenarioFailure({error: {status, message}}))
+            )
+          )
+        }
+      )
+  );
+
+  @Effect()
   toggleChangeVisibility$ = this.actions$.pipe(
     ofType(ScenarioActions.toggleChangeAreaVisibility),
     map(({ feature, featureIndex }) => {
@@ -110,20 +129,44 @@ export class ScenarioEffects {
 
   @Effect()
   fetchMatrices$ = this.actions$.pipe(
-    ofType(fetchAreaMatrices),
+    ofType(fetchAreaMatrices, ScenarioActions.addScenarioAreasSuccess),
     concatMap(action =>
       of(action).pipe(withLatestFrom(this.store.select(UserSelectors.selectBaseline)))
     ),
     filter(([_, baseline]) => baseline !== undefined),
-    mergeMap(([{ scenarioId }, baseline]) =>
-      this.scenarioService.getAreaMatrixParams(scenarioId, baseline!.name).pipe(
-        mergeMap((matrixDataResponse: any) =>
-          of(fetchAreaMatricesSuccess({ matrixDataMap: matrixDataResponse.matrixData }))
-        ),
-        catchError(({status, error}) =>
-          of(fetchAreaMatricesFailure({error: {status, message: error.errorMessage}}))
-        )
-      )
-    )
+    mergeMap(([action, baseline]) => {
+      const scenarioId = action.type === ScenarioActions.fetchAreaMatrices.type ? action.scenarioId : action.newAreas[0].scenarioId;
+
+      // Although it seems preferable to maybe split the "addScenarioAreasSuccess" action result up
+      // to multiple requests utilizing rxJs ´from´ method at this junction, the possibility of calc
+      // area overlap for any of the added areas seems to render that approach prohibitively complex.
+      // As a compromise we differentiate only by single vs multiple areas added, but notably adding
+      // at least two new areas at a time will however redundantly fetch matrices for the entire
+      // scenario.
+      // There is potential for improvement performancewise, but it's not clear how to do it without
+      // introducing excessive code complexity.
+      if(action.type === ScenarioActions.addScenarioAreasSuccess.type && action.newAreas.length === 1) {
+        return this.scenarioService.getSingleAreaMatrixParams(action.newAreas[0].id, baseline!.name).pipe(
+          mergeMap((singleMatrixDataResponse: any) =>
+            of(fetchAreaMatrixSuccess({
+              areaId: action.newAreas[0].id,
+              matrixData: singleMatrixDataResponse
+            }))
+          ),
+          catchError(({status, error}) =>
+            of(fetchAreaMatricesFailure({error: {status, message: error.errorMessage}}))
+          )
+        );
+      } else {
+        return this.scenarioService.getAreaMatrixParams(scenarioId, baseline!.name).pipe(
+          mergeMap((matrixDataResponse: any) =>
+            of(fetchAreaMatricesSuccess({matrixDataMap: matrixDataResponse.matrixData}))
+          ),
+          catchError(({status, error}) =>
+            of(fetchAreaMatricesFailure({error: {status, message: error.errorMessage}}))
+          )
+        );
+      }
+    })
   );
 }

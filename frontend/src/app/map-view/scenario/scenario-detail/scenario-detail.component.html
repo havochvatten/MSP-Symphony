@@ -9,10 +9,17 @@
     </button>
   </div>
   <span class="scenario-timestamp">{{ scenario.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
-
   <main>
     <section class="scenario-areas">
       <h3>{{ 'map.editor.areas.title' | translate }}</h3>
+      <app-add-scenario-areas
+        [disabled]="(calculating$ | async) || (areaMatricesLoading$ | async)"
+        [noneSelectedTipKey]="'map.editor.areas.select-area-first-label'"
+        [singleSelectedTipKey]="'map.editor.areas.add-scenario-label-single'"
+        [multipleSelectedTipKey]="'map.editor.areas.add-scenario-label'"
+        [clickDelegate]="this.addScenarioArea"
+        [scenario]="scenario"
+      ></app-add-scenario-areas>
       <div class="scenario-areas-wrap">
         <div class="pendingMatricesOverlay" *ngIf="areaMatricesLoading$ | async">
           <mat-spinner diameter="32"></mat-spinner>

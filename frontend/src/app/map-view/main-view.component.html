@@ -82,7 +82,7 @@
          (resultLayerGroupChange)="setVisibleImpact($event)"
          (resultLayerGroupChangeCmp)="setVisibleComparison($event)">
 </app-map>
-<div id="scenario-area-selection-hint" *ngIf="scenarioAreaSelection && !(activeScenario$ | async)">
+<div id="scenario-area-selection-hint" *ngIf="scenarioAreaSelection && ((activeScenarioArea$ | async) == undefined)">
       <span>
         <strong>{{ 'map.area-selection-hint.emphasis' | translate}}</strong>
         {{ 'map.area-selection-hint.detail' | translate}}

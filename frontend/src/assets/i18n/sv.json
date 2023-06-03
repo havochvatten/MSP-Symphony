@@ -15,7 +15,7 @@
     "map": {
         "background-transparency": "Bakgrundskartans synlighet",
         "click-area": "Klicka för att markera området.",
-        "location-outside-scenario": "Platsen är utanför aktivt scenario",
+        "location-within-scenario": "Området tillhör redan det aktiva scenariot.",
         "areas": "Kartområden",
         "matrix": "Matris",
         "no-active-scenario": "Aktivera ett scenario för att göra inställningar",
@@ -78,7 +78,10 @@
                     }
                 },
                 "specific-settings": "Specific settings have been made for this area: {{ feature-changes }}",
-                "loading-matrices": "Laddar känslighetsmatriser"
+                "loading-matrices": "Laddar känslighetsmatriser",
+                "add-scenario-label": "Lägg till markerade områden i scenariot",
+                "add-scenario-label-single": "Lägg till « {{ area }} » i scenariot",
+                "select-area-first-label": "Markera först ett område"
             },
             "operation": {
                 "title": "Algoritm",
@@ -179,7 +182,9 @@
                 "no-scenarios": "Inga scenarion",
                 "add-scenarios-hint": "Skapa ett scenario genom att trycka på + ovan.",
                 "scenario-area": "{{ scenario }}\nOmråde: {{ area-feature }}",
-                "show-report-label": "Öppna senaste beräkningsrapporten"
+                "show-report-label": "Öppna senaste beräkningsrapporten",
+                "more-areas-single": "+ ett ytterligare område ..",
+                "more-areas": "+ {{ more }} ytterligare områden .."
             },
             "clear": "Rensa",
             "close": "❮",

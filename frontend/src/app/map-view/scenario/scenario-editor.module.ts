@@ -18,6 +18,7 @@ import { FormsModule } from "@angular/forms";
 import { OrdinalPipe } from "@shared/ordinal.pipe";
 import { ScenarioAreaDetailComponent } from './scenario-area-detail/scenario-area-detail.component';
 import { ChangesListComponent } from './scenario-detail/changes-list/changes-list.component';
+import { AddScenarioAreasComponent } from './add-scenario-areas/add-scenario-areas.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { ChangesListComponent } from './scenario-detail/changes-list/changes-lis
     NormalizationSelectionComponent,
     ScenarioAreaDetailComponent,
     ChangesListComponent,
+    AddScenarioAreasComponent,
   ],
   imports: [
     SharedModule,

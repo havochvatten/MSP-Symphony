@@ -1,33 +1,35 @@
 import { Component, ElementRef, Input, NgModuleRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ChangesProperty, Scenario } from '@data/scenario/scenario.interfaces';
-import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
-import { CalculationReportModalComponent } from '@shared/report-modal/calculation-report-modal.component';
-import { CalculationActions, CalculationSelectors } from '@data/calculation';
+import { FormControl, Validators } from '@angular/forms'
 import { Observable, OperatorFunction, Subscription } from 'rxjs';
+import { debounceTime, filter, take, tap } from 'rxjs/operators';
+import { TranslateService } from "@ngx-translate/core";
 import { Store } from '@ngrx/store';
-import { environment } from '@src/environments/environment';
+import { some } from "lodash";
 import { State } from '@src/app/app-reducer';
+import { environment } from '@src/environments/environment';
+import { DialogService } from '@shared/dialog/dialog.service';
+import { turfIntersects } from "@shared/turf-helper/turf-helper";
+import { CalculationReportModalComponent } from '@shared/report-modal/calculation-report-modal.component';
+import { SelectIntersectionComponent } from "@shared/select-intersection/select-intersection.component";
+import { CalculationActions, CalculationSelectors } from '@data/calculation';
+import { OperationParams } from '@data/calculation/calculation.interfaces';
 import {
   CalcOperation,
   CalculationService,
   NormalizationOptions,
   NormalizationType
 } from '@data/calculation/calculation.service';
-import { DialogService } from '@shared/dialog/dialog.service';
-import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
-import { debounceTime, filter, take, tap } from 'rxjs/operators';
-import { Feature } from 'geojson';
-import { FormControl, Validators } from '@angular/forms';
-import { OperationParams } from '@data/calculation/calculation.interfaces';
 import { availableOperations } from "@data/calculation/calculation.util";
-import { TranslateService } from "@ngx-translate/core";
 import { MetadataSelectors } from "@data/metadata";
 import { Band } from "@data/metadata/metadata.interfaces";
-import { ScenarioService } from "@data/scenario/scenario.service";
-import { SelectIntersectionComponent } from "@shared/select-intersection/select-intersection.component";
+import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
-import { some } from "lodash";
+import { ChangesProperty, Scenario } from '@data/scenario/scenario.interfaces';
+import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
+import { ScenarioService } from "@data/scenario/scenario.service";
+import { Area } from "@data/area/area.interfaces";
 import { deleteScenario } from "@src/app/map-view/scenario/scenario-common";
+import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenario-areas/add-scenario-areas.component";
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 
@@ -186,6 +188,11 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  addScenarioArea(selectedAreas: Area[], that: AddScenarioAreasComponent) {
+    const areas = selectedAreas.filter(a => !some(that.scenario!.areas,
+        s => turfIntersects(that.format.readFeature(a.feature), that.format.readFeature(s.feature))));
+    this.store.dispatch(ScenarioActions.addAreasToActiveScenario({ areas: that.scenarioService.convertAreas(areas) }));
+  }
 
   editTheName() {
     this.editName = !this.editName;
@@ -229,26 +236,6 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   async delete () {
     await deleteScenario(this.dialogService, this.translateService, this.store, this.moduleRef, this.scenario);
-
-    // const confirmDelete = await this.dialogService.open<boolean>(
-    //   ConfirmationModalComponent, this.moduleRef,
-    //   { data: {
-    //             header: `${ this.translateService.instant('map.editor.delete.modal.title', { scenario: this.scenario.name })}`,
-    //             confirmText: this.translateService.instant('map.editor.delete.modal.delete'),
-    //             confirmColor: 'warn',
-    //             dialogClass: 'center'
-    //           }
-    //         });
-    // if (confirmDelete) {
-    //   this.store.dispatch(ScenarioActions.closeActiveScenarioArea());
-    //   this.store.dispatch(ScenarioActions.deleteScenario({
-    //     scenarioToBeDeleted: this.scenario
-    //   }));
-    // }
-  }
-
-  toggleFeatureVisibility(feature: Feature, featureIndex: number) {
-    this.store.dispatch(ScenarioActions.toggleChangeAreaVisibility({ feature, featureIndex }));
   }
 
   ngOnDestroy() {
@@ -273,6 +260,4 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
       }
     }
   }
-
-
 }

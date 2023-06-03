@@ -20,22 +20,48 @@ import javax.ws.rs.core.Response;
 // TODO Move to se/havochvatten/symphony/web/CalcAreaSensMatrixREST.java?
 @Api(value = "/calculationparams",
         produces = MediaType.APPLICATION_JSON,
-        consumes = MediaType.APPLICATION_JSON)
+        consumes = MediaType.TEXT_PLAIN)
 @Path("calculationparams")
 public class CalculationParametersREST {
     @EJB
     CalculationAreaService calculationAreaService;
 
-    @POST
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get selection of possible matrices for a polygon", response =
-            AreaSelectionResponseDto.class,
-            responseContainer = "List")
-    @Path("areamatrices/{baselineName}")
+    @ApiOperation(value = "Get a selection of possible matrices for a given scenario area",
+        response = AreaSelectionResponseDto.class,
+        responseContainer = "Object")
+    @Path("areamatrix/{baselineName}/{areaId}")
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response getAreaMatrix(@Context HttpServletRequest req,
+                                  @PathParam("baselineName") String baselineName,
+                                  @PathParam("areaId") int areaId) {
+        if (req.getUserPrincipal() == null)
+            throw new NotAuthorizedException("Null principal");
+        try {
+            return Response.ok(calculationAreaService.areaSelect(baselineName, areaId, req.getUserPrincipal()))
+                    .build();
+        } catch (SymphonyStandardAppException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(new FrontendErrorDto(ex.getErrorCode().getErrorKey(), ex.getErrorCode().getErrorMessage()))
+                    .build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(new FrontendErrorDto("Exception thrown", "Unable to find area matrix"))
+                    .build();
+        }
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get a list of possible matrices for each area within a given scenario",
+        response = AreaSelectionResponseDto.class,
+        responseContainer = "List")
+    @Path("areamatrices/{baselineName}/{scenarioId}")
     @RolesAllowed("GRP_SYMPHONY")
     public Response getAreaMatrices(@Context HttpServletRequest req,
 									@PathParam("baselineName") String baselineName,
-                                    int scenarioId) {
+                                    @PathParam("scenarioId") int scenarioId) {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
         try {

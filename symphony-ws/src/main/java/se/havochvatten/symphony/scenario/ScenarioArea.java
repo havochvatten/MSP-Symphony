@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.geotools.data.geojson.GeoJSONReader;
 import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
 import se.havochvatten.symphony.dto.MatrixParameters;
@@ -60,6 +61,7 @@ public class ScenarioArea {
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "scenario", nullable = false)
     private Scenario scenario;
 

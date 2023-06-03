@@ -78,7 +78,10 @@
                     }
                 },
                 "specific-settings": "Specific settings have been made for this area: {{ feature-changes }}",
-                "loading-matrices": "Loading sensitivity matrices"
+                "loading-matrices": "Loading sensitivity matrices",
+                "add-scenario-label": "Add selected areas to the active scenario",
+                "add-scenario-label-single": "Add {{ area }} to the active scenario",
+                "select-area-first-label": "Start by selecting an area"
             },
             "operation": {
                 "title": "Algorithm",
@@ -179,7 +182,9 @@
                 "no-scenarios": "No scenarios",
                 "add-scenarios-hint": "Create a scenario by clicking on the + above.",
                 "scenario-area": "{{ scenario }}\nArea: {{ area-feature }}",
-                "show-report-label": "Open the latest calculation report"
+                "show-report-label": "Open the latest calculation report",
+                "more-areas-single": "+ an additional area ..",
+                "more-areas": "+ {{ more }} more areas .."
             },
             "clear": "Clear",
             "close": "❮",

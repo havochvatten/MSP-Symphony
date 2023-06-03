@@ -7,7 +7,10 @@ import {
 } from "@data/scenario/scenario.interfaces";
 import { ErrorMessage } from "@data/message/message.interfaces";
 import { BandType } from "@data/metadata/metadata.interfaces";
-import { MatrixParameters } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
+import {
+  AreaMatrixData,
+  MatrixParameters
+} from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
 import { Feature } from "geojson";
 import { OperationParams } from "@data/calculation/calculation.interfaces";
 import { CalcOperation, NormalizationOptions } from "@data/calculation/calculation.service";
@@ -139,8 +142,14 @@ export const setChangeAreaVisibility = createAction(
   props<{ featureIndex: number, visible: boolean }>()
 );
 
-export const hideAllChangeAreas = createAction(
-  '[Scenario] Hide fill of all scenario change areas'
+export const addAreasToActiveScenario = createAction(
+  '[Scenario] Add scenario areas',
+  props<{ areas: ScenarioArea[] }>()
+);
+
+export const addScenarioAreasSuccess = createAction(
+  '[Scenario] Add scenario areas success',
+  props<{ newAreas: ScenarioArea[] }>()
 );
 
 export const deleteBandChange = createAction(
@@ -154,16 +163,21 @@ export const deleteAreaBandChange = createAction(
 );
 
 export const fetchAreaMatrices = createAction(
-  '[Area] Fetch matrices',
+  '[Scenario] Fetch matrices',
   props<{ scenarioId: number }>()
 );
 
 export const fetchAreaMatricesSuccess = createAction(
-  '[Area] Fetch matrices success',
+  '[Scenario] Fetch matrices success',
   props<{ matrixDataMap: ScenarioMatrixDataMap }>()
 );
 
+export const fetchAreaMatrixSuccess = createAction(
+  '[Scenario] Fetch single matrix success',
+  props<{ areaId: number, matrixData: AreaMatrixData }>()
+);
+
 export const fetchAreaMatricesFailure = createAction(
-  '[Area] Fetch matrices failure',
+  '[Scenario] Fetch matrices failure',
   props<{ error: ErrorMessage }>()
 );

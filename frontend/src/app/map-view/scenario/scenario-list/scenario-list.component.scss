@@ -32,12 +32,6 @@ $buttons-row-gap: 1rem;
         margin: 0;
         margin-bottom: 1rem;
       }
-
-      app-icon-button {
-        font-size: 2.6rem;
-        margin-right: 1rem;
-        margin-bottom: 1rem;
-      }
     }
 
     .divider {
@@ -67,10 +61,10 @@ $buttons-row-gap: 1rem;
         display: flex;
         flex-direction: column;
         max-width: 100%;
+        cursor: pointer;
         align-items: stretch;
 
         &:hover {
-          cursor: pointer;
           background-color: $hav-coldgrey;
 
           .scenario-info h4, .scenario-info span, app-icon {
@@ -80,6 +74,10 @@ $buttons-row-gap: 1rem;
           //&:has(li:hover) {
           //  background-color: white;
           //}
+
+          ul.scenario-areas li.more-areas {
+            background-color: $hav-coldgrey;
+          }
         }
 
         .scenario-info {
@@ -145,16 +143,26 @@ $buttons-row-gap: 1rem;
             line-height: 2rem;
             flex: 1;
 
-            //&:hover {
-            //  background-color: $lighter-yellow;
-            //}
-
             .feature-name {
 
             }
 
             &:last-child {
               margin-bottom: 0;
+            }
+
+            &.more-areas {
+              border: 1px solid transparent;
+              color: $hav-darkergrey;
+            }
+          }
+
+          &.abundant {
+            li {
+              padding: 0.4rem 0.8rem 0.3rem;
+              margin: 0 0 0.45rem;
+              line-height: 1.55rem;
+              font-size: 1.25rem;
             }
           }
         }

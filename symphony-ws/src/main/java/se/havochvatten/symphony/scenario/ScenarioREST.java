@@ -131,4 +131,25 @@ public class ScenarioREST {
         service.deleteArea(req.getUserPrincipal(), areaId);
         return Response.noContent().build();
     }
+
+    @POST
+    @Path("{id}/areas")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response addScenarioAreas(@Context HttpServletRequest req,
+                                       @PathParam("id") int scenarioId,
+                                       ScenarioAreaDto[] areaDtos) {
+        if (req.getUserPrincipal() == null)
+            throw new NotAuthorizedException("Null principal");
+
+        Scenario scenario = service.findById(scenarioId);
+        if (scenario == null)
+            throw new NotFoundException("Scenario not found");
+
+        if (!req.getUserPrincipal().getName().equals(scenario.getOwner()))
+            throw new NotAuthorizedException("Not owner of scenario");
+
+        var persistedAreas = service.addAreas(scenario, areaDtos);
+        return Response.created(null).entity(persistedAreas).build();
+    }
 }

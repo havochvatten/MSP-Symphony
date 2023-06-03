@@ -106,7 +106,7 @@ public class Scenario implements Serializable {
     protected JsonNode operationOptions;
 
     @OneToMany(mappedBy = "scenario", orphanRemoval = true, fetch = FetchType.EAGER)
-    @Cascade({ CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
+    @Cascade({ CascadeType.ALL })
     @Fetch(FetchMode.SUBSELECT)
     private List<ScenarioArea> areas = new ArrayList<>();
 

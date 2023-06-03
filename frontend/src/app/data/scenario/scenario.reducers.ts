@@ -1,16 +1,18 @@
 import { createReducer, on } from '@ngrx/store';
-import { ScenarioActions, ScenarioInterfaces } from '@data/scenario/index';
-import { CalculationActions } from '@data/calculation';
 import { removeIn, setIn, updateIn } from 'immutable';
+import { size } from "lodash";
+
+import { CalculationActions } from '@data/calculation';
+import { calculationSucceeded } from "@data/calculation/calculation.actions";
+import { BandChange } from "@data/metadata/metadata.interfaces";
 import {
   fetchAreaMatricesFailure,
-  fetchAreaMatricesSuccess
+  fetchAreaMatricesSuccess, fetchAreaMatrixSuccess
 } from '@data/scenario/scenario.actions';
-import { ChangesProperty } from "@data/scenario/scenario.interfaces";
-import { BandChange } from "@data/metadata/metadata.interfaces";
-import { size } from "lodash";
+import { ScenarioActions, ScenarioInterfaces } from '@data/scenario/index';
+import { ChangesProperty, ScenarioArea } from "@data/scenario/scenario.interfaces";
 import { AreaMatrixData } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
-import { calculationSucceeded } from "@data/calculation/calculation.actions";
+
 
 export const initialState: ScenarioInterfaces.State = {
   scenarios: [],
@@ -70,6 +72,11 @@ export const scenarioReducer = createReducer(
     ...state,
     scenarios: updateIn(state.scenarios, [state.active, 'areas', areaIndex], () => areaToBeSaved)
   }}),
+  on(ScenarioActions.addScenarioAreasSuccess, (state, { newAreas }) => ({
+    ...state,
+    scenarios: updateIn(state.scenarios, [state.active, 'areas'], areas => [...(areas as ScenarioArea[]), ...newAreas]),
+    matricesLoading: true
+  })),
   on(CalculationActions.calculationSucceeded, (state, { calculation }) => ({
     ...state,
     scenarios: setIn(state.scenarios, [state.active, 'latestCalculationId'], calculation.id)
@@ -185,6 +192,14 @@ export const scenarioReducer = createReducer(
     return {
       ...state,
       matrixData: matrixDataMap,
+      matricesLoading: loading
+    }
+  }),
+  on(fetchAreaMatrixSuccess, (state, { areaId, matrixData }) => {
+    const loading = matrixData.overlap.length > 0;
+    return {
+      ...state,
+      matrixData: setIn(state.matrixData, [areaId], matrixData),
       matricesLoading: loading
     }
   }),

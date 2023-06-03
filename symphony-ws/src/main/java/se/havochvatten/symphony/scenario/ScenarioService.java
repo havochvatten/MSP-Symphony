@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.calculation.Operations;
 import se.havochvatten.symphony.dto.LayerType;
+import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
 import se.havochvatten.symphony.service.CalculationAreaService;
 import se.havochvatten.symphony.util.Util;
@@ -33,6 +34,7 @@ import javax.transaction.Transactional;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -208,5 +210,20 @@ public class ScenarioService {
 
         if(scenario.getAreas().isEmpty())
             em.remove(scenario);
+    }
+
+    public ScenarioAreaDto[] addAreas(Scenario scenario, ScenarioAreaDto[] areaDtos) {
+        ScenarioArea[] newAreas = new ScenarioArea[areaDtos.length];
+        int i = 0;
+        for (ScenarioAreaDto areaDto : areaDtos) {
+            ScenarioArea area = new ScenarioArea(areaDto, scenario);
+            em.persist(area);
+            em.flush();
+            newAreas[i++] = area;
+        }
+        Scenario finalScenario = em.merge(scenario);
+        return Arrays.stream(newAreas).map(
+            scenarioArea -> new ScenarioAreaDto(scenarioArea, finalScenario.getId()))
+            .toArray(ScenarioAreaDto[]::new);
     }
 }

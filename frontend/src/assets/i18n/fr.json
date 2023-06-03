@@ -78,7 +78,10 @@
                     }
                 },
                 "specific-settings": "Des valeurs spécifiques ont été définies pour cette zone: {{ feature-changes }}",
-                "loading-matrices": "Chargement des matrices de sensibilité"
+                "loading-matrices": "Chargement des matrices de sensibilité",
+                "add-scenario-label": "Ajouter des zones sélectionnées au scénario",
+                "add-scenario-label-single": "Ajouter {{ area }} au scénario",
+                "select-area-first-label": "Sélectionnez d'abord une zone."
             },
             "operation": {
                 "title": "Algorithme",
@@ -179,7 +182,9 @@
                 "no-scenarios": "Aucun scénario",
                 "add-scenarios-hint": "Créez un scénario en cliquant sur le + ci-dessus.",
                 "scenario-area": "{{ scenario }}\nZone: {{ area-feature }}",
-                "show-report-label": "Ouvrir le rapport de calcul le plus récent"
+                "show-report-label": "Ouvrir le rapport de calcul le plus récent",
+                "more-areas-single": "+ une zone supplémentaire ..",
+                "more-areas": "+ {{ more }} zones supplémentaires .."
             },
             "clear": "Effacer",
             "close": "❮",
