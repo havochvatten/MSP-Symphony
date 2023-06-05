@@ -44,10 +44,10 @@ hav-accordion-panel {
     }
   }
 
-  #scenario-area-selection-hint {
+  .mouse-interface-hint {
     position: absolute;
     top: 1rem;
-    left: 50%;
+    left: 40%;
     background-color: #ffffff;
     background-image: url("~src/assets/info-icon-black.svg");
     background-size: 1.3rem;
@@ -58,5 +58,9 @@ hav-accordion-panel {
     padding: 1rem 1.6rem 1rem 3rem;
     border-radius: 2px;
     box-shadow: 2px 2px 20px #00000029;
+
+    &#special-actions-hint.two-hints {
+      top: 5rem
+    }
   }
 }

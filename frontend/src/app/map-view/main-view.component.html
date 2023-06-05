@@ -82,9 +82,18 @@
          (resultLayerGroupChange)="setVisibleImpact($event)"
          (resultLayerGroupChangeCmp)="setVisibleComparison($event)">
 </app-map>
-<div id="scenario-area-selection-hint" *ngIf="scenarioAreaSelection && ((activeScenarioArea$ | async) == undefined)">
+<div id="scenario-area-selection-hint" class="mouse-interface-hint" *ngIf="scenarioAreaSelection && ((activeScenarioArea$ | async) == undefined)">
       <span>
         <strong>{{ 'map.area-selection-hint.emphasis' | translate}}</strong>
         {{ 'map.area-selection-hint.detail' | translate}}
+      </span>
+</div>
+<div id="special-actions-hint"
+     [ngClass]="{'mouse-interface-hint' : true,
+                 'two-hints' : scenarioAreaSelection && ((activeScenarioArea$ | async) == undefined) }"
+     *ngIf="singleSelection">
+      <span>
+        <strong>{{ 'map.special-actions-hint.emphasis' | translate}}</strong>
+        {{ 'map.special-actions-hint.detail' | translate}}
       </span>
 </div>

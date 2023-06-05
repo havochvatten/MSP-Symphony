@@ -346,6 +346,10 @@
         "area-selection-hint": {
             "emphasis": "Select / deselect multiple areas",
             "detail": "using Ctrl + click or ⌘ + click."
+        },
+        "special-actions-hint": {
+            "emphasis": "Cut or merge area",
+            "detail": "Alt / ⌥ + click splits by intersection, Alt / ⌥ + Shift + click merges."
         }
     },
     "main-menu": {

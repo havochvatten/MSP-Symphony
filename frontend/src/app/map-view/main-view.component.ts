@@ -10,7 +10,7 @@ import {
 import { MapComponent } from './map/map.component';
 import { MetadataSelectors } from '@data/metadata';
 import { AreaSelectors } from '@data/area';
-import { Observable, PartialObserver } from 'rxjs';
+import { Observable, PartialObserver, Subscription } from 'rxjs';
 import { AllAreas, StatePath } from '@data/area/area.interfaces';
 import { BandGroup } from '@data/metadata/metadata.interfaces';
 import { LegendState } from '@data/calculation/calculation.interfaces';
@@ -34,10 +34,12 @@ export class MainViewComponent implements OnInit, AfterViewInit {
   center = environment.map.center;
   visibleImpact = false;
   visibleComparison = false;
+  singleSelection = false
 
   protected activeScenario$: Observable<Scenario | undefined>;
   protected activeScenarioArea$: Observable<number | undefined>;
   protected scenarioAreaSelection = false
+  private selectedAreas$?: Subscription;
 
   constructor(
     private store: Store<State>,
@@ -50,6 +52,9 @@ export class MainViewComponent implements OnInit, AfterViewInit {
     this.metadata = this.store.select(MetadataSelectors.selectMetadata);
     this.areas = this.store.select(AreaSelectors.selectAll);
     this.legends$ = this.store.select(CalculationSelectors.selectVisibleLegends);
+    this.selectedAreas$ = this.store.select(AreaSelectors.selectSelectedAreaData).subscribe((areas) => {
+      this.singleSelection = areas.length === 1;
+    });
   }
 
   clearResult = () => {

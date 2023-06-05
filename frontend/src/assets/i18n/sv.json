@@ -346,6 +346,10 @@
         "area-selection-hint": {
             "emphasis": "Välj / avmarkera flera områden",
             "detail": "genom Ctrl + klick eller ⌘ + klick"
+        },
+        "special-actions-hint": {
+            "emphasis": "Dela eller sammanfoga område",
+            "detail": "Alt / ⌥ + klick delar överlappande, Alt / ⌥ + Shift + sammanfogar"
         }
     },
     "main-menu": {

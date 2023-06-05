@@ -346,6 +346,10 @@
         "area-selection-hint": {
             "emphasis": "Sélectionner / désélectionner plusieurs zones ",
             "detail": "par Ctrl + clic ou ⌘ + clic."
+        },
+        "special-actions-hint": {
+            "emphasis": "Partager ou fusionner zone",
+            "detail": "Alt / ⌥ + clic pour séparer par section, Alt / ⌥ + Shift + clic pour fusionner"
         }
     },
     "main-menu": {
