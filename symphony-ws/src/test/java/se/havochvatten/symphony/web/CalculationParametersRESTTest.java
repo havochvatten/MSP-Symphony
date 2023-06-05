@@ -2,6 +2,7 @@ package se.havochvatten.symphony.web;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.junit.Test;
 import se.havochvatten.symphony.dto.*;
@@ -24,7 +25,7 @@ public class CalculationParametersRESTTest extends RESTTest {
 
     @Test
     public void testGetAreaSelectionParam() throws IOException {
-        String endpoint = endpoint("/calculationparams/areamatrices/{baselineName}");
+        String endpoint = endpoint("/calculationparams/areamatrices/{baselineName}/{scenarioId}");
         String baselineName = "BASELINE2019";
 
         var resp = ScenarioRESTTest.create(ScenarioDto.createWithoutId("TEST-SCENARIO",
@@ -38,10 +39,10 @@ public class CalculationParametersRESTTest extends RESTTest {
                 preemptive().
                 basic(getUsername(), getPassword()).
                 pathParam("baselineName", baselineName).
+                pathParam("scenarioId", testScenario.id).
                 when().
                 header("Content-Type", "application/json").
-                body(testScenario.id).
-                post(endpoint);
+                get(endpoint);
 
         assertThat(response.getStatusCode(), is(200));
 
