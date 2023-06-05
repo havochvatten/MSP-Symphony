@@ -50,7 +50,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   @Output() resultLayerGroupChange: EventEmitter<number> = new EventEmitter<number>();
   @Output() resultLayerGroupChangeCmp: EventEmitter<number> = new EventEmitter<number>();
   drawIsActive = false;
-  layerAliasing = true;
 
   private map?: OLMap;
   private readonly storeSubscription?: Subscription;
@@ -58,6 +57,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private readonly resultSubscription?: Subscription;
   private readonly resultDeletedSubscription?: Subscription;
   private readonly userSubscription?: Subscription;
+  private readonly aliasingSubscription: Subscription;
   protected activeScenario$: Observable<Scenario | undefined>;
   private scenarioSubscription: Subscription;
   private scenarioCloseSubscription: Subscription;
@@ -72,6 +72,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   public baselineName = '';
   private geoJson?: GeoJSON;
 
+  private aliasing = true;
+
   constructor(
     private store: Store<State>,
     private calcService: CalculationService,
@@ -85,7 +87,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       .select(UserSelectors.selectBaseline).pipe(isNotNullOrUndefined())
       .subscribe((baseline) => {
         this.baselineName = baseline.name;
-        this.bandLayer = new BandLayer(baseline.name, dataLayerService);
+        this.bandLayer = new BandLayer(baseline.name, dataLayerService, this.aliasing);
         this.map!.getLayers().insertAt(1, this.bandLayer); // on top of background layer
       });
 
@@ -140,6 +142,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     this.resultDeletedSubscription = this.calcService.resultRemoved$.subscribe((removedId: number) => {
       this.resultLayerGroup.removeResult(removedId);
+    });
+
+    this.aliasingSubscription = this.store.select(UserSelectors.selectAliasing).subscribe((aliasing: boolean) => {
+      this.resultLayerGroup?.toggleImageSmoothing(aliasing);
+      this.bandLayer?.toggleImageSmoothing(aliasing);
+      this.aliasing = aliasing;
     });
   }
 
@@ -226,6 +234,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }
     if (this.userSubscription) {
       this.userSubscription.unsubscribe();
+    }
+    if (this.aliasingSubscription) {
+      this.aliasingSubscription.unsubscribe();
     }
 
     this.scenarioCloseSubscription.unsubscribe();
@@ -398,12 +409,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     // in an input event, which makes the opacity reset to 1
     if (typeof opacity === 'number' && this.background)
       this.background.setOpacity(opacity);
-  }
-
-  public toggleSmooth() {
-    this.resultLayerGroup.toggleImageSmoothing();
-    this.bandLayer?.toggleImageSmoothing();
-    this.layerAliasing = this.resultLayerGroup.antialias;
   }
 }
 

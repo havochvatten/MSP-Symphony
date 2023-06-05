@@ -12,6 +12,7 @@ import { AppSettings } from '@src/app/app.settings';
 import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 import { Scenario } from '@data/scenario/scenario.interfaces';
+import { UserSelectors } from "@data/user";
 
 export enum NormalizationType {
   Area = 'AREA',
@@ -40,14 +41,14 @@ export class CalculationService implements OnDestroy {
   private ecoBands: number[] = [];
   private pressureBands: number[] = [];
   private bandNumbersSubscription$: Subscription;
+  private aliasingSubscription$: Subscription;
+  private aliasing: boolean = true;
 
   constructor(private http: HttpClient, private store: Store<State>) {
-    if (AppSettings.CLIENT_SIDE_PROJECTION) {
-      proj4.defs('EPSG:3035', '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs');
-      proj4.defs('ESRI:54034', '+proj=cea +lat_ts=-12 +lon_0=12 +x_0=0 +y_0=0 +datum=WGS84 +units=m' +
-        ' +no_defs');
-      register(proj4);
-    }
+    proj4.defs('EPSG:3035', '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs');
+    proj4.defs('ESRI:54034', '+proj=cea +lat_ts=-12 +lon_0=12 +x_0=0 +y_0=0 +datum=WGS84 +units=m' +
+      ' +no_defs');
+    register(proj4);
 
     this.bandNumbersSubscription$ = this.store
       .select(MetadataSelectors.selectBandNumbers)
@@ -55,6 +56,10 @@ export class CalculationService implements OnDestroy {
         this.ecoBands = data.ecoComponent;
         this.pressureBands = data.pressureComponent;
       });
+
+    this.aliasingSubscription$ = this.store.select(UserSelectors.selectAliasing).subscribe((aliasing: boolean) => {
+      this.aliasing = aliasing;
+    });
   }
 
   public calculate(scenario: Scenario) {
@@ -102,7 +107,7 @@ export class CalculationService implements OnDestroy {
     //  Bit "hacky" but workable "faux" id constructed as a negative number
     //  to guarantee uniqueness without demanding a separate interface.
     //  Note that this artficially imposes a virtual maximum for calculation
-    //  results ids to 2^26 - 1 (around 67 million).
+    //  result ids to 2^26 - 1 (around 67 million).
     //  The limit is chosen specifically in relation to Number.MIN_SAFE_INTEGER
     //  which is -2^53
 
@@ -128,7 +133,8 @@ export class CalculationService implements OnDestroy {
               url: URL.createObjectURL(response.body!),
               calculationId: id,
               imageExtent: JSON.parse(extentHeader),
-              projection: AppSettings.CLIENT_SIDE_PROJECTION ? AppSettings.DATALAYER_RASTER_CRS : AppSettings.MAP_PROJECTION
+              projection: AppSettings.DATALAYER_RASTER_CRS,
+              interpolate: that.aliasing
             });
             resolve();
           } else {
@@ -195,6 +201,9 @@ export class CalculationService implements OnDestroy {
   ngOnDestroy() {
     if (this.bandNumbersSubscription$) {
       this.bandNumbersSubscription$.unsubscribe();
+    }
+    if (this.aliasingSubscription$) {
+      this.aliasingSubscription$.unsubscribe();
     }
   }
 }

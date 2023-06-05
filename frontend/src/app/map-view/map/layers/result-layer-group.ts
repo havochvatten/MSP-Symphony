@@ -6,10 +6,21 @@ import { StaticImageOptions} from '@data/calculation/calculation.interfaces';
 import Static from "ol/source/ImageStatic";
 import { SymphonyLayerGroup } from "@src/app/map-view/map/layers/symphony-layer";
 import { MapComponent } from "@src/app/map-view/map/map.component";
+import { AppSettings } from "@src/app/app.settings";
 
 export class ResultLayerGroup extends SymphonyLayerGroup {
 
   private calculationLayers = new Map<number, ImageLayer<Static>>();
+
+  private resetOptions(image: ImageStatic, calcId: number): StaticImageOptions {
+    return {
+      url: image.getUrl(),
+      imageExtent: image.getImageExtent(),
+      projection: AppSettings.DATALAYER_RASTER_CRS,
+      calculationId: calcId,
+      interpolate: this.antialias
+    };
+  }
 
   constructor(private map: MapComponent) { super(); }
 
@@ -29,7 +40,6 @@ export class ResultLayerGroup extends SymphonyLayerGroup {
 
     if(!isNaN(result.calculationId)  && !cl) {
       this.calculationLayers.set(result.calculationId, cpl);
-      cpl.on('prerender', this.renderHandler);
       imageLayers.push(cpl);
       this.setLayers(imageLayers);
     }
@@ -59,4 +69,18 @@ export class ResultLayerGroup extends SymphonyLayerGroup {
                              layerIds.filter(layerId => layerId < 0).length);
   }
 
+  public toggleImageSmoothing(aliasing: boolean) {
+    super.toggleImageSmoothing(aliasing);
+
+    const layers : ImageLayer<ImageStatic>[] = [];
+    this.calculationLayers.forEach((layer: ImageLayer<Static>, calcId) => {
+      const chgLayer = new ImageLayer({
+        source: new ImageStatic(this.resetOptions(layer.getRenderSource() as ImageStatic, calcId))
+      });
+      this.calculationLayers.set(calcId, chgLayer);
+      layers.push(chgLayer);
+    });
+    this.setLayers(new Collection(layers));
+    this.changed();
+  }
 }

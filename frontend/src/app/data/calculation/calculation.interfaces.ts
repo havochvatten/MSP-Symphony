@@ -72,7 +72,8 @@ export interface StaticImageOptions {
   url: string;
   calculationId: number;
   imageExtent: Extent;
-  projection: ProjectionLike
+  projection: ProjectionLike;
+  interpolate: boolean;
 }
 
 export interface CalculationSlice {
