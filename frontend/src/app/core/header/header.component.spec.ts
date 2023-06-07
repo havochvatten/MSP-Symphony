@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 
 import { HeaderComponent } from './header.component';
-import { SharedModule } from '@src/app/shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { UserMenuToggleComponent } from './user-menu-toggle/user-menu-toggle.component';
 import { StoreModule } from "@ngrx/store";
 

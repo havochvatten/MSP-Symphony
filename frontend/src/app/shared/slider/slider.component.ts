@@ -1,5 +1,8 @@
 import { Component, Input } from '@angular/core';
 
+/* TODO: Refactor - unwrap and delete this component !
+         looks like it's concieved solely for scss containment  */
+
 @Component({
   selector: 'app-slider',
   templateUrl: './slider.component.html',
@@ -10,4 +13,5 @@ export class SliderComponent {
   @Input() max = 100;
   @Input() step = 1;
   @Input() value = 50;
+  @Input() disabled = false;
 }

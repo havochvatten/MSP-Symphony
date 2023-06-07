@@ -1,13 +1,16 @@
-@import '../../../styles/hav-colors';
+@import 'src/styles/hav-colors';
 
 :host {
   display: flex;
+  position: relative;
   flex-direction: column;
   background-color: white;
   border-radius: 4px;
   padding: 2rem;
   width: 50vw;
   min-width: 36rem;
+  max-height: 83vh;
+  overflow-x: auto;
 
   h4 {
     font-size: 1.8rem;
@@ -55,6 +58,29 @@
           margin-bottom: 0.3rem;
         }
       }
+    }
+  }
+
+  app-icon {
+    position: absolute;
+    display: none;
+    font-size: 1.8rem;
+    right: 1rem;
+    top: 0px;
+    margin-top: 1rem;
+    opacity: 0.6;
+    color: $hav-turquoise;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &.has-overflow {
+
+    app-icon {
+      display: block;
     }
   }
 }

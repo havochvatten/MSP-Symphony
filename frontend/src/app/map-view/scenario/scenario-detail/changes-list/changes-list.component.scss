@@ -1,0 +1,100 @@
+@import 'src/styles/constants';
+@import 'src/styles/hav-colors';
+
+:host {
+  app-accordion-box {
+
+    &.single-change::ng-deep {
+      article {
+        header {
+          display: none;
+        }
+
+        app-accordion-box-content {
+          .band-name, .spec {
+            line-height: 2;
+          }
+
+          .icons > app-icon {
+            height: 2.2rem;
+          }
+        }
+      }
+    }
+
+    app-accordion-box-header {
+      font-size: 1.6rem;
+
+      .area-title {
+        font-weight: 300;
+        font-style: oblique;
+        color: $hav-darkergrey;
+        flex: 1;
+      }
+
+      app-icon {
+        justify-content: flex-end;
+        margin-left: 0.8rem;
+        color: black;
+      }
+    }
+
+    app-accordion-box-content {
+      .change {
+        display: grid;
+        grid-template-columns: 25rem 4.2rem 30px;
+        grid-template-rows: 26px;
+        font-size: 1.3rem;
+        line-height: 24px;
+
+        .band-name {
+          grid-column: 1/3;
+          grid-row: 1;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+
+        .spec {
+          grid-column: 2/3;
+          grid-row: 1;
+        }
+
+        .icons {
+          grid-column: 3/3;
+          grid-row: 1;
+          cursor: pointer;
+          font-size: 1.8rem;
+          color: rgba(0, 0, 0, 0.87);
+          margin-top: 2px;
+        }
+      }
+    }
+  }
+
+  #no-changes {
+    text-align: center;
+
+    span {
+      display: inline-block;
+      box-sizing: border-box;
+      height: 2.8rem;
+      font-size: 1.4rem;
+      letter-spacing: 0;
+      font-weight: 400;
+      color: #818181;
+      padding-bottom: 1rem;
+
+      app-icon {
+        color: $hav-turquoise;
+        font-size: 3rem;
+      }
+    }
+
+    p {
+      font-size: 1.3rem;
+      line-height: 1.8rem;
+      width: 76%;
+      margin: 1.2rem 12% 0;
+    }
+  }
+}

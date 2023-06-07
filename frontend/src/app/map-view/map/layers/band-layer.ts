@@ -7,6 +7,7 @@ import { StaticImageOptions } from '@data/calculation/calculation.interfaces';
 import { DataLayerService } from '@src/app/map-view/map/layers/data-layer.service';
 import ImageSource from 'ol/source/Image';
 import { SymphonyLayerGroup } from "@src/app/map-view/map/layers/symphony-layer";
+import RenderEvent from "ol/render/Event";
 
 class DataLayer extends ImageLayer<ImageSource> {
   constructor(opts: StaticImageOptions) {
@@ -24,10 +25,13 @@ class BandLayer extends SymphonyLayerGroup {
   };
 
   constructor(private baseline: string,
-              private dataLayerService: DataLayerService)
-  {
+              private dataLayerService: DataLayerService,
+              antialias: boolean) {
     super();
+    this.antialias = antialias;
   }
+
+  protected renderHandler = (evt: RenderEvent) => (evt.context! as CanvasRenderingContext2D).imageSmoothingEnabled = this.antialias;
 
   public setVisibleBands(bandType: BandType, bands: Band[]) {
     const layerBands =
@@ -55,8 +59,9 @@ class BandLayer extends SymphonyLayerGroup {
               url: URL.createObjectURL(response.body),
               imageExtent: JSON.parse(extentHeader),
               calculationId: NaN,
-              projection: AppSettings.CLIENT_SIDE_PROJECTION ? AppSettings.DATALAYER_RASTER_CRS : AppSettings.MAP_PROJECTION,
-              attributions: band.mapAcknowledgement ?? band.authorOrganisation ?? ''
+              projection: AppSettings.MAP_PROJECTION,
+              attributions: band.mapAcknowledgement ?? band.authorOrganisation ?? '',
+              interpolate: this.antialias
             };
 
             const layer = new DataLayer(imageOpts);

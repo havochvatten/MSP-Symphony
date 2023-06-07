@@ -1,4 +1,4 @@
-import { AreaMatrixData } from "@src/app/map-view/scenario/scenario-detail/matrix-selection/matrix.interfaces";
+import { AreaMatrixData } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
 
 export type StatePath = Array<string | number>;
 
@@ -130,6 +130,6 @@ export interface State {
   }
   userArea: UserAreasState;
   boundaries: Boundary[];
-  currentSelection?: StatePath; // currentFeature?
+  currentSelection?: StatePath[]; // currentFeature?
   selectionMatrices?: AreaMatrixData;
 }

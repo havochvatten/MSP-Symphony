@@ -17,6 +17,8 @@ public class ReportResponseDto {
         }
     }
 
+    public record AreaMatrix (String areaName, String matrix) {}
+
     public String name;
     public String baselineName;
     public String operationName;
@@ -32,12 +34,8 @@ public class ReportResponseDto {
     public long calculatedPixels;
     public double gridResolution; // in m
 
-    public Object matrix; // Runtime type is DefaultMatrixData|Integer. TODO: Just use MatrixParameters?
-
-    public boolean altMatrix;
-
+    public AreaMatrix[] areaMatrices;
     public NormalizationOptions normalization;
-
     public Map<Integer, Double> impactPerPressure; // N.B: accumulated total, not percentage
     public Map<Integer, Double> impactPerEcoComponent;
     public Map<String, List> chartData;

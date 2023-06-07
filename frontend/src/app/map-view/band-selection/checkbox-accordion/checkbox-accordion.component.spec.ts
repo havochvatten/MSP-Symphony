@@ -5,9 +5,9 @@ import {
   AccordionBoxComponent,
   AccordionBoxHeaderComponent,
   AccordionBoxContentComponent
-} from '../../../shared/accordion-box/accordion-box.component';
-import { IconButtonComponent } from '../../../shared/icon-button/icon-button.component';
-import { IconComponent } from '../../../shared/icon/icon.component';
+} from '@shared/accordion-box/accordion-box.component';
+import { IconButtonComponent } from '@shared/icon-button/icon-button.component';
+import { IconComponent } from '@shared/icon/icon.component';
 import { StoreModule } from "@ngrx/store";
 import { provideMockStore } from "@ngrx/store/testing";
 import { initialState as scenario } from '@data/scenario/scenario.reducers';

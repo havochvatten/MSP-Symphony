@@ -17,7 +17,7 @@ public class CalculationAreaMapper {
         calculationAreaDto.setId(calculationArea.getId());
         calculationAreaDto.setName(calculationArea.getName());
         calculationAreaDto.setCareaDefault(calculationArea.isCareaDefault());
-        calculationAreaDto.setDefaultSensitivityMatrixId(calculationArea.getdefaultSensitivityMatrix() == null ? null : calculationArea.getdefaultSensitivityMatrix().getId());
+        calculationAreaDto.setDefaultSensitivityMatrixId(calculationArea.getDefaultSensitivityMatrix() == null ? null : calculationArea.getDefaultSensitivityMatrix().getId());
         calculationAreaDto.getPolygons().addAll(mapPolygonToDto(calculationArea.getCaPolygonList()));
         return calculationAreaDto;
     }

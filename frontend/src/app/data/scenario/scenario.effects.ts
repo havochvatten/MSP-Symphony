@@ -14,15 +14,12 @@ import { ScenarioActions, ScenarioSelectors } from '@data/scenario/index';
 import { of } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
-import { getIn, removeIn } from 'immutable';
 import { UserSelectors } from '@data/user';
-import { AreaMatrixData } from '@src/app/map-view/scenario/scenario-detail/matrix-selection/matrix.interfaces';
 import {
   fetchAreaMatrices,
   fetchAreaMatricesFailure,
-  fetchAreaMatricesSuccess
+  fetchAreaMatricesSuccess, fetchAreaMatrixSuccess
 } from '@data/scenario/scenario.actions';
-import { CalculationActions } from '@data/calculation';
 
 @Injectable()
 export class ScenarioEffects {
@@ -48,15 +45,30 @@ export class ScenarioEffects {
   @Effect()
   saveScenario$ = this.actions$.pipe(
     ofType(ScenarioActions.saveActiveScenario),
-    mergeMap(({ scenarioToBeSaved, updateState }) => {
+    mergeMap(({ scenarioToBeSaved }) => {
       return this.scenarioService.save(scenarioToBeSaved).pipe(
         retry(2),
-        map(savedScenario => updateState ?
-          ScenarioActions.saveScenarioSuccessUpdate({ savedScenario }) :
-          ScenarioActions.saveScenarioSuccess({ savedScenario })),
+        map(savedScenario => ScenarioActions.saveScenarioSuccess({ savedScenario })),
         catchError(({ status, error: message }) =>
           of(ScenarioActions.saveScenarioFailure({ error: { status, message } }))
         )
+      );
+    })
+  );
+
+  @Effect()
+  saveScenarioArea$ = this.actions$.pipe(
+    ofType(ScenarioActions.saveScenarioArea),
+    concatMap(action =>
+      of(action).pipe(withLatestFrom(this.store.select(ScenarioSelectors.selectActiveScenario)))
+    ),
+    mergeMap(([{ areaToBeSaved }, scenario]) => {
+      return this.scenarioService.save(scenario!).pipe(
+      map((savedScenario) =>
+          ScenarioActions.saveScenarioSuccess({ savedScenario })),
+          catchError(({ status, error: message }) =>
+            of(ScenarioActions.saveScenarioFailure({ error: { status, message } }))
+          )
       );
     })
   );
@@ -66,7 +78,7 @@ export class ScenarioEffects {
     ofType(ScenarioActions.deleteScenario),
     mergeMap(({ scenarioToBeDeleted }) => {
       return this.scenarioService.delete(scenarioToBeDeleted.id).pipe(
-        map(() => ScenarioActions.deleteScenarioSuccess()),
+        map(() => ScenarioActions.fetchScenarios()),
         catchError(({ status, error: message }) =>
           of(ScenarioActions.deleteScenarioFailure({ error: { status, message } }))
         )
@@ -75,34 +87,35 @@ export class ScenarioEffects {
   );
 
   @Effect()
-  removeFeature$ = this.actions$.pipe(
-    ofType(ScenarioActions.deleteBandChangeOrChangeFeature),
-    concatMap(action =>
-      of(action).pipe(
-        withLatestFrom(this.store.select(ScenarioSelectors.selectActiveScenarioChangeFeatures))
-      )
-    ),
-    map(([{ featureIndex, bandId }, features]) => {
-      const featuresWithoutChangeAttribute = removeIn(features, [
-        featureIndex,
-        'properties',
-        'changes',
-        bandId
-      ]);
-
-      const getObject = Object(
-        getIn(featuresWithoutChangeAttribute, [featureIndex, 'properties', 'changes'], {})
+  deleteScenarioArea$ = this.actions$.pipe(
+    ofType(ScenarioActions.deleteScenarioArea),
+    mergeMap(({ areaId }) => {
+      return this.scenarioService.deleteArea(areaId).pipe(
+        map(() => ScenarioActions.fetchScenarios()),
+        catchError(({ status, error: message }) =>
+          of(ScenarioActions.deleteScenarioAreaFailure({ error: { status, message } }))
+        )
       );
-
-      const doesFeatureStillHasChanges = getObject && Object.keys(getObject).length > 0;
-      if (doesFeatureStillHasChanges)
-        return ScenarioActions.deleteBandChangeAttribute({ featureIndex, bandId });
-      else {
-        // Easier to call out directly than try to work our which feature has been deleted from the state alone
-        this.scenarioService.removeScenarioChangeFeature(features![featureIndex].id!);
-        return ScenarioActions.deleteChangeFeature({ featureIndex });
-      }
     })
+  );
+
+  @Effect()
+  addScenarioAreas$ = this.actions$.pipe(
+    ofType(ScenarioActions.addAreasToActiveScenario),
+    concatMap(action =>
+      of(action).pipe(withLatestFrom(this.store.select(ScenarioSelectors.selectActiveScenario)))
+    ),
+      mergeMap(([{ areas }, scenario]) => {
+          return this.scenarioService.addScenarioAreas(scenario!.id, areas).pipe(
+            map((newAreas) => {
+              return ScenarioActions.addScenarioAreasSuccess({ newAreas });
+            }),
+            catchError(({status, error: message}) =>
+              of(ScenarioActions.saveScenarioFailure({error: {status, message}}))
+            )
+          )
+        }
+      )
   );
 
   @Effect()
@@ -115,28 +128,45 @@ export class ScenarioEffects {
   );
 
   @Effect()
-  hideChanges$ = this.actions$.pipe(
-    ofType(CalculationActions.calculationSucceeded),
-    map(({ calculation }) => {
-      this.scenarioService.hideScenarioChanges();
-      return ScenarioActions.hideAllChangeAreas();
-    })
-  );
-
-  @Effect()
   fetchMatrices$ = this.actions$.pipe(
-    ofType(fetchAreaMatrices),
+    ofType(fetchAreaMatrices, ScenarioActions.addScenarioAreasSuccess),
     concatMap(action =>
       of(action).pipe(withLatestFrom(this.store.select(UserSelectors.selectBaseline)))
     ),
     filter(([_, baseline]) => baseline !== undefined),
-    mergeMap(([{ geometry }, baseline]) =>
-      this.scenarioService.getAreaMatrixParams(geometry, baseline!.name).pipe(
-        map((matrixData: AreaMatrixData) => fetchAreaMatricesSuccess({ matrixData })),
-        catchError(({ status, error }) =>
-          of(fetchAreaMatricesFailure({ error: { status, message: error.errorMessage } }))
-        )
-      )
-    )
+    mergeMap(([action, baseline]) => {
+      const scenarioId = action.type === ScenarioActions.fetchAreaMatrices.type ? action.scenarioId : action.newAreas[0].scenarioId;
+
+      // Although it seems preferable to maybe split the "addScenarioAreasSuccess" action result up
+      // to multiple requests utilizing rxJs ´from´ method at this junction, the possibility of calc
+      // area overlap for any of the added areas seems to render that approach prohibitively complex.
+      // As a compromise we differentiate only by single vs multiple areas added, but notably adding
+      // at least two new areas at a time will however redundantly fetch matrices for the entire
+      // scenario.
+      // There is potential for improvement performancewise, but it's not clear how to do it without
+      // introducing excessive code complexity.
+      if(action.type === ScenarioActions.addScenarioAreasSuccess.type && action.newAreas.length === 1) {
+        return this.scenarioService.getSingleAreaMatrixParams(action.newAreas[0].id, baseline!.name).pipe(
+          mergeMap((singleMatrixDataResponse: any) =>
+            of(fetchAreaMatrixSuccess({
+              areaId: action.newAreas[0].id,
+              matrixData: singleMatrixDataResponse
+            }))
+          ),
+          catchError(({status, error}) =>
+            of(fetchAreaMatricesFailure({error: {status, message: error.errorMessage}}))
+          )
+        );
+      } else {
+        return this.scenarioService.getAreaMatrixParams(scenarioId, baseline!.name).pipe(
+          mergeMap((matrixDataResponse: any) =>
+            of(fetchAreaMatricesSuccess({matrixDataMap: matrixDataResponse.matrixData}))
+          ),
+          catchError(({status, error}) =>
+            of(fetchAreaMatricesFailure({error: {status, message: error.errorMessage}}))
+          )
+        );
+      }
+    })
   );
 }

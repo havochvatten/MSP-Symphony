@@ -19,7 +19,10 @@ import java.io.Serializable;
 		@NamedQuery(name = "CaPolygon.findAll", query = "SELECT c FROM CaPolygon c"),
 		@NamedQuery(name = "CaPolygon.findForBaselineVersionId",
 				query = "SELECT c FROM CaPolygon c WHERE c" + ".calculationArea.defaultSensitivityMatrix" +
-						".baselineVersion.id = :versionId")})
+						".baselineVersion.id = :versionId"),
+        @NamedQuery(name = "CaPolygon.findDefaultForBaselineVersionId",
+                    query = "SELECT c FROM CaPolygon c WHERE c.calculationArea.defaultSensitivityMatrix" +
+                        ".baselineVersion.id = :versionId AND c.calculationArea.careaDefault = true")})
 public class CaPolygon implements Serializable {
     private static final long serialVersionUID = 1L;
 

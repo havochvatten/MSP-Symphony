@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { DialogRef } from '@src/app/shared/dialog/dialog-ref';
-import { DialogConfig } from '@src/app/shared/dialog/dialog-config';
+import { DialogRef } from '@shared/dialog/dialog-ref';
+import { DialogConfig } from '@shared/dialog/dialog-config';
 
 @Component({
   selector: 'app-rename-user-area-modal',

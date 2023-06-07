@@ -1,6 +1,6 @@
 package se.havochvatten.symphony.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import it.geosolutions.jaiext.stats.HistogramMode;
@@ -17,11 +17,11 @@ import org.opengis.referencing.operation.TransformException;
 import se.havochvatten.symphony.calculation.Operations;
 import se.havochvatten.symphony.calculation.SankeyChart;
 import se.havochvatten.symphony.dto.*;
-import se.havochvatten.symphony.entity.AreaType;
 import se.havochvatten.symphony.entity.CalculationResult;
+import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
-import se.havochvatten.symphony.scenario.Scenario;
-import se.havochvatten.symphony.util.Util;
+import se.havochvatten.symphony.scenario.ScenarioService;
+import se.havochvatten.symphony.scenario.ScenarioSnapshot;
 import si.uom.SI;
 import tech.units.indriya.quantity.Quantities;
 
@@ -59,7 +59,7 @@ public class ReportService {
     SensMatrixService matrixService;
 
     @Inject
-    AreaTypeService areaTypeService;
+    ScenarioService scenarioService;
 
     @Inject
     PropertiesService props;
@@ -126,7 +126,7 @@ public class ReportService {
     }
 
     public ReportResponseDto generateReportData(CalculationResult calc, boolean computeChart)
-        throws FactoryException, TransformException {
+        throws FactoryException, TransformException, SymphonyStandardAppException {
         var scenario = calc.getScenarioSnapshot();
         var coverage = calc.getCoverage();
         var stats = getStatistics(coverage);
@@ -164,34 +164,22 @@ public class ReportService {
                                 Math.round(resolution * 100) / 100;
                                 // Round to two decimal places and guard for NaN
                                 // since Math.round(Double.NaN) returns 0
-        try {
-            var matrixParams = mapper.treeToValue(scenario.getMatrix(), MatrixParameters.class);
-            if (matrixParams.userDefinedMatrixId != null) {
-                var mx = matrixService.getSensMatrixbyId(matrixParams.userDefinedMatrixId);
-                report.matrix = mx.getName();
-                report.altMatrix = mx.getOwner() == null;
-            } else {
-                Map<Integer, AreaType> areaTypes =
-                        areaTypeService.findAll().stream().collect(toMap(AreaType::getId,
-                                areaType -> areaType));
-                // TODO: Get the real matrix name later
-                report.matrix = new ReportResponseDto.DefaultMatrixData("Default area matrix",
-                        matrixParams.areaTypes
-                                .stream()
-                                .filter(areaTypeRef -> !areaTypes.get(areaTypeRef.id).isCoastalArea())
-                                .collect(toMap(areaTypeRef ->
-                                                areaTypes.get(areaTypeRef.id).getAtypeName(),
-                                        (MatrixParameters.AreaTypeRef areaType) ->
-                                                areaType.areaMatrices
-                                                        .stream()
-                                                        .filter(Util.distinctByKey(AreaMatrixMapping::getMatrixId))
-                                                        .map(mapping -> this.getMatrixName(mapping.getMatrixId()))
-                                                        .toArray(String[]::new))));
+
+        report.areaMatrices = new ReportResponseDto.AreaMatrix[calc.getAreaMatrixMap().size()];
+        int am_ix = 0;
+        String matrix, areaName;
+
+        for(int areaId : calc.getAreaMatrixMap().keySet()) {
+            if(scenarioService.findAreaById(areaId) == null) {
+                throw new SymphonyStandardAppException(SymphonyModelErrorCode.OTHER_ERROR, "Area with id " + areaId + " not found.");
             }
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        } catch (SymphonyStandardAppException e) {
-            report.matrix = "<unknown>";
+            areaName = scenarioService.findAreaById(areaId).getFeature().getAttribute("name").toString();
+            try {
+                matrix = matrixService.getSensMatrixbyId(calc.getAreaMatrixMap().get(areaId)).getName();
+            } catch (SymphonyStandardAppException e) {
+                matrix = "<unknown>";
+            }
+            report.areaMatrices[am_ix++] = new ReportResponseDto.AreaMatrix(areaName, matrix);
         }
 
         report.normalization = scenario.getNormalization();
@@ -207,6 +195,7 @@ public class ReportService {
                 CRS.findMathTransform(DefaultGeographicCRS.WGS84,
                     coverage.getCoordinateReferenceSystem2D())).getArea();
 
+
         report.scenarioChanges = scenario.getChanges();
         report.timestamp = calc.getTimestamp().getTime();
 
@@ -215,7 +204,7 @@ public class ReportService {
 
     public ComparisonReportResponseDto generateComparisonReportData(CalculationResult calcA,
                                                                     CalculationResult calcB)
-        throws FactoryException, TransformException, JsonProcessingException {
+        throws FactoryException, TransformException, SymphonyStandardAppException {
         var report = new ComparisonReportResponseDto();
         report.a = generateReportData(calcA, false);
         report.b = generateReportData(calcB, false);
@@ -305,7 +294,7 @@ public class ReportService {
         MetadataPropertyDto[]   ecocomponentMetadata = flattenAndSort(metadata.getEcoComponent()),
                                 pressureMetadata = flattenAndSort(metadata.getPressureComponent());
 
-        Scenario scenarioA = calcA.getScenarioSnapshot(), scenarioB = calcB.getScenarioSnapshot();
+        ScenarioSnapshot scenarioA = calcA.getScenarioSnapshot(), scenarioB = calcB.getScenarioSnapshot();
         int[] featuredEcosystems = uniqueIntersection(  scenarioA.getEcosystemsToInclude(),
                                                         scenarioB.getEcosystemsToInclude()),
               featuredPressures = uniqueIntersection(   scenarioA.getPressuresToInclude(),

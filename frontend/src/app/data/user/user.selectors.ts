@@ -33,3 +33,8 @@ export const selectBaseline = createSelector(
   selectUserState,
   (state: State) => state.baseline
 );
+
+export const selectAliasing = createSelector(
+  selectUserState,
+  (state: State) => state.aliasing
+)

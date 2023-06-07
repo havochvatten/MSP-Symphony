@@ -5,7 +5,10 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.calculation.CalcService;
+import se.havochvatten.symphony.calculation.CalcUtil;
+import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
+import se.havochvatten.symphony.entity.CalculationResult;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
@@ -15,9 +18,7 @@ import javax.ws.rs.core.*;
 import java.util.List;
 
 /**
- * Calculation REST API
- * <p>
- * This class handles request decoding, result color-mapping and image encoding.
+ * Scenario REST API
  */
 
 @Path("/scenario")
@@ -51,7 +52,7 @@ public class ScenarioREST {
     @RolesAllowed("GRP_SYMPHONY")
     public Response createScenario(@Context HttpServletRequest req, @Context UriInfo uriInfo,
                                    ScenarioDto dto) {
-        var persistedScenario = service.create(new Scenario(dto, calcService), req.getUserPrincipal());
+        var persistedScenario = service.create(new Scenario(dto), req.getUserPrincipal());
         logger.info("Create {} (id={})", persistedScenario.getName(), persistedScenario.getId());
         var uri = uriInfo.getAbsolutePathBuilder().path(persistedScenario.getId().toString()).build();
         return Response.created(uri).entity(new ScenarioDto(persistedScenario)).build();
@@ -70,10 +71,39 @@ public class ScenarioREST {
         if (previous == null)
             throw new NoContentException("Scenario to update does not exist");
 
-        if (req.getUserPrincipal().getName().equals(previous.getOwner()))
-            return new ScenarioDto(service.update(new Scenario(updated, calcService)));
+        if (req.getUserPrincipal().getName().equals(previous.getOwner())) {
+            Scenario scenarioToSave = new Scenario(updated);
+            if(updated.latestCalculationId != null) {
+                CalculationResult calc = CalcUtil.getCalculationResultFromSessionOrDb(
+                    updated.latestCalculationId, req.getSession(), calcService).orElseThrow(NotFoundException::new);
+                scenarioToSave.setLatestCalculation(calc);
+            }
+
+            return new ScenarioDto(service.update(scenarioToSave));
+        } else throw new NotAuthorizedException("Not owner of scenario");
+    }
+
+    @PUT
+    @ApiOperation(value = "Update scenario area")
+    @Path("/area")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public ScenarioAreaDto updateScenarioArea(@Context HttpServletRequest req, ScenarioAreaDto updated) throws NoContentException {
+        if (req.getUserPrincipal() == null)
+            throw new NotAuthorizedException("Null principal");
+
+        var previous = service.findAreaById(updated.id);
+        if (previous == null)
+            throw new NoContentException("Scenario area to update does not exist");
+
+        Scenario scenario = service.findById(updated.getScenarioId());
+
+        if (req.getUserPrincipal().getName().equals(scenario.getOwner()))
+
+            return new ScenarioAreaDto(service.updateArea(new ScenarioArea(updated, scenario)), scenario.getId());
         else
-            throw new NotAuthorizedException("Not owner of scenario");
+            throw new NotAuthorizedException("Not owner of scenario area");
     }
 
     @DELETE
@@ -87,5 +117,39 @@ public class ScenarioREST {
 
         service.delete(req.getUserPrincipal(), id);
         return Response.noContent().build();
+    }
+
+    @DELETE
+    @ApiOperation(value = "Delete a scenario area")
+    @Path("/area/{areaId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response deleteScenarioArea(@Context HttpServletRequest req, @PathParam("areaId") int areaId) {
+        if (req.getUserPrincipal() == null)
+            throw new NotAuthorizedException("Null principal");
+
+        service.deleteArea(req.getUserPrincipal(), areaId);
+        return Response.noContent().build();
+    }
+
+    @POST
+    @Path("{id}/areas")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response addScenarioAreas(@Context HttpServletRequest req,
+                                       @PathParam("id") int scenarioId,
+                                       ScenarioAreaDto[] areaDtos) {
+        if (req.getUserPrincipal() == null)
+            throw new NotAuthorizedException("Null principal");
+
+        Scenario scenario = service.findById(scenarioId);
+        if (scenario == null)
+            throw new NotFoundException("Scenario not found");
+
+        if (!req.getUserPrincipal().getName().equals(scenario.getOwner()))
+            throw new NotAuthorizedException("Not owner of scenario");
+
+        var persistedAreas = service.addAreas(scenario, areaDtos);
+        return Response.created(null).entity(persistedAreas).build();
     }
 }

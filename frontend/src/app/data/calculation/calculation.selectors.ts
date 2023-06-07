@@ -40,6 +40,7 @@ export const selectVisibleLegends = createSelector(
   MetadataSelectors.selectVisibleBands,
   (legends, visibleBands): LegendState => ({
     result: legends.result,
+    comparison: legends.comparison,
     ecosystem: visibleBands.ecoComponent.length > 0 ? legends.ecosystem : undefined,
     pressure: visibleBands.pressureComponent.length > 0 ? legends.pressure : undefined
   })

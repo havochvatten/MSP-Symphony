@@ -9,8 +9,8 @@ different kinds of human activities on the marine ecosystems. This cumulative im
 environment. In this way, marine spatial plans can be developed with an ecosystem approach.
 
 This repository contains a specific implementation conceived as an application facilitating building and evaluation 
-of Symphony scenarios, initially developed at the agency in-house during the years 2019-2022. For more details on 
-the science behind the Symphony method see the [project web page at the Swedish Agency for Marine and Water Management](https://www.havochvatten.se/en/eu-and-international/marine-spatial-planning/swedish-marine-spatial-planning/the-marine-spatial-planning-process/development-of-plan-proposals/symphony---a-tool-for-ecosystem-based-marine-spatial-planning.html).
+of Symphony scenarios, continually developed at the agency since 2019. For more details on the science behind the Symphony
+method see the [project web page at the Swedish Agency for Marine and Water Management](https://www.havochvatten.se/en/eu-and-international/marine-spatial-planning/swedish-marine-spatial-planning/the-marine-spatial-planning-process/development-of-plan-proposals/symphony---a-tool-for-ecosystem-based-marine-spatial-planning.html).
 
 ## Features overview
 

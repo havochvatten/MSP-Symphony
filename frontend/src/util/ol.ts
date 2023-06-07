@@ -3,19 +3,18 @@ import { StatePath } from '@data/area/area.interfaces';
 import Feature from 'ol/Feature';
 import { Geometry } from 'ol/geom';
 
-/** @returns The feature whose statePath property equals `path`, or null if not found */
-export function getFeatureByStatePath(
+/** @returns The features whose statePath property is contained in `paths`, or null if not found */
+export function getFeaturesByStatePaths(
   source: VectorSource,
-  path: StatePath,
-  comparator?: (a: StatePath, b: StatePath) => boolean
-): Feature<Geometry> | null {
-  return (
-    source.forEachFeature(f => {
-      const equals = comparator
-        ? comparator(f.get('statePath'), path)
-        : f.get('statePath') === path;
+  paths: StatePath[]
+): Feature<Geometry>[] | null {
+  const matchingFeatures: Feature<Geometry>[] = [];
 
-      return equals ? f : null;
-    }) ?? null
-  );
+  source.forEachFeature(f => {
+    if(paths.includes(f.get('statePath') as StatePath)){
+      matchingFeatures.push(f);
+    }
+  });
+
+  return matchingFeatures.length > 0 ? matchingFeatures : null;
 }

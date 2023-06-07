@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DialogRef } from '@src/app/shared/dialog/dialog-ref';
+import { DialogRef } from '@shared/dialog/dialog-ref';
 
 @Component({
   selector: 'app-create-user-area-modal',

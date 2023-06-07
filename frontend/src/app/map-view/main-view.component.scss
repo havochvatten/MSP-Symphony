@@ -1,4 +1,4 @@
-@import '../../styles/hav-colors';
+@import 'src/styles/hav-colors';
 
 hav-accordion-panel {
   hav-accordion-panel-header {
@@ -41,6 +41,26 @@ hav-accordion-panel {
 
     #scale-container {
       height: 50px;
+    }
+  }
+
+  .mouse-interface-hint {
+    position: absolute;
+    top: 1rem;
+    left: 40%;
+    background-color: #ffffff;
+    background-image: url("~src/assets/info-icon-black.svg");
+    background-size: 1.3rem;
+    background-repeat: no-repeat;
+    background-position: 1rem 1.1rem;
+    font-size: 1.3rem;
+    text-align: center;
+    padding: 1rem 1.6rem 1rem 3rem;
+    border-radius: 2px;
+    box-shadow: 2px 2px 20px #00000029;
+
+    &#special-actions-hint.two-hints {
+      top: 5rem
     }
   }
 }

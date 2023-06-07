@@ -1,19 +1,19 @@
 package se.havochvatten.symphony.scenario;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vladmihalcea.hibernate.type.array.IntArrayType;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import org.geotools.data.geojson.GeoJSONReader;
 import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.operation.union.CascadedPolygonUnion;
+
 import org.opengis.feature.simple.SimpleFeature;
 import se.havochvatten.symphony.calculation.CalcService;
-import se.havochvatten.symphony.dto.MatrixParameters;
 import se.havochvatten.symphony.dto.NormalizationOptions;
 import se.havochvatten.symphony.dto.ScenarioDto;
-import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.entity.CalculationResult;
 
 import javax.persistence.*;
@@ -24,16 +24,16 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Size;
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.Date;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "scenario")
 @NamedQueries({
         @NamedQuery(name = "Scenario.findAllByOwner",
                 query = "SELECT NEW se.havochvatten.symphony.dto.ScenarioDto(s) FROM Scenario s" +
-                        " WHERE s.owner = :owner and TYPE(s) <> ScenarioSnapshot ORDER BY s.timestamp DESC")
+                        " WHERE s.owner = :owner ORDER BY s.timestamp DESC")
 })
 @TypeDefs({
         @TypeDef(name = "json", typeClass = JsonBinaryType.class),
@@ -43,46 +43,21 @@ import java.util.Date;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Scenario implements Serializable {
     private static final ObjectMapper mapper = new ObjectMapper();
-
     @Basic(optional = false)
     @NotNull
     @GeneratedValue
     @Id
+    @Column(name = "id", nullable = false)
     protected Integer id;
 
-    @Basic(optional = false)
+    @Size(max = 255)
     @NotNull
-    @Size(min = 1, max = 2147483647)
-    protected String owner; // immutable
-
-    @Basic(optional = false)
-    @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    @PastOrPresent
-    @UpdateTimestamp
-    protected Date timestamp;
-
-    /////////////// Supplied by frontend
-
-    @Basic(optional = false)
-    protected Integer baselineId;
-
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 2147483647)
+    @Column(name = "name", nullable = false)
     protected String name;
 
-    @Basic(optional = false)
     @NotNull
-    // Or just use Hibernate Spatiol with PostGIS geometry?
-    @Type(type = "json")
-    @Column(columnDefinition = "json")
-    protected JsonNode feature; // TODO Use custom deserializer to deserialize into SimpleFeature
-
-    @Basic(optional = true)
-    @Type(type = "json")
-    @Column(columnDefinition = "json")
-    protected JsonNode changes;
+    @Column(name = "baselineid", nullable = false)
+    protected Integer baselineId;
 
     @Basic
     @Type(type = "int-array")
@@ -94,69 +69,74 @@ public class Scenario implements Serializable {
     @Column(columnDefinition = "integer[]", name = "pressures")
     protected int[] pressuresToInclude;
 
-    @Basic
+    @Basic(optional = true)
     @Type(type = "json")
     @Column(columnDefinition = "json")
-    protected JsonNode matrix; // Just use JsonNode until we have a better representation to serialize
-    // Just put MatrixParameters as type?
+    protected JsonNode changes;
 
     @Embedded
     @NotNull
+    @AttributeOverrides({
+        @AttributeOverride(name = "type", column = @Column(name = "normalization_type", nullable = false)),
+        @AttributeOverride(name = "userDefinedValue", column = @Column(name = "normalization_userdefinedvalue", nullable = false)),
+        @AttributeOverride(name = "stdDevMultiplier", column = @Column(name = "normalization_stddevmultiplier", nullable = false))
+    })
     protected NormalizationOptions normalization;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    protected CalculationResult latestCalculation;
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "owner", nullable = false)
+    protected String owner;
+
+    @Basic(optional = false)
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    @PastOrPresent
+    @UpdateTimestamp
+    protected Date timestamp;
+
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "operation", nullable = false, columnDefinition = "int2 default 0")
+    protected int operation = CalcService.OPERATION_CUMULATIVE;
+
+    @Basic(optional = true)
+    @Type(type = "json")
+    @Column(name = "operation_options", columnDefinition = "json")
+    protected JsonNode operationOptions;
+
+    @OneToMany(mappedBy = "scenario", orphanRemoval = true, fetch = FetchType.EAGER)
+    @Cascade({ CascadeType.ALL })
+    @Fetch(FetchMode.SUBSELECT)
+    private List<ScenarioArea> areas = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @Cascade({ CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
+    @JoinColumn(name = "latestcalculation_cares_id")
+    private CalculationResult latestCalculation;
 
     public Scenario() {}
 
-    public Scenario(ScenarioDto dto, CalcService calcService) {
+    public Scenario(ScenarioDto dto) {
         id = dto.id;
         owner = dto.owner;
         timestamp = new Date();
         baselineId = dto.baselineId; // look up real baseline object from database?
         name = dto.name;
-        feature = dto.feature; // could have a proper Feature object here
         changes = dto.changes; // ditto
         normalization = dto.normalization;
-        matrix = mapper.valueToTree(dto.matrix);
         ecosystemsToInclude = dto.ecosystemsToInclude;
         pressuresToInclude = dto.pressuresToInclude;
-        if (dto.latestCalculation != null)
-            // TODO handle case when old Calculations can have been pruned?
-            latestCalculation =
-                    calcService.getCalculation(dto.latestCalculation);
-    }
-
-    public static Scenario createWithoutId(String name, BaselineVersion baseline,
-                                           JsonNode polygon,
-                                           MatrixParameters matrix,
-                                           NormalizationOptions normalization) throws IOException {
-        var s = new Scenario();
-        s.name = name;
-        s.feature = polygon;
-        s.baselineId = baseline.getId();
-        s.changes = mapper.readTree("{}");
-        s.matrix = mapper.valueToTree(matrix);
-        s.normalization = normalization;
-        return s;
+        areas.addAll(Arrays.stream(dto.areas).map(a -> new ScenarioArea(a, this)).toList());
+        operation = dto.operation;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String username) {owner = username;}
-
-    public Integer getBaselineId() {
-        return baselineId;
-    }
-
-    public Date getTimestamp() {
-        return timestamp;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -167,29 +147,77 @@ public class Scenario implements Serializable {
         this.name = name;
     }
 
-    public SimpleFeature getFeature() {
-        try {
-            return GeoJSONReader.parseFeature(mapper.writeValueAsString(feature));
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to parse feature: "+feature.toString());
-        }
+    public Integer getBaselineId() {
+        return baselineId;
     }
 
-    public JsonNode getFeatureJson() {
-        return feature;
+    public void setBaselineId(Integer baselineid) {
+        this.baselineId = baselineid;
     }
 
-    /** Convenience function to retrieve scenario geometry */
-    public Geometry getGeometry() {
-        return (Geometry) getFeature().getDefaultGeometry();
+    public int[] getEcosystemsToInclude() {
+        return ecosystemsToInclude;
+    }
+
+    public void setEcosystemsToInclude(int[] ecosystems) {
+        this.ecosystemsToInclude = ecosystems;
+    }
+
+    public int[] getPressuresToInclude() {
+        return pressuresToInclude;
+    }
+
+    public void setPressures(int[] pressures) {
+        this.pressuresToInclude = pressures;
     }
 
     public JsonNode getChanges() {
-        return changes;
+        return changes == null || changes.isNull() ? mapper.createObjectNode() : changes;
     }
 
     public void setChanges(JsonNode changes) {
         this.changes = changes;
+    }
+
+    public Map<String, BandChange> getChangeMap() {
+        Map<String, BandChange> changeMap =
+            changes == null || changes.isNull() ? new HashMap<>() :
+                mapper.convertValue(this.changes, new TypeReference<>() {});
+        return changeMap;
+    }
+
+    public NormalizationOptions getNormalization() { return normalization; }
+
+    public void setNormalization(NormalizationOptions opts) { this.normalization = opts; }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public Integer getOperation() { return operation; }
+
+    public Map<String, String> getOperationOptions() {
+        return mapper.convertValue(operationOptions, Map.class);
+    }
+
+    public List<ScenarioArea> getAreas() {
+        return areas;
+    }
+
+    protected void setScenarioAreas(List<ScenarioArea> scenarioareas) {
+        this.areas = scenarioareas;
     }
 
     public CalculationResult getLatestCalculation() {
@@ -200,42 +228,16 @@ public class Scenario implements Serializable {
         this.latestCalculation = calculation;
     }
 
-    public NormalizationOptions getNormalization() { return normalization; }
-
-    public void setNormalization(NormalizationOptions opts) {
-        this.normalization = opts;
+    public Geometry getGeometry() {
+        return (new CascadedPolygonUnion(areas.stream().map(a -> a.getGeometry()).collect(Collectors.toList()))).union();
     }
 
-    public int[] getEcosystemsToInclude() {
-        return ecosystemsToInclude;
+    public Map<Integer, Integer> getAreasExcludingCoastal() {
+        return areas.stream().filter(a -> a.getExcludedCoastal() != null)
+                .collect(Collectors.toMap(a -> a.getId(), a -> a.getExcludedCoastal()));
     }
 
-    public int[] getPressuresToInclude() {
-        return pressuresToInclude;
-    }
-
-    public JsonNode getMatrix() {
-        return matrix;
-    }
-
-    public MatrixParameters getMatrixParameters() {
-        try {
-            return mapper.treeToValue(matrix, MatrixParameters.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public void setMatrix(JsonNode matrix) {
-        this.matrix = matrix;
-    }
-
-    public void setEcosystemsToInclude(int[] ecosystemsToInclude) {
-        this.ecosystemsToInclude = ecosystemsToInclude;
-    }
-
-    public void setPressuresToInclude(int[] pressuresToInclude) {
-        this.pressuresToInclude = pressuresToInclude;
+    public List<SimpleFeature> compileZones() {
+        return areas.stream().map(a -> a.getFeature()).collect(Collectors.toList());
     }
 }

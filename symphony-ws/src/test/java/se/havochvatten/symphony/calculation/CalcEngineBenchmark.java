@@ -1,10 +1,12 @@
 package se.havochvatten.symphony.calculation;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.geosolutions.jaiext.JAIExt;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
+import org.geotools.data.geojson.GeoJSONWriter;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.geometry.jts.JTS;
@@ -18,8 +20,9 @@ import org.opengis.coverage.grid.GridCoverage;
 import org.openjdk.jmh.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.havochvatten.symphony.dto.AreaMatrixResponse;
+import se.havochvatten.symphony.dto.MatrixResponse;
 import se.havochvatten.symphony.dto.SensitivityMatrix;
+import se.havochvatten.symphony.scenario.ScenarioArea;
 
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
@@ -41,6 +44,7 @@ import static org.junit.Assert.assertEquals;
 public class CalcEngineBenchmark {
     static final Logger LOG = LoggerFactory.getLogger(CalcEngineBenchmark.class);
 
+    static final ObjectMapper mapper = new ObjectMapper();
     static final String OUT_DIR = "target/benchmark-output";
 
     static {
@@ -144,15 +148,20 @@ public class CalcEngineBenchmark {
 //        var transform = CRS.findMathTransform(gridGeometry.getCoordinateReferenceSystem2D(),
 //        DefaultGeographicCRS.WGS84);
 //        var geographicRoi = JTS.transform(bbox, transform);
-        AreaMatrixResponse area = new AreaMatrixResponse();
-        area.setMatrixId(Västerhavet2018.ID);
-        area.setDefaultArea(true);
-        if (roi != null)
-            area.getPolygons().add(roi);
-        else
-            area.getPolygons().add(JTS.toGeometry(JTS.transform(new ReferencedEnvelope(ecosystems.getEnvelope()),
-                    CRS.findMathTransform(ecosystems.getCoordinateReferenceSystem2D(),
-                            DefaultGeographicCRS.WGS84))));
+
+        ScenarioArea[] areas = new ScenarioArea[]{ new ScenarioArea() };
+
+        String jsonRoi = GeoJSONWriter.toGeoJSON(roi);
+
+        var featureJsonTpl = "{ \"type\": \"Feature\", \"geometry\": %s, " +
+            "\"id\": \"features.3\", \"properties\": { \"name\": \"example feature\", \"title\": \"example feature\", " +
+            "\"statePath\": [\"state\", \"path\"], \"changes\": {}, \"matrix\": {\n" +
+            "  \"matrixType\": \"OPTIONAL\",\n" +
+            "  \"matrixId\": 242\n" +
+            "} } }";
+
+        areas[0].setFeature(mapper.readTree(String.format(featureJsonTpl, jsonRoi)));
+        areas[0].setId(1);
 
         List<SensitivityMatrix> matrices = new ArrayList<>();
         matrices.add(null); // the null element
@@ -241,8 +250,12 @@ public class CalcEngineBenchmark {
 
 //        var mask = maskImage.getRaster()
 //                .createWritableTranslatedChild(layout.getMinX(null), layout.getMinY(null));
-        var mask = new MatrixMask(roiGridGeomtry.toCanonical(), layout,
-                List.of(area), CalcUtil.createMapFromMatrixIdToIndex(matrices));
+
+        MatrixResponse mxr = new MatrixResponse(new int[]{ 1 });
+        mxr.setAreaMatrixId(1, 242);
+
+        var mask = new MatrixMask(roiGridGeomtry.toCanonical(), layout, mxr,
+                List.of(areas), CalcUtil.createMapFromMatrixIdToIndex(matrices));
         ParameterBlockJAI pb = new ParameterBlockJAI("se.havochvatten.symphony.CumulativeImpact");
         pb.setSource("source0", /*croppedEcosystems*/ecosystems.getRenderedImage());
         pb.setSource("source1", /*croppedPressures*/pressures.getRenderedImage());
