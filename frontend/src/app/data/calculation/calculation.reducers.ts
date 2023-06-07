@@ -12,7 +12,8 @@ export const initialState: CalculationInterfaces.State = {
   legends: {
     result: undefined,
     ecosystem: undefined,
-    pressure: undefined
+    pressure: undefined,
+    comparison: undefined
   }
 };
 

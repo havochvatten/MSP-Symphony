@@ -74,33 +74,6 @@
     </tr>
   </table>
 
-  <ng-container *ngIf="reports?.length == 1 && reports[0].matrix as matrix">
-    <h4>{{'report.cumulative-effect-etc.sensitivity-matrices.title' | translate}}</h4> <!-- plural?-->
-    <table>
-      <tr [ngSwitch]="typeOf(matrix)">
-        <ng-container *ngSwitchCase="'object'">
-          <th>{{'map.editor.matrix.default-matrix' | translate}}:</th>
-          <td>{{ matrix.defaultMatrix }}</td>
-        </ng-container>
-        <ng-container *ngSwitchCase="'string'">
-          <th *ngIf="reports[0].altMatrix">{{'map.editor.matrix.alt-matrix' | translate}}:</th>
-          <th *ngIf="!reports[0].altMatrix">{{'map.editor.matrix.user-matrix' | translate}}:</th>
-          <td>{{ matrix }}</td>
-        </ng-container>
-        <ng-container *ngSwitchCase="undefined"></ng-container>
-      </tr>
-    </table>
-    <ng-container *ngIf="hasAreaTypes(matrix)">
-      <h5>{{'report.cumulative-effect-etc.sensitivity-matrices.area-type-matrices' | translate}}</h5>
-      <table>
-        <tr *ngFor="let areaType of matrix.areaTypes | keyvalue">
-          <th>{{ areaType.key | titlecase }}:</th>
-          <td>{{ areaType.value.join() }}</td>
-        </tr>
-      </table>
-    </ng-container>
-  </ng-container>
-
   <fn *ngIf="this.normalized">
     <span class='star'>&lowast;</span>
     {{ 'report.cumulative-effect-etc.normalization.domain-desc' | translate:{ percentileValue: this.percentileValue } }}

@@ -4,6 +4,7 @@
   [searchValue]="search"
   [onSearch]="onSearch"
   [searchPlaceholder]="'map.area.search.placeholder' | translate"
+  [areaTab]="true"
 >
   <div *ngIf="search.length > 0">
     <div class="search-header">
@@ -17,7 +18,7 @@
     [areas]="nationalArea.groups"
     [title]="nationalArea.displayName"
     [searching]="search.length > 0"
-    [selectedArea]="selectedArea$ | async"
+    [selectedAreas]="selectedAreas$ | async"
     [updateVisible]="toggleVisibleArea"
     [selectArea]="selectArea"
   ></app-area-group>
@@ -25,7 +26,7 @@
     [areas]="filteredUserAreas"
     [title]="'map.area.user-created' | translate"
     [searching]="search.length > 0"
-    [selectedArea]="selectedArea$ | async"
+    [selectedAreas]="selectedAreas$ | async"
     [updateVisible]="toggleVisibleArea"
     [selectArea]="selectArea"
     [drawUserArea]="drawUserArea"

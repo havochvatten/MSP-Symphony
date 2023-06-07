@@ -1,6 +1,6 @@
-@import '../../../../styles/constants';
-@import '../../../../styles/hav-colors';
-@import '../../../../styles/margins';
+@import 'src/styles/constants';
+@import 'src/styles/hav-colors';
+@import 'src/styles/margins';
 
 @mixin flex-row-spaced {
   display: flex;
@@ -63,5 +63,10 @@
   .column {
     display: flex;
     flex-direction: column;
+  }
+
+  .override-wrapper {
+    background-color: $light-bluegray;
+    padding: 0.7rem 1rem;
   }
 }

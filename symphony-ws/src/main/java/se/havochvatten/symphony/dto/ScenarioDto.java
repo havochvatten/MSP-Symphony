@@ -1,13 +1,15 @@
 package se.havochvatten.symphony.dto;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import se.havochvatten.symphony.calculation.CalcService;
 import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.scenario.Scenario;
+import se.havochvatten.symphony.scenario.ScenarioArea;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Map;
 
 public class ScenarioDto {
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -27,19 +29,21 @@ public class ScenarioDto {
 
     public String name;
 
-    public JsonNode feature; // TODO Use custom deserializer to deserialize into SimpleFeature
-
-    public JsonNode changes; // FeatureCollection
+    public JsonNode changes;
 
     public int[] ecosystemsToInclude;
 
     public int[] pressuresToInclude;
 
-    public MatrixParameters matrix;
-
     public NormalizationOptions normalization;
 
-    public Integer latestCalculation; // id
+    public int operation = CalcService.OPERATION_CUMULATIVE;
+
+    public ScenarioAreaDto[] areas;
+
+    public Map<String, String> operationOptions;
+
+    public Integer latestCalculationId;
 
     public ScenarioDto() {}
 
@@ -52,29 +56,25 @@ public class ScenarioDto {
         timestamp = s.getTimestamp();
         baselineId = s.getBaselineId();
         name = s.getName();
-        feature = s.getFeatureJson();
         changes = s.getChanges();
         ecosystemsToInclude = s.getEcosystemsToInclude();
         pressuresToInclude = s.getPressuresToInclude();
-        try {
-            matrix = s.getMatrix() == null ? null : mapper.treeToValue(s.getMatrix(), MatrixParameters.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
         normalization = s.getNormalization();
-        if (s.getLatestCalculation() != null)
-            latestCalculation = s.getLatestCalculation().getId();
+        operation = s.getOperation();
+        operationOptions = mapper.convertValue(s.getOperationOptions(), Map.class);
+        areas = s.getAreas().stream().map(sa -> new ScenarioAreaDto(sa, this.id)).toArray(ScenarioAreaDto[]::new);
+        latestCalculationId = s.getLatestCalculation() == null ? null : s.getLatestCalculation().getId();
     }
 
     public static ScenarioDto createWithoutId(String name, BaselineVersion baseline,
-                                              JsonNode polygon,
+                                              ScenarioAreaDto area,
                                               NormalizationOptions normalization) throws IOException {
         var s = new ScenarioDto();
         s.name = name;
-        s.feature = polygon;
         s.baselineId = baseline.getId();
         s.normalization = normalization;
         s.changes = mapper.readTree("{}");
+        s.areas = new ScenarioAreaDto[] { area };
         return s;
     }
 }

@@ -1,4 +1,4 @@
-<ng-container *ngIf="selectedArea">
+<ng-container *ngIf="!disabled">
   <h4>{{ 'map.editor.band-pressures.intensity' | translate }}</h4>
   <div class="knobs">
     <div class="slider">
@@ -14,6 +14,7 @@
         max="3"
         step="0.01"
         (input)="updateMultiplier($event.target.value)"
+        [disabled]="getDisabled()"
       >
       </app-slider>
     </div>
@@ -24,6 +25,7 @@
         value="0"
         step="1"
         [value]="offset"
+        [disabled]="!(groupSetting || overridden)"
       />
     </div>
   </div>
@@ -42,5 +44,12 @@
       </app-slider>
     </div>
     <span>{{ band.layerOpacity }}%</span>
+  </div>
+</ng-container>
+<ng-container *ngIf="!groupSetting">
+  <div class="override-wrapper">
+    <mat-checkbox (change)="setOverride($event.checked)" [checked]="overridden">
+      {{ 'map.intensity.override' | translate }}
+    </mat-checkbox>
   </div>
 </ng-container>

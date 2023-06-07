@@ -1,7 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 import { Boundary, NationalAreaState, Polygon, StatePath, UserArea, UserAreasState } from './area.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
-import { MatrixRef } from "@src/app/map-view/scenario/scenario-detail/matrix-selection/matrix.interfaces";
+import { MatrixRef } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
 
 export const fetchNationalAreas = createAction('[Area] Fetch national areas');
 
@@ -93,7 +93,7 @@ export const deleteUserDefinedAreaFailure = createAction(
 
 export const updateSelectedArea = createAction(
   '[Area] Update selected area',
-  props<{ statePath?: StatePath }>()
+  props<{ statePaths?: StatePath[] }>()
 );
 
 export const addUserDefinedMatrix = createAction(

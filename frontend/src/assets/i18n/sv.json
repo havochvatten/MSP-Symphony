@@ -15,14 +15,20 @@
     "map": {
         "background-transparency": "Bakgrundskartans synlighet",
         "click-area": "Klicka för att markera området.",
-        "location-outside-scenario": "Platsen är utanför aktivt scenario",
+        "location-within-scenario": "Området tillhör redan det aktiva scenariot.",
         "areas": "Kartområden",
-        "ecosystems": "Naturvärden",
-        "pressures": "Belastningar",
         "matrix": "Matris",
+        "no-active-scenario": "Aktivera ett scenario för att göra inställningar",
+        "scenariowide-settings": "Inställningar för hela scenariot",
         "no-selected-area": "Inget valt område",
         "reset-preselected": "Återställ",
         "reset-preselected-description": "Återställ valda naturvärden och belastningar till standardurvalet och nollställ ändringar",
+        "selection-overlap": "Kan inte välja överlappande områden",
+        "intensity": {
+            "ecosystems": "Naturvärden",
+            "pressures": "Belastningar",
+            "override": "Åsidosätt gruppinställning"
+        },
         "confirm-reset": {
             "modal": {
                 "header": "Bekräfta återställning",
@@ -52,8 +58,31 @@
                 "save-overwrite": "Ersätt befintligt område: « {{ name }} »"
             }
         },
+        "active-scenario": {
+            "header": "Aktivt scenario",
+            "area": "Område:",
+            "exit": "Lämna"
+        },
         "editor": {
             "title": "Scenarion",
+            "areas": {
+                "title": "Scenarioområden",
+                "remove": {
+                    "button" : "Avlägsna område",
+                    "label": "Tag bort området från aktuellt scenario",
+                    "modal": {
+                        "title": "Ta bort område från scenario",
+                        "message": "Är du säker på att du vill ta bort området<br>&ldquo;{{ area }}&rdquo;,<br>inklusive inställningar, från scenariot<br>&laquo;&nbsp;{{ scenario }}&nbsp;&raquo;&nbsp;?",
+                        "message-last": "&ldquo;{{ area }}&rdquo; är det enda området som omfattas av det aktuella scenariot. Om du tar bort det tas därmed även scenariot: &laquo;&nbsp;{{ scenario }}&nbsp;&raquo; bort.",
+                        "confirm": "Tag bort"
+                    }
+                },
+                "specific-settings": "Specific settings have been made for this area: {{ feature-changes }}",
+                "loading-matrices": "Laddar känslighetsmatriser",
+                "add-scenario-label": "Lägg till markerade områden i scenariot",
+                "add-scenario-label-single": "Lägg till « {{ area }} » i scenariot",
+                "select-area-first-label": "Markera först ett område"
+            },
             "operation": {
                 "title": "Algoritm",
                 "choose": "Välj algoritm",
@@ -67,7 +96,7 @@
                             "title": "Raritetsindexdomän",
                             "description": "Beräkna raritetsindex baserat på:",
                             "GLOBAL": "Hela datarastrets utsträckning",
-                            "LOCAL": "Valt områdes utsträckning"
+                            "LOCAL": "Scenariots utsträckning"
                         }
                     }
                 }
@@ -90,6 +119,7 @@
                 "choose-matrix": "Välj matris",
                 "choose-area-type": "Välj områdestyp (valfritt)",
                 "choose-area-type-matrix": "Välj matris för områdestyp",
+                "no-area-type": "( ingen )",
                 "edited-matrixes": "Tidigare justerade matriser",
                 "edit-matrix": "Justera matris",
                 "upload-file": "Ladda upp fil",
@@ -124,33 +154,44 @@
                 "area": "Maximalt värde i valt område",
                 "domain": "{{ ordinalPercentileValue }} percentil i havsplaneområde",
                 "mean-plus-stddev": "Medelvärde +/- multipel av \nstandardavvikelsen:",
-                "custom": "Egendefinierat värde:",
+                "custom": "Egendefinierat värde",
                 "custom-value": "Värde"
             },
             "changes": {
-                "title": "Scenarioförändringar",
+                "title": "Förekomständringar",
                 "no-changes": "Inga scenarioändringar",
-                "make-changes-hint": "Välj ett område och gör ändringar i Ekosystemkomponenter eller Belastnings-tabbarna.",
+                "make-changes-hint": "Lägg till ändringar i Naturvärden- eller Belastning-tabbarna.",
                 "clear-change": "Rensa ändring",
-                "units": "enheter"
+                "units": "enheter",
+                "collapse": "Dölj ändringar",
+                "collapsed-count": "Visa {{ count }} ändringar"
+            },
+            "area-changes": {
+                "title": "Områdesspecifika förekomständringar"
             },
             "select-area-message": "För att beräkna krävs det att ett område har markerats. Börja med att välja område och eventuella naturvärden och belastningar i vänster panel.",
             "fetching-matrices": "Hämtar information om områdets känslighetsmatriser...",
             "map-layer": "Kartlager",
             "list": {
                 "user-scenarios": "Mina scenarion",
-                "add-scenario-label": "Skapa ett nytt scenario för {{area}}",
+                "add-scenario-label": "Skapa ett nytt grupperat scenario",
+                "add-scenario-label-single": "Skapa ett nytt scenario för {{area}}",
+                "scenario-name": "Namnlöst scenario",
                 "scenario-name-template": "Scenario {{area}}",
-                "select-area-first-label": "Börja med att välja ett område för scenariot.",
+                "select-area-first-label": "Börja med att välja områden för scenariot.",
                 "no-scenarios": "Inga scenarion",
-                "add-scenarios-hint": "Skapa ett scenario genom att trycka på + ovan."
+                "add-scenarios-hint": "Skapa ett scenario genom att trycka på + ovan.",
+                "scenario-area": "{{ scenario }}\nOmråde: {{ area-feature }}",
+                "show-report-label": "Öppna senaste beräkningsrapporten",
+                "more-areas-single": "+ ett ytterligare område ..",
+                "more-areas": "+ {{ more }} ytterligare områden .."
             },
             "clear": "Rensa",
             "close": "❮",
             "delete": {
                 "label": "Radera",
                 "modal": {
-                    "title": "Är du säker på att du vill radera",
+                    "title": "Är du säker på att du vill radera &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
                     "delete": "Radera",
                     "cancel": "Avbryt"
                 }
@@ -298,8 +339,17 @@
         },
         "color-scale": {
             "result": "Kumulativ belastning",
+            "comparison": "Relativ skillnad i belastning",
             "ecosystem": "Naturvärden",
             "pressure": "Belastningsintensitet"
+        },
+        "area-selection-hint": {
+            "emphasis": "Välj / avmarkera flera områden",
+            "detail": "genom Ctrl + klick eller ⌘ + klick"
+        },
+        "special-actions-hint": {
+            "emphasis": "Dela eller sammanfoga område",
+            "detail": "Alt / ⌥ + klick delar överlappande, Alt / ⌥ + Shift + sammanfogar"
         }
     },
     "main-menu": {
@@ -320,7 +370,7 @@
         "close": "Tack"
     },
     "popup-message": {
-        "INFO": "Infomation",
+        "INFO": "Information",
         "SUCCESS": "Processen lyckades",
         "ERROR": "Ett fel inträffade",
         "WARNING": "Långsam process"
@@ -362,13 +412,14 @@
                 "mean-plus-stddev": "Genomsnitt {{ positiveOrNegative }} standdardavvikelsen ⨯ {{ stddevMultiplier }}",
                 "domain-desc": "Resultatet är normaliserat med avseende på det värde som {{ percentileValue }}% av datapunkterna i tillhörande havsplaneområdet ligger inom (inklusive värden för kustområden)."
             },
-            "sensitivity-matrices": {
-                "title": "Känslighetsmatrisval",
-                "area-type-matrices": "Matriser per områdestyp"
-            },
             "comparison": {
                 "legend-desc": "Bilden visar den relativa skillnaden i total kumulativ belastning mellan grund- och what-if-scenario."
             }
+        },
+        "sensitivity-matrices": {
+            "title": "Känslighetsmatrisval",
+            "area-type-matrices": "Matriser per områdestyp",
+            "all-areas": "Samtliga områden"
         },
         "histogram": {
             "caption": "Histogram",
@@ -389,6 +440,8 @@
             "percent-change-with": "Procentuell förändring med <strong>{{percent}}%</strong>",
             "constant-offset-with": "Konstant förändring med <strong>{{offset}}</strong> enheter",
             "and": "och",
+            "base-changes": "Gemensamma förändringar",
+            "area-changes": "Områdesspecifika förändringar",
             "no-changes": "Inga förändringar"
         },
         "impact-table": {

@@ -8,6 +8,8 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.referencing.FactoryException;
 import se.havochvatten.symphony.dto.AreaMatrixResponse;
+import se.havochvatten.symphony.dto.MatrixResponse;
+import se.havochvatten.symphony.scenario.ScenarioArea;
 
 import javax.imageio.ImageIO;
 import javax.media.jai.ImageLayout;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /* Immutable */
@@ -28,13 +31,7 @@ public class MatrixMask { // TODO: Make serializable for distributed session man
     private static final Logger logger = Logger.getLogger(MatrixMask.class.getName());
 
     // should color zero be transparent instead?
-    private static final Color[] palette = new Color[] {
-            Color.black/*transparent background color*/,
-            Color.blue,
-            Color.yellow,
-            Color.red,
-            Color.cyan
-    };
+    private final Color[] palette;
 
     private final ImageLayout layout;
 
@@ -48,40 +45,34 @@ public class MatrixMask { // TODO: Make serializable for distributed session man
      * @param areas areas to iterate through
      * @param matrixIdToPaletteIndex map from matrix id to palette color index
      */
-    public MatrixMask(GridGeometry2D gridGeometry, ImageLayout layout, List<AreaMatrixResponse> areas,
-                      Map<Integer, Integer> matrixIdToPaletteIndex) throws FactoryException {
+    public MatrixMask(GridGeometry2D gridGeometry, ImageLayout layout, MatrixResponse matrixResponse,
+                      List<ScenarioArea> areas, Map<Integer, Integer> matrixIdToPaletteIndex) throws FactoryException {
         this.layout = layout;
+
+        this.palette = IntStream.range(0, matrixIdToPaletteIndex.size() + 1).mapToObj(i -> new Color(i)).toArray(Color[]::new);
 
         // Or create writableraster with origin location?
         this.image = new BufferedImage(layout.getWidth(null), layout.getHeight(null),
                 BufferedImage.TYPE_BYTE_INDEXED, CalcUtil.makeIndexedColorModel(palette));
 
-        paint(image.createGraphics(), gridGeometry, /*transform,*/ areas, matrixIdToPaletteIndex);
+        paint(image.createGraphics(), gridGeometry, /*transform,*/ matrixResponse, areas, matrixIdToPaletteIndex);
     }
 
-    private void paint(Graphics2D g2, GridGeometry2D gridGeometry, /*MathTransform targetTransform,*/
-                       List<AreaMatrixResponse> areas, Map<Integer, Integer> matrixIdToIndex) throws FactoryException {
+    private void paint(Graphics2D g2, GridGeometry2D gridGeometry,
+                    MatrixResponse matrixResponse, List<ScenarioArea> areas,
+                    Map<Integer, Integer> matrixIdToIndex) throws FactoryException {
         var targetTransform  = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
-                gridGeometry.getCoordinateReferenceSystem2D());
+            gridGeometry.getCoordinateReferenceSystem2D());
 
-        // extract from class
-        List<AreaMatrixResponse> orderedAreas =
-                Stream.concat(
-                        areas.stream().filter(AreaMatrixResponse::isDefaultArea),
-                        areas.stream().filter(Predicate.not(AreaMatrixResponse::isDefaultArea))).
-                        toList();
-
-        orderedAreas.forEach(area -> {
-            area.getPolygons().forEach((polygon) -> {
-                try {
-                    Geometry projectedGeometry = JTS.transform(polygon, targetTransform);
-                    var shape = new LiteShape2(projectedGeometry, gridGeometry.getCRSToGrid2D(), null, false);
-                    g2.setColor(palette[matrixIdToIndex.get(area.getMatrixId())]);
-                    g2.fill(shape);
-                } catch (Exception e) {
-                    logger.severe("Error with polygon: "+e);
-                }
-            });
+        areas.forEach(area -> {
+            try {
+                Geometry projectedGeometry = JTS.transform(area.getGeometry(), targetTransform);
+                var shape = new LiteShape2(projectedGeometry, gridGeometry.getCRSToGrid2D(), null, false);
+                g2.setColor(palette[matrixIdToIndex.get(matrixResponse.getAreaMatrixId(area.getId()))]);
+                g2.fill(shape);
+            } catch (Exception e) {
+                logger.severe("Error with polygon: "+e);
+            }
         });
     }
 

@@ -1,4 +1,4 @@
-import { Component, AfterContentInit, ContentChildren, QueryList, Input } from '@angular/core';
+import { Component, AfterContentInit, ContentChildren, QueryList, Input, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TabComponent } from './tab/tab.component';
 
@@ -10,6 +10,7 @@ import { TabComponent } from './tab/tab.component';
 export class TabsComponent implements AfterContentInit {
   @ContentChildren(TabComponent) tabs!: QueryList<TabComponent>;
   @Input() routeTabIdIsAvailable = false;
+  tabSelected = new EventEmitter<string>();
 
   constructor(private router: Router, private route: ActivatedRoute) {}
 
@@ -31,6 +32,7 @@ export class TabsComponent implements AfterContentInit {
   navigateToURL = (tabId: string) => {
     if (this.routeTabIdIsAvailable) {
       this.router.navigate([tabId], { relativeTo: this.route });
+      this.tabSelected.emit(tabId);
     }
   };
 

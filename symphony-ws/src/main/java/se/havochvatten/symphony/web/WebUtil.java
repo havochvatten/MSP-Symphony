@@ -1,16 +1,12 @@
 package se.havochvatten.symphony.web;
 
-import com.google.common.collect.Maps;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
-import org.geotools.renderer.lite.gridcoverage2d.RasterSymbolizerHelper;
-import org.geotools.renderer.lite.gridcoverage2d.StyleVisitorAdapter;
 import org.geotools.sld.SLDConfiguration;
 import org.geotools.styling.*;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Parser;
-import org.hibernate.mapping.Set;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -23,10 +19,10 @@ import javax.media.jai.InterpolationNearest;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.RenderedImage;
 import java.io.*;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -74,12 +70,22 @@ public interface WebUtil {
             0); // no tiles
     }
 
+    static RenderedImage renderNormalized(GridCoverage2D cov, CoordinateReferenceSystem crs,
+                                          Envelope env, Rectangle dstDimension,
+                                          StyledLayerDescriptor sld, double normalizationValue) throws Exception {
+        RasterSymbolizer symbolizer = getNormalizingdRasterSymbolizer(sld, normalizationValue);
+        GridCoverageRenderer renderer = new GridCoverageRenderer(crs, env, dstDimension,null);
+        return renderer.renderImage(cov, symbolizer, new InterpolationNearest(), new Color(0, 0, 0, 0), 0,
+            0); // no tiles
+    }
+
     static ByteArrayOutputStream encode(RenderedImage image, String formatName) throws IOException {
         var baos = new ByteArrayOutputStream( // conservative estimate:
                 image.getHeight() * image.getWidth() * image.getSampleModel().getNumDataElements());
         var bos = new BufferedOutputStream(baos,
                 image.getHeight() * image.getWidth() * image.getSampleModel().getNumDataElements());
         ImageIO.write(image, formatName, bos);
+        bos.flush();
         bos.close();
         return baos;
     }

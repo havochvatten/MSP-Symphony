@@ -15,6 +15,10 @@ describe('ScenarioChangesComponent', () => {
     .compileComponents();
     fixture = TestBed.createComponent(ScenarioChangesComponent);
     component = fixture.componentInstance;
+    component.scenarioChanges = {
+      baseChanges: {},
+      areaChanges: {}
+    }
     fixture.detectChanges();
   }));
 

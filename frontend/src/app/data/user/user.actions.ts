@@ -52,4 +52,9 @@ export const updateRedirectUrl = createAction(
   props<{ url: string }>()
 );
 
+export const setAliasing = createAction(
+  '[User] Set aliasing',
+  props<{ aliasing: boolean }>()
+);
+
 export const navigateTo = createAction('[User] Navigate to', props<{ url: string }>());

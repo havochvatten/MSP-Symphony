@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AreaSelectionComponent } from './area-selection.component';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
-import { SharedModule } from '@src/app/shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { provideMockStore } from '@ngrx/store/testing';
 import { SelectionLayoutComponent } from '../selection-layout/selection-layout.component';
 import { AreaGroupComponent } from './area-group/area-group.component';

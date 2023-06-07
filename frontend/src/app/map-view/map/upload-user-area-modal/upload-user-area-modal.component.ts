@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DialogRef } from '@src/app/shared/dialog/dialog-ref';
+import { DialogRef } from '@shared/dialog/dialog-ref';
 import AreaService from "@data/area/area.service";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { UploadedUserDefinedArea } from "@data/area/area.interfaces";

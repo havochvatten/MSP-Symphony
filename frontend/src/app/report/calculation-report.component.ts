@@ -36,6 +36,7 @@ export class CalculationReportComponent {
     ecoComponent: BandGroup[];
     pressureComponent: BandGroup[];
   }>;
+  areaDict: Map<number, string> = new Map<number, string>();
 
   constructor(
     private translate: TranslateService,
@@ -58,8 +59,8 @@ export class CalculationReportComponent {
               that.report = report;
               that.area = reportService.calculateArea(report);
               that.loadingReport = false;
-
               that.store.dispatch(MetadataActions.fetchMetadata({ baseline: report.baselineName }));
+              that.areaDict = reportService.setAreaDict(report);
             },
             error() {
               that.loadingReport = false;
@@ -113,5 +114,33 @@ export class CalculationReportComponent {
     return fromJS(components)
       .map(x => total && (100 * (x as number)) / total)
       .toJS();
+  }
+
+  getGroupedMatrixMap(): Map<string, string[]> {
+    const matrixMap = new Map<string, string[]>();
+    let mxName: string | undefined
+
+    for (const mxEntry of this.report!.areaMatrices) {
+      mxName = mxEntry.matrix;
+      if (matrixMap.get(mxName)) {
+        matrixMap.get(mxName)?.push(mxEntry.areaName);
+      } else {
+        matrixMap.set(mxName, [mxEntry.areaName]);
+      }
+    }
+
+    if(matrixMap.size === 1 && this.report!.areaMatrices.length > 1) {
+      matrixMap.set(mxName!, [this.translate.instant('report.sensitivity-matrices.all-areas')]);
+    }
+
+    return matrixMap;
+  }
+
+  setAreaDict(): void {
+    const index_ids = Object.keys(this.report!.scenarioChanges.areaChanges);
+
+    index_ids.map((areaId, ix) => {
+      this.areaDict.set(+areaId, this.report!.areaMatrices[ix].areaName);
+    });
   }
 }

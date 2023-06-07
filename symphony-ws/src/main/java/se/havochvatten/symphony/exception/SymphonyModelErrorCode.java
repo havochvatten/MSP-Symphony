@@ -42,6 +42,7 @@ public enum SymphonyModelErrorCode implements SymphonyErrorCode {
     GEOPACKAGE_READ_FEATURE_FAILURE("GEOPACKAGE_READ_FEATURE_FAILURE", "Failed reading features from " +
         "GeoPackage"),
     GEOPACKAGE_REPROJECTION_FAILED("GEOPACKAGE_REPROJECTION_FAILED", "Failed reprojection GeoPackage polygon"),
+    MATRIX_NOT_SET("MATRIX_NOT_SET", "Calculation failed, matrix parameters not correctly set for area"),
     OTHER_ERROR("OTHER_ERROR", "Other error");
 
     private final String key;

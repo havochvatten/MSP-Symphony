@@ -177,3 +177,8 @@ mat-radio-button {
     }
   }
 }
+
+.mat-radio-button:not(.mat-radio-disabled).cdk-keyboard-focused .mat-radio-persistent-ripple,
+.mat-radio-button:not(.mat-radio-disabled).cdk-program-focused .mat-radio-persistent-ripple {
+  opacity: 0 !important; /* hide material "focus indicator", deemed distracting */
+}

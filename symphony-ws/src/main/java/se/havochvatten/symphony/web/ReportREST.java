@@ -46,7 +46,7 @@ public class ReportREST {
     public Response getReport(@Context HttpServletRequest req,
                               @PathParam("id") int id,
                               @Context UriInfo uriInfo)
-        throws FactoryException, TransformException {
+        throws FactoryException, TransformException, SymphonyStandardAppException {
         logger.info("Fetching report "+id);
         var calc = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
             calcService).orElseThrow(NotFoundException::new);

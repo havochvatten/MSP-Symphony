@@ -25,6 +25,7 @@ import se.havochvatten.symphony.scenario.ScenarioServiceTest;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -65,7 +66,7 @@ public class CalibrationServiceTest {
 
         feature.setDefaultGeometry(JTS.transform((Geometry) feature.getDefaultGeometry(), WGS84toTarget));
 
-        var result = service.calculateLocalCommonnessIndices(ecoComponents, bands, feature);
+        var result = service.calculateLocalCommonnessIndices(ecoComponents, bands, List.of(feature));
         assertArrayEquals(new double[] {9381.0, 653993.0, 7400.0}, result, 1.0);
     }
 }

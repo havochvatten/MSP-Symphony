@@ -12,9 +12,10 @@ export class DataLayerService {
 
   public getDataLayer(baseline: string, type: BandType, bandNumber: number) {
     const url = `${env.apiBaseUrl}/datalayer/${type.toLowerCase()}/${bandNumber}/${baseline}`;
-    const params = AppSettings.CLIENT_SIDE_PROJECTION ?
-      undefined :
-      new HttpParams().set('crs', AppSettings.MAP_PROJECTION);
+    // const params = AppSettings.CLIENT_SIDE_PROJECTION ?
+    //       undefined :
+    //       new HttpParams().set('crs', encodeURIComponent(AppSettings.MAP_PROJECTION));
+    const params = new HttpParams().set('crs', encodeURIComponent(AppSettings.MAP_PROJECTION));
 
     return this.http.get(url, {
       responseType: 'blob',

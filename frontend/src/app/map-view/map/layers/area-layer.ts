@@ -10,17 +10,11 @@ import { Coordinate } from 'ol/coordinate';
 import { FeatureCollection, Polygon, StatePath } from '@data/area/area.interfaces';
 import { Extent, getCenter } from 'ol/extent';
 import * as condition from 'ol/events/condition';
-import { getFeatureByStatePath } from '@src/util/ol';
+import { getFeaturesByStatePaths } from '@src/util/ol';
 import { ScenarioLayer } from '@src/app/map-view/map/layers/scenario-layer';
 import { TranslateService } from '@ngx-translate/core';
-
-// const boundaryStyle = new Style({
-//   stroke: new Stroke({
-//     width: 4,
-//     color: 'yellow',
-//     lineDash: [1, 5]
-//   })
-// });
+import { isEqual } from "lodash";
+import { turfIntersects as intersects } from "@shared/turf-helper/turf-helper";
 
 function unique<T>(value: T, index: number, self: T[]) {
   return self.indexOf(value) === index;
@@ -94,15 +88,16 @@ class AreaLayer extends VectorLayer<VectorSource> {
   private drawInteractionActive = false;
   private boundaryLayer: VectorLayer<VectorSource>;
   private boundaries?: FeatureLike[];
-  private previousSelectedFeature?: Feature;
+  private selectedFeatures: Feature[] = [];
 
   constructor(
     private map: OLMap,
-    private setSelection: (feature?: Feature) => void,
+    private setSelection: (features?: Feature[]) => void,
     private zoomToExtent: (extent: Extent, duration: number) => void,
     onDrawEnd = (polygon: Polygon) => {},
     onSplitClick = (feature: Feature, prevFeature: Feature) => {},
     onMergeClick = (feature: Feature, prevFeature: Feature) => {},
+    overlapWarning = () => {},
     private scenarioLayer: ScenarioLayer,
     private translateService: TranslateService,
     private geoJson: GeoJSON
@@ -133,7 +128,7 @@ class AreaLayer extends VectorLayer<VectorSource> {
           condition: event => {
             return (
               condition.singleClick(event) &&
-              that.scenarioLayer.isScenarioActiveAndPointInsideScenario(event.coordinate)
+              that.scenarioLayer.isScenarioActiveAndPointOutsideScenario(event.coordinate)
             );
           },
           filter: (feature, layer) => {
@@ -144,7 +139,7 @@ class AreaLayer extends VectorLayer<VectorSource> {
             if (
               layer === that &&
               source &&
-              getFeatureByStatePath(source, feature.get('statePath'))
+              getFeaturesByStatePaths(source, [feature.get('statePath')])
             ) {
               console.debug('Preventing double selection since feature exists in scenario');
               return false;
@@ -155,18 +150,43 @@ class AreaLayer extends VectorLayer<VectorSource> {
         });
         this.on('select', event => {
           const feature = event.selected[0];
-          if(event.mapBrowserEvent.originalEvent.altKey && that.previousSelectedFeature && feature) {
-            if(event.mapBrowserEvent.originalEvent.shiftKey) {
-              onMergeClick(feature, that.previousSelectedFeature);
+          if (feature !== undefined) {
+            // Merge or split (Alt key pressed)
+            if (event.mapBrowserEvent.originalEvent.altKey && that.selectedFeatures.length === 1) {
+              if (event.mapBrowserEvent.originalEvent.shiftKey) {
+                onMergeClick(feature, that.selectedFeatures[0]);
+              } else {
+                onSplitClick(feature, that.selectedFeatures[0]);
+              }
             } else {
-              onSplitClick(feature, that.previousSelectedFeature);
+              // Expand selection (Ctrl key pressed)
+              if (event.mapBrowserEvent.originalEvent.ctrlKey) {
+                if (that.selectedFeatures.some(f => intersects(f, feature))) {
+                  overlapWarning();
+                }
+                if (that.selectedFeatures.includes(feature)) {
+                  that.selectedFeatures = that.selectedFeatures.filter(f => !isEqual(feature.getGeometry(), f.getGeometry()));
+                } else {
+                  that.selectedFeatures.push(feature);
+                }
+              // Select single feature
+              } else {
+                that.selectedFeatures = [feature];
+              }
+            }
+          } else  {
+            if(event.deselected.length > 0) { // may indicate click within selected area, ctrl+click deselects
+              const clickedFeature = that.map.getFeaturesAtPixel(event.mapBrowserEvent.pixel)[0];
+              if(clickedFeature) {
+                  that.selectedFeatures = event.mapBrowserEvent.originalEvent.ctrlKey ?
+                    that.selectedFeatures.filter(f => clickedFeature.get('statePath') !== f.get('statePath')) :
+                    that.selectedFeatures.filter(f => clickedFeature.get('statePath') === f.get('statePath'))
+              }
+            } else {
+              that.selectedFeatures = [];
             }
           }
-          if (feature !== undefined) {
-            console.log('dispatching selection ' + feature.get('id'))
-            that.previousSelectedFeature = feature;
-          }
-          that.setSelection(feature)
+          that.setSelection(that.selectedFeatures);
         });
       }
     })(this);
@@ -187,9 +207,9 @@ class AreaLayer extends VectorLayer<VectorSource> {
 
     const {
       'map.click-area': clickArea,
-      'map.location-outside-scenario': pointOutsideScenario
+      'map.location-within-scenario': pointWithinScenario
     } = await this.translateService
-      .get(['map.click-area', 'map.location-outside-scenario'])
+      .get(['map.click-area', 'map.location-within-scenario'])
       .toPromise();
     map.on('pointermove', event => {
       const detectedFeatures = map.getFeaturesAtPixel(event.pixel);
@@ -207,11 +227,10 @@ class AreaLayer extends VectorLayer<VectorSource> {
         if (!this.scenarioLayer.hasActiveScenario()) body.innerText = clickArea;
         else {
           if (this.scenarioLayer.isPointInsideScenario(event.coordinate))
-            body.innerText = clickArea;
-          else body.innerText = pointOutsideScenario;
+            body.innerText = pointWithinScenario;
+          else body.innerText = clickArea;
         }
 
-        // FIXME index 0 is not always correct (can contain scenario layer)
         const extent = detectedFeatures[0].getGeometry()?.getExtent();
         if (extent) {
           overlay.setPosition(getCenter(extent));
@@ -256,7 +275,7 @@ class AreaLayer extends VectorLayer<VectorSource> {
   };
 
   // FIXME: This is called each time an area is selected!
-  setAreaLayers(featureCollections: FeatureCollection[], selected: StatePath | undefined) {
+  setAreaLayers(featureCollections: FeatureCollection[], selected: StatePath[] | undefined) {
     const source = this.getSource();
     if (!source) {
       return;
@@ -269,8 +288,12 @@ class AreaLayer extends VectorLayer<VectorSource> {
     );
 
     if (selected) {
-      const feature = getFeatureByStatePath(source, selected);
-      if (feature) this.onClickInteraction.getFeatures().push(feature);
+      const features = getFeaturesByStatePaths(source, selected);
+      if (features) {
+        for(const f of features) {
+          this.onClickInteraction.getFeatures().push(f);
+        }
+      }
     }
   }
 
@@ -284,17 +307,25 @@ class AreaLayer extends VectorLayer<VectorSource> {
     this.boundaries = source.getFeatures();
   }
 
-  zoomToArea(statePath: StatePath) {
+  zoomToArea(statePath: StatePath[]) {
     // The below is pretty expensive (linear search), we would like to make use of getFeatureById instead...
     const source = this.getSource();
     if (!source) {
       return;
     }
-    const geo = getFeatureByStatePath(source, statePath)?.getGeometry();
-    if (!geo) {
+
+    const geo = getFeaturesByStatePaths(source, statePath);
+
+    if(!geo) {
       return;
     }
-    return this.zoomToExtent(geo.getExtent(), 1000), true;
+
+    const newSource = new VectorSource({
+      format: source.getFormat(),
+      features: geo
+    });
+
+    return this.zoomToExtent(newSource.getExtent(), 1000), true;
   }
 
   toggleDrawInteraction(): boolean {

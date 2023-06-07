@@ -24,4 +24,16 @@ ReportService {
     else
       return report.geographicalArea;
   }
+
+  public setAreaDict(report: Report): Map<number, string> {
+
+    const areaDict = new Map<number, string>();
+    const index_ids = Object.keys(report.scenarioChanges.areaChanges);
+
+    index_ids.map((areaId, ix) => {
+      areaDict.set(+areaId, report.areaMatrices[ix].areaName);
+    });
+
+    return areaDict;
+  }
 }

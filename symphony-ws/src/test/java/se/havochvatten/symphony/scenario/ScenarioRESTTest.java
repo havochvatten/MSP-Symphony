@@ -8,10 +8,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.locationtech.jts.io.ParseException;
 import se.havochvatten.symphony.dto.CalculationResultSlice;
-import se.havochvatten.symphony.dto.MatrixParameters;
+import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
 import se.havochvatten.symphony.web.RESTTest;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.stream.IntStream;
 
@@ -25,10 +26,9 @@ public class ScenarioRESTTest extends RESTTest {
 
     @BeforeClass
     public static void setup() throws ParseException, IOException {
+
         testScenario = ScenarioDto.createWithoutId("TEST-SCENARIO", makeBaseline(),
-                mapper.readTree(ScenarioRESTTest.class.getClassLoader()
-                        .getResourceAsStream("polygons/test.geojson")),
-                getDomainNormalization());
+                getTestArea("V330FN"), getDomainNormalization());
 
     }
 
@@ -38,8 +38,6 @@ public class ScenarioRESTTest extends RESTTest {
         var scenario = resp.as(ScenarioDto.class);
         assertEquals(getUsername(), scenario.owner);
         assertEquals(testScenario.name, scenario.name);
-        // Coordinates may differ slightly, so only check polygon type
-        assertEquals(testScenario.feature.get("type"), scenario.feature.get("type"));
 
         delete(scenario.id);
     }
@@ -86,10 +84,10 @@ public class ScenarioRESTTest extends RESTTest {
 
         testScenario.ecosystemsToInclude = IntStream.range(0, 35).toArray();
         testScenario.pressuresToInclude = IntStream.range(0, 41).toArray(); // abrasion bottom trawling and
+
+        update(testScenario);
         // temperature
         // increase
-        testScenario.matrix = new MatrixParameters(6); // exists for sympho1 user
-
         var result = calculate(testScenario);
         delete(testScenario.id);
     }
@@ -102,13 +100,13 @@ public class ScenarioRESTTest extends RESTTest {
                         preemptive().
                         basic(getUsername(), getPassword()).
                         when().
-                        body(s).
-                        post(endpoint("/calculation/sum/CumulativeImpact"));
+                        body(s.id).
+                        post(endpoint("/calculation/sum"));
         assertEquals(200, response.statusCode());
         return response.as(CalculationResultSlice.class);
     }
 
-    static ExtractableResponse<Response> update(ScenarioDto s) {
+    public static ExtractableResponse<Response> update(ScenarioDto s) {
         return given()
                 .auth()
                 .preemptive()
@@ -125,6 +123,7 @@ public class ScenarioRESTTest extends RESTTest {
 
     @Test
     public void delete() {
+        //
         var resp = create(testScenario);
         var resp2 = delete(resp.jsonPath().getInt("id"));
         assertEquals(204, resp2.statusCode());
@@ -151,5 +150,10 @@ public class ScenarioRESTTest extends RESTTest {
                 preemptive().
                 basic(getUsername(), getPassword()).
                 delete(endpoint("/scenario/") + id);
+    }
+    public static ScenarioAreaDto getTestArea(String areaCode) throws IOException {
+        return mapper.readValue(
+            new File(String.format("src/test/resources/mock_entity/testArea_%s.json", areaCode)),
+            ScenarioAreaDto.class);
     }
 }

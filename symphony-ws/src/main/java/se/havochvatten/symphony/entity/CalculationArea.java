@@ -17,7 +17,9 @@ import java.util.List;
 @NamedQueries({
 		@NamedQuery(name = "CalculationArea.findAll", query = "SELECT c FROM CalculationArea c"),
 		@NamedQuery(name = "CalculationArea.findByBaselineName", query = "SELECT c FROM CalculationArea c " +
-				"WHERE c.defaultSensitivityMatrix.baselineVersion.name = :name")
+				"WHERE c.defaultSensitivityMatrix.baselineVersion.name = :name"),
+        @NamedQuery(name = "CalculationArea.findByIds", query = "SELECT c FROM CalculationArea c " +
+                "WHERE c.id IN :ids")
 })
 public class CalculationArea implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -129,7 +131,7 @@ public class CalculationArea implements Serializable {
 		return "se.havochvatten.symphonyws.entity.Calculationarea[ careaId=" + id + " ]";
 	}
 
-	public SensitivityMatrix getdefaultSensitivityMatrix() {
+	public SensitivityMatrix getDefaultSensitivityMatrix() {
 		return defaultSensitivityMatrix;
 	}
 

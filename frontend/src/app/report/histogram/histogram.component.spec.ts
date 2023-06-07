@@ -27,7 +27,6 @@ describe('HistogramComponent', () => {
 
   it('should create', () => {
     const report: Report = {
-      altMatrix: false,
       average: 0,
       calculatedPixels: 0,
       chartData: {nodes:[], links:[]},
@@ -36,14 +35,14 @@ describe('HistogramComponent', () => {
       histogram: new Array(100).fill(100),
       impactPerEcoComponent: [0,0],
       impactPerPressure: [0,0],
-      matrix: "",
+      areaMatrices: [],
       max: 100,
       min: 0,
       name: "",
       normalization: {type: NormalizationType.Domain},
       operationName: "",
       operationOptions: {},
-      scenarioChanges: {type:"FeatureCollection",features:[]},
+      scenarioChanges: {baseChanges: {}, areaChanges: {}},
       stddev: 0,
       timestamp: 0,
       total: 0,

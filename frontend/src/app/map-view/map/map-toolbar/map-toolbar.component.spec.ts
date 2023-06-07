@@ -5,7 +5,7 @@ import {
   ToolbarZoomButtonsComponent,
   ToolbarButtonComponent
 } from '../toolbar-button/toolbar-button.component';
-import { SharedModule } from '@src/app/shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { MapOpacitySliderComponent } from '../map-opacity-slider/map-opacity-slider.component';
 

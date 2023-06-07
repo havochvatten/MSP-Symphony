@@ -1,7 +1,6 @@
 package se.havochvatten.symphony.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.vladmihalcea.hibernate.type.array.DoubleArrayType;
 import com.vladmihalcea.hibernate.type.json.JsonType;
@@ -10,9 +9,8 @@ import org.geotools.gce.geotiff.GeoTiffReader;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
-import org.opengis.feature.simple.SimpleFeature;
+import se.havochvatten.symphony.calculation.CalcService;
 import se.havochvatten.symphony.dto.CalculationResultSlice;
-import se.havochvatten.symphony.scenario.Scenario;
 import se.havochvatten.symphony.scenario.ScenarioSnapshot;
 
 import javax.persistence.*;
@@ -23,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 @Entity
@@ -54,15 +53,15 @@ import java.util.Map;
         columns = { @ColumnResult(name="cares_id", type=Integer.class),
             @ColumnResult(name="cares_calculationname", type=String.class),
             @ColumnResult(name="cares_timestamp", type=Date.class),
-            @ColumnResult(name="feature", type=String.class)
+            @ColumnResult(name="polygon", type=String.class)
         }
     )
 )
 
 @NamedNativeQuery(name = "CalculationResult.findCmpByOwner",
-    query = "SELECT c.cares_id, c.cares_calculationname, c.cares_timestamp, s.feature FROM " +
+    query = "SELECT c.cares_id, c.cares_calculationname, c.cares_timestamp, s.polygon FROM " +
             "calculationresult c JOIN scenariosnapshot s ON c.scenariosnapshot_id = s.id "+
-            "AND s.owner = :username ORDER BY c.cares_timestamp DESC",
+            "AND s.owner = :username AND c.cares_op = :operation ORDER BY c.cares_timestamp DESC",
     resultSetMapping = "CalculationCmpMapping" )
 
 @TypeDefs({
@@ -121,8 +120,9 @@ public class CalculationResult implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 
-    @Column(name = "cares_normalizationvalue")
-    private Double normalizationValue;
+    @Column(name = "cares_normalizationvalue", columnDefinition = "double precision[]")
+    @Type(type = "double-array")
+    private double[] normalizationValue;
 
     @OneToOne
     @NotNull
@@ -140,6 +140,32 @@ public class CalculationResult implements Serializable {
 
     @Transient
     private GridCoverage2D coverage;
+
+    @NotNull
+    @Column(name = "cares_areamatrix_map", nullable = false)
+    @Type(type = "int-array")
+    private int[][] areaMatrixMap;
+
+    public Map<Integer, Integer> getAreaMatrixMap() {
+        Map<Integer, Integer> map = new HashMap<>();
+
+        for (int i = 0; i < areaMatrixMap.length; i++) {
+            map.put(areaMatrixMap[i][0], areaMatrixMap[i][1]);
+        }
+
+        return map;
+    }
+
+    public void setAreaMatrixMap(Map areaMatrixMap) {
+        int[][] map = new int[areaMatrixMap.size()][2];
+        int i = 0;
+        for (Object key : areaMatrixMap.keySet()) {
+            map[i][0] = (int) key;
+            map[i][1] = (int) areaMatrixMap.get(key);
+            i++;
+        }
+        this.areaMatrixMap = map;
+    }
 
     public CalculationResult() {}
 
@@ -187,11 +213,11 @@ public class CalculationResult implements Serializable {
         this.timestamp = timestamp;
     }
 
-    public Double getNormalizationValue() {
+    public double[] getNormalizationValue() {
         return normalizationValue;
     }
 
-    public void setNormalizationValue(Double value) {
+    public void setNormalizationValue(double[] value) {
         this.normalizationValue = value;
     }
 
@@ -240,11 +266,13 @@ public class CalculationResult implements Serializable {
         this.scenarioSnapshot = scenario;
     }
 
-    public Scenario getScenarioSnapshot() {
+    public ScenarioSnapshot getScenarioSnapshot() {
         return scenarioSnapshot;
     }
 
-    public void setOperationName(String operation) { this.operationName = operation; }
+    public void setOperationName(int operation) {
+        this.operationName = CalcService.operationName(operation);
+    }
 
     public String getOperationName() { return operationName; }
 
@@ -253,11 +281,6 @@ public class CalculationResult implements Serializable {
     }
 
     public Map<String, String> getOperationOptions() { return operationOptions; }
-
-    @JsonIgnore
-    public SimpleFeature getFeature() {
-        return getScenarioSnapshot().getFeature();
-    }
 
     @Override
     public int hashCode() {

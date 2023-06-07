@@ -1,0 +1,49 @@
+@import 'src/styles/hav-colors';
+
+:host {
+  display: flex;
+  width: 280px;
+  padding: 1rem;
+  background-color: rgba(255, 255, 255, 0.934);
+  margin-bottom: 1rem;
+
+  .text-wrap {
+    width: 86%;
+
+    h5, span {
+      padding: 0 0 0 2rem;
+      margin: 0;
+    }
+
+    h5 {
+      font-weight: 600;
+      line-height: 1.8rem;
+      background-image: url("~src/assets/info-icon-blue.svg");
+      background-repeat: no-repeat;
+      background-size: 1.3rem;
+      background-position: left center;
+    }
+
+    span {
+      display: block;
+      font-size: 1.2rem;
+      line-height: 1.6rem;
+      margin-top: 2px !important;
+    }
+  }
+
+  .exit-button {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+
+    span {
+      font-size: 1.28rem;
+      font-weight: 600;
+      color: $hav-turquoise;
+      cursor: pointer;
+    }
+  }
+}
