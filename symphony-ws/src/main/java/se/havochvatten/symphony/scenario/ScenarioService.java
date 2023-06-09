@@ -34,8 +34,8 @@ import javax.transaction.Transactional;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -74,7 +74,8 @@ public class ScenarioService {
         try {
             return em.createNamedQuery("Scenario.findAllByOwner", ScenarioDto.class)
                 .setParameter("owner", principal.getName())
-                .getResultList().stream().filter(s -> s.id != null).collect(Collectors.toList());
+                .getResultList().stream().filter(s -> s.id != null)
+                .sorted(Comparator.<ScenarioDto>comparingInt(s -> s.id).reversed()).collect(Collectors.toList());
         } catch (Exception e) {
             return null;
         }
