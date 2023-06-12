@@ -15,7 +15,7 @@
     "map": {
         "background-transparency": "Transparence de la carte de fond",
         "click-area": "Cliquez pour sélectionner une région.",
-        "location-outside-scenario": "Cette région n'est pas disponible dans le scénario actif.",
+        "location-within-scenario": "Cette zone se superpose au scénario actif.",
         "areas": "Régions",
         "matrix": "Matrice",
         "no-active-scenario": "Activer un scénario pour effectuer les réglages",

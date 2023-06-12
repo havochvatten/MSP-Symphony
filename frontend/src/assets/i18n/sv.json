@@ -15,7 +15,7 @@
     "map": {
         "background-transparency": "Bakgrundskartans synlighet",
         "click-area": "Klicka för att markera området.",
-        "location-within-scenario": "Området tillhör redan det aktiva scenariot.",
+        "location-within-scenario": "Området överlappar med det aktiva scenariot.",
         "areas": "Kartområden",
         "matrix": "Matris",
         "no-active-scenario": "Aktivera ett scenario för att göra inställningar",

@@ -15,7 +15,7 @@
     "map": {
         "background-transparency": "Background map transparency",
         "click-area": "Click to select area.",
-        "location-outside-scenario": "Location is outside of active scenario",
+        "location-within-scenario": "The area overlaps with the active scenario.",
         "areas": "Areas",
         "matrix": "Matrix",
         "no-active-scenario": "Activate a scenario to make changes",
