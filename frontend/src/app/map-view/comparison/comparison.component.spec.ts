@@ -9,6 +9,7 @@ import { provideMockStore } from "@ngrx/store/testing";
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { initialState as calculation } from '@data/calculation/calculation.reducers';
+import { initialState as user } from '@data/user/user.reducers';
 
 describe('ComparisonComponent', () => {
   let fixture: ComponentFixture<ComparisonComponent>,
@@ -29,7 +30,8 @@ describe('ComparisonComponent', () => {
           initialState: {
             metadata: metadata,
             scenario: scenario,
-            calculation: calculation
+            calculation: calculation,
+            user: user
           }
         })
       ],
