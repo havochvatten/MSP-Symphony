@@ -19,7 +19,7 @@ $buttons-row-gap: 1rem;
     }
 
     .area-name {
-      color: #818181;
+      color: $medium-gray;
       margin: 0 0 0.4rem;
     }
 
@@ -220,7 +220,7 @@ $buttons-row-gap: 1rem;
         font-size: 1.6rem;
         letter-spacing: 0;
         font-weight: 400;
-        color: #818181;
+        color: $medium-gray;
         padding: 5rem 0;
 
         app-icon {

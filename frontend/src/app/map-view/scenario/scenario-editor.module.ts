@@ -19,6 +19,7 @@ import { OrdinalPipe } from "@shared/ordinal.pipe";
 import { ScenarioAreaDetailComponent } from './scenario-area-detail/scenario-area-detail.component';
 import { ChangesListComponent } from './scenario-detail/changes-list/changes-list.component';
 import { AddScenarioAreasComponent } from './add-scenario-areas/add-scenario-areas.component';
+import { ChangesOverviewComponent } from './changes-overview/changes-overview.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { AddScenarioAreasComponent } from './add-scenario-areas/add-scenario-are
     ScenarioAreaDetailComponent,
     ChangesListComponent,
     AddScenarioAreasComponent,
+    ChangesOverviewComponent,
   ],
   imports: [
     SharedModule,

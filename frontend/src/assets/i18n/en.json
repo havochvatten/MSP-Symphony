@@ -166,6 +166,13 @@
                 "collapse": "Hide changes",
                 "collapsed-count": "Show {{ count }} changes"
             },
+            "changes-overview" : {
+                "title": "Scenario changes overview",
+                "show-overview": "Show an overview of all changes",
+                "global-changes": "Global changes",
+                "show-all": "Show all",
+                "close": "Close"
+            },
             "area-changes": {
                 "title": "Scenario Area Changes"
             },

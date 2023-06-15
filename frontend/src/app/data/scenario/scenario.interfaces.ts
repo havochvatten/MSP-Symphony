@@ -55,3 +55,7 @@ export interface ScenarioMatrixDataMap {
 export interface ScenarioAreaCoastalExclusion {
   areaId: number | null;
 }
+
+export interface ScenarioChangeMap {
+  [ bandType: string ]: { [ bandId: number ]: BandChange }
+}

@@ -166,6 +166,13 @@
                 "collapse": "Dölj ändringar",
                 "collapsed-count": "Visa {{ count }} ändringar"
             },
+            "changes-overview" : {
+                "title": "Översikt förekomständringar",
+                "show-overview": "Öppna översiktsvyn för ändringar",
+                "global-changes": "Generella ändringar",
+                "show-all": "Visa alla",
+                "close": "Stäng"
+            },
             "area-changes": {
                 "title": "Områdesspecifika förekomständringar"
             },
