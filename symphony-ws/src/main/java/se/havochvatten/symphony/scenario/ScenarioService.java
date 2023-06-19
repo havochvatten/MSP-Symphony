@@ -227,4 +227,13 @@ public class ScenarioService {
             scenarioArea -> new ScenarioAreaDto(scenarioArea, finalScenario.getId()))
             .toArray(ScenarioAreaDto[]::new);
     }
+
+    public ScenarioDto copy(Scenario scenario, ScenarioCopyOptions options) {
+
+        Scenario copiedScenario = new Scenario(scenario, options);
+        em.persist(copiedScenario);
+        em.flush();
+
+        return new ScenarioDto(copiedScenario);
+    }
 }

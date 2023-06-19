@@ -106,6 +106,31 @@ public class ScenarioREST {
             throw new NotAuthorizedException("Not owner of scenario area");
     }
 
+    // POST verb preferred over COPY for creating a new scenario from an existing since the
+    // endpoint accepts option parameters for the procedure. It's reasonably not considered a
+    // pure copying operation, but rather a convenience method facilitating scenario creation
+    // (typically utilized for making comparison analyses)
+    @POST
+    @ApiOperation(value = "Copy scenario", response = ScenarioDto.class)
+    @Path("{id}/copy")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response copyScenario(@Context HttpServletRequest req, @PathParam("id") int scenarioId,
+                                          ScenarioCopyOptions options) {
+        if (req.getUserPrincipal() == null)
+            throw new NotAuthorizedException("Null principal");
+
+        Scenario scenario = service.findById(scenarioId);
+
+        if (req.getUserPrincipal().getName().equals(scenario.getOwner())) {
+            var persistedScenario = service.copy(scenario, options);
+            return Response.ok(persistedScenario).build();
+        }
+        else
+            throw new NotAuthorizedException("Not owner of scenario");
+    }
+
     @DELETE
     @ApiOperation(value = "Delete scenario")
     @Path("{id}")

@@ -13,6 +13,7 @@ import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 import org.opengis.feature.simple.SimpleFeature;
 import se.havochvatten.symphony.calculation.CalcService;
 import se.havochvatten.symphony.dto.NormalizationOptions;
+import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
 import se.havochvatten.symphony.entity.CalculationResult;
 
@@ -129,6 +130,34 @@ public class Scenario implements Serializable {
         pressuresToInclude = dto.pressuresToInclude;
         areas.addAll(Arrays.stream(dto.areas).map(a -> new ScenarioArea(a, this)).toList());
         operation = dto.operation;
+    }
+
+    public Scenario(Scenario s, ScenarioCopyOptions options) {
+        id = null;
+        owner = s.getOwner();
+        timestamp = new Date();
+        baselineId = s.baselineId;
+        name = options.name;
+        changes = options.includeScenarioChanges ? s.changes : null;
+        normalization = s.normalization;
+        ecosystemsToInclude = s.ecosystemsToInclude;
+        pressuresToInclude = s.pressuresToInclude;
+        operation = s.operation;
+
+        List<Integer> changesToInclude =
+            Arrays.stream(options.areaChangesToInclude).boxed().collect(Collectors.toList());
+
+        for(ScenarioArea a : s.areas) {
+            areas.add(new ScenarioArea(
+                new ScenarioAreaDto(
+                    -1,
+                    changesToInclude.contains(a.getId()) ?
+                        a.getChanges() : null,
+                    a.getFeatureJson(),
+                    a.getMatrix(),
+                    null,
+                    a.getExcludedCoastal()), this));
+        }
     }
 
     public Integer getId() {
