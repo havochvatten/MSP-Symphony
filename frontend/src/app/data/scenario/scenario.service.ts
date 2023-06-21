@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment as env } from '@src/environments/environment';
-import { Scenario, ScenarioArea, ScenarioMatrixDataMap } from "@data/scenario/scenario.interfaces";
+import { Scenario, ScenarioArea, ScenarioCopyOptions, ScenarioMatrixDataMap } from "@data/scenario/scenario.interfaces";
 import { Baseline } from "@data/user/user.interfaces";
 import { NormalizationOptions } from "@data/calculation/calculation.service";
 import { GeoJSONFeature } from 'ol/format/GeoJSON';
@@ -57,6 +57,10 @@ export class ScenarioService {
 
   delete(id: number) {
     return this.http.delete(this.scenarioApiBaseUrl+'/'+id);
+  }
+
+  copy(scenarioId: number, options: ScenarioCopyOptions) {
+    return this.http.post<Scenario>(this.scenarioApiBaseUrl+'/'+scenarioId+'/copy', options);
   }
 
   setScenarioChangeVisibility(feature: GeoJSONFeature) {

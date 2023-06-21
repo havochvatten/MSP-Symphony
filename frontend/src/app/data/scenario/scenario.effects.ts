@@ -169,4 +169,16 @@ export class ScenarioEffects {
       }
     })
   );
+
+  @Effect()
+  copyScenario$ = this.actions$.pipe(
+    ofType(ScenarioActions.copyScenario),
+    mergeMap(({ scenarioId, options }) => {
+      return this.scenarioService.copy(scenarioId, options).pipe(
+        map((copiedScenario) => ScenarioActions.copyScenarioSuccess({ copiedScenario })),
+        catchError(({ status, error: message }) =>
+          of(ScenarioActions.copyScenarioFailure({ error: { status, message } }))
+        )
+      );
+    }));
 }

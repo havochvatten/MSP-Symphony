@@ -186,6 +186,10 @@ export const scenarioReducer = createReducer(
       }
     }
   }),
+  on(ScenarioActions.copyScenarioSuccess, (state, { copiedScenario }) => ({
+    ...state,
+    scenarios: [copiedScenario, ...state.scenarios]
+  })),
   on(fetchAreaMatricesSuccess, (state, { matrixDataMap }) => {
     const data = Object.values(matrixDataMap) as AreaMatrixData[],
           loading = data.some(d => d.overlap.length > 0);

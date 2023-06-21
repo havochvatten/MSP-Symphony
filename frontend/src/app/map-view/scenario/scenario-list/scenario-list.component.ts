@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
 import { Observable, of, Subscription } from 'rxjs';
-import { Scenario, ScenarioArea } from '@data/scenario/scenario.interfaces';
+import { Scenario, ScenarioArea, ScenarioCopyOptions } from '@data/scenario/scenario.interfaces';
 import { Area } from '@data/area/area.interfaces';
 import { AreaSelectors } from '@data/area';
 import { catchError } from 'rxjs/operators';
@@ -13,6 +13,7 @@ import * as Normalization from '@src/app/map-view/scenario/scenario-detail/norma
 import { TranslateService } from '@ngx-translate/core';
 import { deleteScenario } from "@src/app/map-view/scenario/scenario-common";
 import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenario-areas/add-scenario-areas.component";
+import { CopyScenarioComponent } from "@src/app/map-view/scenario/copy-scenario/copy-scenario.component";
 
 @Component({
   selector: 'app-scenario-list',
@@ -86,5 +87,17 @@ export class ScenarioListComponent {
 
   ngOnDestroy() {
     this.areaSubscription$.unsubscribe();
+  }
+
+  async copyScenario(scenario: Scenario) {
+    const copyOptions = await this.dialogService.open<ScenarioCopyOptions>(
+      CopyScenarioComponent,
+      this.moduleRef,
+      {data: { scenario }}
+    );
+
+    if (copyOptions) {
+      this.store.dispatch(ScenarioActions.copyScenario({ scenarioId: scenario.id, options: copyOptions }));
+    }
   }
 }

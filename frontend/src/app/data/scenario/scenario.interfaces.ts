@@ -59,3 +59,9 @@ export interface ScenarioAreaCoastalExclusion {
 export interface ScenarioChangeMap {
   [ bandType: string ]: { [ bandId: number ]: BandChange }
 }
+
+export interface ScenarioCopyOptions {
+  name: string;
+  includeScenarioChanges: boolean;
+  areaChangesToInclude : number[];
+}

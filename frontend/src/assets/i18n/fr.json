@@ -176,6 +176,17 @@
             "area-changes": {
                 "title": "Modifications spécifiques à la zone"
             },
+            "copy-scenario": {
+                "label": "Copier le scénario",
+                "title": "Configurer la copie du scénario",
+                "new-scenario-name": "Nom du nouveau scénario",
+                "copy-specifier": "{{ scenario }} (copie)",
+                "include-scenario-changes": "Inclure les modifications globales de scénario",
+                "area-changes-to-include": "Sélectionnez les modifications de zone à inclure dans le scénario copié",
+                "areas-without-changes": "Ces zones du scénario manquent de changements spécifiques: {{ areas-list }}",
+                "create-copy": "Copier",
+                "cancel": "Annuler"
+            },
             "select-area-message": "Sélectionnez une zone de calcul. Commencez par sélectionner une zone, puis modifiez les valeurs des composantes écosystèmes ou pressions dans le panel de gauche.",
             "fetching-matrices": "Chargement des matrices de sensibilité...",
             "map-layer": "Couche de données",
@@ -197,6 +208,7 @@
             "close": "❮",
             "delete": {
                 "label": "Supprimer",
+                "tooltip": "Supprimer le scénario",
                 "modal": {
                     "title": "Êtes-vous sûr de vouloir supprimer &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
                     "delete": "Supprimer",

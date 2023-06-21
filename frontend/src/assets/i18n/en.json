@@ -176,6 +176,17 @@
             "area-changes": {
                 "title": "Scenario Area Changes"
             },
+            "copy-scenario": {
+                "label": "Copy scenario",
+                "title": "Copy scenario: options",
+                "new-scenario-name": "New scenario name",
+                "copy-specifier": "{{ scenario }} (copy)",
+                "include-scenario-changes": "Include Scenario-level changes",
+                "area-changes-to-include": "Select which area changes to be mirrored in the copied scenario",
+                "areas-without-changes": "The following areas of the scenario lack specific changes: {{ areas-list }}",
+                "create-copy": "Create copy",
+                "cancel": "Cancel"
+            },
             "select-area-message": "Select an area to calculate. Start with selecting an area and then make any adjustments to nature values or pressures in the left panel.",
             "fetching-matrices": "Fetching information on area's sensitivity matrices...",
             "map-layer": "Map layer",
@@ -197,6 +208,7 @@
             "close": "❮",
             "delete": {
                 "label": "Delete",
+                "tooltip": "Delete scenario",
                 "modal": {
                     "title": "Are you sure you want to delete &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
                     "delete": "Delete",

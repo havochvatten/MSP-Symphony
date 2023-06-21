@@ -2,7 +2,7 @@ import { createAction, props } from "@ngrx/store";
 import {
   Scenario,
   ScenarioArea,
-  ScenarioAreaCoastalExclusion,
+  ScenarioAreaCoastalExclusion, ScenarioCopyOptions,
   ScenarioMatrixDataMap
 } from "@data/scenario/scenario.interfaces";
 import { ErrorMessage } from "@data/message/message.interfaces";
@@ -14,6 +14,8 @@ import {
 import { Feature } from "geojson";
 import { OperationParams } from "@data/calculation/calculation.interfaces";
 import { CalcOperation, NormalizationOptions } from "@data/calculation/calculation.service";
+import { CopyScenarioComponent } from "@src/app/map-view/scenario/copy-scenario/copy-scenario.component";
+
 
 export const fetchScenarios = createAction(
   '[Scenario] Fetch user scenarios',
@@ -94,6 +96,21 @@ export const saveScenarioArea = createAction(
 export const addScenario = createAction(
   '[Scenario] Add scenario',
   props<{ scenario: Scenario }>()
+);
+
+export const copyScenario = createAction(
+  '[Scenario] Copy scenario',
+  props<{ scenarioId: number, options: ScenarioCopyOptions }>()
+);
+
+export const copyScenarioSuccess = createAction(
+  '[Scenario] Copy scenario success',
+  props<{ copiedScenario: Scenario }>()
+);
+
+export const copyScenarioFailure = createAction(
+  '[Scenario] Copy scenario failure',
+  props<{ error: ErrorMessage }>()
 );
 
 export const changeScenarioName = createAction(

@@ -176,6 +176,17 @@
             "area-changes": {
                 "title": "Områdesspecifika förekomständringar"
             },
+            "copy-scenario": {
+                "label": "Kopiera scenario",
+                "title": "Kopiera scenario: alternativ",
+                "new-scenario-name": "Ange ett nytt namn",
+                "copy-specifier": "{{ scenario }} (kopia)",
+                "include-scenario-changes": "Inkludera scenariots generella förekomständringar",
+                "area-changes-to-include": "Välj vilka områdens ändringar som ska speglas i det kopierade scenariot",
+                "areas-without-changes": "Följande områden i scenariot saknar specifika ändringar: {{ areas-list }}",
+                "create-copy": "Kopiera",
+                "cancel": "Avbryt"
+            },
             "select-area-message": "För att beräkna krävs det att ett område har markerats. Börja med att välja område och eventuella naturvärden och belastningar i vänster panel.",
             "fetching-matrices": "Hämtar information om områdets känslighetsmatriser...",
             "map-layer": "Kartlager",
@@ -197,6 +208,7 @@
             "close": "❮",
             "delete": {
                 "label": "Radera",
+                "tooltip": "Radera scenario",
                 "modal": {
                     "title": "Är du säker på att du vill radera &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
                     "delete": "Radera",

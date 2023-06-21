@@ -1,0 +1,24 @@
+<h3>{{ 'map.editor.copy-scenario.title' | translate }}</h3>
+<mat-label>{{ 'map.editor.copy-scenario.new-scenario-name' | translate }}</mat-label>
+<input matInput #scenarioName [value]="'map.editor.copy-scenario.copy-specifier' | translate : { scenario: this.scenario.name }">
+<mat-checkbox #includeChanges [checked]="true">{{ 'map.editor.copy-scenario.include-scenario-changes' | translate }}</mat-checkbox>
+<div *ngIf="allAreasWithChanges.length > 0"
+     class="include-areas">
+  <mat-label class="select-areas">{{ 'map.editor.copy-scenario.area-changes-to-include' | translate }}</mat-label>
+  <ng-container *ngFor="let area of allAreasWithChanges">
+    <mat-checkbox class="scenario-area-cb" checked="true" (change)="areaSelection($event, area.id)">{{ area.feature.properties['name'] }}</mat-checkbox>
+  </ng-container>
+</div>
+<span *ngIf="allAreasWithChanges.length > 0 && scenario.areas.length > allAreasWithChanges.length"
+      class="areas-notice">
+  {{ 'map.editor.copy-scenario.areas-without-changes' | translate : { "areas-list": areasWithoutChangeFmt } }}
+</span>
+<div class="button-pane">
+  <button mat-flat-button (click)="copy()">{{
+    'map.editor.copy-scenario.create-copy' | translate
+    }}</button>
+  <button mat-flat-button [ngClass]="'secondary'" (click)="cancel()">{{
+    'map.editor.copy-scenario.cancel' | translate
+    }}</button>
+</div>
+

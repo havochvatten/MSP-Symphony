@@ -20,6 +20,8 @@ import { ScenarioAreaDetailComponent } from './scenario-area-detail/scenario-are
 import { ChangesListComponent } from './scenario-detail/changes-list/changes-list.component';
 import { AddScenarioAreasComponent } from './add-scenario-areas/add-scenario-areas.component';
 import { ChangesOverviewComponent } from './changes-overview/changes-overview.component';
+import { CopyScenarioComponent } from './copy-scenario/copy-scenario.component';
+import { MatInputModule } from "@angular/material/input";
 
 @NgModule({
   declarations: [
@@ -32,16 +34,18 @@ import { ChangesOverviewComponent } from './changes-overview/changes-overview.co
     ChangesListComponent,
     AddScenarioAreasComponent,
     ChangesOverviewComponent,
+    CopyScenarioComponent,
   ],
-  imports: [
-    SharedModule,
-    FormsModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    MatRadioModule,
-    MatSelectModule,
-    MatCheckboxModule
-  ],
+    imports: [
+        SharedModule,
+        FormsModule,
+        MatButtonModule,
+        MatProgressSpinnerModule,
+        MatRadioModule,
+        MatSelectModule,
+        MatCheckboxModule,
+        MatInputModule
+    ],
   providers: [ OrdinalPipe ],
   exports: [ScenarioEditorComponent]
 })
