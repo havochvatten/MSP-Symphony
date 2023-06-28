@@ -133,8 +133,10 @@ class AreaLayer extends VectorLayer<VectorSource> {
           },
           filter: (feature, layer) => {
             console.debug('filter', feature.get('title') ?? feature.get('id'), layer.get('name'));
-            if (feature === that.scenarioLayer.getBoundaryFeature()) return false; // don't allow selection of whole scenario for now
-
+            if(that.scenarioLayer.getBoundaryFeature()) {
+              if (feature === that.scenarioLayer.getBoundaryFeature()) return false; // don't allow selection of whole scenario for now
+              if (intersects(feature, that.scenarioLayer.getBoundaryFeature()!)) return false; // don't allow selection of features inside scenario
+            }
             const source = that.scenarioLayer.getSource();
             if (
               layer === that &&
@@ -224,14 +226,17 @@ class AreaLayer extends VectorLayer<VectorSource> {
           .filter(unique) // scenario layer can contain duplicated feature
           .join(', ');
 
+        const hoveredFeature = (detectedFeatures[0] as Feature);
+
         if (!this.scenarioLayer.hasActiveScenario()) body.innerText = clickArea;
         else {
-          if (this.scenarioLayer.isPointInsideScenario(event.coordinate))
+          if (this.scenarioLayer.isPointInsideScenario(event.coordinate) ||
+              intersects(this.scenarioLayer.getBoundaryFeature()!, hoveredFeature))
             body.innerText = pointWithinScenario;
           else body.innerText = clickArea;
         }
 
-        const extent = detectedFeatures[0].getGeometry()?.getExtent();
+        const extent = hoveredFeature.getGeometry()?.getExtent();
         if (extent) {
           overlay.setPosition(getCenter(extent));
         }
@@ -339,6 +344,11 @@ class AreaLayer extends VectorLayer<VectorSource> {
     }
     this.drawInteractionActive = !this.drawInteractionActive;
     return this.drawInteractionActive;
+  }
+
+  deselectAreas() {
+    this.selectedFeatures = [];
+    this.setSelection([]);
   }
 }
 

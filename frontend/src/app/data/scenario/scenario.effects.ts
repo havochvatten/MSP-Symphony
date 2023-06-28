@@ -169,4 +169,75 @@ export class ScenarioEffects {
       }
     })
   );
+
+  @Effect()
+  copyScenario$ = this.actions$.pipe(
+    ofType(ScenarioActions.copyScenario),
+    mergeMap(({ scenarioId, options }) => {
+      return this.scenarioService.copy(scenarioId, options).pipe(
+        map((copiedScenario) => ScenarioActions.copyScenarioSuccess({ copiedScenario })),
+        catchError(({ status, error: message }) =>
+          of(ScenarioActions.copyScenarioFailure({ error: { status, message } }))
+        )
+      );
+    }));
+
+  @Effect()
+  transferChangesToScenario$ = this.actions$.pipe(
+    ofType(ScenarioActions.transferScenarioChanges),
+    concatMap(action =>
+      of(action).pipe(withLatestFrom(this.store.select(ScenarioSelectors.selectActiveScenario)))
+    ),
+    mergeMap(([{changesSelection}, scenario]) => {
+      if(!scenario) return of(ScenarioActions.transferChangesFailure(
+        {error: {status: 500, message: 'No active scenario'}})
+      );
+        return (changesSelection.areaId !== null ?
+        this.scenarioService.transferAreaChanges(
+          scenario.id,
+          changesSelection.areaId,
+          changesSelection.overwrite) :
+        this.scenarioService.transferChanges(
+          scenario.id,
+          changesSelection.scenarioId!,
+          changesSelection.overwrite)).pipe(
+          map((scenario) => ScenarioActions.transferChangesSuccess({scenario})),
+          catchError(({status, error: message}) =>
+            of(ScenarioActions.transferChangesFailure({error: {status, message}}))
+          )
+        );
+      }
+    )
+  );
+
+  @Effect()
+  transferChangesToArea$ = this.actions$.pipe(
+    ofType(ScenarioActions.transferScenarioAreaChanges),
+    concatMap(action =>
+      of(action).pipe(withLatestFrom(this.store.select(ScenarioSelectors.selectActiveScenario),
+                                     this.store.select(ScenarioSelectors.selectActiveScenarioArea)))
+    ),
+    mergeMap(([{changesSelection}, scenario, area]) => {
+      if(!scenario) return of(ScenarioActions.transferChangesFailure(
+        {error: {status: 500, message: 'No active scenario'}})
+      );
+      if(area === undefined) return of(ScenarioActions.transferChangesFailure(
+        {error: {status: 500, message: 'No active scenario area'}})
+      );
+      return (changesSelection.areaId !== null ?
+        this.scenarioService.transferAreaChangesToArea(
+          scenario.areas[area].id,
+          changesSelection.areaId,
+          changesSelection.overwrite) :
+        this.scenarioService.transferChangesToArea(
+          scenario.areas[area].id,
+          changesSelection.scenarioId!,
+          changesSelection.overwrite)).pipe(
+          map((scenario) => ScenarioActions.transferChangesSuccess({scenario})),
+          catchError(({status, error: message}) =>
+            of(ScenarioActions.transferChangesFailure({error: {status, message}}))
+          )
+        );
+    })
+  );
 }

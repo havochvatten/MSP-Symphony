@@ -186,6 +186,10 @@ export const scenarioReducer = createReducer(
       }
     }
   }),
+  on(ScenarioActions.copyScenarioSuccess, (state, { copiedScenario }) => ({
+    ...state,
+    scenarios: [copiedScenario, ...state.scenarios]
+  })),
   on(fetchAreaMatricesSuccess, (state, { matrixDataMap }) => {
     const data = Object.values(matrixDataMap) as AreaMatrixData[],
           loading = data.some(d => d.overlap.length > 0);
@@ -193,6 +197,12 @@ export const scenarioReducer = createReducer(
       ...state,
       matrixData: matrixDataMap,
       matricesLoading: loading
+    }
+  }),
+  on(ScenarioActions.transferChangesSuccess, (state, { scenario: updatedScenario }) => {
+    return {
+      ...state,
+      scenarios: setIn(state.scenarios, [state.active], updatedScenario)
     }
   }),
   on(fetchAreaMatrixSuccess, (state, { areaId, matrixData }) => {

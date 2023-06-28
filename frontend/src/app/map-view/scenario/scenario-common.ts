@@ -4,8 +4,9 @@ import { DialogService } from "@shared/dialog/dialog.service";
 import { NgModuleRef } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
 import { Store } from "@ngrx/store";
-import { Scenario } from "@data/scenario/scenario.interfaces";
+import { Scenario, ScenarioArea, ScenarioChangesSelection } from "@data/scenario/scenario.interfaces";
 import { State } from "@src/app/app-reducer";
+import { TransferChangesComponent } from "@src/app/map-view/scenario/transfer-changes/transfer-changes.component";
 
 export async function deleteScenario(
   dialogService:DialogService, translateService: TranslateService, store:Store<State>, moduleRef:NgModuleRef<any>, scenario: Scenario):Promise<void> {
@@ -23,5 +24,27 @@ export async function deleteScenario(
     store.dispatch(ScenarioActions.deleteScenario({
       scenarioToBeDeleted: scenario
     }));
+  }
+}
+
+function isScenario(target: Scenario | ScenarioArea): target is Scenario {
+  return (target as Scenario).areas !== undefined;
+}
+
+export async function transferChanges(
+  dialogService:DialogService, translateService: TranslateService, store: Store<State>, moduleRef:NgModuleRef<any>, target: Scenario | ScenarioArea):Promise<void> {
+  const selectedChanges = await dialogService.open<ScenarioChangesSelection>(
+    TransferChangesComponent, moduleRef,
+    {
+      data: {
+        target: target,
+      }
+    });
+  if (selectedChanges) {
+    if(isScenario(target)) {
+      store.dispatch(ScenarioActions.transferScenarioChanges({ changesSelection: selectedChanges }));
+    } else {
+      store.dispatch(ScenarioActions.transferScenarioAreaChanges({ changesSelection: selectedChanges }));
+    }
   }
 }

@@ -15,7 +15,7 @@
     "map": {
         "background-transparency": "Background map transparency",
         "click-area": "Click to select area.",
-        "location-outside-scenario": "Location is outside of active scenario",
+        "location-within-scenario": "The area overlaps with the active scenario.",
         "areas": "Areas",
         "matrix": "Matrix",
         "no-active-scenario": "Activate a scenario to make changes",
@@ -166,8 +166,35 @@
                 "collapse": "Hide changes",
                 "collapsed-count": "Show {{ count }} changes"
             },
+            "changes-overview" : {
+                "title": "Scenario changes overview",
+                "show-overview": "Show an overview of all changes",
+                "global-changes": "Global changes",
+                "show-all": "Show all",
+                "close": "Close"
+            },
             "area-changes": {
                 "title": "Scenario Area Changes"
+            },
+            "transfer-changes" : {
+                "title": "Transfer changes",
+                "tooltip": "Transfer changes from an existing scenario or scenario area",
+                "use-scenario-wide": "Use scenario-wide changes",
+                "select-scenario": "Select a scenario",
+                "select-scenario-detail": "Specify a scenario or area from which to transfer changes",
+                "area-changes": "Scenario Areas with changes available",
+                "overwrite": "Check to replace changes (otherwise the selected changes are appended)"
+            },
+            "copy-scenario": {
+                "label": "Copy scenario",
+                "title": "Copy scenario: options",
+                "new-scenario-name": "New scenario name",
+                "copy-specifier": "{{ scenario }} (copy)",
+                "include-scenario-changes": "Include Scenario-level changes",
+                "area-changes-to-include": "Select which area changes to be mirrored in the copied scenario",
+                "areas-without-changes": "The following areas of the scenario lack specific changes: {{ areas-list }}",
+                "create-copy": "Create copy",
+                "cancel": "Cancel"
             },
             "select-area-message": "Select an area to calculate. Start with selecting an area and then make any adjustments to nature values or pressures in the left panel.",
             "fetching-matrices": "Fetching information on area's sensitivity matrices...",
@@ -190,6 +217,7 @@
             "close": "❮",
             "delete": {
                 "label": "Delete",
+                "tooltip": "Delete scenario",
                 "modal": {
                     "title": "Are you sure you want to delete &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
                     "delete": "Delete",

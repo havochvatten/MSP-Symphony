@@ -3,6 +3,7 @@ export type StatePath = Array<string | number>;
 export type ComponentKey = keyof Pick<APILayerData, 'ecoComponent' | 'pressureComponent'>;
 
 export type BandType = 'ECOSYSTEM' | 'PRESSURE';
+export type BandType_Alt = 'ecoComponents' | 'pressures';
 
 export interface SelectableLayer {
   title: string;

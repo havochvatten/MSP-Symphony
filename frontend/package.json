@@ -1,13 +1,14 @@
 {
   "name": "symphony-fe",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --ssl",
     "build": "ng build",
     "prod-build": "ng build --configuration production",
-    "test": "ng test --codeCoverage=true",
-    "test-headless": "ng test --watch=false --codeCoverage=true --browsers=ChromiumHeadless",
+    "test": "ng test --code-coverage=true",
+    "test-headless": "ng test --watch=false --code-coverage=true --browsers=ChromiumHeadless",
+    "test-headless-win": "ng test --watch=false --code-coverage=true --browsers=ChromeHeadless",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "format": "prettier \"src/**/*.{js,json,ts,html,css,less}\" --write",

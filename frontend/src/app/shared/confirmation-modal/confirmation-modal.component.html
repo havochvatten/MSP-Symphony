@@ -1,6 +1,6 @@
 <h4 [innerHTML]="header" [ngClass]="{'no-message': (message === null) }"></h4>
 <div *ngIf="message"><p [innerHTML]="message"></p></div>
-<div class="buttonPane" [ngClass]="buttonsClass !== null ? buttonsClass : ''">
+<div class="button-pane" [ngClass]="buttonsClass !== null ? buttonsClass : ''">
   <button mat-flat-button color="{{ matColorCancel }}" [ngClass]="cancelClass" (click)="cancel()">{{
     cancelText || ('confirmation-modal.cancel' | translate)
     }}</button>

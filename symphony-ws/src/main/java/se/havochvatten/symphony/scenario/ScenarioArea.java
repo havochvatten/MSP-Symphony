@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 @Entity
 @Table(name = "scenarioarea")
 @DynamicInsert
-public class ScenarioArea {
+public class ScenarioArea implements BandChangeEntity {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     private static JsonNode defaultMatrixJSON() {

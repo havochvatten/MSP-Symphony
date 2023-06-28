@@ -19,7 +19,7 @@
 
   <main *ngIf="(scenarios$ | async)?.length">
     <div *ngFor="let scenario of scenarios$ | async; index as scenarioIndex"
-         [ngClass]="{'scenario': true, 'hasCalculation': scenario.latestCalculationId }"
+         [ngClass]="{'scenario': true }"
             (click)="open(scenarioIndex)" [title]="scenario.name">
       <div class="scenario-info">
         <div class="name">
@@ -39,12 +39,17 @@
           <span class="feature-name">{{ 'map.editor.list.more-areas' | translate: { more: scenario.areas.length - MAX_AREAS } }}</span>
         </li>
       </ul>
-      <app-icon iconType="delete" [title]="'map.editor.delete.label' | translate"
-                (click)="deleteScenario(scenario); $event.stopPropagation()">
-      </app-icon>
-      <app-icon *ngIf="scenario.latestCalculationId" iconType="report" [title]="'map.editor.list.show-report-label' | translate"
-                (click)="showReport(scenario.latestCalculationId); $event.stopPropagation()">
-      </app-icon>
+      <div class="scenario-actions">
+        <app-icon *ngIf="scenario.latestCalculationId" iconType="report" [title]="'map.editor.list.show-report-label' | translate"
+                  (click)="showReport(scenario.latestCalculationId); $event.stopPropagation()">
+        </app-icon>
+        <app-icon iconType="copy" [title]="'map.editor.copy-scenario.label' | translate"
+                  (click)="copyScenario(scenario); $event.stopPropagation()">
+        </app-icon>
+        <app-icon iconType="delete" [title]="'map.editor.delete.tooltip' | translate"
+                  (click)="deleteScenario(scenario); $event.stopPropagation()">
+        </app-icon>
+      </div>
     </div>
   </main>
 

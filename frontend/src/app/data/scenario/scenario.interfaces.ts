@@ -55,3 +55,19 @@ export interface ScenarioMatrixDataMap {
 export interface ScenarioAreaCoastalExclusion {
   areaId: number | null;
 }
+
+export interface ScenarioChangeMap {
+  [ bandType: string ]: { [ bandId: number ]: BandChange }
+}
+
+export interface ScenarioCopyOptions {
+  name: string;
+  includeScenarioChanges: boolean;
+  areaChangesToInclude : number[];
+}
+
+export interface ScenarioChangesSelection {
+  scenarioId: number | null;
+  areaId: number | null;
+  overwrite: boolean;
+}
