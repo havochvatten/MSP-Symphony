@@ -27,6 +27,10 @@
   }
 
   .scenario-changes {
+    .changes-tools {
+      top: 2.3rem;
+    }
+
     #areas-list {
       box-sizing: border-box;
       display: grid;

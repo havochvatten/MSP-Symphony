@@ -177,4 +177,115 @@ public class ScenarioREST {
         var persistedAreas = service.addAreas(scenario, areaDtos);
         return Response.created(null).entity(persistedAreas).build();
     }
+
+    @POST
+    @Path("{id}/transferChanges")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response transferChanges(@Context HttpServletRequest req, @PathParam("id") int scenarioId,
+                                    ChangesSelection changesSelection) {
+        var principal = req.getUserPrincipal().getName();
+
+        if (principal == null)
+            throw new NotAuthorizedException("Null principal");
+
+        Scenario scenario = service.findById(scenarioId);
+        Scenario sourceScenario = service.findById(changesSelection.Id());
+
+        if (scenario == null || sourceScenario == null)
+            throw new NotFoundException("Scenario not found");
+
+        if (!(principal.equals(scenario.getOwner()) && principal.equals(sourceScenario.getOwner())))
+            throw new NotAuthorizedException("Not owner of scenario");
+
+        var persistedScenario = service.transferChanges(scenario, sourceScenario, changesSelection.overwrite());
+
+        return Response.ok(new ScenarioDto(persistedScenario)).build();
+    }
+
+    @POST
+    @Path("{id}/transferAreaChanges")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response transferAreaChanges(@Context HttpServletRequest req, @PathParam("id") int scenarioId,
+                                    ChangesSelection changesSelection) {
+        var principal = req.getUserPrincipal().getName();
+
+        if (principal == null)
+            throw new NotAuthorizedException("Null principal");
+
+        Scenario scenario = service.findById(scenarioId);
+        ScenarioArea sourceArea = service.findAreaById(changesSelection.Id());
+
+        if (scenario == null)
+            throw new NotFoundException("Scenario not found");
+
+        if (sourceArea == null)
+            throw new NotFoundException("Scenario area not found");
+
+        if (!(principal.equals(scenario.getOwner()) && principal.equals(sourceArea.getScenario().getOwner())))
+            throw new NotAuthorizedException("Not owner of scenario");
+
+        var persistedScenario = service.transferChanges(scenario, sourceArea, changesSelection.overwrite());
+
+        return Response.ok(new ScenarioDto(persistedScenario)).build();
+    }
+
+    @POST
+    @Path("area/{areaId}/transferChanges")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response transferChanges_Area(@Context HttpServletRequest req, @PathParam("areaId") int areaId,
+                                    ChangesSelection changesSelection) {
+        var principal = req.getUserPrincipal().getName();
+
+        if (principal == null)
+            throw new NotAuthorizedException("Null principal");
+
+        ScenarioArea area = service.findAreaById(areaId);
+        Scenario sourceScenario = service.findById(changesSelection.Id());
+
+        if(area == null)
+            throw new NotFoundException("Scenario area not found");
+
+        if (sourceScenario == null)
+            throw new NotFoundException("Scenario not found");
+
+        if (!(principal.equals(area.getScenario().getOwner()) && principal.equals(sourceScenario.getOwner())))
+            throw new NotAuthorizedException("Not owner of scenario");
+
+        var persistedScenario = service.transferChanges(area, sourceScenario, changesSelection.overwrite());
+
+        return Response.ok(new ScenarioDto(persistedScenario)).build();
+    }
+
+    @POST
+    @Path("area/{areaId}/transferAreaChanges")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response transferAreaChanges_Area(@Context HttpServletRequest req, @PathParam("areaId") int areaId,
+                                    ChangesSelection changesSelection) {
+        var principal = req.getUserPrincipal().getName();
+
+        if (principal == null)
+            throw new NotAuthorizedException("Null principal");
+
+        ScenarioArea area = service.findAreaById(areaId);
+        ScenarioArea sourceArea = service.findAreaById(changesSelection.Id());
+
+        if(area == null || sourceArea == null)
+            throw new NotFoundException("Scenario area not found");
+
+        if (!(principal.equals(area.getScenario().getOwner()) && principal.equals(sourceArea.getScenario().getOwner())))
+            throw new NotAuthorizedException("Not owner of scenario");
+
+        var persistedScenario = service.transferChanges(area, sourceArea, changesSelection.overwrite());
+
+        return Response.ok(new ScenarioDto(persistedScenario)).build();
+    }
+
 }

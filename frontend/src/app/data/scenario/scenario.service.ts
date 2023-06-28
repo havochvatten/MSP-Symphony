@@ -82,4 +82,32 @@ export class ScenarioService {
   addScenarioAreas(scenarioId: number, areas: ScenarioArea[]) {
     return this.http.post<ScenarioArea[]>(this.scenarioApiBaseUrl + '/' + scenarioId + '/areas' , areas);
   }
+
+  transferChanges(targetId:number, scenarioId: number, overwrite: boolean) {
+    return this.http.post<Scenario>(this.scenarioApiBaseUrl + '/' + targetId + '/transferChanges', {
+      Id: scenarioId,
+      overwrite
+    });
+  }
+
+  transferAreaChanges(targetId: number, areaId: number, overwrite: boolean) {
+    return this.http.post<Scenario>(this.scenarioApiBaseUrl + '/' + targetId + '/transferAreaChanges', {
+      Id: areaId,
+      overwrite
+    });
+  }
+
+  transferChangesToArea(targetId:number, scenarioId: number, overwrite: boolean) {
+    return this.http.post<Scenario>(this.scenarioApiBaseUrl + '/area/' + targetId + '/transferChanges', {
+      Id: scenarioId,
+      overwrite
+    });
+  }
+
+  transferAreaChangesToArea(targetId: number, areaId: number, overwrite: boolean) {
+    return this.http.post<Scenario>(this.scenarioApiBaseUrl + '/area/' + targetId + '/transferAreaChanges', {
+      Id: areaId,
+      overwrite
+    });
+  }
 }

@@ -65,3 +65,9 @@ export interface ScenarioCopyOptions {
   includeScenarioChanges: boolean;
   areaChangesToInclude : number[];
 }
+
+export interface ScenarioChangesSelection {
+  scenarioId: number | null;
+  areaId: number | null;
+  overwrite: boolean;
+}

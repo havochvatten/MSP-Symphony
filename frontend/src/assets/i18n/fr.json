@@ -176,6 +176,14 @@
             "area-changes": {
                 "title": "Modifications spécifiques à la zone"
             },
+            "transfer-changes" : {
+                "title": "Transférer des modifications",
+                "tooltip": "Transférer des modifications à partir d'un scénario ou d'une zone",
+                "select-scenario": "Sélectionnez un scénario",
+                "select-scenario-detail": "Sélectionnez un scénario à partir duquel transférer les modifications",
+                "area-changes": "Zones de scénario avec modifications",
+                "overwrite": "Remplacer les modifications (sinon les modifications sélectionnées sont ajoutées)"
+            },
             "copy-scenario": {
                 "label": "Copier le scénario",
                 "title": "Configurer la copie du scénario",

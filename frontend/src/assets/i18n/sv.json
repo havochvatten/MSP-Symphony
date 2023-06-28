@@ -176,6 +176,14 @@
             "area-changes": {
                 "title": "Områdesspecifika förekomständringar"
             },
+            "transfer-changes" : {
+                "title": "Överför ändringar",
+                "tooltip": "Hämta ändringar från ett befintligt scenario eller scenarioområde",
+                "use-scenario-wide": "Använd det valda scenariots generella ändringar",
+                "select-scenario": "Välj scenario",
+                "select-scenario-detail": "Ange ett scenario eller område att hämta ändringar från",
+                "overwrite": "Ersätt befintliga förekomständringar med de valda (lägg annars till)"
+            },
             "copy-scenario": {
                 "label": "Kopiera scenario",
                 "title": "Kopiera scenario: alternativ",

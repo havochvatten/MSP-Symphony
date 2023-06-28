@@ -22,6 +22,7 @@ import { AddScenarioAreasComponent } from './add-scenario-areas/add-scenario-are
 import { ChangesOverviewComponent } from './changes-overview/changes-overview.component';
 import { CopyScenarioComponent } from './copy-scenario/copy-scenario.component';
 import { MatInputModule } from "@angular/material/input";
+import { TransferChangesComponent } from './transfer-changes/transfer-changes.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { MatInputModule } from "@angular/material/input";
     AddScenarioAreasComponent,
     ChangesOverviewComponent,
     CopyScenarioComponent,
+    TransferChangesComponent,
   ],
     imports: [
         SharedModule,

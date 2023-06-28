@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 })
 @Embeddable
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Scenario implements Serializable {
+public class Scenario implements Serializable, BandChangeEntity {
     private static final ObjectMapper mapper = new ObjectMapper();
     @Basic(optional = false)
     @NotNull

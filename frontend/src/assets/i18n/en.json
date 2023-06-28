@@ -176,6 +176,14 @@
             "area-changes": {
                 "title": "Scenario Area Changes"
             },
+            "transfer-changes" : {
+                "title": "Transfer changes",
+                "tooltip": "Transfer changes from an existing scenario or scenario area",
+                "select-scenario": "Select a scenario",
+                "select-scenario-detail": "Specify a scenario or area from which to transfer changes",
+                "area-changes": "Scenario Areas with changes available",
+                "overwrite": "Check to replace changes (otherwise the selected changes are appended)"
+            },
             "copy-scenario": {
                 "label": "Copy scenario",
                 "title": "Copy scenario: options",

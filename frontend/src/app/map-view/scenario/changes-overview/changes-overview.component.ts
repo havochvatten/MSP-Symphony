@@ -1,4 +1,4 @@
-import { Component, NgModuleRef, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Observable } from "rxjs";
 import { take } from "rxjs/operators";
 import { DialogRef } from "@shared/dialog/dialog-ref";

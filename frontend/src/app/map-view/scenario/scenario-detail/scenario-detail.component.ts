@@ -28,12 +28,9 @@ import { ChangesProperty, Scenario } from '@data/scenario/scenario.interfaces';
 import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
 import { ScenarioService } from "@data/scenario/scenario.service";
 import { Area } from "@data/area/area.interfaces";
-import { deleteScenario } from "@src/app/map-view/scenario/scenario-common";
+import { deleteScenario, transferChanges } from "@src/app/map-view/scenario/scenario-common";
 import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenario-areas/add-scenario-areas.component";
 import { SensitivityMatrix } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
-import {
-  MatrixTableComponent
-} from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix-table/matrix-table.component";
 import {
   ChangesOverviewComponent
 } from "@src/app/map-view/scenario/changes-overview/changes-overview.component";
@@ -279,5 +276,9 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   anyChanges() {
     return  (this.scenario.changes && Object.keys(this.scenario.changes).length > 0) ||
              this.scenario.areas.some(a => a.changes && Object.keys(a.changes!).length > 0);
+  }
+
+  async importChanges() {
+    await transferChanges(this.dialogService, this.translateService, this.store, this.moduleRef, this.scenario);
   }
 }

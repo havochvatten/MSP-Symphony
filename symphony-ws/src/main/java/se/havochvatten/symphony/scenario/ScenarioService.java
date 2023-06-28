@@ -166,11 +166,11 @@ public class ScenarioService {
 
                         var multipliers = new double[numBands];
                         Arrays.fill(multipliers, 1.0);  // default to no change
-                        multipliers[bandChange.band] = bandChange.multiplier;
+                        multipliers[bandChange.band] = bandChange.multiplier == null ? 1.0 : bandChange.multiplier;
 
                         var offsets = new double[numBands];
                         // No need to fill since array is initialized to zero by default
-                        offsets[bandChange.band] = bandChange.offset;
+                        offsets[bandChange.band] = bandChange.offset == null ? 0.0 : bandChange.offset;
 
                         return (GridCoverage2D) operations.rescale(innerState, multipliers, offsets,
                             gridROI, MAX_IMPACT_VALUE);
@@ -235,5 +235,32 @@ public class ScenarioService {
         em.flush();
 
         return new ScenarioDto(copiedScenario);
+    }
+
+    public Scenario transferChanges(BandChangeEntity target, BandChangeEntity source, boolean overwrite) {
+
+        if(overwrite) {
+            target.setChanges(source.getChanges());
+        } else {
+            var changes = target.getChangeMap();
+            changes.putAll(source.getChangeMap());
+            target.setChanges(mapper.valueToTree(changes));
+        }
+
+        if(target instanceof ScenarioArea) {
+            var area = (ScenarioArea) target;
+            var targetScenario = area.getScenario();
+            targetScenario.getAreas().remove(area);
+            targetScenario.getAreas().add(area);
+            em.merge(targetScenario);
+            em.flush();
+
+            return targetScenario;
+        } else {
+            em.merge(target);
+            em.flush();
+
+            return (Scenario) target;
+        }
     }
 }

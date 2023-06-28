@@ -46,10 +46,15 @@
 
     <section class="scenario-changes">
       <h3>{{ 'map.editor.changes.title' | translate }}</h3>
-      <app-icon iconType="table"
-                (click)="openIntensityOverview()"
-                title="{{ 'map.editor.changes-overview.show-overview' | translate }}"
-                *ngIf="anyChanges()"></app-icon>
+      <div class="changes-tools">
+        <app-icon iconType="table"
+                  (click)="openIntensityOverview()"
+                  title="{{ 'map.editor.changes-overview.show-overview' | translate }}"
+                  *ngIf="anyChanges()"></app-icon>
+        <app-icon iconType="copy-setting"
+                  (click)="importChanges()"
+                  title="{{ 'map.editor.transfer-changes.tooltip' | translate }}"></app-icon>
+      </div>
       <app-changes-list
         [changes]="changes()"
         [deleteChange]="deleteChange">

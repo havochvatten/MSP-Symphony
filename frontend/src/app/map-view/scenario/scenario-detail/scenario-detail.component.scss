@@ -278,13 +278,19 @@ $buttons-row-gap: 1rem;
   .scenario-changes {
     position: relative;
 
-    app-icon {
-      display: inline-block;
+    .changes-tools {
+      display:flex;
+      flex-direction: row-reverse;
       position: absolute;
       top: 0.8rem;
       right: 0.8rem;
-      font-size: 1.6rem;
-      cursor: pointer;
+
+      app-icon {
+        display: inline-block;
+        font-size: 1.6rem;
+        cursor: pointer;
+        margin-left: 0.8rem;
+      }
     }
   }
 }

@@ -199,6 +199,12 @@ export const scenarioReducer = createReducer(
       matricesLoading: loading
     }
   }),
+  on(ScenarioActions.transferChangesSuccess, (state, { scenario: updatedScenario }) => {
+    return {
+      ...state,
+      scenarios: setIn(state.scenarios, [state.active], updatedScenario)
+    }
+  }),
   on(fetchAreaMatrixSuccess, (state, { areaId, matrixData }) => {
     const loading = matrixData.overlap.length > 0;
     return {

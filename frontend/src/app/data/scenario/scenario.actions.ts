@@ -2,7 +2,7 @@ import { createAction, props } from "@ngrx/store";
 import {
   Scenario,
   ScenarioArea,
-  ScenarioAreaCoastalExclusion, ScenarioCopyOptions,
+  ScenarioAreaCoastalExclusion, ScenarioChangesSelection, ScenarioCopyOptions,
   ScenarioMatrixDataMap
 } from "@data/scenario/scenario.interfaces";
 import { ErrorMessage } from "@data/message/message.interfaces";
@@ -14,7 +14,6 @@ import {
 import { Feature } from "geojson";
 import { OperationParams } from "@data/calculation/calculation.interfaces";
 import { CalcOperation, NormalizationOptions } from "@data/calculation/calculation.service";
-import { CopyScenarioComponent } from "@src/app/map-view/scenario/copy-scenario/copy-scenario.component";
 
 
 export const fetchScenarios = createAction(
@@ -167,6 +166,26 @@ export const addAreasToActiveScenario = createAction(
 export const addScenarioAreasSuccess = createAction(
   '[Scenario] Add scenario areas success',
   props<{ newAreas: ScenarioArea[] }>()
+);
+
+export const transferScenarioChanges = createAction(
+  '[Scenario] Transfer scenario changes',
+  props<{ changesSelection: ScenarioChangesSelection }>()
+);
+
+export const transferScenarioAreaChanges = createAction(
+  '[Scenario] Transfer scenario area changes',
+  props<{ changesSelection: ScenarioChangesSelection }>()
+);
+
+export const transferChangesSuccess = createAction(
+  '[Scenario] Transfer scenario changes success',
+  props<{ scenario: Scenario }>()
+);
+
+export const transferChangesFailure = createAction(
+  '[Scenario] Transfer changes failure',
+  props<{ error: ErrorMessage }>()
 );
 
 export const deleteBandChange = createAction(

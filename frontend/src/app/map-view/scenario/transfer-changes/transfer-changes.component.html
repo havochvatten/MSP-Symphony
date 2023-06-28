@@ -1,0 +1,32 @@
+<h3>{{ 'map.editor.transfer-changes.title' | translate }}</h3>
+<p class="transfer-instruction">{{ 'map.editor.transfer-changes.select-scenario-detail' | translate }}</p>
+<mat-form-field>
+  <mat-label>{{ 'map.editor.transfer-changes.select-scenario' | translate }}</mat-label>
+  <mat-select (selectionChange)="onScenarioChange($event)" [ngClass]="'scenario-select'" [(ngModel)]="selectedScenario">
+    <mat-option *ngFor="let scenarioWithChanges of (scenarios$ | async)" [value]="scenarioWithChanges" [ngClass]="{ 'grayed' : !scenarioWithChanges.hasGlobalChanges }">
+      {{ scenarioWithChanges.scenario.name }}
+    </mat-option>
+  </mat-select>
+  <mat-radio-group #changesSelection (change)="setChangesToTransfer($event)" (click)="$event.stopPropagation()">
+    <mat-radio-button [value]="-1"
+                      [checked]="selectedChange === -1"
+                      [disabled]="selectedScenario == null ||
+                                  !selectedScenario.hasGlobalChanges">{{ 'map.editor.transfer-changes.use-scenario-wide' | translate }}
+    </mat-radio-button>
+    <h4 *ngIf="getSelectableAreas().length > 0">{{ 'map.editor.transfer-changes.area-changes' | translate }}</h4>
+    <mat-radio-button *ngFor="let area of getSelectableAreas()"
+                      [value]="area.id"
+                      [checked]="selectedChange === area.id">{{ area.feature.properties['name'] }}
+    </mat-radio-button>
+  </mat-radio-group>
+</mat-form-field>
+<mat-checkbox [(ngModel)]="selectedChanges.overwrite">{{ 'map.editor.transfer-changes.overwrite' | translate }}</mat-checkbox>
+<section class="buttons">
+  <button mat-flat-button (click)="confirmTransferChanges()" [ngClass]="'primary'" [disabled]="noSelection()" >
+    {{ 'confirmation-modal.confirm' | translate }}
+  </button>
+  <button mat-flat-button (click)="dialog.close()" [ngClass]="'secondary'">
+    {{ 'confirmation-modal.cancel' | translate }}
+  </button>
+</section>
+
