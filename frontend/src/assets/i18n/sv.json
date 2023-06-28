@@ -182,6 +182,7 @@
                 "use-scenario-wide": "Använd det valda scenariots generella ändringar",
                 "select-scenario": "Välj scenario",
                 "select-scenario-detail": "Ange ett scenario eller område att hämta ändringar från",
+                "area-changes": "Scenarioområden med ändringar",
                 "overwrite": "Ersätt befintliga förekomständringar med de valda (lägg annars till)"
             },
             "copy-scenario": {

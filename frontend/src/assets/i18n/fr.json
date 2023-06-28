@@ -179,6 +179,7 @@
             "transfer-changes" : {
                 "title": "Transférer des modifications",
                 "tooltip": "Transférer des modifications à partir d'un scénario ou d'une zone",
+                "use-scenario-wide": "Utiliser les modifications à l'échelle du scénario",
                 "select-scenario": "Sélectionnez un scénario",
                 "select-scenario-detail": "Sélectionnez un scénario à partir duquel transférer les modifications",
                 "area-changes": "Zones de scénario avec modifications",
