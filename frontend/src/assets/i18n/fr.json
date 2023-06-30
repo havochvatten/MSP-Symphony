@@ -168,7 +168,7 @@
             },
             "changes-overview" : {
                 "title": "Vue d'ensemble des modifications de scénario",
-                "show-overview": "Afficher une vue d'ensemble de tous les changements"
+                "show-overview": "Afficher une vue d'ensemble de tous les changements",
                 "global-changes": "Modifications générales",
                 "show-all": "Afficher toutes",
                 "close": "Fermer"
