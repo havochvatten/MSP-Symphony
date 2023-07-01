@@ -35,8 +35,9 @@
     }
   }
 
-  div.buttonPane {
+  div.button-pane {
       display: flex;
+      justify-content: center;
 
     &.left {
       -webkit-box-pack: start;

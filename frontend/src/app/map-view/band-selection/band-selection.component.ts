@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { BandGroup, Band, StatePath } from '@data/metadata/metadata.interfaces';
+import { BandGroup, Band, StatePath, BandType_Alt } from '@data/metadata/metadata.interfaces';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { MetadataActions } from '@data/metadata';
@@ -40,7 +40,7 @@ function filterCheckBoxGroups(groups: BandGroup[], search: string): BandGroup[] 
     }));
 }
 
-type BandType = 'ecoComponents' | 'pressures';
+type BandType = BandType_Alt;
 
 @Component({
   selector: 'app-band-selection',

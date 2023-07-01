@@ -110,8 +110,8 @@ $buttons-row-gap: 1rem;
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(255, 255, 255, 0.5);
-            background-color: #9ea6b380;
+            background-color: rgba(237, 237, 237, 0.58);
+            background-color: #ededed94;
             justify-content: center;
             align-items: center;
             z-index: 1;
@@ -271,6 +271,25 @@ $buttons-row-gap: 1rem;
         app-icon {
           font-size: 3rem;
         }
+      }
+    }
+  }
+
+  .scenario-changes {
+    position: relative;
+
+    .changes-tools {
+      display:flex;
+      flex-direction: row-reverse;
+      position: absolute;
+      top: 0.8rem;
+      right: 0.8rem;
+
+      app-icon {
+        display: inline-block;
+        font-size: 1.6rem;
+        cursor: pointer;
+        margin-left: 0.8rem;
       }
     }
   }

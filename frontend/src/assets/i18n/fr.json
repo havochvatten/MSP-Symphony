@@ -15,7 +15,7 @@
     "map": {
         "background-transparency": "Transparence de la carte de fond",
         "click-area": "Cliquez pour sélectionner une région.",
-        "location-outside-scenario": "Cette région n'est pas disponible dans le scénario actif.",
+        "location-within-scenario": "Cette zone se superpose au scénario actif.",
         "areas": "Régions",
         "matrix": "Matrice",
         "no-active-scenario": "Activer un scénario pour effectuer les réglages",
@@ -166,8 +166,35 @@
                 "collapse": "Cacher les modifications",
                 "collapsed-count": "Afficher {{ count }} modifications"
             },
+            "changes-overview" : {
+                "title": "Vue d'ensemble des modifications de scénario",
+                "show-overview": "Afficher une vue d'ensemble de tous les changements"
+                "global-changes": "Modifications générales",
+                "show-all": "Afficher toutes",
+                "close": "Fermer"
+            },
             "area-changes": {
                 "title": "Modifications spécifiques à la zone"
+            },
+            "transfer-changes" : {
+                "title": "Transférer des modifications",
+                "tooltip": "Transférer des modifications à partir d'un scénario ou d'une zone",
+                "use-scenario-wide": "Utiliser les modifications à l'échelle du scénario",
+                "select-scenario": "Sélectionnez un scénario",
+                "select-scenario-detail": "Sélectionnez un scénario à partir duquel transférer les modifications",
+                "area-changes": "Zones de scénario avec modifications",
+                "overwrite": "Remplacer les modifications (sinon les modifications sélectionnées sont ajoutées)"
+            },
+            "copy-scenario": {
+                "label": "Copier le scénario",
+                "title": "Configurer la copie du scénario",
+                "new-scenario-name": "Nom du nouveau scénario",
+                "copy-specifier": "{{ scenario }} (copie)",
+                "include-scenario-changes": "Inclure les modifications globales de scénario",
+                "area-changes-to-include": "Sélectionnez les modifications de zone à inclure dans le scénario copié",
+                "areas-without-changes": "Ces zones du scénario manquent de changements spécifiques: {{ areas-list }}",
+                "create-copy": "Copier",
+                "cancel": "Annuler"
             },
             "select-area-message": "Sélectionnez une zone de calcul. Commencez par sélectionner une zone, puis modifiez les valeurs des composantes écosystèmes ou pressions dans le panel de gauche.",
             "fetching-matrices": "Chargement des matrices de sensibilité...",
@@ -190,6 +217,7 @@
             "close": "❮",
             "delete": {
                 "label": "Supprimer",
+                "tooltip": "Supprimer le scénario",
                 "modal": {
                     "title": "Êtes-vous sûr de vouloir supprimer &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
                     "delete": "Supprimer",

@@ -34,8 +34,8 @@ import javax.transaction.Transactional;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -74,7 +74,8 @@ public class ScenarioService {
         try {
             return em.createNamedQuery("Scenario.findAllByOwner", ScenarioDto.class)
                 .setParameter("owner", principal.getName())
-                .getResultList().stream().filter(s -> s.id != null).collect(Collectors.toList());
+                .getResultList().stream().filter(s -> s.id != null)
+                .sorted(Comparator.<ScenarioDto>comparingInt(s -> s.id).reversed()).collect(Collectors.toList());
         } catch (Exception e) {
             return null;
         }
@@ -165,11 +166,11 @@ public class ScenarioService {
 
                         var multipliers = new double[numBands];
                         Arrays.fill(multipliers, 1.0);  // default to no change
-                        multipliers[bandChange.band] = bandChange.multiplier;
+                        multipliers[bandChange.band] = bandChange.multiplier == null ? 1.0 : bandChange.multiplier;
 
                         var offsets = new double[numBands];
                         // No need to fill since array is initialized to zero by default
-                        offsets[bandChange.band] = bandChange.offset;
+                        offsets[bandChange.band] = bandChange.offset == null ? 0.0 : bandChange.offset;
 
                         return (GridCoverage2D) operations.rescale(innerState, multipliers, offsets,
                             gridROI, MAX_IMPACT_VALUE);
@@ -225,5 +226,41 @@ public class ScenarioService {
         return Arrays.stream(newAreas).map(
             scenarioArea -> new ScenarioAreaDto(scenarioArea, finalScenario.getId()))
             .toArray(ScenarioAreaDto[]::new);
+    }
+
+    public ScenarioDto copy(Scenario scenario, ScenarioCopyOptions options) {
+
+        Scenario copiedScenario = new Scenario(scenario, options);
+        em.persist(copiedScenario);
+        em.flush();
+
+        return new ScenarioDto(copiedScenario);
+    }
+
+    public Scenario transferChanges(BandChangeEntity target, BandChangeEntity source, boolean overwrite) {
+
+        if(overwrite) {
+            target.setChanges(source.getChanges());
+        } else {
+            var changes = target.getChangeMap();
+            changes.putAll(source.getChangeMap());
+            target.setChanges(mapper.valueToTree(changes));
+        }
+
+        if(target instanceof ScenarioArea) {
+            var area = (ScenarioArea) target;
+            var targetScenario = area.getScenario();
+            targetScenario.getAreas().remove(area);
+            targetScenario.getAreas().add(area);
+            em.merge(targetScenario);
+            em.flush();
+
+            return targetScenario;
+        } else {
+            em.merge(target);
+            em.flush();
+
+            return (Scenario) target;
+        }
     }
 }

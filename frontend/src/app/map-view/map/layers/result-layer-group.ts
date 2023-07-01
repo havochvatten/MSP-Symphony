@@ -16,7 +16,9 @@ export class ResultLayerGroup extends SymphonyLayerGroup {
     return {
       url: image.getUrl(),
       imageExtent: image.getImageExtent(),
-      projection: AppSettings.DATALAYER_RASTER_CRS,
+      projection: AppSettings.CLIENT_SIDE_PROJECTION ?
+        AppSettings.DATALAYER_RASTER_CRS :
+        AppSettings.MAP_PROJECTION,
       calculationId: calcId,
       interpolate: this.antialias
     };

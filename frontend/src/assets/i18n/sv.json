@@ -15,7 +15,7 @@
     "map": {
         "background-transparency": "Bakgrundskartans synlighet",
         "click-area": "Klicka för att markera området.",
-        "location-within-scenario": "Området tillhör redan det aktiva scenariot.",
+        "location-within-scenario": "Området överlappar med det aktiva scenariot.",
         "areas": "Kartområden",
         "matrix": "Matris",
         "no-active-scenario": "Aktivera ett scenario för att göra inställningar",
@@ -166,8 +166,35 @@
                 "collapse": "Dölj ändringar",
                 "collapsed-count": "Visa {{ count }} ändringar"
             },
+            "changes-overview" : {
+                "title": "Översikt förekomständringar",
+                "show-overview": "Öppna översiktsvyn för ändringar",
+                "global-changes": "Generella ändringar",
+                "show-all": "Visa alla",
+                "close": "Stäng"
+            },
             "area-changes": {
                 "title": "Områdesspecifika förekomständringar"
+            },
+            "transfer-changes" : {
+                "title": "Överför ändringar",
+                "tooltip": "Hämta ändringar från ett befintligt scenario eller scenarioområde",
+                "use-scenario-wide": "Använd det valda scenariots generella ändringar",
+                "select-scenario": "Välj scenario",
+                "select-scenario-detail": "Ange ett scenario eller område att hämta ändringar från",
+                "area-changes": "Scenarioområden med ändringar",
+                "overwrite": "Ersätt befintliga förekomständringar med de valda (lägg annars till)"
+            },
+            "copy-scenario": {
+                "label": "Kopiera scenario",
+                "title": "Kopiera scenario: alternativ",
+                "new-scenario-name": "Ange ett nytt namn",
+                "copy-specifier": "{{ scenario }} (kopia)",
+                "include-scenario-changes": "Inkludera scenariots generella förekomständringar",
+                "area-changes-to-include": "Välj vilka områdens ändringar som ska speglas i det kopierade scenariot",
+                "areas-without-changes": "Följande områden i scenariot saknar specifika ändringar: {{ areas-list }}",
+                "create-copy": "Kopiera",
+                "cancel": "Avbryt"
             },
             "select-area-message": "För att beräkna krävs det att ett område har markerats. Börja med att välja område och eventuella naturvärden och belastningar i vänster panel.",
             "fetching-matrices": "Hämtar information om områdets känslighetsmatriser...",
@@ -190,6 +217,7 @@
             "close": "❮",
             "delete": {
                 "label": "Radera",
+                "tooltip": "Radera scenario",
                 "modal": {
                     "title": "Är du säker på att du vill radera &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
                     "delete": "Radera",

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment as env } from '@src/environments/environment';
-import { Scenario, ScenarioArea, ScenarioMatrixDataMap } from "@data/scenario/scenario.interfaces";
+import { Scenario, ScenarioArea, ScenarioCopyOptions, ScenarioMatrixDataMap } from "@data/scenario/scenario.interfaces";
 import { Baseline } from "@data/user/user.interfaces";
 import { NormalizationOptions } from "@data/calculation/calculation.service";
 import { GeoJSONFeature } from 'ol/format/GeoJSON';
@@ -59,6 +59,10 @@ export class ScenarioService {
     return this.http.delete(this.scenarioApiBaseUrl+'/'+id);
   }
 
+  copy(scenarioId: number, options: ScenarioCopyOptions) {
+    return this.http.post<Scenario>(this.scenarioApiBaseUrl+'/'+scenarioId+'/copy', options);
+  }
+
   setScenarioChangeVisibility(feature: GeoJSONFeature) {
     return this.scenarioLayer!.toggleChangeAreaVisibility(feature);
   }
@@ -77,5 +81,33 @@ export class ScenarioService {
 
   addScenarioAreas(scenarioId: number, areas: ScenarioArea[]) {
     return this.http.post<ScenarioArea[]>(this.scenarioApiBaseUrl + '/' + scenarioId + '/areas' , areas);
+  }
+
+  transferChanges(targetId:number, scenarioId: number, overwrite: boolean) {
+    return this.http.post<Scenario>(this.scenarioApiBaseUrl + '/' + targetId + '/transferChanges', {
+      Id: scenarioId,
+      overwrite
+    });
+  }
+
+  transferAreaChanges(targetId: number, areaId: number, overwrite: boolean) {
+    return this.http.post<Scenario>(this.scenarioApiBaseUrl + '/' + targetId + '/transferAreaChanges', {
+      Id: areaId,
+      overwrite
+    });
+  }
+
+  transferChangesToArea(targetId:number, scenarioId: number, overwrite: boolean) {
+    return this.http.post<Scenario>(this.scenarioApiBaseUrl + '/area/' + targetId + '/transferChanges', {
+      Id: scenarioId,
+      overwrite
+    });
+  }
+
+  transferAreaChangesToArea(targetId: number, areaId: number, overwrite: boolean) {
+    return this.http.post<Scenario>(this.scenarioApiBaseUrl + '/area/' + targetId + '/transferAreaChanges', {
+      Id: areaId,
+      overwrite
+    });
   }
 }

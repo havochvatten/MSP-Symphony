@@ -115,6 +115,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           isEqual(prev?.areas.map(a => a.id), curr?.areas.map(a => a.id))),
       isNotNullOrUndefined(),
     ).subscribe((scenario: Scenario) => {
+      this.areaLayer.deselectAreas();
+
       this.scenarioLayer.clearLayers();
 
       this.scenarioLayer.setScenarioBoundary(scenario);
@@ -199,6 +201,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     this.map.addLayer(this.scenarioLayer);
   }
+
   public clearResult() {
     this.resultLayerGroup.clearResult();
   }

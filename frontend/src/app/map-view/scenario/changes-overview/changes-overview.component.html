@@ -1,0 +1,61 @@
+<header>
+  <div>
+    <h2>{{ 'map.editor.changes-overview.title' | translate }}</h2>
+    <span>{{ scenario.name }}</span>
+  </div>
+  <mat-radio-group name="changes-to-show" (change)="selectType($event.value)" *ngIf="bothTypes">
+    <mat-radio-button [value]="'ecoComponents'" [checked]="ecoChanges && !pressureChanges">
+      <strong>{{ 'map.intensity.ecosystems' | translate }}</strong>
+    </mat-radio-button>
+    <mat-radio-button [value]="'pressures'" [checked]="!ecoChanges && pressureChanges">
+      <strong>{{ 'map.intensity.pressures' | translate }}</strong>
+    </mat-radio-button>
+    <mat-radio-button [value]="'both'" [checked]="ecoChanges && pressureChanges">
+      <strong>{{ 'map.editor.changes-overview.show-all' | translate }}</strong>
+    </mat-radio-button>
+  </mat-radio-group>
+</header>
+<div class="intensity-tables-wrapper">
+  <table class="intensity-table">
+    <thead>
+      <tr>
+        <th></th>
+        <ng-container *ngFor="let $bandType of selectedBandTypes()">
+          <ng-container *ngFor="let $bandGroups of groupMap.get($bandType) | keyvalue">
+            <th *ngFor="let $band of $bandGroups.value; let $ix = index"
+                [ngClass]="{ 'first-band' : $ix === 0, 'band-name-cell': true}">
+              <span *ngIf="$ix === 0" class="symphony-theme">{{ $bandGroups.key | translate }}</span>
+              <span class="band-name">{{ $band.name | translate }}</span>
+            </th>
+          </ng-container>
+        </ng-container>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let $change of areaChangeMap | keyvalue">
+        <th>
+          <span class="band-name">
+            {{ $change.key >= 0 ? scenario.areas[$change.key].feature.properties['name'] :
+              ('map.editor.changes-overview.global-changes' | translate) }}
+          </span>
+        </th>
+        <ng-container *ngFor="let $bandType of selectedBandTypes()">
+          <ng-container *ngFor="let $bandGroups of groupMap.get($bandType) | keyvalue">
+            <td *ngFor="let $band of $bandGroups.value"
+            [ngClass]="{
+                  eco:      $bandType === 'ecoComponents',
+                  pressure: $bandType === 'pressures' }"
+            >
+              <span>{{ bandValueForArea($bandType, +$change.key, $band.id) }}</span>
+            </td>
+          </ng-container>
+        </ng-container>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<section class="buttons">
+  <button mat-flat-button (click)="dialog.close()" [ngClass]="'secondary'">
+    {{ 'map.editor.changes-overview.close' | translate }}
+  </button>
+</section>

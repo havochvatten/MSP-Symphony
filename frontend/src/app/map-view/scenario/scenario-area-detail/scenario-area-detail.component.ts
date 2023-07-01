@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, NgModuleRef, OnDestroy, OnInit } from '@angular/core';
 import { ChangesProperty, Scenario, ScenarioArea } from "@data/scenario/scenario.interfaces";
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
@@ -19,12 +19,13 @@ import { ScenarioService } from "@data/scenario/scenario.service";
 import { availableOperationsByValue } from "@data/calculation/calculation.util";
 import { OperationParams } from "@data/calculation/calculation.interfaces";
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
+import { transferChanges } from "@src/app/map-view/scenario/scenario-common";
 
 @Component({
   selector: 'app-scenario-area-detail',
   templateUrl: './scenario-area-detail.component.html',
-  styleUrls: ['./scenario-area-detail.component.scss',
-              '../scenario-detail/scenario-detail.component.scss']
+  styleUrls: ['../scenario-detail/scenario-detail.component.scss',
+              './scenario-area-detail.component.scss']
 })
 export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
   env = environment;
@@ -51,7 +52,8 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
     private calcService: CalculationService,
     private scenarioService: ScenarioService,
     private dialogService: DialogService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private moduleRef: NgModuleRef<any>
   ) {
     const that = this;
     this.calculating$ = this.store.select(CalculationSelectors.selectCalculating);
@@ -131,5 +133,9 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
 
   hasAssociatedCoastalArea() {
     return !!this.associatedCoastalArea;
+  }
+
+  async importChanges() {
+    await transferChanges(this.dialogService, this.translateService, this.store, this.moduleRef, this.area());
   }
 }
