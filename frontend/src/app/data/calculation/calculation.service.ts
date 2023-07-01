@@ -13,6 +13,7 @@ import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 import { Scenario } from '@data/scenario/scenario.interfaces';
 import { UserSelectors } from "@data/user";
+import { transformExtent } from "ol/proj";
 
 export enum NormalizationType {
   Area = 'AREA',
@@ -133,7 +134,9 @@ export class CalculationService implements OnDestroy {
               url: URL.createObjectURL(response.body!),
               calculationId: id,
               imageExtent: JSON.parse(extentHeader),
-              projection: AppSettings.DATALAYER_RASTER_CRS,
+              projection: AppSettings.CLIENT_SIDE_PROJECTION ?
+                            AppSettings.DATALAYER_RASTER_CRS :
+                            AppSettings.MAP_PROJECTION,
               interpolate: that.aliasing
             });
             resolve();
