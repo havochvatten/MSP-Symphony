@@ -1,12 +1,10 @@
 <div id="map" class="map" #map></div>
 <app-map-toolbar
   [drawIsActive]="drawIsActive"
-  [hasImageSmoothing]="layerAliasing"
   (zoomIn)="zoomIn()"
   (zoomOut)="zoomOut()"
   (clearResult)="clearResult()"
   (toggleDraw)="toggleDrawInteraction()"
-  (toggleSmooth)="toggleSmooth()"
   (setMapOpacity)="setMapOpacity($event)"
 ></app-map-toolbar>
 <app-footer></app-footer>

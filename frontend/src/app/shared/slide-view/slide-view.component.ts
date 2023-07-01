@@ -46,6 +46,7 @@ export class SlideViewComponent implements OnChanges, AfterViewInit {
   @Input() open = false;
   @Input() position: ViewOrientation = 'right';
   @Output() toggle = new EventEmitter<void>();
+  @Output() navigate = new EventEmitter<string>();
   @ContentChildren(SlideViewTabComponent) tabs!: QueryList<SlideViewTabComponent>;
   @Input() routeTabIdIsAvailable = false;
 
@@ -73,6 +74,7 @@ export class SlideViewComponent implements OnChanges, AfterViewInit {
       this.onClick();
     }
     this.tabs.toArray().forEach(tab => (tab.active = tab.id === tabId));
+    this.navigate.emit(tabId);
   }
 
   onClick() {

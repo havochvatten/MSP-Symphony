@@ -42,12 +42,15 @@ public class CalcUtil {
     public static Optional<CalculationResult> getCalculationResultFromSessionOrDb(int id,
                                                                                   HttpSession session,
                                                                                   CalcService calcService) {
-        var lastResult = (CalculationResult) session.getAttribute(LAST_CALCULATION_PROPERTY_NAME);
+        return Optional.ofNullable(calcService.getCalculation(id));
 
-        if (lastResult != null && lastResult.getId().equals(id)) {
-            LOG.info("Getting calculation {} from session {}", id, session.getId());
-            return Optional.of(lastResult);
-        } else
-            return Optional.ofNullable(calcService.getCalculation(id));
+//      previous approach for caching calculation results in session, apparently not reliable
+//        var lastResult = (CalculationResult) session.getAttribute(LAST_CALCULATION_PROPERTY_NAME);
+//
+//        if (lastResult != null && lastResult.getId().equals(id)) {
+//            LOG.info("Getting calculation {} from session {}", id, session.getId());
+//            return Optional.of(lastResult);
+//        } else
+//            return Optional.ofNullable(calcService.getCalculation(id));
     }
 }

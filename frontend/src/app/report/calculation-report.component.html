@@ -16,13 +16,26 @@
     [normalized]="isDomainNormalization(report)"
     [locale]="locale"
   ></app-cumulative-effect-etc>
-  <app-histogram
-    [title]="('report.histogram.caption'| translate) +
-        ' (' + ('map.editor.operation.'+ (report.operationName) + '.title' | translate | lowercase) +')'"
-    [report]="report"
-    [locale]="locale"
-  >
-  </app-histogram>
+  <ng-container>
+    <div id="matrix-selection">
+      <h4>{{'report.sensitivity-matrices.title' | translate}}</h4>
+      <table>
+        <tr *ngFor="let matrixMap of getGroupedMatrixMap() | keyvalue">
+          <th>{{ matrixMap.value.join(", ") }}</th>
+          <td>{{ matrixMap.key }}</td>
+        </tr>
+      </table>
+<!--      <ng-container *ngIf="hasAreaTypes(matrix)">-->
+<!--        <h5>{{'report.cumulative-effect-etc.sensitivity-matrices.area-type-matrices' | translate}}</h5>-->
+<!--        <table>-->
+<!--          <tr *ngFor="let areaType of matrix.areaTypes | keyvalue">-->
+<!--            <th>{{ areaType.key | titlecase }}:</th>-->
+<!--            <td>{{ areaType.value.join() }}</td>-->
+<!--          </tr>-->
+<!--        </table>-->
+<!--      </ng-container>-->
+    </div>
+  </ng-container>
   <app-highest-impacts
     class="pressure-impacts"
     [title]="'report.highest-impact.pressure' | translate"
@@ -48,6 +61,7 @@
   <app-scenario-changes
     [scenarioChanges]="report.scenarioChanges"
     [bandMap]="bandMap"
+    [areaDict]="areaDict"
   ></app-scenario-changes>
   <!--TODO Localize names -->
   <app-impact-table class="pressure-impacts"
@@ -64,10 +78,16 @@
     [names]="['report.impact-table.cumulative' | translate, 'report.impact-table.percentage-of-total' | translate]"
     [locale]="locale"
   ></app-impact-table>
+  <app-histogram
+    [title]="('report.histogram.caption'| translate) +
+        ' (' + ('map.editor.operation.'+ (report.operationName) + '.title' | translate | lowercase) +')'"
+    [report]="report"
+    [locale]="locale"
+  >
+  </app-histogram>
   <app-report-bottom
-  [formattedDate]="report?.timestamp | date:  'yyyy-MM-dd&nbsp;&nbsp;&nbsp;HH:mm'"
+    [formattedDate]="report?.timestamp | date:  'yyyy-MM-dd&nbsp;&nbsp;&nbsp;HH:mm'"
   ></app-report-bottom>
-
 </tbody>
 
 <div *ngIf="loadingReport" class="loading-report">

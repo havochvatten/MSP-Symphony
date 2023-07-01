@@ -1,0 +1,12 @@
+<app-icon-button
+  icon="plus" [disabled]="disabled || selectedAreas.length === 0"
+  [title]="disabled ? '' :
+          !(selectedAreas && selectedAreas.length > 0) ?
+            (noneSelectedTipKey | translate) :
+            selectedAreas.length === 1 ?
+            (singleSelectedTipKey | translate: { area: selectedAreas![0].name }) :
+            (multipleSelectedTipKey | translate)"
+  [label]="selectedAreas && selectedAreas.length > 0 ? (multipleSelectedTipKey | translate :
+        { area: selectedAreas![0].name }) : (noneSelectedTipKey | translate)"
+  (click)="callDelegate()"
+></app-icon-button>

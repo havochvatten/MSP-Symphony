@@ -1,6 +1,6 @@
-@import '../../../styles/constants';
-@import '../../../styles/hav-colors';
-@import '../../../styles/margins';
+@import 'src/styles/constants';
+@import 'src/styles/hav-colors';
+@import 'src/styles/margins';
 
 :host {
   background: $hav-darkcoldgrey;
@@ -73,6 +73,8 @@
 
     p {
       font-size: 1.3rem;
+      line-height: 1.6rem;
+      padding-top: 0.6rem;
       margin: 0;
     }
   }

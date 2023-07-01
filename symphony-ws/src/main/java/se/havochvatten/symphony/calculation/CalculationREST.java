@@ -4,19 +4,28 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.time.StopWatch;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridCoverageFactory;
+import org.geotools.coverage.processing.CoverageProcessor;
+import org.geotools.coverage.util.IntersectUtils;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.locationtech.jts.geom.Envelope;
+import org.geotools.styling.StyledLayerDescriptor;
+import org.locationtech.jts.geom.*;
+import org.opengis.coverage.Coverage;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import se.havochvatten.symphony.dto.CalculationResultSlice;
-import se.havochvatten.symphony.dto.ScenarioDto;
 import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.exception.SymphonyStandardSystemException;
-import se.havochvatten.symphony.scenario.Scenario;
+import se.havochvatten.symphony.scenario.ScenarioArea;
 import se.havochvatten.symphony.scenario.ScenarioService;
+import se.havochvatten.symphony.scenario.ScenarioSnapshot;
 import se.havochvatten.symphony.service.PropertiesService;
 import se.havochvatten.symphony.web.WebUtil;
 
@@ -26,7 +35,12 @@ import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.awt.image.RenderedImage;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.*;
+import java.io.ByteArrayOutputStream;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.util.List;
@@ -36,7 +50,6 @@ import java.util.logging.Logger;
 
 import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.status;
-import static se.havochvatten.symphony.web.WebUtil.multiValuedToSingleValuedMap;
 
 /**
  * Calculation REST API
@@ -61,39 +74,48 @@ public class CalculationREST {
     @Inject
     private ScenarioService scenarioService;
 
+    private CalculationResult calculationResult;
+
+    private GridCoverage2D coverage;
+
+    private ScenarioSnapshot scenario;
+
+    private String sldProperty;
+
+    private ReferencedEnvelope coverageEnvelope;
+
+    private Rectangle coveragePixelDimension;
+
+    private CoordinateReferenceSystem targetCRS;
+
     @POST
-    @Path("/sum/{operation}")
+    @Path("/sum")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
     @ApiOperation(value = "Computes cumulative impact sum")
     public CalculationResultSlice sum(@Context HttpServletRequest req,
                                       @Context UriInfo uriInfo,
-                                      @PathParam("operation") String operation,
-                                      ScenarioDto dto)
-            throws Exception {
-        if (dto == null)
+                                      Integer scenarioId)
+        throws Exception {
+        if (scenarioId == null)
             throw new BadRequestException();
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
 
-        var persistedScenario = scenarioService.findById(dto.id);
+        var persistedScenario = scenarioService.findById(scenarioId);
         if (!persistedScenario.getOwner().equals(req.getUserPrincipal().getName()))
             throw new ForbiddenException("User not owner of scenario");
 
         var watch = new StopWatch();
         watch.start();
-        logger.info("Performing "+operation+" calculation for " + dto.name + "...");
-        var operationParams = uriInfo.getQueryParameters();
-        CalculationResult result = calcService.calculateScenarioImpact(req, new Scenario(dto, calcService),
-            operation, multiValuedToSingleValuedMap(operationParams));
+        logger.info("Performing "+CalcService.operationName(persistedScenario.getOperation())+" calculation for " + persistedScenario.getName() + "...");
+        CalculationResult result = calcService.calculateScenarioImpact(req, persistedScenario);
         watch.stop();
         logger.log(Level.INFO, "DONE ({0} ms)", watch.getTime());
 
         return new CalculationResultSlice(result);
     }
-
-    // TODO return full CalculationResult instead, use when loading calculation (or see below)
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -193,20 +215,74 @@ public class CalculationREST {
     public Response getResultImage(@Context HttpServletRequest req,
                                    @PathParam("id") int id,
                                    @QueryParam("crs") String crs)
-            throws Exception {
-        var calc = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
+        throws Exception {
+        this.calculationResult = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
             calcService).orElseThrow(NotFoundException::new);
 
-        if (!hasAccess(calc, req.getUserPrincipal()))
+        if (!hasAccess(this.calculationResult, req.getUserPrincipal()))
             return status(Response.Status.UNAUTHORIZED).build();
 
-        var coverage = calc.getCoverage(); // N.B: raw result data, not normalized nor color-mapped
-        var scenario = calc.getScenarioSnapshot();
+        this.coverage = this.calculationResult.getCoverage(); // N.B: raw result data, not normalized nor color-mapped
+        this.scenario = this.calculationResult.getScenarioSnapshot();
+        this.sldProperty = "data.styles.result";
+        this.coverageEnvelope = new ReferencedEnvelope(this.coverage.getEnvelope());
+        this.coveragePixelDimension = this.coverage.getGridGeometry().getGridRange2D();
+        this.targetCRS = this.coverage.getCoordinateReferenceSystem2D();
+
+        crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8.toString()) : "EPSG:3035";
+
+        CoordinateReferenceSystem clientCRS =
+            CRS.getAuthorityFactory(true).createCoordinateReferenceSystem(crs);
+        MathTransform clientTransform =
+            CRS.findMathTransform(coverage.getGridGeometry().getCoordinateReferenceSystem(), clientCRS);
 
         RasterNormalizer normalizer = normalizationFactory.getNormalizer(scenario.getNormalization().type);
-        Double normalizationValue = normalizer.apply(coverage, calc.getNormalizationValue());
 
-        return projectedPNGImageResponse(coverage, crs, normalizationValue);
+        int[] areas = this.calculationResult.getAreaMatrixMap().keySet().stream().sorted().mapToInt(i -> i).toArray();
+        int areaIndex = 0;
+
+        RenderedImage[] renderedImages = new RenderedImage[areas.length];
+
+        for(int areaId : areas) {
+            ScenarioArea areaToRender = scenarioService.findAreaById(areaId);
+            Double normalizationValue = normalizer.apply(coverage, this.calculationResult.getNormalizationValue()[areaIndex]);
+            renderedImages[areaIndex] = renderAreaImage(areaToRender, normalizationValue);
+            ++areaIndex;
+        }
+
+        BufferedImage cimage = new BufferedImage(this.coveragePixelDimension.width, this.coveragePixelDimension.height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = cimage.createGraphics();
+        AffineTransform at = new AffineTransform();
+        for(RenderedImage image : renderedImages) {
+            g2d.drawRenderedImage(image, at);
+        }
+
+        ByteArrayOutputStream baos = WebUtil.encode(cimage, "png");
+        baos.flush();
+
+        return ok(baos.toByteArray(), "image/png")
+            .header("SYM-Image-Extent", WebUtil.createExtent(JTS.transform(this.coverageEnvelope, clientTransform)).toString())
+            .build();
+    }
+
+    private RenderedImage renderAreaImage(
+        ScenarioArea areaToRender,
+        double normalizationValue) throws Exception {
+
+        SimpleFeature areaFeature = areaToRender.getFeature();
+        MathTransform mt = CRS.findMathTransform(areaFeature.getBounds().getCoordinateReferenceSystem(), this.targetCRS);
+        // "SLD" apparantly needs to be instantiated anew for each render
+        // maybe to do with JAI op threading?
+        StyledLayerDescriptor sld =
+            WebUtil.getSLD(CalculationREST.class.getClassLoader().getResourceAsStream(props.getProperty(this.sldProperty)));
+        GridCoverage2D croppedArea = cropToScenarioArea(areaFeature, mt);
+
+        if(croppedArea == null)
+            return null;
+
+        return WebUtil.renderNormalized(croppedArea, targetCRS,
+                        this.coverageEnvelope, this.coveragePixelDimension,
+                        sld, normalizationValue);
     }
 
     @GET
@@ -275,6 +351,42 @@ public class CalculationREST {
 
         return calcService.relativeDifference(base.getCoverage(), scenario.getCoverage());
         // TODO Store coverage in user session? (and recalc if necessary?)
+    }
+
+    public GridCoverage2D cropToScenarioArea(SimpleFeature areaFeature, MathTransform transform)
+        throws MismatchedDimensionException, TransformException {
+
+        GridCoverage2D resultCoverage;
+        Geometry areaPoly = JTS.transform((Geometry) areaFeature.getDefaultGeometry(), transform);
+        RenderedImage canvas = this.coverage.getRenderedImage();
+
+        // Weirdly, we cannot instantiate a BufferedImage directly since it's encapsulated to java.awt,
+        // making it inaccessible to JAI operations.
+        // new BufferedImage(this.coveragePixelDimension.width, this.coveragePixelDimension.height,
+        // BufferedImage.TYPE_INT_ARGB);   <- triggers error at runtime
+
+        Geometry intersection = null;
+        try {
+            intersection = IntersectUtils.intersection(areaPoly, this.scenario.getGeometry());
+        } catch (Exception e) {
+            e = e;
+        }
+        if(!(intersection instanceof GeometryCollection)) {
+            intersection = IntersectUtils.unrollGeometries(intersection);
+        }
+
+        GridCoverageFactory gridCoverageFactory = new GridCoverageFactory();
+        Coverage coverage = gridCoverageFactory.create("Raster", canvas, this.coverageEnvelope);
+
+        CoverageProcessor processor = new CoverageProcessor();
+        ParameterValueGroup params = processor.getOperation("CoverageCrop").getParameters();
+        params.parameter("Source").setValue(coverage);
+        params.parameter("ROI").setValue(intersection);
+        params.parameter("ForceMosaic").setValue(true);
+
+        resultCoverage = (GridCoverage2D) processor.doOperation(params);
+
+        return resultCoverage;
     }
 
     private Response projectedPNGImageResponse(GridCoverage2D coverage, String crs, Double normalizationValue) throws Exception {

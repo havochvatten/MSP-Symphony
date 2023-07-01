@@ -6,7 +6,6 @@ import io.restassured.response.Response;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import se.havochvatten.symphony.dto.MatrixParameters;
 import se.havochvatten.symphony.dto.ScenarioDto;
 import se.havochvatten.symphony.scenario.ScenarioRESTTest;
 
@@ -16,6 +15,7 @@ import java.util.stream.IntStream;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static se.havochvatten.symphony.scenario.ScenarioRESTTest.getTestArea;
 
 public class ReportRESTTest extends RESTTest {
     static String sessionCookieValue;
@@ -28,8 +28,7 @@ public class ReportRESTTest extends RESTTest {
     public static void doCalculation() throws IOException {
         var testScenario = ScenarioDto.createWithoutId("TEST-SCENARIO",
             makeBaseline(),
-            mapper.readTree(ScenarioRESTTest.class.getClassLoader()
-                .getResourceAsStream("polygons/test.geojson")),
+            getTestArea("V330FN"),
             getDomainNormalization());
         var resp = ScenarioRESTTest.create(testScenario);
         testScenario = resp.as(ScenarioDto.class);
@@ -37,7 +36,7 @@ public class ReportRESTTest extends RESTTest {
 
         testScenario.ecosystemsToInclude = IntStream.range(0, 35).toArray();
         testScenario.pressuresToInclude = IntStream.range(0, 41).toArray();
-        testScenario.matrix = new MatrixParameters(78);
+        ScenarioRESTTest.update(testScenario);
 
         Response response =
             given().
@@ -46,8 +45,8 @@ public class ReportRESTTest extends RESTTest {
                 preemptive().
                 basic(getUsername(), getPassword()).
                 when().
-                body(testScenario).
-                post(endpoint("/calculation/sum/CumulativeImpact"));
+                body(testScenarioId).
+                post(endpoint("/calculation/sum"));
         assertEquals(200, response.statusCode());
 
         sessionCookieValue = response.getCookie(SESSION_COOKIE_NAME);

@@ -34,6 +34,8 @@ export class ComparisonReportComponent {
     pressureComponent: BandGroup[];
   }>;
   now = new Date();
+  areaDictA: Map<number, string> = new Map<number, string>();
+  areaDictB: Map<number, string> = new Map<number, string>();
   private legend:Observable<Legend>;
 
   constructor(
@@ -59,6 +61,8 @@ export class ComparisonReportComponent {
           that.loadingReport = false;
 
           that.store.dispatch(MetadataActions.fetchMetadata({ baseline: report.a.baselineName }));
+          that.areaDictA = reportService.setAreaDict(report.a);
+          that.areaDictB = reportService.setAreaDict(report.b);
         },
         error() {
           that.loadingReport = false;

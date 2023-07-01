@@ -1,6 +1,6 @@
-@import '../../../styles/constants';
-@import '../../../styles/hav-colors';
-@import '../../../styles/margins';
+@import 'src/styles/constants';
+@import 'src/styles/hav-colors';
+@import 'src/styles/margins';
 
 $thumb-size: 12px;
 
@@ -9,7 +9,6 @@ $thumb-size: 12px;
   height: $thumb-size;
   border-radius: 50%;
   background: $hav-turquoise;
-  cursor: pointer;
 }
 
 :host {
@@ -38,7 +37,27 @@ $thumb-size: 12px;
     }
   }
 
-  .slider:hover {
+  :disabled {
+    &::-webkit-slider-thumb {
+      background: $hav-darkgrey
+    }
+
+    &::-moz-range-thumb {
+      background: $hav-darkgrey
+    }
+  }
+
+  :not([disabled]) {
+    &::-webkit-slider-thumb {
+      cursor: pointer;
+    }
+
+    &::-moz-range-thumb {
+      cursor: pointer;
+    }
+  }
+
+  :not([disabled]).slider:hover {
     opacity: 1;
   }
 }

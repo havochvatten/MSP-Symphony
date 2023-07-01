@@ -1,7 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { Groups, Selection, StatePath } from './metadata.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
-import { SelectableArea } from "@data/area/area.interfaces";
 
 export const fetchMetadata = createAction(
   '[Metadata] Fetch Metadata',
@@ -40,10 +39,5 @@ export const updateLayerOpacity = createAction(
 
 export const updateMultiplier = createAction(
   '[Metadata] Update intensity multiplier',
-  props<{ area: SelectableArea, bandPath: StatePath; value: number }>()
-);
-
-export const updateOffset = createAction(
-  '[Metadata] Update intensity offset',
-  props<{ area: SelectableArea, bandPath: StatePath, value: number }>()
+  props<{ bandPath: StatePath; value: number }>()
 );

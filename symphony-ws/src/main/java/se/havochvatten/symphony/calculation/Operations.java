@@ -116,7 +116,7 @@ public class Operations extends org.geotools.coverage.processing.Operations {
     /**
      * Zonal statistics for a single feature
      */
-    public ZoneGeometry zonalStats(final Coverage source, int[] bands, Statistics.StatsType[] stats, SimpleFeature roi)
+    public ZoneGeometry zonalStats(final Coverage source, int[] bands, Statistics.StatsType[] stats, List<SimpleFeature> zoneList)
         throws CoverageProcessingException {
         final var statsOp = processor.getOperation("Zonal");
 
@@ -125,7 +125,7 @@ public class Operations extends org.geotools.coverage.processing.Operations {
         params.parameter("bands").setValue(bands);
         params.parameter("stats").setValue(stats);
         // Perhaps use RasterZonalStatistics if its faster?
-        params.parameter("roilist").setValue(List.of(roi));
+        params.parameter("roilist").setValue(zoneList);
         var result = (GridCoverage2D) processor.doOperation(params);
         var zoneStats = (List<ZoneGeometry>) result.getProperty(ZonalStatsDescriptor.ZS_PROPERTY);
         return zoneStats.get(0);

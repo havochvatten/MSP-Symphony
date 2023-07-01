@@ -86,8 +86,8 @@ public class RESTTestUtilApi {
     public Response deleteScenarioAndReferencedCalculation(@PathParam("id") int id) {
         try {
             var s = em.find(Scenario.class, id);
-            var c = s.getLatestCalculation();
-            em.remove(c);
+            //var c = s.getScenarioAreas().get(0).getLatestCalculation();
+            //em.remove(c);
             em.remove(s);
         } catch (Exception ex) {
             return Response.status(Response.Status.BAD_REQUEST).build();

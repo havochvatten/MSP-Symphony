@@ -28,7 +28,7 @@ import {
 import { CheckboxAccordionComponent } from './band-selection/checkbox-accordion/checkbox-accordion.component';
 import {
   MatrixTableComponent
-} from './scenario/scenario-detail/matrix-selection/matrix-table/matrix-table.component';
+} from './scenario/scenario-area-detail/matrix-selection/matrix-table/matrix-table.component';
 import { FormsModule } from "@angular/forms";
 import { UploadUserAreaModalComponent } from "@src/app/map-view/map/upload-user-area-modal/upload-user-area-modal.component";
 import { ScenarioEditorModule } from "@src/app/map-view/scenario/scenario-editor.module";
@@ -38,6 +38,7 @@ import { AnchorPipe } from "@shared/anchor.pipe";
 import { DialogService } from "@shared/dialog/dialog.service";
 import { MergeAreasModalComponent } from './map/merge-areas-modal/merge-areas-modal.component';
 import { MatRadioModule } from "@angular/material/radio";
+import { ActiveScenarioDisplayComponent } from './active-scenario-display/active-scenario-display.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +65,7 @@ import { MatRadioModule } from "@angular/material/radio";
     ConfirmResetComponent,
     MetaInfoComponent,
     MergeAreasModalComponent,
+    ActiveScenarioDisplayComponent,
   ],
     imports: [
         SharedModule,

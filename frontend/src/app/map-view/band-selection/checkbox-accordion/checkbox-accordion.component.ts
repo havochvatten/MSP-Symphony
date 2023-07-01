@@ -17,16 +17,17 @@ export class CheckboxAccordionComponent implements AfterViewInit {
   @Input() checked?: boolean;
   @Input() bands: Band[] = [];
   @Input() selectedArea = undefined;
+  @Input() scenarioActive = false;
   @Input() searching = false;
   @Input() change: (value: any, statePath: StatePath) => void = () => {};
   @Input() changeVisible: (value: boolean, statePath: StatePath) => void = () => {};
-  open = false;
+  @Input() open = false;
   toggle: () => void = () => this.open = !this.open;
 
   private groupBandNumbers = new Set();
 
   constructor(private store: Store<State>) {
-    this.store.select(ScenarioSelectors.selectActiveScenarioFeatureChanges).subscribe((changes: ChangesProperty) => {
+    this.store.select(ScenarioSelectors.selectActiveScenarioChanges).subscribe((changes: ChangesProperty) => {
       const changesBandNumbers = new Set(Object.values(changes).map(c => c['band']));
       this.open = intersection(this.groupBandNumbers, changesBandNumbers).size>0
     });

@@ -72,12 +72,11 @@ export interface AreaTypeRef {
   areaMatrices: AreaMatrixMapping[];
 }
 
+export type MatrixOption = 'STANDARD' | 'CUSTOM' | 'OPTIONAL';
+
 export interface MatrixParameters {
+  matrixType: MatrixOption;
   areaTypes?: AreaTypeRef[];
-  userDefinedMatrixId?: number; // If set, means we should use this matrix
+  matrixId?: number;
 }
 
-export interface MatrixParameterResponse {
-  defaultMatrixId: number // not used at the moment
-  areaTypes?: AreaTypeRef[];
-}

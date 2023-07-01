@@ -7,6 +7,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class MatrixParameters {
+    public enum MatrixType {
+        STANDARD, OPTIONAL, CUSTOM
+    }
     public static class AreaTypeRef {
         public int id;
         public List<AreaMatrixMapping> areaMatrices; // any specific matrix-area mappings to use
@@ -19,18 +22,29 @@ public class MatrixParameters {
         }
     }
 
-    public Integer userDefinedMatrixId;
+    public MatrixType matrixType;
+
+    public Integer matrixId;
     public List<AreaTypeRef> areaTypes;
 
-    public MatrixParameters(Integer id) {
-        userDefinedMatrixId = id;
-        areaTypes = Collections.emptyList();
+    public MatrixParameters() {
+        this.matrixType = MatrixType.STANDARD;
+        this.matrixId = null;
+        this.areaTypes = Collections.emptyList();
+    }
+
+    public MatrixParameters(String matrixType, Integer id) {
+        this.matrixType = MatrixType.valueOf(matrixType);
+        this.matrixId = id;
+        this.areaTypes = Collections.emptyList();
     }
 
     @JsonCreator
-    public MatrixParameters(@JsonProperty("userDefinedMatrixId") Integer id,
+    public MatrixParameters(@JsonProperty("matrixType") MatrixType type,
+                            @JsonProperty("matrixId") Integer id,
                             @JsonProperty("areaTypes") List<AreaTypeRef> types) {
-        userDefinedMatrixId = id;
+        matrixType = type;
+        matrixId = id;
         areaTypes = types;
     }
 }
