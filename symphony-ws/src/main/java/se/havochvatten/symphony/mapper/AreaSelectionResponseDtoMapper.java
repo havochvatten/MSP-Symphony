@@ -52,7 +52,7 @@ public class AreaSelectionResponseDtoMapper {
         AreaSelectionResponseDto.Area areaDto = new AreaSelectionResponseDto.Area();
         areaDto.setId(calculationArea.getId());
         areaDto.setName(calculationArea.getName());
-        areaDto.setDefaultMatrix(mapSensitivityMatrixToDto(calculationArea.getdefaultSensitivityMatrix()));
+        areaDto.setDefaultMatrix(mapSensitivityMatrixToDto(calculationArea.getDefaultSensitivityMatrix()));
         areaDto.getMatrices().addAll(mapToCalcAreaSensMatrixDtos(calculationArea.getCalcAreaSensMatrixList(), true));
         return areaDto;
     }

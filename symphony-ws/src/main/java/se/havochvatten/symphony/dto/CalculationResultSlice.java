@@ -5,10 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.geotools.data.geojson.GeoJSONReader;
-import org.opengis.feature.simple.SimpleFeature;
+import org.locationtech.jts.geom.Geometry;
 import se.havochvatten.symphony.entity.CalculationResult;
 
-import java.io.IOException;
 import java.util.Date;
 
 // TODO: Do away with this one? Or at least include parameters
@@ -16,21 +15,17 @@ import java.util.Date;
 public class CalculationResultSlice {
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private String featureJson;
+    private String polygon;
 
     public int id;
     public String name; // params.areaName by default
     public long timestamp;
     @JsonIgnore
-    public SimpleFeature getFeature() {
-        if(featureJson == null)
+    public Geometry getGeometry() {
+        if(polygon == null)
             return null;
 
-        try {
-            return GeoJSONReader.parseFeature(featureJson);
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to parse feature: "+featureJson);
-        }
+        return GeoJSONReader.parseGeometry(polygon);
     };
     // add optional param?
 
@@ -49,11 +44,11 @@ public class CalculationResultSlice {
     }
 
 
-    public CalculationResultSlice(int id, String name, Date timestamp, String feature) {
+    public CalculationResultSlice(int id, String name, Date timestamp, String polygon) {
         this.id = id;
         this.name = name;
         this.timestamp = timestamp.getTime();
-        this.featureJson = feature;
+        this.polygon = polygon;
     }
 
     public String getName() {return name;}

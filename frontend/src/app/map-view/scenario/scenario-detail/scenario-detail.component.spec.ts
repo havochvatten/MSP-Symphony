@@ -14,7 +14,7 @@ import { initialState as calculation } from "@data/calculation/calculation.reduc
 import { initialState as area } from "@data/area/area.reducers";
 import {
   MatrixSelectionComponent
-} from "@src/app/map-view/scenario/scenario-detail/matrix-selection/matrix-selection.component";
+} from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix-selection.component";
 import {
   NormalizationSelectionComponent
 } from "@src/app/map-view/scenario/scenario-detail/normalization-selection/normalization-selection.component";
@@ -56,17 +56,18 @@ describe('ScenarioDetailComponent', () => {
     fixture = TestBed.createComponent(ScenarioDetailComponent);
     component = fixture.componentInstance;
     component.scenario = {
+      operation: 0,
+      operationOptions: {},
+      id: -1,
+      timestamp: 0,
       baselineId: 0,
-      changes: {type: 'FeatureCollection', features: []},
+      changes: {},
       ecosystemsToInclude: [],
-      feature: { type:'Feature', geometry:{ type:'Point', coordinates:[] }, properties: {} },
-      id: "",
-      latestCalculation: "",
-      matrix: {},
       name: "",
       normalization: { type:NormalizationType.Domain },
       pressuresToInclude: [],
-      timestamp: 0
+      areas: [],
+      latestCalculationId: null
     };
     component.ngOnInit();
   }));

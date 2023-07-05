@@ -1,6 +1,6 @@
-@import '../../../../styles/constants';
-@import '../../../../styles/hav-colors';
-@import '../../../../styles/margins';
+@import 'src/styles/constants';
+@import 'src/styles/hav-colors';
+@import 'src/styles/margins';
 @import 'src/styles/paddings';
 
 $button-height: 6rem;
@@ -15,25 +15,21 @@ $buttons-row-gap: 1rem;
     flex-direction: column;
 
     h2 {
-      margin: 0;
+      margin: 0 0 0.5em;
     }
 
     .area-name {
-      color: #818181;
+      color: $medium-gray;
+      margin: 0 0 0.4rem;
     }
 
     .title-container {
       display: flex;
       justify-content: space-between;
+      margin-top: 1.5rem;
 
       h3 {
         margin: 0;
-        margin-bottom: 1rem;
-      }
-
-      app-icon-button {
-        font-size: 2.6rem;
-        margin-right: 1rem;
         margin-bottom: 1rem;
       }
     }
@@ -58,22 +54,29 @@ $buttons-row-gap: 1rem;
 
       .scenario {
         box-sizing: border-box;
-        background: none;
+        position: relative;
+        background-color: white;
         border: 1px solid #707070;
-        padding: 0.4rem;
+        padding: 1.2rem;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: nowrap;
-        height: $button-height;
+        flex-direction: column;
         max-width: 100%;
+        cursor: pointer;
+        align-items: stretch;
 
         &:hover {
-          cursor: pointer;
-          background-color: $hav-turquoise;
+          background-color: $hav-coldgrey;
 
           .scenario-info h4, .scenario-info span, app-icon {
-            color: white;
+            //color: white;
+          }
+
+          //&:has(li:hover) {
+          //  background-color: white;
+          //}
+
+          ul.scenario-areas li.more-areas {
+            background-color: $hav-coldgrey;
           }
         }
 
@@ -81,13 +84,11 @@ $buttons-row-gap: 1rem;
           display: flex;
           flex-direction: column;
           box-sizing: border-box;
-          padding: 0 1rem;
-          max-width: calc(100% - 4rem);
 
           h4 {
             margin: 0;
             text-align: left;
-            font: Medium 1.4rem/1.3rem;
+            font-size: 1.4rem;
             line-height: 1.9rem;
             color: #232323;
             text-overflow: ellipsis;
@@ -123,15 +124,108 @@ $buttons-row-gap: 1rem;
           }
         }
 
-        app-icon {
-          color: $hav-turquoise;
-          font-size: 4rem;
+        ul.scenario-areas {
+          display: flex;
+          flex-direction: column;
+          list-style: none;
+          padding: 0;
+          margin: 1rem 0 0;
+
+          li {
+            display: flex;
+            background-color: white;
+            padding: 1rem;
+            margin: 0 0 0.5rem;
+            border: 1px dotted black;
+            font-size: 1.4rem;
+            align-items: center;
+            line-height: 2rem;
+            flex: 1;
+
+            .feature-name {
+
+            }
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            &.more-areas {
+              border: 1px solid transparent;
+              color: $hav-darkergrey;
+            }
+          }
+
+          &.abundant {
+            li {
+              padding: 0.4rem 0.8rem 0.3rem;
+              margin: 0 0 0.45rem;
+              line-height: 1.55rem;
+              font-size: 1.25rem;
+            }
+          }
         }
 
-        ::ng-deep app-status-icon svg {
-          height: 3rem;
-          width: 3rem;
-          margin-right: 0.5rem;
+        &:hover {
+          .scenario-actions {
+            opacity: 0.6;
+          }
+        }
+
+        .scenario-actions {
+          position: absolute;
+          opacity: 0;
+          display: flex;
+          top: 2px;
+          right: 2px;
+          background-color: white;
+          border: 1px solid gray;
+          padding: 4px 2px 4px 6px;
+
+          app-icon {
+            position: relative;
+            font-size: 4rem;
+            height: 2.8rem;
+            width: 2.8rem;
+
+            ::ng-deep svg {
+              height: 1.75rem;
+              width: 1.75rem;
+            }
+
+            &[icontype='report'] {
+              background-color: $hav-turquoise;
+              color: white;
+              border-radius: 50%;
+              margin-right: 0.4rem;
+
+              &:hover {
+                background-color: transparent;
+                color: $hav-turquoise;
+              }
+            }
+
+            &[icontype='copy'], &[icontype='delete'] {
+              background-color: transparent;
+              opacity: 0.3;
+
+              &:hover {
+                opacity: 1;
+              }
+            }
+
+            &[icontype='copy'] {
+              color: $hav-turquoise;
+            }
+
+            &[icontype='delete'] {
+              color: $red;
+            }
+          }
+
+          &:hover {
+            opacity: 1;
+          }
         }
       }
     }
@@ -145,7 +239,7 @@ $buttons-row-gap: 1rem;
         font-size: 1.6rem;
         letter-spacing: 0;
         font-weight: 400;
-        color: #818181;
+        color: $medium-gray;
         padding: 5rem 0;
 
         app-icon {

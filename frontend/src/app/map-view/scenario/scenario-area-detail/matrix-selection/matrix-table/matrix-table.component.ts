@@ -1,7 +1,7 @@
 import { Component, NgModuleRef } from '@angular/core';
 import { DialogRef } from '@shared/dialog/dialog-ref';
 import { DialogConfig } from '@shared/dialog/dialog-config';
-import { SensitivityMatrix } from '@src/app/map-view/scenario/scenario-detail/matrix-selection/matrix.interfaces';
+import { SensitivityMatrix } from '@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces';
 import { MatrixService } from '../matrix.service';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';

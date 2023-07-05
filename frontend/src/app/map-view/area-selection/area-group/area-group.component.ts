@@ -12,11 +12,11 @@ export class AreaGroupComponent {
   @Input() title?: string;
   @Input() areas: AreaGroup[] | UserArea[] = [];
   @Input() searching = false;
-  @Input() selectedArea?: StatePath;
+  @Input() selectedAreas?: StatePath[];
   @Input() drawUserArea?: () => void;
   @Input() deleteUserArea?: (areaId: number, areaName: string) => void;
   @Input() renameUserArea?: (userArea: UserArea) => void;
-  @Input() selectArea?: (statePath: StatePath, visible: boolean, groupStatePath: StatePath) => void;
+  @Input() selectArea?: (statePath: StatePath[], visible: boolean, groupStatePath: StatePath) => void;
   @Input() updateVisible: (statePath: StatePath) => void = (statePath: StatePath) => {};
   @Input() importArea?: () => void;
   faCloudUpload = faCloudUploadAlt;
@@ -44,7 +44,7 @@ export class AreaGroupComponent {
     }
   };
 
-  onSelectArea(statePath: StatePath, visible: boolean, groupStatePath: StatePath) {
+  onSelectArea(statePath: StatePath[], visible: boolean, groupStatePath: StatePath) {
     if (typeof this.selectArea === 'function') {
       this.selectArea(statePath, visible, groupStatePath);
     }

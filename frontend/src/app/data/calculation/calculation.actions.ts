@@ -23,11 +23,6 @@ export const fetchCalculationsFailure = createAction(
   props<{ error: ErrorMessage }>()
 );
 
-export const loadCalculation = createAction(
-  '[Calculation] Load calculations',
-  props<{calculation: CalculationSlice}>()
-);
-
 export const fetchLegend = createAction(
   '[Calculation] Fetch legend',
   props<{ legendType: LegendType }>()

@@ -1,0 +1,44 @@
+@import 'src/styles/constants';
+@import 'src/styles/hav-colors';
+@import 'src/styles/margins';
+@import 'src/styles/paddings';
+
+:host {
+  #applied-group-settings {
+    div {
+      h3 {
+        font-size: 2.2rem;
+        font-weight: 500;
+        margin-bottom: 0.6rem;
+      }
+
+      span {
+        font-size: 1.6rem;
+
+        &.rarityOptions {
+          display: block;
+          line-height: 3rem;
+          font-style: oblique;
+          font-size: 1.5rem;
+          font-weight: 300;
+        }
+      }
+    }
+  }
+
+  .scenario-changes {
+    .changes-tools {
+      top: 2.3rem;
+    }
+
+    #areas-list {
+      box-sizing: border-box;
+      display: grid;
+      grid-row-gap: 1.2rem;
+    }
+  }
+
+  .coastal-area {
+    padding-bottom: 2.4rem;
+  }
+}

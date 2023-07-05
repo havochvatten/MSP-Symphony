@@ -1,0 +1,76 @@
+<section class="padded-container">
+  <div class="title">
+    <h2>{{ areaFeatureName }}</h2>
+  </div>
+  <div id="applied-group-settings">
+    <div>
+      <h3>{{ 'map.editor.operation.title' | translate }}</h3>
+      <span>{{ 'map.editor.operation.'+ availableOperations.get(scenario.operation) +'.title' | translate }}</span>
+      <span class="rarityOptions" *ngIf="scenario.operation == operation.RarityAdjusted">{{ 'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.' + getOptions().domain | translate }}</span>
+    </div>
+    <div>
+      <h3>{{ 'map.editor.normalization.title' | translate }}</h3>
+      <span [ngSwitch]="scenario.normalization.type">
+        <ng-container *ngSwitchCase="type.Domain">
+          {{ 'map.editor.normalization.domain' | translate:{ ordinalPercentileValue: (percentileValue$ | async) | ordinal:locale } }}
+        </ng-container>
+        <ng-container *ngSwitchCase="type.Area">
+          {{ 'map.editor.normalization.area' | translate }}
+        </ng-container>
+        <ng-container *ngSwitchCase="type.StandardDeviation">
+          {{ 'report.cumulative-effect-etc.normalization.mean-plus-stddev' | translate:
+          { stddevMultiplier: jsMath.abs(scenario.normalization.stdDevMultiplier),
+            positiveOrNegative: scenario.normalization.stdDevMultiplier > 0 ? '+' : '-' } }}
+        </ng-container>
+        <ng-container *ngSwitchCase="type.UserDefined">
+          {{ 'map.editor.normalization.custom' | translate }} = {{
+          scenario.normalization.userDefinedValue | number: '1.0-4':locale }}
+        </ng-container>
+      </span>
+    </div>
+  </div>
+
+  <section class="scenario-changes">
+    <h3>{{ 'map.editor.changes.title' | translate }}</h3>
+    <div class="changes-tools">
+      <app-icon iconType="copy-setting"
+                (click)="importChanges()"
+                title="{{ 'map.editor.transfer-changes.tooltip' | translate }}"></app-icon>
+    </div>
+    <app-changes-list
+      [changes]="changes()"
+      [deleteChange]="deleteChange">
+    </app-changes-list>
+  </section>
+
+  <section class="sensitivity-matrix">
+    <h3>{{ 'map.editor.matrix.sensitivity-matrix' | translate }}</h3>
+    <app-matrix-selection
+      [scenario]="this.scenario"
+      [areaIndex]="this.areaIndex"
+      (setMatrix)="onMatrixSelection($event)"
+    >
+    </app-matrix-selection>
+  </section>
+
+  <section class="coastal-area" *ngIf="hasAssociatedCoastalArea()">
+    <h3>{{ 'map.editor.coastal-areas.title' | translate }}</h3>
+    <mat-checkbox id="coast-checkbox"
+                  [checked]="(this.area()).excludedCoastal === null"
+                  (change)="onCheckIncludeCoast($event.checked)">
+      {{ 'map.editor.coastal-areas.include-coast' | translate }}
+    </mat-checkbox>
+  </section>
+</section>
+
+<div class="toolbar">
+
+  <button mat-flat-button id="exit" (click)="close()" [ngClass]="'basic'">
+    {{ 'map.editor.close' | translate }}
+  </button>
+
+  <button mat-flat-button id="delete" color="warn" [ngClass]="'secondary'" (click)="delete($event)">
+    {{ 'map.editor.areas.remove.button' | translate }}
+  </button>
+
+</div>

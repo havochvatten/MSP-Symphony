@@ -1,21 +1,24 @@
 import { createReducer, on } from '@ngrx/store';
-import { ScenarioActions, ScenarioInterfaces } from '@data/scenario/index';
-import { CalculationActions } from '@data/calculation';
 import { removeIn, setIn, updateIn } from 'immutable';
-import { Feature, GeoJsonProperties } from "geojson"
-import { AreaActions } from '@data/area';
-import { Polygon } from '@data/area/area.interfaces';
+import { size } from "lodash";
+
+import { CalculationActions } from '@data/calculation';
+import { calculationSucceeded } from "@data/calculation/calculation.actions";
+import { BandChange } from "@data/metadata/metadata.interfaces";
 import {
-  fetchAreaMatrices,
   fetchAreaMatricesFailure,
-  fetchAreaMatricesSuccess
+  fetchAreaMatricesSuccess, fetchAreaMatrixSuccess
 } from '@data/scenario/scenario.actions';
-import { isEqual } from 'lodash';
+import { ScenarioActions, ScenarioInterfaces } from '@data/scenario/index';
+import { ChangesProperty, ScenarioArea } from "@data/scenario/scenario.interfaces";
+import { AreaMatrixData } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
+
 
 export const initialState: ScenarioInterfaces.State = {
   scenarios: [],
   active: undefined,
-  activeFeature: undefined,
+  activeArea: undefined,
+  matrixData: null,
   matricesLoading: false
 };
 
@@ -28,119 +31,141 @@ export const scenarioReducer = createReducer(
   on(ScenarioActions.openScenario, (state, { index }) => ({
     ...state,
     active: index,
-    scenarios: updateIn(state.scenarios, [index, 'changes', 'features'], [], (features) =>
-      (features as Feature[]).map(feature => setIn(feature, ['properties', 'visible'], true)))
+    matrixData: null,
+    matricesLoading: true
+  })),
+  on(ScenarioActions.openScenarioArea, (state, { index, scenarioIndex }) => ({
+    ...state,
+    active: scenarioIndex ?? state.active,
+    activeArea: index
   })),
   on(ScenarioActions.closeActiveScenario, state => ({
     ...state,
     active: undefined,
-    activeFeature: undefined
+    activeArea: undefined,
+    matrixData: null
+  })),
+  on(ScenarioActions.closeActiveScenarioArea, state => ({
+    ...state,
+    activeArea: undefined,
   })),
   on(ScenarioActions.addScenario, (state, { scenario }) => ({
     ...state,
     scenarios: [scenario, ...state.scenarios], // prepend, since it will be newest
-    active: 0
+    active: 0,
+    matricesLoading: true
   })),
   on(ScenarioActions.deleteScenario, (state, _) => ({
     ...state,
     scenarios: removeIn(state.scenarios, [state.active]),
     // Optimistically close scenario to reduce latency
     active: undefined,
-    activeFeature: undefined
+    activeArea: undefined
   })),
-  on(ScenarioActions.saveScenarioSuccessUpdate, (state, { savedScenario }) => ({
+  on(ScenarioActions.saveScenarioSuccess, (state, { savedScenario }) => ({
     ...state,
     scenarios: updateIn(state.scenarios, [state.active], () => savedScenario),
+  })),
+  on(ScenarioActions.saveScenarioArea, (state, { areaToBeSaved }) => {
+    const areaIndex = state.scenarios[state.active!].areas.findIndex(area => area.id === areaToBeSaved.id);
+    return (areaIndex === -1) ? state : {
+    ...state,
+    scenarios: updateIn(state.scenarios, [state.active, 'areas', areaIndex], () => areaToBeSaved)
+  }}),
+  on(ScenarioActions.addScenarioAreasSuccess, (state, { newAreas }) => ({
+    ...state,
+    scenarios: updateIn(state.scenarios, [state.active, 'areas'], areas => [...(areas as ScenarioArea[]), ...newAreas]),
     matricesLoading: true
   })),
   on(CalculationActions.calculationSucceeded, (state, { calculation }) => ({
     ...state,
-    scenarios: setIn(state.scenarios, [state.active, 'latestCalculation'], calculation.id)
+    scenarios: setIn(state.scenarios, [state.active, 'latestCalculationId'], calculation.id)
   })),
   on(ScenarioActions.changeScenarioName, (state, { name }) => ({
     ...state,
     scenarios: setIn(state.scenarios, [state.active, 'name'], name)
   })),
-  on(ScenarioActions.changeScenarioAttribute, (state, { attribute, value }) => ({
+  on(ScenarioActions.changeScenarioOperation, (state, { operation }) => ({
     ...state,
-    scenarios: setIn(state.scenarios, [state.active, attribute], value)
+    scenarios: setIn(state.scenarios, [state.active, 'operation'], operation)
   })),
-  on(AreaActions.updateSelectedArea, (state, { statePath }) => {
-    if (state.active === undefined) return state;
-    else {
-      const featureIndex = state.scenarios[state.active].changes?.features?.findIndex((f: Feature) =>
-        isEqual(f.properties!.statePath, statePath)
-      ); // or just check id?
-      return {
-        ...state,
-        activeFeature: featureIndex !== -1 ? featureIndex : undefined
-      };
-    }
-  }),
+  on(ScenarioActions.changeScenarioOperationParams, (state, { operationParams }) => ({
+    ...state,
+    scenarios: setIn(state.scenarios, [state.active, 'operationOptions'], operationParams)
+  })),
+  on(ScenarioActions.changeScenarioNormalization, (state, { normalizationOptions }) => ({
+    ...state,
+    scenarios: setIn(state.scenarios, [state.active, 'normalization'], normalizationOptions)
+  })),
+  on(ScenarioActions.changeScenarioAreaMatrix, (state, { matrixType, matrixId, areaTypes }) => ({
+    ...state,
+    scenarios: setIn(state.scenarios, [state.active, 'areas', state.activeArea, 'matrix'], { matrixType, matrixId, areaTypes })
+  })),
+  on(ScenarioActions.excludeActiveAreaCoastal, (state, { areaId }) => ({
+    ...state,
+    scenarios: setIn(state.scenarios, [state.active, 'areas', state.activeArea, 'excludedCoastal'], areaId)
+  })),
   on(
     ScenarioActions.updateBandAttribute,
-    (state, { area, componentType, bandId, band, attribute, value }) => {
-      const featureIndex =
-        state.activeFeature ?? // activeFeature is wrong!
-        state.scenarios[state.active!].changes.features?.findIndex(
-          (f: Feature) => f!.id == area.feature.properties.id
-        ) ?? -1;
+    (state, { componentType, bandId, band, attribute, value }) => {
 
-      if (featureIndex == -1) {
-        const isWholeScenarioFeature =
-          area.feature.properties.id == state.scenarios[state.active!].feature.properties?.id;
-        const featureToBeAdded = createGeoJSONFeature(area.polygon, area.feature.properties.id, {
-          title: area?.name,
-          visible: true,
-          displayName: area?.displayName,
-          statePath: area.statePath, // perhaps useful
-          changes: {
-            [bandId]: {
-              type: componentType,
-              band: band,
-              [attribute]: value
-            }
-          }
-        });
+      const change: BandChange = {
+        type: componentType,
+        band: band,
+        [attribute]: value
+      }
+      if(state.active === undefined)
+        return state;
 
-        return {
+      if(state.activeArea !== undefined) {
+        return state.scenarios[state.active].areas[state.activeArea].changes !== null ? {
           ...state,
-          scenarios: updateIn(state.scenarios, [state.active, 'changes', 'features'],
-            features => isWholeScenarioFeature ?
-              [featureToBeAdded, ...(features as Feature[])] :
-              [...(features as Feature[]), featureToBeAdded]),
-          activeFeature: isWholeScenarioFeature ? 0 : state.scenarios[state.active!].changes.features.length
-        };
-      } else
-        return {
+          scenarios: updateIn(state.scenarios, [state.active, 'areas', state.activeArea, 'changes', bandId],
+            () => change)
+        } : {
           ...state,
-          // TODO delete if all area changes are neutral?
-
-          scenarios: state.scenarios[state.active!].changes.features !== undefined ?
-            updateIn(
-            state.scenarios,
-            [state.active, 'changes', 'features', featureIndex, 'properties', 'changes', bandId],
-            change => ({
-                  type: componentType,
-                  band,
-                  [attribute]: value
-                })) : state.scenarios,
-          activeFeature: featureIndex
-        };
+          scenarios: updateIn(state.scenarios, [state.active, 'areas', state.activeArea, 'changes'],
+            () => ({[bandId]: change}))
+        }
+      } else {
+        return state.scenarios[state.active].changes !== null ?
+          {
+            ...state,
+            scenarios: updateIn(state.scenarios, [state.active, 'changes', bandId],
+              () => change)
+          } : {
+            ...state,
+            scenarios: updateIn(state.scenarios, [state.active, 'changes'],
+              () => ({[bandId]: change}))
+          };
+      }
     }
   ),
-  on(ScenarioActions.deleteBandChangeAttribute, (state, { featureIndex, bandId }) => ({
-    ...state,
-    scenarios: removeIn(state.scenarios, [
-      state.active,
-      'changes',
-      'features',
-      featureIndex,
-      'properties',
-      'changes',
-      bandId
-    ])
-  })),
+  on(ScenarioActions.deleteBandChange, (state, { bandId }) => {
+    if(state.active !== undefined && state.scenarios[state.active].changes !== null) {
+      const bChanges = (state.scenarios[state.active].changes as ChangesProperty);
+      return bChanges[bandId] !== undefined ? {
+        ...state,
+        scenarios: size(bChanges) === 1 ?
+          setIn(state.scenarios, [state.active, 'changes'], null) :
+          removeIn(state.scenarios, [state.active, 'changes', bandId])
+      } : state;
+    }
+    return state;
+  }),
+  on(ScenarioActions.deleteAreaBandChange, (state, { bandId }) => {
+    if(state.active !== undefined && state.activeArea !== undefined &&
+      state.scenarios[state.active].areas[state.activeArea].changes !== null) {
+        const bChanges = (state.scenarios[state.active].areas[state.activeArea].changes as ChangesProperty);
+        return bChanges !== undefined ? {
+          ...state,
+          scenarios: size(bChanges) === 1 ?
+            setIn(state.scenarios, [state.active, 'areas', state.activeArea, 'changes'], null) :
+            removeIn(state.scenarios, [state.active, 'areas', state.activeArea, 'changes', bandId])
+        } : state;
+    }
+    return state;
+  }),
   on(ScenarioActions.setChangeAreaVisibility, (state, { featureIndex, visible }) => ({
     ...state,
     scenarios: setIn(
@@ -149,39 +174,53 @@ export const scenarioReducer = createReducer(
       visible
     )
   })),
-  on(ScenarioActions.hideAllChangeAreas, (state, {}) => ({
+  on(ScenarioActions.deleteScenarioArea, (state, { areaId }) => {
+    if(state.active === undefined) {
+        return state;
+    } else {
+      const areaIndex = state.scenarios[state.active!].areas.findIndex(a => a.id === areaId);
+      return {
+        ...state,
+        scenarios: removeIn(state.scenarios, [state.active, 'areas', areaIndex]),
+        matrixData: removeIn(state.matrixData, [areaId]),
+      }
+    }
+  }),
+  on(ScenarioActions.copyScenarioSuccess, (state, { copiedScenario }) => ({
     ...state,
-    scenarios: updateIn(state.scenarios, [state.active, 'changes', 'features'], features =>
-      (features as Feature[]).map(feature => setIn(feature, ['properties', 'visible'], false))
-    )
+    scenarios: [copiedScenario, ...state.scenarios]
   })),
-  on(ScenarioActions.deleteChangeFeature, (state, { featureIndex }) => ({
-    ...state,
-    scenarios: removeIn(state.scenarios, [state.active, 'changes', 'features', featureIndex])
-  })),
-  on(fetchAreaMatrices, (state, { geometry }) => ({
-    ...state,
-    matricesLoading: true
-  })),
-  on(fetchAreaMatricesSuccess, (state, { matrixData }) => ({
-    ...state,
-    matricesLoading: matrixData.overlap.length !== 0
-  })),
+  on(fetchAreaMatricesSuccess, (state, { matrixDataMap }) => {
+    const data = Object.values(matrixDataMap) as AreaMatrixData[],
+          loading = data.some(d => d.overlap.length > 0);
+    return {
+      ...state,
+      matrixData: matrixDataMap,
+      matricesLoading: loading
+    }
+  }),
+  on(ScenarioActions.transferChangesSuccess, (state, { scenario: updatedScenario }) => {
+    return {
+      ...state,
+      scenarios: setIn(state.scenarios, [state.active], updatedScenario)
+    }
+  }),
+  on(fetchAreaMatrixSuccess, (state, { areaId, matrixData }) => {
+    const loading = matrixData.overlap.length > 0;
+    return {
+      ...state,
+      matrixData: setIn(state.matrixData, [areaId], matrixData),
+      matricesLoading: loading
+    }
+  }),
+  on(calculationSucceeded, (state, { calculation }) => {
+    return {
+      ...state,
+      scenarios: setIn(state.scenarios, [state.active, 'latestCalculationId'], calculation.id)
+    }
+  }),
   on(fetchAreaMatricesFailure, state => ({
     ...state,
     matricesLoading: false
   }))
 );
-
-function createGeoJSONFeature(
-  geometry: Polygon,
-  id: string | number,
-  properties: GeoJsonProperties
-) {
-  return {
-    type: 'Feature',
-    geometry,
-    id,
-    properties
-  };
-}

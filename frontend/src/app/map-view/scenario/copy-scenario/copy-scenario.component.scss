@@ -1,0 +1,61 @@
+@import 'src/styles/hav-colors';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  width: 50rem;
+  border-radius: 4px;
+  padding: 2rem;
+}
+
+h3 {
+  margin: 0 0 1.4rem;
+}
+
+mat-label {
+  font-size: 1.4rem;
+  margin-bottom: 0.6rem;
+
+  &.select-areas {
+    display: block;
+    margin: 1.4rem 0 1rem;
+    font-weight: 500;
+  }
+}
+
+input.mat-input-element {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.5rem;
+  padding: 1rem;
+  border: 1px dotted black;
+  width: 48rem;
+  margin: 0 0 1.5rem;
+}
+
+mat-checkbox.scenario-area-cb {
+  margin-right: 1rem;
+}
+
+.include-areas {
+  margin-bottom: 0.8rem;
+}
+
+.areas-notice {
+  font-size: 1.2rem;
+  line-height: 2rem;
+  color: $hav-darkergrey;
+}
+
+.button-pane {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 2rem;
+
+  button {
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+}

@@ -4,7 +4,7 @@ import { retry, tap } from "rxjs/operators";
 import { select, Store } from '@ngrx/store';
 import { environment } from "@src/environments/environment";
 import { State } from '@src/app/app-reducer';
-import { DialogService } from '@src/app/shared/dialog/dialog.service';
+import { DialogService } from '@shared/dialog/dialog.service';
 import { CalculationActions, CalculationSelectors } from '@data/calculation';
 import { CalculationService } from "@data/calculation/calculation.service";
 import { CalculationSlice } from '@data/calculation/calculation.interfaces';

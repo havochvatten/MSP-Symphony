@@ -1,8 +1,13 @@
 <section>
   <div>
     <h2>{{ title }}</h2>
-    <div *ngIf="selectedAreaName || showResetButton" class="selection-info">
-      <span>{{ selectedAreaName }}</span>
+    <div *ngIf="!areaTab" class="selection-info">
+      <div class="active-scenario-display">
+        <span *ngIf="selectedScenarioName">{{ selectedScenarioName }}</span>
+        <span *ngIf="!selectedScenarioName">{{ 'map.no-active-scenario' | translate }}</span>
+        <span *ngIf="selectedScenarioName && selectedAreaName">{{ selectedAreaName }}</span>
+        <span *ngIf="!selectedAreaName && !!selectedScenarioName" class="scenariowide-settings">{{ 'map.scenariowide-settings' | translate }}</span>
+      </div>
       <button *ngIf="showResetButton" (click)="reset()" title="{{
         'map.reset-preselected-description' | translate
       }}">{{

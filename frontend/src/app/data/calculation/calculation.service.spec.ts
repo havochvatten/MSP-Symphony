@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { provideMockStore } from '@ngrx/store/testing';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as area } from '@data/area/area.reducers';
+import { initialState as user } from '@data/user/user.reducers';
 
 describe('CalculationService', () => {
   beforeEach(() => TestBed.configureTestingModule({
@@ -12,7 +13,8 @@ describe('CalculationService', () => {
     providers: [provideMockStore({
       initialState: {
         metadata,
-        area
+        area,
+        user
       }
     })]
   }));

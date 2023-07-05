@@ -15,14 +15,20 @@
     "map": {
         "background-transparency": "Transparence de la carte de fond",
         "click-area": "Cliquez pour sélectionner une région.",
-        "location-outside-scenario": "Cette région n'est pas disponible dans le scénario actif.",
+        "location-within-scenario": "Cette zone se superpose au scénario actif.",
         "areas": "Régions",
-        "ecosystems": "Composante écosystèmes",
-        "pressures": "Pressions",
         "matrix": "Matrice",
+        "no-active-scenario": "Activer un scénario pour effectuer les réglages",
+        "scenariowide-settings": "Paramètres à l'échelle du scénario",
         "no-selected-area": "Aucune région sélectionnée.",
         "reset-preselected": "Réinitialiser",
         "reset-preselected-description": "Réinitialiser les composants et les pressions sélectionnés à la sélection par défaut, supprimez tous les changements d'intensité pour le scénario actif",
+        "selection-overlap": "Impossible de sélectionner des zones superposées",
+        "intensity" : {
+            "ecosystems": "Composante écosystèmes",
+            "pressures": "Pressions",
+            "override": "Remplacer le paramètre de groupe"
+        },
         "confirm-reset": {
             "modal": {
                 "header": "Confirmer réinitialisation",
@@ -52,8 +58,31 @@
                 "save-overwrite": "Écraser la zone existante: « {{ name }} »"
             }
         },
+        "active-scenario": {
+            "header": "Scénario actif",
+            "area": "Zone:",
+            "exit": "Arrêter"
+        },
         "editor": {
             "title": "Scénarios",
+            "areas": {
+                "title": "Zones de scénario",
+                "remove": {
+                    "button" : "Supprimer la zone",
+                    "label": "Supprimer cette zone du scénario actuel",
+                    "modal": {
+                        "title": "Supprimer la zone du scénario",
+                        "message": "Confirmez que vous souhaitez supprimer la zone &ldquo;{{ area }}&rdquo; du scénario &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;&nbsp;.",
+                        "message-last": "&ldquo;{{ area }}&rdquo; est la seule zone couverte par le scénario actuel. Si vous le supprimez, le scénario : &laquo;&nbsp;{{ scenario }}&nbsp;&raquo; sera également supprimé.",
+                        "confirm": "Supprimer"
+                    }
+                },
+                "specific-settings": "Des valeurs spécifiques ont été définies pour cette zone: {{ feature-changes }}",
+                "loading-matrices": "Chargement des matrices de sensibilité",
+                "add-scenario-label": "Ajouter des zones sélectionnées au scénario",
+                "add-scenario-label-single": "Ajouter {{ area }} au scénario",
+                "select-area-first-label": "Sélectionnez d'abord une zone."
+            },
             "operation": {
                 "title": "Algorithme",
                 "choose": "Choisissez l'algorithme",
@@ -67,7 +96,7 @@
                             "title": "Domaine de l'indice de rareté",
                             "description": "Calculer les coefficients de rareté en fonction de:",
                             "GLOBAL": "L'étendue de la grille de données",
-                            "LOCAL": "L'étendue de la grille de la région sélectionnée."
+                            "LOCAL": "L'étendue de la grille du scénario."
                         }
                     }
                 }
@@ -90,6 +119,7 @@
                 "choose-matrix": "Choisir la matrice",
                 "choose-area-type": "Choisir le type de zone (facultatif)",
                 "choose-area-type-matrix": "Sélectionner la matrice pour le type de zone",
+                "no-area-type": "( aucune )",
                 "edited-matrixes": "Matrice personnalisée",
                 "edit-matrix": "Modifier la matrice",
                 "upload-file": "Importer un fichier",
@@ -113,7 +143,7 @@
                         "message": "Enregistrez ou ignorez les modifications indiquées dans \"{{ matrixName }}\"{{ newNotice }}?",
                         "immutable-message": "La matrice contient des modifications non enregistrées. Voulez-vous enregistrer la matrice sous \"{{ suggestedName }}\" ou ignorez toutes les modifications?",
                         "new-notice": "(nouvelle matrice)",
-                        "confirm": "Enregistrer",
+                        "save": "Enregistrer",
                         "abandon": "Ignorez"
                     }
                 }
@@ -130,27 +160,66 @@
             "changes": {
                 "title": "Changements de scénario",
                 "no-changes": "Aucun changement de scénario",
-                "make-changes-hint": "Sélectionnez une zone et modifier les paramètres sous les onglets composantes écosystème ou pressions.",
+                "make-changes-hint": "Modifier les paramètres sous les onglets composantes écosystème ou pressions.",
                 "clear-change": "Effacer les modifications",
-                "units": "unités"
+                "units": "unités",
+                "collapse": "Cacher les modifications",
+                "collapsed-count": "Afficher {{ count }} modifications"
+            },
+            "changes-overview" : {
+                "title": "Vue d'ensemble des modifications de scénario",
+                "show-overview": "Afficher une vue d'ensemble de tous les changements"
+                "global-changes": "Modifications générales",
+                "show-all": "Afficher toutes",
+                "close": "Fermer"
+            },
+            "area-changes": {
+                "title": "Modifications spécifiques à la zone"
+            },
+            "transfer-changes" : {
+                "title": "Transférer des modifications",
+                "tooltip": "Transférer des modifications à partir d'un scénario ou d'une zone",
+                "use-scenario-wide": "Utiliser les modifications à l'échelle du scénario",
+                "select-scenario": "Sélectionnez un scénario",
+                "select-scenario-detail": "Sélectionnez un scénario à partir duquel transférer les modifications",
+                "area-changes": "Zones de scénario avec modifications",
+                "overwrite": "Remplacer les modifications (sinon les modifications sélectionnées sont ajoutées)"
+            },
+            "copy-scenario": {
+                "label": "Copier le scénario",
+                "title": "Configurer la copie du scénario",
+                "new-scenario-name": "Nom du nouveau scénario",
+                "copy-specifier": "{{ scenario }} (copie)",
+                "include-scenario-changes": "Inclure les modifications globales de scénario",
+                "area-changes-to-include": "Sélectionnez les modifications de zone à inclure dans le scénario copié",
+                "areas-without-changes": "Ces zones du scénario manquent de changements spécifiques: {{ areas-list }}",
+                "create-copy": "Copier",
+                "cancel": "Annuler"
             },
             "select-area-message": "Sélectionnez une zone de calcul. Commencez par sélectionner une zone, puis modifiez les valeurs des composantes écosystèmes ou pressions dans le panel de gauche.",
             "fetching-matrices": "Chargement des matrices de sensibilité...",
             "map-layer": "Couche de données",
             "list": {
                 "user-scenarios": "Scénarios utilisateur",
-                "add-scenario-label": "Créer un nouveau scénario pour {{area}}",
+                "add-scenario-label": "Créer un nouveau scénario groupé",
+                "add-scenario-label-single": "Créer un nouveau scénario pour {{ area }}",
+                "scenario-name": "Scénario sans nom",
                 "scenario-name-template": "Scénario {{area}}",
                 "select-area-first-label": "Commencez par sélectionner une zone pour le scénario.",
                 "no-scenarios": "Aucun scénario",
-                "add-scenarios-hint": "Créez un scénario en cliquant sur le + ci-dessus."
+                "add-scenarios-hint": "Créez un scénario en cliquant sur le + ci-dessus.",
+                "scenario-area": "{{ scenario }}\nZone: {{ area-feature }}",
+                "show-report-label": "Ouvrir le rapport de calcul le plus récent",
+                "more-areas-single": "+ une zone supplémentaire ..",
+                "more-areas": "+ {{ more }} zones supplémentaires .."
             },
             "clear": "Effacer",
             "close": "❮",
             "delete": {
                 "label": "Supprimer",
+                "tooltip": "Supprimer le scénario",
                 "modal": {
-                    "title": "Êtes-vous sûr de vouloir supprimer",
+                    "title": "Êtes-vous sûr de vouloir supprimer &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
                     "delete": "Supprimer",
                     "cancel": "Annuler"
                 }
@@ -298,8 +367,17 @@
         },
         "color-scale": {
             "result": "Impact cumulé",
+            "comparison": "Différence de pression relative",
             "ecosystem": "Valeur écosystème",
             "pressure": "Valeur pression"
+        },
+        "area-selection-hint": {
+            "emphasis": "Sélectionner / désélectionner plusieurs zones ",
+            "detail": "par Ctrl + clic ou ⌘ + clic."
+        },
+        "special-actions-hint": {
+            "emphasis": "Partager ou fusionner zone",
+            "detail": "Alt / ⌥ + clic pour séparer par section, Alt / ⌥ + Shift + clic pour fusionner"
         }
     },
     "main-menu": {
@@ -320,7 +398,7 @@
         "close": "Merci"
     },
     "popup-message": {
-        "INFO": "Infomations",
+        "INFO": "Informations",
         "SUCCESS": "Succès",
         "ERROR": "Une erreur est survenue",
         "WARNING": "Attention, processus lent"
@@ -362,13 +440,14 @@
                 "mean-plus-stddev": "La moyenne {{ positiveOrNegative }} l'ecart type ⨯ {{ stddevMultiplier }}",
                 "domain-desc": "Le résultat est normalisé afin que {{ percentileValue }}% des données dans la zone d'aménagement maritime soient sous le seuil."
             },
-            "sensitivity-matrices": {
-                "title": "Matrice de sensibilité",
-                "area-type-matrices": "Matrice par type de zone"
-            },
             "comparison": {
                 "legend-desc": "L'image montre la différence relative d'impact cumulé entre le scénario de référence et le scénario anticipé."
             }
+        },
+        "sensitivity-matrices": {
+            "title": "Matrice de sensibilité",
+            "area-type-matrices": "Matrice par type de zone",
+            "all-areas": "Toutes les zones"
         },
         "histogram": {
             "caption": "Histogramme",
@@ -389,6 +468,8 @@
             "percent-change-with": "Variation de <strong>{{percent}}%</strong>",
             "constant-offset-with": "Impact équivalent à <strong>{{offset}}</strong> unités",
             "and": "et",
+            "base-changes": "Changements à l'échelle du scénario",
+            "area-changes": "Changements spécifiques à la zone",
             "no-changes": "Aucun changement"
         },
         "impact-table": {

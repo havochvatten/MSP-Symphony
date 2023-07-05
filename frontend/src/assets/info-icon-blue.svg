@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg">
+ <g fill="none" fill-rule="evenodd">
+  <polygon points="0 0 14 0 14 14 0 14"/>
+  <path d="m7 1.1667c-3.22 0-5.8333 2.6133-5.8333 5.8333s2.6133 5.8333 5.8333 5.8333 5.8333-2.6133 5.8333-5.8333-2.6133-5.8333-5.8333-5.8333zm0.58333 8.75h-1.1667v-3.5h1.1667zm0-4.6667h-1.1667v-1.1667h1.1667z" fill="#005F88" fill-rule="nonzero"/>
+ </g>
+</svg>

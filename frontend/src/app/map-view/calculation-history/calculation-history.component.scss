@@ -1,6 +1,6 @@
-@import '../../../styles/constants';
-@import '../../../styles/hav-colors';
-@import '../../../styles/margins';
+@import 'src/styles/constants';
+@import 'src/styles/hav-colors';
+@import 'src/styles/margins';
 
 $iconbar-h: 1.2rem;
 $button-height: 6rem;
@@ -23,7 +23,7 @@ section {
     font-size: 1.6rem;
     letter-spacing: 0;
     font-weight: 400;
-    color: #818181;
+    color: $medium-gray;
     cursor: help;
   }
 

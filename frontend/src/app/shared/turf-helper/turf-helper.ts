@@ -2,8 +2,9 @@ import Feature from "ol/Feature";
 import { Polygon } from "@data/area/area.interfaces";
 import { Feature as TFeature, Polygon as TPolygon } from "@turf/helpers/dist/js/lib/geojson";
 import { SimpleGeometry } from "ol/geom";
-import { polygon, multiPolygon, MultiPolygon} from "@turf/helpers";
+import { polygon, multiPolygon, MultiPolygon } from "@turf/helpers";
 import intersect from "@turf/intersect";
+import intersects from '@turf/boolean-intersects';
 import booleanEqual from "@turf/boolean-equal";
 import difference from "@turf/difference";
 import union from "@turf/union";
@@ -30,6 +31,10 @@ function turfSubtract(polygon: Feature, intersector: Feature): Polygon | null {
 export function turfMerge(polygon: Feature, extension: Feature): Polygon | null {
   const merged = union(extractTurfPolygon(polygon), extractTurfPolygon(extension));
   return merged ? turfAsSymphonyPoly(merged) : null;
+}
+
+export function turfIntersects(polygon: Feature, intersector: Feature): boolean {
+  return intersects(extractTurfPolygon(polygon), extractTurfPolygon(intersector));
 }
 
 function turfIntersect(polygon: Feature, intersector: Feature): Polygon | null {

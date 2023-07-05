@@ -4,7 +4,7 @@
     <mat-checkbox
       *ngIf="title"
       [checked]="checked !== undefined ? checked : allBoxesAreChecked"
-      [disabled]="!selectedArea"
+      [disabled]="!scenarioActive"
       (change)="checked === undefined ? updateAll() : onChange($event, title)"
       checkboxSize="small"
     >{{ title }}</mat-checkbox>
@@ -14,7 +14,7 @@
       <app-slider-controls
         *ngFor="let band of bands; trackBy: bandName"
         [band]="band"
-        [selectedArea]="selectedArea"
+        [disabled]="!scenarioActive"
         [onSelect]="onChange"
         [onChangeVisible]="onChangeVisible"
       >

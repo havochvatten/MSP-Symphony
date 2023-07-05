@@ -1,9 +1,10 @@
+@import 'src/styles/hav-colors';
+
 :host {
+  break-inside: avoid-page;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  margin: 0 0 2rem;
-  vertical-align: top;
+  justify-content: flex-start;
 
   h4 {
     margin: 0;
@@ -13,19 +14,47 @@
 
   table {
     font-size: 12px;
+    width: 100%;
 
-    tr.title-row {
-      text-align: left;
-      text-transform: uppercase;
+    tr {
+      &.title-row {
+        text-align: left;
+        text-transform: uppercase;
 
-      th {
-        padding-bottom: 4px;
-        vertical-align: middle;
+        th {
+          padding-bottom: 4px;
+        }
+
+        &:not(:first-child) {
+          th {
+            padding-top: 16px;
+          }
+        }
+
+        &.scenario-wide {
+          th {
+            padding-bottom: 8px;
+          }
+        }
       }
-    }
 
-    tr:not(.title-row)>th {
-      text-align: left;
+      &.area-row {
+        th {
+          font-size: 1.3rem;
+          line-height: 2rem;
+          font-style: oblique;
+          padding: 0.6rem 0 0 1rem;
+          border-bottom: 1px solid $hav-coldgrey;
+        }
+      }
+
+      &:not(.title-row) > th {
+        text-align: left;
+      }
+
+      th.change-label {
+        width: 44%;
+      }
     }
   }
 

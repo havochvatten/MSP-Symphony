@@ -1,11 +1,20 @@
 import { createAction, props } from "@ngrx/store";
-import { Scenario } from "@data/scenario/scenario.interfaces";
+import {
+  Scenario,
+  ScenarioArea,
+  ScenarioAreaCoastalExclusion, ScenarioChangesSelection, ScenarioCopyOptions,
+  ScenarioMatrixDataMap
+} from "@data/scenario/scenario.interfaces";
 import { ErrorMessage } from "@data/message/message.interfaces";
 import { BandType } from "@data/metadata/metadata.interfaces";
-import { SelectableArea } from "@data/area/area.interfaces";
-import { AreaMatrixData } from "@src/app/map-view/scenario/scenario-detail/matrix-selection/matrix.interfaces";
-import { GeoJSONGeometry } from "ol/format/GeoJSON";
+import {
+  AreaMatrixData,
+  MatrixParameters
+} from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
 import { Feature } from "geojson";
+import { OperationParams } from "@data/calculation/calculation.interfaces";
+import { CalcOperation, NormalizationOptions } from "@data/calculation/calculation.service";
+
 
 export const fetchScenarios = createAction(
   '[Scenario] Fetch user scenarios',
@@ -26,8 +35,17 @@ export const openScenario = createAction(
   props<{ index: number }>()
 );
 
+export const openScenarioArea = createAction(
+  '[Scenario] Open scenario area',
+  props<{ index: number, scenarioIndex: number | null }>()
+);
+
 export const closeActiveScenario = createAction(
   '[Scenario] Close active scenario'
+);
+
+export const closeActiveScenarioArea = createAction(
+  '[Scenario] Close active scenario area'
 );
 
 export const deleteScenario = createAction(
@@ -46,16 +64,11 @@ export const deleteScenarioFailure = createAction(
 
 export const saveActiveScenario = createAction(
   '[Scenario] Save active scenario',
-  props<{ scenarioToBeSaved: Scenario, updateState: boolean }>()
+  props<{ scenarioToBeSaved: Scenario }>()
 );
 
 export const saveScenarioSuccess = createAction(
   '[Scenario] Save scenario success',
-  props<{ savedScenario: Scenario }>()
-);
-
-export const saveScenarioSuccessUpdate = createAction(
-  '[Scenario] Save scenario success and update active state',
   props<{ savedScenario: Scenario }>()
 );
 
@@ -64,9 +77,39 @@ export const saveScenarioFailure = createAction(
   props<{ error: ErrorMessage }>()
 );
 
+export const deleteScenarioArea = createAction(
+  '[Scenario] Remove scenario area by id',
+  props<{ areaId: number }>()
+);
+
+export const deleteScenarioAreaFailure = createAction(
+  '[Scenario] Remove scenario area failure',
+  props<{ error: ErrorMessage }>()
+);
+
+export const saveScenarioArea = createAction(
+  '[Scenario] Save scenario area',
+  props<{ areaToBeSaved: ScenarioArea }>()
+);
+
 export const addScenario = createAction(
   '[Scenario] Add scenario',
   props<{ scenario: Scenario }>()
+);
+
+export const copyScenario = createAction(
+  '[Scenario] Copy scenario',
+  props<{ scenarioId: number, options: ScenarioCopyOptions }>()
+);
+
+export const copyScenarioSuccess = createAction(
+  '[Scenario] Copy scenario success',
+  props<{ copiedScenario: Scenario }>()
+);
+
+export const copyScenarioFailure = createAction(
+  '[Scenario] Copy scenario failure',
+  props<{ error: ErrorMessage }>()
 );
 
 export const changeScenarioName = createAction(
@@ -74,14 +117,35 @@ export const changeScenarioName = createAction(
   props<{ name: string }>()
 );
 
-export const changeScenarioAttribute = createAction(
-  '[Scenario] Change attribute in active scenario',
-  props<{ attribute: string, value: any }>()
+export const changeScenarioOperation = createAction(
+  '[Scenario] Change active scenario operation',
+  props<{ operation: CalcOperation }>()
+);
+
+export const changeScenarioOperationParams = createAction(
+  '[Scenario] Change active scenario operation parameters',
+  props<{ operationParams: OperationParams }>()
+);
+
+export const changeScenarioNormalization = createAction(
+  '[Scenario] Change normalization options for active scenario',
+  props<{ normalizationOptions: NormalizationOptions }>()
+);
+
+export const changeScenarioAreaMatrix = createAction(
+  '[Scenario] Change matrix in active scenario area',
+   //props< { areaTypes: AreaTypeRef, userDefinedMatrix: number } >()
+  props< MatrixParameters >()
+);
+
+export const excludeActiveAreaCoastal = createAction(
+  '[Scenario] Optionally exclude coastal area from analysis',
+  props< ScenarioAreaCoastalExclusion >()
 );
 
 export const updateBandAttribute = createAction(
   '[Scenario] Update intensity attribute for band in scenario area',
-  props<{ area: SelectableArea, componentType: BandType, bandId: string, band: number, attribute: string, value: number }>()
+  props<{ componentType: BandType, bandId: string, band: number, attribute: string, value: number }>()
 );
 
 export const toggleChangeAreaVisibility = createAction(
@@ -94,36 +158,62 @@ export const setChangeAreaVisibility = createAction(
   props<{ featureIndex: number, visible: boolean }>()
 );
 
-export const hideAllChangeAreas = createAction(
-  '[Scenario] Hide fill of all scenario change areas'
+export const addAreasToActiveScenario = createAction(
+  '[Scenario] Add scenario areas',
+  props<{ areas: ScenarioArea[] }>()
 );
 
-export const deleteBandChangeOrChangeFeature = createAction(
-  '[Scenario] Delete band change in scenario area, or perhaps whole feature',
-  props<{ featureIndex: number, bandId: string }>()
+export const addScenarioAreasSuccess = createAction(
+  '[Scenario] Add scenario areas success',
+  props<{ newAreas: ScenarioArea[] }>()
 );
 
-export const deleteBandChangeAttribute = createAction(
+export const transferScenarioChanges = createAction(
+  '[Scenario] Transfer scenario changes',
+  props<{ changesSelection: ScenarioChangesSelection }>()
+);
+
+export const transferScenarioAreaChanges = createAction(
+  '[Scenario] Transfer scenario area changes',
+  props<{ changesSelection: ScenarioChangesSelection }>()
+);
+
+export const transferChangesSuccess = createAction(
+  '[Scenario] Transfer scenario changes success',
+  props<{ scenario: Scenario }>()
+);
+
+export const transferChangesFailure = createAction(
+  '[Scenario] Transfer changes failure',
+  props<{ error: ErrorMessage }>()
+);
+
+export const deleteBandChange = createAction(
+  '[Scenario] Delete band change in scenario',
+  props<{ bandId: string }>()
+);
+
+export const deleteAreaBandChange = createAction(
   '[Scenario] Delete band change in scenario area',
-  props<{ featureIndex: number, bandId: string }>()
-);
-
-export const deleteChangeFeature = createAction(
-  '[Scenario] Delete scenario change feature',
-  props<{ featureIndex: number }>()
+  props<{ bandId: string }>()
 );
 
 export const fetchAreaMatrices = createAction(
-  '[Area] Fetch matrices',
-  props<{ geometry: GeoJSONGeometry }>()
+  '[Scenario] Fetch matrices',
+  props<{ scenarioId: number }>()
 );
 
 export const fetchAreaMatricesSuccess = createAction(
-  '[Area] Fetch matrices success',
-  props<{ matrixData: AreaMatrixData }>()
+  '[Scenario] Fetch matrices success',
+  props<{ matrixDataMap: ScenarioMatrixDataMap }>()
+);
+
+export const fetchAreaMatrixSuccess = createAction(
+  '[Scenario] Fetch single matrix success',
+  props<{ areaId: number, matrixData: AreaMatrixData }>()
 );
 
 export const fetchAreaMatricesFailure = createAction(
-  '[Area] Fetch matrices failure',
+  '[Scenario] Fetch matrices failure',
   props<{ error: ErrorMessage }>()
 );

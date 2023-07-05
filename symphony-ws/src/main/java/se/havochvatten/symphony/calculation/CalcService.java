@@ -1,12 +1,13 @@
 package se.havochvatten.symphony.calculation;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.geosolutions.jaiext.utilities.ImageLayout2;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.gce.geotiff.GeoTiffWriter;
@@ -29,18 +30,17 @@ import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.calculation.jai.CIA.CumulativeImpactOp;
 import se.havochvatten.symphony.dto.*;
 import se.havochvatten.symphony.entity.BaselineVersion;
+import se.havochvatten.symphony.entity.CaPolygon;
+import se.havochvatten.symphony.entity.CalculationArea;
 import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.exception.SymphonyStandardSystemException;
-import se.havochvatten.symphony.scenario.Scenario;
-import se.havochvatten.symphony.scenario.ScenarioService;
-import se.havochvatten.symphony.scenario.ScenarioSnapshot;
+import se.havochvatten.symphony.scenario.*;
 import se.havochvatten.symphony.service.BaselineVersionService;
 import se.havochvatten.symphony.service.CalculationAreaService;
 import se.havochvatten.symphony.service.DataLayerService;
 import se.havochvatten.symphony.service.PropertiesService;
-import se.havochvatten.symphony.util.Util;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.*;
@@ -77,10 +77,24 @@ import static se.havochvatten.symphony.dto.NormalizationType.PERCENTILE;
 @Startup
 @TransactionManagement(TransactionManagementType.BEAN)
 public class CalcService {
+    public static final int OPERATION_CUMULATIVE = 0;
+    public static final int OPERATION_RARITYADJUSTED = 1;
     private static final Logger LOG = LoggerFactory.getLogger(CalcService.class);
 
     /* Can be useful for debugging, but breaks persistent sessions since not serializable atm */
     static final boolean SAVE_MASK_IN_SESSION = false;
+
+    public static String operationName(int operation) {
+    // Temporary solution.
+    // Should utilize enum (?) but due to inadequacies re: Hibernate mapping of
+    // postgres enum data type (availalble for pgdb > v10) int is chosen instead.
+    // Operation options json object is also arguably suboptimal, but kept as
+    // legacy. There may be a case for a more thorough restructuring.
+
+     return operation == CalcService.OPERATION_CUMULATIVE ?
+        "CumulativeImpact" :
+        "RarityAdjustedCumulativeImpact";
+    }
 
     private static final ObjectMapper mapper = new ObjectMapper(); // TODO Inject instead
 
@@ -106,6 +120,8 @@ public class CalcService {
 
     @Inject
     private CalibrationService calibrationService;
+
+    private record ScenarioChanges (Map<String, BandChange> baseChanges, Map<Integer, Map<String, BandChange>> areaChanges ) {};
 
     @PostConstruct
     void setup() {
@@ -135,9 +151,10 @@ public class CalcService {
                 getResultList();
     }
 
-    public List<CalculationResultSlice> findAllCmpByUser(Principal principal) {
+    public List<CalculationResultSlice> findAllCmpByUser(Principal principal, int operation) {
         return em.createNamedQuery("CalculationResult.findCmpByOwner", CalculationResultSlice.class).
                 setParameter("username", principal.getName()).
+                setParameter("operation", operationName(operation)).
                 getResultList();
     }
 
@@ -146,12 +163,17 @@ public class CalcService {
         // Ideally we would do a spatial query to the database, but since areas are not stored as proper
         // PostGIS geometries this is not possible at it stands.
 
-        var candidates = findAllCmpByUser(principal);
-        var baseFeature = base.getFeature();
+        Geometry baseGeometry = base.getScenarioSnapshot().getGeometry();
+        // Somewhat strange indirection here for stringency, should be refactored as an enum
+        int operation = base.getOperationName().equals("CumulativeImpact") ?
+                OPERATION_CUMULATIVE : OPERATION_RARITYADJUSTED;
+
+        var candidates = findAllCmpByUser(principal, operation);
+
         return candidates.stream()
                 .filter(c -> !base.getId().equals(c.id)) // omit the calculation whose matches we are
                 // searching for
-                .filter(c -> geometryEquals(baseFeature, c.getFeature()))
+                .filter(c -> baseGeometry.equals(c.getGeometry()))
                 .toList();
     }
 
@@ -261,10 +283,54 @@ public class CalcService {
         return factory.buildGeometry(collection).union();
     }
 
-    private static List<SensitivityMatrix> getUniqueMatrices(List<SensitivityMatrix> matrices) {
-        return matrices.stream(). // filter in symphony-ws instead? (or use map!)
-                filter(Util.distinctByKey(SensitivityMatrix::getMatrixId)).
-                collect(Collectors.toList());
+    private List<SensitivityMatrix> getUniqueMatrices(MatrixResponse matrixResponse, Integer baselineId) {
+        List<Integer> matrixIds = matrixResponse.areaMatrixMap.values().stream().map(MutablePair::getLeft).distinct().toList();
+        List<SensitivityMatrix> smList = matrixIds.stream().map(matrixId ->
+        {
+            try {
+                return new SensitivityMatrix(matrixId, calculationAreaService.getSensitivityMatrix(matrixId, baselineId));
+            } catch (SymphonyStandardAppException e) {
+                throw new RuntimeException(e);
+            }
+        }).toList();
+
+        return new ArrayList<>(smList);
+    }
+
+    private Geometry coastalComplement(Scenario scenario) throws SymphonyStandardAppException {
+
+        Geometry scenarioGeometry = scenario.getGeometry();
+        Geometry excludedCoastPolygon = null;
+        Map<Integer, Integer> areasExcludingCoastal = scenario.getAreasExcludingCoastal();
+
+        if(areasExcludingCoastal.isEmpty()) {
+            return scenarioGeometry;
+        } else {
+            List<Integer> excludedAreaIds = areasExcludingCoastal.values().stream().toList();
+            List<CalculationArea> caList = calculationAreaService.findCalculationAreas(excludedAreaIds);
+
+            if(caList.isEmpty()){
+                return scenarioGeometry;
+            }
+
+            Map<Integer, List<CaPolygon>> polygonCache;
+            polygonCache = caList.stream().collect(Collectors.toMap(CalculationArea::getId, CalculationArea::getCaPolygonList));
+
+            for (var areaId : areasExcludingCoastal.keySet()) {
+                var caPolygons = polygonCache.get(areasExcludingCoastal.get(areaId));
+                for(var caPoly : caPolygons){
+                    Geometry caGeo = CalculationAreaService.jsonToGeometry(caPoly.getPolygon());
+                    if(caGeo != null) {
+                        if (excludedCoastPolygon == null) {
+                            excludedCoastPolygon = caGeo;
+                        } else {
+                            excludedCoastPolygon = excludedCoastPolygon.union(caGeo);
+                        }
+                    }
+                }
+            }
+            return scenarioGeometry.difference(excludedCoastPolygon);
+        }
     }
 
     /**
@@ -272,10 +338,14 @@ public class CalcService {
      *
      * @return coverage in input coordinate system (EPSG 3035 in the Swedish case)
      */
-    public CalculationResult calculateScenarioImpact(HttpServletRequest req, Scenario scenario,
-                                                     String operationName, Map<String, String> operationOptions)
+    public CalculationResult calculateScenarioImpact(HttpServletRequest req, Scenario scenario)
             throws FactoryException, TransformException, IOException, SymphonyStandardAppException {
+
+        Geometry roi = coastalComplement(scenario);
         MatrixResponse matrixResponse = calculationAreaService.getAreaCalcMatrices(scenario);
+        List<ScenarioArea> areas = scenario.getAreas();
+
+        areas.sort(Comparator.comparing(ScenarioArea::getId));
 
         BaselineVersion baseline = baselineVersionService.getBaselineVersionById(scenario.getBaselineId());
         // Cache these in a map?
@@ -288,23 +358,17 @@ public class CalcService {
         MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
                 input.getCoordinateReferenceSystem());
 
-        // Apply scenario changes, if any
-        if (scenario.getChanges() != null && !scenario.getChanges().isNull()) {
-            var changeFeatures =
-                    GeoJSONReader.parseFeatureCollection(mapper.writeValueAsString(scenario.getChanges()));
-            if (!changeFeatures.isEmpty()) {
-                var scenarioComponents = scenarioService.applyScenario(
-                        ecoComponents,
-                        pressures,
-                        changeFeatures
-                );
-                ecoComponents = scenarioComponents.getLeft();
-                pressures = scenarioComponents.getRight();
-            }
-        }
+        var scenarioComponents = scenarioService.applyScenario(
+            ecoComponents,
+            pressures,
+            scenario
+        );
 
-        Geometry minimalROI = getMatricesCombinedROI(matrixResponse.areaMatrixResponses);
-        Geometry targetRoi = JTS.transform(minimalROI, WGS84toTarget); // Transform ROI to coverage CRS
+        ecoComponents = scenarioComponents.getLeft();
+        pressures = scenarioComponents.getRight();
+
+//        Geometry minimalROI = getMatricesCombinedROI(matrixResponse.areaMatrixResponses);
+        Geometry targetRoi = JTS.transform(roi, WGS84toTarget); // Transform ROI to coverage CRS
         ReferencedEnvelope targetEnv = JTS.bounds(targetRoi, input.getCoordinateReferenceSystem());
 
         // The below is a more detailed transformation of ROI but it does not seem necessary:
@@ -313,12 +377,12 @@ public class CalcService {
         //        var better = JTS.transform(env, null, WGS84toTarget, 1000);
         //        Envelope targetEnv = new ReferencedEnvelope(better, input.getCoordinateReferenceSystem2D());
 
-        List<SensitivityMatrix> matrices = getUniqueMatrices(matrixResponse.sensitivityMatrices);
+        List<SensitivityMatrix> matrices = getUniqueMatrices(matrixResponse, scenario.getBaselineId());
         // TODO: persist matrix ids in calculation
 
         // insert null element at start to correspond to mask background
         matrices.add(0, null); // do away with this hack and compensate on paint?
-
+        matrixResponse.areaMatrixMap.put(0, null);
         GridGeometry2D gridGeometry = input.getGridGeometry();
         Envelope targetGridEnvelope = JTS.transform(targetEnv, gridGeometry.getCRSToGrid2D());
 
@@ -326,28 +390,25 @@ public class CalcService {
 
         var targetGridGeometry = getTargetGridGeometry(targetGridEnvelope, targetEnv);
         MatrixMask mask = new MatrixMask(targetGridGeometry.toCanonical(), layout,
-                matrixResponse.areaMatrixResponses, CalcUtil.createMapFromMatrixIdToIndex(matrices));
+                matrixResponse, scenario.getAreas(), CalcUtil.createMapFromMatrixIdToIndex(matrices));
         if (SAVE_MASK_IN_SESSION) {
             req.getSession().setAttribute("mask", mask.getAsPNG());
         }
 
-//        Map<String, Object> props = new HashMap<>();
-//        CoverageUtilities.setNoDataProperty(props, new NoDataContainer(CalcEngine.NO_DATA)); // TODO remove?
-
         var ecosystemsToInclude = scenario.getEcosystemsToInclude();
         GridCoverage2D coverage;
-        if (operationName.equals("RarityAdjustedCumulativeImpact")) {
+        if (scenario.getOperation() == CalcService.OPERATION_RARITYADJUSTED) {
+            // Refactor this. Enum is explicitly avoided.
             final int[] tmpEcoSystems = ecosystemsToInclude;
-            var domain = operationOptions.get("domain");
+            var domain = scenario.getOperationOptions() != null ?
+                scenario.getOperationOptions().get("domain") : "GLOBAL";
             var indices = switch (domain) {
                 case "GLOBAL":
                     yield calibrationService.calculateGlobalCommonnessIndices(ecoComponents,
                         ecosystemsToInclude, scenario.getBaselineId());
                 case "LOCAL":
-                    var targetFeatureProjected = scenario.getFeature(); // N.B: Returns copy
-                    targetFeatureProjected.setDefaultGeometry(targetRoi);
                     yield calibrationService.calculateLocalCommonnessIndices(ecoComponents,
-                        ecosystemsToInclude, targetFeatureProjected);
+                        ecosystemsToInclude, scenario.compileZones());
                 default:
                     throw new RuntimeException("Unknown rarity index calculation domain: "+domain);
             };
@@ -374,20 +435,38 @@ public class CalcService {
                 ecosystemsToInclude, scenario.getPressuresToInclude(),
                 preprocessMatrices(matrices), layout, mask, nonZeroIndices);
         } else
-            coverage = operations.cumulativeImpact(operationName, ecoComponents, pressures,
+            coverage = operations.cumulativeImpact(
+                CalcService.operationName(scenario.getOperation()),
+                ecoComponents,
+                pressures,
                 ecosystemsToInclude, scenario.getPressuresToInclude(), preprocessMatrices(matrices), layout, mask,
                 null);
 
         // Trigger actual calculation since GeoTiffWriter requests tiles in the same thread otherwise
         var ignored = ((PlanarImage) coverage.getRenderedImage()).getTiles();
 
+        ScenarioChanges sc = new ScenarioChanges(scenario.getChangeMap(), new HashMap<>());
+
+        // Importantly, areas list is sorted numerically by id
+        double[] normalizationValues = new double[areas.size()];
+        Map<Integer, Integer> areaMatrices = new HashMap<>();
+        int a_ix = 0, a_id;
+
+        for(ScenarioArea area : scenario.getAreas()) {
+            a_id = area.getId();
+            normalizationValues[a_ix] = matrixResponse.getAreaNormalizationValue(a_id);
+            areaMatrices.put(a_id, matrixResponse.getAreaMatrixId(a_id));
+            sc.areaChanges.put(a_id, area.getChangeMap());
+            ++a_ix;
+        }
+
         CalculationResult calculation = scenario.getNormalization().type == PERCENTILE ?
             new CalculationResult(coverage) :
-            persistCalculation(coverage, matrixResponse.normalizationValue,
-                scenario, ecosystemsToInclude, operationName, operationOptions, baseline);
+            persistCalculation(coverage, normalizationValues, areaMatrices, scenario, mapper.valueToTree(sc), ecosystemsToInclude, baseline, targetRoi);
 
+        // previous approach for caching calculation results in session, apparently not reliable
         // Cache last calculation in session to speed up subsequent REST call to retrieve result image
-        req.getSession().setAttribute(CalcUtil.LAST_CALCULATION_PROPERTY_NAME, calculation);
+        //req.getSession().setAttribute(CalcUtil.LAST_CALCULATION_PROPERTY_NAME, calculation);
 
         return calculation;
     }
@@ -419,12 +498,13 @@ public class CalcService {
     }
 
     public CalculationResult persistCalculation(GridCoverage2D result,
-                                                double normalizationValue,
+                                                double[] normalizationValue,
+                                                Map<Integer, Integer> areaMatrixMap,
                                                 Scenario scenario,
+                                                JsonNode changesSnapshot,
                                                 int[] ecosystemsThatWasIncluded,
-                                                String operation,
-                                                Map<String, String> operationOptions,
-                                                BaselineVersion baselineVersion)
+                                                BaselineVersion baselineVersion,
+                                                Geometry projectedRoi)
         throws IOException {
         var calculation = new CalculationResult(result);
 
@@ -435,8 +515,9 @@ public class CalcService {
             try {
                 transaction.begin();
 
-                var snapshot = ScenarioSnapshot.makeSnapshot(scenario);
+                var snapshot = ScenarioSnapshot.makeSnapshot(scenario, projectedRoi);
                 snapshot.setEcosystemsToInclude(ecosystemsThatWasIncluded); // Override actually used only in snapshot
+                snapshot.setChanges(changesSnapshot);
                 em.persist(snapshot);
                 calculation.setScenarioSnapshot(snapshot);
 
@@ -444,12 +525,13 @@ public class CalcService {
                 calculation.setOwner(scenario.getOwner());
                 calculation.setCalculationName(makeCalculationName(scenario));
                 calculation.setNormalizationValue(normalizationValue);
+                calculation.setAreaMatrixMap(areaMatrixMap);
                 calculation.setTimestamp(new Date());
                 var impactMatrix = (double[][]) result.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME);
                 calculation.setImpactMatrix(impactMatrix);
                 calculation.setBaselineVersion(baselineVersion);
-                calculation.setOperationName(operation);
-                calculation.setOperationOptions(operationOptions);
+                calculation.setOperationName(scenario.getOperation());
+                calculation.setOperationOptions(scenario.getOperationOptions());
 
                 em.persist(calculation);
                 em.flush(); // to have id generated

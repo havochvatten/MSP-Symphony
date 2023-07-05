@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ToolbarButtonComponent } from './toolbar-button.component';
-import { SharedModule } from '@src/app/shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { provideMockStore } from "@ngrx/store/testing";
 import { initialState as scenario } from "@data/scenario/scenario.reducers";

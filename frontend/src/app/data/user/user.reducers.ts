@@ -4,7 +4,8 @@ import { createReducer, on } from '@ngrx/store';
 export const initialState: UserInterfaces.State = {
   isLoggedIn: false,
   loading: false,
-  redirectUrl: '/map'
+  redirectUrl: '/map',
+  aliasing: true
 };
 
 export const userReducer = createReducer(
@@ -56,5 +57,9 @@ export const userReducer = createReducer(
   on(UserActions.updateRedirectUrl, (state, { url }) => ({
     ...state,
     redirectUrl: url
+  })),
+  on(UserActions.setAliasing, (state, { aliasing }) => ({
+    ...state,
+    aliasing: aliasing
   }))
 );

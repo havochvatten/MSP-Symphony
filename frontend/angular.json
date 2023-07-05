@@ -40,6 +40,7 @@
               "lerc",
               "lru-cache",
               "rbush",
+              "geojson-rbush",
               "web-worker",
               "earcut",
               "geojson-equality",

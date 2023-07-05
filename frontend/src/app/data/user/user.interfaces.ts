@@ -9,6 +9,7 @@ export interface State {
   redirectUrl: string;
   baseline?: Baseline;
   error?: any;
+  aliasing: boolean;
 }
 
 export interface Baseline {

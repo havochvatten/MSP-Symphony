@@ -66,7 +66,7 @@ export class MetadataEffects {
         concatLatestFrom((action) => this.store.select(MetadataSelectors.selectMetadataState))
       )
     ),
-    switchMap(([{ area, bandPath, value }, metadata]) => {
+    switchMap(([{ bandPath, value }, metadata]) => {
       // Here we could fetch the state from the actual map feature using a Promise or such
       let getBand = getIn(metadata, [...bandPath, 'bandNumber'], NaN);
       if (typeof getBand !== 'number') {
@@ -74,7 +74,6 @@ export class MetadataEffects {
       }
 
       return of(ScenarioActions.updateBandAttribute({
-        area, // FIXME make sure we can only change when selected
         componentType: getComponentType(bandPath),
         bandId: bandPath[bandPath.length - 1] as string,
         band: getBand,

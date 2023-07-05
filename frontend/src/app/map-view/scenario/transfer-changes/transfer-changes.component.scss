@@ -1,0 +1,71 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  width: 50rem;
+  border-radius: 4px;
+  padding: 2rem;
+
+  h3 {
+    margin: 0 0 1.4rem;
+  }
+
+  h4 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0 0 0.8rem;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  ::ng-deep mat-form-field {
+    margin-top: 1rem;
+
+    .mat-form-field-wrapper {
+      padding-bottom: 0.4rem;
+    }
+
+    .mat-form-field-label-wrapper label {
+      font-size: 1.5rem;
+      padding: 0.9rem 0 0 1.4rem;
+    }
+
+    &.mat-form-field-should-float {
+      .mat-form-field-label-wrapper {
+        overflow: visible;
+
+        label {
+          margin-top: -3px;
+          padding: 0;
+          color: #00639b;
+        }
+      }
+    }
+
+    mat-radio-button {
+      font-size: 14px;
+    }
+
+    .scenario-select {
+      width: 97%;
+      margin-bottom: 1.4rem;
+    }
+  }
+
+  section.buttons {
+    text-align: center;
+    margin-top: 1.4rem;
+  }
+}
+
+/* Material dropdown bug, workaround / effective solution */
+::ng-deep .cdk-overlay-container {
+  z-index: 100000 !important;
+  position: absolute;
+
+  .cdk-overlay-connected-position-bounding-box {
+    // z-index: 10000 !important;
+  }
+}

@@ -1,5 +1,6 @@
 package se.havochvatten.symphony.scenario;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import se.havochvatten.symphony.dto.LayerType;
 
 // TODO: Add user-defined matrix id? (integer)
@@ -11,12 +12,14 @@ public class BandChange {
     /**
      * Number to multiply intensity value by
      */
-    public double multiplier = 1.0;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public Double multiplier = null;
 
     /**
      * Number to add to intensity value
      */
-    public double offset = 0.0;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public Double offset = null;
 
     public BandChange() {} // necessary for Jackson databind deserialization
 

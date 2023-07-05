@@ -12,8 +12,6 @@ import {
   Boundary
 } from './area.interfaces';
 import { getIn } from 'immutable';
-// import { selectBaseline } from '@data/user/user.selectors';
-// import { Baseline } from '@data/user/user.interfaces';
 
 export const selectAreaState = createFeatureSelector<AppState, State>('area');
 
@@ -22,11 +20,11 @@ export const selectSelectedArea = createSelector(
   (area: State) => area.currentSelection
 );
 
-// Why not just return the OL feature?
 export const selectSelectedAreaData = createSelector(
   selectAreaState,
   selectSelectedArea,
-  (area: State, selectedArea) => (selectedArea ? getIn(area, selectedArea, undefined) : undefined)
+  (area: State, selectedAreas) =>
+      (selectedAreas ? selectedAreas.map(s_area => getIn(area, s_area, [])) : [])
 );
 
 // Not used anywhere.. also problem with type of the selectSelectedAreaData
@@ -56,11 +54,6 @@ export const selectUserAreas = createSelector(selectAreaState, (state: State) =>
 
 export const selectBoundaries = createSelector(selectAreaState, state => state.boundaries);
 
-export const selectAreaMatrixData = createSelector(
-  selectAreaState,
-  state => state.selectionMatrices
-);
-
 export const selectAll = createSelector(
   selectNationalAreas,
   selectUserAreas,
@@ -79,11 +72,11 @@ export const selectSelectedFeatureCollections = createSelector(
     nationalAreas: NationalArea[],
     userAreas: UserArea[],
     boundaries: Boundary[],
-    selected?: StatePath
+    selected?: StatePath[]
   ): {
     collections: FeatureCollection[];
     boundary: FeatureCollection;
-    selected?: StatePath;
+    selected?: StatePath[];
   } => {
     const nationalFeatures = getNationalAreaFeatures(nationalAreas);
     const userFeatures = getUserAreasFeatures(userAreas);

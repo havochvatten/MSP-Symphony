@@ -5,9 +5,12 @@ import {
   ToolbarZoomButtonsComponent,
   ToolbarButtonComponent
 } from '../toolbar-button/toolbar-button.component';
-import { SharedModule } from '@src/app/shared/shared.module';
+import { StoreModule } from "@ngrx/store";
+import { SharedModule } from '@shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { MapOpacitySliderComponent } from '../map-opacity-slider/map-opacity-slider.component';
+import { provideMockStore } from "@ngrx/store/testing";
+import { initialState as user } from '@data/user/user.reducers';
 
 describe('MapToolbarComponent', () => {
   let fixture: ComponentFixture<MapToolbarComponent>,
@@ -15,7 +18,18 @@ describe('MapToolbarComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, TranslationSetupModule],
+      imports: [
+        SharedModule,
+        TranslationSetupModule,
+        StoreModule.forRoot({},{}),
+      ],
+      providers : [
+        provideMockStore({
+          initialState: {
+            user
+          }
+        })
+      ],
       declarations: [
         MapToolbarComponent,
         ToolbarZoomButtonsComponent,
