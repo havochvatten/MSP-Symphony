@@ -303,6 +303,8 @@ public class CalculationREST {
     public Response getDifferenceImage(@Context HttpServletRequest req,
                                        @PathParam("a") int baseId, @PathParam("b") int scenarioId, @QueryParam("crs") String crs)
             throws Exception {
+        crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8.toString()) : "EPSG:3035";
+
         try {
             var diff = getDiffCoverageFromCalcIds(calcService, req, baseId, scenarioId);
             return projectedPNGImageResponse(diff, crs, null);
