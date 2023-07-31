@@ -320,6 +320,10 @@
                     "placeholder": "Mitt område 1",
                     "save": "Spara",
                     "close": "Avbryt"
+                },
+                "invalid-area" : {
+                    "title": "Felaktigt område",
+                    "message": "Nya områden måste överlappa minst ett område med standardmatriskoppling"
                 }
             },
             "upload": {
@@ -498,7 +502,6 @@
                 "message-single" : "Importerat område: \"{{ topLayerName }}\"",
                 "message-multi" : "Importerade {{ layersCount }} områden."
             }
-
         }
     }
 }

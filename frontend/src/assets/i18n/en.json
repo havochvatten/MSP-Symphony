@@ -320,6 +320,10 @@
                     "placeholder": "My area 1",
                     "save": "Save",
                     "close": "Close"
+                },
+                "invalid-area" : {
+                    "title": "Invalid area extent",
+                    "message": "User defined areas must overlap at least one other area having a default matrix coupling"
                 }
             },
             "upload": {
@@ -498,7 +502,6 @@
                 "message-single" : "Imported area: \"{{ topLayerName }}\"",
                 "message-multi" : "Imported {{ layersCount }} areas"
             }
-
         }
     }
 }

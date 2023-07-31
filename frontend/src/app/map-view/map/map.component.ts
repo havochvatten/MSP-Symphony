@@ -195,7 +195,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     this.areaLayer = new AreaLayer(
         this.map, this.dispatchSelectionUpdate, this.zoomToExtent,
-        this.onDrawEnd, this.onSplitClick, this.onMergeClick, () => this.warnOnOverlap(this.store),
+        this.onDrawEnd, this.onDrawInvalid, this.onSplitClick, this.onMergeClick, () => this.warnOnOverlap(this.store),
         this.scenarioLayer, this.translateService, this.geoJson); // Will add itself to the map
     this.map.addLayer(this.areaLayer);
 
@@ -249,6 +249,17 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   toggleDrawInteraction = () => {
     this.drawIsActive = this.areaLayer.toggleDrawInteraction();
   };
+
+  onDrawInvalid = async () => {
+    this.store.dispatch(MessageActions.addPopupMessage({
+      message: {
+        type: 'WARNING',
+        title: this.translateService.instant('map.user-area.create.invalid-area.title'),
+        message: this.translateService.instant('map.user-area.create.invalid-area.message'),
+        uuid: uuid()
+      }
+    }));
+  }
 
   onDrawEnd = async (polygon: Polygon) => {
     const areaName = await this.dialogService.open(CreateUserAreaModalComponent, this.moduleRef);

@@ -320,6 +320,10 @@
                     "placeholder": "Zone 1",
                     "save": "Sauvegarder",
                     "close": "Fermer"
+                },
+                "invalid-area" : {
+                    "title": "Zone invalide",
+                    "message": "Les zones doivent chevaucher au moins une autre zone avec un couplage matriciel par défaut"
                 }
             },
             "upload": {
@@ -498,7 +502,6 @@
                 "message-single" : "Zone importée: \"{{ topLayerName }}\"",
                 "message-multi" : "Importé {{ layersCount }} zones"
             }
-
         }
     }
 }
