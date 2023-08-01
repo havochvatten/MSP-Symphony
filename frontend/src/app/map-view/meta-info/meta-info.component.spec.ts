@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MetaInfoComponent } from './meta-info.component';
+import { AnchorPipe } from "@shared/anchor.pipe";
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
@@ -28,7 +29,7 @@ describe('MetaInfoComponent', () => {
             }
           }
         }],
-      declarations: [ MetaInfoComponent ]
+      declarations: [ MetaInfoComponent, AnchorPipe ]
     })
     .compileComponents();
     fixture = TestBed.createComponent(MetaInfoComponent);
