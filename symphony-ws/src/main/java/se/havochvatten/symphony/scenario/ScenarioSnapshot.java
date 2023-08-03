@@ -1,6 +1,7 @@
 package se.havochvatten.symphony.scenario;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.geotools.data.geojson.GeoJSONReader;
@@ -15,7 +16,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Size;
-import java.util.Date;
+import java.util.*;
 
 @Entity
 public class ScenarioSnapshot {
@@ -54,6 +55,12 @@ public class ScenarioSnapshot {
     @Type(type = "json")
     @Column(columnDefinition = "json")
     protected JsonNode changes;
+
+    @Basic
+    @Type(type = "json")
+    @NotNull
+    @Column(columnDefinition = "json")
+    protected JsonNode areas;
 
     @Embedded
     @NotNull
@@ -103,6 +110,10 @@ public class ScenarioSnapshot {
         return GeoJSONReader.parseGeometry(this.polygon.toString());
     }
 
+    public Map<Integer, ScenarioAreaRecord> getAreas() {
+        return mapper.convertValue(areas, new TypeReference<>() {});
+    }
+
     public int[] getEcosystemsToInclude() {
         return ecosystemsToInclude;
     }
@@ -115,6 +126,15 @@ public class ScenarioSnapshot {
         this.ecosystemsToInclude = ecosystems;
     }
 
+    public void setAreas(List<ScenarioArea> areas) {
+        var areaMap = new HashMap<Integer, ScenarioAreaRecord>() {};
+        for (var area : areas) {
+            areaMap.put(area.getId(),
+                new ScenarioAreaRecord( area.getFeature().getAttribute("name").toString(),
+                                        area.getFeatureJson()));
+        }
+        this.areas = mapper.valueToTree(areaMap);
+    }
 
     public ScenarioSnapshot() {}
 
@@ -132,6 +152,7 @@ public class ScenarioSnapshot {
         snapshot.pressuresToInclude = s.pressuresToInclude;
         snapshot.normalization = s.normalization;
         snapshot.latestCalculation = s.getLatestCalculation();
+        snapshot.setAreas(s.getAreas());
 
         return snapshot;
     }

@@ -170,10 +170,7 @@ public class ReportService {
         String matrix, areaName;
 
         for(int areaId : calc.getAreaMatrixMap().keySet()) {
-            if(scenarioService.findAreaById(areaId) == null) {
-                throw new SymphonyStandardAppException(SymphonyModelErrorCode.OTHER_ERROR, "Area with id " + areaId + " not found.");
-            }
-            areaName = scenarioService.findAreaById(areaId).getFeature().getAttribute("name").toString();
+            areaName = scenario.getAreas().get(areaId).areaName();
             try {
                 matrix = matrixService.getSensMatrixbyId(calc.getAreaMatrixMap().get(areaId)).getName();
             } catch (SymphonyStandardAppException e) {

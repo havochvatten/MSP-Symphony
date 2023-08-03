@@ -93,8 +93,8 @@ public class ScenarioArea implements BandChangeEntity {
     }
     
     public BandChange[] getAllChanges() {
-        Map<String, BandChange> baseChangeMap = mapper.convertValue(scenario.getChanges(), new TypeReference<>() {});
-        Map<String, BandChange> changeMap = getChangeMap();
+        Map<String, BandChange> baseChangeMap = mapper.convertValue(scenario.getChanges(), new TypeReference<>() {}),
+                                changeMap = getChangeMap();
 
         return Stream.concat(
                 baseChangeMap.entrySet().stream().filter(c -> !changeMap.containsKey(c.getKey())),

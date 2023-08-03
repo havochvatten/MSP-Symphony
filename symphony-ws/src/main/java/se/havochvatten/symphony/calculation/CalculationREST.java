@@ -244,9 +244,8 @@ public class CalculationREST {
         RenderedImage[] renderedImages = new RenderedImage[areas.length];
 
         for(int areaId : areas) {
-            ScenarioArea areaToRender = scenarioService.findAreaById(areaId);
             Double normalizationValue = normalizer.apply(coverage, this.calculationResult.getNormalizationValue()[areaIndex]);
-            renderedImages[areaIndex] = renderAreaImage(areaToRender, normalizationValue);
+            renderedImages[areaIndex] = renderAreaImage(scenario.getAreas().get(areaId).getFeature(), normalizationValue);
             ++areaIndex;
         }
 
@@ -266,16 +265,15 @@ public class CalculationREST {
     }
 
     private RenderedImage renderAreaImage(
-        ScenarioArea areaToRender,
+        SimpleFeature areaFeatureToRender,
         double normalizationValue) throws Exception {
 
-        SimpleFeature areaFeature = areaToRender.getFeature();
-        MathTransform mt = CRS.findMathTransform(areaFeature.getBounds().getCoordinateReferenceSystem(), this.targetCRS);
-        // "SLD" apparantly needs to be instantiated anew for each render
+        MathTransform mt = CRS.findMathTransform(areaFeatureToRender.getBounds().getCoordinateReferenceSystem(), this.targetCRS);
+        // "SLD" apparently needs to be instantiated anew for each render
         // maybe to do with JAI op threading?
         StyledLayerDescriptor sld =
             WebUtil.getSLD(CalculationREST.class.getClassLoader().getResourceAsStream(props.getProperty(this.sldProperty)));
-        GridCoverage2D croppedArea = cropToScenarioArea(areaFeature, mt);
+        GridCoverage2D croppedArea = cropToScenarioArea(areaFeatureToRender, mt);
 
         if(croppedArea == null)
             return null;

@@ -183,6 +183,8 @@ $buttons-row-gap: 1rem;
           padding: 4px 2px 4px 6px;
 
           app-icon {
+            background-color: transparent;
+            opacity: 0.3;
             position: relative;
             font-size: 4rem;
             height: 2.8rem;
@@ -193,33 +195,16 @@ $buttons-row-gap: 1rem;
               width: 1.75rem;
             }
 
-            &[icontype='report'] {
-              background-color: $hav-turquoise;
-              color: white;
-              border-radius: 50%;
-              margin-right: 0.4rem;
-
-              &:hover {
-                background-color: transparent;
-                color: $hav-turquoise;
-              }
-            }
-
-            &[icontype='copy'], &[icontype='delete'] {
-              background-color: transparent;
-              opacity: 0.3;
-
-              &:hover {
-                opacity: 1;
-              }
-            }
-
-            &[icontype='copy'] {
+            &[icontype='copy'], &[icontype='report'] {
               color: $hav-turquoise;
             }
 
             &[icontype='delete'] {
               color: $red;
+            }
+
+            &:hover {
+              opacity: 1;
             }
           }
 
