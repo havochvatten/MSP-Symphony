@@ -16,10 +16,8 @@ import java.util.List;
 				".rasterFileName = :rasterFilename"),
 		@NamedQuery(name = "Metadata.findBySymphonycategory", query = "SELECT m FROM Metadata m WHERE m" +
 				".symphonyCategory = :symphonyCategory"),
-		@NamedQuery(name = "Metadata.findBySymphonyteam", query = "SELECT m FROM Metadata m WHERE m" +
-				".symphonyTeam = :symphonyTeam"),
-		@NamedQuery(name = "Metadata.findBySymphonyteamlocal", query = "SELECT m FROM Metadata m WHERE m" +
-				".symphonyTeamLocal = :symphonyTeamLocal"),
+		@NamedQuery(name = "Metadata.findBySymphonytheme", query = "SELECT m FROM Metadata m WHERE m.symphonyTheme = :symphonyTheme"),
+		@NamedQuery(name = "Metadata.findBySymphonythemelocal", query = "SELECT m FROM Metadata m WHERE m.symphonyThemeLocal = :symphonyThemeLocal"),
 		@NamedQuery(name = "Metadata.findById", query = "SELECT m FROM Metadata m WHERE m.id = :id")})
 public class Metadata implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -50,11 +48,11 @@ public class Metadata implements Serializable {
     @Column(name = "meta_symphonycategory")
     private String symphonyCategory;
     @Size(max = 2147483647)
-    @Column(name = "meta_symphonyteam")
-    private String symphonyTeam;
+    @Column(name = "meta_symphonytheme")
+    private String symphonyTheme;
     @Size(max = 2147483647)
-    @Column(name = "meta_symphonyteamlocal")
-    private String symphonyTeamLocal;
+    @Column(name = "meta_symphonythemelocal")
+    private String symphonyThemeLocal;
     @Size(max = 2147483647)
     @Column(name = "meta_symphonydatatype")
     private String symphonyDataType;
@@ -209,20 +207,20 @@ public class Metadata implements Serializable {
         this.symphonyCategory = symphonyCategory;
     }
 
-    public String getSymphonyTeam() {
-        return symphonyTeam;
+    public String getSymphonyTheme() {
+        return symphonyTheme;
     }
 
-    public void setSymphonyTeam(String symphonyTeam) {
-        this.symphonyTeam = symphonyTeam;
+    public void setSymphonyTheme(String symphonyTheme) {
+        this.symphonyTheme = symphonyTheme;
     }
 
-    public String getSymphonyTeamLocal() {
-        return symphonyTeamLocal;
+    public String getSymphonyThemeLocal() {
+        return symphonyThemeLocal;
     }
 
-    public void setSymphonyTeamLocal(String symphonyTeamLocal) {
-        this.symphonyTeamLocal = symphonyTeamLocal;
+    public void setSymphonyThemeLocal(String symphonyThemeLocal) {
+        this.symphonyThemeLocal = symphonyThemeLocal;
     }
 
     public String getSymphonyDataType() {

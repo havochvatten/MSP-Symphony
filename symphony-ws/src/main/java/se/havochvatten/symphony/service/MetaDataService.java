@@ -2,7 +2,7 @@ package se.havochvatten.symphony.service;
 
 import se.havochvatten.symphony.dto.MetadataComponentDto;
 import se.havochvatten.symphony.dto.MetadataDto;
-import se.havochvatten.symphony.dto.MetadataSymphonyTeamDto;
+import se.havochvatten.symphony.dto.MetadataSymphonyThemeDto;
 import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.entity.Metadata;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
@@ -40,30 +40,30 @@ public class MetaDataService {
 
     public MetadataComponentDto getComponentDto(String componentName, int baselineVersionId) {
         MetadataComponentDto componentDto = new MetadataComponentDto();
-		Set<String> symphonyTeams = new HashSet(em.createQuery("Select o.symphonyTeam from Metadata o where " +
+		Set<String> symphonyThemes = new HashSet(em.createQuery("Select o.symphonyTheme from Metadata o where " +
 						"o.symphonyCategory = :categ AND o.baselineVersion.id = :baselineVersionId")
 				.setParameter("categ", componentName)
 				.setParameter("baselineVersionId", baselineVersionId)
 				.getResultList());
-        SortedSet<String> symphonyTeamsSort = new TreeSet<>(symphonyTeams);
-        symphonyTeamsSort.forEach(t -> {
-            List<Metadata> teamMetaData = getSymphonyTeamMetaData(componentName, t, baselineVersionId);
-            MetadataSymphonyTeamDto symphonyTeamDto =
-					EntityToMetadataDtoMapper.mapEnitiesToMetaDataTeamDto(t, teamMetaData);
-            componentDto.getSymphonyTeams().add(symphonyTeamDto);
+        SortedSet<String> symphonyThemesSort = new TreeSet<>(symphonyThemes);
+        symphonyThemesSort.forEach(t -> {
+            List<Metadata> themeMetaData = getSymphonyThemeMetaData(componentName, t, baselineVersionId);
+            MetadataSymphonyThemeDto symphonyThemeDto =
+					EntityToMetadataDtoMapper.mapEntitiesToMetaDataThemeDto(t, themeMetaData);
+            componentDto.getSymphonyThemes().add(symphonyThemeDto);
         });
         return componentDto;
     }
 
-    public List<Metadata> getSymphonyTeamMetaData(String componentName, String team, int baselineVersionId) {
-        List<Metadata> teamMetaData = em.createQuery("Select o from Metadata o where o.symphonyCategory = " +
-						":categ and o.symphonyTeam = :symphonyTeam AND o.baselineVersion.id = " +
+    public List<Metadata> getSymphonyThemeMetaData(String componentName, String theme, int baselineVersionId) {
+        List<Metadata> themeMetaData = em.createQuery("Select o from Metadata o where o.symphonyCategory = " +
+						":categ and o.symphonyTheme = :symphonyTheme AND o.baselineVersion.id = " +
 						":baselineVersionId order by o.title")
                 .setParameter("categ", componentName)
-                .setParameter("symphonyTeam", team)
+                .setParameter("symphonyTheme", theme)
                 .setParameter("baselineVersionId", baselineVersionId)
                 .getResultList();
-        return teamMetaData;
+        return themeMetaData;
     }
 
     public Metadata getMetadataById(Integer id) throws SymphonyStandardAppException {

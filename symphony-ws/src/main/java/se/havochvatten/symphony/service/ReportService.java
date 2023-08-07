@@ -1,6 +1,5 @@
 package se.havochvatten.symphony.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import it.geosolutions.jaiext.stats.HistogramMode;
@@ -18,7 +17,6 @@ import se.havochvatten.symphony.calculation.Operations;
 import se.havochvatten.symphony.calculation.SankeyChart;
 import se.havochvatten.symphony.dto.*;
 import se.havochvatten.symphony.entity.CalculationResult;
-import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.scenario.ScenarioService;
 import se.havochvatten.symphony.scenario.ScenarioSnapshot;
@@ -217,7 +215,10 @@ public class ReportService {
     }
 
     private MetadataPropertyDto[] flattenAndSort(MetadataComponentDto component) {
-        return component.getSymphonyTeams().stream().flatMap(team -> team.getProperties().stream()).sorted(Comparator.comparingInt(MetadataPropertyDto::getBandNumber)).toArray(MetadataPropertyDto[]::new);
+        return component.getSymphonyThemes().stream()
+            .flatMap(theme -> theme.getProperties().stream()).sorted(
+                Comparator.comparingInt(MetadataPropertyDto::getBandNumber))
+            .toArray(MetadataPropertyDto[]::new);
     }
 
     static int[] uniqueIntersection(int[] a, int[] b) {

@@ -41,5 +41,13 @@ export const environment = {
   login: {
     noAccountUrl: "https://your.server.com/no-account.html",
     forgotPasswordUrl: "https://your.server.com/forgot-password.html"
+  },
+  meta: {
+    visible_fields: ['methodSummary',
+                    'limitationsForSymphony',
+                    'valueRange',
+                    'dataProcessing',
+                    'dataSources'],
+    list_fields:    ['dataSources']
   }
 };

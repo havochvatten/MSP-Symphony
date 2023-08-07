@@ -21,10 +21,12 @@ describe('MetaInfoComponent', () => {
               band: {
                 title: '',
                 statePath: [''],
-                methodSummary: '',
-                limitationsForSymphony: '',
-                valueRange: '',
-                dataProcessing: ''
+                meta: {
+                  methodSummary: '',
+                  limitationsForSymphony: '',
+                  valueRange: '',
+                  dataProcessing: ''
+                }
               }
             }
           }

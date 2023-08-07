@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MetadataComponentDto {
-    List<MetadataSymphonyTeamDto> symphonyTeams;
+    List<MetadataSymphonyThemeDto> symphonyThemes;
 
-    public List<MetadataSymphonyTeamDto> getSymphonyTeams() {
-        if (symphonyTeams == null) {
-            symphonyTeams = new ArrayList<>();
+    public List<MetadataSymphonyThemeDto> getSymphonyThemes() {
+        if (symphonyThemes == null) {
+            symphonyThemes = new ArrayList<>();
         }
-        return symphonyTeams;
+        return symphonyThemes;
     }
 }

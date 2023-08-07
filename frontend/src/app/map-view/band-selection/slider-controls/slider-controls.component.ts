@@ -1,5 +1,5 @@
 import { Component, Input, NgModuleRef, OnDestroy, OnInit } from '@angular/core';
-import { Band, BandChange, BandType, StatePath } from '@data/metadata/metadata.interfaces';
+import { Band, BandChange, StatePath } from '@data/metadata/metadata.interfaces';
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
 import { ScenarioSelectors } from "@data/scenario";
@@ -10,6 +10,7 @@ import { DialogService } from "@shared/dialog/dialog.service";
 import { MetaInfoComponent } from "@src/app/map-view/meta-info/meta-info.component";
 import { isEmpty } from "lodash";
 import { MatCheckboxChange } from "@angular/material/checkbox";
+import { environment as env } from "@src/environments/environment";
 
 @Component({
   selector: 'app-slider-controls',
@@ -86,18 +87,9 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    const publicMeta =
-      [ this.band.methodSummary,
-        this.band.limitationsForSymphony,
-        this.band.valueRange,
-        this.band.dataProcessing ];
-
-    for (const meta of publicMeta) {
-      if (meta) {
-        this.hasPublicMeta = true;
-        break;
-      }
-    }
+    this.hasPublicMeta = env.meta.visible_fields.some(
+      visible_field => !!this.band.meta[visible_field]
+    )
   }
 
   toggleOpen() {
