@@ -1,7 +1,7 @@
 <h4>{{ 'report.scenario-changes.title' | translate }}&nbsp;<span class="scenario-name" *ngIf="name">{{ name }}</span></h4>
 <div *ngIf="anyChanges(); else noChanges">
   <!--TODO make this span two columns. Multicol?-->
-  <table>
+  <table [class]="(comparisonReport ? 'comparison' : '')">
     <tr *ngIf="anyScenarioChanges()" class="title-row scenario-wide"><th colspan="2">{{ 'report.scenario-changes.base-changes' | translate }}</th></tr>
     <tr *ngFor="let s_change of scenarioChanges.baseChanges | keyvalue">
       <th class="change-label">{{ s_change.key }}</th>

@@ -501,8 +501,18 @@
             "pressure": "Pressures with highest impact"
         },
         "sankey": {
-            "title": "Sankey diagram",
-            "description": "This Sankey diagram shows the relationship between the pressures and the nature values. The thickness of the arrows are proportional to the size of the pressures and their impact on the nature values."
+            "sankey-single": {
+                "title": "Sankey diagram",
+                "description": "This Sankey diagram shows the relationship between the pressures and the nature values. The thickness of the arrows are proportional to the size of the pressures and their impact on the natural values. Values below {{ chartThreshold }} are not included in the diagram."
+            },
+            "sankey-cmp-positive": {
+                "title": "Sankey diagram (increasing)",
+                "description": "This Sankey diagram shows the relationship between the pressures whose impact increases on different natural values in scenario B, relative to scenario A. The thickness of the arrows are proportional to the increase of each pressure between the two specified scenarios, with respect to the affected nature values. Values below {{ chartThreshold }} are not included in the diagram."
+            },
+            "sankey-cmp-negative": {
+                "title": "Sankey diagram (decreasing)",
+                "description": "This Sankey diagram shows the relationship between the pressures whose impact decreases on different natural values in scenario B, relative to scenario A. The thickness of the arrows are proportional to the amount each pressure is alleviated between the two specified scenarios, with respect to the affected nature values. Values below {{ chartThreshold }} are not included in the diagram."
+            }
         },
         "scenario-changes": {
             "title": "Scenario Parameters",

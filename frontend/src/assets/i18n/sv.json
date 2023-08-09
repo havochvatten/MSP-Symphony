@@ -501,8 +501,18 @@
             "pressure": "Belastningar med högst påverkan"
         },
         "sankey": {
-            "title": "Sankey-diagram",
-            "description": "Detta Sankey-diagram visar sambanden mellan belastningar och naturvärden. Flödespilarnas bredd är proportionella mot belastningarnas storlek och deras påverkan på olika naturvärden. Detta gör det möjligt att visa alla data översiktligt i en enda bild. Endast värden på över 1% inkluderas i diagrammet."
+            "sankey-single": {
+                "title": "Sankey-diagram",
+                "description": "Detta Sankey-diagram visar sambanden mellan belastningar och naturvärden. Flödespilarnas bredd är proportionella mot belastningarnas storlek och deras påverkan på olika naturvärden. Detta gör det möjligt att visa alla data översiktligt i en enda bild. Endast värden över {{ chartThreshold }} inkluderas i diagrammet."
+            },
+            "sankey-cmp-positive": {
+                "title": "Sankey-diagram (ökande påverkan)",
+                "description": "Detta Sankey-diagram visar sambanden mellan de belastningar vars påverkan ökar på olika naturvärden i \"what-if\" scenariot, jämfört med grundscenariot. Flödespilarnas bredd är proportionella mot ökningen av varje belastning mellan de två angivna scenarierna, med avseende på de påverkade naturvärdena. Endast värden över {{ chartThreshold }} inkluderas i diagrammet."
+            },
+            "sankey-cmp-negative": {
+                "title": "Sankey diagram (minskande påverkan)",
+                "description": "Detta Sankey-diagram visar sambanden mellan de belastningar vars påverkan minskar på olika naturvärden i \"what-if\" scenariot, jämfört med grundscenariot. Flödespilarnas bredd är proportionella mot minskningen av varje belastning mellan de två angivna scenarierna, med avseende på de påverkade naturvärdena. Endast värden över {{ chartThreshold }} inkluderas i diagrammet."
+            }
         },
         "scenario-changes": {
             "title": "Scenarioparametrar",

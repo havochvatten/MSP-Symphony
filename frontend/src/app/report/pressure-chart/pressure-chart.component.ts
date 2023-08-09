@@ -30,6 +30,8 @@ export interface ChartData {
 export class PressureChartComponent implements OnChanges {
   @Input() data?: ChartData;
   @Input() locale = 'en';
+  @Input() diagramId = '';
+  @Input() chartWeightThreshold = '';
 
   constructor(private numberPipe: DecimalPipe) {}
 
@@ -40,7 +42,7 @@ export class PressureChartComponent implements OnChanges {
   }
 
   private DrawChart() {
-    const svg = d3.select('#sankey'),
+    const svg = d3.select('#' + this.diagramId + ' svg'),
       width = +svg.attr('width'),
       height = +svg.attr('height');
 

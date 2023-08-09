@@ -10,12 +10,14 @@ import { environment as env } from "@src/environments/environment";
 import { HttpClient } from "@angular/common/http";
 import { filter } from "rxjs/operators";
 import { BandMap } from "@src/app/report/report.component";
+import { formatChartData } from "@src/app/report/report.util";
 import { BandGroup } from "@data/metadata/metadata.interfaces";
 import MetadataService from "@data/metadata/metadata.service";
 import { ReportService } from "@src/app/report/report.service";
 import { CalculationService } from "@data/calculation/calculation.service";
-import { relativeDifference } from "@data/calculation/calculation.util";
 import { map } from "lodash";
+import { relativeDifference } from "@src/app/report/report.util";
+import { formatPercent } from "@angular/common";
 
 @Component({
   selector: 'app-calculation-report',
@@ -27,6 +29,7 @@ export class ComparisonReportComponent {
   report?: ComparisonReport;
   loadingReport = true;
   area?: number;
+  public chartWeightThresholdPercentage: string = '1%';
   private imageUrl?: string;
   bandMap: BandMap = { b: {}, e: {}};
   metadata$: Observable<{
@@ -45,10 +48,11 @@ export class ComparisonReportComponent {
     private reportService: ReportService,
     private calcService: CalculationService,
     private http: HttpClient,
-    private metadataService: MetadataService
+    private metadataService: MetadataService,
   ) {
     this.locale = this.translate.currentLang;
     this.legend = calcService.getLegend('comparison');
+
 
     const that = this;
     route.paramMap.subscribe((result: ParamMap) => {
@@ -63,6 +67,8 @@ export class ComparisonReportComponent {
           that.store.dispatch(MetadataActions.fetchMetadata({ baseline: report.a.baselineName }));
           that.areaDictA = reportService.setAreaDict(report.a);
           that.areaDictB = reportService.setAreaDict(report.b);
+
+          that.chartWeightThresholdPercentage = formatPercent(report.a.chartWeightThreshold, that.locale);
         },
         error() {
           that.loadingReport = false;
@@ -81,9 +87,11 @@ export class ComparisonReportComponent {
     });
   }
 
-  toArray(reports: ComparisonReport):Report[] {
-    return reports ? [reports.a, reports.b] : [];
+  getChartThresholdPercentage(): string {
+    return this.chartWeightThresholdPercentage;
   }
+
+  formatChartData = formatChartData;
 
   // Compute relative difference with regard to first scenario element in components
   calculateRelativeDifference(components: Record<string, number>[]) {

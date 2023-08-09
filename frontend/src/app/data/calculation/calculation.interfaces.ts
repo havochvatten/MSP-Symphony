@@ -31,10 +31,11 @@ export interface Report {
   gridResolution: number; // [m]
   areaMatrices: AreaMatrix[];
   normalization: NormalizationOptions;
-  impactPerPressure: Record<number, number>;
-  impactPerEcoComponent: Record<number, number>;
+  impactPerPressure: Record<string, number>;
+  impactPerEcoComponent: Record<string, number>;
   scenarioChanges: ReportChanges;
   chartData: ChartData;
+  chartWeightThreshold: number;
   timestamp: number;
 }
 
@@ -48,6 +49,8 @@ export interface ReportChanges {
 export interface ComparisonReport {
   a: Report,
   b: Report
+  chartDataPositive: ChartData;
+  chartDataNegative: ChartData;
 }
 
 export interface DefaultMatrixData {

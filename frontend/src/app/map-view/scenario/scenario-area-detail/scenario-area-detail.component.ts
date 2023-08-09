@@ -16,10 +16,13 @@ import { ScenarioActions, ScenarioSelectors, } from "@data/scenario";
 import { Observable, Subscription } from "rxjs";
 import { CalculationSelectors } from "@data/calculation";
 import { ScenarioService } from "@data/scenario/scenario.service";
-import { availableOperationsByValue } from "@data/calculation/calculation.util";
 import { OperationParams } from "@data/calculation/calculation.interfaces";
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
 import { transferChanges } from "@src/app/map-view/scenario/scenario-common";
+
+const availableOperationsByValue: Map<CalcOperation, string> = new Map<CalcOperation, string>(
+  [ [CalcOperation.Cumulative, 'CumulativeImpact' ] ,
+    [CalcOperation.RarityAdjusted, 'RarityAdjustedCumulativeImpact' ]]);
 
 @Component({
   selector: 'app-scenario-area-detail',

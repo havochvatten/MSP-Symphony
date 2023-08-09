@@ -180,10 +180,12 @@ public class ReportService {
         report.normalization = scenario.getNormalization();
         report.impactPerPressure = impactPerComponent(scenario.getPressuresToInclude(), pTotal);
         report.impactPerEcoComponent = impactPerComponent(scenario.getEcosystemsToInclude(), esTotal);
+        report.chartWeightThreshold =
+            props.getPropertyAsDouble("calc.sankey_chart.link_weight_threshold", 0.001);
         if (computeChart)
             report.chartData = new SankeyChart(scenario.getEcosystemsToInclude(),
                 scenario.getPressuresToInclude(), impactMatrix, total,
-                props.getPropertyAsDouble("calc.sankey_chart.link_weight_threshold", 0.001)
+                report.chartWeightThreshold
             ).getChartData();
 
         report.geographicalArea =  JTS.transform(scenario.getGeometry(),
@@ -197,12 +199,74 @@ public class ReportService {
         return report;
     }
 
+    private static double relativeDifference(double a, double b) {
+        if (a == b) return 0;
+        if (a == 0 && b == 0) return 0;
+        return (b - a) / a;
+    }
+
+    public double[][] calculateDifferentialImpactMatrix(double[][] imxA, double[][] imxB) {
+
+        int pLen = imxA.length, esLen = imxA[0].length;
+        double[][] diffs = new double[pLen][esLen];
+        for (int b = 0; b < pLen; b++) {
+            for (int e = 0; e < esLen; e++) {
+                diffs[b][e] = relativeDifference(imxA[b][e], imxB[b][e]);
+            }
+        }
+
+        return diffs;
+    }
+
     public ComparisonReportResponseDto generateComparisonReportData(CalculationResult calcA,
                                                                     CalculationResult calcB)
         throws FactoryException, TransformException, SymphonyStandardAppException {
         var report = new ComparisonReportResponseDto();
         report.a = generateReportData(calcA, false);
         report.b = generateReportData(calcB, false);
+
+        double chartWeightThreshold =
+            props.getPropertyAsDouble("calc.sankey_chart.link_weight_threshold", 0.001);
+
+        int[] ecoSystems = calcA.getScenarioSnapshot().getEcosystemsToInclude(),
+              pressures  = calcA.getScenarioSnapshot().getPressuresToInclude();
+
+        double[][] diffImpact = calculateDifferentialImpactMatrix(calcA.getImpactMatrix(), calcB.getImpactMatrix()),
+                   diffImpactPositive = new double[diffImpact.length][diffImpact[0].length],
+                   diffImpactNegative = new double[diffImpact.length][diffImpact[0].length];
+
+        for (int b = 0; b < diffImpact.length; b++) {
+            for (int e = 0; e < diffImpact[0].length; e++) {
+                if (diffImpact[b][e] > 0) {
+                    diffImpactPositive[b][e] = diffImpact[b][e];
+                }
+            }
+        }
+
+        for (int b = 0; b < diffImpact.length; b++) {
+            for (int e = 0; e < diffImpact[0].length; e++) {
+                if (diffImpact[b][e] < 0) {
+                    diffImpactNegative[b][e] = Math.abs(diffImpact[b][e]);
+                }
+            }
+        }
+
+        double[] positiveTotalP = new double[diffImpactPositive.length],
+               positiveTotalES = new double[diffImpactPositive[0].length],
+               negativeTotalP = new double[diffImpactNegative.length],
+               negativeTotalES = new double[diffImpactNegative[0].length];
+
+        double totalPositive = getComponentTotals(diffImpactPositive, positiveTotalP, positiveTotalES),
+               totalNegative = getComponentTotals(diffImpactNegative, negativeTotalP, negativeTotalES);
+
+        report.chartDataPositive =
+            new SankeyChart(ecoSystems, pressures, diffImpactPositive, totalPositive, chartWeightThreshold)
+                .getChartData();
+
+        report.chartDataNegative =
+            new SankeyChart(ecoSystems, pressures, diffImpactNegative, totalNegative, chartWeightThreshold)
+                .getChartData();
+
         return report;
     }
 

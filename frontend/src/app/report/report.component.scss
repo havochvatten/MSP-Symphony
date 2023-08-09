@@ -106,16 +106,17 @@
     }
 
     app-pressure-chart {
+
       grid-column: 1 / 6;
-      grid-row: 9 / 10;
+
+      &#sankey-single {
+        grid-row: 9 / 10;
+      }
+
     }
 
     app-scenario-changes {
       grid-column: 1 / 4;
-      grid-row: 10 / 11;
-    }
-
-    app-scenario-changes {
       grid-row: 10 / 11;
     }
 

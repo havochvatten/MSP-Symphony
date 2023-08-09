@@ -501,8 +501,18 @@
             "pressure": "Pressions avec l'impact le plus important"
         },
         "sankey": {
-            "title": "Diagramme Sankey",
-            "description": "Ce diagramme Sankey montre la relation entre les pressions et les valeurs des composantes écosystème. L'épaisseur des flèches est proportionnelle à l'importance des pressions et à leur impact sur les composantes écosystème."
+            "sankey-single": {
+                "title": "Diagramme Sankey",
+                "description": "Ce diagramme Sankey montre la relation entre les pressions et les valeurs des composantes écosystème. L'épaisseur des flèches est proportionnelle à l'importance des pressions et à leur impact sur les composantes écosystème."
+            },
+            "sankey-cmp-positive": {
+                "title": "Diagramme Sankey (augmentation)",
+                "description": "Ce diagramme de Sankey montre les relations entre les charges dont l'impact augmente sur différentes valeurs naturelles dans le scénario anticipé, par rapport au scénario de référence. L'épaisseur des flèches est proportionnelle à l'augmentation de chaque pression entre les deux scénarios spécifiés, par rapport à son impact sur les écosystèmes. Les valeurs inférieures à {{ chartThreshold }} ne sont pas incluses dans le diagramme."
+            },
+            "sankey-cmp-negative": {
+                "title": "Diagramme Sankey (diminution)",
+                "description": "Ce diagramme de Sankey montre les relations entre les charges dont l'impact diminue sur différentes valeurs naturelles dans le scénario anticipé, par rapport au scénario de référence. L'épaisseur des flèches est proportionnelle à la diminution de chaque pression entre les deux scénarios spécifiés, par rapport à son impact sur les écosystèmes. Les valeurs inférieures à {{ chartThreshold }} ne sont pas incluses dans le diagramme."
+            }
         },
         "scenario-changes": {
             "title": "Paramètres du scénario",

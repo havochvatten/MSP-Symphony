@@ -3,7 +3,6 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { DialogRef } from '../dialog/dialog-ref';
 import { DialogConfig } from '../dialog/dialog-config';
 import { ReportModalComponent } from "@shared/report-modal/report-modal.component";
-import { environment as env } from "@src/environments/environment";
 
 @Component({
   selector: 'app-comparison-report-modal',
