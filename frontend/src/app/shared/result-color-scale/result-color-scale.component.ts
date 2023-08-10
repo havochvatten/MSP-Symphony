@@ -10,6 +10,13 @@ export class ResultColorScaleComponent {
   @Input() locale = 'en';
   @Input() title?: string;
   @Input() unit?: string;
+  @Input() perMille: boolean = false
+  @Input() decimals = true;
+
+  digitsInfo(): string {
+    return this.perMille && this.decimals ? '1.0-2' : '1.0-0'
+  }
+
   @Input() colors: LegendColor[] = [
     {
       color: '#0072fc',

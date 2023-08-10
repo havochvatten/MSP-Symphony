@@ -11,7 +11,12 @@
                              [footnote]="'report.cumulative-effect-etc.comparison.legend-desc' | translate"
                              [locale]="locale"
   ></app-cumulative-effect-etc>
-  <app-result-color-scale [colors]="(legend | async)?.colorMap" unit="%"></app-result-color-scale>
+  <app-result-color-scale
+    [perMille]="true"
+    [decimals]="dynamicMax < 0.45"
+    [colors]="(legend | async)?.colorMap"
+    unit="%"
+  ></app-result-color-scale>
   <app-scenario-changes
     [name]="report.a.name"
     [scenarioChanges]="report.a.scenarioChanges"

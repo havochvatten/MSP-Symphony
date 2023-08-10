@@ -28,6 +28,11 @@ export const fetchLegend = createAction(
   props<{ legendType: LegendType }>()
 );
 
+export const fetchDynamicComparisonLegend = createAction(
+  '[Calculation] Fetch dynamic comparison legend',
+  props<{ dynamicMax: number }>()
+);
+
 export const fetchLegendSuccess = createAction(
   '[Calculation] Fetch legend success',
   props<{ legend: Legend, legendType: LegendType }>()

@@ -29,8 +29,7 @@ export class ComparisonReportComponent {
   report?: ComparisonReport;
   loadingReport = true;
   area?: number;
-  public chartWeightThresholdPercentage: string = '1%';
-  private imageUrl?: string;
+
   bandMap: BandMap = { b: {}, e: {}};
   metadata$: Observable<{
     ecoComponent: BandGroup[];
@@ -39,6 +38,13 @@ export class ComparisonReportComponent {
   now = new Date();
   areaDictA: Map<number, string> = new Map<number, string>();
   areaDictB: Map<number, string> = new Map<number, string>();
+
+  isDynamic: boolean;
+  dynamicMax: number;
+
+  chartWeightThresholdPercentage: string = '1%';
+
+  private imageUrl: string;
   private legend:Observable<Legend>;
 
   constructor(
@@ -51,30 +57,37 @@ export class ComparisonReportComponent {
     private metadataService: MetadataService,
   ) {
     this.locale = this.translate.currentLang;
-    this.legend = calcService.getLegend('comparison');
 
+    const that = this,
+          paramMap = route.snapshot.paramMap,
+          aId = paramMap.get('aId')!, bId = paramMap.get('bId')!;
 
-    const that = this;
-    route.paramMap.subscribe((result: ParamMap) => {
-      const aId = result.get('aId')!, bId = result.get('bId')!;
-      this.imageUrl = `${env.apiBaseUrl}/calculation/diff/${aId}/${bId}`;
-      reportService.getComparisonReport(aId, bId).subscribe({
-        next(report) {
-          that.report = report;
-          that.area = reportService.calculateArea(report.a);
-          that.loadingReport = false;
+    this.isDynamic = route.snapshot.url[0].path === 'compareDynamic'
+    this.dynamicMax = +(paramMap.get('dynamicMax') || 0);
 
-          that.store.dispatch(MetadataActions.fetchMetadata({ baseline: report.a.baselineName }));
-          that.areaDictA = reportService.setAreaDict(report.a);
-          that.areaDictB = reportService.setAreaDict(report.b);
+    this.legend = (this.isDynamic) ?
+      calcService.getDynamicComparisonLegend(this.dynamicMax) :
+      calcService.getLegend('comparison');
 
-          that.chartWeightThresholdPercentage = formatPercent(report.a.chartWeightThreshold, that.locale);
-        },
-        error() {
-          that.loadingReport = false;
-          }
-        });
-      });
+    this.imageUrl = `${env.apiBaseUrl}/calculation/diff/${aId}/${bId}`
+                            + (this.isDynamic ? `?dynamic=true` : '');
+
+    reportService.getComparisonReport(aId, bId).subscribe({
+      next(report) {
+        that.report = report;
+        that.area = reportService.calculateArea(report.a);
+        that.loadingReport = false;
+
+        that.store.dispatch(MetadataActions.fetchMetadata({ baseline: report.a.baselineName }));
+        that.areaDictA = reportService.setAreaDict(report.a);
+        that.areaDictB = reportService.setAreaDict(report.b);
+
+        that.chartWeightThresholdPercentage = formatPercent(report.a.chartWeightThreshold, that.locale);
+      },
+      error() {
+        that.loadingReport = false;
+      }
+    });
 
     this.metadata$ = this.store.select(MetadataSelectors.selectMetadata);
     this.metadata$.pipe(

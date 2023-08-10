@@ -23,7 +23,6 @@ import se.havochvatten.symphony.dto.CalculationResultSlice;
 import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.exception.SymphonyStandardSystemException;
-import se.havochvatten.symphony.scenario.ScenarioArea;
 import se.havochvatten.symphony.scenario.ScenarioService;
 import se.havochvatten.symphony.scenario.ScenarioSnapshot;
 import se.havochvatten.symphony.service.PropertiesService;
@@ -43,7 +42,9 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
 import java.security.Principal;
+import java.util.Formatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -299,13 +300,14 @@ public class CalculationREST {
     @RolesAllowed("GRP_SYMPHONY")
     @ApiOperation(value = "Computes the difference between two calculations", response = byte[].class)
     public Response getDifferenceImage(@Context HttpServletRequest req,
-                                       @PathParam("a") int baseId, @PathParam("b") int scenarioId, @QueryParam("crs") String crs)
+                                       @PathParam("a") int baseId, @PathParam("b") int scenarioId,
+                                       @QueryParam("dynamic") boolean dynamic, @QueryParam("crs") String crs)
             throws Exception {
         crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8.toString()) : "EPSG:3035";
 
         try {
             var diff = getDiffCoverageFromCalcIds(calcService, req, baseId, scenarioId);
-            return projectedPNGImageResponse(diff, crs, null);
+            return projectedPNGImageResponse(diff, crs, null, dynamic);
         } catch (AccessDeniedException ax) {
             return status(Response.Status.UNAUTHORIZED).build();
         }
@@ -389,11 +391,13 @@ public class CalculationREST {
         return resultCoverage;
     }
 
-    private Response projectedPNGImageResponse(GridCoverage2D coverage, String crs, Double normalizationValue) throws Exception {
+    private Response projectedPNGImageResponse(GridCoverage2D coverage, String crs, Double normalizationValue,
+                                               boolean dynamicComparativeScale) throws Exception {
         Envelope dataEnvelope = new ReferencedEnvelope(coverage.getEnvelope());
         CoordinateReferenceSystem targetCRS;
         Envelope targetEnvelope;
         RenderedImage image;
+        double dynamicMax = 0;
 
         if (crs == null) {
             targetCRS = coverage.getCoordinateReferenceSystem2D();
@@ -410,9 +414,18 @@ public class CalculationREST {
                 WebUtil.getSLD(CalculationREST.class.getClassLoader().getResourceAsStream(
                     props.getProperty("data.styles.result"))), normalizationValue);
         } else {
-            image = WebUtil.render(coverage, targetCRS, targetEnvelope,
+            // Comparative image
+            var sld =
                 WebUtil.getSLD(CalculationREST.class.getClassLoader().getResourceAsStream(
-                    props.getProperty("data.styles.comparison"))));
+                        props.getProperty("data.styles.comparison")));
+            // "Dynamic" color maxima
+            if(dynamicComparativeScale) {
+                double[] extrema = StatsNormalizer.getExtrema(coverage, normalizationFactory.getOperations());
+                dynamicMax = Math.max(Math.abs(extrema[0]), Math.abs(extrema[1]));
+                image = WebUtil.renderDynamicComparison(coverage, targetCRS, targetEnvelope, sld, dynamicMax);
+            } else {
+                image = WebUtil.render(coverage, targetCRS, targetEnvelope, sld);
+            }
         }
 
         logger.info("Encoding result in PNG format...");
@@ -424,6 +437,7 @@ public class CalculationREST {
         cc.setMaxAge(WebUtil.ONE_YEAR_IN_SECONDS);
         return ok(baos.toByteArray(), "image/png")
             .header("SYM-Image-Extent", WebUtil.createExtent(targetEnvelope).toString())
+            .header("SYM-Dynamic-Max", new Formatter(Locale.US).format("%.3f", dynamicMax))
             .cacheControl(cc)
             .build();
     }

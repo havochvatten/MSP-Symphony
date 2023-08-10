@@ -19,6 +19,8 @@ import { MatSelect } from "@angular/material/select";
     return a && b && a.value === b.value ? { identicalCalculations: true } : null;
 }*/
 
+enum ComparisonScaleOptions { CONSTANT, DYNAMIC }
+
 @Component({
   selector: 'app-comparison',
   templateUrl: './comparison.component.html',
@@ -33,6 +35,8 @@ export class ComparisonComponent implements AfterViewInit {
   });
   @ViewChild('candidates') bSelect!: MatSelect;
   loadingCandidates?: boolean;
+  ScaleOptions = ComparisonScaleOptions;
+  public selectedScale = ComparisonScaleOptions.CONSTANT;
 
   constructor(
     private store: Store<State>,
@@ -50,11 +54,15 @@ export class ComparisonComponent implements AfterViewInit {
   }
 
   submit() {
-    const a =  this.compareForm.value.a as string, b = this.compareForm.value.b as string;
-    this.dialogService.open(ComparisonReportModalComponent, this.moduleRef, {
-      data: { a, b }
-    });
-    this.calcService.addComparisonResult(a, b)
+    const a =  this.compareForm.value.a as string, b = this.compareForm.value.b as string,
+          dynamic = this.selectedScale === ComparisonScaleOptions.DYNAMIC;
+    this.calcService.addComparisonResult(a, b, dynamic).then(
+      (dynamicMax: number) => {
+        this.dialogService.open(ComparisonReportModalComponent, this.moduleRef, {
+          data: { a, b, dynamicMax }
+        });
+      }
+    )
       .catch(e => console.warn(e));
   }
 
@@ -71,5 +79,9 @@ export class ComparisonComponent implements AfterViewInit {
       }),
       map(([res, _]) => res)
     );
+  }
+
+  setComparisonScale(scale: ComparisonScaleOptions) {
+    this.selectedScale = scale;
   }
 }

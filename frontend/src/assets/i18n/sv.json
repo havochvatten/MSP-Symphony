@@ -347,7 +347,10 @@
             "choose-scenario": "Välj scenario",
             "choose-base-scenario-first": "Välj grundscenario först",
             "base-scenario-suggestion": "(vanligtvis basvärdeanalysen)",
-            "what-if-scenario-suggestion": "(vanligtvis den prognostiserade analysen)"
+            "what-if-scenario-suggestion": "(vanligtvis den prognostiserade analysen)",
+            "select-scale": "Anpassa färgskala",
+            "scale-constant": "Konstant maximum (45%)",
+            "scale-dynamic": "Dynamiskt maximum"
         },
         "user-area": {
             "create": {

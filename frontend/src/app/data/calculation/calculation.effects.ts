@@ -64,6 +64,24 @@ export class CalculationEffects {
   );
 
   @Effect()
+  fetchDynamicComparisonLegend$ = this.actions$.pipe(
+    ofType(CalculationActions.fetchDynamicComparisonLegend),
+    mergeMap(({ dynamicMax }) =>
+      this.calcService.getDynamicComparisonLegend(dynamicMax).pipe(
+        map(legend => CalculationActions.fetchLegendSuccess({ legend, legendType: 'comparison' })),
+        catchError(({ status, error: message }) =>
+          of(
+            CalculationActions.fetchLegendFailure({
+              error: { status, message }
+            })
+          )
+        )
+      )
+    )
+  );
+
+
+  @Effect()
   fetchPercentile$ = this.actions$.pipe(
     ofType(CalculationActions.fetchPercentile),
     switchMap(() =>

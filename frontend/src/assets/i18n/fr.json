@@ -347,7 +347,10 @@
             "choose-scenario": "Choisissez un scénario",
             "choose-base-scenario-first": "Choisissez un scénario de référence avant",
             "base-scenario-suggestion": "",
-            "what-if-scenario-suggestion": ""
+            "what-if-scenario-suggestion": "",
+            "select-scale": "Sélectionnez l'échelle de couleur",
+            "scale-constant": "Maximum constant (45%)",
+            "scale-dynamic": "Maximum dynamique"
         },
         "user-area": {
             "create": {
