@@ -29,7 +29,8 @@ public class EntityToMetadataDtoMapper {
         // the dto. Since we utilize reflection to access all getters in the
         // entity, "Class" (getClass, by inheritance) needs to be excluded here
         // as well.
-        String[] topLevelProperties = {"Class", "Id", "Title", "TitleLocal", "BandNumber",
+        String[] topLevelProperties = {"Class", "Id", "Title", "TitleLocal", "BandNumber", "BaselineVersion",
+                                       "EcoSensitivities", "PressureSensitivities",
                                        "SymphonyThemeName", "SymphonyThemeLocal"};
 
         MetadataPropertyDto dto = new MetadataPropertyDto();
