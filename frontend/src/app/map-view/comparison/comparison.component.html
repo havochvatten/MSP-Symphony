@@ -34,11 +34,13 @@
   <div class="container select-scale">
     <h4>{{ 'map.compare.select-scale' | translate }}</h4>
     <article>
-      <mat-radio-group (change)="setComparisonScale($event.value)" [ngModel]="selectedScale">
-        <mat-radio-button [value]="ScaleOptions.CONSTANT">
+      <mat-radio-group (change)="setComparisonScale($event.value)">
+        <mat-radio-button [value]="ScaleOptions.CONSTANT"
+                          [checked]="selectedScale == ScaleOptions.CONSTANT">
           {{ 'map.compare.scale-constant' | translate }}
         </mat-radio-button>
-        <mat-radio-button [value]="ScaleOptions.DYNAMIC">
+        <mat-radio-button [value]="ScaleOptions.DYNAMIC"
+                          [checked]="selectedScale == ScaleOptions.DYNAMIC">
           {{ 'map.compare.scale-dynamic' | translate }}
         </mat-radio-button>
       </mat-radio-group>
