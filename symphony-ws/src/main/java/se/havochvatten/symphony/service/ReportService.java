@@ -211,7 +211,7 @@ public class ReportService {
         double[][] diffs = new double[pLen][esLen];
         for (int b = 0; b < pLen; b++) {
             for (int e = 0; e < esLen; e++) {
-                diffs[b][e] = relativeDifference(imxA[b][e], imxB[b][e]);
+                diffs[b][e] =  imxB[b][e] - imxA[b][e];
             }
         }
 
@@ -240,24 +240,14 @@ public class ReportService {
                 if (diffImpact[b][e] > 0) {
                     diffImpactPositive[b][e] = diffImpact[b][e];
                 }
-            }
-        }
-
-        for (int b = 0; b < diffImpact.length; b++) {
-            for (int e = 0; e < diffImpact[0].length; e++) {
                 if (diffImpact[b][e] < 0) {
                     diffImpactNegative[b][e] = Math.abs(diffImpact[b][e]);
                 }
             }
         }
 
-        double[] positiveTotalP = new double[diffImpactPositive.length],
-               positiveTotalES = new double[diffImpactPositive[0].length],
-               negativeTotalP = new double[diffImpactNegative.length],
-               negativeTotalES = new double[diffImpactNegative[0].length];
-
-        double totalPositive = getComponentTotals(diffImpactPositive, positiveTotalP, positiveTotalES),
-               totalNegative = getComponentTotals(diffImpactNegative, negativeTotalP, negativeTotalES);
+        double totalPositive = Arrays.stream(diffImpactPositive).flatMapToDouble(Arrays::stream).sum(),
+               totalNegative = Arrays.stream(diffImpactNegative).flatMapToDouble(Arrays::stream).sum();
 
         report.chartDataPositive =
             new SankeyChart(ecoSystems, pressures, diffImpactPositive, totalPositive, chartWeightThreshold)
