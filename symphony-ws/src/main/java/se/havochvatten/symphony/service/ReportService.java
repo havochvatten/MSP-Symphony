@@ -199,12 +199,6 @@ public class ReportService {
         return report;
     }
 
-    private static double relativeDifference(double a, double b) {
-        if (a == b) return 0;
-        if (a == 0 && b == 0) return 0;
-        return (b - a) / a;
-    }
-
     public double[][] calculateDifferentialImpactMatrix(double[][] imxA, double[][] imxB) {
 
         int pLen = imxA.length, esLen = imxA[0].length;
