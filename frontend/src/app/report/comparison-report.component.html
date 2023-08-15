@@ -31,13 +31,13 @@
     [areaDict]="areaDictB"
     [comparisonReport]="true"
   ></app-scenario-changes>
-  <app-pressure-chart *ngIf="report.chartDataPositive.nodes.length > 0"
+  <app-pressure-chart *ngIf="report.chartDataPositive.links.length > 1"
     [id]="'sankey-cmp-positive'" [diagramId]="'sankey-cmp-positive'"
     [chartWeightThreshold]="getChartThresholdPercentage()"
     [data]="formatChartData(report.chartDataPositive, metadata$ | async, bandMap)"
     [locale]="locale"
   ></app-pressure-chart>
-  <app-pressure-chart *ngIf="report.chartDataNegative.nodes.length > 0"
+  <app-pressure-chart *ngIf="report.chartDataNegative.links.length > 1"
     [id]="'sankey-cmp-negative'" [diagramId]="'sankey-cmp-negative'"
     [chartWeightThreshold]="getChartThresholdPercentage()"
     [data]="formatChartData(report.chartDataNegative, metadata$ | async, bandMap)"
