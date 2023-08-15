@@ -79,6 +79,6 @@ import { ActiveScenarioDisplayComponent } from './active-scenario-display/active
         MatRadioModule
     ],
   providers: [AnchorPipe, DialogService],
-  exports: [MainViewComponent]
+  exports: [MainViewComponent, ComparisonComponent]
 })
 export class MapViewModule {}

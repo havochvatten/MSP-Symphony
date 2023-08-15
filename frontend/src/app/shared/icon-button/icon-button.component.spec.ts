@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { IconButtonComponent } from './icon-button.component';
 import { IconComponent } from '../icon/icon.component';
+import { DialogConfig } from "@shared/dialog/dialog-config";
 
 describe('IconButtonComponent', () => {
   let fixture: ComponentFixture<IconButtonComponent>,

@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { ChangesListComponent } from './changes-list.component';
+import { IconComponent } from "@shared/icon/icon.component";
 
 
 describe('ChangesListComponent', () => {
@@ -12,7 +13,7 @@ describe('ChangesListComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ TranslateModule.forRoot() ],
       providers: [ TranslateService ],
-      declarations: [ ChangesListComponent ]
+      declarations: [ ChangesListComponent, IconComponent ]
     })
     .compileComponents();
 
