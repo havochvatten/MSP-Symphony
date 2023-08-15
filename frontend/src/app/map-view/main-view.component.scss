@@ -37,6 +37,8 @@ hav-accordion-panel {
       background-color: #ffffffee;
       padding: 1rem;
       border-radius: 2px;
+      max-height: 85.2vh;
+      overflow: auto;
     }
 
     #scale-container {

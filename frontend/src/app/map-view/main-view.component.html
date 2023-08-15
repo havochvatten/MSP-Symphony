@@ -44,7 +44,7 @@
     <div
       *ngIf="
         ((legends$ | async).result && this.getVisibleImpact()) ||
-        ((legends$ | async).comparison && this.getVisibleComparison()) ||
+         (cmpLegends$ | async)?.length > 0 && this.getVisibleComparison() ||
          (legends$ | async).ecosystem ||
          (legends$ | async).pressure
       "
@@ -56,12 +56,10 @@
         [colors]="(legends$ | async).result.colorMap"
         [unit]="(legends$ | async).result.unit"
       ></app-result-color-scale>
-      <app-result-color-scale
-        *ngIf="(legends$ | async).comparison && this.getVisibleComparison()"
-        [title]="'map.color-scale.comparison' | translate"
-        [colors]="(legends$ | async).comparison.colorMap"
-        [unit]="(legends$ | async).comparison.unit"
-      ></app-result-color-scale>
+      <app-comparison-color-scale
+        *ngIf="this.getVisibleComparison()"
+        [legends]="(cmpLegends$ | async)"
+      ></app-comparison-color-scale>
       <app-result-color-scale
         *ngIf="(legends$ | async).ecosystem"
         [title]="'map.color-scale.ecosystem' | translate"

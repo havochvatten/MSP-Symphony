@@ -104,8 +104,16 @@ export interface PercentileResponse {
   percentileValue: number;
 }
 
+export interface ComparisonLegendState {
+  title: string[]
+  legend: Legend,
+}
+
 export type LegendState = {
-  [key in LegendType]: Legend | undefined;
+  result: Legend | undefined,
+  ecosystem: Legend | undefined,
+  pressure: Legend | undefined,
+  comparison: { [value: string] : ComparisonLegendState }
 };
 
 export interface OperationParams {

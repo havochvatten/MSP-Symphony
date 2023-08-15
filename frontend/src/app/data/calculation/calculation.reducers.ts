@@ -1,7 +1,8 @@
 import { createReducer, on } from '@ngrx/store';
+import { setIn } from "immutable";
 import { CalculationActions, CalculationInterfaces } from './';
 import { AreaActions } from '@data/area';
-import { setIn } from "immutable";
+import { Legend } from "@data/calculation/calculation.interfaces";
 
 export const initialState: CalculationInterfaces.State = {
   loadingReport: false,
@@ -13,7 +14,7 @@ export const initialState: CalculationInterfaces.State = {
     result: undefined,
     ecosystem: undefined,
     pressure: undefined,
-    comparison: undefined
+    comparison: {}
   }
 };
 
@@ -48,10 +49,16 @@ export const calculationReducer = createReducer(
   })),
   on(CalculationActions.fetchLegendSuccess, (state, { legend, legendType }) => ({
     ...state,
-    legends: {
-      ...state.legends,
-      [legendType]: legend
-    }
+    legends: setIn(state.legends, [legendType], legend)
+  })),
+  on(CalculationActions.fetchComparisonLegendSuccess, (state, { legend, comparisonTitle, maxValue }) => {
+    const comparisonTitles= new Set(state.legends.comparison[maxValue.toString()]?.title || []);
+          comparisonTitles.add(comparisonTitle);
+    return updateComparisonLegend(state, maxValue.toString(), [...comparisonTitles], legend);
+  }),
+  on(CalculationActions.resetComparisonLegend, (state) => ({
+    ...state,
+    legends: setIn(state.legends, ['comparison'], {})
   })),
   on(CalculationActions.updateName, (state, { index, newName }) => ({
     ...state,
@@ -62,3 +69,7 @@ export const calculationReducer = createReducer(
     percentileValue: percentileValue
   }))
 );
+
+function updateComparisonLegend(state: CalculationInterfaces.State, maxValueKey:string, comparisonTitles: string[], legend: Legend): CalculationInterfaces.State {
+    return setIn(state, ['legends', 'comparison', maxValueKey], { title: comparisonTitles, legend: legend });
+}

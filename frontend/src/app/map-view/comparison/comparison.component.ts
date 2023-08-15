@@ -3,7 +3,7 @@ import { Store } from "@ngrx/store";
 import { State } from '@src/app/app-reducer';
 import { Observable } from 'rxjs';
 import { CalculationSlice } from '@data/calculation/calculation.interfaces';
-import { CalculationSelectors } from '@data/calculation';
+import { CalculationActions, CalculationSelectors } from '@data/calculation';
 import { FormBuilder, Validators } from '@angular/forms'; //ValidationErrors, ValidatorFn
 import { DialogService } from '@shared/dialog/dialog.service';
 import { ComparisonReportModalComponent } from '@shared/report-modal/comparison-report-modal.component';
@@ -11,6 +11,7 @@ import { CalculationService } from '@data/calculation/calculation.service';
 import { map, tap, withLatestFrom } from 'rxjs/operators';
 import { TranslateService } from "@ngx-translate/core";
 import { MatSelect } from "@angular/material/select";
+import { MatOption } from "@angular/material/core";
 
 /*export const sameCalculationsValidator: ValidatorFn = (control: AbstractControl):
   ValidationErrors | null => {
@@ -33,6 +34,7 @@ export class ComparisonComponent implements AfterViewInit {
     a: ['', Validators.required],
     b: ['', Validators.required]
   });
+  @ViewChild('base') aSelect!: MatSelect;
   @ViewChild('candidates') bSelect!: MatSelect;
   loadingCandidates?: boolean;
   ScaleOptions = ComparisonScaleOptions;
@@ -54,13 +56,21 @@ export class ComparisonComponent implements AfterViewInit {
   }
 
   submit() {
-    const a =  this.compareForm.value.a as string, b = this.compareForm.value.b as string,
+    const that = this,
+          a =  this.compareForm.value.a as string, b = this.compareForm.value.b as string,
+          comparisonTitle = (this.aSelect.selected as MatOption).viewValue + ' ~ ' +
+                                   (this.bSelect.selected as MatOption).viewValue,
           dynamic = this.selectedScale === ComparisonScaleOptions.DYNAMIC;
     this.calcService.addComparisonResult(a, b, dynamic).then(
       (dynamicMax: number) => {
         this.dialogService.open(ComparisonReportModalComponent, this.moduleRef, {
           data: { a, b, dynamicMax }
         });
+        if(dynamic) {
+          that.store.dispatch(CalculationActions.fetchDynamicComparisonLegend({ dynamicMax: dynamicMax, comparisonTitle }));
+        } else {
+            that.store.dispatch(CalculationActions.fetchComparisonLegend({ comparisonTitle }));
+        }
       }
     )
       .catch(e => console.warn(e));

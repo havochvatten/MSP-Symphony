@@ -6,7 +6,7 @@
       <article>
         <h3>{{'map.compare.base-scenario' | translate }}</h3>
         <span class="suggestion">{{'map.compare.base-scenario-suggestion' | translate }}</span>
-        <mat-select [placeholder]="'map.compare.choose-scenario' | translate" formControlName="a"
+        <mat-select #base [placeholder]="'map.compare.choose-scenario' | translate" formControlName="a"
                     (valueChange)="changeBase($event)" required="true" [panelClass]="'ddPanel cmp'">
           <mat-option *ngFor="let c of calculations$ | async" [value]="c.id">{{ c.name }}</mat-option>
         </mat-select>

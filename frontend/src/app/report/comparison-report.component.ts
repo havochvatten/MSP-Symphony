@@ -1,21 +1,20 @@
 import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { filter } from "rxjs/operators";
 import { Store } from '@ngrx/store';
+import { TranslateService } from '@ngx-translate/core';
+import { map } from "lodash";
 import { State } from '../app-reducer';
 import { MetadataActions, MetadataSelectors } from '@data/metadata';
-import { TranslateService } from '@ngx-translate/core';
-import { Report, ComparisonReport, Legend } from '@data/calculation/calculation.interfaces';
+import { ComparisonReport, Legend } from '@data/calculation/calculation.interfaces';
 import { environment as env } from "@src/environments/environment";
-import { HttpClient } from "@angular/common/http";
-import { filter } from "rxjs/operators";
 import { BandMap } from "@src/app/report/report.component";
 import { formatChartData } from "@src/app/report/report.util";
 import { BandGroup } from "@data/metadata/metadata.interfaces";
 import MetadataService from "@data/metadata/metadata.service";
 import { ReportService } from "@src/app/report/report.service";
 import { CalculationService } from "@data/calculation/calculation.service";
-import { map } from "lodash";
 import { relativeDifference } from "@src/app/report/report.util";
 import { formatPercent } from "@angular/common";
 
@@ -53,7 +52,6 @@ export class ComparisonReportComponent {
     private route: ActivatedRoute,
     private reportService: ReportService,
     private calcService: CalculationService,
-    private http: HttpClient,
     private metadataService: MetadataService,
   ) {
     this.locale = this.translate.currentLang;

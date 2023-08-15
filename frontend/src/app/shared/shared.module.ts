@@ -34,11 +34,12 @@ import { StatusIconComponent } from './status-icon/status-icon.component';
 import { ComparisonReportModalComponent } from '@shared/report-modal/comparison-report-modal.component';
 import { OrdinalPipe } from '@shared/ordinal.pipe';
 import { AnchorPipe } from '@shared/anchor.pipe';
-import { MatButtonModule } from "@angular/material/button";
-import { MatCheckboxModule } from "@angular/material/checkbox";
 import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal.component';
 import { InlineMapComponent } from './inline-map/inline-map.component';
 import { SelectIntersectionComponent} from "@shared/select-intersection/select-intersection.component";
+import { ComparisonColorScaleComponent } from './comparison-color-scale/comparison-color-scale.component';
+import { MatButtonModule } from "@angular/material/button";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatRadioModule } from "@angular/material/radio";
 import { MatInputModule } from "@angular/material/input";
 
@@ -79,7 +80,8 @@ import { MatInputModule } from "@angular/material/input";
     AnchorPipe,
     ConfirmationModalComponent,
     InlineMapComponent,
-    SelectIntersectionComponent
+    SelectIntersectionComponent,
+    ComparisonColorScaleComponent
   ],
   imports: [
     CommonModule,
@@ -127,7 +129,8 @@ import { MatInputModule } from "@angular/material/input";
     OrdinalPipe,
     AnchorPipe,
     InlineMapComponent,
-    SelectIntersectionComponent
+    SelectIntersectionComponent,
+    ComparisonColorScaleComponent
   ]
 })
 export class SharedModule {}

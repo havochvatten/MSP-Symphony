@@ -30,6 +30,11 @@ export const selectLegends = createSelector(
   state => state.legends
 );
 
+export const selectComparisonLegend = createSelector(
+  selectCalculationState,
+  state => [...Object.values(state.legends.comparison)]
+);
+
 export const selectPercentileValue = createSelector(
   selectCalculationState,
   state => state.percentileValue

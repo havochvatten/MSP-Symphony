@@ -28,14 +28,28 @@ export const fetchLegend = createAction(
   props<{ legendType: LegendType }>()
 );
 
+export const fetchComparisonLegend = createAction(
+  '[Calculation] Fetch comparison legend',
+  props<{ comparisonTitle: string }>()
+);
+
 export const fetchDynamicComparisonLegend = createAction(
   '[Calculation] Fetch dynamic comparison legend',
-  props<{ dynamicMax: number }>()
+  props<{ dynamicMax: number, comparisonTitle: string }>()
 );
 
 export const fetchLegendSuccess = createAction(
   '[Calculation] Fetch legend success',
   props<{ legend: Legend, legendType: LegendType }>()
+);
+
+export const fetchComparisonLegendSuccess = createAction(
+  '[Calculation] Fetch comparison legend success',
+  props<{ legend: Legend, comparisonTitle: string, maxValue: number }>()
+);
+
+export const resetComparisonLegend = createAction(
+    '[Calculation] Reset comparison legend'
 );
 
 export const fetchLegendFailure = createAction(

@@ -1,0 +1,13 @@
+<ng-container *ngFor="let legendEntry of legends">
+  <ng-container *ngIf="legends.length === 1">
+    <h5 class="single-value">{{ 'map.color-scale.comparison' | translate }}</h5>
+  </ng-container>
+  <ng-container *ngIf="legends.length > 1">
+    <h5 *ngFor="let legendTitle of legendEntry.title">{{ legendTitle }}</h5>
+  </ng-container>
+  <app-result-color-scale
+    [colors]="legendEntry.legend.colorMap"
+    [perMille]="true"
+    [decimals]="false"
+    [unit]="legendEntry.legend.unit"></app-result-color-scale>
+</ng-container>
