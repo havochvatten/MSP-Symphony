@@ -26,12 +26,6 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Running end-to-end tests
-
-~~Run `ng e2e` to execute the end-to-end tests~~  
-We're switching to Cypress for e2e testing. However, no specs are written as of now.
-See [Cypress](https://www.cypress.io/) for more information.
-
 ## Storybook
 
 Run `npm run storybook` for a dev server. Navigate to [https://localhost:6006/](https://localhost:6006/) (it usually opens a Chrome tab automatically). Storybook will automatically update if you change any of the source files.
