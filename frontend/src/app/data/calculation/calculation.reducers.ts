@@ -3,6 +3,7 @@ import { setIn } from "immutable";
 import { CalculationActions, CalculationInterfaces } from './';
 import { AreaActions } from '@data/area';
 import { Legend } from "@data/calculation/calculation.interfaces";
+import { ListItemsSort } from "@data/common/sorting.interfaces";
 
 export const initialState: CalculationInterfaces.State = {
   loadingReport: false,
@@ -15,7 +16,8 @@ export const initialState: CalculationInterfaces.State = {
     ecosystem: undefined,
     pressure: undefined,
     comparison: {}
-  }
+  },
+  sortCalculations: ListItemsSort.None
 };
 
 export const calculationReducer = createReducer(
@@ -67,6 +69,10 @@ export const calculationReducer = createReducer(
   on(CalculationActions.fetchPercentileSuccess, (state, { percentileValue }) => ({
     ...state,
     percentileValue: percentileValue
+  })),
+  on(CalculationActions.setCalculationSortType, (state, { sortType }) => ({
+    ...state,
+    sortCalculations: sortType
   }))
 );
 

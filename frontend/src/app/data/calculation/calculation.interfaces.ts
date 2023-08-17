@@ -4,6 +4,7 @@ import { ProjectionLike } from "ol/proj";
 import { NormalizationOptions } from "@data/calculation/calculation.service";
 import { BandType } from "@data/metadata/metadata.interfaces";
 import { ChangesProperty } from '@data/scenario/scenario.interfaces';
+import { ListItemsSort, SortableListItem } from "@data/common/sorting.interfaces";
 
 // TODO Move calculation element to Scenario state
 export interface State {
@@ -13,6 +14,7 @@ export interface State {
   calculating: boolean;
   legends: LegendState;
   percentileValue: number;
+  sortCalculations: ListItemsSort;
 }
 
 export interface Report {
@@ -79,11 +81,9 @@ export interface StaticImageOptions {
   interpolate: boolean;
 }
 
-export interface CalculationSlice {
-  name: string;
+export interface CalculationSlice extends SortableListItem {
   // The below are set upon calculation completion
   id: number;
-  timestamp: number;
   loading?: boolean;
 }
 

@@ -211,7 +211,8 @@
                 "scenario-area": "{{ scenario }}\nOmråde: {{ area-feature }}",
                 "show-report-label": "Öppna senaste beräkningsrapporten",
                 "more-areas-single": "+ ett ytterligare område ..",
-                "more-areas": "+ {{ more }} ytterligare områden .."
+                "more-areas": "+ {{ more }} ytterligare områden ..",
+                "filter-hint": "Filtrera scenarion per namn"
             },
             "clear": "Rensa",
             "close": "❮",
@@ -332,6 +333,7 @@
             "placeholder": "Inga tidigare beräkningar",
             "show-report": "Öppna rapport “{{ calculationName }}”",
             "delete": "Radera sparad beräkning “{{ calculationName }}”",
+            "filter-hint": "Filtrera beräkningsrapport per namn",
             "delete-modal" : {
                 "header": "Radera sparad beräkning",
                 "message": "Bekräfta borttagning av tidigare sparad beräkning: <em>“{{ calculationName }}”</em>",
@@ -553,5 +555,13 @@
                 "message-multi" : "Importerade {{ layersCount }} områden."
             }
         }
+    },
+    "list-sorting-options" : {
+        "indicate-order" : "Ange sorteringsordning som {{ orderHint }}",
+        "AlphaAsc" : "alfabetisk, stigande (A-Ö)",
+        "AlphaDesc" : "alfabetisk, fallande (Ö-A)",
+        "DateAsc" : "datum, stigande (äldst först)",
+        "DateDesc" : "datum, fallande (nyast först)",
+        "None" : " ej ordnad"
     }
 }

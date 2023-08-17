@@ -1,12 +1,15 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store";
 import { State as AppState } from "@src/app/app-reducer";
 import { ScenarioDisplayMeta, State } from "@data/scenario/scenario.interfaces";
+import { sortFuncMap } from "@data/common/sorting.interfaces";
 
 export const selectScenarioState = createFeatureSelector<AppState, State>('scenario');
 
 export const selectScenarios = createSelector(
   selectScenarioState,
-  (state) => state.scenarios
+  (state) => {
+    return [...state.scenarios].sort(sortFuncMap[state.sortScenarios]);
+  }
 );
 
 export const selectActiveScenario = createSelector(

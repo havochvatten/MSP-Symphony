@@ -1,6 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 import { CalculationSlice, LegendType, Legend, PercentileResponse } from './calculation.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
+import { SortActionProps } from "@data/common/sorting.interfaces";
 
 export const startCalculation = createAction('[Calculation] Add calculation');
 
@@ -88,4 +89,9 @@ export const deleteCalculationFailure = createAction(
 export const updateName = createAction(
   '[Calculation] Update calculation name',
   props<{ index: number, newName: string }>()
+);
+
+export const setCalculationSortType = createAction(
+  '[Calculation] Set calculation sort type',
+  props<SortActionProps>()
 );

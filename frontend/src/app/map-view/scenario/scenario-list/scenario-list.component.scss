@@ -34,6 +34,10 @@ $buttons-row-gap: 1rem;
       }
     }
 
+    .list-filter-container {
+      padding: 0 0 1rem;
+    }
+
     .divider {
       height: 1px;
       width: 100%;
@@ -63,6 +67,10 @@ $buttons-row-gap: 1rem;
         max-width: 100%;
         cursor: pointer;
         align-items: stretch;
+
+        &.filtered {
+          display: none;
+        }
 
         &:hover {
           background-color: $hav-coldgrey;

@@ -6,6 +6,7 @@ import {
   MatrixParameters
 } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
 import { OperationParams } from "@data/calculation/calculation.interfaces";
+import { ListItemsSort, SortableListItem } from "@data/common/sorting.interfaces";
 
 export interface State {
   scenarios: Scenario[];
@@ -13,13 +14,12 @@ export interface State {
   activeArea?: number; // index of area that is being edited in the active scenario
   matrixData: ScenarioMatrixDataMap | null;
   matricesLoading: boolean;
+  sortScenarios: ListItemsSort;
 }
 
-export interface Scenario {
+export interface Scenario extends SortableListItem {
   id: number;
-  timestamp: number;
   baselineId: number;
-  name: string;
   changes: ChangesProperty;
   normalization: NormalizationOptions;
   ecosystemsToInclude: number[];

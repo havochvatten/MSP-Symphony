@@ -1,0 +1,22 @@
+<input matInput
+  [(ngModel)]="filterString"
+  [placeholder]="filterPlaceholder"
+  (input)="setFilter()"/>
+<app-icon-button
+  [title]="'list-sorting-options.indicate-order' | translate :
+  { orderHint: i18n_key(false) | translate }"
+  [label]="'list-sorting-options.indicate-order' | translate :
+  { orderHint: i18n_key(false) | translate }"
+  (click)="cycle(false)"
+  [icon]="sortType === ListItemsSort.AlphaDesc ? 'sort-alphaD' : 'sort-alphaA'"
+  [ngClass]="{ 'active' : isActive(false) }">
+</app-icon-button>
+<app-icon-button
+  [title]="'list-sorting-options.indicate-order' | translate :
+  { orderHint: i18n_key(true) | translate }"
+  [label]="'list-sorting-options.indicate-order' | translate :
+  { orderHint: i18n_key(true) | translate }"
+  (click)="cycle(true)"
+  [icon]="sortType === ListItemsSort.DateAsc ? 'sort-dateA' : 'sort-dateD'"
+  [ngClass]="{ 'active' : isActive(true) }">
+</app-icon-button>

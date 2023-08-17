@@ -2,6 +2,7 @@ import { State, LegendState } from './calculation.interfaces';
 import { State as AppState } from '@src/app/app-reducer';
 import { createSelector, createFeatureSelector } from '@ngrx/store';
 import { MetadataSelectors } from '@data/metadata';
+import { sortFuncMap } from "@data/common/sorting.interfaces";
 
 export const selectCalculationState = createFeatureSelector<AppState, State>('calculation');
 
@@ -12,7 +13,9 @@ export const selectLoadingReport = createSelector(
 
 export const selectCalculations = createSelector(
   selectCalculationState,
-  state => state.calculations
+  state => {
+    return [...state.calculations].sort(sortFuncMap[state.sortCalculations]);
+  }
 );
 
 export const selectLoadingCalculations = createSelector(

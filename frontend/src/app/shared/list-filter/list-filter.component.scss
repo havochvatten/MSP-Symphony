@@ -1,0 +1,25 @@
+:host {
+  display: flex;
+
+  input {
+    flex: 1;
+    font-size: 1.4rem;
+    padding: 0.8rem 0.6rem;
+    margin-right: 8px;
+    border: 1px solid rgba(9, 45, 75, 0.3);
+  }
+
+  app-icon-button {
+    font-size: 1.6rem;
+    padding: 0.4rem 0;
+    width: 24px;
+    height: 24px;
+    margin-left: 4px;
+    cursor: pointer;
+    opacity: 0.3;
+
+    &.active {
+      opacity: 1;
+    }
+  }
+}

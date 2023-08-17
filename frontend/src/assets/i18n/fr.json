@@ -211,7 +211,8 @@
                 "scenario-area": "{{ scenario }}\nZone: {{ area-feature }}",
                 "show-report-label": "Ouvrir le rapport de calcul le plus récent",
                 "more-areas-single": "+ une zone supplémentaire ..",
-                "more-areas": "+ {{ more }} zones supplémentaires .."
+                "more-areas": "+ {{ more }} zones supplémentaires ..",
+                "filter-hint": "Filtrer les scénarios par nom"
             },
             "clear": "Effacer",
             "close": "❮",
@@ -332,6 +333,7 @@
             "placeholder": "Aucun résultat calculé",
             "show-report": "Ouvrir le rapport de calcul “{{ calculationName }}”",
             "delete": "Supprimer le résultat “{{ calculationName }}”",
+            "filter-hint": "Filtrer les calculs par nom",
             "delete-modal" : {
                 "header": "Supprimer résultat",
                 "message": "Confirmer la suppression du résultat: <em>“{{ calculationName }}”</em>",
@@ -553,5 +555,13 @@
                 "message-multi" : "Importé {{ layersCount }} zones"
             }
         }
+    },
+    "list-sorting-options" : {
+        "indicate-order" : "Indiquer l'ordre comme {{ orderHint }}",
+        "AlphaAsc" : "alphabétique croissant (A-Z)",
+        "AlphaDesc" : "alphabétique décroissant (Z-A)",
+        "DateAsc" : "croissant par date (les plus anciens en premier)",
+        "DateDesc" : "décroissant par date (les plus récents en premier)",
+        "None" : " non trié"
     }
 }

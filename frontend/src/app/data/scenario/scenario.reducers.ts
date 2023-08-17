@@ -7,11 +7,13 @@ import { calculationSucceeded } from "@data/calculation/calculation.actions";
 import { BandChange } from "@data/metadata/metadata.interfaces";
 import {
   fetchAreaMatricesFailure,
-  fetchAreaMatricesSuccess, fetchAreaMatrixSuccess
+  fetchAreaMatricesSuccess,
+  fetchAreaMatrixSuccess
 } from '@data/scenario/scenario.actions';
 import { ScenarioActions, ScenarioInterfaces } from '@data/scenario/index';
 import { ChangesProperty, ScenarioArea } from "@data/scenario/scenario.interfaces";
 import { AreaMatrixData } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
+import { ListItemsSort } from "@data/common/sorting.interfaces";
 
 
 export const initialState: ScenarioInterfaces.State = {
@@ -19,7 +21,8 @@ export const initialState: ScenarioInterfaces.State = {
   active: undefined,
   activeArea: undefined,
   matrixData: null,
-  matricesLoading: false
+  matricesLoading: false,
+  sortScenarios: ListItemsSort.None
 };
 
 export const scenarioReducer = createReducer(
@@ -61,6 +64,10 @@ export const scenarioReducer = createReducer(
     // Optimistically close scenario to reduce latency
     active: undefined,
     activeArea: undefined
+  })),
+  on(ScenarioActions.setScenarioSortType, (state, { sortType }) => ({
+    ...state,
+    sortScenarios: sortType
   })),
   on(ScenarioActions.saveScenarioSuccess, (state, { savedScenario }) => ({
     ...state,

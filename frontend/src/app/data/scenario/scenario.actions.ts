@@ -14,6 +14,7 @@ import {
 import { Feature } from "geojson";
 import { OperationParams } from "@data/calculation/calculation.interfaces";
 import { CalcOperation, NormalizationOptions } from "@data/calculation/calculation.service";
+import { ListItemsSort } from "@data/common/sorting.interfaces";
 
 
 export const fetchScenarios = createAction(
@@ -216,4 +217,9 @@ export const fetchAreaMatrixSuccess = createAction(
 export const fetchAreaMatricesFailure = createAction(
   '[Scenario] Fetch matrices failure',
   props<{ error: ErrorMessage }>()
+);
+
+export const setScenarioSortType = createAction(
+  '[Scenario] Set scenario sort type',
+  props<{ sortType: ListItemsSort }>()
 );

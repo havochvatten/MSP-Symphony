@@ -211,7 +211,8 @@
                 "scenario-area": "{{ scenario }}\nArea: {{ area-feature }}",
                 "show-report-label": "Open the latest calculation report",
                 "more-areas-single": "+ an additional area ..",
-                "more-areas": "+ {{ more }} more areas .."
+                "more-areas": "+ {{ more }} more areas ..",
+                "filter-hint": "Filter scenarios by name"
             },
             "clear": "Clear",
             "close": "❮",
@@ -332,6 +333,7 @@
             "placeholder": "No calculations performed",
             "show-report": "Open calculation report “{{ calculationName }}”",
             "delete": "Delete saved calculation result “{{ calculationName }}”",
+            "filter-hint": "Filter calculations by name",
             "delete-modal" : {
                 "header": "Delete calculation",
                 "message": "Confirm deletion of previously saved calculation result: <em>“{{ calculationName }}”</em>",
@@ -553,5 +555,13 @@
                 "message-multi" : "Imported {{ layersCount }} areas"
             }
         }
+    },
+    "list-sorting-options" : {
+        "indicate-order" : "Indicate ordering as {{ orderHint }}",
+        "AlphaAsc" : "alphabetical, ascending (A-Z)",
+        "AlphaDesc" : "alphabetical, descending (Z-A)",
+        "DateAsc" : "ascending by date (oldest first)",
+        "DateDesc" : "descending by date (newest first)",
+        "None" : " unsorted"
     }
 }

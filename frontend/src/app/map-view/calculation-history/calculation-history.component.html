@@ -20,8 +20,18 @@
   </div>
 
   <h3>{{ 'map.history.previous-calculations' | translate }}</h3>
+
+  <div class="list-filter-container">
+    <app-list-filter
+            [filterPlaceholder]="'map.editor.list.filter-hint' | translate"
+            (filterChange)="setFilter($event)"
+            (sortChange)="setSort($event)"
+    ></app-list-filter>
+  </div>
+
   <main *ngIf="!(loading$ | async) else loading" >
-    <button *ngFor="let calculation of calculations$ | async; index as i" class="calculation"
+    <button *ngFor="let calculation of calculations$ | async; index as i"
+            [ngClass]="{'calculation' : true, 'filtered': filter(calculation.name)}"
             (click)="load(calculation)">
       <div class="calculation-info">
         <div class="name">
