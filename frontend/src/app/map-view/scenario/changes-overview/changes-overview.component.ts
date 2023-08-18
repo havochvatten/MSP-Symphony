@@ -86,7 +86,7 @@ export class ChangesOverviewComponent implements OnInit {
       for(const bandGroup of bandMeta[bandType]) {
         for(const band of bandGroup.properties) {
           if(this.allChangedBands.get(this.getBandType(bandType))!.has(band.bandNumber)) {
-            this.setGroupedChangeToDisplay(bandType, bandGroup.symphonyTeamName, { id: band.bandNumber, name: band.title })
+            this.setGroupedChangeToDisplay(bandType, bandGroup.symphonyThemeName, { id: band.bandNumber, name: band.title })
           }
         }
       }

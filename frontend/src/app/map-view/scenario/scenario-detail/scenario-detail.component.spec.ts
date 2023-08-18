@@ -18,7 +18,9 @@ import {
 import {
   NormalizationSelectionComponent
 } from "@src/app/map-view/scenario/scenario-detail/normalization-selection/normalization-selection.component";
+import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenario-areas/add-scenario-areas.component";
 import { OrdinalPipe } from "@shared/ordinal.pipe";
+import { ChangesListComponent } from "@src/app/map-view/scenario/scenario-detail/changes-list/changes-list.component";
 
 describe('ScenarioDetailComponent', () => {
   let component: ScenarioDetailComponent;
@@ -48,6 +50,8 @@ describe('ScenarioDetailComponent', () => {
         ScenarioDetailComponent,
         MatrixSelectionComponent,
         NormalizationSelectionComponent,
+        AddScenarioAreasComponent,
+        ChangesListComponent,
         OrdinalPipe,
         IconComponent
       ]

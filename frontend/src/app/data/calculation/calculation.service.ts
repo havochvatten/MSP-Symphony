@@ -13,6 +13,7 @@ import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 import { Scenario } from '@data/scenario/scenario.interfaces';
 import { UserSelectors } from "@data/user";
+import { transformExtent } from "ol/proj";
 
 export enum NormalizationType {
   Area = 'AREA',
@@ -103,7 +104,7 @@ export class CalculationService implements OnDestroy {
     });
   }
 
-  public addComparisonResult(idA: string, idB: string){
+  public addComparisonResult(idA: string, idB: string, dynamic: boolean){
     //  Bit "hacky" but workable "faux" id constructed as a negative number
     //  to guarantee uniqueness without demanding a separate interface.
     //  Note that this artficially imposes a virtual maximum for calculation
@@ -111,7 +112,8 @@ export class CalculationService implements OnDestroy {
     //  The limit is chosen specifically in relation to Number.MIN_SAFE_INTEGER
     //  which is -2^53
 
-    return this.addResultImage(this.cmpId(+idA, +idB), `diff/${idA}/${idB}`);
+    return this.addResultImage(this.cmpId(+idA, +idB), `diff/${idA}/${idB}`
+                                                  + (dynamic ? '?dynamic=true' : ''));
   }
 
   cmpId(a:number, b:number): number {
@@ -124,19 +126,22 @@ export class CalculationService implements OnDestroy {
 
   private addResultImage(id: number, epFragment: string) {
     const that = this;
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<number>((resolve, reject) => {
       this.getStaticImage(`${env.apiBaseUrl}/calculation/` + epFragment).subscribe({
         next(response) {
-          const extentHeader = response.headers.get('SYM-Image-Extent');
+          const extentHeader = response.headers.get('SYM-Image-Extent'),
+                dynamicMaxHeader = response.headers.get('SYM-Dynamic-Max');
           if (extentHeader) {
             that.resultReady$.emit({
               url: URL.createObjectURL(response.body!),
               calculationId: id,
               imageExtent: JSON.parse(extentHeader),
-              projection: AppSettings.DATALAYER_RASTER_CRS,
+              projection: AppSettings.CLIENT_SIDE_PROJECTION ?
+                            AppSettings.DATALAYER_RASTER_CRS :
+                            AppSettings.MAP_PROJECTION,
               interpolate: that.aliasing
             });
-            resolve();
+            resolve(dynamicMaxHeader ? +dynamicMaxHeader : 0);
           } else {
             console.error(
               'Result image for calculation ' + id + ' does not have any extent header, ignoring.'
@@ -188,6 +193,9 @@ export class CalculationService implements OnDestroy {
 
   public getLegend(type: LegendType) {
     return this.http.get<Legend>(`${env.apiBaseUrl}/legend/${type}`);
+  }
+  public getDynamicComparisonLegend(dynamicMax: number) {
+    return this.http.get<Legend>(`${env.apiBaseUrl}/legend/comparison?dynamicMax=${dynamicMax}`);
   }
 
   public getPercentileValue() {

@@ -28,6 +28,10 @@ const routes: Routes = [
         component: ComparisonReportComponent
       },
       {
+        path: 'compareDynamic/:aId/:bId/:dynamicMax',
+        component: ComparisonReportComponent,
+      },
+      {
         path: ':calcId',
         component: CalculationReportComponent
       }

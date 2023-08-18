@@ -2,7 +2,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { TranslateService } from "@ngx-translate/core";
 import { NormalizationOptions, NormalizationType } from "@data/calculation/calculation.service";
 import { Report } from "@data/calculation/calculation.interfaces";
-import { relativeDifference, formatPercentage } from "@data/calculation/calculation.util";
+import { relativeDifference } from "@src/app/report/report.util";
+import { formatPercentage } from "@src/app/shared/common.util";
 
 @Component({
   selector: 'app-cumulative-effect-etc',

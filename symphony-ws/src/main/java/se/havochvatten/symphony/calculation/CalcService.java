@@ -502,7 +502,7 @@ public class CalcService {
                                                 Map<Integer, Integer> areaMatrixMap,
                                                 Scenario scenario,
                                                 JsonNode changesSnapshot,
-                                                int[] ecosystemsThatWasIncluded,
+                                                int[] includedEcosystems,
                                                 BaselineVersion baselineVersion,
                                                 Geometry projectedRoi)
         throws IOException {
@@ -516,7 +516,7 @@ public class CalcService {
                 transaction.begin();
 
                 var snapshot = ScenarioSnapshot.makeSnapshot(scenario, projectedRoi);
-                snapshot.setEcosystemsToInclude(ecosystemsThatWasIncluded); // Override actually used only in snapshot
+                snapshot.setEcosystemsToInclude(includedEcosystems); // Override actually used only in snapshot
                 snapshot.setChanges(changesSnapshot);
                 em.persist(snapshot);
                 calculation.setScenarioSnapshot(snapshot);

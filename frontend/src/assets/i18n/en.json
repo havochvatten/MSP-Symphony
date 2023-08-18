@@ -211,7 +211,8 @@
                 "scenario-area": "{{ scenario }}\nArea: {{ area-feature }}",
                 "show-report-label": "Open the latest calculation report",
                 "more-areas-single": "+ an additional area ..",
-                "more-areas": "+ {{ more }} more areas .."
+                "more-areas": "+ {{ more }} more areas ..",
+                "filter-hint": "Filter scenarios by name"
             },
             "clear": "Clear",
             "close": "❮",
@@ -239,15 +240,52 @@
         "metadata": {
             "label": "Show metadata",
             "header": "Metadata regarding {{ layerType }}: {{ layerName }}",
-            "method-summary": "Method summary",
-            "known-limitations": "Known limitations",
-            "value-range": "Value range",
-            "data-processing": "Data processing",
-            "data-sources": "Data sources",
             "close": "Close",
             "ecosystem": "ecosystem",
             "pressure": "pressure",
-            "no-info": "Metadatum missing."
+            "no-info": "Metadatum missing.",
+            "properties": {
+                "accessUseRestrictions": "Access and use restrictions",
+                "authorEmail": "Author email address",
+                "authorOrganisation": "Author organisation",
+                "dataOwner": "Data owner",
+                "dataOwnerLocal": "Data owner",
+                "dataProcessing": "Data processing",
+                "dataSources": "Data sources",
+                "dateCreated": "Date created",
+                "descriptiveKeywords": "Keywords",
+                "format": "Format",
+                "limitationsForSymphony": "Known limitations",
+                "lineage": "Lineage",
+                "maintenanceInformation": "Maintenance information",
+                "mapAcknowledgement": "Map acknowledgement",
+                "marinePlaneArea": "Marine spatial planning area",
+                "metadataDate": "Date",
+                "metadataEmail": "Email address",
+                "metadataFileName": "File name",
+                "metadataLanguage": "Language",
+                "metadataOrganisation": "Organisation",
+                "metadataOrganisationLocal": "Organisation",
+                "methodSummary": "Method summary",
+                "ownerEmail": "Owner email address",
+                "otherRestrictions": "Other restrictions",
+                "rasterFileName": "Raster data file name",
+                "rasterSpatialReferenceSystem": "Raster coordinate reference system",
+                "recommendations": "Recommendations",
+                "resourceType": "Resource type",
+                "securityClassification": "Security classification",
+                "status": "Status",
+                "summary": "Summary",
+                "summaryLocal": "Summary",
+                "symphonyCategory": "Category",
+                "symphonyDatatype": "",
+                "symphonyTheme": "Metadata group",
+                "temporalPeriod": "Period",
+                "theme": "Theme",
+                "topicCategory": "Topic category",
+                "useLimitations": "Usage limitations",
+                "valueRange": "Value range"
+            }
         },
         "toolbar": {
             "zoom-in": "Zoom in",
@@ -295,6 +333,7 @@
             "placeholder": "No calculations performed",
             "show-report": "Open calculation report “{{ calculationName }}”",
             "delete": "Delete saved calculation result “{{ calculationName }}”",
+            "filter-hint": "Filter calculations by name",
             "delete-modal" : {
                 "header": "Delete calculation",
                 "message": "Confirm deletion of previously saved calculation result: <em>“{{ calculationName }}”</em>",
@@ -310,7 +349,10 @@
             "choose-scenario": "Choose a calculation",
             "choose-base-scenario-first": "Choose calculation A first",
             "base-scenario-suggestion": "(typically your baseline analysis)",
-            "what-if-scenario-suggestion": "(typically your new scenario analysis)"
+            "what-if-scenario-suggestion": "(typically your new scenario analysis)",
+            "select-scale": "Customize color scale",
+            "scale-constant": "Constant maximum (45%)",
+            "scale-dynamic": "Dynamic maximum"
         },
         "user-area": {
             "create": {
@@ -320,6 +362,10 @@
                     "placeholder": "My area 1",
                     "save": "Save",
                     "close": "Close"
+                },
+                "invalid-area" : {
+                    "title": "Invalid area extent",
+                    "message": "User defined areas must overlap at least one other area having a default matrix coupling"
                 }
             },
             "upload": {
@@ -460,8 +506,18 @@
             "pressure": "Pressures with highest impact"
         },
         "sankey": {
-            "title": "Sankey diagram",
-            "description": "This Sankey diagram shows the relationship between the pressures and the nature values. The thickness of the arrows are proportional to the size of the pressures and their impact on the nature values."
+            "sankey-single": {
+                "title": "Sankey diagram",
+                "description": "This Sankey diagram shows the relationship between the pressures and the nature values. The thickness of the arrows are proportional to the size of the pressures and their impact on the natural values. Values below {{ chartThreshold }} are not included in the diagram."
+            },
+            "sankey-cmp-positive": {
+                "title": "Sankey diagram (increasing)",
+                "description": "This Sankey diagram shows the relationship between the pressures whose impact increases on different natural values in scenario B, relative to scenario A. The thickness of the arrows are proportional to the increase of each pressure between the two specified scenarios, with respect to the affected nature values. Values below {{ chartThreshold }} are not included in the diagram."
+            },
+            "sankey-cmp-negative": {
+                "title": "Sankey diagram (decreasing)",
+                "description": "This Sankey diagram shows the relationship between the pressures whose impact decreases on different natural values in scenario B, relative to scenario A. The thickness of the arrows are proportional to the amount each pressure is alleviated between the two specified scenarios, with respect to the affected nature values. Values below {{ chartThreshold }} are not included in the diagram."
+            }
         },
         "scenario-changes": {
             "title": "Scenario Parameters",
@@ -498,7 +554,14 @@
                 "message-single" : "Imported area: \"{{ topLayerName }}\"",
                 "message-multi" : "Imported {{ layersCount }} areas"
             }
-
         }
+    },
+    "list-sorting-options" : {
+        "indicate-order" : "Indicate ordering as {{ orderHint }}",
+        "AlphaAsc" : "alphabetical, ascending (A-Z)",
+        "AlphaDesc" : "alphabetical, descending (Z-A)",
+        "DateAsc" : "ascending by date (oldest first)",
+        "DateDesc" : "descending by date (newest first)",
+        "None" : " unsorted"
     }
 }

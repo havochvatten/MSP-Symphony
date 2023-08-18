@@ -6,12 +6,9 @@ import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as area } from '@data/area/area.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { MatrixSelectionComponent } from './matrix-selection.component';
-import { MatRadioModule } from "@angular/material/radio";
-import { MatSelectModule } from "@angular/material/select";
+import { MatRadioButton, MatRadioModule } from "@angular/material/radio";
+import { MatSelect, MatSelectModule } from "@angular/material/select";
 import { NormalizationType } from "@data/calculation/calculation.service";
-import { GeoJSONFeature } from "ol/format/GeoJSON";
-import { MatrixParameters } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
-import { ChangesProperty } from "@data/scenario/scenario.interfaces";
 
 describe('MatrixSelectionComponent', () => {
   let component: MatrixSelectionComponent;
@@ -25,7 +22,7 @@ describe('MatrixSelectionComponent', () => {
         MatRadioModule,
         MatSelectModule
       ],
-      declarations: [MatrixSelectionComponent],
+      declarations: [MatrixSelectionComponent, MatRadioButton, MatSelect],
       providers: [provideMockStore(
         { initialState: {
           metadata: metadata,

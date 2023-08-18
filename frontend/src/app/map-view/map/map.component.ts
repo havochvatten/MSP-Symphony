@@ -3,16 +3,19 @@ import { AfterViewInit, Component, EventEmitter, HostListener, Input, NgModuleRe
 import { Coordinate } from 'ol/coordinate';
 import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
+import uuid from "uuid/v4";
 import { State } from '@src/app/app-reducer';
 import { MetadataSelectors } from '@data/metadata';
 import { AreaActions, AreaSelectors } from '@data/area';
+import { UserSelectors } from '@data/user';
+import { ScenarioSelectors } from '@data/scenario';
+import { MessageActions } from "@data/message";
+import { CalculationActions } from "@data/calculation";
 import { Polygon, StatePath } from '@data/area/area.interfaces';
 import { CalculationService } from '@data/calculation/calculation.service';
 import { StaticImageOptions } from '@data/calculation/calculation.interfaces';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { CreateUserAreaModalComponent } from './create-user-area-modal/create-user-area-modal.component';
-import { UserSelectors } from '@data/user';
-import { ScenarioSelectors } from '@data/scenario';
 import { Scenario } from '@data/scenario/scenario.interfaces';
 import { distinctUntilChanged, filter, skip } from 'rxjs/operators';
 import { Feature, Map as OLMap, View } from 'ol';
@@ -37,8 +40,6 @@ import GeoJSON from "ol/format/GeoJSON";
 import { Geometry } from "geojson";
 import { MergeAreasModalComponent } from "@src/app/map-view/map/merge-areas-modal/merge-areas-modal.component";
 import { AreaSelectionConfig } from "@shared/select-intersection/select-intersection.interfaces";
-import { MessageActions } from "@data/message";
-import uuid from "uuid/v4";
 
 @Component({
   selector: 'app-map',
@@ -195,7 +196,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     this.areaLayer = new AreaLayer(
         this.map, this.dispatchSelectionUpdate, this.zoomToExtent,
-        this.onDrawEnd, this.onSplitClick, this.onMergeClick, () => this.warnOnOverlap(this.store),
+        this.onDrawEnd, this.onDrawInvalid, this.onSplitClick, this.onMergeClick, () => this.warnOnOverlap(this.store),
         this.scenarioLayer, this.translateService, this.geoJson); // Will add itself to the map
     this.map.addLayer(this.areaLayer);
 
@@ -204,6 +205,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   public clearResult() {
     this.resultLayerGroup.clearResult();
+    this.store.dispatch(CalculationActions.resetComparisonLegend())
   }
 
   public emitLayerChange(resultCount: number, cmpCount: number):void {
@@ -249,6 +251,17 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   toggleDrawInteraction = () => {
     this.drawIsActive = this.areaLayer.toggleDrawInteraction();
   };
+
+  onDrawInvalid = async () => {
+    this.store.dispatch(MessageActions.addPopupMessage({
+      message: {
+        type: 'WARNING',
+        title: this.translateService.instant('map.user-area.create.invalid-area.title'),
+        message: this.translateService.instant('map.user-area.create.invalid-area.message'),
+        uuid: uuid()
+      }
+    }));
+  }
 
   onDrawEnd = async (polygon: Polygon) => {
     const areaName = await this.dialogService.open(CreateUserAreaModalComponent, this.moduleRef);

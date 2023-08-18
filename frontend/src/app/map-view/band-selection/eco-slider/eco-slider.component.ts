@@ -14,7 +14,7 @@ import { State } from '@src/app/app-reducer';
 import { Band, StatePath } from '@data/metadata/metadata.interfaces';
 import { MetadataActions } from '@data/metadata';
 import { convertMultiplierToPercent, getComponentType } from '@data/metadata/metadata.selectors';
-import { formatPercentage } from "@data/calculation/calculation.util";
+import { formatPercentage } from '@src/app/shared/common.util';
 import { ScenarioActions } from "@data/scenario";
 import { debounceTime, map } from "rxjs/operators";
 

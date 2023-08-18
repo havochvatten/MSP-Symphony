@@ -31,6 +31,10 @@ section {
     flex: 0 0 auto;
   }
 
+  .list-filter-container {
+    padding: 1.8rem 0 1rem;
+  }
+
   main {
     flex: 1 1;
     margin: 2rem 0 2rem 0;
@@ -64,6 +68,10 @@ section {
       flex-wrap: nowrap;
       height: $button-height;
       max-width: 100%;
+
+      &.filtered {
+        display: none;
+      }
 
       &:hover {
         cursor: pointer;

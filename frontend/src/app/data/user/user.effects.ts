@@ -12,7 +12,7 @@ import { MetadataActions } from '@data/metadata';
 import { CalculationActions } from '@data/calculation';
 import { LegendType } from '@data/calculation/calculation.interfaces';
 
-const legendTypes: LegendType[] = ['result', 'comparison', 'ecosystem', 'pressure'];
+const legendTypes: LegendType[] = ['result', 'ecosystem', 'pressure'];
 
 @Injectable()
 export class UserEffects {

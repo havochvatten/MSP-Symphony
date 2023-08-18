@@ -3,7 +3,6 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { DialogRef } from '../dialog/dialog-ref';
 import { DialogConfig } from '../dialog/dialog-config';
 import { ReportModalComponent } from "@shared/report-modal/report-modal.component";
-import { environment as env } from "@src/environments/environment";
 
 @Component({
   selector: 'app-comparison-report-modal',
@@ -17,8 +16,12 @@ export class ComparisonReportModalComponent extends ReportModalComponent {
     config: DialogConfig,
     dom: DomSanitizer
   ) {
-    super(dialog, dom,
-      window.location.origin+`/report/compare/${config.data.a}/${config.data.b}`,
+    const location = window.location.origin + '/report/' +
+      (config.data.dynamicMax ? 'compareDynamic' : 'compare') + '/' +
+      config.data.a + '/' + config.data.b +
+      (config.data.dynamicMax ? '/' + config.data.dynamicMax : '');
+
+    super(dialog, dom, location,
       `/report/comparison/${config.data.a}/${config.data.b}`,
       'report.comparison.title');
   }

@@ -10,6 +10,9 @@ import { initialState as area } from '@data/area/area.reducers';
 import { provideMockStore } from "@ngrx/store/testing";
 import { IconButtonComponent } from "@shared/icon-button/icon-button.component";
 import { IconComponent } from "@shared/icon/icon.component";
+import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenario-areas/add-scenario-areas.component";
+import { SharedModule } from "@shared/shared.module";
+import { ScenarioEditorModule } from "@src/app/map-view/scenario/scenario-editor.module";
 
 describe('ScenarioListComponent', () => {
   let component: ScenarioListComponent;
@@ -18,6 +21,8 @@ describe('ScenarioListComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
+        ScenarioEditorModule,
+        SharedModule,
         HttpClientModule,
         StoreModule.forRoot({},{}),
         TranslateModule.forRoot()
@@ -32,7 +37,7 @@ describe('ScenarioListComponent', () => {
             user: { baseline: undefined }
           }})
       ],
-      declarations: [ ScenarioListComponent, IconButtonComponent, IconComponent]
+      declarations: [ ScenarioListComponent, AddScenarioAreasComponent, IconButtonComponent, IconComponent]
     })
     .compileComponents();
     fixture = TestBed.createComponent(ScenarioListComponent);

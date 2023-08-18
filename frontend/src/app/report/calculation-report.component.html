@@ -52,8 +52,9 @@
   ></app-highest-impacts>
   <app-result-color-scale [locale]="locale" class="calc-report-legend"></app-result-color-scale>
   <!--TODO Avoid calling expensive function in template-->
-  <app-pressure-chart
-    [data]="formatChartData(report.chartData, metadata$ | async)"
+  <app-pressure-chart [id]="'sankey-single'" [diagramId]="'sankey-single'"
+    [chartWeightThreshold]="formatPercent(report.chartWeightThreshold, this.locale)"
+    [data]="formatChartData(report.chartData, metadata$ | async, bandMap)"
     [locale]="locale"
   ></app-pressure-chart>
   <app-scenario-changes

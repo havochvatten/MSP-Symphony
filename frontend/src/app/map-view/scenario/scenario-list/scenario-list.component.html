@@ -14,12 +14,19 @@
       ></app-add-scenario-areas>
     </div>
   </div>
+  <div class="list-filter-container">
+    <app-list-filter
+            [filterPlaceholder]="'map.editor.list.filter-hint' | translate"
+            (filterChange)="setFilter($event)"
+            (sortChange)="setSort($event)"
+            ></app-list-filter>
+  </div>
 
   <div class="divider"></div>
 
-  <main *ngIf="(scenarios$ | async)?.length">
-    <div *ngFor="let scenario of scenarios$ | async; index as scenarioIndex"
-         [ngClass]="{'scenario': true }"
+  <main *ngIf="(scenario$ | async)?.length">
+    <div *ngFor="let scenario of scenario$ | async; index as scenarioIndex"
+         [ngClass]="{'scenario': true, 'filtered': filter(scenario.name) }"
             (click)="open(scenarioIndex)" [title]="scenario.name">
       <div class="scenario-info">
         <div class="name">
@@ -53,7 +60,7 @@
     </div>
   </main>
 
-  <div *ngIf="!(scenarios$ | async)?.length" id="no-scenarios">
+  <div *ngIf="!(scenario$ | async)?.length" id="no-scenarios">
     <span style="font-style: italic">
       <app-icon iconType="info-circle"></app-icon>
       {{ 'map.editor.list.no-scenarios' | translate }}

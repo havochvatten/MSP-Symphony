@@ -19,7 +19,6 @@ import {
   NormalizationOptions,
   NormalizationType
 } from '@data/calculation/calculation.service';
-import { availableOperations } from "@data/calculation/calculation.util";
 import { MetadataSelectors } from "@data/metadata";
 import { Band } from "@data/metadata/metadata.interfaces";
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
@@ -36,6 +35,10 @@ import {
 } from "@src/app/map-view/scenario/changes-overview/changes-overview.component";
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
+
+const availableOperations: Map<string, CalcOperation> = new Map<string, CalcOperation>(
+  [ ['CumulativeImpact', CalcOperation.Cumulative ] ,
+    ['RarityAdjustedCumulativeImpact', CalcOperation.RarityAdjusted ]]);
 
 @Component({
   selector: 'app-scenario-detail',

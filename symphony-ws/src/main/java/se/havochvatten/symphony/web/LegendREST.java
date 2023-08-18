@@ -12,14 +12,12 @@ import se.havochvatten.symphony.service.PropertiesService;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 
 @Path("/legend")
 @Stateless
@@ -35,10 +33,15 @@ public class LegendREST {
     @Path("{type}")
     @ApiOperation(value = "Get legend definition", response = LegendDto.class)
     @Produces({MediaType.APPLICATION_JSON})
-    public Response get(@ApiParam(value = "type of legend", allowableValues = "result,ecosystem,pressure," +
-			"comparison") @PathParam("type") String legendType) {
+    public Response get(
+            @ApiParam(  value = "type of legend",
+                        allowableValues = "result,ecosystem,pressure,comparison")
+            @PathParam("type") String legendType, @QueryParam("dynamicMax") String dynamicMaxParam) {
         try {
             var type = LegendDto.Type.valueOf(legendType.toUpperCase());
+
+            // parsing instead of directly typing 'dynamicMax' query parameter for locale independence
+            Double dynamicMax = dynamicMaxParam != null ? Double.parseDouble(dynamicMaxParam) : null;
 
             StyledLayerDescriptor sld =
 					WebUtil.getSLD(LegendREST.class.getClassLoader().getResourceAsStream(props.getProperty(
@@ -57,11 +60,12 @@ public class LegendREST {
                     legend.unit = null;
                     break;
             }
+            var entries = symbolizer.getColorMap().getColorMapEntries();
             legend.colorMap =
-					Arrays.stream(symbolizer.getColorMap().getColorMapEntries())
+                IntStream.range(0, symbolizer.getColorMap().getColorMapEntries().length)
                             .skip(type != LegendDto.Type.COMPARISON ? 1 : 0)
-							.map(entry -> new LegendDto.ColorMapEntry(entry, type))
-							.toArray(LegendDto.ColorMapEntry[]::new);
+                            .mapToObj(index -> new LegendDto.ColorMapEntry(entries[index], type, index, dynamicMax))
+                            .toArray(LegendDto.ColorMapEntry[]::new);
 
             return Response.ok(legend).build();
         } catch (IllegalArgumentException e) {

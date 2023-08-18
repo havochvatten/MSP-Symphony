@@ -13,8 +13,13 @@
   }
 
   table {
+
     font-size: 12px;
     width: 100%;
+
+    &.comparison {
+      table-layout: fixed;
+    }
 
     tr {
       &.title-row {
@@ -54,6 +59,7 @@
 
       th.change-label {
         width: 44%;
+        overflow: hidden;
       }
     }
   }

@@ -19,7 +19,6 @@ import javax.media.jai.InterpolationNearest;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.image.RenderedImage;
 import java.io.*;
 import java.util.Arrays;
@@ -30,6 +29,12 @@ import static java.util.stream.Collectors.toMap;
 
 public interface WebUtil {
     int ONE_YEAR_IN_SECONDS = 31536000;
+
+    // arbitrary constant series based entirely on the
+    // legacy comparison color scale style definition
+    // (styles/comparison.xml)
+    double[] COMPARISON_STEPS = { -1, -0.6666, -0.3333, -0.1111, -0.022223, 0, 0.022223, 0.1111, 0.3333, 0.6666, 1 };
+
     FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
     static JsonArray createExtent(Envelope targetEnvelope) {
@@ -59,6 +64,22 @@ public interface WebUtil {
         RasterSymbolizer symbolizer = WebUtil.getRasterSymbolizer(sld);
         return renderer.renderImage(cov, symbolizer, new InterpolationNearest(), new Color(0, 0, 0, 0), 0,
                 0); // no tiles
+    }
+
+    static RenderedImage renderDynamicComparison(GridCoverage2D cov, CoordinateReferenceSystem crs, Envelope env,
+                                                 StyledLayerDescriptor sld, double dynMax) throws Exception {
+        GridCoverageRenderer renderer = new GridCoverageRenderer(crs, env,
+            cov.getGridGeometry().getGridRange2D(), null);
+        var symbolizer = WebUtil.getRasterSymbolizer(sld);
+
+        for(int i = 0; i < 11; i++) {
+            ColorMapEntry cEntry = symbolizer.getColorMap().getColorMapEntry(i);
+            cEntry.setQuantity(ff.literal(COMPARISON_STEPS[i] * dynMax));
+        }
+
+        return renderer.renderImage(cov, symbolizer, new InterpolationNearest(),
+            new Color(0, 0, 0, 0), 0,
+            0); // no tiles
     }
 
     static RenderedImage renderNormalized(GridCoverage2D cov, CoordinateReferenceSystem crs, Envelope env,

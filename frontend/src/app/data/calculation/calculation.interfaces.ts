@@ -4,6 +4,7 @@ import { ProjectionLike } from "ol/proj";
 import { NormalizationOptions } from "@data/calculation/calculation.service";
 import { BandType } from "@data/metadata/metadata.interfaces";
 import { ChangesProperty } from '@data/scenario/scenario.interfaces';
+import { ListItemsSort, SortableListItem } from "@data/common/sorting.interfaces";
 
 // TODO Move calculation element to Scenario state
 export interface State {
@@ -13,6 +14,7 @@ export interface State {
   calculating: boolean;
   legends: LegendState;
   percentileValue: number;
+  sortCalculations: ListItemsSort;
 }
 
 export interface Report {
@@ -31,10 +33,11 @@ export interface Report {
   gridResolution: number; // [m]
   areaMatrices: AreaMatrix[];
   normalization: NormalizationOptions;
-  impactPerPressure: Record<number, number>;
-  impactPerEcoComponent: Record<number, number>;
+  impactPerPressure: Record<string, number>;
+  impactPerEcoComponent: Record<string, number>;
   scenarioChanges: ReportChanges;
   chartData: ChartData;
+  chartWeightThreshold: number;
   timestamp: number;
 }
 
@@ -48,6 +51,8 @@ export interface ReportChanges {
 export interface ComparisonReport {
   a: Report,
   b: Report
+  chartDataPositive: ChartData;
+  chartDataNegative: ChartData;
 }
 
 export interface DefaultMatrixData {
@@ -76,11 +81,9 @@ export interface StaticImageOptions {
   interpolate: boolean;
 }
 
-export interface CalculationSlice {
-  name: string;
+export interface CalculationSlice extends SortableListItem {
   // The below are set upon calculation completion
   id: number;
-  timestamp: number;
   loading?: boolean;
 }
 
@@ -101,8 +104,16 @@ export interface PercentileResponse {
   percentileValue: number;
 }
 
+export interface ComparisonLegendState {
+  title: string[]
+  legend: Legend,
+}
+
 export type LegendState = {
-  [key in LegendType]: Legend | undefined;
+  result: Legend | undefined,
+  ecosystem: Legend | undefined,
+  pressure: Legend | undefined,
+  comparison: { [value: string] : ComparisonLegendState }
 };
 
 export interface OperationParams {

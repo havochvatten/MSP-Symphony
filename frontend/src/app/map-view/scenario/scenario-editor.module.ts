@@ -49,6 +49,10 @@ import { TransferChangesComponent } from './transfer-changes/transfer-changes.co
         MatInputModule
     ],
   providers: [ OrdinalPipe ],
-  exports: [ScenarioEditorComponent]
+  exports: [
+      ScenarioEditorComponent,
+      ChangesListComponent,
+      AddScenarioAreasComponent
+  ]
 })
 export class ScenarioEditorModule {}

@@ -11,19 +11,38 @@
                              [footnote]="'report.cumulative-effect-etc.comparison.legend-desc' | translate"
                              [locale]="locale"
   ></app-cumulative-effect-etc>
-  <app-result-color-scale [colors]="(legend | async)?.colorMap" unit="%"></app-result-color-scale>
-  <app-scenario-changes class="left"
+  <app-result-color-scale
+    [perMille]="true"
+    [decimals]="dynamicMax < 0.45"
+    [colors]="(legend | async)?.colorMap"
+    unit="%"
+  ></app-result-color-scale>
+  <app-scenario-changes
     [name]="report.a.name"
     [scenarioChanges]="report.a.scenarioChanges"
     [bandMap]="bandMap"
     [areaDict]="areaDictA"
+    [comparisonReport]="true"
   ></app-scenario-changes>
   <app-scenario-changes class="right"
     [name]="report.b.name"
     [scenarioChanges]="report.b.scenarioChanges"
     [bandMap]="bandMap"
     [areaDict]="areaDictB"
+    [comparisonReport]="true"
   ></app-scenario-changes>
+  <app-pressure-chart *ngIf="report.chartDataPositive.links.length > 1"
+    [id]="'sankey-cmp-positive'" [diagramId]="'sankey-cmp-positive'"
+    [chartWeightThreshold]="getChartThresholdPercentage()"
+    [data]="formatChartData(report.chartDataPositive, metadata$ | async, bandMap)"
+    [locale]="locale"
+  ></app-pressure-chart>
+  <app-pressure-chart *ngIf="report.chartDataNegative.links.length > 1"
+    [id]="'sankey-cmp-negative'" [diagramId]="'sankey-cmp-negative'"
+    [chartWeightThreshold]="getChartThresholdPercentage()"
+    [data]="formatChartData(report.chartDataNegative, metadata$ | async, bandMap)"
+    [locale]="locale"
+  ></app-pressure-chart>
  <app-impact-table
     class="pressure-impacts"
     [title]="'report.impact-table.pressure' | translate"

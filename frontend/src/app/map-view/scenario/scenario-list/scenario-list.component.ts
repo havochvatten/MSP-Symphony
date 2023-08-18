@@ -2,8 +2,8 @@ import { Component, NgModuleRef } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
-import { Observable, of, Subscription } from 'rxjs';
-import { Scenario, ScenarioArea, ScenarioCopyOptions } from '@data/scenario/scenario.interfaces';
+import { of, Subscription } from 'rxjs';
+import { Scenario, ScenarioCopyOptions } from '@data/scenario/scenario.interfaces';
 import { Area } from '@data/area/area.interfaces';
 import { AreaSelectors } from '@data/area';
 import { catchError } from 'rxjs/operators';
@@ -14,14 +14,18 @@ import { TranslateService } from '@ngx-translate/core';
 import { deleteScenario } from "@src/app/map-view/scenario/scenario-common";
 import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenario-areas/add-scenario-areas.component";
 import { CopyScenarioComponent } from "@src/app/map-view/scenario/copy-scenario/copy-scenario.component";
+import { Listable } from "@shared/list-filter/listable.directive";
+import { ListItemsSort } from "@data/common/sorting.interfaces";
 
 @Component({
-  selector: 'app-scenario-list',
-  templateUrl: './scenario-list.component.html',
-  styleUrls: ['./scenario-list.component.scss']
+    selector: 'app-scenario-list',
+    templateUrl: './scenario-list.component.html',
+    styleUrls: ['./scenario-list.component.scss']
 })
-export class ScenarioListComponent {
-  scenarios$: Observable<Scenario[]>;
+export class ScenarioListComponent extends Listable {
+
+  scenario$ = this.store.select(ScenarioSelectors.selectScenarios);
+
   selectedAreas: Area[] = [];
   ABUNDANT_AREA_COUNT = 4;
   MAX_AREAS = 9;
@@ -29,15 +33,19 @@ export class ScenarioListComponent {
   private areaSubscription$: Subscription;
 
   constructor(
-    private store: Store<State>,
+    protected store: Store<State>,
     private translateService: TranslateService,
     private dialogService: DialogService,
     private moduleRef: NgModuleRef<any>
   ) {
-    this.scenarios$ = this.store.select(ScenarioSelectors.selectScenarios);
+    super();
     this.areaSubscription$ = this.store
       .select(AreaSelectors.selectSelectedAreaData)
       .subscribe(area => (this.selectedAreas = area as Area[]));
+  }
+
+  setSort(sortType: ListItemsSort): void {
+      this.store.dispatch(ScenarioActions.setScenarioSortType({ sortType }));
   }
 
   /* Create new scenario in selected area, and enter it */
@@ -85,10 +93,6 @@ export class ScenarioListComponent {
     await deleteScenario(this.dialogService, this.translateService, this.store, this.moduleRef, scenario);
   }
 
-  ngOnDestroy() {
-    this.areaSubscription$.unsubscribe();
-  }
-
   async copyScenario(scenario: Scenario) {
     const copyOptions = await this.dialogService.open<ScenarioCopyOptions>(
       CopyScenarioComponent,
@@ -99,5 +103,9 @@ export class ScenarioListComponent {
     if (copyOptions) {
       this.store.dispatch(ScenarioActions.copyScenario({ scenarioId: scenario.id, options: copyOptions }));
     }
+  }
+
+  ngOnDestroy() {
+      this.areaSubscription$.unsubscribe();
   }
 }

@@ -24,6 +24,10 @@ public class NormalizerService {
         this.operations = operations;
     }
 
+    public Operations getOperations() {
+        return operations;
+    }
+
     public NormalizerService() { this.operations = null; } // to satisfy CDI
 
     // Call this from Jackson handle this?
@@ -65,6 +69,10 @@ abstract class StatsNormalizer extends RasterNormalizer {
     public StatsNormalizer(Operations ops) {
         this.operations = ops;
     }
+    public static double[] getExtrema(GridCoverage2D coverage, Operations operations) {
+        return (double[]) ((Statistics[][])
+            ((GridCoverage2D) operations.extrema(coverage)).getProperty(Statistics.STATS_PROPERTY))[0][0].getResult();
+    }
 }
 
 
@@ -75,10 +83,7 @@ class AreaNormalizer extends StatsNormalizer {
 
     @Override
     public Double apply(GridCoverage2D coverage, Double ignored) {
-        double[] extrema =
-            (double[]) ((Statistics[][])
-                ((GridCoverage2D) operations.extrema(coverage)).getProperty(Statistics.STATS_PROPERTY))[0][0].getResult();
-        return extrema[1];
+        return getExtrema(coverage, this.operations)[1];
     }
 }
 

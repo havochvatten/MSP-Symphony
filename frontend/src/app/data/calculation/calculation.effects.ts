@@ -51,7 +51,9 @@ export class CalculationEffects {
     ofType(CalculationActions.fetchLegend),
     mergeMap(({ legendType }) =>
       this.calcService.getLegend(legendType).pipe(
-        map(legend => CalculationActions.fetchLegendSuccess({ legend, legendType })),
+        map(legend =>
+          CalculationActions.fetchLegendSuccess({ legend, legendType })
+        ),
         catchError(({ status, error: message }) =>
           of(
             CalculationActions.fetchLegendFailure({
@@ -62,6 +64,41 @@ export class CalculationEffects {
       )
     )
   );
+
+  @Effect()
+  fetchComparisonLegend$ = this.actions$.pipe(
+    ofType(CalculationActions.fetchComparisonLegend),
+    mergeMap(({ comparisonTitle }) =>
+      this.calcService.getLegend('comparison').pipe(
+        map(legend => CalculationActions.fetchComparisonLegendSuccess({ legend, comparisonTitle, maxValue: 0.45 })),
+        catchError(({ status, error: message }) =>
+          of(
+            CalculationActions.fetchLegendFailure({
+              error: { status, message }
+            })
+          )
+        )
+      )
+    )
+  );
+
+  @Effect()
+  fetchDynamicComparisonLegend$ = this.actions$.pipe(
+    ofType(CalculationActions.fetchDynamicComparisonLegend),
+    mergeMap(({ dynamicMax, comparisonTitle }) =>
+      this.calcService.getDynamicComparisonLegend(dynamicMax).pipe(
+        map(legend => CalculationActions.fetchComparisonLegendSuccess({ legend, comparisonTitle, maxValue: dynamicMax })),
+        catchError(({ status, error: message }) =>
+          of(
+            CalculationActions.fetchLegendFailure({
+              error: { status, message }
+            })
+          )
+        )
+      )
+    )
+  );
+
 
   @Effect()
   fetchPercentile$ = this.actions$.pipe(

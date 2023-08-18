@@ -168,7 +168,7 @@
             },
             "changes-overview" : {
                 "title": "Vue d'ensemble des modifications de scénario",
-                "show-overview": "Afficher une vue d'ensemble de tous les changements"
+                "show-overview": "Afficher une vue d'ensemble de tous les changements",
                 "global-changes": "Modifications générales",
                 "show-all": "Afficher toutes",
                 "close": "Fermer"
@@ -211,7 +211,8 @@
                 "scenario-area": "{{ scenario }}\nZone: {{ area-feature }}",
                 "show-report-label": "Ouvrir le rapport de calcul le plus récent",
                 "more-areas-single": "+ une zone supplémentaire ..",
-                "more-areas": "+ {{ more }} zones supplémentaires .."
+                "more-areas": "+ {{ more }} zones supplémentaires ..",
+                "filter-hint": "Filtrer les scénarios par nom"
             },
             "clear": "Effacer",
             "close": "❮",
@@ -239,15 +240,52 @@
         "metadata": {
             "label": "Voir les métadonnées",
             "header": "Métadonnées concernant {{ layerType }}: {{ layerName }}",
-            "method-summary": "Résumé de la méthode",
-            "known-limitations": "Limites connues",
-            "value-range": "Plage de valeurs",
-            "data-processing": "Traitement de l'information",
-            "data-sources": "Source de données",
             "close": "Fermer",
             "ecosystem": "écosystème",
             "pressure": "pression",
-            "no-info": "Métadonnée manquante."
+            "no-info": "Métadonnée manquante.",
+            "properties": {
+                "accessUseRestrictions": "Restrictions d'accès et d'utilisation",
+                "authorEmail": "Adresse e-mail de l'auteur",
+                "authorOrganisation": "Organisation de l'auteur",
+                "dataOwner": "Propriétaire des données",
+                "dataOwnerLocal": "Propriétaire des données",
+                "dataProcessing": "Traitement de l'information",
+                "dataSources": "Sources de données",
+                "dateCreated": "Date de création",
+                "descriptiveKeywords": "Mots clef",
+                "format": "Format",
+                "limitationsForSymphony": "Limites connues",
+                "lineage": "Origine",
+                "maintenanceInformation": "Informations d'entretien",
+                "mapAcknowledgement": "",
+                "marinePlaneArea": "Zone MSP",
+                "metadataDate": "Date",
+                "metadataEmail": "Adresse e-mail",
+                "metadataFileName": "Nom de fichier",
+                "metadataLanguage": "Langue",
+                "metadataOrganisation": "Organisation",
+                "metadataOrganisationLocal": "Organisation",
+                "methodSummary": "Résumé de la méthode",
+                "ownerEmail": "Adresse e-mail du propriétaire",
+                "otherRestrictions": "Autres limites",
+                "rasterFileName": "Nom du fichier de données raster",
+                "rasterSpatialReferenceSystem": "Système de référence de coordonnées raster",
+                "recommendations": "Recommandations",
+                "resourceType": "Type de ressource",
+                "securityClassification": "Classement de sécurité",
+                "status": "Statut",
+                "summary": "Résumé",
+                "summaryLocal": "Résumé",
+                "symphonyCategory": "Catégorie",
+                "symphonyDatatype": "",
+                "symphonyTheme": "Groupe métadonnées",
+                "temporalPeriod": "Période",
+                "theme": "Thème",
+                "topicCategory": "Catégorie de sujet",
+                "useLimitations": "Limites d'utilisation",
+                "valueRange": "Plage de valeurs"
+            }
         },
         "toolbar": {
             "zoom-in": "Zoom +",
@@ -295,6 +333,7 @@
             "placeholder": "Aucun résultat calculé",
             "show-report": "Ouvrir le rapport de calcul “{{ calculationName }}”",
             "delete": "Supprimer le résultat “{{ calculationName }}”",
+            "filter-hint": "Filtrer les calculs par nom",
             "delete-modal" : {
                 "header": "Supprimer résultat",
                 "message": "Confirmer la suppression du résultat: <em>“{{ calculationName }}”</em>",
@@ -310,7 +349,10 @@
             "choose-scenario": "Choisissez un scénario",
             "choose-base-scenario-first": "Choisissez un scénario de référence avant",
             "base-scenario-suggestion": "",
-            "what-if-scenario-suggestion": ""
+            "what-if-scenario-suggestion": "",
+            "select-scale": "Sélectionnez l'échelle de couleur",
+            "scale-constant": "Maximum constant (45%)",
+            "scale-dynamic": "Maximum dynamique"
         },
         "user-area": {
             "create": {
@@ -320,6 +362,10 @@
                     "placeholder": "Zone 1",
                     "save": "Sauvegarder",
                     "close": "Fermer"
+                },
+                "invalid-area" : {
+                    "title": "Zone invalide",
+                    "message": "Les zones doivent chevaucher au moins une autre zone avec un couplage matriciel par défaut"
                 }
             },
             "upload": {
@@ -460,8 +506,18 @@
             "pressure": "Pressions avec l'impact le plus important"
         },
         "sankey": {
-            "title": "Diagramme Sankey",
-            "description": "Ce diagramme Sankey montre la relation entre les pressions et les valeurs des composantes écosystème. L'épaisseur des flèches est proportionnelle à l'importance des pressions et à leur impact sur les composantes écosystème."
+            "sankey-single": {
+                "title": "Diagramme Sankey",
+                "description": "Ce diagramme Sankey montre la relation entre les pressions et les valeurs des composantes écosystème. L'épaisseur des flèches est proportionnelle à l'importance des pressions et à leur impact sur les composantes écosystème."
+            },
+            "sankey-cmp-positive": {
+                "title": "Diagramme Sankey (augmentation)",
+                "description": "Ce diagramme de Sankey montre les relations entre les charges dont l'impact augmente sur différentes valeurs naturelles dans le scénario anticipé, par rapport au scénario de référence. L'épaisseur des flèches est proportionnelle à l'augmentation de chaque pression entre les deux scénarios spécifiés, par rapport à son impact sur les écosystèmes. Les valeurs inférieures à {{ chartThreshold }} ne sont pas incluses dans le diagramme."
+            },
+            "sankey-cmp-negative": {
+                "title": "Diagramme Sankey (diminution)",
+                "description": "Ce diagramme de Sankey montre les relations entre les charges dont l'impact diminue sur différentes valeurs naturelles dans le scénario anticipé, par rapport au scénario de référence. L'épaisseur des flèches est proportionnelle à la diminution de chaque pression entre les deux scénarios spécifiés, par rapport à son impact sur les écosystèmes. Les valeurs inférieures à {{ chartThreshold }} ne sont pas incluses dans le diagramme."
+            }
         },
         "scenario-changes": {
             "title": "Paramètres du scénario",
@@ -498,7 +554,14 @@
                 "message-single" : "Zone importée: \"{{ topLayerName }}\"",
                 "message-multi" : "Importé {{ layersCount }} zones"
             }
-
         }
+    },
+    "list-sorting-options" : {
+        "indicate-order" : "Indiquer l'ordre comme {{ orderHint }}",
+        "AlphaAsc" : "alphabétique croissant (A-Z)",
+        "AlphaDesc" : "alphabétique décroissant (Z-A)",
+        "DateAsc" : "croissant par date (les plus anciens en premier)",
+        "DateDesc" : "décroissant par date (les plus récents en premier)",
+        "None" : " non trié"
     }
 }

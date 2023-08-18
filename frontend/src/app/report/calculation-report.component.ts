@@ -1,21 +1,22 @@
 import { Component } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { formatPercent } from "@angular/common";
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { Observable, of } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
+import { TranslateService } from '@ngx-translate/core';
 import { State } from '../app-reducer';
+import { fromJS } from "immutable";
+
 import { MetadataActions, MetadataSelectors } from '@data/metadata';
 import { BandGroup, LayerData } from '@data/metadata/metadata.interfaces';
-import { TranslateService } from '@ngx-translate/core';
-import { ChartData } from './pressure-chart/pressure-chart.component';
+import { formatChartData } from './report.util';
 import { Report } from '@data/calculation/calculation.interfaces';
 import { environment as env } from "@src/environments/environment";
 import { CalculationActions, CalculationSelectors } from "@data/calculation";
 import { NormalizationType } from "@data/calculation/calculation.service";
 import { ReportService } from "@src/app/report/report.service";
 import MetadataService from "@data/metadata/metadata.service";
-import { fromJS } from "immutable";
-import { cloneDeep } from "lodash";
 
 export type BandMap = Record<'b' | 'e', Record<number, string>>;
 
@@ -82,38 +83,17 @@ export class CalculationReportComponent {
     this.store.dispatch(CalculationActions.fetchPercentile());
   }
 
-  formatChartData(data: ChartData, metadata: LayerData) {
-    if (!metadata.ecoComponent.length || !data) return undefined;
-
-    const changeName = (node: any) => {
-      try {
-        const bands = this.bandMap[node.name[0] as 'b' | 'e'];
-        const name = bands[Number(node.name.slice(1))];
-        return {
-          ...node,
-          name
-        };
-      } catch (error) {
-        return { ...node };
-      }
-    };
-
-    // Needed to make the object extensible
-    const _data = cloneDeep(data);
-    return {
-      ..._data,
-      nodes: _data.nodes.map(changeName)
-    };
-  }
+  formatChartData = formatChartData;
+  formatPercent = formatPercent;
 
   isDomainNormalization(report: Report) {
     return report.normalization.type === NormalizationType.Domain;
   }
 
-  calculatePercentOfTotal(components: Record<number, number>, total: number) {
+  calculatePercentOfTotal(components: Record<number, number>, total: number): Record<string, number> {
     return fromJS(components)
       .map(x => total && (100 * (x as number)) / total)
-      .toJS();
+      .toJS() as Record<string, number>;
   }
 
   getGroupedMatrixMap(): Map<string, string[]> {
