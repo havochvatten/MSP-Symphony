@@ -562,6 +562,6 @@
         "AlphaDesc" : "alfabetisk, fallande (Ö-A)",
         "DateAsc" : "datum, stigande (äldst först)",
         "DateDesc" : "datum, fallande (nyast först)",
-        "None" : " ej ordnad"
+        "None" : "ej ordnad"
     }
 }

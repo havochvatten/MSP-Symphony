@@ -562,6 +562,6 @@
         "AlphaDesc" : "alphabétique décroissant (Z-A)",
         "DateAsc" : "croissant par date (les plus anciens en premier)",
         "DateDesc" : "décroissant par date (les plus récents en premier)",
-        "None" : " non trié"
+        "None" : "non trié"
     }
 }

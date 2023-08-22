@@ -562,6 +562,6 @@
         "AlphaDesc" : "alphabetical, descending (Z-A)",
         "DateAsc" : "ascending by date (oldest first)",
         "DateDesc" : "descending by date (newest first)",
-        "None" : " unsorted"
+        "None" : "unsorted"
     }
 }
