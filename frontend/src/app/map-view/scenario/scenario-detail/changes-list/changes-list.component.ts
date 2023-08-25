@@ -18,12 +18,12 @@ export class ChangesListComponent {
   @Input() changes!: ChangesProperty | null;
   @Input() displayNames!: Record<string, string>[];
   @Input() deleteChange!: (bandId: string) => void;
+  @Input() bandDictionary!: { [p: string]: string };
 
   @ViewChild('changesAccordion') changesAccordion: AccordionBoxComponent | undefined;
-  private bandDictionary: Observable<{ [p: string]: string }>;
 
   constructor(private store: Store<State>) {
-    this.bandDictionary = this.store.select(MetadataSelectors.selectMetaDisplayDictionary);
+
   }
 
   convertMultiplierToPercent = convertMultiplierToPercent;
@@ -38,9 +38,5 @@ export class ChangesListComponent {
 
   getChanges(): ChangesProperty | null {
     return this.changes;
-  }
-
-  getDisplayName(bandId: string): Observable<string> {
-    return this.bandDictionary.pipe(map((bandDictionary) => bandDictionary[bandId]));
   }
 }

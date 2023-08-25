@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, NgModuleRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms'
 import { Observable, OperatorFunction, Subscription } from 'rxjs';
-import { debounceTime, filter, take, tap } from 'rxjs/operators';
+import { debounceTime, filter, map, take, tap } from 'rxjs/operators';
 import { TranslateService } from "@ngx-translate/core";
 import { Store } from '@ngrx/store';
 import { some } from "lodash";
@@ -20,7 +20,7 @@ import {
   NormalizationType
 } from '@data/calculation/calculation.service';
 import { MetadataSelectors } from "@data/metadata";
-import { Band, BandGroup } from "@data/metadata/metadata.interfaces";
+import { Band } from "@data/metadata/metadata.interfaces";
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
 import { ChangesProperty, Scenario } from '@data/scenario/scenario.interfaces';
@@ -62,6 +62,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   percentileValue$: Observable<number>;
   areaMatricesLoading$: Observable<boolean>;
+  bandDictionary$: Observable<{ [p: string]: string }>;
 
   constructor(
     private store: Store<State>,
@@ -85,6 +86,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     this.areaMatricesLoading$ = this.store.select(ScenarioSelectors.selectAreaMatrixDataLoading);
     this.calculating$ = this.store.select(CalculationSelectors.selectCalculating);
     this.percentileValue$ = this.store.select(CalculationSelectors.selectPercentileValue);
+    this.bandDictionary$ = this.store.select(MetadataSelectors.selectMetaDisplayDictionary);
     this.store.dispatch(CalculationActions.fetchPercentile());
   }
 
@@ -92,7 +94,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     return this.scenario.changes;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     if (!this.scenario)
       throw new Error("Attribute 'scenario' is required");
 
@@ -100,7 +102,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
       this.operation.setValue([...availableOperations.keys()][this.scenario.operation]);
     });
 
-    this.setChangesText();
+    await this.setChangesText();
 
     this.matrixDataSubscription$ = this.store.select(ScenarioSelectors.selectAreaMatrixData).subscribe(
       async data => {
@@ -143,22 +145,18 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     return this.changesText[areaIndex];
   }
 
-  setChangesText():void {
-    this.changesText = {};
-    for(const [ix, a] of this.scenario.areas.entries()) {
-      this.changesText[ix] = '';
-      for(const c in a.changes) {
-        let change = a.changes[c];
-        this.changesText[ix] += '\n' + c + ': ';
-        if (change['multiplier']) {
-          this.changesText[ix] +=
-            (change['multiplier'] > 1 ? '+' : '') +
-            Number(convertMultiplierToPercent(change['multiplier']) * 100).toFixed(2) + '%';
-        } else if (change['offset']) {
-          this.changesText[ix] += change['offset'];
-        }
-      }
-    }
+  async setChangesText():Promise<void> {
+    const bandDict = await this.bandDictionary$.pipe(take(1)).toPromise();
+
+    this.changesText = this.scenario.areas.map((a, ix) => {
+        return Object.entries(a.changes || {}).map(([c, change]) => {
+            return `${bandDict[c]}: ${
+              change.multiplier ? (change.multiplier > 1 ? '+' : '') +
+                Number(convertMultiplierToPercent(change.multiplier) * 100).toFixed(2) + '%' :
+                change.offset
+            }`;
+        }).join('\n');
+    });
   }
 
   calculate() {
@@ -288,5 +286,9 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   async importChanges() {
     await transferChanges(this.dialogService, this.translateService, this.store, this.moduleRef, this.scenario);
+  }
+
+  getDisplayName(bandId: string): Observable<string> {
+    return this.bandDictionary$.pipe(map((bandDictionary) => bandDictionary[bandId]));
   }
 }
