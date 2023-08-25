@@ -20,7 +20,7 @@ import {
   NormalizationType
 } from '@data/calculation/calculation.service';
 import { MetadataSelectors } from "@data/metadata";
-import { Band } from "@data/metadata/metadata.interfaces";
+import { Band, BandGroup } from "@data/metadata/metadata.interfaces";
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
 import { ChangesProperty, Scenario } from '@data/scenario/scenario.interfaces';
@@ -139,7 +139,12 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(fetchAreaMatrices({ scenarioId: this.scenario.id }));
   }
 
+  getChangesText(areaIndex: number): string {
+    return this.changesText[areaIndex];
+  }
+
   setChangesText():void {
+    this.changesText = {};
     for(const [ix, a] of this.scenario.areas.entries()) {
       this.changesText[ix] = '';
       for(const c in a.changes) {
@@ -253,13 +258,13 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(ScenarioActions.openScenarioArea({ index: areaIndex, scenarioIndex: null }));
   }
 
-  openIntensityOverview() {
-    this.dialogService.open<SensitivityMatrix & {savedAsNew: boolean, deleted: boolean}>(ChangesOverviewComponent, this.moduleRef, {
+  async openIntensityOverview() {
+    await this.dialogService.open<SensitivityMatrix & {savedAsNew: boolean, deleted: boolean}>(ChangesOverviewComponent, this.moduleRef, {
       data: {
         scenario: this.scenario,
-
       }
     });
+    this.setChangesText();
   }
 
   setOperation() {

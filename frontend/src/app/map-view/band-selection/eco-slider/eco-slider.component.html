@@ -4,8 +4,7 @@
     <div class="slider">
       <div class="row">
         <span>{{ 'map.editor.band-pressures.percentage' | translate }}</span>
-        <input #percentage
-               class="percentage"
+        <input class="percentage"
                type="number"
                [value]="(multiplier - 1) * 100 | number:'1.0-0'"
                step="1"

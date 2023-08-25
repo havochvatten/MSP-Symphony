@@ -171,6 +171,11 @@
                 "show-overview": "Öppna översiktsvyn för ändringar",
                 "global-changes": "Generella ändringar",
                 "show-all": "Visa alla",
+                "edit-value": "Ändra värde",
+                "confirm-change": "Bekräfta ändring",
+                "discard-change": "Förkasta ändring",
+                "relative-label": "Procentuell",
+                "absolute-label": "Konstant",
                 "close": "Stäng"
             },
             "area-changes": {

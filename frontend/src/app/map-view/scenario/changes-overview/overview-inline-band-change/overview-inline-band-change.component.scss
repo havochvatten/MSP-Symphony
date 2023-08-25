@@ -1,0 +1,99 @@
+@import 'src/styles/hav-colors';
+
+:host {
+   display: block;
+
+   app-icon-button {
+     font-size: 13px;
+     opacity: 0.3;
+
+     &.edit-button {
+       position: absolute;
+       top: 0;
+       right: 0;
+     }
+   }
+
+   &:hover app-icon-button.edit-button {
+     opacity: 1;
+   }
+
+  .band-change-controls {
+    display: flex;
+    flex-direction: column;
+
+    input[type='number'] {
+      display: none;
+      height: 4.1rem;
+      box-sizing: border-box;
+      border-radius: 4px;
+      border: 1px solid #ced4da;
+      font-size: 1.6rem;
+      align-self: center;
+
+      &.constant {
+        width: 6rem;
+        text-align: center;
+      }
+
+      &.active {
+        display: block;
+      }
+    }
+
+    mat-radio-group {
+      display: flex;
+      flex-direction: column;
+      margin: 0.4rem 0 0.6rem;
+
+      .mat-radio-button {
+        display: block;
+        height: 16px;
+        margin: 0.3rem 0 0;
+        padding-left: 1.85rem;
+
+        ::ng-deep .mat-radio-label {
+          .mat-radio-outer-circle, .mat-radio-inner-circle {
+            width: 14px;
+            height: 14px;
+            top: 3px;
+            left: 4px;
+          }
+
+          .mat-radio-label-content {
+            font-size: 1.1rem;
+          }
+        }
+
+        .mat-radio-ripple {
+          height: 16px;
+          width: 16px;
+          left: calc(50% - 16px);
+          top: calc(50% - 16px);
+        }
+      }
+    }
+
+    .inline-change-confirmation {
+      display: flex;
+      justify-content: space-evenly;
+
+      ::ng-deep app-icon-button.confirmation-button {
+        display: inline-flex;
+        position: relative;
+
+        &:hover {
+          opacity: 1;
+        }
+
+        &.change button {
+          color: $hav-success;
+        }
+
+        &.discard button {
+          color: $hav-warning;
+        }
+      }
+    }
+  }
+}

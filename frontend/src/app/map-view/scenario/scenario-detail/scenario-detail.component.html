@@ -32,7 +32,7 @@
               <ng-container *ngIf="area.changes">
                 <app-icon iconType="not-equal" *ngIf="area.changes"
                           title="{{ 'map.editor.areas.specific-settings'
-                          | translate: { 'feature-changes': changesText[aix] }  }}">
+                          | translate: { 'feature-changes': getChangesText(aix) }  }}">
                 </app-icon>
               </ng-container>
               <app-icon iconType="delete" (click)="deleteAreaDelegate(area.id, $event, scenario)"

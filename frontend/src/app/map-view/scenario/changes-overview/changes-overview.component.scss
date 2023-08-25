@@ -170,8 +170,23 @@
       }
 
       td {
+        position: relative;
         text-align: center;
         font-size: 1.3rem;
+
+        ::ng-deep app-overview-inline-band-change.cell-editing {
+          padding: 1rem 0 0.2rem;
+        }
+      }
+    }
+
+    &.editing table {
+      td ::ng-deep app-overview-inline-band-change:not(.cell-editing) {
+        color: $hav-darkgrey;
+
+        app-icon-button {
+          display: none;
+        }
       }
     }
   }

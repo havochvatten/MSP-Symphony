@@ -171,6 +171,11 @@
                 "show-overview": "Show an overview of all changes",
                 "global-changes": "Global changes",
                 "show-all": "Show all",
+                "edit-value": "Modify change",
+                "confirm-change": "Confirm change",
+                "discard-change": "Discard change",
+                "relative-label": "Percentage",
+                "absolute-label": "Constant",
                 "close": "Close"
             },
             "area-changes": {

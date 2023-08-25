@@ -35,9 +35,6 @@ export class EcoSliderComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() locale = 'en';
 
   @ViewChild("constant") constantEl!: ElementRef;
-  convertMultiplierToPercent = convertMultiplierToPercent;
-  formatPercentage = formatPercentage;
-
 
   constructor(private store: Store<State>) {
 

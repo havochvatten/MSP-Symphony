@@ -144,8 +144,19 @@ export const excludeActiveAreaCoastal = createAction(
   props< ScenarioAreaCoastalExclusion >()
 );
 
+export const updateBandAttributeForAreaIndex = createAction(
+  '[Scenario] Update general intensity attribute or a specific area contained in the active scenario',
+  props<{ areaIndex: number|undefined, componentType: BandType, bandId: string,
+          band: number, attribute: string, value: number }>()
+);
+
+export const deleteBandChangeForAreaIndex = createAction(
+  '[Scenario] Delete general band change or within a specific area contained in the active scenario',
+  props<{ areaIndex: number|undefined, bandId: string }>()
+);
+
 export const updateBandAttribute = createAction(
-  '[Scenario] Update intensity attribute for band in scenario area',
+  '[Scenario] Update intensity attribute for band in active scenario area',
   props<{ componentType: BandType, bandId: string, band: number, attribute: string, value: number }>()
 );
 
