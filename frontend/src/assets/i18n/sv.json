@@ -77,7 +77,7 @@
                         "confirm": "Tag bort"
                     }
                 },
-                "specific-settings": "Specific settings have been made for this area: {{ feature-changes }}",
+                "specific-settings": "Områdesspecifika ändringar förekommer: {{ feature-changes }}",
                 "loading-matrices": "Laddar känslighetsmatriser",
                 "add-scenario-label": "Lägg till markerade områden i scenariot",
                 "add-scenario-label-single": "Lägg till « {{ area }} » i scenariot",
