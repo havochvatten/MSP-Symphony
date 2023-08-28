@@ -1,12 +1,7 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
 import { ChangesProperty } from "@data/scenario/scenario.interfaces";
 import { AccordionBoxComponent } from "@shared/accordion-box/accordion-box.component";
-import { MetadataSelectors } from "@data/metadata";
-import { Store } from "@ngrx/store";
-import { State } from "@src/app/app-reducer";
-import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
 
 @Component({
   selector: 'app-changes-list',
@@ -21,10 +16,6 @@ export class ChangesListComponent {
   @Input() bandDictionary!: { [p: string]: string };
 
   @ViewChild('changesAccordion') changesAccordion: AccordionBoxComponent | undefined;
-
-  constructor(private store: Store<State>) {
-
-  }
 
   convertMultiplierToPercent = convertMultiplierToPercent;
 

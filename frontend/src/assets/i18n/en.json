@@ -77,7 +77,7 @@
                         "confirm": "Remove"
                     }
                 },
-                "specific-settings": "Specific settings have been made for this area: {{ feature-changes }}",
+                "specific-settings": "Specific settings have been made for this area:\n{{ feature-changes }}",
                 "loading-matrices": "Loading sensitivity matrices",
                 "add-scenario-label": "Add selected areas to the active scenario",
                 "add-scenario-label-single": "Add {{ area }} to the active scenario",

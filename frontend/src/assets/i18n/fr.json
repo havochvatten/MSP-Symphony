@@ -77,7 +77,7 @@
                         "confirm": "Supprimer"
                     }
                 },
-                "specific-settings": "Des valeurs spécifiques ont été définies pour cette zone: {{ feature-changes }}",
+                "specific-settings": "Des valeurs spécifiques ont été définies pour cette zone:\n{{ feature-changes }}",
                 "loading-matrices": "Chargement des matrices de sensibilité",
                 "add-scenario-label": "Ajouter des zones sélectionnées au scénario",
                 "add-scenario-label-single": "Ajouter {{ area }} au scénario",

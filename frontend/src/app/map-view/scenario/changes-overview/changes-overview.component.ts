@@ -102,7 +102,10 @@ export class ChangesOverviewComponent implements OnInit {
     ) {
       return this.areaChangeMap[areaIndex][thisType][id];
     }
-    return { type: bandType as _BandType, band: id, multiplier: 1, offset: 0 };
+    return { type: bandType === 'ecoComponents' ? 'ECOSYSTEM' : 'PRESSURE',
+             band: id,
+             multiplier: 1,
+             offset: undefined };
   }
 
   addChange(areaIndex: number, bandId: number, bandChange: BandChange) {
