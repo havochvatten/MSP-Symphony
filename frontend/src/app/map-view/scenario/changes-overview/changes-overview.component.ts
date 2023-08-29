@@ -35,6 +35,7 @@ export class ChangesOverviewComponent implements OnInit {
   pressureChanges: boolean = false;
   bothTypes: boolean = false;
   editingCell: boolean = false;
+  hasChanged: boolean = false;
 
   // these naming discrepancies should be consolidated at some point
   bandTypeDict: Map<string, BandType> = new Map([
@@ -141,11 +142,13 @@ export class ChangesOverviewComponent implements OnInit {
 
     if(!this.editingCell) {
       const change = $event!.change;
-
       if((change.multiplier !== undefined && change.multiplier === 1) ||
          (change.offset !== undefined && change.offset === 0)) {
+        this.hasChanged = true;
         this.allChangedBands.get(this.getBandType(change.type))!.delete(change.band);
       } else {
+        const prevChange = this.getChange(change.type, $event!.areaIndex, change.band);
+        this.hasChanged = prevChange.multiplier !== change.multiplier || prevChange.offset !== change.offset;
         this.addChange($event!.areaIndex, $event!.change!.band, $event!.change!);
       }
     }

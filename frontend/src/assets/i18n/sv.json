@@ -240,7 +240,11 @@
                 "default-matrix": "Områdets standardmatriskoppling:",
                 "confirm-selection": "Använd valt område"
             },
-            "calculate": "Beräkna"
+            "calculate": "Beräkna",
+            "unsaved-changes": "Osparade ändringar",
+            "save-changes": "Spara nu",
+            "saved-by-user": "Ändringar sparade",
+            "saved-by-user-time": "Senast sparad: {{ timestamp }}"
         },
         "metadata": {
             "label": "Visa metadata",

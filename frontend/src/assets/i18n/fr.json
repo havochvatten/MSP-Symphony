@@ -240,7 +240,11 @@
                 "default-matrix": "Matrice par défaut pour cette zone:",
                 "confirm-selection": "Analyser la zone sélectionnée"
             },
-            "calculate": "Calculer"
+            "calculate": "Calculer",
+            "unsaved-changes": "Modifications non enregistrées",
+            "save-changes": "Enregistrez les modifications maintenant",
+            "saved-by-user": "Modifications enregistrées",
+            "saved-by-user-time": "Dernière sauvegarde: {{ timestamp }}"
         },
         "metadata": {
             "label": "Voir les métadonnées",

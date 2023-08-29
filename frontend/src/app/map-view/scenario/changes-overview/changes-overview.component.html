@@ -60,7 +60,7 @@
   </table>
 </div>
 <section class="buttons">
-  <button mat-flat-button (click)="dialog.close()" [ngClass]="'secondary'" [disabled]="editingCell">
+  <button mat-flat-button (click)="dialog.close(this.hasChanged)" [ngClass]="'secondary'" [disabled]="editingCell">
     {{ 'map.editor.changes-overview.close' | translate }}
   </button>
 </section>
