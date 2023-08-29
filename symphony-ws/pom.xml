@@ -30,7 +30,7 @@
         <version.resteasy.jackson2.provider>4.4.2.Final</version.resteasy.jackson2.provider>
         <version.resteasy>3.9.0.Final</version.resteasy>
         <version.java.lang3>3.9</version.java.lang3>
-        <version.catalina.corsfilter>7.0.42</version.catalina.corsfilter>
+        <version.catalina.corsfilter>7.0.109</version.catalina.corsfilter>
         <version.harmcrest>2.0.0.0</version.harmcrest>
         <version.jts>1.18.2</version.jts> <!--Synced with GeoTools 26.1 -->
     </properties>
@@ -222,7 +222,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.12.6.1</version>
+            <version>2.12.7.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
