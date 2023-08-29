@@ -8,7 +8,18 @@
       <app-icon iconType="edit"></app-icon>
     </button>
   </div>
-  <span class="scenario-timestamp">{{ scenario.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
+  <div [ngClass]="{'is-dirty': this.unsaved, 'scenario-info-stripe' : true, 'active-save': !this.unsaved && this.savedByInteraction }">
+    <span class="scenario-timestamp">{{ scenario.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
+    <button class="save-immediate" (click)="saveImmediate()"
+            title="{{ 'map.editor.save-changes' | translate }}">
+      {{ 'map.editor.unsaved-changes' | translate }}
+    </button>
+    <div class="interactive-save-indication"
+          title="{{ 'map.editor.saved-by-user-time' | translate :
+                  { timestamp: scenario.timestamp | date: 'HH:mm'} }}">
+      {{ 'map.editor.saved-by-user' | translate }}
+    </div>
+  </div>
   <main>
     <section class="scenario-areas">
       <h3>{{ 'map.editor.areas.title' | translate }}</h3>

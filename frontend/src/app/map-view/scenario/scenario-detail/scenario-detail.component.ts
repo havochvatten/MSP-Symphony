@@ -63,6 +63,8 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   percentileValue$: Observable<number>;
   areaMatricesLoading$: Observable<boolean>;
   bandDictionary$: Observable<{ [p: string]: string }>;
+  unsaved: boolean = false;
+  savedByInteraction: boolean = false;
 
   constructor(
     private store: Store<State>,
@@ -81,7 +83,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
           debounceTime(AUTO_SAVE_TIMEOUT * 1000), // TODO use fixed interval instead
           tap((s: Scenario) => console.debug('Auto-saving scenario ' + s.name))
         )
-        .subscribe((_: Scenario) => this.save());
+        .subscribe((_: Scenario) => { this.savedByInteraction = false; this.save() });
     }
     this.areaMatricesLoading$ = this.store.select(ScenarioSelectors.selectAreaMatrixDataLoading);
     this.calculating$ = this.store.select(CalculationSelectors.selectCalculating);
@@ -180,6 +182,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   }
 
   onCheckRarityIndicesDomain(domain: string) {
+    this.unsaved = true;
     this.store.dispatch(ScenarioActions.changeScenarioOperationParams({ operationParams: { domain } }));
   }
 
@@ -200,6 +203,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   addScenarioArea(selectedAreas: Area[], that: AddScenarioAreasComponent) {
     const areas = selectedAreas.filter(a => !some(that.scenario!.areas,
         s => turfIntersects(that.format.readFeature(a.feature), that.format.readFeature(s.feature))));
+    this.unsaved = true;
     this.store.dispatch(ScenarioActions.addAreasToActiveScenario({ areas: that.scenarioService.convertAreas(areas) }));
   }
 
@@ -210,10 +214,12 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   onChangeName(name: string) {
     this.editName = !this.editName;
+    this.unsaved = true;
     setTimeout(() => this.store.dispatch(ScenarioActions.changeScenarioName({ name })));
   }
 
   setNormalizationOptions(opts: NormalizationOptions) {
+    this.unsaved = true;
     this.store.dispatch(ScenarioActions.changeScenarioNormalization({ normalizationOptions: opts }));
 
     // TODO: investigate and fix to get rid of the "nudge" below.
@@ -230,11 +236,19 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  saveImmediate() {
+    this.savedByInteraction = true;
+    this.save();
+    setTimeout(() => this.savedByInteraction = false, 30000);
+  }
+
   save() {
+    this.unsaved = false;
     this.store.dispatch(ScenarioActions.saveActiveScenario({ scenarioToBeSaved: this.scenario }));
   }
 
   deleteChange = (bandId: string) => {
+    this.unsaved = true;
     this.store.dispatch(ScenarioActions.deleteBandChange({ bandId }));
   }
 
@@ -257,7 +271,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   }
 
   async openIntensityOverview() {
-    await this.dialogService.open<SensitivityMatrix & {savedAsNew: boolean, deleted: boolean}>(ChangesOverviewComponent, this.moduleRef, {
+    this.unsaved ||= await this.dialogService.open<boolean>(ChangesOverviewComponent, this.moduleRef, {
       data: {
         scenario: this.scenario,
       }
@@ -268,6 +282,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   setOperation() {
     const operation = availableOperations.get(this.operation.value!)!;
     this.store.dispatch(ScenarioActions.changeScenarioOperation({ operation: operation }));
+    this.unsaved = true;
     if(operation === CalcOperation.RarityAdjusted) {
       const normalizationOptions = this.getNormalizationOptions();
       this.store.dispatch(ScenarioActions.changeScenarioOperationParams({operationParams: this.getParams() ? this.getParams() : {'domain': 'GLOBAL'}}));
@@ -285,7 +300,14 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   }
 
   async importChanges() {
-    await transferChanges(this.dialogService, this.translateService, this.store, this.moduleRef, this.scenario);
+    const changesImported =
+      await transferChanges(this.dialogService, this.translateService, this.store, this.moduleRef, this.scenario);
+    if(changesImported) {
+      // importing changes saves implicitly
+      this.savedByInteraction = false;
+      this.unsaved = false;
+      await this.setChangesText();
+    }
   }
 
   getDisplayName(bandId: string): Observable<string> {

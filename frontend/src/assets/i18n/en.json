@@ -240,7 +240,11 @@
                 "default-matrix": "Default matrix for this area:",
                 "confirm-selection": "Use selected area"
             },
-            "calculate": "Calculate"
+            "calculate": "Calculate",
+            "unsaved-changes": "Unsaved changes",
+            "save-changes": "Save changes",
+            "saved-by-user": "Changes saved",
+            "saved-by-user-time": "Last saved: {{ timestamp }}"
         },
         "metadata": {
             "label": "Show metadata",
