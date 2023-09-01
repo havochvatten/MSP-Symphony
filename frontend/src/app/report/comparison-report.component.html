@@ -71,8 +71,10 @@
       www.havochvatten.se
     </a>.
   </p>
-
-  <span class="date">{{ now | date: 'yyyy-MM-dd HH:mm' }}</span>
+  <p class="closing-matter-smaller">
+    Symphony version {{ symphonyVersion }}<br/>
+    {{ now | date: 'yyyy-MM-dd HH:mm' }}
+  </p>
 </tbody>
 
 <div *ngIf="loadingReport" class="loading-report">
