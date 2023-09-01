@@ -17,6 +17,7 @@ import { CalculationActions, CalculationSelectors } from "@data/calculation";
 import { NormalizationType } from "@data/calculation/calculation.service";
 import { ReportService } from "@src/app/report/report.service";
 import MetadataService from "@data/metadata/metadata.service";
+import buildInfo from '@src/build-info';
 
 export type BandMap = Record<'b' | 'e', Record<number, string>>;
 
@@ -38,6 +39,7 @@ export class CalculationReportComponent {
     pressureComponent: BandGroup[];
   }>;
   areaDict: Map<number, string> = new Map<number, string>();
+  symphonyVersion = buildInfo.version;
 
   constructor(
     private translate: TranslateService,
