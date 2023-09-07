@@ -23,7 +23,6 @@
     *ngIf="!editMode"
     [icon]="'edit'"
     [label]="'map.editor.changes-overview.edit-value' | translate"
-    [title]="'map.editor.changes-overview.edit-value' | translate"
     [className]="'edit-button'"
     (click)="editValue()">
   </app-icon-button>
@@ -45,7 +44,6 @@
       *ngIf="editMode"
       [icon]="'check'"
       [label]="'map.editor.changes-overview.confirm-change' | translate"
-      [title]="'map.editor.changes-overview.confirm-change' | translate"
       [className]="'confirmation-button change'"
       (click)="confirmChange()">
     </app-icon-button>
@@ -54,7 +52,6 @@
       [className]="'confirmation-button discard'"
       [icon]="'cross'"
       [label]="'map.editor.changes-overview.discard-change' | translate"
-      [title]="'map.editor.changes-overview.discard-change' | translate"
       (click)="exitEditMode()">
     </app-icon-button>
   </div>

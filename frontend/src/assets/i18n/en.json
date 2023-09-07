@@ -435,6 +435,15 @@
             "detail": "Alt / ⌥ + click splits by intersection, Alt / ⌥ + Shift + click merges."
         }
     },
+    "controls": {
+        "open": "Open",
+        "close": "Close",
+        "delete": "Delete",
+        "accordion": {
+            "expand": "Expand",
+            "contract": "Contract"
+        }
+    },
     "main-menu": {
         "projects": "Project",
         "calculations": "Calculations",

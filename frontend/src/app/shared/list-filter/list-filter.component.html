@@ -3,8 +3,6 @@
   [placeholder]="filterPlaceholder"
   (input)="setFilter()"/>
 <app-icon-button
-  [title]="'list-sorting-options.indicate-order' | translate :
-  { orderHint: i18n_key(false) | translate }"
   [label]="'list-sorting-options.indicate-order' | translate :
   { orderHint: i18n_key(false) | translate }"
   (click)="cycle(false)"
@@ -12,8 +10,6 @@
   [ngClass]="{ 'active' : isActive(false) }">
 </app-icon-button>
 <app-icon-button
-  [title]="'list-sorting-options.indicate-order' | translate :
-  { orderHint: i18n_key(true) | translate }"
   [label]="'list-sorting-options.indicate-order' | translate :
   { orderHint: i18n_key(true) | translate }"
   (click)="cycle(true)"
