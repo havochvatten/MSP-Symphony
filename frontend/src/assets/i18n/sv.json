@@ -435,6 +435,15 @@
             "detail": "Alt / ⌥ + klick delar överlappande, Alt / ⌥ + Shift + sammanfogar"
         }
     },
+    "controls": {
+        "open": "Öppna",
+        "close": "Stäng",
+        "delete": "Radera",
+        "accordion": {
+            "expand": "Fäll ut",
+            "contract": "Fäll ihop"
+        }
+    },
     "main-menu": {
         "projects": "Projekt",
         "calculations": "Beräkningar",
