@@ -3,6 +3,7 @@ export const environment = {
   showBaseCalculations: true,
   showIncludeCoastCheckbox: true,
   apiBaseUrl: "/symphony-ws/service",
+  socketBaseUrl: "/socket",
   baseline: false, // Set to some false value to get "latest" baseline
   map: {
     center: [0, 0],
