@@ -112,7 +112,7 @@ public class Scenario implements Serializable, BandChangeEntity {
     private List<ScenarioArea> areas = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.EAGER)
-    @Cascade({ CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
+    @Cascade({ CascadeType.MERGE, CascadeType.REMOVE })
     @JoinColumn(name = "latestcalculation_cares_id")
     private CalculationResult latestCalculation;
 
