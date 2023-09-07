@@ -19,7 +19,9 @@ import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+import se.havochvatten.symphony.dto.BatchCalculationDto;
 import se.havochvatten.symphony.dto.CalculationResultSlice;
+import se.havochvatten.symphony.entity.BatchCalculation;
 import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.exception.SymphonyStandardSystemException;
@@ -42,10 +44,8 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
 import java.security.Principal;
-import java.util.Formatter;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -111,7 +111,7 @@ public class CalculationREST {
         var watch = new StopWatch();
         watch.start();
         logger.info("Performing "+CalcService.operationName(persistedScenario.getOperation())+" calculation for " + persistedScenario.getName() + "...");
-        CalculationResult result = calcService.calculateScenarioImpact(req, persistedScenario);
+        CalculationResult result = calcService.calculateScenarioImpact(persistedScenario);
         watch.stop();
         logger.log(Level.INFO, "DONE ({0} ms)", watch.getTime());
 
@@ -310,6 +310,52 @@ public class CalculationREST {
             return projectedPNGImageResponse(diff, crs, null, dynamic);
         } catch (AccessDeniedException ax) {
             return status(Response.Status.UNAUTHORIZED).build();
+        }
+    }
+
+    @POST
+    @Path("/batch")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Queues batch run of scenario calculations", response = BatchCalculationDto.class)
+    public BatchCalculationDto queueBatchCalculation(@Context HttpServletRequest req, String ids) {
+        if (req.getUserPrincipal() == null)
+            throw new NotAuthorizedException("Null principal");
+
+        int[] idArray = Arrays.stream(ids.split(",")).mapToInt(Integer::parseInt).toArray();
+
+        for(int id : idArray) {
+            var persistedScenario = scenarioService.findById(id);
+            if (!persistedScenario.getOwner().equals(req.getUserPrincipal().getName()))
+                throw new ForbiddenException("User not owner of scenario");
+        }
+
+        BatchCalculation queuedBatchCalculation = calcService.queueBatchCalculation(idArray, req.getUserPrincipal().getName());
+        logger.log(Level.INFO, "Queuing batch calculation for ids: {0}", Arrays.toString(idArray));
+
+        return new BatchCalculationDto(queuedBatchCalculation);
+    }
+
+    @DELETE
+    @Path("/batch/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Deletes batch calculation process entry")
+    public Response deleteBatchCalculation(@Context HttpServletRequest req, @PathParam("id") int id) {
+        var principal = req.getUserPrincipal();
+        if (principal == null)
+            throw new NotAuthorizedException("Null principal");
+
+        try {
+            calcService.deleteBatchCalculationEntry(req.getUserPrincipal(), id);
+            return ok().build();
+        } catch (NotFoundException nx) {
+            return status(Response.Status.NOT_FOUND).build();
+        } catch (NotAuthorizedException ax) {
+            return status(Response.Status.UNAUTHORIZED).build();
+        } catch (SymphonyStandardAppException px) {
+            return status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 

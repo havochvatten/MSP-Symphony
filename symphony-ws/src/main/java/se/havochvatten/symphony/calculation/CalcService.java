@@ -29,10 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.calculation.jai.CIA.CumulativeImpactOp;
 import se.havochvatten.symphony.dto.*;
-import se.havochvatten.symphony.entity.BaselineVersion;
-import se.havochvatten.symphony.entity.CaPolygon;
-import se.havochvatten.symphony.entity.CalculationArea;
-import se.havochvatten.symphony.entity.CalculationResult;
+import se.havochvatten.symphony.dto.SensitivityMatrix;
+import se.havochvatten.symphony.entity.*;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.exception.SymphonyStandardSystemException;
@@ -43,6 +41,8 @@ import se.havochvatten.symphony.service.DataLayerService;
 import se.havochvatten.symphony.service.PropertiesService;
 
 import javax.annotation.PostConstruct;
+import javax.batch.operations.JobOperator;
+import javax.batch.runtime.BatchRuntime;
 import javax.ejb.*;
 import javax.inject.Inject;
 import javax.media.jai.ImageLayout;
@@ -50,7 +50,6 @@ import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.*;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
@@ -80,9 +79,6 @@ public class CalcService {
     public static final int OPERATION_CUMULATIVE = 0;
     public static final int OPERATION_RARITYADJUSTED = 1;
     private static final Logger LOG = LoggerFactory.getLogger(CalcService.class);
-
-    /* Can be useful for debugging, but breaks persistent sessions since not serializable atm */
-    static final boolean SAVE_MASK_IN_SESSION = false;
 
     public static String operationName(int operation) {
     // Temporary solution.
@@ -121,7 +117,7 @@ public class CalcService {
     @Inject
     private CalibrationService calibrationService;
 
-    private record ScenarioChanges (Map<String, BandChange> baseChanges, Map<Integer, Map<String, BandChange>> areaChanges ) {};
+    private record ScenarioChanges (Map<String, BandChange> baseChanges, Map<Integer, Map<String, BandChange>> areaChanges ) {}
 
     @PostConstruct
     void setup() {
@@ -338,7 +334,7 @@ public class CalcService {
      *
      * @return coverage in input coordinate system (EPSG 3035 in the Swedish case)
      */
-    public CalculationResult calculateScenarioImpact(HttpServletRequest req, Scenario scenario)
+    public CalculationResult calculateScenarioImpact(Scenario scenario)
             throws FactoryException, TransformException, IOException, SymphonyStandardAppException {
 
         Geometry roi = coastalComplement(scenario);
@@ -391,9 +387,6 @@ public class CalcService {
         var targetGridGeometry = getTargetGridGeometry(targetGridEnvelope, targetEnv);
         MatrixMask mask = new MatrixMask(targetGridGeometry.toCanonical(), layout,
                 matrixResponse, scenario.getAreas(), CalcUtil.createMapFromMatrixIdToIndex(matrices));
-        if (SAVE_MASK_IN_SESSION) {
-            req.getSession().setAttribute("mask", mask.getAsPNG());
-        }
 
         var ecosystemsToInclude = scenario.getEcosystemsToInclude();
         GridCoverage2D coverage;
@@ -462,7 +455,8 @@ public class CalcService {
 
         CalculationResult calculation = scenario.getNormalization().type == PERCENTILE ?
             new CalculationResult(coverage) :
-            persistCalculation(coverage, normalizationValues, areaMatrices, scenario, mapper.valueToTree(sc), ecosystemsToInclude, baseline, targetRoi);
+            persistCalculation( coverage, normalizationValues, areaMatrices, scenario,
+                                mapper.valueToTree(sc), ecosystemsToInclude, baseline, targetRoi);
 
         // previous approach for caching calculation results in session, apparently not reliable
         // Cache last calculation in session to speed up subsequent REST call to retrieve result image
@@ -481,6 +475,60 @@ public class CalcService {
                 ),
                 targetEnv
         );
+    }
+
+    @Transactional
+    public BatchCalculation queueBatchCalculation(int[] idArray, String owner) {
+        BatchCalculation batchCalculation = new BatchCalculation();
+        batchCalculation.setScenarios(idArray);
+        batchCalculation.setOwner(owner);
+
+        em.persist(batchCalculation);
+        em.flush();
+
+        JobOperator jobOperator = BatchRuntime.getJobOperator();
+        Properties jobParameters = new Properties();
+
+        jobParameters.setProperty("batchCalculationId", String.valueOf(batchCalculation.getId()));
+
+        long executionId = jobOperator.start("calculateBatch", jobParameters);
+        batchCalculation.setExecutionId((int) executionId);
+        em.merge(batchCalculation);
+
+        return batchCalculation;
+    }
+
+    public void deleteBatchCalculationEntry(Principal userPrincipal, int id) throws SymphonyStandardAppException {
+        BatchCalculation batchCalculation = em.find(BatchCalculation.class, id);
+
+        if (batchCalculation == null)
+            throw new NotFoundException();
+        if (!batchCalculation.getOwner().equals(userPrincipal.getName()))
+            throw new NotAuthorizedException(userPrincipal.getName());
+        if(isBatchCalculationRunning(id))
+            throw new SymphonyStandardAppException(
+                SymphonyModelErrorCode.BATCH_CALCULATION_JOB_RUNNING,
+                SymphonyModelErrorCode.BATCH_CALCULATION_JOB_RUNNING.getErrorMessage());
+        else {
+            try {
+                transaction.begin();
+                em.remove(batchCalculation);
+                transaction.commit();
+            } catch (Exception e) {
+                throw new SymphonyStandardSystemException(SymphonyModelErrorCode.OTHER_ERROR, e, "BatchCalculation " +
+                    "persistence error");
+            } finally {
+                try {
+                    if (transaction.getStatus() == Status.STATUS_ACTIVE)
+                        transaction.rollback();
+                } catch (Throwable e) {/* ignore */}
+            }
+        }
+    }
+
+    public boolean isBatchCalculationRunning(int batchCalculationId) {
+        JobOperator jobOperator = BatchRuntime.getJobOperator();
+        return jobOperator.getJobExecution(batchCalculationId).getBatchStatus() == javax.batch.runtime.BatchStatus.STARTED;
     }
 
     private ImageLayout getImageLayout(Envelope envelope) {

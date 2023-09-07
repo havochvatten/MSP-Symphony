@@ -33,6 +33,8 @@
         <version.catalina.corsfilter>7.0.109</version.catalina.corsfilter>
         <version.harmcrest>2.0.0.0</version.harmcrest>
         <version.jts>1.18.2</version.jts> <!--Synced with GeoTools 26.1 -->
+        <version.javax.batch>1.0.1</version.javax.batch>
+        <version.jberet>1.4.2.Final</version.jberet>
     </properties>
 
     <dependencies>
@@ -273,6 +275,26 @@
             <artifactId>rest-assured</artifactId>
             <version>${version.rest.assured}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.batch</groupId>
+            <artifactId>javax.batch-api</artifactId>
+            <version>${version.javax.batch}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jberet</groupId>
+            <artifactId>jberet-core</artifactId>
+            <version>${version.jberet}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jberet</groupId>
+            <artifactId>jberet-support</artifactId>
+            <version>${version.jberet}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jberet</groupId>
+            <artifactId>jberet-se</artifactId>
+            <version>${version.jberet}</version>
         </dependency>
 
         <!-- Benchmarking -->
