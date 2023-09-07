@@ -14,6 +14,12 @@ const PROXY_CONFIG = {
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true
+  },
+  "/socket": {
+    "target": targets.host,
+    "pathRewrite": {'^/socket' : '/symphony-ws'},
+    "secure": false,
+    "ws": true
   }
 };
 

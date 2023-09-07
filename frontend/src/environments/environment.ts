@@ -7,6 +7,7 @@ export const environment = {
   showBaseCalculations: false,
   showIncludeCoastCheckbox: true,
   apiBaseUrl: "/symphony-ws/service",
+  socketBaseUrl: "/socket",
   baseline: false,
   map: {
     center: [10, -10],
