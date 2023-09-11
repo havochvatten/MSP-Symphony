@@ -63,6 +63,18 @@
             "area": "Område:",
             "exit": "Lämna"
         },
+        "batch-progress": {
+            "header-in-progress": "\"Batch\"-beräkning pågår",
+            "header-cancelled": "Avbruten \"batch\"-beräkning",
+            "header-finished": "Slutförd \"batch\"-beräkning",
+            "message": "Beräknar.. ({{ count }} av {{ total }} scenarion beräknade)",
+            "cancel": "Avbryt körningen",
+            "remove-finished": "Göm slutförd \"batch\"-status",
+            "cancelled-run": {
+                "title": "\"Batch\"-beräkning avbruten",
+                "message": "\"Batch\"-beräkningen avbröts. Resultaten av de beräkningar som slutfördes finns tillgängliga under 'Tidigare beräkningar'."
+            }
+        },
         "editor": {
             "title": "Scenarion",
             "areas": {
@@ -201,6 +213,9 @@
                 "create-copy": "Kopiera",
                 "cancel": "Avbryt"
             },
+            "batch-options": {
+                "split-scenario": "Splitt splutt"
+            },
             "select-area-message": "För att beräkna krävs det att ett område har markerats. Börja med att välja område och eventuella naturvärden och belastningar i vänster panel.",
             "fetching-matrices": "Hämtar information om områdets känslighetsmatriser...",
             "map-layer": "Kartlager",
@@ -217,7 +232,16 @@
                 "show-report-label": "Öppna senaste beräkningsrapporten",
                 "more-areas-single": "+ ett ytterligare område ..",
                 "more-areas": "+ {{ more }} ytterligare områden ..",
-                "filter-hint": "Filtrera scenarion per namn"
+                "filter-hint": "Filtrera scenarion per namn",
+                "select-all-for-batch": "Markera samtliga",
+                "select-all-for-batch-filtered": "Markera synliga",
+                "deselect-all-for-batch": "Avmarkera samtliga",
+                "batch-tools": {
+                    "enter-batch-mode": "Gå till \"batch\"-läge",
+                    "exit-batch-mode": "Gå ur \"batch\"-läge",
+                    "batch-too-small": "Markera minst två scenarion",
+                    "run-batch": "Kör \"batch\"-beräkning för markerade scenarion"
+                }
             },
             "clear": "Rensa",
             "close": "❮",

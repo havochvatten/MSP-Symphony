@@ -14,12 +14,14 @@ public class BatchCalculationDto {
 
     private Integer currentScenario;
 
+    private boolean cancelled = false;
+
     public BatchCalculationDto(BatchCalculation batchCalculation) {
         this.id = batchCalculation.getId();
         this.scenarios = batchCalculation.getScenarios();
         this.calculated = new ArrayList<>(Arrays.stream(batchCalculation.getCalculated()).boxed().toList());
-        this.failed = new ArrayList<>(Arrays.stream(batchCalculation.getFailed()).boxed().toList());
         this.reports = new Integer[batchCalculation.getScenarios().length];
+        setFailed(batchCalculation.getFailed());
     }
 
     public int getId() {
@@ -41,4 +43,16 @@ public class BatchCalculationDto {
     }
 
     public Integer getCurrentScenario() { return currentScenario; }
+
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
+
+    public void setFailed(int[] failed) {
+        this.failed = new ArrayList<>(Arrays.stream(failed).boxed().toList());
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
+    }
 }

@@ -39,6 +39,7 @@ import { DialogService } from "@shared/dialog/dialog.service";
 import { MergeAreasModalComponent } from './map/merge-areas-modal/merge-areas-modal.component';
 import { MatRadioModule } from "@angular/material/radio";
 import { ActiveScenarioDisplayComponent } from './active-scenario-display/active-scenario-display.component';
+import { BatchProgressComponent } from './batch-progress-display/batch-progress.component';
 
 @NgModule({
   declarations: [
@@ -66,6 +67,7 @@ import { ActiveScenarioDisplayComponent } from './active-scenario-display/active
     MetaInfoComponent,
     MergeAreasModalComponent,
     ActiveScenarioDisplayComponent,
+    BatchProgressComponent,
   ],
     imports: [
         SharedModule,

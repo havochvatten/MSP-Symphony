@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { setIn } from "immutable";
+import { setIn, updateIn } from "immutable";
 import { CalculationActions, CalculationInterfaces } from './';
 import { AreaActions } from '@data/area';
 import { Legend } from "@data/calculation/calculation.interfaces";
@@ -17,7 +17,8 @@ export const initialState: CalculationInterfaces.State = {
     pressure: undefined,
     comparison: {}
   },
-  sortCalculations: ListItemsSort.None
+  sortCalculations: ListItemsSort.None,
+  batchProcesses: []
 };
 
 export const calculationReducer = createReducer(
@@ -73,6 +74,18 @@ export const calculationReducer = createReducer(
   on(CalculationActions.setCalculationSortType, (state, { sortType }) => ({
     ...state,
     sortCalculations: sortType
+  })),
+  on(CalculationActions.updateBatchProcess, (state, { id, process }) => ({
+    ...state,
+    batchProcesses: setIn(state.batchProcesses, [id], process)
+  })),
+  on(CalculationActions.removeBatchProcessSuccess, (state, { id }) => ({
+    ...state,
+    batchProcesses: setIn(state.batchProcesses, [id], undefined)
+  })),
+  on(CalculationActions.cancelBatchProcessSuccess, (state, { id }) => ({
+    ...state,
+    batchProcesses: setIn(state.batchProcesses, [id], {...state.batchProcesses[id], cancelled: true})
   }))
 );
 

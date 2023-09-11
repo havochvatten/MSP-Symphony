@@ -1,4 +1,4 @@
-import { Component, NgModuleRef } from '@angular/core';
+import { Component, NgModuleRef, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
@@ -6,7 +6,7 @@ import { of, Subscription } from 'rxjs';
 import { Scenario, ScenarioCopyOptions } from '@data/scenario/scenario.interfaces';
 import { Area } from '@data/area/area.interfaces';
 import { AreaSelectors } from '@data/area';
-import { catchError } from 'rxjs/operators';
+import { catchError, retry } from 'rxjs/operators';
 import { CalculationReportModalComponent } from '@shared/report-modal/calculation-report-modal.component';
 import { DialogService } from '@shared/dialog/dialog.service';
 import * as Normalization from '@src/app/map-view/scenario/scenario-detail/normalization-selection/normalization-selection.component';
@@ -16,6 +16,10 @@ import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenar
 import { CopyScenarioComponent } from "@src/app/map-view/scenario/copy-scenario/copy-scenario.component";
 import { Listable } from "@shared/list-filter/listable.directive";
 import { ListItemsSort } from "@data/common/sorting.interfaces";
+import { BatchStatusService } from "@src/app/socket/batch-status.service";
+import { CalculationService } from "@data/calculation/calculation.service";
+import { CalculationActions } from "@data/calculation";
+import { MatCheckbox, MatCheckboxChange } from "@angular/material/checkbox";
 
 @Component({
     selector: 'app-scenario-list',
@@ -30,18 +34,34 @@ export class ScenarioListComponent extends Listable {
   ABUNDANT_AREA_COUNT = 4;
   MAX_AREAS = 9;
 
+  batchMode = false;
+  selectedBatchIds: number[] = [];
+
   private areaSubscription$: Subscription;
+  private autoBatchSubscription$: Subscription;
 
   constructor(
     protected store: Store<State>,
     private translateService: TranslateService,
     private dialogService: DialogService,
+    private calculationService: CalculationService,
     private moduleRef: NgModuleRef<any>
   ) {
     super();
     this.areaSubscription$ = this.store
       .select(AreaSelectors.selectSelectedAreaData)
       .subscribe(area => (this.selectedAreas = area as Area[]));
+
+    this.autoBatchSubscription$ = this.store
+      .select(ScenarioSelectors.selectAutoBatch).subscribe(
+        (autoBatch) => {
+          if(autoBatch && autoBatch.length > 0) {
+            this.batchMode = true;
+            this.selectedBatchIds = autoBatch;
+            this.store.dispatch(ScenarioActions.resetAutoBatch());
+          }
+        }
+      );
   }
 
   setSort(sortType: ListItemsSort): void {
@@ -80,7 +100,9 @@ export class ScenarioListComponent extends Listable {
   }
 
   open(index: number) {
-    this.store.dispatch(ScenarioActions.openScenario({ index: index }));
+    if(!this.batchMode) {
+      this.store.dispatch(ScenarioActions.openScenario({ index: index }));
+    }
   }
 
   showReport(id: number) {
@@ -107,5 +129,39 @@ export class ScenarioListComponent extends Listable {
 
   ngOnDestroy() {
       this.areaSubscription$.unsubscribe();
+      this.autoBatchSubscription$.unsubscribe();
+  }
+
+  triggerBatchRun() {
+    if(this.batchMode && this.selectedBatchIds.length > 1) {
+      this.calculationService.queueBatchCalculation(this.selectedBatchIds).pipe()
+        .subscribe({
+          next: (qbr) => {
+            if(qbr) {
+              this.store.dispatch(CalculationActions.updateBatchProcess({ id: qbr.id, process: qbr }));
+            }
+          }
+        }
+      );
+    }
+  }
+
+  getBatchMode(): boolean {
+    return this.batchMode;
+  }
+
+  setBatchMode() {
+    this.batchMode = !this.batchMode;
+    if(!this.batchMode) {
+      this.selectedBatchIds = [];
+    }
+  }
+
+  async selectForBatch(id: number) {
+    if(!this.selectedBatchIds.includes(id)) {
+      this.selectedBatchIds.push(id);
+    } else {
+      this.selectedBatchIds = this.selectedBatchIds.filter(i => i !== id);
+    }
   }
 }

@@ -63,6 +63,18 @@
             "area": "Zone:",
             "exit": "Arrêter"
         },
+        "batch-progress": {
+            "header-in-progress": "Calcul par lots en cours",
+            "header-cancelled": "Calcul par lots annulé",
+            "header-finished": "Calcul par lots terminé",
+            "message": "Calcul en cours.. ({{ count }} de {{ total }} scénarios terminés)",
+            "cancel": "Annuler",
+            "remove-finished": "Masquer le calcul par lots terminé",
+            "cancelled-run": {
+                "title": "Calcul par lots annulé",
+                "message": "Le calcul par lots a été annulé. Les résultats des calculs terminés sont disponibles sous 'Résultat précédent'"
+            }
+        },
         "editor": {
             "title": "Scénarios",
             "areas": {
@@ -201,6 +213,9 @@
                 "create-copy": "Copier",
                 "cancel": "Annuler"
             },
+            "batch-options": {
+                "split-scenario": "Splitzonë"
+            },
             "select-area-message": "Sélectionnez une zone de calcul. Commencez par sélectionner une zone, puis modifiez les valeurs des composantes écosystèmes ou pressions dans le panel de gauche.",
             "fetching-matrices": "Chargement des matrices de sensibilité...",
             "map-layer": "Couche de données",
@@ -217,7 +232,16 @@
                 "show-report-label": "Ouvrir le rapport de calcul le plus récent",
                 "more-areas-single": "+ une zone supplémentaire ..",
                 "more-areas": "+ {{ more }} zones supplémentaires ..",
-                "filter-hint": "Filtrer les scénarios par nom"
+                "filter-hint": "Filtrer les scénarios par nom",
+                "select-all-for-batch": "Tout sélectionner",
+                "select-all-for-batch-filtered": "Sélectionner les visibles",
+                "deselect-all-for-batch": "Tout désélectionner",
+                "batch-tools": {
+                    "enter-batch-mode": "Entrer en mode de sélection par lots",
+                    "exit-batch-mode": "Quitter le mode de sélection par lots",
+                    "batch-too-small": "Au moins deux scénarios requis",
+                    "run-batch": "Exécuter le calcul par lots"
+                }
             },
             "clear": "Effacer",
             "close": "❮",

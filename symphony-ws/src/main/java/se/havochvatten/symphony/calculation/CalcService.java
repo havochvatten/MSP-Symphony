@@ -42,7 +42,9 @@ import se.havochvatten.symphony.service.PropertiesService;
 
 import javax.annotation.PostConstruct;
 import javax.batch.operations.JobOperator;
+import javax.batch.operations.NoSuchJobExecutionException;
 import javax.batch.runtime.BatchRuntime;
+import javax.batch.runtime.JobExecution;
 import javax.ejb.*;
 import javax.inject.Inject;
 import javax.media.jai.ImageLayout;
@@ -60,6 +62,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.DoublePredicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -193,6 +196,22 @@ public class CalcService {
         return em.find(CalculationResult.class, id);
     }
 
+    private BatchCalculation getBatchCalculationStatus(Integer id) {
+        return em.find(BatchCalculation.class, id);
+    }
+
+    public BatchCalculation getBatchCalculationStatusAuthorized(Principal userPrincipal, Integer id)
+        throws NotFoundException, NotAuthorizedException {
+        BatchCalculation batchCalculation = getBatchCalculationStatus(id);
+
+        if (batchCalculation == null)
+            throw new NotFoundException();
+        if (!batchCalculation.getOwner().equals(userPrincipal.getName()))
+            throw new NotAuthorizedException(userPrincipal.getName());
+
+        return batchCalculation;
+    }
+
     public synchronized CalculationResult updateCalculation(CalculationResult calc) {
         try {
             transaction.begin();
@@ -210,6 +229,23 @@ public class CalcService {
         }
     }
 
+    public synchronized void delete(Principal principal, Object entity) {
+        try {
+            transaction.begin();
+            em.remove(em.merge(entity));
+            transaction.commit();
+        } catch (Exception e) {
+            throw new SymphonyStandardSystemException(SymphonyModelErrorCode.OTHER_ERROR, e,
+                    entity.getClass().getSimpleName() + " persistence error");
+        } finally {
+            try {
+                if (transaction.getStatus() == Status.STATUS_ACTIVE)
+                    transaction.rollback();
+            } catch (Throwable e) {/* ignore */}
+        }
+
+    }
+
     public synchronized void delete(Principal principal, int id) {
         var calc = getCalculation(id);
 
@@ -218,19 +254,7 @@ public class CalcService {
         if (!calc.getOwner().equals(principal.getName()))
             throw new NotAuthorizedException(principal.getName());
         else {
-            try {
-                transaction.begin();
-                em.remove(getCalculation(id));
-                transaction.commit();
-            } catch (Exception e) {
-                throw new SymphonyStandardSystemException(SymphonyModelErrorCode.OTHER_ERROR, e, "CalculationResult " +
-                    "persistence error");
-            } finally {
-                try {
-                    if (transaction.getStatus() == Status.STATUS_ACTIVE)
-                        transaction.rollback();
-                } catch (Throwable e) {/* ignore */}
-            }
+            delete(principal, calc);
         }
     }
 
@@ -498,37 +522,41 @@ public class CalcService {
         return batchCalculation;
     }
 
-    public void deleteBatchCalculationEntry(Principal userPrincipal, int id) throws SymphonyStandardAppException {
-        BatchCalculation batchCalculation = em.find(BatchCalculation.class, id);
+    public void cancelBatchCalculation(Principal userPrincipal, int id)
+        throws NotFoundException, NotAuthorizedException, SymphonyStandardAppException {
 
-        if (batchCalculation == null)
-            throw new NotFoundException();
-        if (!batchCalculation.getOwner().equals(userPrincipal.getName()))
-            throw new NotAuthorizedException(userPrincipal.getName());
-        if(isBatchCalculationRunning(id))
+        BatchCalculation batchCalculation = getBatchCalculationStatusAuthorized(userPrincipal, id);
+
+        if(isBatchCalculationRunning(batchCalculation.getExecutionId())) {
+            JobOperator jobOperator = BatchRuntime.getJobOperator();
+            jobOperator.stop(batchCalculation.getExecutionId());
+        }
+    }
+
+    public void deleteBatchCalculationEntry(Principal userPrincipal, int id)
+        throws SymphonyStandardAppException, NotFoundException, NotAuthorizedException {
+        BatchCalculation batchCalculation = getBatchCalculationStatusAuthorized(userPrincipal, id);
+
+        if(isBatchCalculationRunning(batchCalculation.getExecutionId()))
             throw new SymphonyStandardAppException(
                 SymphonyModelErrorCode.BATCH_CALCULATION_JOB_RUNNING,
                 SymphonyModelErrorCode.BATCH_CALCULATION_JOB_RUNNING.getErrorMessage());
         else {
-            try {
-                transaction.begin();
-                em.remove(batchCalculation);
-                transaction.commit();
-            } catch (Exception e) {
-                throw new SymphonyStandardSystemException(SymphonyModelErrorCode.OTHER_ERROR, e, "BatchCalculation " +
-                    "persistence error");
-            } finally {
-                try {
-                    if (transaction.getStatus() == Status.STATUS_ACTIVE)
-                        transaction.rollback();
-                } catch (Throwable e) {/* ignore */}
-            }
+            delete(userPrincipal, batchCalculation);
         }
     }
 
-    public boolean isBatchCalculationRunning(int batchCalculationId) {
+    public boolean isBatchCalculationRunning(int executionId) {
         JobOperator jobOperator = BatchRuntime.getJobOperator();
-        return jobOperator.getJobExecution(batchCalculationId).getBatchStatus() == javax.batch.runtime.BatchStatus.STARTED;
+        JobExecution execution;
+
+        try {
+            execution = jobOperator.getJobExecution(executionId);
+        } catch (NoSuchJobExecutionException e) {
+            return false;
+        }
+
+        return execution.getBatchStatus() == javax.batch.runtime.BatchStatus.STARTED;
     }
 
     private ImageLayout getImageLayout(Envelope envelope) {
