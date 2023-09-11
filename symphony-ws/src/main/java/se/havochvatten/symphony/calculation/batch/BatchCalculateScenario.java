@@ -10,20 +10,23 @@ import se.havochvatten.symphony.scenario.Scenario;
 import se.havochvatten.symphony.scenario.ScenarioService;
 import se.havochvatten.symphony.service.PropertiesService;
 
+import javax.annotation.Resource;
 import javax.batch.api.AbstractBatchlet;
 import javax.batch.runtime.BatchRuntime;
 import javax.batch.runtime.context.JobContext;
-import javax.ejb.Stateful;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.ejb.*;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.*;
 import javax.websocket.*;
 import java.net.URI;
+import java.util.Arrays;
 
-@Stateful
+import static javax.ejb.LockType.READ;
+import static javax.ejb.LockType.WRITE;
+
 @Named
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class BatchCalculateScenario extends AbstractBatchlet {
@@ -39,6 +42,9 @@ public class BatchCalculateScenario extends AbstractBatchlet {
     @Inject
     private ScenarioService scenarioService;
 
+    @Resource
+    private UserTransaction transaction;
+
     @PersistenceContext(unitName = "symphonyPU")
     private EntityManager em;
 
@@ -49,6 +55,8 @@ public class BatchCalculateScenario extends AbstractBatchlet {
 
     private BatchCalculation batchCalculation;
     private BatchCalculationDto batchCalculationDto;
+
+    private static volatile boolean cancelled = false;
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -70,11 +78,23 @@ public class BatchCalculateScenario extends AbstractBatchlet {
         }
     }
 
-    @Override
-    public String process() {
+    // Concurrent R/W-locked get + set for the 'single point of failure'.
+    // (note that parallel mishaps should be extremely unlikely without this measure)
 
+    @Lock(READ)
+    private static boolean isCancelled() {
+        return BatchCalculateScenario.cancelled;
+    }
+
+    @Lock(WRITE)
+    private static void setCancelled(boolean cancelled) {
+        BatchCalculateScenario.cancelled = cancelled;
+    }
+
+    @Override
+    public String process() throws Exception {
         batchCalculationId = Integer.parseInt(BatchRuntime.getJobOperator().
-            getParameters( jobContext.getExecutionId() ).getProperty("batchCalculationId"));
+                getParameters( jobContext.getExecutionId() ).getProperty("batchCalculationId"));
 
         batchCalculation = em.find(BatchCalculation.class, batchCalculationId);
         batchCalculationDto = new BatchCalculationDto(batchCalculation);
@@ -88,6 +108,19 @@ public class BatchCalculateScenario extends AbstractBatchlet {
             currentScenario = scenarioService.findById(scenarioIds[ix]);
             batchCalculationDto.setCurrentScenario(scenarioIds[ix]);
             dispatchStatus();
+
+            if (isCancelled()) {
+                setCancelled(false);
+                int[] allFailed =
+                        Arrays.stream(batchCalculation.getScenarios()).filter(
+                                        scenarioId -> !batchCalculationDto.getCalculated().contains(scenarioId))
+                                .toArray();
+
+                batchCalculation.setFailed(allFailed);
+                batchCalculationDto.setFailed(allFailed);
+                batchCalculationDto.setCancelled(true);
+                break;
+            }
 
             try {
                 CalculationResult calculationResult = calcService.calculateScenarioImpact(currentScenario);
@@ -103,12 +136,23 @@ public class BatchCalculateScenario extends AbstractBatchlet {
         batchCalculationDto.setCurrentScenario(null);
         dispatchStatus();
 
+        persistBatchStatus();
+
+        return isCancelled() ? "STOPPED" : "COMPLETED";
+    }
+
+    @Override
+    public void stop() throws Exception {
+        setCancelled(true);
+    }
+
+    public void persistBatchStatus() throws Exception {
         batchCalculation.setCalculated(batchCalculationDto.getCalculated());
         batchCalculation.setFailed(batchCalculationDto.getFailed());
 
+        transaction.begin();
         em.merge(batchCalculation);
-
-        return "COMPLETED";
+        transaction.commit();
     }
 
     @ClientEndpoint

@@ -337,6 +337,29 @@ public class CalculationREST {
         return new BatchCalculationDto(queuedBatchCalculation);
     }
 
+    @POST
+    @Path("/batch/{id}/cancel")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Cancels batch calculation process")
+    public Response cancelBatchCalculation(@Context HttpServletRequest req, @PathParam("id") int id) {
+        var principal = req.getUserPrincipal();
+        if (principal == null)
+            throw new NotAuthorizedException("Null principal");
+
+        try {
+            calcService.cancelBatchCalculation(req.getUserPrincipal(), id);
+            logger.log(Level.INFO, "Cancelling batch calculation run, id: {0}", id);
+            return ok().build();
+        } catch (NotFoundException nx) {
+            return status(Response.Status.NOT_FOUND).build();
+        } catch (NotAuthorizedException ax) {
+            return status(Response.Status.UNAUTHORIZED).build();
+        } catch (SymphonyStandardAppException px) {
+            return status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @DELETE
     @Path("/batch/{id}")
     @Produces(MediaType.APPLICATION_JSON)

@@ -116,4 +116,32 @@ export class CalculationEffects {
       )
     )
   );
+
+  @Effect()
+  removeBatchProcess$ = this.actions$.pipe(
+    ofType(CalculationActions.removeFinishedBatchProcess),
+    mergeMap(({ id }) =>
+      this.calcService.removeFinishedBatchProcess(id).pipe(
+        map(() => CalculationActions.removeBatchProcessSuccess({ id })),
+        catchError(({ status, error: message }) =>
+          of(
+            CalculationActions.removeBatchProcessFailure({
+              error: { status, message }
+            })
+          )
+        )
+      )
+    )
+  );
+
+  @Effect()
+  cancelBatchProcess$ = this.actions$.pipe(
+    ofType(CalculationActions.cancelBatchProcess),
+    mergeMap(({ id }) =>
+      this.calcService.cancelBatchProcess(id).pipe(
+        map(() => CalculationActions.cancelBatchProcessSuccess({ id }))
+      )
+    )
+  );
+
 }

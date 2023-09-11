@@ -53,3 +53,8 @@ export const selectVisibleLegends = createSelector(
     pressure: visibleBands.pressureComponent.length > 0 ? legends.pressure : undefined
   })
 );
+
+export const selectBatchProcesses = createSelector(
+  selectCalculationState,
+  state => [...Object.values(state.batchProcesses)].filter(p => p !== undefined)
+);
