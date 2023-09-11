@@ -23,16 +23,22 @@ import { MetadataSelectors } from "@data/metadata";
 import { Band } from "@data/metadata/metadata.interfaces";
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
-import { ChangesProperty, Scenario } from '@data/scenario/scenario.interfaces';
+import {
+  ChangesProperty,
+  Scenario,
+  ScenarioSplitOptions,
+} from '@data/scenario/scenario.interfaces';
 import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
 import { ScenarioService } from "@data/scenario/scenario.service";
 import { Area } from "@data/area/area.interfaces";
 import { deleteScenario, transferChanges } from "@src/app/map-view/scenario/scenario-common";
 import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenario-areas/add-scenario-areas.component";
-import { SensitivityMatrix } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
 import {
   ChangesOverviewComponent
 } from "@src/app/map-view/scenario/changes-overview/changes-overview.component";
+import {
+  SplitScenarioSettingsComponent
+} from "@src/app/map-view/scenario/split-scenario-settings/split-scenario-settings.component";
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 
@@ -312,5 +318,26 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   getDisplayName(bandId: string): Observable<string> {
     return this.bandDictionary$.pipe(map((bandDictionary) => bandDictionary[bandId]));
+  }
+
+  async openSplitOptions(): Promise<void> {
+    const splitOptions = await this.dialogService.open<ScenarioSplitOptions>(
+      SplitScenarioSettingsComponent,
+      this.moduleRef,
+      { data: {
+          scenarioName: this.scenario.name,
+          areaSpecificChanges:
+            this.scenario.areas.some(a => a.changes && Object.keys(a.changes!).length > 0),
+          confirmText: this.translateService.instant('map.editor.split-scenario-settings.generate')
+        }}
+    );
+
+    if (splitOptions) {
+      if(splitOptions.batchSelect) {
+          this.store.dispatch(ScenarioActions.closeActiveScenario());
+      }
+      this.store.dispatch(ScenarioActions.splitScenarioForBatch(
+        { scenarioId : this.scenario.id, options: splitOptions }));
+    }
   }
 }

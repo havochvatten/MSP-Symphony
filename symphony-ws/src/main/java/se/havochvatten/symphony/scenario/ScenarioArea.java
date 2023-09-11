@@ -101,6 +101,13 @@ public class ScenarioArea implements BandChangeEntity {
                 changeMap.entrySet().stream()).map(Map.Entry::getValue).toArray(BandChange[]::new);
     }
 
+    public Map<String, BandChange> getCombinedChangeMap() {
+        Map<String, BandChange> changeMap = new HashMap<>();
+        changeMap.putAll(mapper.convertValue(scenario.getChanges(), new TypeReference<>() {}));
+        changeMap.putAll(getChangeMap());
+        return changeMap;
+    }
+
     public void setChanges(JsonNode changes) {
         this.changes = changes;
     }

@@ -8,7 +8,7 @@ import { BandChange } from "@data/metadata/metadata.interfaces";
 import {
   fetchAreaMatricesFailure,
   fetchAreaMatricesSuccess,
-  fetchAreaMatrixSuccess
+  fetchAreaMatrixSuccess, resetAutoBatch, setAutoBatch
 } from '@data/scenario/scenario.actions';
 import { ScenarioActions, ScenarioInterfaces } from '@data/scenario/index';
 import { ChangesProperty, ScenarioArea } from "@data/scenario/scenario.interfaces";
@@ -22,15 +22,22 @@ export const initialState: ScenarioInterfaces.State = {
   activeArea: undefined,
   matrixData: null,
   matricesLoading: false,
-  sortScenarios: ListItemsSort.None
+  sortScenarios: ListItemsSort.None,
+  autoBatch: []
 };
 
 export const scenarioReducer = createReducer(
   initialState,
-  on(ScenarioActions.fetchScenariosSuccess, (state, { scenarios }) => ({
+  on(ScenarioActions.fetchScenariosSuccess, (state, { scenarios }) => {
+    let newActiveIndex = undefined;
+    if(state.active !== undefined) {
+      newActiveIndex = scenarios.findIndex(s => s.id === state.scenarios[state.active!].id);
+    }
+    return {
     ...state,
-    scenarios
-  })),
+    active: newActiveIndex,
+    scenarios }
+  }),
   on(ScenarioActions.openScenario, (state, { index }) => ({
     ...state,
     active: index,
@@ -296,5 +303,13 @@ export const scenarioReducer = createReducer(
   on(fetchAreaMatricesFailure, state => ({
     ...state,
     matricesLoading: false
+  })),
+  on(setAutoBatch, (state, { ids }) => ({
+    ...state,
+    autoBatch: ids
+  })),
+  on(resetAutoBatch, state => ({
+    ...state,
+    autoBatch: []
   }))
 );

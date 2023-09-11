@@ -140,10 +140,28 @@ $buttons-row-gap: 1rem;
           color: $hav-darkergrey;
         }
 
-        app-add-scenario-areas{
+        app-add-scenario-areas,
+        .batch-options-button {
           position: absolute;
           top: 0;
+
+          ::ng-deep button:not(.disabled) {
+            opacity: 0.4;
+
+            &:hover {
+              opacity: 1;
+            }
+          }
+        }
+
+        app-add-scenario-areas {
           right: 0;
+        }
+
+        .batch-options-button {
+          right: 4rem;
+          font-size: 1.8rem;
+          cursor: pointer;
         }
 
         .scenario-areas-wrap {

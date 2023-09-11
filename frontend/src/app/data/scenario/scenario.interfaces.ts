@@ -15,6 +15,7 @@ export interface State {
   matrixData: ScenarioMatrixDataMap | null;
   matricesLoading: boolean;
   sortScenarios: ListItemsSort;
+  autoBatch: number[];
 }
 
 export interface Scenario extends SortableListItem {
@@ -70,4 +71,16 @@ export interface ScenarioChangesSelection {
   scenarioId: number | null;
   areaId: number | null;
   overwrite: boolean;
+}
+
+export interface ScenarioSplitOptions {
+  batchName: string;
+  applyScenarioChanges: boolean;
+  applyAreaChanges: boolean;
+  batchSelect: boolean;
+}
+
+export interface ScenarioSplitResponse {
+  scenarioId: number;
+  splitScenarioIds: number[];
 }

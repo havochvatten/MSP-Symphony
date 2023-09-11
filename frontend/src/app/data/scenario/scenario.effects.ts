@@ -11,7 +11,7 @@ import {
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { ScenarioService } from '@data/scenario/scenario.service';
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario/index';
-import { of } from 'rxjs';
+import { from, of } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { UserSelectors } from '@data/user';
@@ -238,6 +238,28 @@ export class ScenarioEffects {
             of(ScenarioActions.transferChangesFailure({error: {status, message}}))
           )
         );
+    })
+  );
+
+  @Effect()
+  splitScenarioForBatch$ = this.actions$.pipe(
+    ofType(ScenarioActions.splitScenarioForBatch),
+    mergeMap(({ scenarioId, options }) => {
+      return this.scenarioService.splitScenarioForBatch(scenarioId, options).pipe(
+        map((response) => ScenarioActions.splitScenarioForBatchSuccess(response)),
+        catchError(({ status, error: message }) =>
+          of(ScenarioActions.splitScenarioForBatchFailure({ error: { status, message } }))
+        )
+      );
+    })
+  );
+
+  @Effect()
+  splitScenarioForBatchSuccess$ = this.actions$.pipe(
+    ofType(ScenarioActions.splitScenarioForBatchSuccess),
+    mergeMap((response) => {
+      return from([ScenarioActions.setAutoBatch({ ids: response.splitScenarioIds }),
+                   ScenarioActions.fetchScenarios()]);
     })
   );
 }
