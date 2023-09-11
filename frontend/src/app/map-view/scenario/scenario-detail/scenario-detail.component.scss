@@ -73,11 +73,61 @@ $buttons-row-gap: 1rem;
       }
     }
 
-    .scenario-timestamp {
-      color: #919191;
-      font-size: 1.2rem;
-    }
+    .scenario-info-stripe {
+      display: flex;
+      justify-content: space-between;
+      line-height: 2.2rem;
+      margin-top: 0.4rem;
 
+      button.save-immediate,
+      .interactive-save-indication {
+        all: unset;
+        position: relative;
+        display: inline-block;
+        top: -1px;
+        line-height: 1.3rem;
+        font-size: 1.13rem;
+        padding: 3px 8px;
+        border-radius: 4px;
+      }
+
+      button.save-immediate {
+        display: none;
+        cursor: pointer;
+        color: #8d0c0c;
+        background-color: #ffc5d2;
+        outline: 1px solid #cf8f8f;
+        opacity: 0.7;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+
+      &.is-dirty button.save-immediate {
+        display: inline-block;
+      }
+
+      &.active-save .interactive-save-indication {
+        display: inline-block;
+        animation: indicator-fade 1.5s ease-in 10s forwards;
+      }
+
+      .interactive-save-indication {
+        display: none;
+        color: $hav-green;
+        background-color: $hav-coldgrey;
+        outline: 1px solid #9ab59b;
+        line-height: 1.6rem;
+        opacity: 0.6;
+        cursor: default;
+      }
+
+      .scenario-timestamp {
+        color: #919191;
+        font-size: 1.2rem;
+      }
+    }
     main {
       flex: 1;
 
@@ -90,10 +140,28 @@ $buttons-row-gap: 1rem;
           color: $hav-darkergrey;
         }
 
-        app-add-scenario-areas{
+        app-add-scenario-areas,
+        .batch-options-button {
           position: absolute;
           top: 0;
+
+          ::ng-deep button:not(.disabled) {
+            opacity: 0.4;
+
+            &:hover {
+              opacity: 1;
+            }
+          }
+        }
+
+        app-add-scenario-areas {
           right: 0;
+        }
+
+        .batch-options-button {
+          right: 4rem;
+          font-size: 1.8rem;
+          cursor: pointer;
         }
 
         .scenario-areas-wrap {
@@ -292,6 +360,16 @@ $buttons-row-gap: 1rem;
         margin-left: 0.8rem;
       }
     }
+  }
+}
+
+
+@keyframes indicator-fade {
+  0% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
   }
 }
 

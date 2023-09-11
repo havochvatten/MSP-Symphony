@@ -1,5 +1,11 @@
 import { createAction, props } from '@ngrx/store';
-import { CalculationSlice, LegendType, Legend, PercentileResponse } from './calculation.interfaces';
+import {
+  CalculationSlice,
+  LegendType,
+  Legend,
+  PercentileResponse,
+  BatchCalculationProcessEntry
+} from './calculation.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
 import { SortActionProps } from "@data/common/sorting.interfaces";
 
@@ -94,4 +100,34 @@ export const updateName = createAction(
 export const setCalculationSortType = createAction(
   '[Calculation] Set calculation sort type',
   props<SortActionProps>()
+);
+
+export const updateBatchProcess = createAction(
+  '[Calculation] Update batch process',
+  props<{ id: number, process: BatchCalculationProcessEntry }>()
+);
+
+export const cancelBatchProcess = createAction(
+  '[Calculation] Cancel batch process',
+  props<{ id: number }>()
+);
+
+export const cancelBatchProcessSuccess = createAction(
+    '[Calculation] Cancel batch process success',
+    props<{ id: number }>()
+);
+
+export const removeFinishedBatchProcess = createAction(
+  '[Calculation] Remove finished batch process',
+  props<{ id: number }>()
+);
+
+export const removeBatchProcessSuccess = createAction(
+  '[Calculation] Remove batch process success',
+  props<{ id: number }>()
+);
+
+export const removeBatchProcessFailure = createAction(
+  '[Calculation] Remove batch process failure',
+  props<{ error: ErrorMessage }>()
 );

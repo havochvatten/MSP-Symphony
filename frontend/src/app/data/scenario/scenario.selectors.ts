@@ -76,3 +76,13 @@ export const selectActiveAreaMatrixData = createSelector(
     state.matrixData && state.scenarios[state.active!].areas[state.activeArea!] ?
       state.matrixData[(state.scenarios[state.active!].areas[state.activeArea!].id)] : null
 );
+
+export const selectScenarioNamesIndexed = createSelector(
+    selectScenarioState,
+    state => new Map(state.scenarios.map(s => [s.id, s.name]))
+);
+
+export const selectAutoBatch = createSelector(
+  selectScenarioState,
+  state => state.autoBatch
+);

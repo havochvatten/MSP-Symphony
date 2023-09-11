@@ -63,6 +63,18 @@
             "area": "Område:",
             "exit": "Lämna"
         },
+        "batch-progress": {
+            "header-in-progress": "\"Batch\"-beräkning pågår",
+            "header-cancelled": "Avbruten \"batch\"-beräkning",
+            "header-finished": "Slutförd \"batch\"-beräkning",
+            "message": "Beräknar.. ({{ count }} av {{ total }} scenarion beräknade)",
+            "cancel": "Avbryt körningen",
+            "remove-finished": "Göm slutförd \"batch\"-status",
+            "cancelled-run": {
+                "title": "\"Batch\"-beräkning avbruten",
+                "message": "\"Batch\"-beräkningen avbröts. Resultaten av de beräkningar som slutfördes finns tillgängliga under 'Tidigare beräkningar'."
+            }
+        },
         "editor": {
             "title": "Scenarion",
             "areas": {
@@ -77,11 +89,20 @@
                         "confirm": "Tag bort"
                     }
                 },
-                "specific-settings": "Specific settings have been made for this area: {{ feature-changes }}",
+                "specific-settings": "Områdesspecifika ändringar förekommer:\n{{ feature-changes }}",
                 "loading-matrices": "Laddar känslighetsmatriser",
                 "add-scenario-label": "Lägg till markerade områden i scenariot",
                 "add-scenario-label-single": "Lägg till « {{ area }} » i scenariot",
                 "select-area-first-label": "Markera först ett område"
+            },
+            "split-scenario-settings": {
+                "title": "Scenarier från områden",
+                "detail": "Generera ett nytt scenario för varje område som omfattas av det aktuella",
+                "set-batch-name": "Namn på \"batch\"-beräkning",
+                "apply-scenario-changes": "Applicera gemensamma förekomständringar",
+                "apply-area-changes": "Applicera områdesspecifika inställningar på dess motsvarande scenarier",
+                "enter-batch-mode": "Gå till \"batch\"-läget",
+                "generate": "Generera"
             },
             "operation": {
                 "title": "Algoritm",
@@ -171,6 +192,11 @@
                 "show-overview": "Öppna översiktsvyn för ändringar",
                 "global-changes": "Generella ändringar",
                 "show-all": "Visa alla",
+                "edit-value": "Ändra värde",
+                "confirm-change": "Bekräfta ändring",
+                "discard-change": "Förkasta ändring",
+                "relative-label": "Procentuell",
+                "absolute-label": "Konstant",
                 "close": "Stäng"
             },
             "area-changes": {
@@ -212,7 +238,16 @@
                 "show-report-label": "Öppna senaste beräkningsrapporten",
                 "more-areas-single": "+ ett ytterligare område ..",
                 "more-areas": "+ {{ more }} ytterligare områden ..",
-                "filter-hint": "Filtrera scenarion per namn"
+                "filter-hint": "Filtrera scenarion per namn",
+                "select-all-for-batch": "Markera samtliga",
+                "select-all-for-batch-filtered": "Markera synliga",
+                "deselect-all-for-batch": "Avmarkera samtliga",
+                "batch-tools": {
+                    "enter-batch-mode": "Gå till \"batch\"-läge",
+                    "exit-batch-mode": "Gå ur \"batch\"-läge",
+                    "batch-too-small": "Markera minst två scenarion",
+                    "run-batch": "Kör \"batch\"-beräkning för markerade scenarion"
+                }
             },
             "clear": "Rensa",
             "close": "❮",
@@ -235,7 +270,11 @@
                 "default-matrix": "Områdets standardmatriskoppling:",
                 "confirm-selection": "Använd valt område"
             },
-            "calculate": "Beräkna"
+            "calculate": "Beräkna",
+            "unsaved-changes": "Osparade ändringar",
+            "save-changes": "Spara nu",
+            "saved-by-user": "Ändringar sparade",
+            "saved-by-user-time": "Senast sparad: {{ timestamp }}"
         },
         "metadata": {
             "label": "Visa metadata",
@@ -426,6 +465,15 @@
             "detail": "Alt / ⌥ + klick delar överlappande, Alt / ⌥ + Shift + sammanfogar"
         }
     },
+    "controls": {
+        "open": "Öppna",
+        "close": "Stäng",
+        "delete": "Radera",
+        "accordion": {
+            "expand": "Fäll ut",
+            "contract": "Fäll ihop"
+        }
+    },
     "main-menu": {
         "projects": "Projekt",
         "calculations": "Beräkningar",
@@ -562,6 +610,6 @@
         "AlphaDesc" : "alfabetisk, fallande (Ö-A)",
         "DateAsc" : "datum, stigande (äldst först)",
         "DateDesc" : "datum, fallande (nyast först)",
-        "None" : " ej ordnad"
+        "None" : "ej ordnad"
     }
 }

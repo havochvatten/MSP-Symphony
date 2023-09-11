@@ -17,6 +17,7 @@ import { ReportService } from "@src/app/report/report.service";
 import { CalculationService } from "@data/calculation/calculation.service";
 import { relativeDifference } from "@src/app/report/report.util";
 import { formatPercent } from "@angular/common";
+import buildInfo from '@src/build-info';
 
 @Component({
   selector: 'app-calculation-report',
@@ -42,6 +43,8 @@ export class ComparisonReportComponent {
   dynamicMax: number;
 
   chartWeightThresholdPercentage: string = '1%';
+  symphonyVersion = buildInfo.version;
+
 
   private imageUrl: string;
   private legend:Observable<Legend>;

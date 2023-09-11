@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, NgModuleRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms'
 import { Observable, OperatorFunction, Subscription } from 'rxjs';
-import { debounceTime, filter, take, tap } from 'rxjs/operators';
+import { debounceTime, filter, map, take, tap } from 'rxjs/operators';
 import { TranslateService } from "@ngx-translate/core";
 import { Store } from '@ngrx/store';
 import { some } from "lodash";
@@ -23,16 +23,22 @@ import { MetadataSelectors } from "@data/metadata";
 import { Band } from "@data/metadata/metadata.interfaces";
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
-import { ChangesProperty, Scenario } from '@data/scenario/scenario.interfaces';
+import {
+  ChangesProperty,
+  Scenario,
+  ScenarioSplitOptions,
+} from '@data/scenario/scenario.interfaces';
 import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
 import { ScenarioService } from "@data/scenario/scenario.service";
 import { Area } from "@data/area/area.interfaces";
 import { deleteScenario, transferChanges } from "@src/app/map-view/scenario/scenario-common";
 import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenario-areas/add-scenario-areas.component";
-import { SensitivityMatrix } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
 import {
   ChangesOverviewComponent
 } from "@src/app/map-view/scenario/changes-overview/changes-overview.component";
+import {
+  SplitScenarioSettingsComponent
+} from "@src/app/map-view/scenario/split-scenario-settings/split-scenario-settings.component";
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 
@@ -62,6 +68,9 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   percentileValue$: Observable<number>;
   areaMatricesLoading$: Observable<boolean>;
+  bandDictionary$: Observable<{ [p: string]: string }>;
+  unsaved: boolean = false;
+  savedByInteraction: boolean = false;
 
   constructor(
     private store: Store<State>,
@@ -80,11 +89,12 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
           debounceTime(AUTO_SAVE_TIMEOUT * 1000), // TODO use fixed interval instead
           tap((s: Scenario) => console.debug('Auto-saving scenario ' + s.name))
         )
-        .subscribe((_: Scenario) => this.save());
+        .subscribe((_: Scenario) => { this.savedByInteraction = false; this.save() });
     }
     this.areaMatricesLoading$ = this.store.select(ScenarioSelectors.selectAreaMatrixDataLoading);
     this.calculating$ = this.store.select(CalculationSelectors.selectCalculating);
     this.percentileValue$ = this.store.select(CalculationSelectors.selectPercentileValue);
+    this.bandDictionary$ = this.store.select(MetadataSelectors.selectMetaDisplayDictionary);
     this.store.dispatch(CalculationActions.fetchPercentile());
   }
 
@@ -92,7 +102,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     return this.scenario.changes;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     if (!this.scenario)
       throw new Error("Attribute 'scenario' is required");
 
@@ -100,7 +110,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
       this.operation.setValue([...availableOperations.keys()][this.scenario.operation]);
     });
 
-    this.setChangesText();
+    await this.setChangesText();
 
     this.matrixDataSubscription$ = this.store.select(ScenarioSelectors.selectAreaMatrixData).subscribe(
       async data => {
@@ -139,21 +149,22 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(fetchAreaMatrices({ scenarioId: this.scenario.id }));
   }
 
-  setChangesText():void {
-    for(const [ix, a] of this.scenario.areas.entries()) {
-      this.changesText[ix] = '';
-      for(const c in a.changes) {
-        let change = a.changes[c];
-        this.changesText[ix] += '\n' + c + ': ';
-        if (change['multiplier']) {
-          this.changesText[ix] +=
-            (change['multiplier'] > 1 ? '+' : '') +
-            Number(convertMultiplierToPercent(change['multiplier']) * 100).toFixed(2) + '%';
-        } else if (change['offset']) {
-          this.changesText[ix] += change['offset'];
-        }
-      }
-    }
+  getChangesText(areaIndex: number): string {
+    return this.changesText[areaIndex];
+  }
+
+  async setChangesText():Promise<void> {
+    const bandDict = await this.bandDictionary$.pipe(take(1)).toPromise();
+
+    this.changesText = this.scenario.areas.map((a, ix) => {
+        return Object.entries(a.changes || {}).map(([c, change]) => {
+            return `${bandDict[c]}: ${
+              change.multiplier ? (change.multiplier > 1 ? '+' : '') +
+                Number(convertMultiplierToPercent(change.multiplier) * 100).toFixed(2) + '%' :
+                change.offset
+            }`;
+        }).join('\n');
+    });
   }
 
   calculate() {
@@ -177,6 +188,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   }
 
   onCheckRarityIndicesDomain(domain: string) {
+    this.unsaved = true;
     this.store.dispatch(ScenarioActions.changeScenarioOperationParams({ operationParams: { domain } }));
   }
 
@@ -197,6 +209,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   addScenarioArea(selectedAreas: Area[], that: AddScenarioAreasComponent) {
     const areas = selectedAreas.filter(a => !some(that.scenario!.areas,
         s => turfIntersects(that.format.readFeature(a.feature), that.format.readFeature(s.feature))));
+    this.unsaved = true;
     this.store.dispatch(ScenarioActions.addAreasToActiveScenario({ areas: that.scenarioService.convertAreas(areas) }));
   }
 
@@ -207,10 +220,12 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   onChangeName(name: string) {
     this.editName = !this.editName;
+    this.unsaved = true;
     setTimeout(() => this.store.dispatch(ScenarioActions.changeScenarioName({ name })));
   }
 
   setNormalizationOptions(opts: NormalizationOptions) {
+    this.unsaved = true;
     this.store.dispatch(ScenarioActions.changeScenarioNormalization({ normalizationOptions: opts }));
 
     // TODO: investigate and fix to get rid of the "nudge" below.
@@ -227,11 +242,19 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  saveImmediate() {
+    this.savedByInteraction = true;
+    this.save();
+    setTimeout(() => this.savedByInteraction = false, 30000);
+  }
+
   save() {
+    this.unsaved = false;
     this.store.dispatch(ScenarioActions.saveActiveScenario({ scenarioToBeSaved: this.scenario }));
   }
 
   deleteChange = (bandId: string) => {
+    this.unsaved = true;
     this.store.dispatch(ScenarioActions.deleteBandChange({ bandId }));
   }
 
@@ -253,18 +276,19 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(ScenarioActions.openScenarioArea({ index: areaIndex, scenarioIndex: null }));
   }
 
-  openIntensityOverview() {
-    this.dialogService.open<SensitivityMatrix & {savedAsNew: boolean, deleted: boolean}>(ChangesOverviewComponent, this.moduleRef, {
+  async openIntensityOverview() {
+    this.unsaved ||= await this.dialogService.open<boolean>(ChangesOverviewComponent, this.moduleRef, {
       data: {
         scenario: this.scenario,
-
       }
     });
+    this.setChangesText();
   }
 
   setOperation() {
     const operation = availableOperations.get(this.operation.value!)!;
     this.store.dispatch(ScenarioActions.changeScenarioOperation({ operation: operation }));
+    this.unsaved = true;
     if(operation === CalcOperation.RarityAdjusted) {
       const normalizationOptions = this.getNormalizationOptions();
       this.store.dispatch(ScenarioActions.changeScenarioOperationParams({operationParams: this.getParams() ? this.getParams() : {'domain': 'GLOBAL'}}));
@@ -282,6 +306,38 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   }
 
   async importChanges() {
-    await transferChanges(this.dialogService, this.translateService, this.store, this.moduleRef, this.scenario);
+    const changesImported =
+      await transferChanges(this.dialogService, this.translateService, this.store, this.moduleRef, this.scenario);
+    if(changesImported) {
+      // importing changes saves implicitly
+      this.savedByInteraction = false;
+      this.unsaved = false;
+      await this.setChangesText();
+    }
+  }
+
+  getDisplayName(bandId: string): Observable<string> {
+    return this.bandDictionary$.pipe(map((bandDictionary) => bandDictionary[bandId]));
+  }
+
+  async openSplitOptions(): Promise<void> {
+    const splitOptions = await this.dialogService.open<ScenarioSplitOptions>(
+      SplitScenarioSettingsComponent,
+      this.moduleRef,
+      { data: {
+          scenarioName: this.scenario.name,
+          areaSpecificChanges:
+            this.scenario.areas.some(a => a.changes && Object.keys(a.changes!).length > 0),
+          confirmText: this.translateService.instant('map.editor.split-scenario-settings.generate')
+        }}
+    );
+
+    if (splitOptions) {
+      if(splitOptions.batchSelect) {
+          this.store.dispatch(ScenarioActions.closeActiveScenario());
+      }
+      this.store.dispatch(ScenarioActions.splitScenarioForBatch(
+        { scenarioId : this.scenario.id, options: splitOptions }));
+    }
   }
 }

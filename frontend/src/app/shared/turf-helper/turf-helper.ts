@@ -8,6 +8,7 @@ import intersects from '@turf/boolean-intersects';
 import booleanEqual from "@turf/boolean-equal";
 import difference from "@turf/difference";
 import union from "@turf/union";
+import cleanCoords from "@turf/clean-coords";
 
 function extractTurfPolygon(feature: Feature): TFeature<TPolygon|MultiPolygon> {
   const geometry = feature.getGeometry() as SimpleGeometry,
@@ -30,7 +31,8 @@ function turfSubtract(polygon: Feature, intersector: Feature): Polygon | null {
 
 export function turfMerge(polygon: Feature, extension: Feature): Polygon | null {
   const merged = union(extractTurfPolygon(polygon), extractTurfPolygon(extension));
-  return merged ? turfAsSymphonyPoly(merged) : null;
+
+  return merged ? turfAsSymphonyPoly(cleanCoords(merged)) : null;
 }
 
 export function turfIntersects(polygon: Feature, intersector: Feature): boolean {

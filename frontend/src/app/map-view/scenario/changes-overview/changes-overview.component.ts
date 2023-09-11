@@ -5,15 +5,15 @@ import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { Scenario, ScenarioChangeMap } from "@data/scenario/scenario.interfaces";
 import { BandChange, BandGroup } from "@data/metadata/metadata.interfaces";
-import { BandType_Alt as BandType } from "@data/metadata/metadata.interfaces";
+import { BandType_Alt as BandType, BandType as _BandType } from "@data/metadata/metadata.interfaces";
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
 import { MetadataSelectors } from "@data/metadata";
-import { convertMultiplierToPercent } from "@data/metadata/metadata.selectors";
 
 interface BandShim {
   id: number;
   name: string;
+  key: string;
 }
 
 @Component({
@@ -34,6 +34,8 @@ export class ChangesOverviewComponent implements OnInit {
   ecoChanges: boolean = false;
   pressureChanges: boolean = false;
   bothTypes: boolean = false;
+  editingCell: boolean = false;
+  hasChanged: boolean = false;
 
   // these naming discrepancies should be consolidated at some point
   bandTypeDict: Map<string, BandType> = new Map([
@@ -86,25 +88,25 @@ export class ChangesOverviewComponent implements OnInit {
       for(const bandGroup of bandMeta[bandType]) {
         for(const band of bandGroup.properties) {
           if(this.allChangedBands.get(this.getBandType(bandType))!.has(band.bandNumber)) {
-            this.setGroupedChangeToDisplay(bandType, bandGroup.symphonyThemeName, { id: band.bandNumber, name: band.title })
+            this.setGroupedChangeToDisplay(bandType, bandGroup.displayName,
+              { id: band.bandNumber, name: band.displayName, key: band.title })
           }
         }
       }
     }
   }
 
-  bandValueForArea(bandType: string, areaIndex: number, id: number): string {
+  private getChange(bandType: string, areaIndex: number, id: number): BandChange {
     const thisType = this.getBandType(bandType);
-    let value = '-', positive = false;
     if( Object.keys(this.areaChangeMap[areaIndex]).includes(thisType) &&
-        Object.keys(this.areaChangeMap[areaIndex][thisType]).includes(String(id) )
+      Object.keys(this.areaChangeMap[areaIndex][thisType]).includes(String(id))
     ) {
-      const change = this.areaChangeMap[areaIndex][thisType][id];
-            positive = change.multiplier ? change.multiplier - 1 > 0 : change.offset ? change.offset > 0 : false;
-      value = change.multiplier ? parseFloat(Number(convertMultiplierToPercent(change.multiplier!) * 100).toFixed(2)) + '%' :
-              (change.offset ? String(change.offset) : '-');
+      return this.areaChangeMap[areaIndex][thisType][id];
     }
-    return (positive ? '+' : '') + value;
+    return { type: bandType === 'ecoComponents' ? 'ECOSYSTEM' : 'PRESSURE',
+             band: id,
+             multiplier: 1,
+             offset: undefined };
   }
 
   addChange(areaIndex: number, bandId: number, bandChange: BandChange) {
@@ -133,5 +135,22 @@ export class ChangesOverviewComponent implements OnInit {
   selectType(value: string) {
     this.ecoChanges       = value === 'both' || value === 'ecoComponents';
     this.pressureChanges  = value === 'both' || value === 'pressures';
+  }
+
+  setEditingCell($event: {areaIndex: number, change: BandChange} | null) {
+    this.editingCell = $event === null;
+
+    if(!this.editingCell) {
+      const change = $event!.change;
+      if((change.multiplier !== undefined && change.multiplier === 1) ||
+         (change.offset !== undefined && change.offset === 0)) {
+        this.hasChanged = true;
+        this.allChangedBands.get(this.getBandType(change.type))!.delete(change.band);
+      } else {
+        const prevChange = this.getChange(change.type, $event!.areaIndex, change.band);
+        this.hasChanged = prevChange.multiplier !== change.multiplier || prevChange.offset !== change.offset;
+        this.addChange($event!.areaIndex, $event!.change!.band, $event!.change!);
+      }
+    }
   }
 }

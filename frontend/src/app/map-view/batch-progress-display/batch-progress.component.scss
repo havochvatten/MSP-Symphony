@@ -1,0 +1,79 @@
+@import 'src/styles/hav-colors';
+
+:host {
+  min-width: 24rem;
+
+  .batch-process-list {
+    background-color: white;
+    padding: 1rem;
+    font-size: 1.3rem;
+    line-height: 2rem;
+    margin-bottom: 0.5rem;
+
+    .batch-progress-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      cursor: default;
+
+      .batch-progress-header {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin: 0;
+      }
+
+      .batch-progress-cancel,
+      .batch-progress-remove {
+        cursor: pointer;
+        opacity: 0.3;
+        cursor: pointer;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+
+      .batch-progress-cancel {
+        font-size: 1.8rem;
+      }
+
+      .batch-progress-remove {
+        font-size: 1.5rem;
+      }
+    }
+
+    .batch-scenario {
+      display: flex;
+      justify-content: space-between;
+      max-width: 30rem;
+
+      .batch-scenario-name {
+        display: inline-block;
+        margin-right: 1.8rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      ::ng-deep app-icon {
+        height: 1.8rem;
+
+        &.calculation-report {
+          color: $hav-turquoise;
+          cursor: pointer;
+        }
+
+        &.calculation-failed {
+          color: $hav-warning;
+        }
+      }
+
+      .mat-progress-spinner {
+        margin-top: 2px;
+      }
+    }
+  }
+}
+
+

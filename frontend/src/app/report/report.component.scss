@@ -22,12 +22,15 @@
         margin: 0;
       }
       h3 {
-        //white-space: nowrap;
+        font-size: 1.95rem;
+        max-width: 73%;
+        max-height: 10rem;
+        overflow: hidden;
       }
     }
 
     .logo {
-      grid-column: 5 / 6;
+      grid-column: 4 / 6;
       grid-row: 1 / 2;
       display: flex;
       align-items: baseline;
@@ -36,6 +39,10 @@
       img {
         height: 15mm;
         width: 37.5mm;
+
+        &.sweden {
+          margin-right: 4rem;
+        }
       }
     }
 
@@ -146,6 +153,14 @@
     grid-column: 1 / 6;
     grid-row: 13 / 14;
     font-size: 13px;
+    text-align: center;
+    margin: 0 3rem;
+  }
+
+  .closing-matter-smaller {
+    grid-column: 1 / 6;
+    grid-row: 14 / 15;
+    font-size: 12px;
     text-align: center;
     margin: 0 3rem;
   }

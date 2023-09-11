@@ -6,6 +6,7 @@
   (keyup.enter)="!disabled && onEnterKeyUp($event)"
   ngClass="{{ disabled ? 'disabled' : '' }}"
   [attr.aria-label]="label"
+  [title]="label"
 >
   <app-icon [iconType]="icon"></app-icon>
 </button>

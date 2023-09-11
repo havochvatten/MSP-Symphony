@@ -23,6 +23,8 @@ import { ChangesOverviewComponent } from './changes-overview/changes-overview.co
 import { CopyScenarioComponent } from './copy-scenario/copy-scenario.component';
 import { MatInputModule } from "@angular/material/input";
 import { TransferChangesComponent } from './transfer-changes/transfer-changes.component';
+import { OverviewInlineBandChangeComponent } from './changes-overview/overview-inline-band-change/overview-inline-band-change.component';
+import { SplitScenarioSettingsComponent } from './split-scenario-settings/split-scenario-settings.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +39,8 @@ import { TransferChangesComponent } from './transfer-changes/transfer-changes.co
     ChangesOverviewComponent,
     CopyScenarioComponent,
     TransferChangesComponent,
+    OverviewInlineBandChangeComponent,
+    SplitScenarioSettingsComponent,
   ],
     imports: [
         SharedModule,

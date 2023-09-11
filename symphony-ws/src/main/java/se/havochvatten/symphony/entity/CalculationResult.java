@@ -6,6 +6,7 @@ import com.vladmihalcea.hibernate.type.array.DoubleArrayType;
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
@@ -69,15 +70,14 @@ import java.util.Map;
         @TypeDef(name = "double-matrix", typeClass = DoubleArrayType.class)
 })
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@DynamicInsert
 public class CalculationResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @SequenceGenerator(name = "cares_seq", sequenceName = "cares_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cares_seq")
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "cares_id")
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "cares_id", nullable = false)
     private Integer id;
 
     @Basic(optional = false)

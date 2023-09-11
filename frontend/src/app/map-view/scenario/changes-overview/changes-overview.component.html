@@ -15,7 +15,7 @@
     </mat-radio-button>
   </mat-radio-group>
 </header>
-<div class="intensity-tables-wrapper">
+<div [ngClass]="{'intensity-tables-wrapper': true, 'editing': editingCell }">
   <table class="intensity-table">
     <thead>
       <tr>
@@ -24,8 +24,8 @@
           <ng-container *ngFor="let $bandGroups of groupMap.get($bandType) | keyvalue">
             <th *ngFor="let $band of $bandGroups.value; let $ix = index"
                 [ngClass]="{ 'first-band' : $ix === 0, 'band-name-cell': true}">
-              <span *ngIf="$ix === 0" class="symphony-theme">{{ $bandGroups.key | translate }}</span>
-              <span class="band-name">{{ $band.name | translate }}</span>
+              <span *ngIf="$ix === 0" class="symphony-theme">{{ $bandGroups.key}}</span>
+              <span class="band-name">{{ $band.name }}</span>
             </th>
           </ng-container>
         </ng-container>
@@ -46,8 +46,13 @@
                   eco:      $bandType === 'ecoComponents',
                   pressure: $bandType === 'pressures' }"
             >
-              <span>{{ bandValueForArea($bandType, +$change.key, $band.id) }}</span>
-            </td>
+              <app-overview-inline-band-change
+                [change]="getChange($bandType, +$change.key, $band.id)"
+                [areaIndex]="+$change.key"
+                [bandKey]="$band.key"
+                (editModeChange)="setEditingCell($event)"
+                >
+              </app-overview-inline-band-change>
           </ng-container>
         </ng-container>
       </tr>
@@ -55,7 +60,7 @@
   </table>
 </div>
 <section class="buttons">
-  <button mat-flat-button (click)="dialog.close()" [ngClass]="'secondary'">
+  <button mat-flat-button (click)="dialog.close(this.hasChanged)" [ngClass]="'secondary'" [disabled]="editingCell">
     {{ 'map.editor.changes-overview.close' | translate }}
   </button>
 </section>

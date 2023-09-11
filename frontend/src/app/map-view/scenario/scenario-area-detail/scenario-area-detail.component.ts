@@ -19,6 +19,7 @@ import { ScenarioService } from "@data/scenario/scenario.service";
 import { OperationParams } from "@data/calculation/calculation.interfaces";
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
 import { transferChanges } from "@src/app/map-view/scenario/scenario-common";
+import { MetadataSelectors } from "@data/metadata";
 
 const availableOperationsByValue: Map<CalcOperation, string> = new Map<CalcOperation, string>(
   [ [CalcOperation.Cumulative, 'CumulativeImpact' ] ,
@@ -49,6 +50,7 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
   areaFeatureName: string = '';
   locale = 'en';
   private matrixDataSubscription$: Subscription;
+  bandDictionary$: Observable<{ [p: string]: string }>;
 
   constructor(
     private store: Store<State>,
@@ -69,7 +71,7 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
         }
       }
     });
-
+    this.bandDictionary$ = this.store.select(MetadataSelectors.selectMetaDisplayDictionary);
     this.locale = this.translateService.currentLang;
   }
 

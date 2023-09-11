@@ -15,6 +15,7 @@ export interface State {
   legends: LegendState;
   percentileValue: number;
   sortCalculations: ListItemsSort;
+  batchProcesses: {[key: number]: BatchCalculationProcessEntry}
 }
 
 export interface Report {
@@ -102,6 +103,16 @@ export interface Legend {
 
 export interface PercentileResponse {
   percentileValue: number;
+}
+
+export interface BatchCalculationProcessEntry {
+  id: number;
+  cancelled: boolean;
+  currentScenario: number|null;
+  scenarios: number[];
+  calculated: number[];
+  failed: number[];
+  reports: number|null[];
 }
 
 export interface ComparisonLegendState {

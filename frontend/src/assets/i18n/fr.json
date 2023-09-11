@@ -63,6 +63,18 @@
             "area": "Zone:",
             "exit": "Arrêter"
         },
+        "batch-progress": {
+            "header-in-progress": "Calcul par lots en cours",
+            "header-cancelled": "Calcul par lots annulé",
+            "header-finished": "Calcul par lots terminé",
+            "message": "Calcul en cours.. ({{ count }} de {{ total }} scénarios terminés)",
+            "cancel": "Annuler",
+            "remove-finished": "Masquer le calcul par lots terminé",
+            "cancelled-run": {
+                "title": "Calcul par lots annulé",
+                "message": "Le calcul par lots a été annulé. Les résultats des calculs terminés sont disponibles sous 'Résultat précédent'"
+            }
+        },
         "editor": {
             "title": "Scénarios",
             "areas": {
@@ -77,11 +89,20 @@
                         "confirm": "Supprimer"
                     }
                 },
-                "specific-settings": "Des valeurs spécifiques ont été définies pour cette zone: {{ feature-changes }}",
+                "specific-settings": "Des valeurs spécifiques ont été définies pour cette zone:\n{{ feature-changes }}",
                 "loading-matrices": "Chargement des matrices de sensibilité",
                 "add-scenario-label": "Ajouter des zones sélectionnées au scénario",
                 "add-scenario-label-single": "Ajouter {{ area }} au scénario",
                 "select-area-first-label": "Sélectionnez d'abord une zone."
+            },
+            "split-scenario-settings": {
+                "title": "Scénarios à partir de zones",
+                "detail": "Générer un nouveau scénario pour chaque zone incluse dans le scénario en cours.",
+                "set-batch-name": "Nom du calcul par lots",
+                "apply-scenario-changes": "Dupliquer les paramètres d'intensité du scénario",
+                "apply-area-changes": "Appliquer les paramètres spécifiques à la zone aux scénarios correspondants",
+                "enter-batch-mode": "Entrer en mode de sélection par lots",
+                "generate": "Générer"
             },
             "operation": {
                 "title": "Algorithme",
@@ -171,6 +192,11 @@
                 "show-overview": "Afficher une vue d'ensemble de tous les changements",
                 "global-changes": "Modifications générales",
                 "show-all": "Afficher toutes",
+                "edit-value": "Modifier cette valeur",
+                "confirm-change": "Confirmer la modification",
+                "discard-change": "Ignorer la modification",
+                "relative-label": "Pourcentage",
+                "absolute-label": "Constante",
                 "close": "Fermer"
             },
             "area-changes": {
@@ -212,7 +238,16 @@
                 "show-report-label": "Ouvrir le rapport de calcul le plus récent",
                 "more-areas-single": "+ une zone supplémentaire ..",
                 "more-areas": "+ {{ more }} zones supplémentaires ..",
-                "filter-hint": "Filtrer les scénarios par nom"
+                "filter-hint": "Filtrer les scénarios par nom",
+                "select-all-for-batch": "Tout sélectionner",
+                "select-all-for-batch-filtered": "Sélectionner les visibles",
+                "deselect-all-for-batch": "Tout désélectionner",
+                "batch-tools": {
+                    "enter-batch-mode": "Entrer en mode de sélection par lots",
+                    "exit-batch-mode": "Quitter le mode de sélection par lots",
+                    "batch-too-small": "Au moins deux scénarios requis",
+                    "run-batch": "Exécuter le calcul par lots"
+                }
             },
             "clear": "Effacer",
             "close": "❮",
@@ -235,7 +270,11 @@
                 "default-matrix": "Matrice par défaut pour cette zone:",
                 "confirm-selection": "Analyser la zone sélectionnée"
             },
-            "calculate": "Calculer"
+            "calculate": "Calculer",
+            "unsaved-changes": "Modifications non enregistrées",
+            "save-changes": "Enregistrez les modifications maintenant",
+            "saved-by-user": "Modifications enregistrées",
+            "saved-by-user-time": "Dernière sauvegarde: {{ timestamp }}"
         },
         "metadata": {
             "label": "Voir les métadonnées",
@@ -426,6 +465,15 @@
             "detail": "Alt / ⌥ + clic pour séparer par section, Alt / ⌥ + Shift + clic pour fusionner"
         }
     },
+    "controls": {
+        "open": "Ouvrir",
+        "close": "Fermer",
+        "delete": "Supprimer",
+        "accordion": {
+            "expand": "Afficher",
+            "contract": "Masquer"
+        }
+    },
     "main-menu": {
         "projects": "Projets",
         "calculations": "Calculs",
@@ -562,6 +610,6 @@
         "AlphaDesc" : "alphabétique décroissant (Z-A)",
         "DateAsc" : "croissant par date (les plus anciens en premier)",
         "DateDesc" : "décroissant par date (les plus récents en premier)",
-        "None" : " non trié"
+        "None" : "non trié"
     }
 }

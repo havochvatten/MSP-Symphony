@@ -6,7 +6,14 @@ import { environment as env } from '@src/environments/environment';
 import { State } from '@src/app/app-reducer';
 import { MessageActions } from '@data/message';
 import { MetadataSelectors } from '@data/metadata';
-import { CalculationSlice, Legend, LegendType, PercentileResponse, StaticImageOptions } from './calculation.interfaces';
+import {
+  CalculationSlice,
+  Legend,
+  LegendType,
+  PercentileResponse,
+  BatchCalculationProcessEntry,
+  StaticImageOptions
+} from './calculation.interfaces';
 import { CalculationActions } from '.';
 import { AppSettings } from '@src/app/app.settings';
 import { register } from 'ol/proj/proj4';
@@ -202,6 +209,11 @@ export class CalculationService implements OnDestroy {
     return this.http.get<PercentileResponse>(`${env.apiBaseUrl}/calibration/percentile-value`);
   }
 
+  public queueBatchCalculation(scenarioIds: number[]) {
+    return this.http.post<BatchCalculationProcessEntry>(`${env.apiBaseUrl}/calculation/batch`, scenarioIds.join(), {
+      headers: new HttpHeaders({ 'Content-Type': 'text/plain' })});
+  }
+
   delete(id: number) {
     return this.http.delete(`${env.apiBaseUrl}/calculation/${id}`);
   }
@@ -213,5 +225,13 @@ export class CalculationService implements OnDestroy {
     if (this.aliasingSubscription$) {
       this.aliasingSubscription$.unsubscribe();
     }
+  }
+
+  removeFinishedBatchProcess(id: number) {
+    return this.http.delete(`${env.apiBaseUrl}/calculation/batch/${id}`);
+  }
+
+  cancelBatchProcess(id: number) {
+    return this.http.post(`${env.apiBaseUrl}/calculation/batch/${id}/cancel`, null);
   }
 }

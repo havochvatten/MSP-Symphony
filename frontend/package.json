@@ -1,6 +1,6 @@
 {
   "name": "symphony-fe",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --ssl",
@@ -45,6 +45,7 @@
     "@ngx-translate/http-loader": "^7.0.0",
     "@turf/boolean-equal": "^6.5.0",
     "@turf/boolean-intersects": "^6.5.0",
+    "@turf/clean-coords": "^6.5.0",
     "@turf/difference": "^6.5.0",
     "@turf/helpers": "^6.5.0",
     "@turf/intersect": "^6.5.0",

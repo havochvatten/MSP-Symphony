@@ -1,0 +1,39 @@
+<div *ngFor="let process of processes$ | async" class="batch-process-list">
+  <div class="batch-progress-top">
+    <h6 class="batch-progress-header"
+        [title]="
+        checkCompleted(process) ? '' :
+            'map.batch-progress.message' | translate:
+          { count: process.calculated.length, total: process.scenarios.length }"
+      >{{ (checkCompleted(process) ?
+            (process.cancelled ? 'map.batch-progress.header-cancelled' :
+                                 'map.batch-progress.header-finished')   :
+              'map.batch-progress.header-in-progress') | translate }}</h6>
+    <app-icon [iconType]="'times'"
+              *ngIf="!checkCompleted(process)"
+              class="batch-progress-cancel"
+              [title]="'map.batch-progress.cancel' | translate"
+              (click)="cancelRunningProcess(process.id)"
+    ></app-icon>
+    <app-icon [iconType]="'eye-slash'"
+              *ngIf="checkCompleted(process)"
+              class="batch-progress-remove"
+              [title]="'map.batch-progress.remove-finished' | translate"
+              (click)="removeFinishedProcess(process.id)"
+    ></app-icon>
+  </div>
+  <div class="batch-scenario" *ngFor="let scenario of process.scenarios; index as i">
+    <span class="batch-scenario-name">{{
+      (scenarioNames | async)!.get(scenario)
+    }}</span>
+    <mat-spinner *ngIf="process.currentScenario === scenario" [diameter]="14"></mat-spinner>
+    <app-icon [iconType]="'report'"
+              *ngIf="(process.calculated.includes(scenario))"
+              (click)="showReport(process.reports[i])"
+              class="calculation-report"></app-icon>
+    <app-icon [iconType]="'cross'"
+              *ngIf="(process.failed.includes(scenario))"
+              class="calculation-failed"
+              ></app-icon>
+  </div>
+</div>

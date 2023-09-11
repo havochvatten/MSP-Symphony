@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
 import { ChangesProperty } from "@data/scenario/scenario.interfaces";
 import { AccordionBoxComponent } from "@shared/accordion-box/accordion-box.component";
@@ -11,11 +11,11 @@ import { AccordionBoxComponent } from "@shared/accordion-box/accordion-box.compo
 export class ChangesListComponent {
 
   @Input() changes!: ChangesProperty | null;
+  @Input() displayNames!: Record<string, string>[];
   @Input() deleteChange!: (bandId: string) => void;
+  @Input() bandDictionary!: { [p: string]: string };
 
   @ViewChild('changesAccordion') changesAccordion: AccordionBoxComponent | undefined;
-
-  constructor() { }
 
   convertMultiplierToPercent = convertMultiplierToPercent;
 
