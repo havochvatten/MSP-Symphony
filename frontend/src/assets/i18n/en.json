@@ -95,6 +95,15 @@
                 "add-scenario-label-single": "Add {{ area }} to the active scenario",
                 "select-area-first-label": "Start by selecting an area"
             },
+            "split-scenario-settings": {
+                "title": "Split scenario by area",
+                "detail": "Generate a new scenario for each included area",
+                "set-batch-name": "Batch name to use for generated scenarios",
+                "apply-scenario-changes": "Apply scenario-level intensity changes",
+                "apply-area-changes": "Apply specific area changes to their corresponding scenarios",
+                "enter-batch-mode": "Enter batch selection mode",
+                "generate": "Generate"
+            },
             "operation": {
                 "title": "Algorithm",
                 "choose": "Choose algorithm",
@@ -212,9 +221,6 @@
                 "areas-without-changes": "The following areas of the scenario lack specific changes: {{ areas-list }}",
                 "create-copy": "Create copy",
                 "cancel": "Cancel"
-            },
-            "batch-options": {
-                "split-scenario": "Split scenario"
             },
             "select-area-message": "Select an area to calculate. Start with selecting an area and then make any adjustments to nature values or pressures in the left panel.",
             "fetching-matrices": "Fetching information on area's sensitivity matrices...",

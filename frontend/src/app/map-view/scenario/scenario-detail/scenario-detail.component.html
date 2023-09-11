@@ -23,6 +23,12 @@
   <main>
     <section class="scenario-areas">
       <h3>{{ 'map.editor.areas.title' | translate }}</h3>
+      <app-icon-button icon="split"
+        class="batch-options-button"
+        *ngIf="scenario.areas.length > 1"
+        [label]="'map.editor.split-scenario-settings.title' | translate"
+        (click)="openSplitOptions()">
+      </app-icon-button>
       <app-add-scenario-areas
         [disabled]="(calculating$ | async) || (areaMatricesLoading$ | async)"
         [noneSelectedTipKey]="'map.editor.areas.select-area-first-label'"

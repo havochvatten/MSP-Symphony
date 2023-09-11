@@ -1,6 +1,7 @@
 package se.havochvatten.symphony.scenario;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -262,5 +263,28 @@ public class ScenarioService {
 
             return (Scenario) target;
         }
+    }
+
+    @Transactional
+    public int[] split(Scenario scenario, ScenarioSplitOptions options) {
+        JsonNode commonChanges = scenario.getChanges();
+        List<ScenarioArea> areas = scenario.getAreas();
+        int[] newScenarioIds = new int[areas.size()];
+        int aix = 0;
+
+        for (ScenarioArea area : areas) {
+            ScenarioCopyOptions copyOptions = new ScenarioCopyOptions(area, options);
+            scenario.setScenarioAreas(List.of(area));
+            scenario.setChanges(options.applyAreaChanges() && !area.getChangeMap().isEmpty() ?
+                mapper.valueToTree(area.getCombinedChangeMap()) : commonChanges);
+            Scenario newScenario = new Scenario(scenario, copyOptions);
+            em.persist(newScenario);
+            newScenarioIds[aix++] = (em.merge(newScenario)).getId();
+        }
+
+        em.detach(scenario);
+        em.flush();
+
+        return newScenarioIds;
     }
 }

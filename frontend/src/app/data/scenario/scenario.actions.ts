@@ -3,7 +3,7 @@ import {
   Scenario,
   ScenarioArea,
   ScenarioAreaCoastalExclusion, ScenarioChangesSelection, ScenarioCopyOptions,
-  ScenarioMatrixDataMap
+  ScenarioMatrixDataMap, ScenarioSplitOptions, ScenarioSplitResponse
 } from "@data/scenario/scenario.interfaces";
 import { ErrorMessage } from "@data/message/message.interfaces";
 import { BandType } from "@data/metadata/metadata.interfaces";
@@ -233,4 +233,28 @@ export const fetchAreaMatricesFailure = createAction(
 export const setScenarioSortType = createAction(
   '[Scenario] Set scenario sort type',
   props<{ sortType: ListItemsSort }>()
+);
+
+export const splitScenarioForBatch = createAction(
+  '[Scenario] Split scenario (usually preparing batch run)',
+  props<{ scenarioId: number, options: ScenarioSplitOptions }>()
+);
+
+export const splitScenarioForBatchSuccess = createAction(
+  '[Scenario] Split scenario success',
+  props< ScenarioSplitResponse >()
+);
+
+export const splitScenarioForBatchFailure = createAction(
+  '[Scenario] Split scenario failure',
+  props<{ error: ErrorMessage }>()
+);
+
+export const setAutoBatch = createAction(
+  '[Scenario] Set auto batch ids',
+  props<{ ids: number[] }>()
+);
+
+export const resetAutoBatch = createAction(
+  '[Scenario] Reset (empty) auto batch ids',
 );
