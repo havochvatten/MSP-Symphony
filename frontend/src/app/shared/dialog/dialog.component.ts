@@ -48,7 +48,7 @@ export class DialogComponent implements OnDestroy, AfterViewInit {
     if (this.insertionPoint) {
       const viewContainerRef = this.insertionPoint.viewContainerRef;
       viewContainerRef.clear();
-      this.componentRef = viewContainerRef.createComponent(DialogComponent);
+      this.componentRef = viewContainerRef.createComponent(this.childComponentType!);
     }
   };
 
