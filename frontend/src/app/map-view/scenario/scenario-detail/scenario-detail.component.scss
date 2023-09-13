@@ -358,6 +358,12 @@ $buttons-row-gap: 1rem;
         font-size: 1.6rem;
         cursor: pointer;
         margin-left: 0.8rem;
+        opacity: 0.4;
+        color: $hav-turquoise;
+
+        &:hover {
+          opacity: 1;
+        }
       }
     }
   }
