@@ -170,7 +170,7 @@ html {
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-@import 'styles/mat-hav-component';
+@import 'styles/mat-hav-component.scss';
 
 @keyframes indicator-fade {
   0% {
