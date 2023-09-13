@@ -20,6 +20,8 @@ public class LegendDto {
             double q = Filters.asDouble(entry.getQuantity());
             switch (type) {
                 case RESULT:
+                    quantity = (int) (100 * q);
+                    break;
                 case COMPARISON:
                     quantity = (int) (dynMax == null ? (1000 * q) :
                                      (WebUtil.COMPARISON_STEPS[index] * dynMax * 1000));
