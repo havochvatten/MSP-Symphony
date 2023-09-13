@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, concatMap, map, mergeMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -21,8 +21,7 @@ export class AreaEffects {
   ) {
   }
 
-  @Effect()
-  fetchNationalAreas$ = this.actions$.pipe(
+  fetchNationalAreas$ = createEffect(() => this.actions$.pipe(
     ofType(AreaActions.fetchNationalAreas),
     mergeMap(() =>
       this.areaService.getNationalAreaTypes().pipe(
@@ -38,10 +37,9 @@ export class AreaEffects {
         concatMap(actions => actions)
       )
     )
-  );
+  ));
 
-  @Effect()
-  fetchNationalArea$ = this.actions$.pipe(
+  fetchNationalArea$ = createEffect(() => this.actions$.pipe(
     ofType(AreaActions.fetchNationalArea),
     mergeMap(({ areaType }) =>
       this.areaService.getNationalAreasData(areaType).pipe(
@@ -54,10 +52,9 @@ export class AreaEffects {
         })
       )
     )
-  );
+  ));
 
-  @Effect()
-  fetchUserDefinedArea$ = this.actions$.pipe(
+  fetchUserDefinedArea$ = createEffect(() => this.actions$.pipe(
     ofType(AreaActions.fetchUserDefinedAreas),
     mergeMap(() =>
       this.areaService.getUserAreas().pipe(
@@ -88,10 +85,9 @@ export class AreaEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
-  createUserDefinedArea$ = this.actions$.pipe(
+  createUserDefinedArea$ = createEffect(() => this.actions$.pipe(
     ofType(AreaActions.createUserDefinedArea),
     mergeMap(({ name, description, polygon }) =>
       this.areaService.createUserArea({ name, description, polygon }).pipe(
@@ -124,10 +120,9 @@ export class AreaEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
-  updateUserDefinedArea$ = this.actions$.pipe(
+  updateUserDefinedArea$ = createEffect(() => this.actions$.pipe(
     ofType(AreaActions.updateUserDefinedArea),
     mergeMap(({ id, name, description, polygon }) =>
       this.areaService.updateUserArea({ id, name, description, polygon }).pipe(
@@ -153,10 +148,9 @@ export class AreaEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
-  deleteUserDefinedArea$ = this.actions$.pipe(
+  deleteUserDefinedArea$ = createEffect(() => this.actions$.pipe(
     ofType(AreaActions.deleteUserDefinedArea),
     mergeMap(({ userAreaId }) =>
       this.areaService.deleteUserArea(userAreaId).pipe(
@@ -166,10 +160,9 @@ export class AreaEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
-  fetchBoundaries$ = this.actions$.pipe(
+  fetchBoundaries$ = createEffect(() => this.actions$.pipe(
     ofType(AreaActions.fetchBoundaries),
     mergeMap(() =>
       this.areaService
@@ -182,7 +175,7 @@ export class AreaEffects {
           )
         )
     )
-  );
+  ));
 
   // @Effect()
   // uploadPolygons$ = this.actions$.pipe(

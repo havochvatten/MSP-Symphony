@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatMap, map } from 'rxjs/operators';
 import * as uuid from 'uuid/v4';
 
@@ -14,8 +14,7 @@ import { ScenarioActions } from "@data/scenario";
 export class MessageEffects {
   constructor(private actions$: Actions) {}
 
-  @Effect()
-  catchRequestFailure$ = this.actions$.pipe(
+  catchRequestFailure$ = createEffect(() => this.actions$.pipe(
     ofType(
       AreaActions.fetchNationalAreaFailure,
       AreaActions.fetchUserDefinedAreasFailure,
@@ -55,5 +54,5 @@ export class MessageEffects {
       }
     }),
     concatMap(actions => actions)
-  );
+  ));
 }

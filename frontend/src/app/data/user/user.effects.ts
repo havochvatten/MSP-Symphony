@@ -1,7 +1,7 @@
 import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
-import { Actions, ofType, Effect } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { mergeMap, map, catchError, tap, concatMap, withLatestFrom } from 'rxjs/operators';
 import { State } from '@src/app/app-reducer';
@@ -23,8 +23,7 @@ export class UserEffects {
     private router: Router
   ) {}
 
-  @Effect()
-  loginUser$ = this.actions$.pipe(
+  loginUser$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.loginUser),
     withLatestFrom(this.store$),
     mergeMap(([{ username, password }, state]) =>
@@ -46,10 +45,9 @@ export class UserEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
-  logoutUser$ = this.actions$.pipe(
+  logoutUser$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.logoutUser),
     mergeMap(() =>
       this.userService.logout().pipe(
@@ -66,16 +64,14 @@ export class UserEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
-  logoutUserSuccess$ = this.actions$.pipe(
+  logoutUserSuccess$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.logoutUserSuccess),
     map(() => UserActions.navigateTo({ url: '/login' }))
-  );
+  ));
 
-  @Effect()
-  fetchUser$ = this.actions$.pipe(
+  fetchUser$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.fetchUser),
     mergeMap(() =>
       this.userService.fetchUser().pipe(
@@ -92,22 +88,19 @@ export class UserEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
-  fetchUserFailure$ = this.actions$.pipe(
+  fetchUserFailure$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.fetchUserFailure),
     map(() => UserActions.navigateTo({ url: '/login' }))
-  );
+  ));
 
-  @Effect({ dispatch: false })
-  navigateTo$ = this.actions$.pipe(
+  navigateTo$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.navigateTo),
     tap(({ url }) => this.router.navigateByUrl(url))
-  );
+  ), { dispatch: false });
 
-  @Effect()
-  userIsLoggedIn$ = this.actions$.pipe(
+  userIsLoggedIn$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.fetchUserSuccess, UserActions.loginUserSuccess),
     concatMap(() => [
       AreaActions.fetchNationalAreas(),
@@ -116,10 +109,9 @@ export class UserEffects {
       UserActions.fetchBaseline(),
       ...legendTypes.map(legendType => CalculationActions.fetchLegend({ legendType }))
     ])
-  );
+  ));
 
-  @Effect()
-  baselineIsFetched$ = this.actions$.pipe(
+  baselineIsFetched$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.fetchBaseline),
     mergeMap(() =>
       this.userService.fetchBaseline().pipe(
@@ -136,11 +128,10 @@ export class UserEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
-  fetchedMetadata$ = this.actions$.pipe(
+  fetchedMetadata$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.fetchBaselineSuccess),
     map(props => MetadataActions.fetchMetadata({ baseline: props.baseline.name }))
-  );
+  ));
 }
