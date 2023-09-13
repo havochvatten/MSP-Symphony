@@ -41,7 +41,7 @@
     "@ngrx/effects": "^16.2.0",
     "@ngrx/store": "^16.2.0",
     "@ngrx/store-devtools": "^16.2.0",
-    "@ngx-translate/core": "^14.0.0",
+    "@ngx-translate/core": "^15.0.0",
     "@ngx-translate/http-loader": "^7.0.0",
     "@turf/boolean-equal": "^6.5.0",
     "@turf/boolean-intersects": "^6.5.0",
