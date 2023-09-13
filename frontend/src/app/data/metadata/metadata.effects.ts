@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Actions, concatLatestFrom, Effect, ofType } from '@ngrx/effects';
+import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { catchError, concatMap, debounceTime, map, mergeMap, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import MetadataService from './metadata.service';
@@ -27,8 +27,7 @@ export class MetadataEffects {
     private metadataService: MetadataService
   ) {}
 
-  @Effect()
-  fetchMetadata$ = this.actions$.pipe(
+  fetchMetadata$ = createEffect(() => this.actions$.pipe(
     ofType(MetadataActions.fetchMetadata),
     mergeMap(({ baseline }) =>
       this.metadataService.getMetaData(baseline).pipe(

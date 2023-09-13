@@ -4,13 +4,13 @@ import { StoreModule } from "@ngrx/store";
 import { HttpClientModule } from "@angular/common/http";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { FormBuilder } from "@angular/forms";
-import { MatSelectModule } from "@angular/material/select";
+import { MatLegacySelectModule as MatSelectModule } from "@angular/material/legacy-select";
 import { provideMockStore } from "@ngrx/store/testing";
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { initialState as calculation } from '@data/calculation/calculation.reducers';
 import { initialState as user } from '@data/user/user.reducers';
-import { MatRadioButton, MatRadioGroup, MatRadioModule } from "@angular/material/radio";
+import { MatLegacyRadioButton as MatRadioButton, MatLegacyRadioGroup as MatRadioGroup, MatLegacyRadioModule as MatRadioModule } from "@angular/material/legacy-radio";
 
 describe('ComparisonComponent', () => {
   let fixture: ComponentFixture<ComparisonComponent>,

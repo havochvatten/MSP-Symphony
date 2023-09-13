@@ -11,7 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TranslationSetupModule } from '../app-translation-setup.module';
 import { PressureChartComponent } from './pressure-chart/pressure-chart.component';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatLegacyProgressSpinnerModule as MatProgressSpinnerModule } from "@angular/material/legacy-progress-spinner";
 
 describe('CalculationReportComponent', () => {
   let fixture: ComponentFixture<CalculationReportComponent>,

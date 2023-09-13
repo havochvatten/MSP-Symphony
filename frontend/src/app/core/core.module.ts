@@ -5,7 +5,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FooterComponent } from './footer/footer.component';
 import { UserMenuToggleComponent } from './header/user-menu-toggle/user-menu-toggle.component';
 import { AboutDialogComponent } from './about/about-dialog.component';
-import { MatButtonModule } from '@angular/material/button';
+import { MatLegacyButtonModule as MatButtonModule } from '@angular/material/legacy-button';
 
 @NgModule({
   declarations: [HeaderComponent, FooterComponent, UserMenuToggleComponent, AboutDialogComponent],

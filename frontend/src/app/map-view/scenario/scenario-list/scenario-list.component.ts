@@ -19,7 +19,7 @@ import { ListItemsSort } from "@data/common/sorting.interfaces";
 import { BatchStatusService } from "@src/app/socket/batch-status.service";
 import { CalculationService } from "@data/calculation/calculation.service";
 import { CalculationActions } from "@data/calculation";
-import { MatCheckbox, MatCheckboxChange } from "@angular/material/checkbox";
+import { MatLegacyCheckbox as MatCheckbox, MatLegacyCheckboxChange as MatCheckboxChange } from "@angular/material/legacy-checkbox";
 
 @Component({
     selector: 'app-scenario-list',

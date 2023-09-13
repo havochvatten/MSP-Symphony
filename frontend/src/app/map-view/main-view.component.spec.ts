@@ -28,7 +28,7 @@ import { StoreModule } from "@ngrx/store";
 import { CalculationHistoryComponent } from "@src/app/map-view/calculation-history/calculation-history.component";
 import { ComparisonComponent } from "@src/app/map-view/comparison/comparison.component";
 import { FormBuilder } from "@angular/forms";
-import { MatSelectModule } from "@angular/material/select";
+import { MatLegacySelectModule as MatSelectModule } from "@angular/material/legacy-select";
 import { AreaGroupComponent } from "@src/app/map-view/area-selection/area-group/area-group.component";
 import { ScenarioListComponent } from "@src/app/map-view/scenario/scenario-list/scenario-list.component";
 

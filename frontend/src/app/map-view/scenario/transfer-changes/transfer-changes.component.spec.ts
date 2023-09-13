@@ -6,10 +6,10 @@ import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from '@shared/dialog/dialog-config';
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { TransferChangesComponent } from './transfer-changes.component';
-import { MatFormField, MatLabel } from "@angular/material/form-field";
-import { MatRadioButton, MatRadioGroup, MatRadioModule } from "@angular/material/radio";
-import { MatCheckbox, MatCheckboxModule } from "@angular/material/checkbox";
-import { MatSelect, MatSelectModule } from "@angular/material/select";
+import { MatLegacyFormField as MatFormField, MatLegacyLabel as MatLabel } from "@angular/material/legacy-form-field";
+import { MatLegacyRadioButton as MatRadioButton, MatLegacyRadioGroup as MatRadioGroup, MatLegacyRadioModule as MatRadioModule } from "@angular/material/legacy-radio";
+import { MatLegacyCheckbox as MatCheckbox, MatLegacyCheckboxModule as MatCheckboxModule } from "@angular/material/legacy-checkbox";
+import { MatLegacySelect as MatSelect, MatLegacySelectModule as MatSelectModule } from "@angular/material/legacy-select";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { FormsModule } from "@angular/forms";
 
