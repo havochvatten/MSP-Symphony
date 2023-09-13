@@ -5,7 +5,7 @@ import { DialogService } from "@shared/dialog/dialog.service";
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
-import { MatRadioModule } from "@angular/material/radio";
+import { MatLegacyRadioModule as MatRadioModule } from "@angular/material/legacy-radio";
 
 describe('SelectIntersectionComponent', () => {
   let component: SelectIntersectionComponent;

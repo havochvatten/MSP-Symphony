@@ -10,7 +10,7 @@ import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { TranslateService } from "@ngx-translate/core";
 import { MatrixService } from './matrix.service';
-import { MatSelect } from "@angular/material/select";
+import { MatLegacySelect as MatSelect } from "@angular/material/legacy-select";
 import { Scenario } from "@data/scenario/scenario.interfaces";
 import { ScenarioActions, ScenarioSelectors } from "@data/scenario";
 import { Subscription } from "rxjs";
