@@ -1,22 +1,18 @@
 package se.havochvatten.symphony.entity;
 
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 
 @Entity
 @Table(name = "batchcalculation")
-@DynamicInsert
 public class BatchCalculation {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "batchcalculation_id_gen")
-    @SequenceGenerator(name = "batchcalculation_id_gen", sequenceName = "batch_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "batchcalc_id", nullable = false)
     private Integer id;
 

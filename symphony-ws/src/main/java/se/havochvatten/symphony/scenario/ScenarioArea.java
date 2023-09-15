@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 
 @Entity
 @Table(name = "scenarioarea")
-@DynamicInsert
 public class ScenarioArea implements BandChangeEntity {
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -37,8 +36,7 @@ public class ScenarioArea implements BandChangeEntity {
 
     @Id
     @Generated(GenerationTime.INSERT)
-    @SequenceGenerator(name = "sarea_seq", sequenceName = "sarea_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sarea_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 

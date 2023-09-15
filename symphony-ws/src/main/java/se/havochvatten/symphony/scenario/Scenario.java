@@ -44,10 +44,10 @@ import java.util.stream.Collectors;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Scenario implements Serializable, BandChangeEntity {
     private static final ObjectMapper mapper = new ObjectMapper();
-    @Basic(optional = false)
-    @NotNull
-    @GeneratedValue
+
     @Id
+    @Basic(optional = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     protected Integer id;
 
