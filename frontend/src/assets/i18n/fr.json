@@ -229,6 +229,7 @@
                 "user-scenarios": "Scénarios utilisateur",
                 "add-scenario-label": "Créer un nouveau scénario groupé",
                 "add-scenario-label-single": "Créer un nouveau scénario pour {{ area }}",
+                "overlap": "Impossible de créer un scénario pour des zones superposées",
                 "scenario-name": "Scénario sans nom",
                 "scenario-name-template": "Scénario {{area}}",
                 "select-area-first-label": "Commencez par sélectionner une zone pour le scénario.",
@@ -458,11 +459,15 @@
         },
         "area-selection-hint": {
             "emphasis": "Sélectionner / désélectionner plusieurs zones ",
-            "detail": "par Ctrl + clic ou ⌘ + clic."
+            "detail": "par {{ ctrlButton }} + clic."
         },
         "special-actions-hint": {
             "emphasis": "Partager ou fusionner zone",
-            "detail": "Alt / ⌥ + clic pour séparer par section, Alt / ⌥ + Shift + clic pour fusionner"
+            "detail": "{{ altButton }} + clic pour séparer par section, {{ altButton }} + Shift + clic pour fusionner"
+        },
+        "merge-areas-hint" : {
+            "emphasis": "Fusionner les zones",
+            "detail": "{{ altButton }} + Shift + clic pour fusionner la sélection."
         }
     },
     "controls": {

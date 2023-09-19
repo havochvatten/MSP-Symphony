@@ -93,7 +93,7 @@ export const deleteUserDefinedAreaFailure = createAction(
 
 export const updateSelectedArea = createAction(
   '[Area] Update selected area',
-  props<{ statePaths?: StatePath[] }>()
+  props<{ statePaths?: StatePath[], overlap: boolean }>()
 );
 
 export const addUserDefinedMatrix = createAction(

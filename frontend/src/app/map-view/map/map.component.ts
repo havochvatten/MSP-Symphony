@@ -33,7 +33,7 @@ import AreaLayer from '@src/app/map-view/map/layers/area-layer';
 import { Extent } from 'ol/extent';
 import { DataLayerService } from '@src/app/map-view/map/layers/data-layer.service';
 import { isEqual } from "lodash";
-import { dieCutPolygons, turfMerge } from "@shared/turf-helper/turf-helper";
+import { dieCutPolygons, turfMergeAll } from "@shared/turf-helper/turf-helper";
 import { SelectIntersectionComponent } from "@shared/select-intersection/select-intersection.component";
 import { MultiPolygon, Polygon as OLPolygon } from "ol/geom";
 import GeoJSON from "ol/format/GeoJSON";
@@ -196,7 +196,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     this.areaLayer = new AreaLayer(
         this.map, this.dispatchSelectionUpdate, this.zoomToExtent,
-        this.onDrawEnd, this.onDrawInvalid, this.onSplitClick, this.onMergeClick, () => this.warnOnOverlap(this.store),
+        this.onDrawEnd, this.onDrawInvalid, this.onSplitClick, this.onMergeClick,
         this.scenarioLayer, this.translateService, this.geoJson); // Will add itself to the map
     this.map.addLayer(this.areaLayer);
 
@@ -220,8 +220,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  private dispatchSelectionUpdate = (features?: Feature[]) => {
-    this.store.dispatch(AreaActions.updateSelectedArea({ statePaths: features?.map(f => f.get('statePath')) }));
+  private dispatchSelectionUpdate = (features: Feature[] | undefined, overlap: boolean) => {
+    this.store.dispatch(AreaActions.updateSelectedArea({ statePaths: features?.map(f => f.get('statePath')), overlap }));
   };
 
   ngOnDestroy() {
@@ -309,7 +309,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   // (Alt + Shift) keys + select area interaction
-  onMergeClick = async (feature: Feature, prevFeature: Feature) => {
+  onMergeClick = async (features: Feature[]) => {
 
     // Some readability have been sacrificed for the convenience of
     // utilizing existing component logic (and versatility of integers).
@@ -322,9 +322,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     // from the return value and treat -1 as the special case to indicate
     // new area creation.
 
-    const paths = [prevFeature.get('statePath'), feature.get('statePath')],
-          names = [prevFeature.get('name'), feature.get('name')],
-          merged = turfMerge(feature, prevFeature);
+    const paths = features.map(f => f.get('statePath')),
+          names = features.map(f => f.get('name')),
+          merged = turfMergeAll(features);
     if(merged !== null) {
       const areaIndexToSave = await this.dialogService.open(MergeAreasModalComponent, this.moduleRef, {
         data : {
@@ -351,18 +351,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         }
       }
     }
-  }
-
-  // store unavailable outside class context
-  warnOnOverlap(store: Store<State>) {
-    store.dispatch(
-      MessageActions.addPopupMessage({
-        message: {
-          type: 'INFO',
-          message: this.translateService.instant('map.selection-overlap'),
-          uuid: uuid()
-        }
-      }));
   }
 
   // The virtual transform methods on OpenLayers Geometry subclasses

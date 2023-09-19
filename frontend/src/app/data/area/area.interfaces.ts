@@ -131,5 +131,6 @@ export interface State {
   userArea: UserAreasState;
   boundaries: Boundary[];
   currentSelection?: StatePath[]; // currentFeature?
+  selectionOverlap: boolean;
   selectionMatrices?: AreaMatrixData;
 }

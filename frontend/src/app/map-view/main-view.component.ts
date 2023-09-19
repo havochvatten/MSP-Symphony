@@ -15,6 +15,7 @@ import { environment } from "@src/environments/environment";
 import { ScenarioActions, ScenarioSelectors } from "@data/scenario";
 import { Scenario } from "@data/scenario/scenario.interfaces";
 import { MapComponent } from './map/map.component';
+import { isMacOS } from '@src/util/agent';
 
 @Component({
   selector: 'app-main-view',
@@ -32,6 +33,8 @@ export class MainViewComponent implements OnInit, AfterViewInit {
   visibleImpact = false;
   visibleComparison = false;
   singleSelection = false
+  multiSelection = false
+  isMacOS = isMacOS();
 
   protected activeScenario$: Observable<Scenario | undefined>;
   protected activeScenarioArea$: Observable<number | undefined>;
@@ -52,6 +55,7 @@ export class MainViewComponent implements OnInit, AfterViewInit {
     this.cmpLegends$ = this.store.select(CalculationSelectors.selectComparisonLegend);
     this.selectedAreas$ = this.store.select(AreaSelectors.selectSelectedAreaData).subscribe((areas) => {
       this.singleSelection = areas.length === 1;
+      this.multiSelection = areas.length > 1;
     });
   }
 

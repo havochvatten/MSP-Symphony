@@ -229,6 +229,7 @@
                 "user-scenarios": "User Scenarios",
                 "add-scenario-label": "Create new grouped scenario",
                 "add-scenario-label-single": "Create new scenario for {{area}}",
+                "overlap": "Cannot create scenario for overlapping areas",
                 "scenario-name": "Untitled scenario",
                 "scenario-name-template": "Scenario {{area}}",
                 "select-area-first-label": "Start by selecting areas for the scenario.",
@@ -458,11 +459,15 @@
         },
         "area-selection-hint": {
             "emphasis": "Select / deselect multiple areas",
-            "detail": "using Ctrl + click or ⌘ + click."
+            "detail": "using {{ ctrlbutton }} + click."
         },
         "special-actions-hint": {
             "emphasis": "Cut or merge area",
-            "detail": "Alt / ⌥ + click splits by intersection, Alt / ⌥ + Shift + click merges."
+            "detail": "{{ altButton }} + click splits by intersection, {{ altButton }} + Shift + click merges."
+        },
+        "merge-areas-hint" : {
+            "emphasis": "Merge areas",
+            "detail": "{{ altButton }} + Shift + click on final area to merge selected."
         }
     },
     "controls": {

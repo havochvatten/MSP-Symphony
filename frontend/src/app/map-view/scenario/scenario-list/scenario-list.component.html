@@ -24,8 +24,11 @@
           (click)="triggerBatchRun()"></app-icon-button>
       </div>
     </div>
-    <p *ngFor="let selectedArea of selectedAreas" class="area-name">{{ selectedArea.displayName }}</p>
+    <ng-container *ngIf="!((selectionOverlap | async) ?? false)">
+      <p *ngFor="let selectedArea of selectedAreas" class="area-name">{{ selectedArea.displayName }}</p>
+    </ng-container>
     <p *ngIf="selectedAreas.length === 0" class="area-name">{{ 'map.no-selected-area' | translate }}</p>
+    <p *ngIf="selectionOverlap | async" class="area-name">{{ 'map.editor.list.overlap' | translate }}</p>
 
     <!--TODO Add more prominent button to create new scenario? -->
     <div class="title-container">
@@ -35,6 +38,7 @@
         [singleSelectedTipKey]="'map.editor.list.add-scenario-label-single'"
         [multipleSelectedTipKey]="'map.editor.list.add-scenario-label'"
         [clickDelegate]="this.createScenario"
+        [selectionOverlap]="(selectionOverlap | async) ?? false"
       ></app-add-scenario-areas>
     </div>
   </div>

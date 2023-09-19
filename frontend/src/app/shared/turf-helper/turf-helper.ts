@@ -35,6 +35,13 @@ export function turfMerge(polygon: Feature, extension: Feature): Polygon | null 
   return merged ? turfAsSymphonyPoly(cleanCoords(merged)) : null;
 }
 
+export function turfMergeAll(polygons: Feature[]): Polygon | null {
+    const tPolys = polygons.map(p => extractTurfPolygon(p)),
+        merged = tPolys.reduce((acc, tPoly) => union(acc, tPoly)!, tPolys[0]);
+
+  return merged ? turfAsSymphonyPoly(cleanCoords(merged)) : null;
+}
+
 export function turfIntersects(polygon: Feature, intersector: Feature): boolean {
   return intersects(extractTurfPolygon(polygon), extractTurfPolygon(intersector));
 }
