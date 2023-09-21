@@ -9,7 +9,7 @@ import { ImpactTableComponent } from './impact-table/impact-table.component';
 import { SharedModule } from '../shared/shared.module';
 import { HighestImpactsComponent } from './highest-impacts/highest-impacts.component';
 import { CalculationImageComponent } from './calculation-image/calculation-image.component';
-import { MatLegacyProgressSpinnerModule as MatProgressSpinnerModule } from "@angular/material/legacy-progress-spinner";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ScenarioChangesComponent } from './scenario-changes/scenario-changes.component';
 import { ComparisonReportComponent } from "@src/app/report/comparison-report.component";
 import { OrdinalPipe } from "@shared/ordinal.pipe";

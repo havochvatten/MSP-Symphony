@@ -5,7 +5,7 @@ import { StoreModule } from "@ngrx/store";
 import { HttpClientModule } from "@angular/common/http";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { NormalizationType } from "@data/calculation/calculation.service";
-import { MatLegacyRadioModule as MatRadioModule } from "@angular/material/legacy-radio";
+import { MatRadioModule } from "@angular/material/radio";
 import { IconComponent } from "@shared/icon/icon.component";
 import { provideMockStore } from "@ngrx/store/testing";
 import { initialState as metadata } from "@data/metadata/metadata.reducers";

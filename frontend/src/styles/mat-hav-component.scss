@@ -1,18 +1,20 @@
 @import "hav-colors";
 
-button.mat-flat-button,
-button.mat-flat-button.mat-primary {
+button.mdc-button.mat-mdc-unelevated-button,
+button.mdc-button.mat-mdc-unelevated-button.mat-primary {
   color: white;
   height: 48px;
   font-size: 16px;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: .5px;
   border: 2px solid $primary-border-blue;
+  background-color: $hav-turquoise;
   border-radius: 2px;
   padding: 0 16px;
   margin-left: 1rem;
 
-  &.mat-button-disabled:not(.secondary) {
+  &[disabled]:not(.secondary) {
     border-color: white;
 
     &.mat-warn {
@@ -48,12 +50,12 @@ button.mat-flat-button.mat-primary {
     border-color: $primary-border-blue;
     color: white !important;
 
-    &.mat-warn:not(.mat-button-disabled) {
+    &.mat-warn:not([disabled]) {
       background-color: $alert-hover-bg-red;
       border-color: $alert-hover-bg-red;
     }
 
-    &.green:not(.mat-button-disabled) {
+    &.green:not([disabled]) {
       background-color: $success-hover-bg-green;
       border-color: $success-hover-bg-green;
     }
@@ -69,14 +71,15 @@ button.mat-flat-button.mat-primary {
     }
   }
 
-  &.secondary.mat-button-disabled, &.secondary.mat-button-disabled:hover {
+  &.secondary[disabled], &.secondary[disabled]:hover {
     background-color: white !important;
     border-color: $primary-disabled-text-grey;
     color: $primary-disabled-text-grey !important;
   }
 }
 
-mat-select {
+mat-select,
+.mat-form-field-appearance-fill mat-select {
   display: flex !important;
   height: 44px;
   align-items: center;
@@ -85,25 +88,28 @@ mat-select {
   font-size: 15px;
   color: black;
 
-  .mat-select-value {
-    .mat-select-placeholder {
+  .mat-mdc-select-value {
+    .mat-mdc-select-placeholder, .mat-mdc-select-min-line {
+      font-size: 1.4rem;
       color: black;
     }
   }
 
-  &.mat-select-disabled {
+  &.mat-mdc-select-disabled {
     border-color: $primary-disabled-border-grey;
 
-    .mat-select-value {
-      .mat-select-placeholder {
+    .mat-mdc-select-value {
+      .mat-mdc-select-placeholder {
         color: $primary-disabled-text-blue;
       }
     }
   }
 
-  .mat-select-arrow-wrapper {
+  .mat-mdc-select-arrow-wrapper {
 
-    .mat-select-arrow {
+    transform: unset;
+
+    .mat-mdc-select-arrow {
       display: none;
     }
 
@@ -118,6 +124,12 @@ mat-select {
     height: 28px;
     font-size: 10px;
 
+    .mat-mdc-select-value {
+      .mat-mdc-select-placeholder {
+        font-size: 1.1rem;
+      }
+    }
+
     .mat-select-arrow-wrapper:after {
       zoom: 0.38;
       width: 50px;
@@ -125,16 +137,74 @@ mat-select {
   }
 
   &[aria-expanded="true"] {
-    .mat-select-arrow-wrapper:after {
+    .mat-mdc-select-arrow-wrapper:after {
       transform: scaleY(-1) translateY(4px);
     }
   }
 }
 
-mat-checkbox {
-  .mat-checkbox-layout {
-    .mat-checkbox-label {
+.cdk-overlay-container {
+
+  /* Material dropdown bug, workaround / effective solution */
+  z-index: 100000 !important;
+  position: absolute;
+
+  .cdk-overlay-pane {
+    .mat-mdc-select-panel {
+      background-color: white;
+
+      .mat-mdc-option {
+        font-size: 1.6rem;
+
+        &:hover:not(.mdc-list-item--disabled),
+        &:focus:not(.mdc-list-item--disabled) {
+          background: rgba(0,0,0,.04)
+        }
+      }
+    }
+  }
+}
+
+mat-checkbox.mat-mdc-checkbox {
+  &.mat-mdc-checkbox-checked, &.mat-mdc-checkbox-indeterminate {
+    .mdc-form-field {
+      .mdc-checkbox .mdc-checkbox__native-control~.mdc-checkbox__background {
+        color: $hav-turquoise;
+        background-color: $hav-turquoise;
+        border-color: $hav-turquoise;
+        svg.mdc-checkbox__checkmark {
+          color: white;
+        }
+      }
+    }
+  }
+
+  &.mdc-checkbox--disabled {
+    &.mat-mdc-checkbox-checked {
+      .mdc-form-field {
+        .mdc-checkbox {
+          background-color: #b0b0b0;
+        }
+      }
+    }
+
+    .mdc-form-field {
+      .mdc-checkbox, .mdc-checkbox__background {
+        color: #b0b0b0;
+        background-color: white;
+        border-color: #b0b0b0;
+      }
+
+      label.mdc-label {
+        color: $primary-disabled-text-grey;
+      }
+    }
+  }
+
+  .mdc-form-field {
+    label.mdc-label {
       font-size: 13px;
+      margin-left: 0.5rem;
     }
   }
 }
@@ -143,17 +213,33 @@ mat-radio-button {
   display: flex;
   height: 3rem;
   margin: 0.25rem 0;
-  padding: 0 0.625rem;
-  font-size: 16px;
+  font-size: 1.6rem;
+
+  &.mat-mdc-radio-checked {
+    .mdc-form-field {
+      .mdc-radio {
+        .mdc-radio__background {
+          color: $hav-turquoise;
+        }
+      }
+    }
+  }
+
+  .mdc-form-field {
+    .mdc-radio {
+
+    }
+  }
 }
 
+.cdk-overlay-container .cdk-overlay-pane .mat-mdc-select-panel.ddPanel,
 .ddPanel {
-  margin: 34px 0 0 7px;
+  margin: 14px 0 0 -8px;
   min-width: calc(100% + 8px) !important;
   border: 1px solid $primary-bg-blue;
   border-radius: 0 !important;
 
-  mat-option {
+  mat-option.mat-mdc-option {
     &.mat-active {
       background: white !important;
       .mat-option-text {
@@ -170,7 +256,8 @@ mat-radio-button {
   }
 
   &.tiny {
-    margin-top: 32px;
+    margin-top: 6px;
+    margin-left: -8px;
 
     mat-option {
       font-size: 10px;
@@ -178,12 +265,27 @@ mat-radio-button {
   }
 }
 
-.mat-radio-button:not(.mat-radio-disabled).cdk-keyboard-focused .mat-radio-persistent-ripple,
-.mat-radio-button:not(.mat-radio-disabled).cdk-program-focused .mat-radio-persistent-ripple {
-  opacity: 0 !important; /* hide material "focus indicator", deemed distracting */
+.mat-mdc-radio-button {
+  .mdc-radio:not(.mdc-radio--disabled) .mat-radio-ripple.mat-mdc-focus-indicator .mat-radio-persistent-ripple {
+    transition: opacity 0ms;
+    opacity: 0 !important; /* hide material "focus indicator", deemed distracting */
+    display: none;
+  }
+
+  .mdc-radio.mdc-radio--disabled {
+    .mdc-radio__background {
+      .mdc-radio__outer-circle, .mdc-radio_inner_circle {
+        border-color: $primary-disabled-text-grey !important;
+      }
+    }
+
+    & + label {
+      color: $primary-disabled-border-grey
+    }
+  }
 }
 
-.mat-form-field-appearance-legacy .mat-form-field-underline {
+.mat-mdc-form-field .mdc-line-ripple {
   display: none;
 }
 
@@ -195,4 +297,9 @@ input[type='number'].percentage {
   text-align: left;
   padding-left: 1rem;
   width: 8rem;
+}
+
+/* Material progress spinner */
+.mat-mdc-progress-spinner circle {
+  stroke: $hav-turquoise;
 }

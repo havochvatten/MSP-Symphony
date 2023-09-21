@@ -79,14 +79,4 @@ export class NormalizationSelectionComponent implements OnChanges {
       });
     }
   }
-
-  outerCheck(event: InputEvent) {
-    const target = event.target! as HTMLInputElement
-    if(target.tagName === 'INPUT') {
-      this.check(target.id === 'user-defined-value' ?
-                  NormalizationType.UserDefined :
-                  NormalizationType.StandardDeviation)
-      target.select(); // refocus and select
-    }
-  }
 }

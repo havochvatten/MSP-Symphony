@@ -6,8 +6,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TranslationSetupModule } from '../app-translation-setup.module';
-import { MatLegacyFormFieldModule as MatFormFieldModule } from '@angular/material/legacy-form-field';
-import { MatLegacyInputModule as MatInputModule } from "@angular/material/legacy-input";
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from "@angular/material/input";
 import { provideAnimations } from "@angular/platform-browser/animations";
 
 describe('LoginComponent', () => {

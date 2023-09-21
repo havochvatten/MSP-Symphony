@@ -22,9 +22,9 @@ import { CalculationEffects } from '@data/calculation/calculation.effects';
 import { ScenarioEffects } from '@data/scenario/scenario.effects';
 import { CalculationReportModule } from './report/calculation-report.module';
 import { LoginModule } from './login/login.module';
-import { MatLegacyCheckboxModule as MatCheckboxModule } from "@angular/material/legacy-checkbox";
-import { MatLegacyButtonModule as MatButtonModule } from "@angular/material/legacy-button";
-import { MatLegacyRadioModule as MatRadioModule } from "@angular/material/legacy-radio";
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatButtonModule } from "@angular/material/button";
+import { MatRadioModule } from "@angular/material/radio";
 
 @NgModule({
   declarations: [AppComponent],

@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { EcoSliderComponent } from './band-selection/eco-slider/eco-slider.component';
 import { SharedModule } from '../shared/shared.module';
-import { MatLegacySelectModule as MatSelectModule } from "@angular/material/legacy-select";
-import { MatLegacyProgressSpinnerModule as MatProgressSpinnerModule } from "@angular/material/legacy-progress-spinner";
-import { MatLegacyCheckboxModule as MatCheckboxModule } from "@angular/material/legacy-checkbox";
-import { MatLegacyButtonModule as MatButtonModule } from "@angular/material/legacy-button";
+import { MatSelectModule } from "@angular/material/select";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatButtonModule } from "@angular/material/button";
 import { MainViewComponent } from './main-view.component';
 import { MapComponent } from './map/map.component';
 import { SliderControlsComponent } from './band-selection/slider-controls/slider-controls.component';
@@ -37,7 +37,7 @@ import { MetaInfoComponent } from './meta-info/meta-info.component';
 import { AnchorPipe } from "@shared/anchor.pipe";
 import { DialogService } from "@shared/dialog/dialog.service";
 import { MergeAreasModalComponent } from './map/merge-areas-modal/merge-areas-modal.component';
-import { MatLegacyRadioModule as MatRadioModule } from "@angular/material/legacy-radio";
+import { MatRadioModule } from "@angular/material/radio";
 import { ActiveScenarioDisplayComponent } from './active-scenario-display/active-scenario-display.component';
 import { BatchProgressComponent } from './batch-progress-display/batch-progress.component';
 

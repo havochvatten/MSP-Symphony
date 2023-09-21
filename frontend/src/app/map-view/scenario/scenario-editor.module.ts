@@ -9,11 +9,11 @@ import {
 import {
   NormalizationSelectionComponent
 } from "@src/app/map-view/scenario/scenario-detail/normalization-selection/normalization-selection.component";
-import { MatLegacyButtonModule as MatButtonModule } from "@angular/material/legacy-button";
-import { MatLegacyProgressSpinnerModule as MatProgressSpinnerModule } from "@angular/material/legacy-progress-spinner";
-import { MatLegacyRadioModule as MatRadioModule } from "@angular/material/legacy-radio";
-import { MatLegacySelectModule as MatSelectModule } from "@angular/material/legacy-select";
-import { MatLegacyCheckboxModule as MatCheckboxModule } from "@angular/material/legacy-checkbox";
+import { MatButtonModule } from "@angular/material/button";
+import { MatProgressSpinnerModule as MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatRadioModule } from "@angular/material/radio";
+import { MatSelectModule } from "@angular/material/select";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 import { FormsModule } from "@angular/forms";
 import { OrdinalPipe } from "@shared/ordinal.pipe";
 import { ScenarioAreaDetailComponent } from './scenario-area-detail/scenario-area-detail.component';
@@ -21,7 +21,7 @@ import { ChangesListComponent } from './scenario-detail/changes-list/changes-lis
 import { AddScenarioAreasComponent } from './add-scenario-areas/add-scenario-areas.component';
 import { ChangesOverviewComponent } from './changes-overview/changes-overview.component';
 import { CopyScenarioComponent } from './copy-scenario/copy-scenario.component';
-import { MatLegacyInputModule as MatInputModule } from "@angular/material/legacy-input";
+import { MatInputModule } from "@angular/material/input";
 import { TransferChangesComponent } from './transfer-changes/transfer-changes.component';
 import { OverviewInlineBandChangeComponent } from './changes-overview/overview-inline-band-change/overview-inline-band-change.component';
 import { SplitScenarioSettingsComponent } from './split-scenario-settings/split-scenario-settings.component';

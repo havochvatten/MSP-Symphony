@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { NormalizationSelectionComponent } from './normalization-selection.component';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { OrdinalPipe } from "@shared/ordinal.pipe";
-import { MatLegacyRadioModule as MatRadioModule } from "@angular/material/legacy-radio";
+import { MatRadioModule } from "@angular/material/radio";
 
 describe('NormalizationSelectionComponent', () => {
   let component: NormalizationSelectionComponent;

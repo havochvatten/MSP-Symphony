@@ -7,7 +7,7 @@ import { EcoSliderComponent } from '../eco-slider/eco-slider.component';
 import { SharedModule } from '@shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { StoreModule } from "@ngrx/store";
-import { MatLegacyCheckboxModule as MatCheckboxModule } from "@angular/material/legacy-checkbox";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 
 describe('SliderControlsComponent', () => {
   let fixture: ComponentFixture<SliderControlsComponent>,

@@ -6,8 +6,8 @@ import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as area } from '@data/area/area.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { MatrixSelectionComponent } from './matrix-selection.component';
-import { MatLegacyRadioButton as MatRadioButton, MatLegacyRadioModule as MatRadioModule } from "@angular/material/legacy-radio";
-import { MatLegacySelect as MatSelect, MatLegacySelectModule as MatSelectModule } from "@angular/material/legacy-select";
+import { MatRadioButton, MatRadioModule } from "@angular/material/radio";
+import { MatSelect, MatSelectModule } from "@angular/material/select";
 import { NormalizationType } from "@data/calculation/calculation.service";
 
 describe('MatrixSelectionComponent', () => {

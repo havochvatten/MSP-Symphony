@@ -1,10 +1,10 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { isEmpty, some } from "lodash";
-import { MatLegacyRadioChange as MatRadioChange, MatLegacyRadioGroup as MatRadioGroup } from "@angular/material/legacy-radio";
-import { MatLegacySelectChange as MatSelectChange } from "@angular/material/legacy-select";
+import { MatRadioChange, MatRadioGroup } from "@angular/material/radio";
+import { MAT_SELECT_CONFIG, MatSelectChange } from "@angular/material/select";
 import { State } from "@src/app/app-reducer";
 import { ScenarioSelectors } from "@data/scenario";
 import { ChangesProperty, Scenario, ScenarioArea, ScenarioChangesSelection } from "@data/scenario/scenario.interfaces";
