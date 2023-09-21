@@ -9,7 +9,7 @@ import { selectActiveScenario } from "@data/scenario/scenario.selectors";
 import { DialogService } from "@shared/dialog/dialog.service";
 import { MetaInfoComponent } from "@src/app/map-view/meta-info/meta-info.component";
 import { isEmpty } from "lodash";
-import { MatLegacyCheckboxChange as MatCheckboxChange } from "@angular/material/legacy-checkbox";
+import { MatCheckboxChange } from "@angular/material/checkbox";
 import { environment as env } from "@src/environments/environment";
 
 @Component({

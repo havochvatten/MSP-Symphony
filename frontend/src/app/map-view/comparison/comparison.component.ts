@@ -10,8 +10,8 @@ import { ComparisonReportModalComponent } from '@shared/report-modal/comparison-
 import { CalculationService } from '@data/calculation/calculation.service';
 import { map, tap, withLatestFrom } from 'rxjs/operators';
 import { TranslateService } from "@ngx-translate/core";
-import { MatLegacySelect as MatSelect } from "@angular/material/legacy-select";
-import { MatLegacyOption as MatOption } from "@angular/material/legacy-core";
+import { MatSelect } from "@angular/material/select";
+import { MatOption } from "@angular/material/core";
 
 /*export const sameCalculationsValidator: ValidatorFn = (control: AbstractControl):
   ValidationErrors | null => {

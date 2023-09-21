@@ -5,7 +5,7 @@ import { State } from "@src/app/app-reducer";
 import { ScenarioSelectors } from "@data/scenario";
 import { intersection } from "@src/util/set-operations";
 import { ChangesProperty } from "@data/scenario/scenario.interfaces";
-import { MatLegacyCheckboxChange as MatCheckboxChange } from "@angular/material/legacy-checkbox";
+import { MatCheckboxChange } from "@angular/material/checkbox";
 
 @Component({
   selector: 'app-checkbox-accordion',

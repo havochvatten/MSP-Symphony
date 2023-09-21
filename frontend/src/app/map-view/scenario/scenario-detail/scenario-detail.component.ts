@@ -277,11 +277,13 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   }
 
   async openIntensityOverview() {
-    this.unsaved ||= await this.dialogService.open<boolean>(ChangesOverviewComponent, this.moduleRef, {
+    const intensityChanged = await this.dialogService.open<boolean>(ChangesOverviewComponent, this.moduleRef, {
       data: {
         scenario: this.scenario,
       }
     });
+
+    this.unsaved ||= intensityChanged;
     this.setChangesText();
   }
 

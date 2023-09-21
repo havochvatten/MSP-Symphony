@@ -2,7 +2,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { Scenario, ScenarioArea, ScenarioCopyOptions } from "@data/scenario/scenario.interfaces";
-import { MatLegacyCheckbox as MatCheckbox, MatLegacyCheckboxChange as MatCheckboxChange } from "@angular/material/legacy-checkbox";
+import { MatCheckbox, MatCheckboxChange } from "@angular/material/checkbox";
 
 @Component({
   selector: 'app-copy-scenario',

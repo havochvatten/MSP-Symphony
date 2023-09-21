@@ -4,7 +4,7 @@ import { ConfirmationModalComponent } from './confirmation-modal.component';
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "../dialog/dialog-config";
 import { TranslateModule } from "@ngx-translate/core";
-import { MatLegacyButtonModule as MatButtonModule } from "@angular/material/legacy-button";
+import { MatButtonModule } from "@angular/material/button";
 
 describe('ConfirmationModalComponent', () => {
   let component: ConfirmationModalComponent;

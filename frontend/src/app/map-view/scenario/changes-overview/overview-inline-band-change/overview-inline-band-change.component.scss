@@ -46,21 +46,37 @@
       flex-direction: column;
       margin: 0.4rem 0 0.6rem;
 
-      .mat-radio-button {
-        display: block;
+      .mat-mdc-radio-button {
+        display: flex;
         height: 16px;
         margin: 0.3rem 0 0;
         padding-left: 1.85rem;
 
-        ::ng-deep .mat-radio-label {
-          .mat-radio-outer-circle, .mat-radio-inner-circle {
-            width: 14px;
-            height: 14px;
-            top: 3px;
-            left: 4px;
+        ::ng-deep .mdc-form-field {
+          .mdc-radio {
+            padding: 0;
+
+            .mdc-radio__outer-circle {
+              width: 14px;
+              height: 14px;
+              top: 3px;
+              left: 4px;
+            }
+
+            .mdc-radio__inner-circle {
+              border-width: 7px;
+              width: 0px;
+              height: 0px;
+              top: 3px;
+              left: 4px;
+            }
+
+            .mat-mdc-radio-touch-target {
+              height: 16px;
+            }
           }
 
-          .mat-radio-label-content {
+          .mdc-label {
             font-size: 1.1rem;
           }
         }

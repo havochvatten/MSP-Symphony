@@ -70,10 +70,8 @@ export class SelectIntersectionComponent {
     return a || b;
   }
 
-  selectMulti(index: number, event: Event) {
+  selectMulti(index: number) {
     this.multiselect[index] = !this.multiselect[index];
-    event.stopPropagation();
-    event.preventDefault();
   }
 
   select(index: number): void {

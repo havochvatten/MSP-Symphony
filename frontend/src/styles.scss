@@ -50,7 +50,9 @@ $symphony-fe-theme: map.set(
     mat-hav.$symphony-background-palette
 );
 
-@include mat.all-legacy-component-themes($symphony-fe-theme);
+/* TODO: prefer theming like the approach below to scattered
+    overriding declarations (Material migration) */
+/* @include mat.all-component-themes($symphony-fe-theme); */
 
 /* You can add global styles to this file, and also import other style files */
 html {

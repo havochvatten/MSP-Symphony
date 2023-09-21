@@ -38,10 +38,10 @@ import { ConfirmationModalComponent } from './confirmation-modal/confirmation-mo
 import { InlineMapComponent } from './inline-map/inline-map.component';
 import { SelectIntersectionComponent} from "@shared/select-intersection/select-intersection.component";
 import { ComparisonColorScaleComponent } from './comparison-color-scale/comparison-color-scale.component';
-import { MatLegacyButtonModule as MatButtonModule } from "@angular/material/legacy-button";
-import { MatLegacyCheckboxModule as MatCheckboxModule } from "@angular/material/legacy-checkbox";
-import { MatLegacyRadioModule as MatRadioModule } from "@angular/material/legacy-radio";
-import { MatLegacyInputModule as MatInputModule } from "@angular/material/legacy-input";
+import { MatButtonModule } from "@angular/material/button";
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatRadioModule } from "@angular/material/radio";
+import { MatInputModule } from "@angular/material/input";
 import { ListFilterComponent } from './list-filter/list-filter.component';
 
 @NgModule({
