@@ -17,7 +17,7 @@
   <button mat-flat-button [ngClass]="'secondary'" (click)="close()">{{
     cancelTextKey | translate
     }}</button>
-  <button mat-flat-button [disabled]="(multi && areas.length > 1 && !multiselect.reduce(multiAcc, false)) || (!multi && selected === -1)" (click)="confirm()">{{
+  <button mat-flat-button [disabled]="checkDisabled()" (click)="confirm()">{{
     confirmTextKey | translate
     }}</button>
 </div>

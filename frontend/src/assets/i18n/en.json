@@ -267,9 +267,9 @@
             },
             "select-intersection": {
                 "header": "Multiple default matrix couplings",
-                "message": "The selected area has ambiguous couplings to default sensitivity matrices.<br>Please select which area to analyze.",
+                "message": "The selected area has ambiguous standard matrix couplings.<br>Below are suggested valid area divisions that correspond to each standard matrix.<br>Choose which of these to include in the scenario.",
                 "default-matrix": "Default matrix for this area:",
-                "confirm-selection": "Use selected area"
+                "confirm-selection": "Use selected areas"
             },
             "calculate": "Calculate",
             "unsaved-changes": "Unsaved changes",

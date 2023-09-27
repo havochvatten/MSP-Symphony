@@ -71,6 +71,11 @@ button.mdc-button.mat-mdc-unelevated-button.mat-primary {
     }
   }
 
+  &[disabled], &[disabled]:hover {
+    background-color: $primary-disabled-bg-grey !important;
+    color: $primary-disabled-text-blue !important;
+  }
+
   &.secondary[disabled], &.secondary[disabled]:hover {
     background-color: white !important;
     border-color: $primary-disabled-text-grey;

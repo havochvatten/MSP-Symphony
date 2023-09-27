@@ -107,7 +107,7 @@ public class Scenario implements Serializable, BandChangeEntity {
     protected JsonNode operationOptions;
 
     @OneToMany(mappedBy = "scenario", orphanRemoval = true, fetch = FetchType.EAGER)
-    @Cascade({ CascadeType.ALL })
+    @Cascade({ CascadeType.MERGE, CascadeType.PERSIST })
     @Fetch(FetchMode.SUBSELECT)
     private List<ScenarioArea> areas = new ArrayList<>();
 
@@ -246,7 +246,8 @@ public class Scenario implements Serializable, BandChangeEntity {
     }
 
     protected void setScenarioAreas(List<ScenarioArea> scenarioareas) {
-        this.areas = scenarioareas;
+        this.areas.clear();
+        this.areas.addAll(scenarioareas);
     }
 
     public CalculationResult getLatestCalculation() {

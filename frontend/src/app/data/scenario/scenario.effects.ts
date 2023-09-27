@@ -18,7 +18,7 @@ import { UserSelectors } from '@data/user';
 import {
   fetchAreaMatrices,
   fetchAreaMatricesFailure,
-  fetchAreaMatricesSuccess, fetchAreaMatrixSuccess
+  fetchAreaMatricesSuccess, fetchAreaMatrixSuccess, splitAndReplaceScenarioAreaSuccess
 } from '@data/scenario/scenario.actions';
 
 @Injectable()
@@ -161,6 +161,18 @@ export class ScenarioEffects {
       }
     })
   ));
+
+  splitAndReplaceScenarioArea$ = createEffect(() => this.actions$.pipe(
+    ofType(ScenarioActions.splitAndReplaceScenarioArea),
+    mergeMap(({ scenarioId, replacedAreaId, replacementAreas }) => {
+      return this.scenarioService.splitAndReplaceScenarioArea(scenarioId, replacedAreaId, replacementAreas).pipe(
+        map((scenario) => ScenarioActions.splitAndReplaceScenarioAreaSuccess({ updatedScenario: scenario })),
+        catchError(({ status, error: message }) =>
+          of(ScenarioActions.saveScenarioFailure({ error: { status, message } }))
+        )
+      );
+    }))
+  );
 
   copyScenario$ = createEffect(() => this.actions$.pipe(
     ofType(ScenarioActions.copyScenario),

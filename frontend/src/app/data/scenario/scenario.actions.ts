@@ -93,6 +93,16 @@ export const saveScenarioArea = createAction(
   props<{ areaToBeSaved: ScenarioArea }>()
 );
 
+export const splitAndReplaceScenarioArea = createAction(
+  '[Scenario] Split and replace scenario area',
+  props<{ scenarioId: number, replacedAreaId: number, replacementAreas: ScenarioArea[] }>()
+);
+
+export const splitAndReplaceScenarioAreaSuccess = createAction(
+  '[Scenario] Split and replace scenario area success',
+  props<{ updatedScenario: Scenario }>()
+);
+
 export const addScenario = createAction(
   '[Scenario] Add scenario',
   props<{ scenario: Scenario }>()

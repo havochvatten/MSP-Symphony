@@ -59,11 +59,19 @@ export class SelectIntersectionComponent {
   }
 
   confirm() {
-    this.dialog.close(
-      this.multi ?
-        (this.areas.length > 1 ?
-          this.multiselect : [true]) :
-        this.selected);
+    if(!this.checkDisabled()) {
+      this.dialog.close(
+        this.multi ?
+          (this.areas.length > 1 ?
+            this.multiselect : [true]) :
+          this.selected);
+    }
+  }
+
+  checkDisabled():boolean {
+    return (this.multi &&
+            this.areas.length > 1 &&
+           !this.multiselect.reduce(this.multiAcc, false)) || (!this.multi && this.selected === -1);
   }
 
   multiAcc(a:boolean, b:boolean) : boolean {
