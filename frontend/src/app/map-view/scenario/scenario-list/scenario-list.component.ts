@@ -112,7 +112,6 @@ export class ScenarioListComponent extends Listable {
     this.dialogService.open(CalculationReportModalComponent, this.moduleRef, {
       data: { id }
     });
-    this.calculationService.addResult(id).catch(error => console.error(error));
   }
 
   async deleteScenario(scenario: Scenario) {
