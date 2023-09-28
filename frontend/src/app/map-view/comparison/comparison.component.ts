@@ -62,12 +62,12 @@ export class ComparisonComponent implements AfterViewInit {
                                    (this.bSelect.selected as MatOption).viewValue,
           dynamic = this.selectedScale === ComparisonScaleOptions.DYNAMIC;
     this.calcService.addComparisonResult(a, b, dynamic).then(
-      (dynamicMax: number) => {
+      (dynamicMax: number | null) => {
         this.dialogService.open(ComparisonReportModalComponent, this.moduleRef, {
           data: { a, b, dynamicMax }
         });
         if(dynamic) {
-          that.store.dispatch(CalculationActions.fetchDynamicComparisonLegend({ dynamicMax: dynamicMax, comparisonTitle }));
+          that.store.dispatch(CalculationActions.fetchDynamicComparisonLegend({ dynamicMax: dynamicMax || 0, comparisonTitle }));
         } else {
             that.store.dispatch(CalculationActions.fetchComparisonLegend({ comparisonTitle }));
         }

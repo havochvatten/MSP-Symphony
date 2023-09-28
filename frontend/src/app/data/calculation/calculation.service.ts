@@ -133,7 +133,7 @@ export class CalculationService implements OnDestroy {
 
   private addResultImage(id: number, epFragment: string) {
     const that = this;
-    return new Promise<number>((resolve, reject) => {
+    return new Promise<number | null>((resolve, reject) => {
       this.getStaticImage(`${env.apiBaseUrl}/calculation/` + epFragment).subscribe({
         next(response) {
           const extentHeader = response.headers.get('SYM-Image-Extent'),
@@ -148,7 +148,7 @@ export class CalculationService implements OnDestroy {
                             AppSettings.MAP_PROJECTION,
               interpolate: that.aliasing
             });
-            resolve(dynamicMaxHeader ? +dynamicMaxHeader : 0);
+            resolve(dynamicMaxHeader ? +dynamicMaxHeader : null);
           } else {
             console.error(
               'Result image for calculation ' + id + ' does not have any extent header, ignoring.'
@@ -201,6 +201,7 @@ export class CalculationService implements OnDestroy {
   public getLegend(type: LegendType) {
     return this.http.get<Legend>(`${env.apiBaseUrl}/legend/${type}`);
   }
+
   public getDynamicComparisonLegend(dynamicMax: number) {
     return this.http.get<Legend>(`${env.apiBaseUrl}/legend/comparison?dynamicMax=${dynamicMax}`);
   }

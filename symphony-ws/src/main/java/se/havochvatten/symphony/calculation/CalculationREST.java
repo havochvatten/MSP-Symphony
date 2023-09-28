@@ -511,11 +511,17 @@ public class CalculationREST {
         // Revving caching strategy
         var cc = new CacheControl();
         cc.setMaxAge(WebUtil.ONE_YEAR_IN_SECONDS);
-        return ok(baos.toByteArray(), "image/png")
+
+        Response response = ok(baos.toByteArray(), "image/png")
             .header("SYM-Image-Extent", WebUtil.createExtent(targetEnvelope).toString())
-            .header("SYM-Dynamic-Max", new Formatter(Locale.US).format("%.3f", dynamicMax))
             .cacheControl(cc)
             .build();
+
+        if(dynamicComparativeScale) {
+            response.getHeaders().add("SYM-Dynamic-Max", new Formatter(Locale.US).format("%.3f", dynamicMax));
+        }
+
+        return response;
     }
 
     public static boolean hasAccess(CalculationResult calc, Principal user) {
