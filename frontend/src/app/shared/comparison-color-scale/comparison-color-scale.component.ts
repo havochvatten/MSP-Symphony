@@ -1,9 +1,5 @@
-import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
-import { Observable } from "rxjs";
-import { Store } from "@ngrx/store";
+import { Component, Input } from '@angular/core';
 import { ComparisonLegendState } from "@data/calculation/calculation.interfaces";
-import { CalculationSelectors } from "@data/calculation";
-import { State } from "@src/app/app-reducer";
 
 @Component({
   selector: 'app-comparison-color-scale',

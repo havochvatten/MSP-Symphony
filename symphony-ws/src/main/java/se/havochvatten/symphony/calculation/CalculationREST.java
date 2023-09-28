@@ -490,7 +490,14 @@ public class CalculationREST {
             // "Dynamic" color maxima
             if(dynamicComparativeScale) {
                 double[] extrema = StatsNormalizer.getExtrema(coverage, normalizationFactory.getOperations());
+
                 dynamicMax = Math.max(Math.abs(extrema[0]), Math.abs(extrema[1]));
+
+                // edge case: both extrema may be 0 (no difference);
+                // arbitrarily set 'tiny' dynamic maximum (we'll go with 0.01%, truncates to 0% in report)
+                // to provide a "mappable" range for the color scale
+                dynamicMax = dynamicMax == 0 ? 0.0001 : dynamicMax;
+
                 image = WebUtil.renderDynamicComparison(coverage, targetCRS, targetEnvelope, sld, dynamicMax);
             } else {
                 image = WebUtil.render(coverage, targetCRS, targetEnvelope, sld);
