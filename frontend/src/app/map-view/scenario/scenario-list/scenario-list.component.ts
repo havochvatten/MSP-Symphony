@@ -2,11 +2,11 @@ import { Component, NgModuleRef, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
-import { of, Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { Scenario, ScenarioCopyOptions } from '@data/scenario/scenario.interfaces';
 import { Area } from '@data/area/area.interfaces';
 import { AreaSelectors } from '@data/area';
-import { catchError, retry } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { CalculationReportModalComponent } from '@shared/report-modal/calculation-report-modal.component';
 import { DialogService } from '@shared/dialog/dialog.service';
 import * as Normalization from '@src/app/map-view/scenario/scenario-detail/normalization-selection/normalization-selection.component';
@@ -16,10 +16,9 @@ import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenar
 import { CopyScenarioComponent } from "@src/app/map-view/scenario/copy-scenario/copy-scenario.component";
 import { Listable } from "@shared/list-filter/listable.directive";
 import { ListItemsSort } from "@data/common/sorting.interfaces";
-import { BatchStatusService } from "@src/app/socket/batch-status.service";
 import { CalculationService } from "@data/calculation/calculation.service";
 import { CalculationActions } from "@data/calculation";
-import { MatCheckbox, MatCheckboxChange } from "@angular/material/checkbox";
+import intersects from "@turf/boolean-intersects";
 
 @Component({
     selector: 'app-scenario-list',
@@ -39,6 +38,7 @@ export class ScenarioListComponent extends Listable {
 
   private areaSubscription$: Subscription;
   private autoBatchSubscription$: Subscription;
+  public selectionOverlap: Observable<boolean>;
 
   constructor(
     protected store: Store<State>,
@@ -51,6 +51,9 @@ export class ScenarioListComponent extends Listable {
     this.areaSubscription$ = this.store
       .select(AreaSelectors.selectSelectedAreaData)
       .subscribe(area => (this.selectedAreas = area as Area[]));
+
+    this.selectionOverlap = this.store
+        .select(AreaSelectors.selectOverlap);
 
     this.autoBatchSubscription$ = this.store
       .select(ScenarioSelectors.selectAutoBatch).subscribe(

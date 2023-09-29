@@ -94,13 +94,12 @@ class AreaLayer extends VectorLayer<VectorSource> {
 
   constructor(
     private map: OLMap,
-    private setSelection: (features?: Feature[]) => void,
+    private setSelection: (features: Feature[] | undefined, overlap: boolean) => void,
     private zoomToExtent: (extent: Extent, duration: number) => void,
     private onDrawEnd = (polygon: Polygon) => {},
     private onDrawInvalid = () => {},
-    onSplitClick = (feature: Feature, prevFeature: Feature) => {},
-    onMergeClick = (feature: Feature, prevFeature: Feature) => {},
-    overlapWarning = () => {},
+    onSplitClick: (feature: Feature, prevFeature: Feature) => {},
+    onMergeClick: (features: Feature[]) => {},
     private scenarioLayer: ScenarioLayer,
     private translateService: TranslateService,
     private geoJson: GeoJSON
@@ -160,18 +159,15 @@ class AreaLayer extends VectorLayer<VectorSource> {
           const feature = event.selected[0];
           if (feature !== undefined) {
             // Merge or split (Alt key pressed)
-            if (event.mapBrowserEvent.originalEvent.altKey && that.selectedFeatures.length === 1) {
+            if (event.mapBrowserEvent.originalEvent.altKey) {
               if (event.mapBrowserEvent.originalEvent.shiftKey) {
-                onMergeClick(feature, that.selectedFeatures[0]);
-              } else {
+                onMergeClick([feature, ...that.selectedFeatures]);
+              } else if (that.selectedFeatures.length === 1) {
                 onSplitClick(feature, that.selectedFeatures[0]);
               }
             } else {
               // Expand selection (Ctrl key pressed)
               if (event.mapBrowserEvent.originalEvent.ctrlKey) {
-                if (that.selectedFeatures.some(f => intersects(f, feature))) {
-                  overlapWarning();
-                }
                 if (that.selectedFeatures.includes(feature)) {
                   that.selectedFeatures = that.selectedFeatures.filter(f => !isEqual(feature.getGeometry(), f.getGeometry()));
                 } else {
@@ -194,12 +190,23 @@ class AreaLayer extends VectorLayer<VectorSource> {
               that.selectedFeatures = [];
             }
           }
-          that.setSelection(that.selectedFeatures);
+          that.setSelection(that.selectedFeatures, that.checkOverlap());
         });
       }
     })(this);
 
     this.map.addInteraction(this.onClickInteraction);
+  }
+
+  private checkOverlap(): boolean {
+    for(const f of this.selectedFeatures) {
+      for(const f2 of this.selectedFeatures) {
+        if(f !== f2 && intersects(f, f2)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   private async addHoverInteraction(map: OLMap, areaLayer: VectorLayer<VectorSource>) {
@@ -356,7 +363,7 @@ class AreaLayer extends VectorLayer<VectorSource> {
 
   deselectAreas() {
     this.selectedFeatures = [];
-    this.setSelection([]);
+    this.setSelection([], false);
   }
 }
 

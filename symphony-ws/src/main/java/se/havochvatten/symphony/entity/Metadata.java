@@ -24,9 +24,8 @@ public class Metadata implements Serializable {
 
     @Id
     @Basic(optional = false)
-    @SequenceGenerator(name = "meta_seq", sequenceName = "meta_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "meta_seq")
-    @Column(name = "meta_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "meta_id", nullable = false)
     private Integer id;
 
     @Column(name = "meta_bandnumber")

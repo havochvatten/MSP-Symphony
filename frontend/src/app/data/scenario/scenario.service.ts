@@ -120,4 +120,8 @@ export class ScenarioService {
   splitScenarioForBatch(scenarioId: number, options: ScenarioSplitOptions) {
     return this.http.post<ScenarioSplitResponse>(this.scenarioApiBaseUrl + '/' + scenarioId + '/split', options);
   }
+
+  splitAndReplaceScenarioArea(scenarioId: number, replacedAreaId: number, replacementAreas: ScenarioArea[]) {
+    return this.http.post<Scenario>(this.scenarioApiBaseUrl + '/' + scenarioId + '/splitAndReplaceArea/' + replacedAreaId, replacementAreas);
+  }
 }

@@ -229,6 +229,7 @@
                 "user-scenarios": "Scénarios utilisateur",
                 "add-scenario-label": "Créer un nouveau scénario groupé",
                 "add-scenario-label-single": "Créer un nouveau scénario pour {{ area }}",
+                "overlap": "Impossible de créer un scénario pour des zones superposées",
                 "scenario-name": "Scénario sans nom",
                 "scenario-name-template": "Scénario {{area}}",
                 "select-area-first-label": "Commencez par sélectionner une zone pour le scénario.",
@@ -266,9 +267,9 @@
             },
             "select-intersection": {
                 "header": "Couplages ambigus aux matrices de sensibilité",
-                "message": "La zone sélectionnée a des couplages ambigus avec les matrices de sensibilité par défaut.<br>Veuillez sélectionner la zone à analyser.",
+                "message": "La zone sélectionnée contient un couplage matriciel par défaut ambigu.<br>Choisissez les subdivisions à inclure dans le scénario parmi les suggestions correspondant à chaque matrice par défaut.",
                 "default-matrix": "Matrice par défaut pour cette zone:",
-                "confirm-selection": "Analyser la zone sélectionnée"
+                "confirm-selection": "Analyser les zones sélectionnées"
             },
             "calculate": "Calculer",
             "unsaved-changes": "Modifications non enregistrées",
@@ -458,11 +459,15 @@
         },
         "area-selection-hint": {
             "emphasis": "Sélectionner / désélectionner plusieurs zones ",
-            "detail": "par Ctrl + clic ou ⌘ + clic."
+            "detail": "par {{ ctrlButton }} + clic."
         },
         "special-actions-hint": {
             "emphasis": "Partager ou fusionner zone",
-            "detail": "Alt / ⌥ + clic pour séparer par section, Alt / ⌥ + Shift + clic pour fusionner"
+            "detail": "{{ altButton }} + clic pour séparer par section, {{ altButton }} + Shift + clic pour fusionner"
+        },
+        "merge-areas-hint" : {
+            "emphasis": "Fusionner les zones",
+            "detail": "{{ altButton }} + Shift + clic pour fusionner la sélection."
         }
     },
     "controls": {

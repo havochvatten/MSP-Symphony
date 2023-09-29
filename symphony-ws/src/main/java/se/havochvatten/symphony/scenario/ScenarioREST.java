@@ -1,5 +1,6 @@
 package se.havochvatten.symphony.scenario;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -142,6 +143,28 @@ public class ScenarioREST {
             throw new NotAuthorizedException("Not owner of scenario");
     }
 
+    @POST
+    @ApiOperation(value = "Split and replace area within scenario", response = ScenarioDto.class)
+    @Path("{id}/splitAndReplaceArea/{areaId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response splitAndReplaceArea(@Context HttpServletRequest req,
+        @PathParam("id") int scenarioId, @PathParam("areaId") int scenarioAreaId, ScenarioAreaDto[] replacementAreas) {
+        if (req.getUserPrincipal() == null)
+            throw new NotAuthorizedException("Null principal");
+
+        Scenario scenario = service.findById(scenarioId);
+
+        if (req.getUserPrincipal().getName().equals(scenario.getOwner())) {
+            var updatedScenario = service.splitAndReplaceArea(scenario, scenarioAreaId, replacementAreas);
+            return Response.ok(new ScenarioDto(updatedScenario)).build();
+        }
+        else
+            throw new NotAuthorizedException("Not owner of scenario");
+
+    }
+
     @DELETE
     @ApiOperation(value = "Delete scenario")
     @Path("{id}")
@@ -174,7 +197,7 @@ public class ScenarioREST {
     @RolesAllowed("GRP_SYMPHONY")
     public Response addScenarioAreas(@Context HttpServletRequest req,
                                        @PathParam("id") int scenarioId,
-                                       ScenarioAreaDto[] areaDtos) {
+                                       ScenarioAreaDto[] areaDtos) throws JsonProcessingException {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
 

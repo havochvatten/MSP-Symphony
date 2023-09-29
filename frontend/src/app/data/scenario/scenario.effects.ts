@@ -8,7 +8,7 @@ import {
   retry,
   withLatestFrom
 } from 'rxjs/operators';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { ScenarioService } from '@data/scenario/scenario.service';
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario/index';
 import { from, of } from 'rxjs';
@@ -18,7 +18,7 @@ import { UserSelectors } from '@data/user';
 import {
   fetchAreaMatrices,
   fetchAreaMatricesFailure,
-  fetchAreaMatricesSuccess, fetchAreaMatrixSuccess
+  fetchAreaMatricesSuccess, fetchAreaMatrixSuccess, splitAndReplaceScenarioAreaSuccess
 } from '@data/scenario/scenario.actions';
 
 @Injectable()
@@ -29,8 +29,7 @@ export class ScenarioEffects {
     private scenarioService: ScenarioService
   ) {}
 
-  @Effect()
-  fetchScenarios$ = this.actions$.pipe(
+  fetchScenarios$ = createEffect(() => this.actions$.pipe(
     ofType(ScenarioActions.fetchScenarios),
     mergeMap(() =>
       this.scenarioService.getUserScenarios().pipe(
@@ -40,9 +39,8 @@ export class ScenarioEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
   saveScenario$ = this.actions$.pipe(
     ofType(ScenarioActions.saveActiveScenario),
     mergeMap(({ scenarioToBeSaved }) => {
@@ -56,8 +54,7 @@ export class ScenarioEffects {
     })
   );
 
-  @Effect()
-  saveScenarioArea$ = this.actions$.pipe(
+  saveScenarioArea$ = createEffect(() => this.actions$.pipe(
     ofType(ScenarioActions.saveScenarioArea),
     concatMap(action =>
       of(action).pipe(withLatestFrom(this.store.select(ScenarioSelectors.selectActiveScenario)))
@@ -71,10 +68,9 @@ export class ScenarioEffects {
           )
       );
     })
-  );
+  ));
 
-  @Effect()
-  deleteScenario$ = this.actions$.pipe(
+  deleteScenario$ = createEffect(() => this.actions$.pipe(
     ofType(ScenarioActions.deleteScenario),
     mergeMap(({ scenarioToBeDeleted }) => {
       return this.scenarioService.delete(scenarioToBeDeleted.id).pipe(
@@ -84,10 +80,9 @@ export class ScenarioEffects {
         )
       );
     })
-  );
+  ));
 
-  @Effect()
-  deleteScenarioArea$ = this.actions$.pipe(
+  deleteScenarioArea$ = createEffect(() => this.actions$.pipe(
     ofType(ScenarioActions.deleteScenarioArea),
     mergeMap(({ areaId }) => {
       return this.scenarioService.deleteArea(areaId).pipe(
@@ -97,10 +92,9 @@ export class ScenarioEffects {
         )
       );
     })
-  );
+  ));
 
-  @Effect()
-  addScenarioAreas$ = this.actions$.pipe(
+  addScenarioAreas$ = createEffect(() => this.actions$.pipe(
     ofType(ScenarioActions.addAreasToActiveScenario),
     concatMap(action =>
       of(action).pipe(withLatestFrom(this.store.select(ScenarioSelectors.selectActiveScenario)))
@@ -116,19 +110,17 @@ export class ScenarioEffects {
           )
         }
       )
-  );
+  ));
 
-  @Effect()
-  toggleChangeVisibility$ = this.actions$.pipe(
+  toggleChangeVisibility$ = createEffect(() => this.actions$.pipe(
     ofType(ScenarioActions.toggleChangeAreaVisibility),
     map(({ feature, featureIndex }) => {
       const visible = !!this.scenarioService.setScenarioChangeVisibility(feature);
       return ScenarioActions.setChangeAreaVisibility({ featureIndex, visible });
     })
-  );
+  ));
 
-  @Effect()
-  fetchMatrices$ = this.actions$.pipe(
+  fetchMatrices$ = createEffect(() => this.actions$.pipe(
     ofType(fetchAreaMatrices, ScenarioActions.addScenarioAreasSuccess),
     concatMap(action =>
       of(action).pipe(withLatestFrom(this.store.select(UserSelectors.selectBaseline)))
@@ -168,10 +160,21 @@ export class ScenarioEffects {
         );
       }
     })
+  ));
+
+  splitAndReplaceScenarioArea$ = createEffect(() => this.actions$.pipe(
+    ofType(ScenarioActions.splitAndReplaceScenarioArea),
+    mergeMap(({ scenarioId, replacedAreaId, replacementAreas }) => {
+      return this.scenarioService.splitAndReplaceScenarioArea(scenarioId, replacedAreaId, replacementAreas).pipe(
+        map((scenario) => ScenarioActions.splitAndReplaceScenarioAreaSuccess({ updatedScenario: scenario })),
+        catchError(({ status, error: message }) =>
+          of(ScenarioActions.saveScenarioFailure({ error: { status, message } }))
+        )
+      );
+    }))
   );
 
-  @Effect()
-  copyScenario$ = this.actions$.pipe(
+  copyScenario$ = createEffect(() => this.actions$.pipe(
     ofType(ScenarioActions.copyScenario),
     mergeMap(({ scenarioId, options }) => {
       return this.scenarioService.copy(scenarioId, options).pipe(
@@ -180,10 +183,10 @@ export class ScenarioEffects {
           of(ScenarioActions.copyScenarioFailure({ error: { status, message } }))
         )
       );
-    }));
+    }))
+  );
 
-  @Effect()
-  transferChangesToScenario$ = this.actions$.pipe(
+  transferChangesToScenario$ = createEffect(() => this.actions$.pipe(
     ofType(ScenarioActions.transferScenarioChanges),
     concatMap(action =>
       of(action).pipe(withLatestFrom(this.store.select(ScenarioSelectors.selectActiveScenario)))
@@ -208,10 +211,9 @@ export class ScenarioEffects {
         );
       }
     )
-  );
+  ));
 
-  @Effect()
-  transferChangesToArea$ = this.actions$.pipe(
+  transferChangesToArea$ = createEffect(() => this.actions$.pipe(
     ofType(ScenarioActions.transferScenarioAreaChanges),
     concatMap(action =>
       of(action).pipe(withLatestFrom(this.store.select(ScenarioSelectors.selectActiveScenario),
@@ -239,10 +241,9 @@ export class ScenarioEffects {
           )
         );
     })
-  );
+  ));
 
-  @Effect()
-  splitScenarioForBatch$ = this.actions$.pipe(
+  splitScenarioForBatch$ = createEffect(() => this.actions$.pipe(
     ofType(ScenarioActions.splitScenarioForBatch),
     mergeMap(({ scenarioId, options }) => {
       return this.scenarioService.splitScenarioForBatch(scenarioId, options).pipe(
@@ -252,14 +253,13 @@ export class ScenarioEffects {
         )
       );
     })
-  );
+  ));
 
-  @Effect()
-  splitScenarioForBatchSuccess$ = this.actions$.pipe(
+  splitScenarioForBatchSuccess$ = createEffect(() => this.actions$.pipe(
     ofType(ScenarioActions.splitScenarioForBatchSuccess),
     mergeMap((response) => {
       return from([ScenarioActions.setAutoBatch({ ids: response.splitScenarioIds }),
                    ScenarioActions.fetchScenarios()]);
     })
-  );
+  ));
 }

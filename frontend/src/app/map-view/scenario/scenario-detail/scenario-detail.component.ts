@@ -25,7 +25,7 @@ import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
 import {
   ChangesProperty,
-  Scenario,
+  Scenario, ScenarioArea,
   ScenarioSplitOptions,
 } from '@data/scenario/scenario.interfaces';
 import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
@@ -55,6 +55,8 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   env = environment;
   autoSaveSubscription$?: Subscription;
   changesText: { [key: number]: string; } = {};
+
+  replacedAreaIds: number[] = [];
 
   @Input() scenario!: Scenario;
   @Input() deleteAreaDelegate!: ((a:number, e:MouseEvent, s:Scenario) => void);
@@ -115,11 +117,11 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     this.matrixDataSubscription$ = this.store.select(ScenarioSelectors.selectAreaMatrixData).subscribe(
       async data => {
       if(data !== null && !some(data, d => d === null)) {
-        for(const area_id of Object.keys(data).map(id => parseInt(id))) {
-          const area_ix = this.scenario.areas.findIndex(a => a.id == area_id),
-                matrixData = data[area_id];
-          if (!matrixData.defaultArea && matrixData.overlap.length > 0) {
-            const selectedArea = await this.dialogService.open(SelectIntersectionComponent, this.moduleRef, {
+        for (const area_id of Object.keys(data).map(id => parseInt(id))) {
+          const matrixData = data[area_id];
+          if (!matrixData.defaultArea && matrixData.overlap.length > 0 && !this.replacedAreaIds.includes(area_id)) {
+            this.replacedAreaIds.push(area_id);
+            const selectedAreas = (await this.dialogService.open(SelectIntersectionComponent, this.moduleRef, {
               data: {
                 areas: matrixData.overlap.map(overlap => {
                   return {
@@ -127,19 +129,36 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
                     metaDescription: overlap.defaultMatrix.name
                   }
                 }),
+                multi: true,
                 headerTextKey: 'map.editor.select-intersection.header',
                 messageTextKey: 'map.editor.select-intersection.message',
                 confirmTextKey: 'map.editor.select-intersection.confirm-selection',
                 metaDescriptionTextKey: 'map.editor.select-intersection.default-matrix'
               }
-            }) as number;
-            if (selectedArea in matrixData.overlap) {
-              this.store.dispatch(ScenarioActions.saveScenarioArea(
-                { areaToBeSaved: { ...this.scenario.areas[area_ix],
-                    feature: { ...this.scenario.areas[area_ix].feature, geometry: matrixData.overlap[selectedArea].polygon }
-                  }}));
+            }) as boolean[]).filter(a => a);
+
+            if (selectedAreas.length > 0) {
+              const replacementAreas: ScenarioArea[] = selectedAreas.map((selectedArea, ix) => {
+                const area = this.scenario.areas[this.scenario.areas.findIndex(a => a.id == area_id)];
+                return {
+                  ...area,
+                  id: -1,
+                  feature: {...area.feature,
+                    geometry: matrixData.overlap[ix].polygon,
+                    properties: { ...area.feature.properties, statePath: [] } },
+                  matrix: {matrixType: 'STANDARD', matrixId: matrixData.overlap[ix].defaultMatrix.id}
+                }
+              });
+
+              this.store.dispatch(ScenarioActions.splitAndReplaceScenarioArea(
+                {scenarioId: this.scenario.id, replacedAreaId: area_id, replacementAreas: replacementAreas}));
+
             } else {
-              this.store.dispatch(ScenarioActions.closeActiveScenario());
+              if(this.scenario.areas.filter(a => a.id !== area_id).length > 0) {
+                this.store.dispatch(ScenarioActions.closeActiveScenario());
+              } else {
+                this.store.dispatch(ScenarioActions.deleteScenarioArea({ areaId: area_id }));
+              }
             }
           }
         }
@@ -227,19 +246,6 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   setNormalizationOptions(opts: NormalizationOptions) {
     this.unsaved = true;
     this.store.dispatch(ScenarioActions.changeScenarioNormalization({ normalizationOptions: opts }));
-
-    // TODO: investigate and fix to get rid of the "nudge" below.
-    // Angular seems to be having some trouble with updating nested components
-    // through input properties after programmatically triggered events.
-    // In this case we emit a custom modeSelectionEvent to disallow the domain
-    // normalization by percentage option for rarity adjusted calculations.
-
-    // Sort of an anti-pattern anyway, also a little unclear why we don't simply
-    // dispatch directly instead of emitting a synthetic event.
-
-    setTimeout(() => {
-      this.scenario = this.scenario;
-    });
   }
 
   saveImmediate() {
@@ -277,11 +283,13 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   }
 
   async openIntensityOverview() {
-    this.unsaved ||= await this.dialogService.open<boolean>(ChangesOverviewComponent, this.moduleRef, {
+    const intensityChanged = await this.dialogService.open<boolean>(ChangesOverviewComponent, this.moduleRef, {
       data: {
         scenario: this.scenario,
       }
     });
+
+    this.unsaved ||= intensityChanged;
     this.setChangesText();
   }
 

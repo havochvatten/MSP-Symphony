@@ -10,7 +10,7 @@ import {
   NormalizationSelectionComponent
 } from "@src/app/map-view/scenario/scenario-detail/normalization-selection/normalization-selection.component";
 import { MatButtonModule } from "@angular/material/button";
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatProgressSpinnerModule as MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatRadioModule } from "@angular/material/radio";
 import { MatSelectModule } from "@angular/material/select";
 import { MatCheckboxModule } from "@angular/material/checkbox";

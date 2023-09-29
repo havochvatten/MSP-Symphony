@@ -12,6 +12,7 @@ import { UserSelectors } from "@data/user";
 import { Subscription } from "rxjs";
 import { Scenario } from "@data/scenario/scenario.interfaces";
 import { GeoJSON } from "ol/format";
+import intersects from "@turf/boolean-intersects";
 
 @Component({
   selector: 'app-add-scenario-areas',
@@ -26,6 +27,7 @@ export class AddScenarioAreasComponent {
   @Input() noneSelectedTipKey!: string;
   @Input() singleSelectedTipKey!: string;
   @Input() multipleSelectedTipKey!: string;
+  @Input() selectionOverlap: boolean = false;
   @Input() scenario?: Scenario;
   @Input() disabled = false;
 
@@ -53,7 +55,7 @@ export class AddScenarioAreasComponent {
   }
 
   callDelegate() {
-    if(!(this.disabled || this.selectedAreas.length === 0)) {
+    if(!(this.disabled || this.selectedAreas.length === 0 || this.selectionOverlap)) {
       this.clickDelegate(this.selectedAreas, this);
     }
   }

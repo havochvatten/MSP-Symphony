@@ -6,7 +6,6 @@ import com.vladmihalcea.hibernate.type.array.DoubleArrayType;
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
@@ -70,7 +69,6 @@ import java.util.Map;
         @TypeDef(name = "double-matrix", typeClass = DoubleArrayType.class)
 })
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-@DynamicInsert
 public class CalculationResult implements Serializable {
     private static final long serialVersionUID = 1L;
 

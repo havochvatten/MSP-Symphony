@@ -280,6 +280,11 @@ export const scenarioReducer = createReducer(
       matricesLoading: loading
     }
   }),
+  on(ScenarioActions.splitAndReplaceScenarioAreaSuccess, (state, { updatedScenario }) => ({
+    ...state,
+    scenarios: setIn(state.scenarios, [state.active], updatedScenario),
+    matricesLoading: false
+  })),
   on(ScenarioActions.transferChangesSuccess, (state, { scenario: updatedScenario }) => {
     return {
       ...state,

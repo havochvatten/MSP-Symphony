@@ -229,6 +229,7 @@
                 "user-scenarios": "Mina scenarion",
                 "add-scenario-label": "Skapa ett nytt grupperat scenario",
                 "add-scenario-label-single": "Skapa ett nytt scenario för {{area}}",
+                "overlap": "Kan ej skapa scenario för överlappande områden",
                 "scenario-name": "Namnlöst scenario",
                 "scenario-name-template": "Scenario {{area}}",
                 "select-area-first-label": "Börja med att välja områden för scenariot.",
@@ -266,9 +267,9 @@
             },
             "select-intersection": {
                 "header": "Flera standardmatriskopplingar",
-                "message": "Det valda området omfattar flera olika standardmatriskopplingar.<br>Välj det område du vill analysera.",
+                "message": "Det valda området omfattar flera olika standardmatriskopplingar.<br>Nedan föreslås giltiga områdesindelningar för respektive standardmatris.<br>Välj vilka av dessa som skall ingå i scenariot.",
                 "default-matrix": "Områdets standardmatriskoppling:",
-                "confirm-selection": "Använd valt område"
+                "confirm-selection": "Använd valda områden"
             },
             "calculate": "Beräkna",
             "unsaved-changes": "Osparade ändringar",
@@ -458,11 +459,15 @@
         },
         "area-selection-hint": {
             "emphasis": "Välj / avmarkera flera områden",
-            "detail": "genom Ctrl + klick eller ⌘ + klick"
+            "detail": "genom {{ ctrlButton }} + klick"
         },
         "special-actions-hint": {
             "emphasis": "Dela eller sammanfoga område",
-            "detail": "Alt / ⌥ + klick delar överlappande, Alt / ⌥ + Shift + sammanfogar"
+            "detail": "{{ altButton }} + klick delar överlappande, {{ altButton }} + Shift + klick sammanfogar"
+        },
+        "merge-areas-hint" : {
+            "emphasis": "Sammanfoga områden",
+            "detail": "{{ altButton }} + Shift + klick på 'sista' området för att sammanfoga."
         }
     },
     "controls": {

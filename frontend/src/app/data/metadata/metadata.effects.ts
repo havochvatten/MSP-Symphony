@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Actions, concatLatestFrom, Effect, ofType } from '@ngrx/effects';
+import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { catchError, concatMap, debounceTime, map, mergeMap, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import MetadataService from './metadata.service';
@@ -12,7 +12,7 @@ import {
   Components,
   Groups
 } from './metadata.interfaces';
-import { Store } from '@ngrx/store';
+import { Action, Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { getIn } from 'immutable';
 import { ScenarioActions } from '@data/scenario';
@@ -27,8 +27,7 @@ export class MetadataEffects {
     private metadataService: MetadataService
   ) {}
 
-  @Effect()
-  fetchMetadata$ = this.actions$.pipe(
+  fetchMetadata$ = createEffect(() => this.actions$.pipe(
     ofType(MetadataActions.fetchMetadata),
     mergeMap(({ baseline }) =>
       this.metadataService.getMetaData(baseline).pipe(
@@ -55,10 +54,9 @@ export class MetadataEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
-  updateMultiplierMapState$ = this.actions$.pipe(
+  updateMultiplierMapState$ = createEffect(() => this.actions$.pipe(
     ofType(MetadataActions.updateMultiplier),
     debounceTime(200),
     concatMap(action =>
@@ -70,7 +68,7 @@ export class MetadataEffects {
       // Here we could fetch the state from the actual map feature using a Promise or such
       let getBand = getIn(metadata, [...bandPath, 'bandNumber'], NaN);
       if (typeof getBand !== 'number') {
-        return of();
+        return of<Action>();
       }
 
       return of(ScenarioActions.updateBandAttribute({
@@ -81,7 +79,7 @@ export class MetadataEffects {
         value: value
       })).pipe();
     })
-  );
+  ));
 
   private formatComponentData(layerData: APILayerData, componentType: ComponentKey): Groups {
     const useMetadataLocalLang = findBestLanguageMatch([layerData.language]);

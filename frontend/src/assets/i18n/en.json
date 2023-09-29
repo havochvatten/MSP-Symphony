@@ -229,6 +229,7 @@
                 "user-scenarios": "User Scenarios",
                 "add-scenario-label": "Create new grouped scenario",
                 "add-scenario-label-single": "Create new scenario for {{area}}",
+                "overlap": "Cannot create scenario for overlapping areas",
                 "scenario-name": "Untitled scenario",
                 "scenario-name-template": "Scenario {{area}}",
                 "select-area-first-label": "Start by selecting areas for the scenario.",
@@ -266,9 +267,9 @@
             },
             "select-intersection": {
                 "header": "Multiple default matrix couplings",
-                "message": "The selected area has ambiguous couplings to default sensitivity matrices.<br>Please select which area to analyze.",
+                "message": "The selected area has ambiguous standard matrix couplings.<br>Below are suggested valid area divisions that correspond to each standard matrix.<br>Choose which of these to include in the scenario.",
                 "default-matrix": "Default matrix for this area:",
-                "confirm-selection": "Use selected area"
+                "confirm-selection": "Use selected areas"
             },
             "calculate": "Calculate",
             "unsaved-changes": "Unsaved changes",
@@ -458,11 +459,15 @@
         },
         "area-selection-hint": {
             "emphasis": "Select / deselect multiple areas",
-            "detail": "using Ctrl + click or ⌘ + click."
+            "detail": "using {{ ctrlbutton }} + click."
         },
         "special-actions-hint": {
             "emphasis": "Cut or merge area",
-            "detail": "Alt / ⌥ + click splits by intersection, Alt / ⌥ + Shift + click merges."
+            "detail": "{{ altButton }} + click splits by intersection, {{ altButton }} + Shift + click merges."
+        },
+        "merge-areas-hint" : {
+            "emphasis": "Merge areas",
+            "detail": "{{ altButton }} + Shift + click on final area to merge selected."
         }
     },
     "controls": {

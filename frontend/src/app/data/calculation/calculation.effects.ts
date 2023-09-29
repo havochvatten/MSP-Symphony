@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { from, of } from 'rxjs';
 import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
 import { CalculationActions } from './';
@@ -13,8 +13,7 @@ export class CalculationEffects {
 
   }
 
-  @Effect()
-  fetchCalculations$ = this.actions$.pipe(
+  fetchCalculations$ = createEffect(() => this.actions$.pipe(
     ofType(CalculationActions.fetchCalculations),
     mergeMap(() =>
       this.calcService.getAll().pipe(
@@ -28,10 +27,9 @@ export class CalculationEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
-  deleteCalculation$ = this.actions$.pipe(
+  deleteCalculation$ = createEffect(() => this.actions$.pipe(
     ofType(CalculationActions.deleteCalculation),
     mergeMap(({ calculationToBeDeleted }) =>
       from(this.calcService.removeResult(calculationToBeDeleted.id)).pipe(
@@ -44,10 +42,9 @@ export class CalculationEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
-  fetchLegend$ = this.actions$.pipe(
+  fetchLegend$ = createEffect(() => this.actions$.pipe(
     ofType(CalculationActions.fetchLegend),
     mergeMap(({ legendType }) =>
       this.calcService.getLegend(legendType).pipe(
@@ -63,10 +60,9 @@ export class CalculationEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
-  fetchComparisonLegend$ = this.actions$.pipe(
+  fetchComparisonLegend$ = createEffect(() => this.actions$.pipe(
     ofType(CalculationActions.fetchComparisonLegend),
     mergeMap(({ comparisonTitle }) =>
       this.calcService.getLegend('comparison').pipe(
@@ -80,10 +76,9 @@ export class CalculationEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
-  fetchDynamicComparisonLegend$ = this.actions$.pipe(
+  fetchDynamicComparisonLegend$ = createEffect(() => this.actions$.pipe(
     ofType(CalculationActions.fetchDynamicComparisonLegend),
     mergeMap(({ dynamicMax, comparisonTitle }) =>
       this.calcService.getDynamicComparisonLegend(dynamicMax).pipe(
@@ -97,11 +92,9 @@ export class CalculationEffects {
         )
       )
     )
-  );
+  ));
 
-
-  @Effect()
-  fetchPercentile$ = this.actions$.pipe(
+  fetchPercentile$ = createEffect(() => this.actions$.pipe(
     ofType(CalculationActions.fetchPercentile),
     switchMap(() =>
       this.calcService.getPercentileValue().pipe(
@@ -115,10 +108,9 @@ export class CalculationEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
-  removeBatchProcess$ = this.actions$.pipe(
+  removeBatchProcess$ = createEffect(() => this.actions$.pipe(
     ofType(CalculationActions.removeFinishedBatchProcess),
     mergeMap(({ id }) =>
       this.calcService.removeFinishedBatchProcess(id).pipe(
@@ -132,16 +124,14 @@ export class CalculationEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
-  cancelBatchProcess$ = this.actions$.pipe(
+  cancelBatchProcess$ = createEffect(() => this.actions$.pipe(
     ofType(CalculationActions.cancelBatchProcess),
     mergeMap(({ id }) =>
       this.calcService.cancelBatchProcess(id).pipe(
         map(() => CalculationActions.cancelBatchProcessSuccess({ id }))
       )
     )
-  );
-
+  ));
 }

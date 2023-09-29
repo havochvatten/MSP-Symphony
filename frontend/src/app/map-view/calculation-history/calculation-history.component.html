@@ -50,7 +50,7 @@
           title="{{ 'map.history.delete' | translate: { calculationName: calculation.name } }}"
         >
         </app-icon>
-        <app-icon iconType="report" (click)="showReport(calculation.id)"
+        <app-icon iconType="report" (click)="showReport(calculation.id); $event.stopPropagation()"
           title="{{ 'map.history.show-report' | translate: { calculationName: calculation.name } }}">
         </app-icon>
       </div>

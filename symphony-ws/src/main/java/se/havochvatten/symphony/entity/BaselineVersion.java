@@ -22,11 +22,9 @@ import java.util.List;
 public class BaselineVersion implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @SequenceGenerator(name = "bver_seq", sequenceName = "bver_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bver_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Id
-    @NotNull
     @Column(name = "bver_id")
     private Integer id;
 

@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.StyledLayerDescriptor;
-import se.havochvatten.symphony.dto.ComparisonReportResponseDto;
 import se.havochvatten.symphony.dto.LegendDto;
 import se.havochvatten.symphony.service.PropertiesService;
 
@@ -15,7 +14,6 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Arrays;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
@@ -41,7 +39,10 @@ public class LegendREST {
             var type = LegendDto.Type.valueOf(legendType.toUpperCase());
 
             // parsing instead of directly typing 'dynamicMax' query parameter for locale independence
-            Double dynamicMax = dynamicMaxParam != null ? Double.parseDouble(dynamicMaxParam) : null;
+            // arbitrarily use 0.0001 as threshold if dynamic max = 0, to provide "mappable" range
+            // nb: duplicate calls to parseDouble() are intentional here since we need a final variable for lambda
+            final Double dynamicMax = dynamicMaxParam != null ?
+                (Double.parseDouble(dynamicMaxParam) == 0 ? 0.0001 : Double.parseDouble(dynamicMaxParam)) : null;
 
             StyledLayerDescriptor sld =
 					WebUtil.getSLD(LegendREST.class.getClassLoader().getResourceAsStream(props.getProperty(
