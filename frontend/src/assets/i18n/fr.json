@@ -374,6 +374,9 @@
             "show-report": "Ouvrir le rapport de calcul “{{ calculationName }}”",
             "delete": "Supprimer le résultat “{{ calculationName }}”",
             "filter-hint": "Filtrer les calculs par nom",
+            "show-result": "Afficher ce résultat en mode carte",
+            "hide-result": "Masquer ce résultat en mode carte",
+            "visible-result": "Ce résultat est visible en mode carte",
             "delete-modal" : {
                 "header": "Supprimer résultat",
                 "message": "Confirmer la suppression du résultat: <em>“{{ calculationName }}”</em>",

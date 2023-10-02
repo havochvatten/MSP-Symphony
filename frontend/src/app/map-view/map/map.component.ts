@@ -208,9 +208,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.store.dispatch(CalculationActions.resetComparisonLegend())
   }
 
-  public emitLayerChange(resultCount: number, cmpCount: number):void {
-    this.resultLayerGroupChange.emit(resultCount);
+  public emitLayerChange(resultIds: number[], cmpCount: number):void {
+    this.resultLayerGroupChange.emit(resultIds.length);
     this.resultLayerGroupChangeCmp.emit(cmpCount);
+    this.store.dispatch(CalculationActions.setVisibleResultLayers({ visibleResults: resultIds }));
   }
 
   @HostListener('window:keydown', ['$event'])

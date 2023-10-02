@@ -32,7 +32,7 @@ export class CalculationEffects {
   deleteCalculation$ = createEffect(() => this.actions$.pipe(
     ofType(CalculationActions.deleteCalculation),
     mergeMap(({ calculationToBeDeleted }) =>
-      from(this.calcService.removeResult(calculationToBeDeleted.id)).pipe(
+      from(this.calcService.deleteResult(calculationToBeDeleted.id)).pipe(
         mergeMap((_a,_i) => {
           CalculationActions.deleteCalculationSuccess();
           return of(CalculationActions.fetchCalculations(), ScenarioActions.fetchScenarios());

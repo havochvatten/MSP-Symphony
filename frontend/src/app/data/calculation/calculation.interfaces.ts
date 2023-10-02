@@ -15,7 +15,8 @@ export interface State {
   legends: LegendState;
   percentileValue: number;
   sortCalculations: ListItemsSort;
-  batchProcesses: {[key: number]: BatchCalculationProcessEntry}
+  batchProcesses: { [key: number]: BatchCalculationProcessEntry },
+  visibleResults: number[];
 }
 
 export interface Report {

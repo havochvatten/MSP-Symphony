@@ -23,7 +23,7 @@
 
   <div class="list-filter-container">
     <app-list-filter
-            [filterPlaceholder]="'map.editor.list.filter-hint' | translate"
+            [filterPlaceholder]="'map.history.filter-hint' | translate"
             (filterChange)="setFilter($event)"
             (sortChange)="setSort($event)"
     ></app-list-filter>
@@ -31,8 +31,11 @@
 
   <main *ngIf="!(loading$ | async) else loading" >
     <button *ngFor="let calculation of calculations$ | async; index as i"
-            [ngClass]="{'calculation' : true, 'filtered': filter(calculation.name)}"
-            (click)="load(calculation)">
+            [ngClass]="{
+              'calculation list-item' : true,
+              'filtered': filter(calculation.name),
+              'visible': resultIsVisible(calculation.id) }"
+            >
       <div class="calculation-info">
         <div class="name">
           <h4 *ngIf="editingName !== calculation.id" [title]="calculation.name">{{ calculation.name }}</h4>
@@ -41,20 +44,25 @@
                  (keydown.enter)="saveName($event, calculation, i)" (blur)="cancelEdit($event)"
                  (click)="$event.stopPropagation()"/>
 -->
-          <app-icon iconType="edit" (click)="editName($event, calculation.id)"></app-icon>
         </div>
         <span>{{ calculation.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
       </div>
-      <div class="actions" *ngIf="!calculation.loading">
+      <div class="list-actions" *ngIf="!calculation.loading">
+        <app-icon *ngIf="!resultIsVisible(calculation.id)" iconType="eye" (click)="loadResult(calculation.id)"
+                  title="{{ 'map.history.show-result' | translate }}"></app-icon>
+        <app-icon *ngIf="resultIsVisible(calculation.id)" iconType="eye-slash" (click)="removeResult(calculation.id)"
+                  title="{{ 'map.history.hide-result' | translate }}"></app-icon>
+        <app-icon iconType="report" (click)="showReport(calculation.id); $event.stopPropagation()"
+                  title="{{ 'map.history.show-report' | translate: { calculationName: calculation.name } }}">
+        </app-icon>
         <app-icon iconType="delete" (click)="confirmDelete(calculation, $event)"
           title="{{ 'map.history.delete' | translate: { calculationName: calculation.name } }}"
         >
         </app-icon>
-        <app-icon iconType="report" (click)="showReport(calculation.id); $event.stopPropagation()"
-          title="{{ 'map.history.show-report' | translate: { calculationName: calculation.name } }}">
-        </app-icon>
       </div>
       <mat-spinner *ngIf="calculation.loading" diameter="10"></mat-spinner>
+      <app-icon iconType="eye" class="visible" *ngIf="!calculation.loading && resultIsVisible(calculation.id)"
+                title="{{ 'map.history.visible-result' | translate }}"></app-icon>
     </button>
     <ng-container *ngIf="!$any(calculations$ | async).length" [ngTemplateOutlet]="noCalculations">
     </ng-container>

@@ -1,5 +1,5 @@
-import { Component, ElementRef, NgModuleRef, ViewChild } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, ElementRef, NgModuleRef, OnDestroy, ViewChild } from '@angular/core';
+import { Observable, Subscription } from 'rxjs';
 import { retry, tap } from "rxjs/operators";
 import { select, Store } from '@ngrx/store';
 import { environment } from "@src/environments/environment";
@@ -21,16 +21,19 @@ import { Listable } from "@shared/list-filter/listable.directive";
 @Component({
   selector: 'app-history',
   templateUrl: './calculation-history.component.html',
-  styleUrls: ['./calculation-history.component.scss']
+  styleUrls: ['./calculation-history.component.scss', '../list-actions.scss']
 })
-export class CalculationHistoryComponent extends Listable {
+export class CalculationHistoryComponent extends Listable implements OnDestroy {
   calculations$ = this.store.select(CalculationSelectors.selectCalculations);
   baselineCalculations$?: Observable<CalculationSlice[]>;
   loading$?: Observable<boolean>;
   baseline?: Baseline;
   editingName: string|false = false;
   environment = environment;
+  private visibleResults$: Subscription;
   private nameInputEl!: ElementRef;
+
+  private visibleResults: number[] = [];
 
   constructor(
     private store: Store<State>,
@@ -58,6 +61,12 @@ export class CalculationHistoryComponent extends Listable {
           })
         );
     });
+
+    this.visibleResults$ = this.store.select(CalculationSelectors.selectVisibleResults).pipe().subscribe(
+      (visibleResults) => {
+        this.visibleResults = visibleResults;
+      }
+    );
   }
 
   setSort(sortType: ListItemsSort): void {
@@ -69,21 +78,27 @@ export class CalculationHistoryComponent extends Listable {
       this.nameInputEl = content;
   }
 
+  resultIsVisible(id: number) {
+    return this.visibleResults.includes(id);
+  }
+
   showReport(id: string) {
     this.dialogService.open(CalculationReportModalComponent, this.moduleRef, {
       data: { id }
     });
   }
 
-  load(calculation: CalculationSlice) {
+  loadResult(calculationId: number) {
     if (this.editingName)
       return;
-    // TODO zoom to area extent
-    // TODO Make sure the result cannot be loaded several times
     // set loading flag in state
     // this.store.dispatch(CalculationActions.loadCalculation({calculation}));
-      this.calcService.addResult(calculation.id).
+      this.calcService.addResult(calculationId).
         catch(error => console.error(error));
+  }
+
+  removeResult(calculationId: number) {
+    this.calcService.removeResultPixels(calculationId);
   }
 
   async confirmDelete(calculation: CalculationSlice, event: Event) {
@@ -144,5 +159,9 @@ export class CalculationHistoryComponent extends Listable {
     }, 0);
     $event.stopPropagation();
     $event.preventDefault();
+  }
+
+  ngOnDestroy(): void {
+    this.visibleResults$.unsubscribe();
   }
 }

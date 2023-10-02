@@ -374,6 +374,9 @@
             "show-report": "Open calculation report “{{ calculationName }}”",
             "delete": "Delete saved calculation result “{{ calculationName }}”",
             "filter-hint": "Filter calculations by name",
+            "show-result": "Show result in map view",
+            "hide-result": "Hide result in map view",
+            "visible-result": "Result is currently visible in map view",
             "delete-modal" : {
                 "header": "Delete calculation",
                 "message": "Confirm deletion of previously saved calculation result: <em>“{{ calculationName }}”</em>",

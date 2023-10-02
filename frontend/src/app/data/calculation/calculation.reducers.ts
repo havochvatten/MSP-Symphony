@@ -18,7 +18,8 @@ export const initialState: CalculationInterfaces.State = {
     comparison: {}
   },
   sortCalculations: ListItemsSort.None,
-  batchProcesses: []
+  batchProcesses: [],
+  visibleResults: []
 };
 
 export const calculationReducer = createReducer(
@@ -86,7 +87,11 @@ export const calculationReducer = createReducer(
   on(CalculationActions.cancelBatchProcessSuccess, (state, { id }) => ({
     ...state,
     batchProcesses: setIn(state.batchProcesses, [id], {...state.batchProcesses[id], cancelled: true})
-  }))
+  })),
+  on(CalculationActions.setVisibleResultLayers, (state, { visibleResults }) => ({
+    ...state,
+    visibleResults: visibleResults
+  })),
 );
 
 function updateComparisonLegend(state: CalculationInterfaces.State, maxValueKey:string, comparisonTitles: string[], legend: Legend): CalculationInterfaces.State {

@@ -54,6 +54,7 @@ export class ResultLayerGroup extends SymphonyLayerGroup {
           cl = this.calculationLayers.get(id);
     if(cl) {
       imageLayers.remove(cl);
+      this.calculationLayers.delete(id);
     }
     this.setLayers(imageLayers);
     this.layerChange();
@@ -67,7 +68,7 @@ export class ResultLayerGroup extends SymphonyLayerGroup {
 
   private layerChange() {
     const layerIds = [...this.calculationLayers.keys()];
-    this.map.emitLayerChange(layerIds.filter(layerId => layerId > 0).length,
+    this.map.emitLayerChange(layerIds.filter(layerId => layerId > 0),
                              layerIds.filter(layerId => layerId < 0).length);
   }
 

@@ -43,6 +43,11 @@ export const selectPercentileValue = createSelector(
   state => state.percentileValue
 );
 
+export const selectVisibleResults = createSelector(
+  selectCalculationState,
+  state => state.visibleResults
+);
+
 export const selectVisibleLegends = createSelector(
   selectLegends,
   MetadataSelectors.selectVisibleBands,

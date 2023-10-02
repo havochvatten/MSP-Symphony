@@ -131,3 +131,8 @@ export const removeBatchProcessFailure = createAction(
   '[Calculation] Remove batch process failure',
   props<{ error: ErrorMessage }>()
 );
+
+export const setVisibleResultLayers = createAction(
+  '[Calculation] Set visible result layers',
+  props<{ visibleResults: number[] }>()
+);

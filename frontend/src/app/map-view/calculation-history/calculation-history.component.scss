@@ -73,13 +73,15 @@ section {
         display: none;
       }
 
+      &.visible {
+        background: linear-gradient(0deg, #e8d18680 0%, white 33%);
+      }
+
       &:hover {
         cursor: pointer;
-        background-color: $hav-turquoise;
 
-        .calculation-info h4, .calculation-info span,
-        .actions app-icon, .actions app-icon[icontype='delete'] {
-          color: white;
+        &.visible {
+          background: linear-gradient(0deg, #e8d18680 0%, $hav-coldgrey 33%);
         }
       }
 
@@ -88,12 +90,12 @@ section {
         flex-direction: column;
         box-sizing: border-box;
         padding: 0 0.2rem 0 1rem;
-        max-width: calc(100% - 5.1rem);
+        max-width: calc(100% - 0.15rem);
 
         h4 {
           margin: 0;
           text-align: left;
-          font: Medium 1.4rem/1.3rem;
+          font-size: 1.4rem;
           line-height: 1.9rem;
           color: #232323;
           text-overflow: ellipsis;
@@ -104,17 +106,6 @@ section {
         .name {
           display: flex;
           flex-direction: row;
-          //h4:not(.baseline) {
-          //  cursor: text;
-          //}
-          //&:hover {
-          //
-          //}
-          app-icon {
-            display: none; //none; //inline;
-            font-size: 1.2rem;
-            margin-left: 0.4rem;
-          }
           input { // TODO grow to 100%
             border-radius: 4px;
             border: 1px solid $hav-darkcoldgrey;
@@ -125,36 +116,16 @@ section {
         }
         span {
           text-align: left;
-          font: Medium 1rem/1.3rem;
           letter-spacing: 0;
           color: #919191;
         }
       }
 
-      .actions {
-        display: flex;
-
-        app-icon {
-          color: $hav-turquoise;
-          font-size: 2.3rem;
-
-
-          &[icontype='delete'] {
-            color: $red;
-            opacity: 0.3;
-            margin-right: 0.3rem;
-
-            &:hover {
-              opacity: 1;
-            }
-          }
-        }
-
-        ::ng-deep app-status-icon svg {
-          height: 3rem;
-          width: 3rem;
-          margin-right: 0.5rem;
-        }
+      app-icon.visible {
+        position: absolute;
+        right: 1rem;
+        bottom: 0.7rem;
+        color: $hav-lightyellow;
       }
     }
   }
