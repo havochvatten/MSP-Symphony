@@ -44,7 +44,9 @@ import java.util.Map;
                         "CalculationResult c WHERE c.owner = :username ORDER BY c.timestamp DESC"),
         @NamedQuery(name = "CalculationResult.findFullByOwner",
                 query = "SELECT c FROM CalculationResult c WHERE c.owner = :username ORDER BY c.timestamp " +
-                        "DESC")
+                        "DESC"),
+        @NamedQuery(name = "CalculationResult.removeOldCalculationTiff",
+                query = "UPDATE CalculationResult c SET c.rasterData = null WHERE c.timestamp < :timestamp")
 })
 
 @SqlResultSetMapping(
