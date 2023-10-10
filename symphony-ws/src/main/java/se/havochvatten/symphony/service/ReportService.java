@@ -13,6 +13,7 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
+import se.havochvatten.symphony.calculation.CalcService;
 import se.havochvatten.symphony.calculation.Operations;
 import se.havochvatten.symphony.calculation.SankeyChart;
 import se.havochvatten.symphony.dto.*;
@@ -30,9 +31,11 @@ import javax.measure.Quantity;
 import javax.measure.UnconvertibleException;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -40,6 +43,8 @@ import static java.util.stream.Collectors.toMap;
 
 @Singleton
 public class ReportService {
+    private static final Logger logger = Logger.getLogger(ReportService.class.getName());
+
     private static final ObjectMapper mapper = new JsonMapper();
 
     private static final GeometryJSON geoJson = new GeometryJSON();
@@ -58,6 +63,12 @@ public class ReportService {
 
     @Inject
     ScenarioService scenarioService;
+
+    @Inject
+    CalcService calcService;
+
+    @Inject
+    CalculationAreaService calcAreaService;
 
     @Inject
     PropertiesService props;
@@ -124,10 +135,16 @@ public class ReportService {
     }
 
     public ReportResponseDto generateReportData(CalculationResult calc, boolean computeChart)
-        throws FactoryException, TransformException, SymphonyStandardAppException {
+        throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
         var scenario = calc.getScenarioSnapshot();
         var coverage = calc.getCoverage();
-        var stats = getStatistics(coverage);
+        if(coverage == null) {
+            logger.info("Recalculating raster data for purged calculation: '" + calc.getCalculationName() + "' " +
+                             "with id " + calc.getId());
+            coverage = calcService.recreateCoverageFromResult(scenario, calc);
+        }
+
+         var stats = getStatistics(coverage);
 
         var impactMatrix = calc.getImpactMatrix();
         int pLen = impactMatrix.length, esLen = impactMatrix[0].length;
@@ -136,8 +153,6 @@ public class ReportService {
         double[] esTotal = new double[esLen];
         // N.B: Will set pTotal and esTotal as side effect!
         double total = getComponentTotals(impactMatrix, pTotal, esTotal);
-
-        var crs = coverage.getCoordinateReferenceSystem2D();
 
         ReportResponseDto report = new ReportResponseDto();
 
@@ -193,7 +208,7 @@ public class ReportService {
                     coverage.getCoordinateReferenceSystem2D())).getArea();
 
 
-        report.scenarioChanges = scenario.getChanges();
+        report.scenarioChanges = scenario.getChangesForReport();
         report.timestamp = calc.getTimestamp().getTime();
 
         return report;
@@ -214,7 +229,7 @@ public class ReportService {
 
     public ComparisonReportResponseDto generateComparisonReportData(CalculationResult calcA,
                                                                     CalculationResult calcB)
-        throws FactoryException, TransformException, SymphonyStandardAppException {
+        throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
         var report = new ComparisonReportResponseDto();
         report.a = generateReportData(calcA, false);
         report.b = generateReportData(calcB, false);

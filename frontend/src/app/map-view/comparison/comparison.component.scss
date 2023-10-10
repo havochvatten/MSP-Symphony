@@ -72,6 +72,23 @@
   }
 }
 
-::ng-deep .ddPanel.cmp {
-  margin-top: 48px;
+::ng-deep {
+  .ddPanel.cmp {
+    margin-top: 48px;
+  }
+
+  .cdk-overlay-container .cdk-overlay-pane .mat-mdc-select-panel.ddPanel.cmp {
+    mat-option.purged {
+      background: #f7f4f4 url('~/src/assets/cross.svg') no-repeat 98% 50%;
+      background-size: 1.6rem;
+      font-style: oblique;
+      font-weight: 300;
+      color: $hav-map-graphitegrey;
+
+      &:hover, &:hover:not(.mdc-list-item--disabled) {
+        background: #f1e9e9 url('~/src/assets/cross.svg') no-repeat 98% 50%;
+        background-size: 1.6rem;
+      }
+    }
+  }
 }

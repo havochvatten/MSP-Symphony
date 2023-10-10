@@ -19,6 +19,13 @@ public class MatrixResponse {
         }
     }
 
+    public MatrixResponse(Map<Integer, Integer> matrixMap, double[] normalizationValues) {
+        int i = 0;
+        for (Map.Entry<Integer, Integer> entry : matrixMap.entrySet()) {
+            this.areaMatrixMap.put(entry.getKey(), new MutablePair<>(entry.getValue(), normalizationValues[i++]));
+        }
+    }
+
     public void setAreaMatrixId(int areaId, int matrixId) {
         this.areaMatrixMap.get(areaId).setLeft(matrixId);
     }

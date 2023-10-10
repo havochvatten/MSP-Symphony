@@ -77,6 +77,27 @@ section {
         background: linear-gradient(0deg, #e8d18680 0%, white 33%);
       }
 
+      &.purged {
+        background-color: #f7f4f4;
+
+        .calculation-info {
+          h4 {
+            font-style: oblique;
+            font-weight: 300;
+            color: $hav-map-graphitegrey;
+          }
+
+          .timestamp {
+            color: $hav-grey;
+            text-decoration: line-through;
+          }
+        }
+
+        &:hover {
+          background-color: #f1e9e9;
+        }
+      }
+
       &:hover {
         cursor: pointer;
 
@@ -101,6 +122,7 @@ section {
           text-overflow: ellipsis;
           white-space: nowrap;
           overflow: hidden;
+          padding-right: 0.5rem;
           display: inline-block;
         }
         .name {
@@ -114,18 +136,28 @@ section {
             flex: 1;
           }
         }
-        span {
+        span.timestamp {
           text-align: left;
           letter-spacing: 0;
           color: #919191;
         }
       }
 
-      app-icon.visible {
-        position: absolute;
-        right: 1rem;
-        bottom: 0.7rem;
-        color: $hav-lightyellow;
+      app-icon {
+        &.visible, &.purged {
+          position: absolute;
+          right: 1rem;
+          bottom: 0.7rem;
+        }
+
+        &.purged {
+          color: $hav-ext-scarlet-red;
+          opacity: 0.3;
+        }
+
+        &.visible {
+          color: $hav-lightyellow;
+        }
       }
     }
   }

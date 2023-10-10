@@ -377,6 +377,7 @@
             "show-result": "Afficher ce résultat en mode carte",
             "hide-result": "Masquer ce résultat en mode carte",
             "visible-result": "Ce résultat est visible en mode carte",
+            "purged-result": "Les données de ce résultat ont été supprimées\nLe chargement peut prendre un peu plus de temps car le résultat doit être recalculé.",
             "delete-modal" : {
                 "header": "Supprimer résultat",
                 "message": "Confirmer la suppression du résultat: <em>“{{ calculationName }}”</em>",

@@ -46,7 +46,7 @@ public class ReportREST {
     public Response getReport(@Context HttpServletRequest req,
                               @PathParam("id") int id,
                               @Context UriInfo uriInfo)
-        throws FactoryException, TransformException, SymphonyStandardAppException {
+        throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
         logger.info("Fetching report "+id);
         var calc = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
             calcService).orElseThrow(NotFoundException::new);
@@ -97,6 +97,8 @@ public class ReportREST {
                 build();
         } catch (NotAuthorizedException ax) {
             return status(Response.Status.UNAUTHORIZED).build();
+        } catch (SymphonyStandardAppException sx) {
+            return status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 

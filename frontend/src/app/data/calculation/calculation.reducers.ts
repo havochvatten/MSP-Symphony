@@ -90,7 +90,9 @@ export const calculationReducer = createReducer(
   })),
   on(CalculationActions.setVisibleResultLayers, (state, { visibleResults }) => ({
     ...state,
-    visibleResults: visibleResults
+    visibleResults: visibleResults,
+    calculations: state.calculations.map(c => ({...c, isPurged: !(visibleResults.includes(c.id) || !c.isPurged)}))
+                                                      // unnecessary to sync, visible results cannot be "purged"
   })),
 );
 
