@@ -699,6 +699,13 @@ public class CalcService {
         }
     }
 
+    @Transactional
+    public int removeCalculationTiffOlderThan(Date date) {
+        return em.createNamedQuery("CalculationResult.removeOldCalculationTiff")
+            .setParameter("timestamp", date)
+            .executeUpdate();
+    }
+
     String makeCalculationName(Scenario scenario) {
         var previousCalc = scenario.getLatestCalculation();
         if (previousCalc == null)
