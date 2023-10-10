@@ -76,11 +76,11 @@ export class ComparisonComponent implements AfterViewInit {
       .catch(e => console.warn(e));
   }
 
-  async changeBase(id: string) {
+  async changeBase(id: number) {
     this.bSelect.disabled = true;
     this.loadingCandidates = true;
 
-    this.candidates$ = this.calcService.getMatchingCalculations(id).pipe(
+    this.candidates$ = this.calcService.getMatchingCalculations(id.toString()).pipe(
       withLatestFrom(this.translate.get('map.compare.choose-scenario')),
       tap(([res, trans]) => {
         this.loadingCandidates = false;

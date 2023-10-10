@@ -19,7 +19,7 @@ import javax.validation.constraints.Size;
 import java.util.*;
 
 @Entity
-public class ScenarioSnapshot {
+public class ScenarioSnapshot implements BandChangeEntity {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -101,7 +101,11 @@ public class ScenarioSnapshot {
 
     public NormalizationOptions getNormalization() { return normalization; }
 
-    public JsonNode getChanges() { return changes; }
+    public ObjectMapper getMapper() { return mapper; }
+
+    public JsonNode getChanges() { return changes.get("baseChanges"); }
+
+    public JsonNode getChangesForReport() { return changes; }
 
     public void setChanges(JsonNode changes) { this.changes = changes; }
 
@@ -112,6 +116,8 @@ public class ScenarioSnapshot {
     public Map<Integer, ScenarioAreaRecord> getAreas() {
         return mapper.convertValue(areas, new TypeReference<>() {});
     }
+
+    public Integer getBaselineId() { return baselineId; }
 
     public int[] getEcosystemsToInclude() {
         return ecosystemsToInclude;
@@ -133,6 +139,27 @@ public class ScenarioSnapshot {
                                         area.getFeatureJson()));
         }
         this.areas = mapper.valueToTree(areaMap);
+    }
+
+    public Map<String, BandChange> getChangeMap() {
+        ScenarioChanges sc = mapper.convertValue(changes, new TypeReference<>() {});
+        return sc.baseChanges();
+    }
+
+    public List<ScenarioArea> getTmpAreas () {
+        List<ScenarioArea> areas = new ArrayList<>();
+
+
+        for (var areaEntry : getAreas().entrySet()) {
+            Integer areaId = areaEntry.getKey();
+
+            ScenarioArea tmpArea = new ScenarioArea();
+            tmpArea.setId(areaId);
+            tmpArea.setFeature(areaEntry.getValue().featureJson());
+            tmpArea.setChanges(changes.get("areaChanges").get(areaId.toString()));
+            areas.add(tmpArea);
+        }
+        return areas;
     }
 
     public ScenarioSnapshot() {}

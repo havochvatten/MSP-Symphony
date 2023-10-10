@@ -34,7 +34,10 @@
             [ngClass]="{
               'calculation list-item' : true,
               'filtered': filter(calculation.name),
-              'visible': resultIsVisible(calculation.id) }"
+              'visible': resultIsVisible(calculation.id),
+              'purged': calculation.isPurged }"
+            [title]="(calculation.isPurged ? ('map.history.purged-result' | translate) : '')"
+            (click)="showReport(calculation.id)"
             >
       <div class="calculation-info">
         <div class="name">
@@ -45,12 +48,12 @@
                  (click)="$event.stopPropagation()"/>
 -->
         </div>
-        <span>{{ calculation.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
+        <span class="timestamp">{{ calculation.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
       </div>
       <div class="list-actions" *ngIf="!calculation.loading">
-        <app-icon *ngIf="!resultIsVisible(calculation.id)" iconType="eye" (click)="loadResult(calculation.id)"
+        <app-icon *ngIf="!resultIsVisible(calculation.id)" iconType="eye" (click)="loadResult(calculation.id); $event.stopPropagation()"
                   title="{{ 'map.history.show-result' | translate }}"></app-icon>
-        <app-icon *ngIf="resultIsVisible(calculation.id)" iconType="eye-slash" (click)="removeResult(calculation.id)"
+        <app-icon *ngIf="resultIsVisible(calculation.id)" iconType="eye-slash" (click)="removeResult(calculation.id); $event.stopPropagation()"
                   title="{{ 'map.history.hide-result' | translate }}"></app-icon>
         <app-icon iconType="report" (click)="showReport(calculation.id); $event.stopPropagation()"
                   title="{{ 'map.history.show-report' | translate: { calculationName: calculation.name } }}">
@@ -63,6 +66,7 @@
       <mat-spinner *ngIf="calculation.loading" diameter="10"></mat-spinner>
       <app-icon iconType="eye" class="visible" *ngIf="!calculation.loading && resultIsVisible(calculation.id)"
                 title="{{ 'map.history.visible-result' | translate }}"></app-icon>
+      <app-icon iconType="cross" class="purged" *ngIf="!calculation.loading && calculation.isPurged"></app-icon>
     </button>
     <ng-container *ngIf="!$any(calculations$ | async).length" [ngTemplateOutlet]="noCalculations">
     </ng-container>

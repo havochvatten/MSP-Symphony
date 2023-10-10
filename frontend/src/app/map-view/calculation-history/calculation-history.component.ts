@@ -82,7 +82,7 @@ export class CalculationHistoryComponent extends Listable implements OnDestroy {
     return this.visibleResults.includes(id);
   }
 
-  showReport(id: string) {
+  showReport(id: number) {
     this.dialogService.open(CalculationReportModalComponent, this.moduleRef, {
       data: { id }
     });

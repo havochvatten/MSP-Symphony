@@ -201,13 +201,16 @@ public class CalculationAreaService {
     }
 
     public MatrixResponse getAreaCalcMatrices(Scenario scenario) throws SymphonyStandardAppException {
+        return getAreaCalcMatrices(scenario.getAreas(), scenario.getBaselineId());
+    }
+
+    public MatrixResponse getAreaCalcMatrices(List<ScenarioArea> areas, Integer baselineId) throws SymphonyStandardAppException {
 
         Integer areaId, defaultSensMatrixId = null;
         CalculationArea calculationArea;
-        List<ScenarioArea> areas = scenario.getAreas();
         MatrixResponse areaMatrixMap = new MatrixResponse(areas.stream().mapToInt(ScenarioArea::getId).toArray());
 
-        BaselineVersion baseline = baselineVersionService.getBaselineVersionById(scenario.getBaselineId());
+        BaselineVersion baseline = baselineVersionService.getBaselineVersionById(baselineId);
         List<CaPolygon> defaultCalcAreaPolygons = getDefaultCalcAreaPolygonsForBaseline(baseline.getId());
 
         for(ScenarioArea area : areas) {
@@ -233,6 +236,7 @@ public class CalculationAreaService {
         }
 
         return areaMatrixMap;
+
     }
 
     private List<CaPolygon> getDefaultCalcAreaPolygonsForBaseline(Integer id) {

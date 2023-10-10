@@ -23,6 +23,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
@@ -62,7 +63,6 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.function.DoublePredicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -120,8 +120,6 @@ public class CalcService {
     @Inject
     private CalibrationService calibrationService;
 
-    private record ScenarioChanges (Map<String, BandChange> baseChanges, Map<Integer, Map<String, BandChange>> areaChanges ) {}
-
     @PostConstruct
     void setup() {
         JAI jai = JAI.getDefaultInstance();
@@ -157,7 +155,7 @@ public class CalcService {
                 getResultList();
     }
 
-    public List<CalculationResultSlice> findAllMatchingGeometryByUser(
+    public List<CalculationResultSlice> findAllMatchingCalculationsByUser (
             Principal principal, CalculationResult base) {
         // Ideally we would do a spatial query to the database, but since areas are not stored as proper
         // PostGIS geometries this is not possible at it stands.
@@ -168,10 +166,16 @@ public class CalcService {
                 OPERATION_CUMULATIVE : OPERATION_RARITYADJUSTED;
 
         var candidates = findAllCmpByUser(principal, operation);
+        List<Integer> ecoList       = Arrays.stream(base.getScenarioSnapshot().getEcosystemsToInclude()).boxed().toList(),
+                      pressureList  = Arrays.stream(base.getScenarioSnapshot().getPressuresToInclude()).boxed().toList();
 
         return candidates.stream()
                 .filter(c -> !base.getId().equals(c.id)) // omit the calculation whose matches we are
-                // searching for
+                                                         // searching for
+                .filter(c -> ecoList.size() == c.ecosystemsToInclude.size() &&
+                             ecoList.containsAll(c.ecosystemsToInclude))
+                .filter(c -> pressureList.size() == c.pressuresToInclude.size() &&
+                             pressureList.containsAll(c.pressuresToInclude))
                 .filter(c -> baseGeometry.equals(c.getGeometry()))
                 .toList();
     }
@@ -352,7 +356,6 @@ public class CalcService {
             return scenarioGeometry.difference(excludedCoastPolygon);
         }
     }
-
     /**
      * Calculate an area
      *
@@ -364,100 +367,15 @@ public class CalcService {
         Geometry roi = coastalComplement(scenario);
         MatrixResponse matrixResponse = calculationAreaService.getAreaCalcMatrices(scenario);
         List<ScenarioArea> areas = scenario.getAreas();
+        int[] ecosystemsToInclude = scenario.getEcosystemsToInclude(); // necessarily used as output param
+                                                                       // for rarity adjusted calculation
 
         areas.sort(Comparator.comparing(ScenarioArea::getId));
 
         BaselineVersion baseline = baselineVersionService.getBaselineVersionById(scenario.getBaselineId());
-        // Cache these in a map?
-        GridCoverage2D ecoComponents = data.getCoverage(LayerType.ECOSYSTEM, baseline.getId());
-        GridCoverage2D pressures = data.getCoverage(LayerType.PRESSURE, baseline.getId());
-        /* Superfluous reference for making clear that the coverage geometry does not depend on specifics in
-        ecoComponents or pressures (which should be identical) */
-        GridCoverage2D input = ecoComponents;
 
-        MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
-                input.getCoordinateReferenceSystem());
-
-        var scenarioComponents = scenarioService.applyScenario(
-            ecoComponents,
-            pressures,
-            scenario
-        );
-
-        ecoComponents = scenarioComponents.getLeft();
-        pressures = scenarioComponents.getRight();
-
-//        Geometry minimalROI = getMatricesCombinedROI(matrixResponse.areaMatrixResponses);
-        Geometry targetRoi = JTS.transform(roi, WGS84toTarget); // Transform ROI to coverage CRS
-        ReferencedEnvelope targetEnv = JTS.bounds(targetRoi, input.getCoordinateReferenceSystem());
-
-        // The below is a more detailed transformation of ROI but it does not seem necessary:
-        //        Envelope bb = JTS.bounds(roi, DefaultGeographicCRS.WGS84);
-        //        org.locationtech.jts.geom.Envelope env = new ReferencedEnvelope(bb);
-        //        var better = JTS.transform(env, null, WGS84toTarget, 1000);
-        //        Envelope targetEnv = new ReferencedEnvelope(better, input.getCoordinateReferenceSystem2D());
-
-        List<SensitivityMatrix> matrices = getUniqueMatrices(matrixResponse, scenario.getBaselineId());
-        // TODO: persist matrix ids in calculation
-
-        // insert null element at start to correspond to mask background
-        matrices.add(0, null); // do away with this hack and compensate on paint?
-        matrixResponse.areaMatrixMap.put(0, null);
-        GridGeometry2D gridGeometry = input.getGridGeometry();
-        Envelope targetGridEnvelope = JTS.transform(targetEnv, gridGeometry.getCRSToGrid2D());
-
-        ImageLayout layout = getImageLayout(targetGridEnvelope);
-
-        var targetGridGeometry = getTargetGridGeometry(targetGridEnvelope, targetEnv);
-        MatrixMask mask = new MatrixMask(targetGridGeometry.toCanonical(), layout,
-                matrixResponse, scenario.getAreas(), CalcUtil.createMapFromMatrixIdToIndex(matrices));
-
-        var ecosystemsToInclude = scenario.getEcosystemsToInclude();
-        GridCoverage2D coverage;
-        if (scenario.getOperation() == CalcService.OPERATION_RARITYADJUSTED) {
-            // Refactor this. Enum is explicitly avoided.
-            final int[] tmpEcoSystems = ecosystemsToInclude;
-            var domain = scenario.getOperationOptions() != null ?
-                scenario.getOperationOptions().get("domain") : "GLOBAL";
-            var indices = switch (domain) {
-                case "GLOBAL":
-                    yield calibrationService.calculateGlobalCommonnessIndices(ecoComponents,
-                        ecosystemsToInclude, scenario.getBaselineId());
-                case "LOCAL":
-                    yield calibrationService.calculateLocalCommonnessIndices(ecoComponents,
-                        ecosystemsToInclude, scenario.compileZones());
-                default:
-                    throw new RuntimeException("Unknown rarity index calculation domain: "+domain);
-            };
-
-            // Filter out small layers that would cause division by zero, i.e. infinite impact.
-            final var COMMONNESS_THRESHOLD = props.getPropertyAsDouble("calc.rarity_index.threshold", 0);
-            DoublePredicate indexThresholdPredicate = (index) -> index > COMMONNESS_THRESHOLD;
-            int[] ecosystemsToIncludeFiltered = IntStream.range(0, ecosystemsToInclude.length)
-                .map(i -> {
-                    var keep = indexThresholdPredicate.test(indices[i]);
-                    if (!keep)
-                        LOG.warn("Removing band {} since value is below or equal to commonness threshold {}", i,
-                            COMMONNESS_THRESHOLD);
-                    return keep ? tmpEcoSystems[i] : -1;
-            }).filter(e -> e >= 0).toArray();
-
-            ecosystemsToInclude = ecosystemsToIncludeFiltered;
-
-            var nonZeroIndices = Arrays.stream(indices).filter(indexThresholdPredicate).toArray();
-            // TODO report this information to the user and show in a dialog on frontend?
-
-            coverage = operations.cumulativeImpact("RarityAdjustedCumulativeImpact",
-                ecoComponents, pressures,
-                ecosystemsToInclude, scenario.getPressuresToInclude(),
-                preprocessMatrices(matrices), layout, mask, nonZeroIndices);
-        } else
-            coverage = operations.cumulativeImpact(
-                CalcService.operationName(scenario.getOperation()),
-                ecoComponents,
-                pressures,
-                ecosystemsToInclude, scenario.getPressuresToInclude(), preprocessMatrices(matrices), layout, mask,
-                null);
+        GridCoverage2D coverage = calculateCoverage(scenario.getOperation(), roi, scenario.getBaselineId(), ecosystemsToInclude,
+            scenario.getPressuresToInclude(), areas, matrixResponse, scenario.getOperationOptions(), null);
 
         // Trigger actual calculation since GeoTiffWriter requests tiles in the same thread otherwise
         var ignored = ((PlanarImage) coverage.getRenderedImage()).getTiles();
@@ -473,14 +391,17 @@ public class CalcService {
             a_id = area.getId();
             normalizationValues[a_ix] = matrixResponse.getAreaNormalizationValue(a_id);
             areaMatrices.put(a_id, matrixResponse.getAreaMatrixId(a_id));
-            sc.areaChanges.put(a_id, area.getChangeMap());
+            sc.areaChanges().put(a_id, area.getChangeMap());
             ++a_ix;
         }
+
+        MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
+            coverage.getCoordinateReferenceSystem());
 
         CalculationResult calculation = scenario.getNormalization().type == PERCENTILE ?
             new CalculationResult(coverage) :
             persistCalculation( coverage, normalizationValues, areaMatrices, scenario,
-                                mapper.valueToTree(sc), ecosystemsToInclude, baseline, targetRoi);
+                                mapper.valueToTree(sc), ecosystemsToInclude, baseline, JTS.transform(roi, WGS84toTarget));
 
         // previous approach for caching calculation results in session, apparently not reliable
         // Cache last calculation in session to speed up subsequent REST call to retrieve result image
@@ -499,6 +420,117 @@ public class CalcService {
                 ),
                 targetEnv
         );
+    }
+
+    public GridCoverage2D calculateCoverage(
+            int operation, Geometry roi, Integer baselineId, int[] ecosystemsToInclude, int[] pressuresToInclude,
+            List<ScenarioArea> areas, MatrixResponse matrixResponse, Map<String, String> operationOptions, BandChangeEntity altScenario)
+                throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
+
+        GridCoverage2D ecoComponents = data.getCoverage(LayerType.ECOSYSTEM, baselineId);
+        GridCoverage2D pressures = data.getCoverage(LayerType.PRESSURE, baselineId);
+
+        var scenarioComponents = scenarioService.applyScenario(
+            ecoComponents,
+            pressures,
+            areas,
+            altScenario
+        );
+
+        ecoComponents = scenarioComponents.getLeft();
+        pressures = scenarioComponents.getRight();
+
+        MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
+            ecoComponents.getCoordinateReferenceSystem());
+
+        Geometry targetRoi = JTS.transform(roi, WGS84toTarget);
+
+        List<SensitivityMatrix> matrices = getUniqueMatrices(matrixResponse, baselineId);
+        matrices.add(0, null); // do away with this hack and compensate on paint?
+        matrixResponse.areaMatrixMap.put(0, null);
+        GridGeometry2D gridGeometry = ecoComponents.getGridGeometry(); // assumed identical to pressures
+        ReferencedEnvelope targetEnv = JTS.bounds(targetRoi, ecoComponents.getCoordinateReferenceSystem());
+        Envelope targetGridEnvelope = JTS.transform(targetEnv, gridGeometry.getCRSToGrid2D());
+
+        ImageLayout layout = getImageLayout(targetGridEnvelope);
+
+        var targetGridGeometry = getTargetGridGeometry(targetGridEnvelope, targetEnv);
+        MatrixMask mask = new MatrixMask(targetGridGeometry.toCanonical(), layout,
+            matrixResponse, areas, CalcUtil.createMapFromMatrixIdToIndex(matrices));
+
+        // ensure band order
+        Arrays.sort(ecosystemsToInclude);
+        Arrays.sort(pressuresToInclude);
+
+        GridCoverage2D coverage;
+        if (operation == CalcService.OPERATION_RARITYADJUSTED) {
+            // Refactor this. Enum is explicitly avoided.
+            final int[] tmpEcoSystems = ecosystemsToInclude;
+            var domain = operationOptions != null ?
+                operationOptions.get("domain") : "GLOBAL";
+            var indices = switch (domain) {
+                case "GLOBAL":
+                    yield calibrationService.calculateGlobalCommonnessIndices(ecoComponents,
+                        ecosystemsToInclude, baselineId);
+                case "LOCAL":
+                    yield calibrationService.calculateLocalCommonnessIndices(ecoComponents,
+                        ecosystemsToInclude, areas.stream().map(a -> a.getFeature()).collect(Collectors.toList()));
+                default:
+                    throw new RuntimeException("Unknown rarity index calculation domain: "+domain);
+            };
+
+            // Filter out small layers that would cause division by zero, i.e. infinite impact.
+            final var COMMONNESS_THRESHOLD = props.getPropertyAsDouble("calc.rarity_index.threshold", 0);
+            DoublePredicate indexThresholdPredicate = (index) -> index > COMMONNESS_THRESHOLD;
+            int[] ecosystemsToIncludeFiltered = IntStream.range(0, ecosystemsToInclude.length)
+                .map(i -> {
+                    var keep = indexThresholdPredicate.test(indices[i]);
+                    if (!keep)
+                        LOG.warn("Removing band {} since value is below or equal to commonness threshold {}", i,
+                            COMMONNESS_THRESHOLD);
+                    return keep ? tmpEcoSystems[i] : -1;
+                }).filter(e -> e >= 0).toArray();
+
+            ecosystemsToInclude = ecosystemsToIncludeFiltered;
+
+            var nonZeroIndices = Arrays.stream(indices).filter(indexThresholdPredicate).toArray();
+            // TODO report this information to the user and show in a dialog on frontend?
+
+            coverage = operations.cumulativeImpact("RarityAdjustedCumulativeImpact",
+                ecoComponents, pressures,
+                ecosystemsToInclude, pressuresToInclude,
+                preprocessMatrices(matrices), layout, mask, nonZeroIndices);
+        } else
+            coverage = operations.cumulativeImpact(
+                CalcService.operationName(operation),
+                ecoComponents,
+                pressures,
+                ecosystemsToInclude, pressuresToInclude, preprocessMatrices(matrices), layout, mask,
+                null);
+
+        return coverage;
+    }
+
+    public GridCoverage2D recreateCoverageFromResult(ScenarioSnapshot scenario, CalculationResult calc)
+        throws IOException, FactoryException, TransformException, SymphonyStandardAppException {
+        List<ScenarioArea> areas = scenario.getTmpAreas();
+        String srcCRSCode = props.getProperty("data.source.crs", "");
+
+        CoordinateReferenceSystem srcCRS = CRS.getAuthorityFactory(true).createCoordinateReferenceSystem(srcCRSCode);
+        Geometry roi = JTS.transform(scenario.getGeometry(),
+            CRS.findMathTransform(srcCRS, DefaultGeographicCRS.WGS84));
+
+        GridCoverage2D coverage = calculateCoverage(
+            calc.getOperationName().equals("CumulativeImpact") ? CalcService.OPERATION_CUMULATIVE : CalcService.OPERATION_RARITYADJUSTED,
+            roi, calc.getBaselineVersion().getId(), scenario.getEcosystemsToInclude(), scenario.getPressuresToInclude(),
+            areas, calc.getMatrixResponse(), calc.getOperationOptions(), scenario);
+
+        // Trigger calculation to populate impact matrix
+        var ignore = ((PlanarImage) coverage.getRenderedImage()).getTiles();
+
+        updateCalculationData(calc.getId(), coverage);
+
+        return coverage;
     }
 
     @Transactional
@@ -644,6 +676,27 @@ public class CalcService {
             }
         }
         return calculation;
+    }
+
+    public void updateCalculationData(int calculationId, GridCoverage2D coverage) {
+        try {
+            transaction.begin();
+            var calculation = getCalculation(calculationId);
+            calculation.setRasterData(writeGeoTiff(coverage));
+            double[][] impactMatrix = (double[][]) coverage.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME);
+            calculation.setImpactMatrix(impactMatrix);
+            calculation.setTimestamp(new Date());
+            em.merge(calculation);
+            transaction.commit();
+        } catch (Exception e) {
+            throw new SymphonyStandardSystemException(SymphonyModelErrorCode.OTHER_ERROR, e,
+                "Unexpected DB error while updating calculation raster");
+        } finally {
+            try {
+                if (transaction.getStatus() == Status.STATUS_ACTIVE)
+                    transaction.rollback();
+            } catch (Throwable e) {}
+        }
     }
 
     String makeCalculationName(Scenario scenario) {

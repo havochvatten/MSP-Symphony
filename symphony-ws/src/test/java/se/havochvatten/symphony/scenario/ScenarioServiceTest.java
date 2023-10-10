@@ -83,7 +83,7 @@ public class ScenarioServiceTest {
     }
 
     private GridCoverage2D applyChanges(Scenario scenario) {
-        return service.apply(coverage, coverage.getGridGeometry(), scenario, LayerType.PRESSURE, transform);
+        return service.apply(coverage, coverage.getGridGeometry(), scenario.getAreas(), LayerType.PRESSURE, transform, null);
     }
 
     @Test

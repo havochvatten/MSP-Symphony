@@ -14,6 +14,8 @@ import se.havochvatten.symphony.dto.ScenarioAreaDto;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -23,6 +25,10 @@ import java.util.stream.Stream;
 
 @Entity
 @Table(name = "scenarioarea")
+@NamedQueries({
+    @NamedQuery(name = "ScenarioArea.findMany",
+        query = "SELECT s FROM ScenarioArea s WHERE id IN :ids"),
+})
 public class ScenarioArea implements BandChangeEntity {
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -83,15 +89,14 @@ public class ScenarioArea implements BandChangeEntity {
         return changes;
     }
 
-    public Map<String, BandChange> getChangeMap() {
-        Map<String, BandChange> changeMap =
-            changes == null || changes.isNull() ? new HashMap<>() :
-            mapper.convertValue(this.changes, new TypeReference<>() {});
-        return changeMap;
+    public BandChange[] getAllChanges() {
+        return getAllChanges(this.scenario);
     }
     
-    public BandChange[] getAllChanges() {
-        Map<String, BandChange> baseChangeMap = mapper.convertValue(scenario.getChanges(), new TypeReference<>() {}),
+    public BandChange[] getAllChanges(BandChangeEntity altScenario) {
+        BandChangeEntity bcEntity = altScenario == null ? scenario : altScenario;
+
+        Map<String, BandChange> baseChangeMap = mapper.convertValue(bcEntity.getChanges(), new TypeReference<>() {}),
                                 changeMap = getChangeMap();
 
         return Stream.concat(
@@ -109,6 +114,8 @@ public class ScenarioArea implements BandChangeEntity {
     public void setChanges(JsonNode changes) {
         this.changes = changes;
     }
+
+    public ObjectMapper getMapper() { return mapper; }
 
     public SimpleFeature getFeature() {
         try {

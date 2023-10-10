@@ -160,6 +160,8 @@ public class Scenario implements Serializable, BandChangeEntity {
         }
     }
 
+    public ObjectMapper getMapper() { return mapper; }
+
     public Integer getId() {
         return id;
     }
@@ -206,13 +208,6 @@ public class Scenario implements Serializable, BandChangeEntity {
 
     public void setChanges(JsonNode changes) {
         this.changes = changes;
-    }
-
-    public Map<String, BandChange> getChangeMap() {
-        Map<String, BandChange> changeMap =
-            changes == null || changes.isNull() ? new HashMap<>() :
-                mapper.convertValue(this.changes, new TypeReference<>() {});
-        return changeMap;
     }
 
     public NormalizationOptions getNormalization() { return normalization; }
@@ -265,9 +260,5 @@ public class Scenario implements Serializable, BandChangeEntity {
     public Map<Integer, Integer> getAreasExcludingCoastal() {
         return areas.stream().filter(a -> a.getExcludedCoastal() != null)
                 .collect(Collectors.toMap(a -> a.getId(), a -> a.getExcludedCoastal()));
-    }
-
-    public List<SimpleFeature> compileZones() {
-        return areas.stream().map(a -> a.getFeature()).collect(Collectors.toList());
     }
 }

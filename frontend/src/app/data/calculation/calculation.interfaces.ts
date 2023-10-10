@@ -86,6 +86,7 @@ export interface StaticImageOptions {
 export interface CalculationSlice extends SortableListItem {
   // The below are set upon calculation completion
   id: number;
+  isPurged: boolean;
   loading?: boolean;
 }
 
