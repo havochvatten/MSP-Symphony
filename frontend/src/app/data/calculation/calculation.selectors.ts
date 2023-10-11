@@ -48,6 +48,14 @@ export const selectVisibleResults = createSelector(
   state => state.visibleResults
 );
 
+export const selectCalculationLoadingState = createSelector(
+  selectCalculationState,
+  state => ({
+    loadingResults: state.loadingResults,
+    loadingReports: state.loadingReports
+    })
+);
+
 export const selectVisibleLegends = createSelector(
   selectLegends,
   MetadataSelectors.selectVisibleBands,

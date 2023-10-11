@@ -17,6 +17,8 @@ export interface State {
   sortCalculations: ListItemsSort;
   batchProcesses: { [key: number]: BatchCalculationProcessEntry },
   visibleResults: number[];
+  loadingResults: number[];
+  loadingReports: number[];
 }
 
 export interface Report {
@@ -84,10 +86,8 @@ export interface StaticImageOptions {
 }
 
 export interface CalculationSlice extends SortableListItem {
-  // The below are set upon calculation completion
   id: number;
   isPurged: boolean;
-  loading?: boolean;
 }
 
 export type LegendType = 'result' | 'comparison' | 'ecosystem' | 'pressure';
