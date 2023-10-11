@@ -377,7 +377,7 @@
             "show-result": "Show result in map view",
             "hide-result": "Hide result in map view",
             "visible-result": "Result is currently visible in map view",
-            "purged-result": "Data for this result has been purged\nBecause the result will need to be recalculated, it takes a little longer to load.",
+            "purged-result": "Data for this result has been purged\nThis will take a little longer to load because the result is being recalculated.",
             "delete-modal" : {
                 "header": "Delete calculation",
                 "message": "Confirm deletion of previously saved calculation result: <em>“{{ calculationName }}”</em>",
