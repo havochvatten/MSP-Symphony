@@ -78,6 +78,16 @@ export const fetchPercentileFailure = createAction(
   props<{ error: ErrorMessage }>()
 );
 
+export const loadCalculationResult = createAction(
+  '[Calculation] Load calculation result (pixels)',
+  props<{ calculationId: number }>()
+);
+
+export const loadCalculationResultSuccess = createAction(
+  '[Calculation] Load calculation result success',
+  props<{ calculationId: number }>()
+);
+
 export const deleteCalculation = createAction(
   '[Calculation] Delete calculation',
   props<{ calculationToBeDeleted: CalculationSlice }>()
@@ -135,4 +145,9 @@ export const removeBatchProcessFailure = createAction(
 export const setVisibleResultLayers = createAction(
   '[Calculation] Set visible result layers',
   props<{ visibleResults: number[] }>()
+);
+
+export const setReportLoadingState = createAction(
+  '[Calculation] Set loading state for report',
+  props<{ calculationId: number, loadingState: boolean }>()
 );

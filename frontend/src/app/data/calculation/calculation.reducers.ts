@@ -19,7 +19,9 @@ export const initialState: CalculationInterfaces.State = {
   },
   sortCalculations: ListItemsSort.None,
   batchProcesses: [],
-  visibleResults: []
+  visibleResults: [],
+  loadingResults: [],
+  loadingReports: []
 };
 
 export const calculationReducer = createReducer(
@@ -94,6 +96,18 @@ export const calculationReducer = createReducer(
     calculations: state.calculations.map(c => ({...c, isPurged: !(visibleResults.includes(c.id) || !c.isPurged)}))
                                                       // unnecessary to sync, visible results cannot be "purged"
   })),
+  on(CalculationActions.loadCalculationResult, (state, { calculationId }) => ({
+    ...state,
+    loadingResults: [...state.loadingResults, calculationId]
+  })),
+  on(CalculationActions.loadCalculationResultSuccess, (state, { calculationId }) => ({
+    ...state,
+    loadingResults: state.loadingResults.filter(id => id !== calculationId)
+  })),
+  on(CalculationActions.setReportLoadingState, (state, { calculationId, loadingState }) => ({
+    ...state,
+    loadingReports: loadingState ? [...state.loadingReports, calculationId] : state.loadingReports.filter(id => id !== calculationId)
+  }))
 );
 
 function updateComparisonLegend(state: CalculationInterfaces.State, maxValueKey:string, comparisonTitles: string[], legend: Legend): CalculationInterfaces.State {
