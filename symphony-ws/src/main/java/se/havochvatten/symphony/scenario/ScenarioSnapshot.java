@@ -50,6 +50,9 @@ public class ScenarioSnapshot implements BandChangeEntity {
     @Column(columnDefinition = "integer[]", name = "pressures")
     protected int[] pressuresToInclude;
 
+    /**
+     * JSON object serializing the ScenarioChanges record class.
+     */
     @Basic(optional = true)
     @Type(type = "json")
     @Column(columnDefinition = "json")
@@ -103,8 +106,27 @@ public class ScenarioSnapshot implements BandChangeEntity {
 
     public ObjectMapper getMapper() { return mapper; }
 
+    /* The entity freezes the changes for multiple entities, both Scenario and ScenarioArea.
+    *  JSON object structure serializes the ScenarioChanges record class, exposing two keys:
+    *  "baseChanges" and "areaChanges". The latter is a map of area id to changes for that area.
+    *
+    *  Recalculation method needs to provide both scenario-wide changes and for individual areas,
+    *  and achieves this by implementing the BandChangeEntity interface -
+    *  but note that getChanges differs slightly from both the other implementing classes
+    *  (Scenario and ScenarioArea). This is why the implementation of getChanges doesn't provide
+    *  the backing field, as might be expected. */
+
+    /**
+     * @return Scenario-wide changes map <br>
+     * NOTE - not the actual `changes` field but a subset, satisfying its usage
+     * in the recalculation procedure. <br>
+     * Use getChangesForReport() to access the field.
+    */
     public JsonNode getChanges() { return changes.get("baseChanges"); }
 
+    /**
+     * @return The actual `changes` field of the entity
+     */
     public JsonNode getChangesForReport() { return changes; }
 
     public void setChanges(JsonNode changes) { this.changes = changes; }
