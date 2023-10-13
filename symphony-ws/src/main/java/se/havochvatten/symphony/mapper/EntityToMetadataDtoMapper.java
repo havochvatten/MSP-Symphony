@@ -1,69 +1,65 @@
 package se.havochvatten.symphony.mapper;
 
 import se.havochvatten.symphony.dto.MetadataPropertyDto;
-import se.havochvatten.symphony.dto.MetadataSymphonyTeamDto;
+import se.havochvatten.symphony.dto.MetadataSymphonyThemeDto;
 import se.havochvatten.symphony.entity.Metadata;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class EntityToMetadataDtoMapper {
-    public static MetadataSymphonyTeamDto mapEnitiesToMetaDataTeamDto(String symphonyTeam,
-																	  List<Metadata> metadataList) {
-        MetadataSymphonyTeamDto symphonyTeamDto = new MetadataSymphonyTeamDto();
-        symphonyTeamDto.setSymphonyTeamName(symphonyTeam);
-        symphonyTeamDto.setProperties(new ArrayList<>());
+    public static MetadataSymphonyThemeDto mapEntitiesToMetaDataThemeDto(String symphonyTheme,
+                                                                         List<Metadata> metadataList) {
+        MetadataSymphonyThemeDto symphonyThemeDto = new MetadataSymphonyThemeDto();
+        symphonyThemeDto.setSymphonyThemeName(symphonyTheme);
+        symphonyThemeDto.setProperties(new ArrayList<>());
         for (Metadata metadata : metadataList) {
-            symphonyTeamDto.setSymphonyTeamNameLocal(metadata.getSymphonyTeamLocal());
+            symphonyThemeDto.setSymphonyThemeNameLocal(metadata.getSymphonyThemeLocal());
             MetadataPropertyDto dto = mapEntityToPropertyDto(metadata);
-            symphonyTeamDto.getProperties().add(dto);
+            symphonyThemeDto.getProperties().add(dto);
         }
-        return symphonyTeamDto;
+        return symphonyThemeDto;
     }
 
     private static MetadataPropertyDto mapEntityToPropertyDto(Metadata metadata) {
+
+        // List of "non-dynamic" properties to exclude from the "meta" map in
+        // the dto. Since we utilize reflection to access all getters in the
+        // entity, "Class" (getClass, by inheritance) needs to be excluded here
+        // as well.
+        String[] topLevelProperties = {"Class", "Id", "Title", "TitleLocal", "BandNumber", "BaselineVersion",
+                                       "EcoSensitivities", "PressureSensitivities",
+                                       "SymphonyThemeName", "SymphonyThemeLocal"};
+
         MetadataPropertyDto dto = new MetadataPropertyDto();
         dto.setId(metadata.getId());
         dto.setTitle(metadata.getTitle());
         dto.setTitleLocal(metadata.getTitleLocal());
         dto.setDefaultSelected(metadata.isDefaultSelected());
-        dto.setAccessUserRestrictions(metadata.getAccessUseRestrictions());
-        dto.setAuthorEmail(metadata.getAuthorEmail());
-        dto.setAuthorOrganisation(metadata.getAuthorOrganisation());
-        dto.setRasterFileName(metadata.getRasterFileName());
-        dto.setMetadataFileName(metadata.getMetadataFileName());
-        dto.setDataOwner(metadata.getDataOwner());
-        dto.setDataOwnerLocal(metadata.getDataOwnerLocal());
-        dto.setDateCreated(metadata.getDateCreated());
-        dto.setDescriptiveKeywords(metadata.getDescriptiveKeywords());
-        dto.setLimitationsForSymphony(metadata.getLimitationsForSymphony());
-        dto.setValueRange(metadata.getValueRange());
-        dto.setDataProcessing(metadata.getDataProcessing());
-        dto.setDataSources(metadata.getDataSources());
-        dto.setLineage(metadata.getLineage());
-        dto.setMaintenanceInformation(metadata.getMaintenanceInformation());
-        dto.setMapAcknowledgement(metadata.getMapAcknowledgement());
-        dto.setMarinePlaneArea(metadata.getMarinePlaneArea());
-        dto.setMetadataDate(metadata.getMetadataDate());
-        dto.setMetadataEmail(metadata.getMetadataEmail());
-        dto.setMetadataLanguage(metadata.getMetadataLanguage());
-        dto.setMetadataOrganisation(metadata.getMetadataOrganisation());
-        dto.setMetadataOrganisationLocal(metadata.getMetadataOrganisationLocal());
-        dto.setOwnerEmail(metadata.getOwnerEmail());
-        dto.setSummary(metadata.getSummary());
-        dto.setSummaryLocal(metadata.getSummaryLocal());
-        dto.setMethodSummary(metadata.getMethodSummary());
-        dto.setRecommendations(metadata.getRecommendations());
-        dto.setStatus(metadata.getStatus());
-        dto.setTopicCategory(metadata.getTopicCategory());
-        dto.setTheme(metadata.getTheme());
-        dto.setUseLimitations(metadata.getUseLimitations());
-        dto.setOtherRestrictions(metadata.getOtherRestrictions());
-        dto.setSecurityClassification(metadata.getSecurityClassification());
-        dto.setSpatialPresentation(metadata.getSpatialRepresentation());
-        dto.setRasterSpatialReferenceSystem(metadata.getRasterSpatialReferencesystem());
-        dto.setSymphonyDataType(metadata.getSymphonyDataType());
         dto.setBandNumber(metadata.getBandNumber());
+
+        Method[] metaPropertyGetters = Arrays.stream(Metadata.class.getMethods()).filter(m -> {
+            String methodName = m.getName();
+            if (methodName.startsWith("get") && !Arrays.asList(topLevelProperties).contains(methodName.substring(3))) {
+                return true;
+            }
+            return false;
+        }).toArray(Method[]::new);
+
+        for (Method m : metaPropertyGetters) {
+            try {
+                String value = (String) m.invoke(metadata);
+                String property = m.getName().substring(3);
+                if (value != null && !value.equals("")) {
+                    dto.getMeta().put(Character.toLowerCase(property.charAt(0)) + property.substring(1), value);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         return dto;
     }
 

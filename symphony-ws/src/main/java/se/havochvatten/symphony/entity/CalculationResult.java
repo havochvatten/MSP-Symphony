@@ -72,12 +72,10 @@ import java.util.Map;
 public class CalculationResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @SequenceGenerator(name = "cares_seq", sequenceName = "cares_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cares_seq")
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "cares_id")
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "cares_id", nullable = false)
     private Integer id;
 
     @Basic(optional = false)

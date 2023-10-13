@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 
 import { AccordionBoxComponent } from './accordion-box.component';
 import { IconButtonComponent } from '../icon-button/icon-button.component';
@@ -10,6 +11,12 @@ describe('AccordionBoxComponent', () => {
 
   beforeEach(waitForAsync(async () => {
     await TestBed.configureTestingModule({
+      imports: [
+        TranslateModule.forRoot()
+      ],
+      providers: [
+        TranslateService
+      ],
       declarations: [AccordionBoxComponent, IconButtonComponent, IconComponent]
     }).compileComponents();
   }));

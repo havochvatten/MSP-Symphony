@@ -51,12 +51,17 @@
       border: 1px solid #ced4da;
       font-size: 1.6rem;
       text-align: center;
+
+      &.percentage {
+        margin-left: 1rem;
+        text-align: left;
+        width: 8rem;
+      }
+
     }
   }
 
   .row {
-    display: flex;
-    justify-content: space-between;
     margin-bottom: 1.4rem;
   }
 

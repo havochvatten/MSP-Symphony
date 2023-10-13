@@ -1,7 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment as env } from '@src/environments/environment';
-import { Scenario, ScenarioArea, ScenarioCopyOptions, ScenarioMatrixDataMap } from "@data/scenario/scenario.interfaces";
+import {
+  Scenario,
+  ScenarioArea,
+  ScenarioCopyOptions,
+  ScenarioMatrixDataMap,
+  ScenarioSplitOptions, ScenarioSplitResponse
+} from "@data/scenario/scenario.interfaces";
 import { Baseline } from "@data/user/user.interfaces";
 import { NormalizationOptions } from "@data/calculation/calculation.service";
 import { GeoJSONFeature } from 'ol/format/GeoJSON';
@@ -109,5 +115,13 @@ export class ScenarioService {
       Id: areaId,
       overwrite
     });
+  }
+
+  splitScenarioForBatch(scenarioId: number, options: ScenarioSplitOptions) {
+    return this.http.post<ScenarioSplitResponse>(this.scenarioApiBaseUrl + '/' + scenarioId + '/split', options);
+  }
+
+  splitAndReplaceScenarioArea(scenarioId: number, replacedAreaId: number, replacementAreas: ScenarioArea[]) {
+    return this.http.post<Scenario>(this.scenarioApiBaseUrl + '/' + scenarioId + '/splitAndReplaceArea/' + replacedAreaId, replacementAreas);
   }
 }

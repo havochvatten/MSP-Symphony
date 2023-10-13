@@ -9,7 +9,8 @@ export const initialState: AreaInterfaces.State = {
   area: {},
   userArea: {},
   boundaries: [],
-  currentSelection: undefined
+  currentSelection: undefined,
+  selectionOverlap: false,
 };
 
 export const areaReducer = createReducer(
@@ -25,9 +26,10 @@ export const areaReducer = createReducer(
       ...nationalArea
     }
   })),
-  on(AreaActions.updateSelectedArea, (state, { statePaths }) => ({
+  on(AreaActions.updateSelectedArea, (state, { statePaths, overlap }) => ({
     ...state,
-    currentSelection: statePaths //feature?.get("statePath")
+    currentSelection: statePaths, //feature?.get("statePath")
+    selectionOverlap: overlap
   })),
   // on(ScenarioActions.openScenario, (state, { scenario, index }) => ({
   //   ...state,

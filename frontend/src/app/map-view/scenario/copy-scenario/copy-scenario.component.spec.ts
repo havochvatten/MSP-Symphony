@@ -5,6 +5,8 @@ import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from '@shared/dialog/dialog-config';
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { CopyScenarioComponent } from './copy-scenario.component';
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 
 describe('CopyScenarioComponent', () => {
   let component: CopyScenarioComponent;
@@ -13,6 +15,8 @@ describe('CopyScenarioComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
+        MatFormFieldModule,
+        MatCheckboxModule,
         TranslateModule.forRoot()
       ],
       providers: [

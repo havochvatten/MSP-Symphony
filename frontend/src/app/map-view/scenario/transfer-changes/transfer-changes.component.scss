@@ -13,35 +13,25 @@
   h4 {
     font-size: 1.5rem;
     font-weight: 500;
-    margin: 0 0 0.8rem;
+    margin: 1rem 0 0.8rem;
   }
 
   p {
     margin: 0;
   }
 
-  ::ng-deep mat-form-field {
+  ::ng-deep mat-form-field.mat-mdc-form-field {
     margin-top: 1rem;
 
-    .mat-form-field-wrapper {
-      padding-bottom: 0.4rem;
+    .mat-mdc-text-field-wrapper {
+      padding: 0 0 0.4rem;
     }
 
-    .mat-form-field-label-wrapper label {
+    label.mat-mdc-floating-label {
+      transform: none;
       font-size: 1.5rem;
-      padding: 0.9rem 0 0 1.4rem;
-    }
-
-    &.mat-form-field-should-float {
-      .mat-form-field-label-wrapper {
-        overflow: visible;
-
-        label {
-          margin-top: -3px;
-          padding: 0;
-          color: #00639b;
-        }
-      }
+      top: 0;
+      padding: 1.4rem 1.2rem;
     }
 
     mat-radio-button {
@@ -52,20 +42,28 @@
       width: 97%;
       margin-bottom: 1.4rem;
     }
+
+    &.ng-dirty {
+      label.mat-mdc-floating-label {
+        display: none;
+      }
+    }
+
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+  }
+
+  .area-selection {
+    margin-bottom: 2rem;
   }
 
   section.buttons {
     text-align: center;
-    margin-top: 1.4rem;
+    margin-top: 2rem;
   }
 }
 
-/* Material dropdown bug, workaround / effective solution */
-::ng-deep .cdk-overlay-container {
-  z-index: 100000 !important;
-  position: absolute;
-
-  .cdk-overlay-connected-position-bounding-box {
-    // z-index: 10000 !important;
-  }
+::ng-deep .select-scenario-transfer-panel {
+  margin-top: -14px;
 }

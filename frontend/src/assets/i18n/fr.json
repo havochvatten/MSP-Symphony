@@ -63,6 +63,18 @@
             "area": "Zone:",
             "exit": "Arrêter"
         },
+        "batch-progress": {
+            "header-in-progress": "Calcul par lots en cours",
+            "header-cancelled": "Calcul par lots annulé",
+            "header-finished": "Calcul par lots terminé",
+            "message": "Calcul en cours.. ({{ count }} de {{ total }} scénarios terminés)",
+            "cancel": "Annuler",
+            "remove-finished": "Masquer le calcul par lots terminé",
+            "cancelled-run": {
+                "title": "Calcul par lots annulé",
+                "message": "Le calcul par lots a été annulé. Les résultats des calculs terminés sont disponibles sous 'Résultat précédent'"
+            }
+        },
         "editor": {
             "title": "Scénarios",
             "areas": {
@@ -77,11 +89,20 @@
                         "confirm": "Supprimer"
                     }
                 },
-                "specific-settings": "Des valeurs spécifiques ont été définies pour cette zone: {{ feature-changes }}",
+                "specific-settings": "Des valeurs spécifiques ont été définies pour cette zone:\n{{ feature-changes }}",
                 "loading-matrices": "Chargement des matrices de sensibilité",
                 "add-scenario-label": "Ajouter des zones sélectionnées au scénario",
                 "add-scenario-label-single": "Ajouter {{ area }} au scénario",
                 "select-area-first-label": "Sélectionnez d'abord une zone."
+            },
+            "split-scenario-settings": {
+                "title": "Scénarios à partir de zones",
+                "detail": "Générer un nouveau scénario pour chaque zone incluse dans le scénario en cours.",
+                "set-batch-name": "Nom du calcul par lots",
+                "apply-scenario-changes": "Dupliquer les paramètres d'intensité du scénario",
+                "apply-area-changes": "Appliquer les paramètres spécifiques à la zone aux scénarios correspondants",
+                "enter-batch-mode": "Entrer en mode de sélection par lots",
+                "generate": "Générer"
             },
             "operation": {
                 "title": "Algorithme",
@@ -168,9 +189,14 @@
             },
             "changes-overview" : {
                 "title": "Vue d'ensemble des modifications de scénario",
-                "show-overview": "Afficher une vue d'ensemble de tous les changements"
+                "show-overview": "Afficher une vue d'ensemble de tous les changements",
                 "global-changes": "Modifications générales",
                 "show-all": "Afficher toutes",
+                "edit-value": "Modifier cette valeur",
+                "confirm-change": "Confirmer la modification",
+                "discard-change": "Ignorer la modification",
+                "relative-label": "Pourcentage",
+                "absolute-label": "Constante",
                 "close": "Fermer"
             },
             "area-changes": {
@@ -203,6 +229,7 @@
                 "user-scenarios": "Scénarios utilisateur",
                 "add-scenario-label": "Créer un nouveau scénario groupé",
                 "add-scenario-label-single": "Créer un nouveau scénario pour {{ area }}",
+                "overlap": "Impossible de créer un scénario pour des zones superposées",
                 "scenario-name": "Scénario sans nom",
                 "scenario-name-template": "Scénario {{area}}",
                 "select-area-first-label": "Commencez par sélectionner une zone pour le scénario.",
@@ -211,7 +238,17 @@
                 "scenario-area": "{{ scenario }}\nZone: {{ area-feature }}",
                 "show-report-label": "Ouvrir le rapport de calcul le plus récent",
                 "more-areas-single": "+ une zone supplémentaire ..",
-                "more-areas": "+ {{ more }} zones supplémentaires .."
+                "more-areas": "+ {{ more }} zones supplémentaires ..",
+                "filter-hint": "Filtrer les scénarios par nom",
+                "select-all-for-batch": "Tout sélectionner",
+                "select-all-for-batch-filtered": "Sélectionner les visibles",
+                "deselect-all-for-batch": "Tout désélectionner",
+                "batch-tools": {
+                    "enter-batch-mode": "Entrer en mode de sélection par lots",
+                    "exit-batch-mode": "Quitter le mode de sélection par lots",
+                    "batch-too-small": "Au moins deux scénarios requis",
+                    "run-batch": "Exécuter le calcul par lots"
+                }
             },
             "clear": "Effacer",
             "close": "❮",
@@ -230,24 +267,65 @@
             },
             "select-intersection": {
                 "header": "Couplages ambigus aux matrices de sensibilité",
-                "message": "La zone sélectionnée a des couplages ambigus avec les matrices de sensibilité par défaut.<br>Veuillez sélectionner la zone à analyser.",
+                "message": "La zone sélectionnée contient un couplage matriciel par défaut ambigu.<br>Choisissez les subdivisions à inclure dans le scénario parmi les suggestions correspondant à chaque matrice par défaut.",
                 "default-matrix": "Matrice par défaut pour cette zone:",
-                "confirm-selection": "Analyser la zone sélectionnée"
+                "confirm-selection": "Analyser les zones sélectionnées"
             },
-            "calculate": "Calculer"
+            "calculate": "Calculer",
+            "unsaved-changes": "Modifications non enregistrées",
+            "save-changes": "Enregistrez les modifications maintenant",
+            "saved-by-user": "Modifications enregistrées",
+            "saved-by-user-time": "Dernière sauvegarde: {{ timestamp }}"
         },
         "metadata": {
             "label": "Voir les métadonnées",
             "header": "Métadonnées concernant {{ layerType }}: {{ layerName }}",
-            "method-summary": "Résumé de la méthode",
-            "known-limitations": "Limites connues",
-            "value-range": "Plage de valeurs",
-            "data-processing": "Traitement de l'information",
-            "data-sources": "Source de données",
             "close": "Fermer",
             "ecosystem": "écosystème",
             "pressure": "pression",
-            "no-info": "Métadonnée manquante."
+            "no-info": "Métadonnée manquante.",
+            "properties": {
+                "accessUseRestrictions": "Restrictions d'accès et d'utilisation",
+                "authorEmail": "Adresse e-mail de l'auteur",
+                "authorOrganisation": "Organisation de l'auteur",
+                "dataOwner": "Propriétaire des données",
+                "dataOwnerLocal": "Propriétaire des données",
+                "dataProcessing": "Traitement de l'information",
+                "dataSources": "Sources de données",
+                "dateCreated": "Date de création",
+                "descriptiveKeywords": "Mots clef",
+                "format": "Format",
+                "limitationsForSymphony": "Limites connues",
+                "lineage": "Origine",
+                "maintenanceInformation": "Informations d'entretien",
+                "mapAcknowledgement": "",
+                "marinePlaneArea": "Zone MSP",
+                "metadataDate": "Date",
+                "metadataEmail": "Adresse e-mail",
+                "metadataFileName": "Nom de fichier",
+                "metadataLanguage": "Langue",
+                "metadataOrganisation": "Organisation",
+                "metadataOrganisationLocal": "Organisation",
+                "methodSummary": "Résumé de la méthode",
+                "ownerEmail": "Adresse e-mail du propriétaire",
+                "otherRestrictions": "Autres limites",
+                "rasterFileName": "Nom du fichier de données raster",
+                "rasterSpatialReferenceSystem": "Système de référence de coordonnées raster",
+                "recommendations": "Recommandations",
+                "resourceType": "Type de ressource",
+                "securityClassification": "Classement de sécurité",
+                "status": "Statut",
+                "summary": "Résumé",
+                "summaryLocal": "Résumé",
+                "symphonyCategory": "Catégorie",
+                "symphonyDatatype": "",
+                "symphonyTheme": "Groupe métadonnées",
+                "temporalPeriod": "Période",
+                "theme": "Thème",
+                "topicCategory": "Catégorie de sujet",
+                "useLimitations": "Limites d'utilisation",
+                "valueRange": "Plage de valeurs"
+            }
         },
         "toolbar": {
             "zoom-in": "Zoom +",
@@ -295,6 +373,7 @@
             "placeholder": "Aucun résultat calculé",
             "show-report": "Ouvrir le rapport de calcul “{{ calculationName }}”",
             "delete": "Supprimer le résultat “{{ calculationName }}”",
+            "filter-hint": "Filtrer les calculs par nom",
             "delete-modal" : {
                 "header": "Supprimer résultat",
                 "message": "Confirmer la suppression du résultat: <em>“{{ calculationName }}”</em>",
@@ -310,7 +389,10 @@
             "choose-scenario": "Choisissez un scénario",
             "choose-base-scenario-first": "Choisissez un scénario de référence avant",
             "base-scenario-suggestion": "",
-            "what-if-scenario-suggestion": ""
+            "what-if-scenario-suggestion": "",
+            "select-scale": "Sélectionnez l'échelle de couleur",
+            "scale-constant": "Maximum constant (45%)",
+            "scale-dynamic": "Maximum dynamique"
         },
         "user-area": {
             "create": {
@@ -320,6 +402,10 @@
                     "placeholder": "Zone 1",
                     "save": "Sauvegarder",
                     "close": "Fermer"
+                },
+                "invalid-area" : {
+                    "title": "Zone invalide",
+                    "message": "Les zones doivent chevaucher au moins une autre zone avec un couplage matriciel par défaut"
                 }
             },
             "upload": {
@@ -373,11 +459,24 @@
         },
         "area-selection-hint": {
             "emphasis": "Sélectionner / désélectionner plusieurs zones ",
-            "detail": "par Ctrl + clic ou ⌘ + clic."
+            "detail": "par {{ ctrlButton }} + clic."
         },
         "special-actions-hint": {
             "emphasis": "Partager ou fusionner zone",
-            "detail": "Alt / ⌥ + clic pour séparer par section, Alt / ⌥ + Shift + clic pour fusionner"
+            "detail": "{{ altButton }} + clic pour séparer par section, {{ altButton }} + Shift + clic pour fusionner"
+        },
+        "merge-areas-hint" : {
+            "emphasis": "Fusionner les zones",
+            "detail": "{{ altButton }} + Shift + clic pour fusionner la sélection."
+        }
+    },
+    "controls": {
+        "open": "Ouvrir",
+        "close": "Fermer",
+        "delete": "Supprimer",
+        "accordion": {
+            "expand": "Afficher",
+            "contract": "Masquer"
         }
     },
     "main-menu": {
@@ -460,8 +559,18 @@
             "pressure": "Pressions avec l'impact le plus important"
         },
         "sankey": {
-            "title": "Diagramme Sankey",
-            "description": "Ce diagramme Sankey montre la relation entre les pressions et les valeurs des composantes écosystème. L'épaisseur des flèches est proportionnelle à l'importance des pressions et à leur impact sur les composantes écosystème."
+            "sankey-single": {
+                "title": "Diagramme Sankey",
+                "description": "Ce diagramme Sankey montre la relation entre les pressions et les valeurs des composantes écosystème. L'épaisseur des flèches est proportionnelle à l'importance des pressions et à leur impact sur les composantes écosystème."
+            },
+            "sankey-cmp-positive": {
+                "title": "Diagramme Sankey (augmentation)",
+                "description": "Ce diagramme de Sankey montre les relations entre les charges dont l'impact augmente sur différentes valeurs naturelles dans le scénario anticipé, par rapport au scénario de référence. L'épaisseur des flèches est proportionnelle à l'augmentation de chaque pression entre les deux scénarios spécifiés, par rapport à son impact sur les écosystèmes. Les valeurs inférieures à {{ chartThreshold }} ne sont pas incluses dans le diagramme."
+            },
+            "sankey-cmp-negative": {
+                "title": "Diagramme Sankey (diminution)",
+                "description": "Ce diagramme de Sankey montre les relations entre les charges dont l'impact diminue sur différentes valeurs naturelles dans le scénario anticipé, par rapport au scénario de référence. L'épaisseur des flèches est proportionnelle à la diminution de chaque pression entre les deux scénarios spécifiés, par rapport à son impact sur les écosystèmes. Les valeurs inférieures à {{ chartThreshold }} ne sont pas incluses dans le diagramme."
+            }
         },
         "scenario-changes": {
             "title": "Paramètres du scénario",
@@ -505,8 +614,15 @@
                 "message-single" : "Zone importée: \"{{ topLayerName }}\"",
                 "message-multi" : "Importé {{ layersCount }} zones"
             }
-
         }
+    },
+    "list-sorting-options" : {
+        "indicate-order" : "Indiquer l'ordre comme {{ orderHint }}",
+        "AlphaAsc" : "alphabétique croissant (A-Z)",
+        "AlphaDesc" : "alphabétique décroissant (Z-A)",
+        "DateAsc" : "croissant par date (les plus anciens en premier)",
+        "DateDesc" : "décroissant par date (les plus récents en premier)",
+        "None" : "non trié"
     },
     "wio": {
         "in-collaboration": "En collaboration",

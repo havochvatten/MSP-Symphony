@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { DecimalPipe } from "@angular/common";
-import { formatPercentage } from "@data/calculation/calculation.util";
+import { formatPercentage } from "@src/app/shared/common.util";
 
 @Component({
   selector: 'app-histogram-chart',

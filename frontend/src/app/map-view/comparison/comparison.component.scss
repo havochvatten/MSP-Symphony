@@ -21,11 +21,16 @@
     padding: 0 2.2rem;
 
     .container {
-      flex: 1;
+      flex: 0;
     }
 
     h2 {
       margin: 0;
+    }
+
+    h4 {
+      font-weight: 600;
+      margin-bottom: 0.8em;
     }
 
     & ::ng-deep hav-select {

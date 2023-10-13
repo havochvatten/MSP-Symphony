@@ -29,6 +29,10 @@ const routes: Routes = [
         component: ComparisonReportComponent
       },
       {
+        path: 'compareDynamic/:aId/:bId/:dynamicMax',
+        component: ComparisonReportComponent,
+      },
+      {
         path: ':calcId',
         component: CalculationReportComponent
       }
@@ -44,7 +48,7 @@ const routes: Routes = [
     RouterModule.forRoot(
       routes,
       // { enableTracing: true } // <-- debugging purposes only
-      { relativeLinkResolution: 'legacy' }
+      {}
     )
   ],
   exports: [RouterModule]

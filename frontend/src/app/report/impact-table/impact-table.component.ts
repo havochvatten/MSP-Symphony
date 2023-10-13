@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { BandGroup } from '@data/metadata/metadata.interfaces';
-import { formatPercentage } from "@data/calculation/calculation.util";
+import { formatPercentage } from '@src/app/shared/common.util';
 
 @Component({
   selector: 'app-impact-table',
@@ -10,7 +10,7 @@ import { formatPercentage } from "@data/calculation/calculation.util";
 export class ImpactTableComponent {
   @Input() title?: string;
   @Input() bandGroups?: BandGroup[];
-  @Input() scenarioImpacts: Record<number, number>[] = [];
+  @Input() scenarioImpacts: Record<string, number>[] = [];
   @Input() names: string[] = [];
   @Input() locale = 'en';
 

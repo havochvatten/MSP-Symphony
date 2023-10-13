@@ -27,13 +27,17 @@
       }
 
       button {
-        .mat-button-wrapper mat-spinner.mat-progress-spinner {
-          position: absolute;
-          top: 12px;
-          right: 14px;
+        .mdc-button__label {
+          position: static;
 
-          circle {
-            stroke: $hav-cyan;
+          mat-spinner.mat-mdc-progress-spinner {
+            position: absolute;
+            top: 12px;
+            right: 14px;
+
+            circle {
+              stroke: $hav-cyan;
+            }
           }
         }
       }
@@ -68,18 +72,32 @@
 ::ng-deep .ddPanel {
 
   mat-option {
+    font-size: 1.2rem;
+    min-height: unset;
+    line-height: 3rem;
+
     &.locked, &.locked.mat-active {
       font-weight: 700;
       color: dimgray;
       background-color: $hav-web-lightgrey !important;
 
-      .mat-option-text {
+      .mdc-list-item__primary-text {
         app-icon {
           position: absolute;
           right: 1rem;
           top: 1rem;
         }
       }
+
+      mat-pseudo-checkbox.mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
+        margin-right: 8px;
+      }
+    }
+
+    mat-pseudo-checkbox.mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
+      width: 12px;
+      height: 4px;
+      margin-right: -6px;
     }
   }
 }

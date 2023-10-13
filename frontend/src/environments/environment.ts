@@ -7,6 +7,7 @@ export const environment = {
   showBaseCalculations: false,
   showIncludeCoastCheckbox: true,
   apiBaseUrl: "/symphony-ws/service",
+  socketBaseUrl: "/socket",
   baseline: false,
   instanceName: "WIO Symphony",
   instanceImage: "assets/wio/wiosym-ideogram.svg",
@@ -48,6 +49,14 @@ export const environment = {
   login: {
     noAccountUrl: undefined,
     forgotPasswordUrl: undefined
+  },
+  meta: {
+    visible_fields: ['methodSummary',
+                    'limitationsForSymphony',
+                    'valueRange',
+                    'dataProcessing',
+                    'dataSources'],
+    list_fields:    ['dataSources']
   }
 };
 

@@ -63,6 +63,18 @@
             "area": "Area:",
             "exit": "Exit"
         },
+        "batch-progress": {
+            "header-in-progress": "Batch calculation in progress",
+            "header-cancelled": "Cancelled batch calculation",
+            "header-finished": "Completed batch calculation",
+            "message": "Calculating.. ({{ count }} of {{ total }} scenarios completed)",
+            "cancel": "Cancel",
+            "remove-finished": "Hide completed batch status",
+            "cancelled-run": {
+                "title": "Batch calculation cancelled",
+                "message": "The batch calculation was cancelled. The results of the calculations that were completed are available in the History tab."
+            }
+        },
         "editor": {
             "title": "Scenarios",
             "areas": {
@@ -77,11 +89,20 @@
                         "confirm": "Remove"
                     }
                 },
-                "specific-settings": "Specific settings have been made for this area: {{ feature-changes }}",
+                "specific-settings": "Specific settings have been made for this area:\n{{ feature-changes }}",
                 "loading-matrices": "Loading sensitivity matrices",
                 "add-scenario-label": "Add selected areas to the active scenario",
                 "add-scenario-label-single": "Add {{ area }} to the active scenario",
                 "select-area-first-label": "Start by selecting an area"
+            },
+            "split-scenario-settings": {
+                "title": "Split scenario by area",
+                "detail": "Generate a new scenario for each included area",
+                "set-batch-name": "Batch name to use for generated scenarios",
+                "apply-scenario-changes": "Apply scenario-level intensity changes",
+                "apply-area-changes": "Apply specific area changes to their corresponding scenarios",
+                "enter-batch-mode": "Enter batch selection mode",
+                "generate": "Generate"
             },
             "operation": {
                 "title": "Algorithm",
@@ -171,6 +192,11 @@
                 "show-overview": "Show an overview of all changes",
                 "global-changes": "Global changes",
                 "show-all": "Show all",
+                "edit-value": "Modify change",
+                "confirm-change": "Confirm change",
+                "discard-change": "Discard change",
+                "relative-label": "Percentage",
+                "absolute-label": "Constant",
                 "close": "Close"
             },
             "area-changes": {
@@ -203,6 +229,7 @@
                 "user-scenarios": "User Scenarios",
                 "add-scenario-label": "Create new grouped scenario",
                 "add-scenario-label-single": "Create new scenario for {{area}}",
+                "overlap": "Cannot create scenario for overlapping areas",
                 "scenario-name": "Untitled scenario",
                 "scenario-name-template": "Scenario {{area}}",
                 "select-area-first-label": "Start by selecting areas for the scenario.",
@@ -211,7 +238,17 @@
                 "scenario-area": "{{ scenario }}\nArea: {{ area-feature }}",
                 "show-report-label": "Open the latest calculation report",
                 "more-areas-single": "+ an additional area ..",
-                "more-areas": "+ {{ more }} more areas .."
+                "more-areas": "+ {{ more }} more areas ..",
+                "filter-hint": "Filter scenarios by name",
+                "select-all-for-batch": "Select all",
+                "select-all-for-batch-filtered": "Select visible",
+                "deselect-all-for-batch": "Deselect all",
+                "batch-tools": {
+                    "enter-batch-mode": "Enter batch selection mode",
+                    "exit-batch-mode": "Exit batch selection mode",
+                    "batch-too-small": "Select at least two scenarios",
+                    "run-batch": "Batch calculate the selected scenarios"
+                }
             },
             "clear": "Clear",
             "close": "❮",
@@ -230,24 +267,65 @@
             },
             "select-intersection": {
                 "header": "Multiple default matrix couplings",
-                "message": "The selected area has ambiguous couplings to default sensitivity matrices.<br>Please select which area to analyze.",
+                "message": "The selected area has ambiguous standard matrix couplings.<br>Below are suggested valid area divisions that correspond to each standard matrix.<br>Choose which of these to include in the scenario.",
                 "default-matrix": "Default matrix for this area:",
-                "confirm-selection": "Use selected area"
+                "confirm-selection": "Use selected areas"
             },
-            "calculate": "Calculate"
+            "calculate": "Calculate",
+            "unsaved-changes": "Unsaved changes",
+            "save-changes": "Save changes",
+            "saved-by-user": "Changes saved",
+            "saved-by-user-time": "Last saved: {{ timestamp }}"
         },
         "metadata": {
             "label": "Show metadata",
             "header": "Metadata regarding {{ layerType }}: {{ layerName }}",
-            "method-summary": "Method summary",
-            "known-limitations": "Known limitations",
-            "value-range": "Value range",
-            "data-processing": "Data processing",
-            "data-sources": "Data sources",
             "close": "Close",
             "ecosystem": "ecosystem",
             "pressure": "pressure",
-            "no-info": "Metadatum missing."
+            "no-info": "Metadatum missing.",
+            "properties": {
+                "accessUseRestrictions": "Access and use restrictions",
+                "authorEmail": "Author email address",
+                "authorOrganisation": "Author organisation",
+                "dataOwner": "Data owner",
+                "dataOwnerLocal": "Data owner",
+                "dataProcessing": "Data processing",
+                "dataSources": "Data sources",
+                "dateCreated": "Date created",
+                "descriptiveKeywords": "Keywords",
+                "format": "Format",
+                "limitationsForSymphony": "Known limitations",
+                "lineage": "Lineage",
+                "maintenanceInformation": "Maintenance information",
+                "mapAcknowledgement": "Map acknowledgement",
+                "marinePlaneArea": "Marine spatial planning area",
+                "metadataDate": "Date",
+                "metadataEmail": "Email address",
+                "metadataFileName": "File name",
+                "metadataLanguage": "Language",
+                "metadataOrganisation": "Organisation",
+                "metadataOrganisationLocal": "Organisation",
+                "methodSummary": "Method summary",
+                "ownerEmail": "Owner email address",
+                "otherRestrictions": "Other restrictions",
+                "rasterFileName": "Raster data file name",
+                "rasterSpatialReferenceSystem": "Raster coordinate reference system",
+                "recommendations": "Recommendations",
+                "resourceType": "Resource type",
+                "securityClassification": "Security classification",
+                "status": "Status",
+                "summary": "Summary",
+                "summaryLocal": "Summary",
+                "symphonyCategory": "Category",
+                "symphonyDatatype": "",
+                "symphonyTheme": "Metadata group",
+                "temporalPeriod": "Period",
+                "theme": "Theme",
+                "topicCategory": "Topic category",
+                "useLimitations": "Usage limitations",
+                "valueRange": "Value range"
+            }
         },
         "toolbar": {
             "zoom-in": "Zoom in",
@@ -295,6 +373,7 @@
             "placeholder": "No calculations performed",
             "show-report": "Open calculation report “{{ calculationName }}”",
             "delete": "Delete saved calculation result “{{ calculationName }}”",
+            "filter-hint": "Filter calculations by name",
             "delete-modal" : {
                 "header": "Delete calculation",
                 "message": "Confirm deletion of previously saved calculation result: <em>“{{ calculationName }}”</em>",
@@ -310,7 +389,10 @@
             "choose-scenario": "Choose a calculation",
             "choose-base-scenario-first": "Choose calculation A first",
             "base-scenario-suggestion": "(typically your baseline analysis)",
-            "what-if-scenario-suggestion": "(typically your new scenario analysis)"
+            "what-if-scenario-suggestion": "(typically your new scenario analysis)",
+            "select-scale": "Customize color scale",
+            "scale-constant": "Constant maximum (45%)",
+            "scale-dynamic": "Dynamic maximum"
         },
         "user-area": {
             "create": {
@@ -320,6 +402,10 @@
                     "placeholder": "My area 1",
                     "save": "Save",
                     "close": "Close"
+                },
+                "invalid-area" : {
+                    "title": "Invalid area extent",
+                    "message": "User defined areas must overlap at least one other area having a default matrix coupling"
                 }
             },
             "upload": {
@@ -373,11 +459,24 @@
         },
         "area-selection-hint": {
             "emphasis": "Select / deselect multiple areas",
-            "detail": "using Ctrl + click or ⌘ + click."
+            "detail": "using {{ ctrlbutton }} + click."
         },
         "special-actions-hint": {
             "emphasis": "Cut or merge area",
-            "detail": "Alt / ⌥ + click splits by intersection, Alt / ⌥ + Shift + click merges."
+            "detail": "{{ altButton }} + click splits by intersection, {{ altButton }} + Shift + click merges."
+        },
+        "merge-areas-hint" : {
+            "emphasis": "Merge areas",
+            "detail": "{{ altButton }} + Shift + click on final area to merge selected."
+        }
+    },
+    "controls": {
+        "open": "Open",
+        "close": "Close",
+        "delete": "Delete",
+        "accordion": {
+            "expand": "Expand",
+            "contract": "Contract"
         }
     },
     "main-menu": {
@@ -460,8 +559,18 @@
             "pressure": "Pressures with highest impact"
         },
         "sankey": {
-            "title": "Sankey diagram",
-            "description": "This Sankey diagram shows the relationship between the pressures and the nature values. The thickness of the arrows are proportional to the size of the pressures and their impact on the nature values."
+            "sankey-single": {
+                "title": "Sankey diagram",
+                "description": "This Sankey diagram shows the relationship between the pressures and the nature values. The thickness of the arrows are proportional to the size of the pressures and their impact on the natural values. Values below {{ chartThreshold }} are not included in the diagram."
+            },
+            "sankey-cmp-positive": {
+                "title": "Sankey diagram (increasing)",
+                "description": "This Sankey diagram shows the relationship between the pressures whose impact increases on different natural values in scenario B, relative to scenario A. The thickness of the arrows are proportional to the increase of each pressure between the two specified scenarios, with respect to the affected nature values. Values below {{ chartThreshold }} are not included in the diagram."
+            },
+            "sankey-cmp-negative": {
+                "title": "Sankey diagram (decreasing)",
+                "description": "This Sankey diagram shows the relationship between the pressures whose impact decreases on different natural values in scenario B, relative to scenario A. The thickness of the arrows are proportional to the amount each pressure is alleviated between the two specified scenarios, with respect to the affected nature values. Values below {{ chartThreshold }} are not included in the diagram."
+            }
         },
         "scenario-changes": {
             "title": "Scenario Parameters",
@@ -484,16 +593,9 @@
             "open-in-new-tab": "Open in new tab",
             "print": "Print"
         },
-        "wio-addendum": {
-            "citation-header": "Cite as:",
-            "cc-license-header": "License:",
-            "cc-license-desc": "This report is licensed under a",
-            "cc-license-caption": "Creative Commons Attribution-ShareAlike 4.0 International License",
-            "cc-license-permission": "Share and adapt, but always give appropriate credit and share under this same license, etc – see full license for terms and conditions."
-        },
-        "description": "Calculations of the cumulative environmental impact are made using the application WIO Symphony\nby the Nairobi Convention and the Swedish Agency for Marine and Water Management.",
-        "more-info": "For information about WIO Symphony please visit ",
-        "link": "www.nairobiconvention.org/wio-symphony",
+        "description": "Calculations of the cumulative environmental impact is made using the Swedish Agency for Marine and Water Management's application Symphony.",
+        "more-info": "For more information about Symphony please visit ",
+        "link": "https://www.havochvatten.se/en/swam/eu--international/marine-spatial-planning/symphony---a-tool-for-ecosystem-based-marine-spatial-planning.html",
         "fetching-report": "Fetching report",
         "error-message": "An error occurred. There is no report to show now. Please check options and try a calculation again."
     },
@@ -505,8 +607,15 @@
                 "message-single" : "Imported area: \"{{ topLayerName }}\"",
                 "message-multi" : "Imported {{ layersCount }} areas"
             }
-
         }
+    },
+    "list-sorting-options" : {
+        "indicate-order" : "Indicate ordering as {{ orderHint }}",
+        "AlphaAsc" : "alphabetical, ascending (A-Z)",
+        "AlphaDesc" : "alphabetical, descending (Z-A)",
+        "DateAsc" : "ascending by date (oldest first)",
+        "DateDesc" : "descending by date (newest first)",
+        "None" : "unsorted"
     },
     "wio": {
         "in-collaboration": "In collaboration",

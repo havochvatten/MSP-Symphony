@@ -39,7 +39,8 @@
     </div>
     <app-changes-list
       [changes]="changes()"
-      [deleteChange]="deleteChange">
+      [deleteChange]="deleteChange"
+      [bandDictionary]="bandDictionary$ | async">
     </app-changes-list>
   </section>
 

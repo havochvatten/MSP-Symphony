@@ -12,7 +12,7 @@
       </app-accordion-box-header>
       <app-accordion-box-content>
         <div *ngFor="let change of getChanges() | keyvalue" class="change">
-          <div class="band-name">{{ change.key }}</div>
+          <div class="band-name">{{ bandDictionary[change.key] }}</div>
           <div class="spec">
                 <span *ngIf="change.value['multiplier']" class="multiplier">
                   {{ change.value.multiplier - 1 > 0 ? '+' : '' }}{{

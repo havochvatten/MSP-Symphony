@@ -71,7 +71,7 @@ export class AreaSelectionComponent implements OnChanges {
     if (!visible) {
       this.toggleVisibleArea(groupStatePath);
     }
-    this.store.dispatch(AreaActions.updateSelectedArea({ statePaths }));
+    this.store.dispatch(AreaActions.updateSelectedArea({ statePaths, overlap: false }));
     this.zoomToArea(statePaths); // listen for this in map instead?
   }
 

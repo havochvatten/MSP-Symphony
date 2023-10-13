@@ -1,0 +1,32 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  width: 50rem;
+  border-radius: 4px;
+  padding: 2rem;
+}
+
+h3 {
+  margin: 0;
+}
+
+mat-label {
+  font-size: 1.4rem;
+  margin-bottom: 0.6rem;
+}
+
+input.mat-mdc-input-element {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.5rem;
+  padding: 1rem;
+  border: 1px dotted black;
+  width: 48rem;
+  margin: 0 0 1.5rem;
+}
+
+.buttons {
+  margin-top: 2rem;
+  text-align: center;
+}
+

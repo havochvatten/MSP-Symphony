@@ -38,12 +38,9 @@ public class SensitivityMatrix implements Serializable {
     private List<CalculationArea> defaultCalculationAreaList;
 
     @Id
-    @SequenceGenerator(name = "sensm_seq", sequenceName = "sensm_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
-            generator = "sensm_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
-    @Column(name = "sensm_id")
+    @Column(name = "sensm_id", nullable = false)
     private Integer id;
 
     @Basic(optional = false)

@@ -1,10 +1,11 @@
-import { ElementRef, ViewChild, Directive } from '@angular/core';
+import { ElementRef, ViewChild, Directive, OnDestroy } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DialogRef } from '../dialog/dialog-ref';
 import { environment as env } from "@src/environments/environment";
+import * as d3 from "d3";
 
 @Directive()
-export abstract class ReportModalComponent {
+export abstract class ReportModalComponent implements OnDestroy {
   safeUrl: SafeResourceUrl;
   apiUrl: string;
   titleKey: string;
@@ -18,6 +19,11 @@ export abstract class ReportModalComponent {
     this.safeUrl = this.dom.bypassSecurityTrustResourceUrl(this.url);
     this.apiUrl = env.apiBaseUrl + pfx;
     this.titleKey = titleKey;
+  }
+
+  ngOnDestroy(): void {
+    // clean up d3 chart object refs that will otherwise linger in the DOM
+    d3.select('app-pressure-chart svg').selectAll('*').remove();
   }
 
   getSafeUrl() {

@@ -20,8 +20,8 @@ stories.add('default', () => ({
     title: 'Impacts Per Pressure',
     bandGroups: [
       {
-        symphonyTeamName: 'Birds',
-        symphonyTeamNameLocal: 'Fågel',
+        symphonyThemeName: 'Birds',
+        symphonyThemeNameLocal: 'Fågel',
         displayName: 'Birds',
         properties: [
           {
@@ -49,8 +49,8 @@ stories.add('default', () => ({
         ]
       },
       {
-        symphonyTeamName: 'Fish',
-        symphonyTeamNameLocal: 'Fisk',
+        symphonyThemeName: 'Fish',
+        symphonyThemeNameLocal: 'Fisk',
         displayName: 'Fish',
         properties: [
           {

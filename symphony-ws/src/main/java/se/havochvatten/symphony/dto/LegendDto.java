@@ -2,6 +2,7 @@ package se.havochvatten.symphony.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.geotools.filter.Filters;
+import se.havochvatten.symphony.web.WebUtil;
 
 public class LegendDto {
     public enum Type {
@@ -14,13 +15,16 @@ public class LegendDto {
         @JsonInclude(JsonInclude.Include.NON_NULL)
         public Float opacity; // [0,1]
 
-        public ColorMapEntry(org.geotools.styling.ColorMapEntry entry, Type type) {
+        public ColorMapEntry(org.geotools.styling.ColorMapEntry entry, Type type, int index, Double dynMax) {
             color = Filters.asString(entry.getColor());
             double q = Filters.asDouble(entry.getQuantity());
             switch (type) {
                 case RESULT:
-                case COMPARISON:
                     quantity = (int) (100 * q);
+                    break;
+                case COMPARISON:
+                    quantity = (int) (dynMax == null ? (1000 * q) :
+                                     (WebUtil.COMPARISON_STEPS[index] * dynMax * 1000));
                     break;
                 default:
                     quantity = (int) q;

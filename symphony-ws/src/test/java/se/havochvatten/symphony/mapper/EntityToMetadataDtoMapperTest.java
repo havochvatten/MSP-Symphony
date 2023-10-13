@@ -2,11 +2,12 @@ package se.havochvatten.symphony.mapper;
 
 import org.junit.Test;
 import se.havochvatten.symphony.dto.MetadataPropertyDto;
-import se.havochvatten.symphony.dto.MetadataSymphonyTeamDto;
+import se.havochvatten.symphony.dto.MetadataSymphonyThemeDto;
 import se.havochvatten.symphony.entity.Metadata;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -14,55 +15,56 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class EntityToMetadataDtoMapperTest {
 
     @Test
-    public void testMapEnitiesToMetaDataTeamDto() {
+    public void testMapEntitiesToMetaDataThemeDto() {
         List<Metadata> metadataList = findMetadataList();
-        MetadataSymphonyTeamDto metadataSymphonyTeamDto =
-				EntityToMetadataDtoMapper.mapEnitiesToMetaDataTeamDto("Fish", metadataList);
-        assertThat(metadataSymphonyTeamDto.getSymphonyTeamName(), is("Fish"));
-        assertThat(metadataSymphonyTeamDto.getSymphonyTeamNameLocal(), is("Fisk"));
-        assertThat(metadataSymphonyTeamDto.getProperties().size(), is(2));
+        MetadataSymphonyThemeDto metadataSymphonyThemeDto =
+				EntityToMetadataDtoMapper.mapEntitiesToMetaDataThemeDto("Fish", metadataList);
+        assertThat(metadataSymphonyThemeDto.getSymphonyThemeName(), is("Fish"));
+        assertThat(metadataSymphonyThemeDto.getSymphonyThemeNameLocal(), is("Fisk"));
+        assertThat(metadataSymphonyThemeDto.getProperties().size(), is(2));
 
         // properies
-        MetadataPropertyDto propDto1 = metadataSymphonyTeamDto.getProperties().get(0);
+        MetadataPropertyDto propDto1 = metadataSymphonyThemeDto.getProperties().get(0);
         Metadata metadata1 = metadataList.get(0);
+        Map<String, String> meta = propDto1.getMeta();
         assertThat(propDto1.getId(), is(metadata1.getId()));
         assertThat(propDto1.getTitle(), is(metadata1.getTitle()));
         assertThat(propDto1.getTitleLocal(), is(metadata1.getTitleLocal()));
         assertThat(propDto1.isDefaultSelected(), is(metadata1.isDefaultSelected()));
-        assertThat(propDto1.getAccessUserRestrictions(), is(metadata1.getAccessUseRestrictions()));
-        assertThat(propDto1.getAuthorEmail(), is(metadata1.getAuthorEmail()));
-        assertThat(propDto1.getAuthorOrganisation(), is(metadata1.getAuthorOrganisation()));
-        assertThat(propDto1.getRasterFileName(), is(metadata1.getRasterFileName()));
-        assertThat(propDto1.getMetadataFileName(), is(metadata1.getMetadataFileName()));
-        assertThat(propDto1.getDataOwner(), is(metadata1.getDataOwner()));
-        assertThat(propDto1.getDataOwnerLocal(), is(metadata1.getDataOwnerLocal()));
-        assertThat(propDto1.getDateCreated(), is(metadata1.getDateCreated()));
-        assertThat(propDto1.getDescriptiveKeywords(), is(metadata1.getDescriptiveKeywords()));
-        assertThat(propDto1.getLimitationsForSymphony(), is(metadata1.getLimitationsForSymphony()));
-        assertThat(propDto1.getLineage(), is(metadata1.getLineage()));
-        assertThat(propDto1.getMaintenanceInformation(), is(metadata1.getMaintenanceInformation()));
-        assertThat(propDto1.getMapAcknowledgement(), is(metadata1.getMapAcknowledgement()));
-        assertThat(propDto1.getMarinePlaneArea(), is(metadata1.getMarinePlaneArea()));
-        assertThat(propDto1.getMetadataDate(), is(metadata1.getMetadataDate()));
-        assertThat(propDto1.getMetadataEmail(), is(metadata1.getMetadataEmail()));
-        assertThat(propDto1.getMetadataLanguage(), is(metadata1.getMetadataLanguage()));
-        assertThat(propDto1.getMetadataOrganisation(), is(metadata1.getMetadataOrganisation()));
-        assertThat(propDto1.getMetadataOrganisationLocal(), is(metadata1.getMetadataOrganisationLocal()));
-        assertThat(propDto1.getOwnerEmail(), is(metadata1.getOwnerEmail()));
-        assertThat(propDto1.getSummary(), is(metadata1.getSummary()));
-        assertThat(propDto1.getSummaryLocal(), is(metadata1.getSummaryLocal()));
-        assertThat(propDto1.getRecommendations(), is(metadata1.getRecommendations()));
-        assertThat(propDto1.getStatus(), is(metadata1.getStatus()));
-        assertThat(propDto1.getTopicCategory(), is(metadata1.getTopicCategory()));
-        assertThat(propDto1.getTheme(), is(metadata1.getTheme()));
-        assertThat(propDto1.getUseLimitations(), is(metadata1.getUseLimitations()));
-        assertThat(propDto1.getOtherRestrictions(), is(metadata1.getOtherRestrictions()));
-        assertThat(propDto1.getSecurityClassification(), is(metadata1.getSecurityClassification()));
-        assertThat(propDto1.getSpatialPresentation(), is(metadata1.getSpatialRepresentation()));
-        assertThat(propDto1.getRasterSpatialReferenceSystem(),
-				is(metadata1.getRasterSpatialReferencesystem()));
-        assertThat(propDto1.getSymphonyDataType(), is(metadata1.getSymphonyDataType()));
         assertThat(propDto1.getBandNumber(), is(metadata1.getBandNumber()));
+        assertThat(meta.get("accessUseRestrictions"), is(metadata1.getAccessUseRestrictions()));
+        assertThat(meta.get("authorEmail"), is(metadata1.getAuthorEmail()));
+        assertThat(meta.get("authorOrganisation"), is(metadata1.getAuthorOrganisation()));
+        assertThat(meta.get("rasterFileName"), is(metadata1.getRasterFileName()));
+        assertThat(meta.get("metadataFileName"), is(metadata1.getMetadataFileName()));
+        assertThat(meta.get("dataOwner"), is(metadata1.getDataOwner()));
+        assertThat(meta.get("dataOwnerLocal"), is(metadata1.getDataOwnerLocal()));
+        assertThat(meta.get("dateCreated"), is(metadata1.getDateCreated()));
+        assertThat(meta.get("descriptiveKeywords"), is(metadata1.getDescriptiveKeywords()));
+        assertThat(meta.get("limitationsForSymphony"), is(metadata1.getLimitationsForSymphony()));
+        assertThat(meta.get("lineage"), is(metadata1.getLineage()));
+        assertThat(meta.get("maintenanceInformation"), is(metadata1.getMaintenanceInformation()));
+        assertThat(meta.get("mapAcknowledgement"), is(metadata1.getMapAcknowledgement()));
+        assertThat(meta.get("marinePlaneArea"), is(metadata1.getMarinePlaneArea()));
+        assertThat(meta.get("metadataDate"), is(metadata1.getMetadataDate()));
+        assertThat(meta.get("metadataEmail"), is(metadata1.getMetadataEmail()));
+        assertThat(meta.get("metadataLanguage"), is(metadata1.getMetadataLanguage()));
+        assertThat(meta.get("metadataOrganisation"), is(metadata1.getMetadataOrganisation()));
+        assertThat(meta.get("metadataOrganisationLocal"), is(metadata1.getMetadataOrganisationLocal()));
+        assertThat(meta.get("ownerEmail"), is(metadata1.getOwnerEmail()));
+        assertThat(meta.get("summary"), is(metadata1.getSummary()));
+        assertThat(meta.get("summaryLocal"), is(metadata1.getSummaryLocal()));
+        assertThat(meta.get("recommendations"), is(metadata1.getRecommendations()));
+        assertThat(meta.get("status"), is(metadata1.getStatus()));
+        assertThat(meta.get("topicCategory"), is(metadata1.getTopicCategory()));
+        assertThat(meta.get("theme"), is(metadata1.getTheme()));
+        assertThat(meta.get("useLimitations"), is(metadata1.getUseLimitations()));
+        assertThat(meta.get("otherRestrictions"), is(metadata1.getOtherRestrictions()));
+        assertThat(meta.get("securityClassification"), is(metadata1.getSecurityClassification()));
+        assertThat(meta.get("spatialRepresentation"), is(metadata1.getSpatialRepresentation()));
+        assertThat(meta.get("rasterSpatialReferencesystem"),
+            is(metadata1.getRasterSpatialReferencesystem()));
+        assertThat(meta.get("symphonyDataType"), is(metadata1.getSymphonyDataType()));
     }
 
     private List<Metadata> findMetadataList() {
@@ -75,8 +77,8 @@ public class EntityToMetadataDtoMapperTest {
     private Metadata getMetaData(int sufix) {
         Metadata metaData = new Metadata();
         metaData.setId(123);
-        metaData.setSymphonyTeam("Fish");
-        metaData.setSymphonyTeamLocal("Fisk");
+        metaData.setSymphonyTheme("Fish");
+        metaData.setSymphonyThemeLocal("Fisk");
         metaData.setTitle("title" + sufix);
         metaData.setTitleLocal("titleLocal" + sufix);
         metaData.setDefaultSelected(true);

@@ -6,7 +6,6 @@ import {
   OnDestroy,
   AfterViewInit,
   ChangeDetectorRef,
-  ComponentFactoryResolver,
   HostBinding
 } from '@angular/core';
 import { InsertionDirective } from './insertion.directive';
@@ -19,7 +18,6 @@ import { Subject } from 'rxjs';
 })
 export class DialogComponent implements OnDestroy, AfterViewInit {
   constructor(
-    private componentFactoryResolver: ComponentFactoryResolver,
     private changeDetectorRef: ChangeDetectorRef
   ) {}
   componentRef: ComponentRef<any> | undefined;
@@ -47,11 +45,10 @@ export class DialogComponent implements OnDestroy, AfterViewInit {
   }
 
   loadChildComponent = (componentType: Type<any>) => {
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentType);
     if (this.insertionPoint) {
       const viewContainerRef = this.insertionPoint.viewContainerRef;
       viewContainerRef.clear();
-      this.componentRef = viewContainerRef.createComponent(componentFactory);
+      this.componentRef = viewContainerRef.createComponent(this.childComponentType!);
     }
   };
 

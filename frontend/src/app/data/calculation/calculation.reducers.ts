@@ -1,7 +1,9 @@
 import { createReducer, on } from '@ngrx/store';
+import { setIn, updateIn } from "immutable";
 import { CalculationActions, CalculationInterfaces } from './';
 import { AreaActions } from '@data/area';
-import { setIn } from "immutable";
+import { Legend } from "@data/calculation/calculation.interfaces";
+import { ListItemsSort } from "@data/common/sorting.interfaces";
 
 export const initialState: CalculationInterfaces.State = {
   loadingReport: false,
@@ -13,8 +15,10 @@ export const initialState: CalculationInterfaces.State = {
     result: undefined,
     ecosystem: undefined,
     pressure: undefined,
-    comparison: undefined
-  }
+    comparison: {}
+  },
+  sortCalculations: ListItemsSort.None,
+  batchProcesses: []
 };
 
 export const calculationReducer = createReducer(
@@ -48,10 +52,16 @@ export const calculationReducer = createReducer(
   })),
   on(CalculationActions.fetchLegendSuccess, (state, { legend, legendType }) => ({
     ...state,
-    legends: {
-      ...state.legends,
-      [legendType]: legend
-    }
+    legends: setIn(state.legends, [legendType], legend)
+  })),
+  on(CalculationActions.fetchComparisonLegendSuccess, (state, { legend, comparisonTitle, maxValue }) => {
+    const comparisonTitles= new Set(state.legends.comparison[maxValue.toString()]?.title || []);
+          comparisonTitles.add(comparisonTitle);
+    return updateComparisonLegend(state, maxValue.toString(), [...comparisonTitles], legend);
+  }),
+  on(CalculationActions.resetComparisonLegend, (state) => ({
+    ...state,
+    legends: setIn(state.legends, ['comparison'], {})
   })),
   on(CalculationActions.updateName, (state, { index, newName }) => ({
     ...state,
@@ -60,5 +70,25 @@ export const calculationReducer = createReducer(
   on(CalculationActions.fetchPercentileSuccess, (state, { percentileValue }) => ({
     ...state,
     percentileValue: percentileValue
+  })),
+  on(CalculationActions.setCalculationSortType, (state, { sortType }) => ({
+    ...state,
+    sortCalculations: sortType
+  })),
+  on(CalculationActions.updateBatchProcess, (state, { id, process }) => ({
+    ...state,
+    batchProcesses: setIn(state.batchProcesses, [id], process)
+  })),
+  on(CalculationActions.removeBatchProcessSuccess, (state, { id }) => ({
+    ...state,
+    batchProcesses: setIn(state.batchProcesses, [id], undefined)
+  })),
+  on(CalculationActions.cancelBatchProcessSuccess, (state, { id }) => ({
+    ...state,
+    batchProcesses: setIn(state.batchProcesses, [id], {...state.batchProcesses[id], cancelled: true})
   }))
 );
+
+function updateComparisonLegend(state: CalculationInterfaces.State, maxValueKey:string, comparisonTitles: string[], legend: Legend): CalculationInterfaces.State {
+    return setIn(state, ['legends', 'comparison', maxValueKey], { title: comparisonTitles, legend: legend });
+}

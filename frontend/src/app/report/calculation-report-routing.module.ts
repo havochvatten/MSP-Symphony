@@ -9,7 +9,12 @@ const routes: Routes = [
     children: [
       {
         path: 'compare/:aId/:bId',
-        component: ComparisonReportComponent
+        component: ComparisonReportComponent,
+
+      },
+      {
+        path: 'compareDynamic/:aId/:bId/:dynamicMax',
+        component: ComparisonReportComponent,
       },
       {
         path: ':calcId',

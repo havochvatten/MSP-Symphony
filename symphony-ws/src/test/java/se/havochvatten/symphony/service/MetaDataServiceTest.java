@@ -23,43 +23,43 @@ public class MetaDataServiceTest {
     @Test
     public void testFindMetadata() {
         metaDataService.em = mock(EntityManager.class);
-        List<String> symphonyTeams = new ArrayList<>();
+        List<String> symphonyThemes = new ArrayList<>();
         int baselineVersionId = 1;
 
-        symphonyTeams.add("Fish");
-        symphonyTeams.add("Bird");
+        symphonyThemes.add("Fish");
+        symphonyThemes.add("Bird");
         Query mockedQuery = mock(Query.class);
-        when(metaDataService.em.createQuery("Select o.symphonyTeam from Metadata o where o.symphonyCategory" +
+        when(metaDataService.em.createQuery("Select o.symphonyTheme from Metadata o where o.symphonyCategory" +
 				" = :categ AND o.baselineVersion.id = :baselineVersionId")).thenReturn(mockedQuery);
         when(mockedQuery.setParameter(anyString(), anyObject())).thenReturn(mockedQuery);
         when(mockedQuery.setParameter("baselineVersionId", baselineVersionId)).thenReturn(mockedQuery);
-        when(mockedQuery.getResultList()).thenReturn(symphonyTeams);
+        when(mockedQuery.getResultList()).thenReturn(symphonyThemes);
 
-        List<Metadata> teamMetaDataFish = new ArrayList<>();
+        List<Metadata> themeMetaDataFish = new ArrayList<>();
         Metadata metadataFish = new Metadata();
-        metadataFish.setSymphonyTeamLocal("Fisk");
+        metadataFish.setSymphonyThemeLocal("Fisk");
         metadataFish.setTitle("Cod");
-        teamMetaDataFish.add(metadataFish);
+        themeMetaDataFish.add(metadataFish);
 
-        List<Metadata> teamMetaDataBird = new ArrayList<>();
+        List<Metadata> themeMetaDataBird = new ArrayList<>();
         Metadata metadataBird = new Metadata();
-        metadataBird.setSymphonyTeamLocal("Fågel");
+        metadataBird.setSymphonyThemeLocal("Fågel");
         metadataBird.setTitle("Coastal bird");
         metadataBird.setTitleLocal("Kustfågel");
-        teamMetaDataBird.add(metadataBird);
+        themeMetaDataBird.add(metadataBird);
 
         MetaDataService metaDataServiceSpy = Mockito.spy(metaDataService);
-        Mockito.doReturn(teamMetaDataBird).when(metaDataServiceSpy).getSymphonyTeamMetaData("Ecosystem",
+        Mockito.doReturn(themeMetaDataBird).when(metaDataServiceSpy).getSymphonyThemeMetaData("Ecosystem",
 				"Bird", baselineVersionId);
-        Mockito.doReturn(teamMetaDataFish).when(metaDataServiceSpy).getSymphonyTeamMetaData("Ecosystem",
+        Mockito.doReturn(themeMetaDataFish).when(metaDataServiceSpy).getSymphonyThemeMetaData("Ecosystem",
 				"Fish", baselineVersionId);
 
         MetadataComponentDto metadataComponentDto = metaDataServiceSpy.getComponentDto("Ecosystem",
 				baselineVersionId);
-        assertThat(metadataComponentDto.getSymphonyTeams().size(), is(2));
-        assertThat(metadataComponentDto.getSymphonyTeams().get(0).getSymphonyTeamName(), is("Bird"));
-        assertThat(metadataComponentDto.getSymphonyTeams().get(0).getSymphonyTeamNameLocal(), is("Fågel"));
-        assertThat(metadataComponentDto.getSymphonyTeams().get(0).getProperties().get(0).getTitle(), is("Coastal bird"));
-        assertThat(metadataComponentDto.getSymphonyTeams().get(0).getProperties().get(0).getTitleLocal(), is("Kustfågel"));
+        assertThat(metadataComponentDto.getSymphonyThemes().size(), is(2));
+        assertThat(metadataComponentDto.getSymphonyThemes().get(0).getSymphonyThemeName(), is("Bird"));
+        assertThat(metadataComponentDto.getSymphonyThemes().get(0).getSymphonyThemeNameLocal(), is("Fågel"));
+        assertThat(metadataComponentDto.getSymphonyThemes().get(0).getProperties().get(0).getTitle(), is("Coastal bird"));
+        assertThat(metadataComponentDto.getSymphonyThemes().get(0).getProperties().get(0).getTitleLocal(), is("Kustfågel"));
     }
 }

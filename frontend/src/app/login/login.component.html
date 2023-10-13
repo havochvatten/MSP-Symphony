@@ -1,6 +1,8 @@
 <img class="instance" src="{{ env.instanceImage }}" alt="WIO Symphony" />
 <h2 class="instance_desc">{{ env.instanceDescriptor }}</h2>
-<h1>Symphony</h1>
+  <h1>Symphony</h1>
+  <span class="current-version">{{ symphonyVersion }}</span>
+</div>
 <form class="login-form" [formGroup]="loginForm">
   <mat-form-field>
     <input matInput
@@ -23,11 +25,11 @@
 </form>
 <div class="login-options">
   <nav>
-    <p *ngIf="env.login.forgotPasswordUrl !== undefined">
+    <p>
       {{ 'login.forgot-password' | translate }}
       <a [href]="env.login.forgotPasswordUrl">{{ 'login.request-password' | translate }}</a>
     </p>
-    <p *ngIf="env.login.noAccountUrl !== undefined">
+    <p>
       {{ 'login.no-account' | translate }}
       <a [href]="env.login.noAccountUrl">{{ 'login.request-account' | translate }}</a>
     </p>

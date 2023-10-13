@@ -2,6 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { ChangesListComponent } from './changes-list.component';
+import { IconComponent } from "@shared/icon/icon.component";
+import { provideMockStore } from "@ngrx/store/testing";
+import { initialState } from "@data/metadata/metadata.reducers";
 
 
 describe('ChangesListComponent', () => {
@@ -11,8 +14,11 @@ describe('ChangesListComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ TranslateModule.forRoot() ],
-      providers: [ TranslateService ],
-      declarations: [ ChangesListComponent ]
+      providers: [TranslateService,
+            provideMockStore({ initialState: {
+              metadata: initialState
+            }})],
+      declarations: [ ChangesListComponent, IconComponent ]
     })
     .compileComponents();
 

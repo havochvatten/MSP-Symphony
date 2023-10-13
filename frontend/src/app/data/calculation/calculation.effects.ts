@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { from, of } from 'rxjs';
 import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
 import { CalculationActions } from './';
@@ -13,8 +13,7 @@ export class CalculationEffects {
 
   }
 
-  @Effect()
-  fetchCalculations$ = this.actions$.pipe(
+  fetchCalculations$ = createEffect(() => this.actions$.pipe(
     ofType(CalculationActions.fetchCalculations),
     mergeMap(() =>
       this.calcService.getAll().pipe(
@@ -28,10 +27,9 @@ export class CalculationEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
-  deleteCalculation$ = this.actions$.pipe(
+  deleteCalculation$ = createEffect(() => this.actions$.pipe(
     ofType(CalculationActions.deleteCalculation),
     mergeMap(({ calculationToBeDeleted }) =>
       from(this.calcService.removeResult(calculationToBeDeleted.id)).pipe(
@@ -44,14 +42,15 @@ export class CalculationEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
-  fetchLegend$ = this.actions$.pipe(
+  fetchLegend$ = createEffect(() => this.actions$.pipe(
     ofType(CalculationActions.fetchLegend),
     mergeMap(({ legendType }) =>
       this.calcService.getLegend(legendType).pipe(
-        map(legend => CalculationActions.fetchLegendSuccess({ legend, legendType })),
+        map(legend =>
+          CalculationActions.fetchLegendSuccess({ legend, legendType })
+        ),
         catchError(({ status, error: message }) =>
           of(
             CalculationActions.fetchLegendFailure({
@@ -61,10 +60,41 @@ export class CalculationEffects {
         )
       )
     )
-  );
+  ));
 
-  @Effect()
-  fetchPercentile$ = this.actions$.pipe(
+  fetchComparisonLegend$ = createEffect(() => this.actions$.pipe(
+    ofType(CalculationActions.fetchComparisonLegend),
+    mergeMap(({ comparisonTitle }) =>
+      this.calcService.getLegend('comparison').pipe(
+        map(legend => CalculationActions.fetchComparisonLegendSuccess({ legend, comparisonTitle, maxValue: 0.45 })),
+        catchError(({ status, error: message }) =>
+          of(
+            CalculationActions.fetchLegendFailure({
+              error: { status, message }
+            })
+          )
+        )
+      )
+    )
+  ));
+
+  fetchDynamicComparisonLegend$ = createEffect(() => this.actions$.pipe(
+    ofType(CalculationActions.fetchDynamicComparisonLegend),
+    mergeMap(({ dynamicMax, comparisonTitle }) =>
+      this.calcService.getDynamicComparisonLegend(dynamicMax).pipe(
+        map(legend => CalculationActions.fetchComparisonLegendSuccess({ legend, comparisonTitle, maxValue: dynamicMax })),
+        catchError(({ status, error: message }) =>
+          of(
+            CalculationActions.fetchLegendFailure({
+              error: { status, message }
+            })
+          )
+        )
+      )
+    )
+  ));
+
+  fetchPercentile$ = createEffect(() => this.actions$.pipe(
     ofType(CalculationActions.fetchPercentile),
     switchMap(() =>
       this.calcService.getPercentileValue().pipe(
@@ -78,5 +108,30 @@ export class CalculationEffects {
         )
       )
     )
-  );
+  ));
+
+  removeBatchProcess$ = createEffect(() => this.actions$.pipe(
+    ofType(CalculationActions.removeFinishedBatchProcess),
+    mergeMap(({ id }) =>
+      this.calcService.removeFinishedBatchProcess(id).pipe(
+        map(() => CalculationActions.removeBatchProcessSuccess({ id })),
+        catchError(({ status, error: message }) =>
+          of(
+            CalculationActions.removeBatchProcessFailure({
+              error: { status, message }
+            })
+          )
+        )
+      )
+    )
+  ));
+
+  cancelBatchProcess$ = createEffect(() => this.actions$.pipe(
+    ofType(CalculationActions.cancelBatchProcess),
+    mergeMap(({ id }) =>
+      this.calcService.cancelBatchProcess(id).pipe(
+        map(() => CalculationActions.cancelBatchProcessSuccess({ id }))
+      )
+    )
+  ));
 }

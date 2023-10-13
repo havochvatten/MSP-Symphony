@@ -6,7 +6,14 @@ import { environment as env } from '@src/environments/environment';
 import { State } from '@src/app/app-reducer';
 import { MessageActions } from '@data/message';
 import { MetadataSelectors } from '@data/metadata';
-import { CalculationSlice, Legend, LegendType, PercentileResponse, StaticImageOptions } from './calculation.interfaces';
+import {
+  CalculationSlice,
+  Legend,
+  LegendType,
+  PercentileResponse,
+  BatchCalculationProcessEntry,
+  StaticImageOptions
+} from './calculation.interfaces';
 import { CalculationActions } from '.';
 import { AppSettings } from '@src/app/app.settings';
 import { register } from 'ol/proj/proj4';
@@ -104,7 +111,7 @@ export class CalculationService implements OnDestroy {
     });
   }
 
-  public addComparisonResult(idA: string, idB: string){
+  public addComparisonResult(idA: string, idB: string, dynamic: boolean){
     //  Bit "hacky" but workable "faux" id constructed as a negative number
     //  to guarantee uniqueness without demanding a separate interface.
     //  Note that this artficially imposes a virtual maximum for calculation
@@ -112,7 +119,8 @@ export class CalculationService implements OnDestroy {
     //  The limit is chosen specifically in relation to Number.MIN_SAFE_INTEGER
     //  which is -2^53
 
-    return this.addResultImage(this.cmpId(+idA, +idB), `diff/${idA}/${idB}`);
+    return this.addResultImage(this.cmpId(+idA, +idB), `diff/${idA}/${idB}`
+                                                  + (dynamic ? '?dynamic=true' : ''));
   }
 
   cmpId(a:number, b:number): number {
@@ -125,10 +133,11 @@ export class CalculationService implements OnDestroy {
 
   private addResultImage(id: number, epFragment: string) {
     const that = this;
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<number | null>((resolve, reject) => {
       this.getStaticImage(`${env.apiBaseUrl}/calculation/` + epFragment).subscribe({
         next(response) {
-          const extentHeader = response.headers.get('SYM-Image-Extent');
+          const extentHeader = response.headers.get('SYM-Image-Extent'),
+                dynamicMaxHeader = response.headers.get('SYM-Dynamic-Max');
           if (extentHeader) {
             that.resultReady$.emit({
               url: URL.createObjectURL(response.body!),
@@ -139,7 +148,7 @@ export class CalculationService implements OnDestroy {
                             AppSettings.MAP_PROJECTION,
               interpolate: that.aliasing
             });
-            resolve();
+            resolve(dynamicMaxHeader ? +dynamicMaxHeader : null);
           } else {
             console.error(
               'Result image for calculation ' + id + ' does not have any extent header, ignoring.'
@@ -193,8 +202,17 @@ export class CalculationService implements OnDestroy {
     return this.http.get<Legend>(`${env.apiBaseUrl}/legend/${type}`);
   }
 
+  public getDynamicComparisonLegend(dynamicMax: number) {
+    return this.http.get<Legend>(`${env.apiBaseUrl}/legend/comparison?dynamicMax=${dynamicMax}`);
+  }
+
   public getPercentileValue() {
     return this.http.get<PercentileResponse>(`${env.apiBaseUrl}/calibration/percentile-value`);
+  }
+
+  public queueBatchCalculation(scenarioIds: number[]) {
+    return this.http.post<BatchCalculationProcessEntry>(`${env.apiBaseUrl}/calculation/batch`, scenarioIds.join(), {
+      headers: new HttpHeaders({ 'Content-Type': 'text/plain' })});
   }
 
   delete(id: number) {
@@ -208,5 +226,13 @@ export class CalculationService implements OnDestroy {
     if (this.aliasingSubscription$) {
       this.aliasingSubscription$.unsubscribe();
     }
+  }
+
+  removeFinishedBatchProcess(id: number) {
+    return this.http.delete(`${env.apiBaseUrl}/calculation/batch/${id}`);
+  }
+
+  cancelBatchProcess(id: number) {
+    return this.http.post(`${env.apiBaseUrl}/calculation/batch/${id}/cancel`, null);
   }
 }

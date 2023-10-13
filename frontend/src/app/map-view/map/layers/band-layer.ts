@@ -60,7 +60,7 @@ class BandLayer extends SymphonyLayerGroup {
               imageExtent: JSON.parse(extentHeader),
               calculationId: NaN,
               projection: AppSettings.MAP_PROJECTION,
-              attributions: band.mapAcknowledgement ?? band.authorOrganisation ?? '',
+              attributions: band.meta.mapAcknowledgement ?? band.meta.authorOrganisation ?? '',
               interpolate: this.antialias
             };
 

@@ -3,16 +3,17 @@
           layerName: this.title }
   }}</h4>
 <div class="meta-sections">
-  <div *ngFor="let metaSection of bandMetadata | keyvalue : preserveKV">
-    <h5>{{ 'map.metadata.' + metaSection.key | translate }}</h5>
-    <p [ngClass]="{'no-info': !(metaSection.value) }">
-      {{ (metaSection.value || ('map.metadata.no-info' | translate)) }}
+  <div *ngFor="let metaSection of bandMetadata | keyvalue : preserveKV" class="meta-content">
+    <h5>{{ 'map.metadata.properties.' + metaSection.key | translate }}</h5>
+    <p *ngIf="!(metaSection.value)" class="no-info">
+      {{ 'map.metadata.no-info' | translate }}
     </p>
+    <p *ngFor="let meta of metaSection.value" [innerHTML]="meta | anchor"></p>
   </div>
-  <div *ngIf="bandMetadataSources.length > 0 && bandMetadataSources[0].length > 0">
-    <h5>{{ 'map.metadata.data-sources' | translate }}</h5>
+  <div *ngFor="let metaList of bandMetadataLists | keyvalue : preserveKV" class="meta-content meta-list">
+    <h5>{{ 'map.metadata.properties.' + metaList.key | translate }}</h5>
     <ul>
-      <li *ngFor="let mdSource of bandMetadataSources" [innerHTML]="mdSource | anchor"></li>
+      <li *ngFor="let mdListEntry of metaList.value" [innerHTML]="mdListEntry | anchor"></li>
     </ul>
   </div>
 </div>

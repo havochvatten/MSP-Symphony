@@ -1,5 +1,5 @@
 <app-icon-button
-  icon="plus" [disabled]="disabled || selectedAreas.length === 0"
+  icon="plus" [disabled]="disabled || selectedAreas.length === 0 || selectionOverlap"
   [title]="disabled ? '' :
           !(selectedAreas && selectedAreas.length > 0) ?
             (noneSelectedTipKey | translate) :

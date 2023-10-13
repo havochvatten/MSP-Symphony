@@ -1,0 +1,5 @@
+<job id="calculateBatch">
+    <step id="calculate">
+        <batchlet ref="batchCalculateScenario" />
+    </step>
+</job>

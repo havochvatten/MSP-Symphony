@@ -39,6 +39,7 @@ public class ReportResponseDto {
     public Map<Integer, Double> impactPerPressure; // N.B: accumulated total, not percentage
     public Map<Integer, Double> impactPerEcoComponent;
     public Map<String, List> chartData;
+    public double chartWeightThreshold;
     public JsonNode scenarioChanges;
     public long timestamp;
 }
