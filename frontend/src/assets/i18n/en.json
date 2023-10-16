@@ -515,7 +515,8 @@
             "vs": "and"
         },
         "common" : {
-            "not-measurable": "(not measurable)"
+            "not-measurable": "(not measurable)",
+            "date-and-time": "Date and time:"
         },
         "cumulative-effect-etc": {
             "baseline": "Baseline version",
@@ -593,13 +594,19 @@
             "open-in-new-tab": "Open in new tab",
             "print": "Print"
         },
+        "wio-addendum": {
+            "citation-header": "Cite as:",
+            "cc-license-header": "License:",
+            "cc-license-desc": "This report is licensed under a",
+            "cc-license-caption": "Creative Commons Attribution-ShareAlike 4.0 International License",
+            "cc-license-permission": "Share and adapt, but always give appropriate credit and share under this same license, etc – see full license for terms and conditions."
+        },
         "description": "Calculations of the cumulative environmental impact is made using the Swedish Agency for Marine and Water Management's application Symphony.",
         "more-info": "For more information about Symphony please visit ",
         "link": "https://www.havochvatten.se/en/swam/eu--international/marine-spatial-planning/symphony---a-tool-for-ecosystem-based-marine-spatial-planning.html",
         "fetching-report": "Fetching report",
         "error-message": "An error occurred. There is no report to show now. Please check options and try a calculation again."
     },
-    "footer": "Swedish Agency for Marine and Water Management",
     "api-messages": {
         "areas": {
             "import-success" : {

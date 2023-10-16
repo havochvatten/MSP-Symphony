@@ -515,7 +515,8 @@
             "vs": "vs."
         },
         "common" : {
-            "not-measurable": "(non mesurable)"
+            "not-measurable": "(non mesurable)",
+            "date-and-time": "La date et l'heure:"
         },
         "cumulative-effect-etc": {
             "baseline": "Version de référence",
@@ -606,7 +607,6 @@
         "fetching-report": "Assemblage du rapport",
         "error-message": "Une erreur est survenue. Aucun rapport n'a pu être produit. Veuillez vérifier les paramètres et réessayer."
     },
-    "footer": "Agence Suédoise pour la Gestion de l'Eau et des Zones Maritimes (Havs och Vattenmyndigheten)",
     "api-messages": {
         "areas": {
             "import-success" : {

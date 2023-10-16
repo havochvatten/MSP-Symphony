@@ -13,7 +13,6 @@ import { BandGroup, LayerData } from '@data/metadata/metadata.interfaces';
 import { formatChartData } from './report.util';
 import { Report } from '@data/calculation/calculation.interfaces';
 import { environment as env } from "@src/environments/environment";
-import buildInfo from '@src/build-info';
 import { CalculationActions, CalculationSelectors } from "@data/calculation";
 import { NormalizationType } from "@data/calculation/calculation.service";
 import { ReportService } from "@src/app/report/report.service";
