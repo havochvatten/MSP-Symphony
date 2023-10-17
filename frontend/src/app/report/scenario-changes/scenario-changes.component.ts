@@ -14,6 +14,8 @@ export class ScenarioChangesComponent {
   @Input() scenarioChanges!: ReportChanges;
   @Input() areaDict!: Map<number, string>;
   @Input() bandMap: BandMap = { b: {}, e: {} }; // Not used
+  @Input() comparisonReport = false;
+
   anyChanges() {
     return this.anyScenarioChanges() || this.anyAreaChanges();
   }

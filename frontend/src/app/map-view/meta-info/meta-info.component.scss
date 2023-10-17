@@ -29,17 +29,6 @@
       margin: 0.4rem 0;
     }
 
-    p {
-      font-size: 1.3rem;
-      line-height: 2.2rem;
-      margin: 0 0 1.8rem;
-
-      &.no-info {
-        font-style: oblique;
-        color: $hav-darkgrey;
-      }
-    }
-
     > button {
       margin-right: 1.4rem;
       align-self: center;
@@ -47,6 +36,21 @@
 
     &.meta-sections {
       margin-bottom: 1rem;
+
+      .meta-content {
+        p {
+          font-size: 1.3rem;
+          line-height: 2.2rem;
+          margin: 0 0 0.4rem;
+
+          &.no-info {
+            font-style: oblique;
+            color: $hav-darkgrey;
+          }
+        }
+
+        margin-bottom: 1rem;
+      }
 
       ul {
         padding-left: 2rem;

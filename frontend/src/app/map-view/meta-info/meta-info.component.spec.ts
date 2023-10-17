@@ -1,9 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MetaInfoComponent } from './meta-info.component';
+import { AnchorPipe } from "@shared/anchor.pipe";
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
+import { IconComponent } from "@shared/icon/icon.component";
 
 describe('MetaInfoComponent', () => {
   let component: MetaInfoComponent;
@@ -20,15 +22,17 @@ describe('MetaInfoComponent', () => {
               band: {
                 title: '',
                 statePath: [''],
-                methodSummary: '',
-                limitationsForSymphony: '',
-                valueRange: '',
-                dataProcessing: ''
+                meta: {
+                  methodSummary: '',
+                  limitationsForSymphony: '',
+                  valueRange: '',
+                  dataProcessing: ''
+                }
               }
             }
           }
         }],
-      declarations: [ MetaInfoComponent ]
+      declarations: [ MetaInfoComponent, AnchorPipe, IconComponent ]
     })
     .compileComponents();
     fixture = TestBed.createComponent(MetaInfoComponent);

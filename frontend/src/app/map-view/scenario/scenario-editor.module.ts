@@ -10,7 +10,7 @@ import {
   NormalizationSelectionComponent
 } from "@src/app/map-view/scenario/scenario-detail/normalization-selection/normalization-selection.component";
 import { MatButtonModule } from "@angular/material/button";
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatProgressSpinnerModule as MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatRadioModule } from "@angular/material/radio";
 import { MatSelectModule } from "@angular/material/select";
 import { MatCheckboxModule } from "@angular/material/checkbox";
@@ -23,6 +23,8 @@ import { ChangesOverviewComponent } from './changes-overview/changes-overview.co
 import { CopyScenarioComponent } from './copy-scenario/copy-scenario.component';
 import { MatInputModule } from "@angular/material/input";
 import { TransferChangesComponent } from './transfer-changes/transfer-changes.component';
+import { OverviewInlineBandChangeComponent } from './changes-overview/overview-inline-band-change/overview-inline-band-change.component';
+import { SplitScenarioSettingsComponent } from './split-scenario-settings/split-scenario-settings.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +39,8 @@ import { TransferChangesComponent } from './transfer-changes/transfer-changes.co
     ChangesOverviewComponent,
     CopyScenarioComponent,
     TransferChangesComponent,
+    OverviewInlineBandChangeComponent,
+    SplitScenarioSettingsComponent,
   ],
     imports: [
         SharedModule,
@@ -49,6 +53,10 @@ import { TransferChangesComponent } from './transfer-changes/transfer-changes.co
         MatInputModule
     ],
   providers: [ OrdinalPipe ],
-  exports: [ScenarioEditorComponent]
+  exports: [
+      ScenarioEditorComponent,
+      ChangesListComponent,
+      AddScenarioAreasComponent
+  ]
 })
 export class ScenarioEditorModule {}

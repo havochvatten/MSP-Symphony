@@ -63,6 +63,18 @@
             "area": "Område:",
             "exit": "Lämna"
         },
+        "batch-progress": {
+            "header-in-progress": "\"Batch\"-beräkning pågår",
+            "header-cancelled": "Avbruten \"batch\"-beräkning",
+            "header-finished": "Slutförd \"batch\"-beräkning",
+            "message": "Beräknar.. ({{ count }} av {{ total }} scenarion beräknade)",
+            "cancel": "Avbryt körningen",
+            "remove-finished": "Göm slutförd \"batch\"-status",
+            "cancelled-run": {
+                "title": "\"Batch\"-beräkning avbruten",
+                "message": "\"Batch\"-beräkningen avbröts. Resultaten av de beräkningar som slutfördes finns tillgängliga under 'Tidigare beräkningar'."
+            }
+        },
         "editor": {
             "title": "Scenarion",
             "areas": {
@@ -77,11 +89,20 @@
                         "confirm": "Tag bort"
                     }
                 },
-                "specific-settings": "Specific settings have been made for this area: {{ feature-changes }}",
+                "specific-settings": "Områdesspecifika ändringar förekommer:\n{{ feature-changes }}",
                 "loading-matrices": "Laddar känslighetsmatriser",
                 "add-scenario-label": "Lägg till markerade områden i scenariot",
                 "add-scenario-label-single": "Lägg till « {{ area }} » i scenariot",
                 "select-area-first-label": "Markera först ett område"
+            },
+            "split-scenario-settings": {
+                "title": "Scenarier från områden",
+                "detail": "Generera ett nytt scenario för varje område som omfattas av det aktuella",
+                "set-batch-name": "Namn på \"batch\"-beräkning",
+                "apply-scenario-changes": "Applicera gemensamma förekomständringar",
+                "apply-area-changes": "Applicera områdesspecifika inställningar på dess motsvarande scenarier",
+                "enter-batch-mode": "Gå till \"batch\"-läget",
+                "generate": "Generera"
             },
             "operation": {
                 "title": "Algoritm",
@@ -171,6 +192,11 @@
                 "show-overview": "Öppna översiktsvyn för ändringar",
                 "global-changes": "Generella ändringar",
                 "show-all": "Visa alla",
+                "edit-value": "Ändra värde",
+                "confirm-change": "Bekräfta ändring",
+                "discard-change": "Förkasta ändring",
+                "relative-label": "Procentuell",
+                "absolute-label": "Konstant",
                 "close": "Stäng"
             },
             "area-changes": {
@@ -203,6 +229,7 @@
                 "user-scenarios": "Mina scenarion",
                 "add-scenario-label": "Skapa ett nytt grupperat scenario",
                 "add-scenario-label-single": "Skapa ett nytt scenario för {{area}}",
+                "overlap": "Kan ej skapa scenario för överlappande områden",
                 "scenario-name": "Namnlöst scenario",
                 "scenario-name-template": "Scenario {{area}}",
                 "select-area-first-label": "Börja med att välja områden för scenariot.",
@@ -211,7 +238,17 @@
                 "scenario-area": "{{ scenario }}\nOmråde: {{ area-feature }}",
                 "show-report-label": "Öppna senaste beräkningsrapporten",
                 "more-areas-single": "+ ett ytterligare område ..",
-                "more-areas": "+ {{ more }} ytterligare områden .."
+                "more-areas": "+ {{ more }} ytterligare områden ..",
+                "filter-hint": "Filtrera scenarion per namn",
+                "select-all-for-batch": "Markera samtliga",
+                "select-all-for-batch-filtered": "Markera synliga",
+                "deselect-all-for-batch": "Avmarkera samtliga",
+                "batch-tools": {
+                    "enter-batch-mode": "Gå till \"batch\"-läge",
+                    "exit-batch-mode": "Gå ur \"batch\"-läge",
+                    "batch-too-small": "Markera minst två scenarion",
+                    "run-batch": "Kör \"batch\"-beräkning för markerade scenarion"
+                }
             },
             "clear": "Rensa",
             "close": "❮",
@@ -230,24 +267,65 @@
             },
             "select-intersection": {
                 "header": "Flera standardmatriskopplingar",
-                "message": "Det valda området omfattar flera olika standardmatriskopplingar.<br>Välj det område du vill analysera.",
+                "message": "Det valda området omfattar flera olika standardmatriskopplingar.<br>Nedan föreslås giltiga områdesindelningar för respektive standardmatris.<br>Välj vilka av dessa som skall ingå i scenariot.",
                 "default-matrix": "Områdets standardmatriskoppling:",
-                "confirm-selection": "Använd valt område"
+                "confirm-selection": "Använd valda områden"
             },
-            "calculate": "Beräkna"
+            "calculate": "Beräkna",
+            "unsaved-changes": "Osparade ändringar",
+            "save-changes": "Spara nu",
+            "saved-by-user": "Ändringar sparade",
+            "saved-by-user-time": "Senast sparad: {{ timestamp }}"
         },
         "metadata": {
             "label": "Visa metadata",
             "header": "Metadata avseende {{ layerType }}: {{ layerName }}",
-            "method-summary": "Metodsammanfattning",
-            "known-limitations": "Begränsningar",
-            "value-range": "Värdeintervall",
-            "data-processing": "Databehandling",
-            "data-sources": "Datakällor",
             "close": "Stäng",
             "ecosystem": "naturvärde",
             "pressure": "belastning",
-            "no-info": "Uppgift saknas."
+            "no-info": "Uppgift saknas.",
+            "properties": {
+                "accessUseRestrictions": "Användningsbegränsningar",
+                "authorEmail": "Författares e-post",
+                "authorOrganisation": "Ansvarig organisation",
+                "dataOwner": "Ägare av datamängden",
+                "dataOwnerLocal": "Ägare av datamängden",
+                "dataProcessing": "Databehandling",
+                "dataSources": "Datakällor",
+                "dateCreated": "Upphovsdatum",
+                "descriptiveKeywords": "Nyckelord",
+                "format": "Dataformat",
+                "limitationsForSymphony": "Begränsningar",
+                "lineage": "Upphov",
+                "maintenanceInformation": "Underhållsinformation",
+                "mapAcknowledgement": "",
+                "marinePlaneArea": "Havsplaneområde",
+                "metadataDate": "Datum",
+                "metadataEmail": "E-post",
+                "metadataFileName": "Filnamn",
+                "metadataLanguage": "Språk",
+                "metadataOrganisation": "Organisation",
+                "metadataOrganisationLocal": "Organisation",
+                "methodSummary": "Metodsammanfattning",
+                "ownerEmail": "E-post (ägare)",
+                "otherRestrictions": "Övriga begränsningar",
+                "rasterFileName": "Filnamn rasterdata",
+                "rasterSpatialReferenceSystem": "Datarastrets koordinatsystem",
+                "recommendations": "Rekommendationer",
+                "resourceType": "Resurstyp",
+                "securityClassification": "Säkerhetsklassning",
+                "status": "Status",
+                "summary": "Sammanfattning",
+                "summaryLocal": "Sammanfattning",
+                "symphonyCategory": "Kategori",
+                "symphonyDatatype": "",
+                "symphonyTheme": "Metadatagrupp",
+                "temporalPeriod": "Tidsperiod",
+                "theme": "Ämne",
+                "topicCategory": "Ämneskategori",
+                "useLimitations": "Användningsbegränsningar",
+                "valueRange": "Värdeintervall"
+            }
         },
         "toolbar": {
             "zoom-in": "Zooma in",
@@ -295,6 +373,7 @@
             "placeholder": "Inga tidigare beräkningar",
             "show-report": "Öppna rapport “{{ calculationName }}”",
             "delete": "Radera sparad beräkning “{{ calculationName }}”",
+            "filter-hint": "Filtrera beräkningsrapport per namn",
             "delete-modal" : {
                 "header": "Radera sparad beräkning",
                 "message": "Bekräfta borttagning av tidigare sparad beräkning: <em>“{{ calculationName }}”</em>",
@@ -310,7 +389,10 @@
             "choose-scenario": "Välj scenario",
             "choose-base-scenario-first": "Välj grundscenario först",
             "base-scenario-suggestion": "(vanligtvis basvärdeanalysen)",
-            "what-if-scenario-suggestion": "(vanligtvis den prognostiserade analysen)"
+            "what-if-scenario-suggestion": "(vanligtvis den prognostiserade analysen)",
+            "select-scale": "Anpassa färgskala",
+            "scale-constant": "Konstant maximum (45%)",
+            "scale-dynamic": "Dynamiskt maximum"
         },
         "user-area": {
             "create": {
@@ -320,6 +402,10 @@
                     "placeholder": "Mitt område 1",
                     "save": "Spara",
                     "close": "Avbryt"
+                },
+                "invalid-area" : {
+                    "title": "Felaktigt område",
+                    "message": "Nya områden måste överlappa minst ett område med standardmatriskoppling"
                 }
             },
             "upload": {
@@ -373,11 +459,24 @@
         },
         "area-selection-hint": {
             "emphasis": "Välj / avmarkera flera områden",
-            "detail": "genom Ctrl + klick eller ⌘ + klick"
+            "detail": "genom {{ ctrlButton }} + klick"
         },
         "special-actions-hint": {
             "emphasis": "Dela eller sammanfoga område",
-            "detail": "Alt / ⌥ + klick delar överlappande, Alt / ⌥ + Shift + sammanfogar"
+            "detail": "{{ altButton }} + klick delar överlappande, {{ altButton }} + Shift + klick sammanfogar"
+        },
+        "merge-areas-hint" : {
+            "emphasis": "Sammanfoga områden",
+            "detail": "{{ altButton }} + Shift + klick på 'sista' området för att sammanfoga."
+        }
+    },
+    "controls": {
+        "open": "Öppna",
+        "close": "Stäng",
+        "delete": "Radera",
+        "accordion": {
+            "expand": "Fäll ut",
+            "contract": "Fäll ihop"
         }
     },
     "main-menu": {
@@ -461,8 +560,18 @@
             "pressure": "Belastningar med högst påverkan"
         },
         "sankey": {
-            "title": "Sankey-diagram",
-            "description": "Detta Sankey-diagram visar sambanden mellan belastningar och naturvärden. Flödespilarnas bredd är proportionella mot belastningarnas storlek och deras påverkan på olika naturvärden. Detta gör det möjligt att visa alla data översiktligt i en enda bild. Endast värden på över 1% inkluderas i diagrammet."
+            "sankey-single": {
+                "title": "Sankey-diagram",
+                "description": "Detta Sankey-diagram visar sambanden mellan belastningar och naturvärden. Flödespilarnas bredd är proportionella mot belastningarnas storlek och deras påverkan på olika naturvärden. Detta gör det möjligt att visa alla data översiktligt i en enda bild. Endast värden över {{ chartThreshold }} inkluderas i diagrammet."
+            },
+            "sankey-cmp-positive": {
+                "title": "Sankey-diagram (ökande påverkan)",
+                "description": "Detta Sankey-diagram visar sambanden mellan de belastningar vars påverkan ökar på olika naturvärden i \"what-if\" scenariot, jämfört med grundscenariot. Flödespilarnas bredd är proportionella mot ökningen av varje belastning mellan de två angivna scenarierna, med avseende på de påverkade naturvärdena. Endast värden över {{ chartThreshold }} inkluderas i diagrammet."
+            },
+            "sankey-cmp-negative": {
+                "title": "Sankey diagram (minskande påverkan)",
+                "description": "Detta Sankey-diagram visar sambanden mellan de belastningar vars påverkan minskar på olika naturvärden i \"what-if\" scenariot, jämfört med grundscenariot. Flödespilarnas bredd är proportionella mot minskningen av varje belastning mellan de två angivna scenarierna, med avseende på de påverkade naturvärdena. Endast värden över {{ chartThreshold }} inkluderas i diagrammet."
+            }
         },
         "scenario-changes": {
             "title": "Scenarioparametrar",
@@ -498,7 +607,6 @@
         "fetching-report": "Hämtar rapport",
         "error-message": "Ett fel inträffade. Det finns ingen rapport att visa för tillfället – var god testa att göra en ny beräkning."
     },
-    "footer": "Havs och Vattenmyndigheten",
     "api-messages": {
         "areas": {
             "import-success" : {
@@ -506,8 +614,15 @@
                 "message-single" : "Importerat område: \"{{ topLayerName }}\"",
                 "message-multi" : "Importerade {{ layersCount }} områden."
             }
-
         }
+    },
+    "list-sorting-options" : {
+        "indicate-order" : "Ange sorteringsordning som {{ orderHint }}",
+        "AlphaAsc" : "alfabetisk, stigande (A-Ö)",
+        "AlphaDesc" : "alfabetisk, fallande (Ö-A)",
+        "DateAsc" : "datum, stigande (äldst först)",
+        "DateDesc" : "datum, fallande (nyast först)",
+        "None" : "ej ordnad"
     },
     "wio": {
         "in-collaboration": "I samarbete",

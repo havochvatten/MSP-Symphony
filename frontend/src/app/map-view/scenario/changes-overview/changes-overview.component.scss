@@ -35,12 +35,12 @@
       ::ng-deep mat-radio-button {
         height: 1.8rem;
 
-        .mat-radio-label {
-          font-size: 1.2rem;
+          .mdc-label {
+            font-size: 1.2rem;
+          }
 
-          .mat-radio-container,
-          .mat-radio-container .mat-radio-outer-circle,
-          .mat-radio-container .mat-radio-inner-circle {
+          .mat-radio__background,
+          .mat-radio__background .mdc-radio__outer-circle {
             width: 1.4rem;
             height: 1.4rem;
           }
@@ -55,7 +55,6 @@
         }
       }
     }
-  }
 
   .intensity-tables-wrapper {
     display: flex;
@@ -170,8 +169,23 @@
       }
 
       td {
+        position: relative;
         text-align: center;
         font-size: 1.3rem;
+
+        ::ng-deep app-overview-inline-band-change.cell-editing {
+          padding: 1rem 0 0.2rem;
+        }
+      }
+    }
+
+    &.editing table {
+      td ::ng-deep app-overview-inline-band-change:not(.cell-editing) {
+        color: $hav-darkgrey;
+
+        app-icon-button {
+          display: none;
+        }
       }
     }
   }

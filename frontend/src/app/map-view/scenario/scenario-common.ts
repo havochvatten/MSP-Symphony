@@ -32,7 +32,7 @@ function isScenario(target: Scenario | ScenarioArea): target is Scenario {
 }
 
 export async function transferChanges(
-  dialogService:DialogService, translateService: TranslateService, store: Store<State>, moduleRef:NgModuleRef<any>, target: Scenario | ScenarioArea):Promise<void> {
+  dialogService:DialogService, translateService: TranslateService, store: Store<State>, moduleRef:NgModuleRef<any>, target: Scenario | ScenarioArea):Promise<boolean> {
   const selectedChanges = await dialogService.open<ScenarioChangesSelection>(
     TransferChangesComponent, moduleRef,
     {
@@ -46,5 +46,7 @@ export async function transferChanges(
     } else {
       store.dispatch(ScenarioActions.transferScenarioAreaChanges({ changesSelection: selectedChanges }));
     }
+    return true;
   }
+  return false;
 }

@@ -1,3 +1,3 @@
-<h4>{{ 'report.sankey.title' | translate }}</h4>
-<p>{{ 'report.sankey.description' | translate }}</p>
-<svg id="sankey" width="740" height="1100" viewBox="0 0 740 1100"></svg>
+<h4>{{ 'report.sankey.' + diagramId + '.title' | translate }}</h4>
+<p>{{ 'report.sankey.' + diagramId + '.description' | translate:{ chartThreshold: chartWeightThreshold } }}</p>
+<svg width="740" height="1100" viewBox="0 0 740 1100"></svg>

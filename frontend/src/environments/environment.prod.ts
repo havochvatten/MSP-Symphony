@@ -3,6 +3,7 @@ export const environment = {
   showBaseCalculations: true,
   showIncludeCoastCheckbox: true,
   apiBaseUrl: "/symphony-ws/service",
+  socketBaseUrl: "/socket",
   baseline: false, // Set to some false value to get "latest" baseline
   instanceName: "WIO Symphony",
   instanceImage: "assets/wio/wiosym-ideogram.svg",
@@ -44,5 +45,13 @@ export const environment = {
   login: {
     noAccountUrl: undefined,
     forgotPasswordUrl: undefined
+   },
+  meta: {
+    visible_fields: ['methodSummary',
+                    'limitationsForSymphony',
+                    'valueRange',
+                    'dataProcessing',
+                    'dataSources'],
+    list_fields:    ['dataSources']
   }
 };

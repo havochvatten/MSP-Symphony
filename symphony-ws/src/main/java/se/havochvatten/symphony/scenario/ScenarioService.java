@@ -1,16 +1,22 @@
 package se.havochvatten.symphony.scenario;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
+import org.geotools.data.geojson.GeoJSONWriter;
+import org.geotools.feature.simple.SimpleFeatureImpl;
+import org.geotools.geojson.GeoJSON;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.LiteShape2;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Property;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
@@ -34,11 +40,9 @@ import javax.transaction.Transactional;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Stateless
 public class ScenarioService {
@@ -213,15 +217,34 @@ public class ScenarioService {
             em.remove(scenario);
     }
 
-    public ScenarioAreaDto[] addAreas(Scenario scenario, ScenarioAreaDto[] areaDtos) {
+    public ScenarioAreaDto[] addAreas(Scenario scenario, ScenarioAreaDto[] areaDtos) throws JsonProcessingException {
         ScenarioArea[] newAreas = new ScenarioArea[areaDtos.length];
         int i = 0;
+
         for (ScenarioAreaDto areaDto : areaDtos) {
             ScenarioArea area = new ScenarioArea(areaDto, scenario);
             em.persist(area);
             em.flush();
             newAreas[i++] = area;
+
+            ArrayList<Object> statePath = (ArrayList<Object>) area.getFeature().getAttribute("statePath");
+
+            // Areas from "split and replace" action won't have a statePath set
+            if(statePath == null || statePath.isEmpty()) {
+                SimpleFeature feature = area.getFeature();
+                String serialName = "%s %d".formatted(feature.getAttribute("name"), i);
+                statePath = new ArrayList<>();
+                statePath.add("scenarioArea");
+                statePath.add(area.getId());
+                feature.setAttribute("statePath", statePath);
+                feature.setAttribute("name", serialName);
+                feature.setAttribute("displayName", serialName);
+                feature.setAttribute("id", serialName);
+                area.setFeature(mapper.readTree(GeoJSONWriter.toGeoJSON(feature)));
+                em.merge(area);
+            }
         }
+
         Scenario finalScenario = em.merge(scenario);
         return Arrays.stream(newAreas).map(
             scenarioArea -> new ScenarioAreaDto(scenarioArea, finalScenario.getId()))
@@ -261,6 +284,54 @@ public class ScenarioService {
             em.flush();
 
             return (Scenario) target;
+        }
+    }
+
+    @Transactional
+    public int[] split(Scenario scenario, ScenarioSplitOptions options) {
+        JsonNode commonChanges = scenario.getChanges();
+        List<ScenarioArea> areas = scenario.getAreas();
+        int[] newScenarioIds = new int[areas.size()];
+        int aix = 0;
+
+        for (ScenarioArea area : areas) {
+            ScenarioCopyOptions copyOptions = new ScenarioCopyOptions(area, options);
+            scenario.setScenarioAreas(List.of(area));
+            scenario.setChanges(options.applyAreaChanges() && !area.getChangeMap().isEmpty() ?
+                mapper.valueToTree(area.getCombinedChangeMap()) : commonChanges);
+            Scenario newScenario = new Scenario(scenario, copyOptions);
+            em.persist(newScenario);
+            newScenarioIds[aix++] = (em.merge(newScenario)).getId();
+        }
+
+        em.detach(scenario);
+        em.flush();
+
+        return newScenarioIds;
+    }
+
+    public Scenario splitAndReplaceArea(Scenario scenario, int scenarioAreaId, ScenarioAreaDto[] replacementAreas) {
+        ScenarioArea area = scenario.getAreas().stream()
+            .filter(a -> a.getId() == scenarioAreaId)
+            .findFirst()
+            .orElseThrow(NotFoundException::new);
+        try {
+            replacementAreas = addAreas(scenario, replacementAreas);
+
+            scenario.setScenarioAreas(
+                Stream.concat(
+                    Arrays.stream(scenario.getAreas().toArray(new ScenarioArea[0]))
+                        .filter(a -> a.getId() != scenarioAreaId),
+                    Arrays.stream(replacementAreas).map(
+                        areaDto -> em.find(ScenarioArea.class, areaDto.id))).collect(Collectors.toList())
+            );
+
+            em.merge(scenario);
+            em.flush();
+            return scenario;
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 }

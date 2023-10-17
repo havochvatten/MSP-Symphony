@@ -38,78 +38,80 @@
     }
   }
 
-  h1 {
-    margin-top: 0;
-    margin-bottom: $m-margin;
-    height: 92px;
-    width: 300px;
-    color: $hav-darkblue;
-    font-size: 3.3rem;
-    letter-spacing: 0.29rem;
-    line-height: 3.8rem;
-    text-align: center;
-    text-transform: uppercase;
+  .title-container {
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      width: 300px;
+      color: $hav-darkblue;
+      font-size: 3.3rem;
+      letter-spacing: 0.29rem;
+      line-height: 3.8rem;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .current-version {
+      display: block;
+      font-size: 1.1rem;
+      text-align: right;
+      padding-right: 2.6rem;
+    }
+
   }
 
   .login-form {
     align-items: flex-end;
     display: flex;
     flex-direction: column;
+    margin-top: 55px;
 
-    ::ng-deep mat-form-field {
+    ::ng-deep mat-form-field.mat-mdc-form-field {
       font-size: 16px;
       margin-bottom: 0;
       min-width: 25.5rem;
 
-      .mat-form-field-wrapper {
-        position: relative;
+      .mat-mdc-form-field-infix {
+        display: flex;
+        flex-flow: column;
+        margin: 4px 0 0;
         padding: 0;
 
-        .mat-form-field-infix {
-          display: flex;
-          flex-flow: column;
-          margin: 4px 0 0;
-          padding: 0;
+        label.mdc-floating-label {
+          display: inline-block;
+          position: relative;
+          top: 0;
+          padding: 0 0 6px;
+          order: 1;
+          color: black;
+          font-size: 16px;
+          transform: none !important;
 
-          .mat-form-field-label-wrapper {
-            display: inline-block;
-            position: relative;
-            top: 0;
-            padding: 0 0 6px;
-            order: 1;
-
-            label.mat-form-field-label {
-              color: black;
-              font-size: 16px;
-              position: relative;
-              transform: none !important;
-              top: 0;
-
-              .mat-form-field-required-marker {
-                display: none;
-              }
-            }
-          }
-
-          input {
-            display: inline-block;
-            box-sizing: border-box;
-            order: 2;
-            border: 1px solid #000;
-            height: 46px;
-            padding: 0 8px;
-            caret-color: unset;
+          .mat-mdc-form-field-required-marker {
+            display: none;
           }
         }
 
-        .mat-form-field-underline {
-          display: none;
+        input {
+          display: inline-block;
+          box-sizing: border-box;
+          order: 2;
+          border: 1px solid #000;
+          height: 46px;
+          padding: 0 8px;
+          caret-color: unset;
         }
+      }
+
+      .mat-form-field-underline {
+        display: none;
       }
     }
 
-    button.mat-flat-button {
+    button.mdc-button.mat-mdc-unelevated-button {
       margin-top: calc(#{$s-margin} + #{$xs-margin});
+      font-weight: 500;
     }
   }
 

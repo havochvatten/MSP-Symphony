@@ -59,7 +59,7 @@ export class AreaGroupComponent {
         class="edit-icon"
         [attr.data-active]="open"
         icon="edit"
-        label="edit"
+        label="{{ 'map.user-area.edit.label' | translate }}"
         (click)="toggleOpen()"
       ></app-icon-button>
       <ul *ngIf="open" class="edit-options">

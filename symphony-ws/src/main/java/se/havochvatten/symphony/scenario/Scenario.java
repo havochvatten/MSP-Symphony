@@ -44,10 +44,10 @@ import java.util.stream.Collectors;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Scenario implements Serializable, BandChangeEntity {
     private static final ObjectMapper mapper = new ObjectMapper();
-    @Basic(optional = false)
-    @NotNull
-    @GeneratedValue
+
     @Id
+    @Basic(optional = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     protected Integer id;
 
@@ -107,12 +107,12 @@ public class Scenario implements Serializable, BandChangeEntity {
     protected JsonNode operationOptions;
 
     @OneToMany(mappedBy = "scenario", orphanRemoval = true, fetch = FetchType.EAGER)
-    @Cascade({ CascadeType.ALL })
+    @Cascade({ CascadeType.MERGE, CascadeType.PERSIST })
     @Fetch(FetchMode.SUBSELECT)
     private List<ScenarioArea> areas = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.EAGER)
-    @Cascade({ CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
+    @Cascade({ CascadeType.MERGE, CascadeType.REMOVE })
     @JoinColumn(name = "latestcalculation_cares_id")
     private CalculationResult latestCalculation;
 
@@ -246,7 +246,8 @@ public class Scenario implements Serializable, BandChangeEntity {
     }
 
     protected void setScenarioAreas(List<ScenarioArea> scenarioareas) {
-        this.areas = scenarioareas;
+        this.areas.clear();
+        this.areas.addAll(scenarioareas);
     }
 
     public CalculationResult getLatestCalculation() {

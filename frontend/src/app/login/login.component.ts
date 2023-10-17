@@ -4,7 +4,8 @@ import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { UserActions, UserSelectors } from '@data/user';
 import { Subscription, Observable } from 'rxjs';
-import { environment } from "@src/environments/environment.prod";
+import { environment } from '@src/environments/environment.prod';
+import buildInfo from '@src/build-info';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +20,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   errorMessage?: string;
   loading?: Observable<boolean>;
   env = environment;
+  symphonyVersion = buildInfo.version;
   private storeSubscription?: Subscription;
 
   constructor(private fb: FormBuilder, private store: Store<State>) {}

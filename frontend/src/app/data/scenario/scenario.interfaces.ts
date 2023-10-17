@@ -6,6 +6,7 @@ import {
   MatrixParameters
 } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
 import { OperationParams } from "@data/calculation/calculation.interfaces";
+import { ListItemsSort, SortableListItem } from "@data/common/sorting.interfaces";
 
 export interface State {
   scenarios: Scenario[];
@@ -13,13 +14,13 @@ export interface State {
   activeArea?: number; // index of area that is being edited in the active scenario
   matrixData: ScenarioMatrixDataMap | null;
   matricesLoading: boolean;
+  sortScenarios: ListItemsSort;
+  autoBatch: number[];
 }
 
-export interface Scenario {
+export interface Scenario extends SortableListItem {
   id: number;
-  timestamp: number;
   baselineId: number;
-  name: string;
   changes: ChangesProperty;
   normalization: NormalizationOptions;
   ecosystemsToInclude: number[];
@@ -70,4 +71,16 @@ export interface ScenarioChangesSelection {
   scenarioId: number | null;
   areaId: number | null;
   overwrite: boolean;
+}
+
+export interface ScenarioSplitOptions {
+  batchName: string;
+  applyScenarioChanges: boolean;
+  applyAreaChanges: boolean;
+  batchSelect: boolean;
+}
+
+export interface ScenarioSplitResponse {
+  scenarioId: number;
+  splitScenarioIds: number[];
 }

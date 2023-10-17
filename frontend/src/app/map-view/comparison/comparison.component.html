@@ -6,7 +6,7 @@
       <article>
         <h3>{{'map.compare.base-scenario' | translate }}</h3>
         <span class="suggestion">{{'map.compare.base-scenario-suggestion' | translate }}</span>
-        <mat-select [placeholder]="'map.compare.choose-scenario' | translate" formControlName="a"
+        <mat-select #base [placeholder]="'map.compare.choose-scenario' | translate" formControlName="a"
                     (valueChange)="changeBase($event)" required="true" [panelClass]="'ddPanel cmp'">
           <mat-option *ngFor="let c of calculations$ | async" [value]="c.id">{{ c.name }}</mat-option>
         </mat-select>
@@ -30,6 +30,21 @@
       A calculation cannot be compared with the same calculation.
     </div>
 -->
+  </div>
+  <div class="container select-scale">
+    <h4>{{ 'map.compare.select-scale' | translate }}</h4>
+    <article>
+      <mat-radio-group (change)="setComparisonScale($event.value)">
+        <mat-radio-button [value]="ScaleOptions.CONSTANT"
+                          [checked]="selectedScale == ScaleOptions.CONSTANT">
+          {{ 'map.compare.scale-constant' | translate }}
+        </mat-radio-button>
+        <mat-radio-button [value]="ScaleOptions.DYNAMIC"
+                          [checked]="selectedScale == ScaleOptions.DYNAMIC">
+          {{ 'map.compare.scale-dynamic' | translate }}
+        </mat-radio-button>
+      </mat-radio-group>
+    </article>
   </div>
 </section>
 

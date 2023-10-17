@@ -1,24 +1,21 @@
+import { Component, ViewChild, OnInit,
+         AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { Observable, Subscription } from 'rxjs';
+import { take } from "rxjs/operators";
+
 import { State } from '@src/app/app-reducer';
-import {
-  Component,
-  ViewChild,
-  OnInit,
-  AfterViewInit,
-  ChangeDetectorRef
-} from '@angular/core';
-import { MapComponent } from './map/map.component';
 import { MetadataSelectors } from '@data/metadata';
 import { AreaSelectors } from '@data/area';
-import { Observable, PartialObserver, Subscription } from 'rxjs';
 import { AllAreas, StatePath } from '@data/area/area.interfaces';
 import { BandGroup } from '@data/metadata/metadata.interfaces';
-import { LegendState } from '@data/calculation/calculation.interfaces';
+import { ComparisonLegendState, LegendState } from '@data/calculation/calculation.interfaces';
 import { CalculationSelectors } from '@data/calculation';
 import { environment } from "@src/environments/environment";
 import { ScenarioActions, ScenarioSelectors } from "@data/scenario";
 import { Scenario } from "@data/scenario/scenario.interfaces";
-import { take } from "rxjs/operators";
+import { MapComponent } from './map/map.component';
+import { isMacOS } from '@src/util/agent';
 
 @Component({
   selector: 'app-main-view',
@@ -31,10 +28,13 @@ export class MainViewComponent implements OnInit, AfterViewInit {
   metadata?: Observable<Record<string, BandGroup[]>>;
   areas?: Observable<AllAreas>;
   legends$?: Observable<LegendState>;
+  cmpLegends$?: Observable<ComparisonLegendState[]>;
   center = environment.map.center;
   visibleImpact = false;
   visibleComparison = false;
   singleSelection = false
+  multiSelection = false
+  isMacOS = isMacOS();
 
   protected activeScenario$: Observable<Scenario | undefined>;
   protected activeScenarioArea$: Observable<number | undefined>;
@@ -52,8 +52,10 @@ export class MainViewComponent implements OnInit, AfterViewInit {
     this.metadata = this.store.select(MetadataSelectors.selectMetadata);
     this.areas = this.store.select(AreaSelectors.selectAll);
     this.legends$ = this.store.select(CalculationSelectors.selectVisibleLegends);
+    this.cmpLegends$ = this.store.select(CalculationSelectors.selectComparisonLegend);
     this.selectedAreas$ = this.store.select(AreaSelectors.selectSelectedAreaData).subscribe((areas) => {
       this.singleSelection = areas.length === 1;
+      this.multiSelection = areas.length > 1;
     });
   }
 

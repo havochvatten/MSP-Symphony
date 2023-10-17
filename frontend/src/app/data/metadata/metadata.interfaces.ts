@@ -21,57 +21,23 @@ export interface Selection {
 }
 
 export interface Band extends SelectableLayer {
-  marinePlaneArea: string;
-  symphonyDataType: string;
-  rasterFileName: string;
-  metadataFileName: string;
-  dateCreated: string;
-  summary: string;
-  summaryLocal: string;
-  methodSummary: string;
-  limitationsForSymphony: string;
-  valueRange: string;
-  dataProcessing: string;
-  dataSources: string;
-  recommendations: string;
-  lineage: string;
-  status: string;
-  authorOrganisation: string;
-  authorEmail: string;
-  dataOwner: string;
-  dataOwnerLocal: string;
-  ownerEmail: string;
-  topicCategory: string;
-  descriptiveKeywords: string;
-  theme: string;
-  useLimitations: string;
-  accessUserRestrictions: string;
-  otherRestrictions: string;
-  mapAcknowledgement: string;
-  securityClassification: string;
-  maintenanceInformation: string;
-  spatialPresentation: string;
-  rasterSpatialReferenceSystem: string;
-  metadataDate: string;
-  metadataOrganisation: string;
-  metadataOrganisationLocal: string;
-  metadataEmail: string;
-  metadataLanguage: string;
   displayName: string;
   intensityMultiplier?: number; // TODO Rename
   constantIntensity?: number; // TODO rename
   layerOpacity?: number;
+  meta:
+    { [key: string]: string; };
 }
 
 export interface BandGroup {
-  symphonyTeamName: string;
-  symphonyTeamNameLocal: string;
+  symphonyThemeName: string;
+  symphonyThemeNameLocal: string;
   displayName: string;
   properties: Band[];
 }
 
-export interface SymphonyTeam {
-  symphonyTeams: BandGroup[];
+export interface SymphonyTheme {
+  symphonyThemes: BandGroup[];
 }
 
 export interface LayerData {
@@ -85,8 +51,8 @@ export interface ComponentData {
 }
 
 export interface APILayerData {
-  ecoComponent: SymphonyTeam;
-  pressureComponent: SymphonyTeam;
+  ecoComponent: SymphonyTheme;
+  pressureComponent: SymphonyTheme;
   language: string;
 }
 
@@ -95,8 +61,8 @@ export interface Components {
 }
 
 export interface Group {
-  symphonyTeamName: string;
-  symphonyTeamNameLocal: string;
+  symphonyThemeName: string;
+  symphonyThemeNameLocal: string;
   displayName: string;
   properties: Components;
 }

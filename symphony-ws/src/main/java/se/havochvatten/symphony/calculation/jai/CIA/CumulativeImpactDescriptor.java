@@ -67,6 +67,30 @@ public class CumulativeImpactDescriptor extends OperationDescriptorImpl implemen
         RenderedImage source0 = pb.getRenderedSource(0);
 
         ImageLayout layout = (ImageLayout) hints.get(JAI.KEY_IMAGE_LAYOUT); // get dimensions from hint
+
+        // Normalize layout bounds
+        int minX = layout.getMinX(null), minY = layout.getMinY(null);
+
+        if(minX < 0) {
+            layout.setMinX(0);
+            layout.setWidth(layout.getWidth(null) + minX);
+            minX = 0;
+        }
+
+        if(minY < 0) {
+            layout.setMinY(0);
+            layout.setHeight(layout.getHeight(null) + minY);
+            minY = 0;
+        }
+
+        if(minX + layout.getWidth(null) > source0.getWidth()) {
+            layout.setWidth(source0.getWidth() - minX);
+        }
+
+        if(minY + layout.getHeight(null) > source0.getHeight()) {
+            layout.setHeight(source0.getHeight() - minY);
+        }
+
         // Just use new SampleModel??
         layout.setSampleModel(RasterFactory.createComponentSampleModel(
                 source0.getSampleModel(),

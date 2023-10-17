@@ -19,10 +19,8 @@ public class NationalArea implements Serializable { // TODO Rename to Areas
 
     @Id
     @Basic(optional = false)
-    @NotNull
-    @SequenceGenerator(name = "narea_seq", sequenceName = "narea_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "narea_seq")
-    @Column(name = "narea_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "narea_id", nullable = false)
     private Integer id;
 
     @Basic(optional = false)

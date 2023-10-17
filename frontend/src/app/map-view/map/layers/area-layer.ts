@@ -13,8 +13,9 @@ import * as condition from 'ol/events/condition';
 import { getFeaturesByStatePaths } from '@src/util/ol';
 import { ScenarioLayer } from '@src/app/map-view/map/layers/scenario-layer';
 import { TranslateService } from '@ngx-translate/core';
-import { isEqual } from "lodash";
+import { isEqual, some } from "lodash";
 import { turfIntersects as intersects } from "@shared/turf-helper/turf-helper";
+import { Geometry } from "ol/geom";
 
 function unique<T>(value: T, index: number, self: T[]) {
   return self.indexOf(value) === index;
@@ -48,14 +49,15 @@ class DrawAreaInteraction extends Draw {
   constructor(
     map: OLMap,
     source: VectorSource,
-    condition: (event: MapBrowserEvent<UIEvent>) => boolean,
+    drawCondition: (event: MapBrowserEvent<UIEvent>) => boolean,
     onDrawEnd: (polygon: Polygon) => Polygon | void
   ) {
     super({
       source: source,
       // GeometryType.POLYGON is no longer exported ... https://github.com/openlayers/openlayers/issues/5241
       type: 'Polygon',
-      condition
+      condition: drawCondition, // used only for applying side effect accessing internal
+                                // coordinate group, condition itself always return true
     });
     const snap = new Snap({
       source: source
@@ -92,12 +94,12 @@ class AreaLayer extends VectorLayer<VectorSource> {
 
   constructor(
     private map: OLMap,
-    private setSelection: (features?: Feature[]) => void,
+    private setSelection: (features: Feature[] | undefined, overlap: boolean) => void,
     private zoomToExtent: (extent: Extent, duration: number) => void,
-    onDrawEnd = (polygon: Polygon) => {},
-    onSplitClick = (feature: Feature, prevFeature: Feature) => {},
-    onMergeClick = (feature: Feature, prevFeature: Feature) => {},
-    overlapWarning = () => {},
+    private onDrawEnd = (polygon: Polygon) => {},
+    private onDrawInvalid = () => {},
+    onSplitClick: (feature: Feature, prevFeature: Feature) => {},
+    onMergeClick: (features: Feature[]) => {},
     private scenarioLayer: ScenarioLayer,
     private translateService: TranslateService,
     private geoJson: GeoJSON
@@ -115,8 +117,11 @@ class AreaLayer extends VectorLayer<VectorSource> {
     this.drawAreaInteraction = new DrawAreaInteraction(
       map,
       new VectorSource({ format: new GeoJSON() }),
-      this.checkDrawCondition,
-      onDrawEnd
+      this.appendCoordinates,
+      (polygon) => {
+        if(this.boundaries) { this.checkPolygon(polygon, this.boundaries) }
+        else { this.onDrawEnd(polygon); }
+      }
     );
 
 
@@ -154,18 +159,15 @@ class AreaLayer extends VectorLayer<VectorSource> {
           const feature = event.selected[0];
           if (feature !== undefined) {
             // Merge or split (Alt key pressed)
-            if (event.mapBrowserEvent.originalEvent.altKey && that.selectedFeatures.length === 1) {
+            if (event.mapBrowserEvent.originalEvent.altKey) {
               if (event.mapBrowserEvent.originalEvent.shiftKey) {
-                onMergeClick(feature, that.selectedFeatures[0]);
-              } else {
+                onMergeClick([feature, ...that.selectedFeatures]);
+              } else if (that.selectedFeatures.length === 1) {
                 onSplitClick(feature, that.selectedFeatures[0]);
               }
             } else {
               // Expand selection (Ctrl key pressed)
               if (event.mapBrowserEvent.originalEvent.ctrlKey) {
-                if (that.selectedFeatures.some(f => intersects(f, feature))) {
-                  overlapWarning();
-                }
                 if (that.selectedFeatures.includes(feature)) {
                   that.selectedFeatures = that.selectedFeatures.filter(f => !isEqual(feature.getGeometry(), f.getGeometry()));
                 } else {
@@ -188,12 +190,23 @@ class AreaLayer extends VectorLayer<VectorSource> {
               that.selectedFeatures = [];
             }
           }
-          that.setSelection(that.selectedFeatures);
+          that.setSelection(that.selectedFeatures, that.checkOverlap());
         });
       }
     })(this);
 
     this.map.addInteraction(this.onClickInteraction);
+  }
+
+  private checkOverlap(): boolean {
+    for(const f of this.selectedFeatures) {
+      for(const f2 of this.selectedFeatures) {
+        if(f !== f2 && intersects(f, f2)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   private async addHoverInteraction(map: OLMap, areaLayer: VectorLayer<VectorSource>) {
@@ -261,22 +274,24 @@ class AreaLayer extends VectorLayer<VectorSource> {
     map.addInteraction(areaHover);
   }
 
-  private checkDrawCondition = (event: MapBrowserEvent<UIEvent>) => {
-    if (this.boundaries) {
-      const boundaryGeometries = <Point[]>this.boundaries.map(feature => feature.getGeometry());
-      const drawnPointCoordinate = event.coordinate;
-      const drawnCoordinates = [...this.drawAreaInteraction.getCoordinates(), drawnPointCoordinate];
-      for (const boundary of boundaryGeometries) {
-        const isInsideBoundary = drawnCoordinates.every(geometry =>
-          boundary.intersectsCoordinate(geometry)
-        );
-        if (isInsideBoundary) {
-          this.drawAreaInteraction.addCoordinate(drawnPointCoordinate);
-          return true;
-        }
-      }
-      return false;
-    } else return true;
+  private appendCoordinates = (event: MapBrowserEvent<UIEvent>) => {
+    this.drawAreaInteraction.addCoordinate(event.coordinate);
+    return true;
+  };
+
+  private checkPolygon(polygon: Polygon, boundaries: FeatureLike[]) {
+    const testFeature = new GeoJSON({
+      dataProjection: 'EPSG:4326',
+      featureProjection: this.map.getView().getProjection()
+    }).readFeature(polygon);
+
+    if(some(boundaries, boundary => {
+        return intersects(testFeature, boundary as Feature<Geometry>)
+    })) {
+      this.onDrawEnd(polygon);
+    } else {
+      this.onDrawInvalid();
+    }
   };
 
   // FIXME: This is called each time an area is selected!
@@ -348,7 +363,7 @@ class AreaLayer extends VectorLayer<VectorSource> {
 
   deselectAreas() {
     this.selectedFeatures = [];
-    this.setSelection([]);
+    this.setSelection([], false);
   }
 }
 

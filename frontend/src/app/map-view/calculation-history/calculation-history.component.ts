@@ -5,24 +5,26 @@ import { select, Store } from '@ngrx/store';
 import { environment } from "@src/environments/environment";
 import { State } from '@src/app/app-reducer';
 import { DialogService } from '@shared/dialog/dialog.service';
+import { ListItemsSort } from "@data/common/sorting.interfaces";
 import { CalculationActions, CalculationSelectors } from '@data/calculation';
 import { CalculationService } from "@data/calculation/calculation.service";
 import { CalculationSlice } from '@data/calculation/calculation.interfaces';
-import { ScenarioActions } from "@data/scenario";
 import { UserSelectors } from "@data/user";
 import { Baseline } from "@data/user/user.interfaces";
 import { CalculationReportModalComponent } from "@shared/report-modal/calculation-report-modal.component";
 import { HttpErrorResponse } from "@angular/common/http";
 import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 import { TranslateService } from "@ngx-translate/core";
+import { Listable } from "@shared/list-filter/listable.directive";
+
 
 @Component({
   selector: 'app-history',
   templateUrl: './calculation-history.component.html',
   styleUrls: ['./calculation-history.component.scss']
 })
-export class CalculationHistoryComponent {
-  calculations$?: Observable<CalculationSlice[]>;
+export class CalculationHistoryComponent extends Listable {
+  calculations$ = this.store.select(CalculationSelectors.selectCalculations);
   baselineCalculations$?: Observable<CalculationSlice[]>;
   loading$?: Observable<boolean>;
   baseline?: Baseline;
@@ -37,9 +39,8 @@ export class CalculationHistoryComponent {
     private translateService: TranslateService,
     private moduleRef: NgModuleRef<any>
   ) {
+    super();
     this.store.dispatch(CalculationActions.fetchCalculations());
-
-    this.calculations$ = this.store.select(CalculationSelectors.selectCalculations);
     this.loading$ = this.store.select(CalculationSelectors.selectLoadingCalculations);
 
     this.store.pipe(
@@ -57,6 +58,10 @@ export class CalculationHistoryComponent {
           })
         );
     });
+  }
+
+  setSort(sortType: ListItemsSort): void {
+      this.store.dispatch(CalculationActions.setCalculationSortType({ sortType }));
   }
 
   @ViewChild('name') set content(content: ElementRef) {

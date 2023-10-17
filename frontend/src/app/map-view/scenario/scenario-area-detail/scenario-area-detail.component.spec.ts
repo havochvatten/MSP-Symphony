@@ -7,8 +7,11 @@ import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { OrdinalPipe } from "@shared/ordinal.pipe";
 import { NormalizationType } from "@data/calculation/calculation.service";
 import { ScenarioAreaDetailComponent } from './scenario-area-detail.component';
-
-
+import { IconComponent } from "@shared/icon/icon.component";
+import { ChangesListComponent } from "@src/app/map-view/scenario/scenario-detail/changes-list/changes-list.component";
+import {
+  MatrixSelectionComponent
+} from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix-selection.component";
 describe('ScenarioAreaDetailComponent', () => {
   let component: ScenarioAreaDetailComponent;
   let fixture: ComponentFixture<ScenarioAreaDetailComponent>;
@@ -16,7 +19,8 @@ describe('ScenarioAreaDetailComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ StoreModule.forRoot({},{}), HttpClientModule, TranslateModule.forRoot() ],
-      declarations: [ ScenarioAreaDetailComponent, OrdinalPipe ],
+      declarations: [ ScenarioAreaDetailComponent, OrdinalPipe,
+                      IconComponent, ChangesListComponent, MatrixSelectionComponent ],
       providers: [ OrdinalPipe, TranslateService,  provideMockStore({}) ]
     })
     .compileComponents();

@@ -1,0 +1,21 @@
+<h3>{{ 'map.editor.split-scenario-settings.title' | translate }}</h3>
+<p class="split-scenario-instruction">{{ 'map.editor.split-scenario-settings.detail' | translate }}</p>
+<mat-label>{{ 'map.editor.split-scenario-settings.set-batch-name' | translate }}</mat-label>
+<input matInput #batchName [value]="options.batchName" [(ngModel)]="options.batchName">
+<mat-checkbox [(ngModel)]="options.applyScenarioChanges">{{
+  'map.editor.split-scenario-settings.apply-scenario-changes' | translate
+}}</mat-checkbox>
+<mat-checkbox [(ngModel)]="options.applyAreaChanges" [disabled]="noAreaChanges">{{
+  'map.editor.split-scenario-settings.apply-area-changes' | translate
+}}</mat-checkbox>
+<mat-checkbox [(ngModel)]="options.batchSelect">{{
+  'map.editor.split-scenario-settings.enter-batch-mode' | translate
+  }}</mat-checkbox>
+<section class="buttons">
+  <button mat-flat-button (click)="confirmSplitScenario()" [ngClass]="'primary'" >
+    {{ 'confirmation-modal.confirm' | translate }}
+  </button>
+  <button mat-flat-button (click)="dialog.close()" [ngClass]="'secondary'">
+    {{ 'confirmation-modal.cancel' | translate }}
+  </button>
+</section>

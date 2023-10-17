@@ -1,0 +1,115 @@
+import { Component, ElementRef, EventEmitter, HostBinding,
+         Input, Output, ViewChild, OnInit } from '@angular/core';
+import { Store } from "@ngrx/store";
+import { State } from "@src/app/app-reducer";
+import { BandChange  } from "@data/metadata/metadata.interfaces";
+import { ScenarioActions } from "@data/scenario";
+import { convertMultiplierToPercent } from "@data/metadata/metadata.selectors";
+
+@Component({
+  selector: 'app-overview-inline-band-change',
+  templateUrl: './overview-inline-band-change.component.html',
+  styleUrls: ['./overview-inline-band-change.component.scss']
+})
+export class OverviewInlineBandChangeComponent implements OnInit {
+
+  @Input() change!: BandChange;
+  @Input() currentValueAsString!: string;
+  @Input() areaIndex!: number;
+  @Input() bandKey!: string;
+
+  @Output() editModeChange = new EventEmitter<{} | null>();
+  @HostBinding('className') componentClass = '';
+
+  @ViewChild("offsetInput") offsetInput!: ElementRef;
+  @ViewChild("multiplierInput") multiplierInput!: ElementRef;
+
+  changeType: 'constant' | 'relative' = 'constant';
+  editMode: boolean = false;
+
+  localMultiplier: number = 1;
+  localOffset: number = 0;
+
+  constructor(private store: Store<State>) {}
+
+  editValue() {
+    this.editMode = true;
+    this.editModeChange.emit(null);
+    this.componentClass = 'cell-editing';
+
+    if (this.changeType === 'constant') {
+        this.offsetInput.nativeElement.focus();
+    } else {
+        this.multiplierInput.nativeElement.focus();
+    }
+  }
+
+  checkEmptyValue(): boolean {
+    const change = this.getChange()!;
+    return (this.changeType === 'relative' && change.multiplier === 1) ||
+           (this.changeType === 'constant' && change.offset === 0);
+  }
+
+  displayValue(): string {
+    if(this.checkEmptyValue()) {
+      return '-';
+    } else {
+      const change = this.getChange()!;
+      return change.multiplier ? parseFloat(Number(convertMultiplierToPercent(change.multiplier!) * 100).toFixed(2)) + '%' :
+        (change.offset ? String(change.offset) : '-');
+    }
+  }
+
+  // Side effects: resets localMultiplier and localOffset
+  // when returning other value
+  getChange(): BandChange {
+    const change = { ...this.change };
+    if(this.changeType === 'constant') {
+      change.multiplier = undefined;
+      change.offset = this.localOffset;
+      this.localMultiplier = 1;
+    } else {
+      change.multiplier = this.localMultiplier;
+      change.offset = undefined;
+      this.localOffset = 0;
+    }
+    return change;
+  }
+
+  exitEditMode() {
+    this.editMode = false;
+    this.editModeChange.emit({areaIndex: this.areaIndex, change: this.getChange()});
+    this.componentClass = '';
+  }
+
+  confirmChange() {
+    const change = this.getChange();
+    if (this.checkEmptyValue()) {
+      this.store.dispatch(ScenarioActions.deleteBandChangeForAreaIndex({
+        areaIndex: this.areaIndex === -1 ? undefined : this.areaIndex,
+        bandId: this.bandKey
+      }));
+    } else {
+        this.store.dispatch(ScenarioActions.updateBandAttributeForAreaIndex({
+            areaIndex: this.areaIndex === -1 ? undefined : this.areaIndex,
+            componentType: this.change!.type,
+            bandId: this.bandKey,
+            band: this.change!.band,
+            attribute: this.changeType === 'constant' ? 'offset' : 'multiplier',
+            value: this.changeType === 'constant' ? this.localOffset : this.localMultiplier,
+        }));
+    }
+
+    this.exitEditMode();
+  }
+
+  setType(value: string) {
+    this.changeType = value as 'constant' | 'relative';
+  }
+
+  ngOnInit(): void {
+    this.changeType = this.change?.multiplier !== undefined ? 'relative' : 'constant';
+    this.localMultiplier = this.change?.multiplier ?? 1;
+    this.localOffset = this.change?.offset ?? 0;
+  }
+}

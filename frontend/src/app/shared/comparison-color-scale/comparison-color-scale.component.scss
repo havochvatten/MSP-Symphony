@@ -1,0 +1,26 @@
+:host {
+  h5 {
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 1.4em;
+    margin: 0;
+    padding-bottom: 0.2em;
+
+    &.single-value {
+      font-size: 13px;
+      font-weight: 600;
+    }
+  }
+
+  &:not(:first-child) h5 {
+    margin-top: 0.6em;
+  }
+
+  ::ng-deep app-result-color-scale svg {
+    margin-top: 0.7em;
+  }
+
+  ::ng-deep app-result-color-scale:not(:last-child) svg {
+    margin-bottom: 0.7em;
+  }
+}

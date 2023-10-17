@@ -10,6 +10,7 @@ import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { initialState as calculation } from '@data/calculation/calculation.reducers';
 import { initialState as user } from '@data/user/user.reducers';
+import { MatRadioButton, MatRadioGroup, MatRadioModule } from "@angular/material/radio";
 
 describe('ComparisonComponent', () => {
   let fixture: ComponentFixture<ComparisonComponent>,
@@ -19,6 +20,7 @@ describe('ComparisonComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         MatSelectModule,
+        MatRadioModule,
         HttpClientModule,
         StoreModule.forRoot({},{}),
         TranslateModule.forRoot()
@@ -36,7 +38,9 @@ describe('ComparisonComponent', () => {
         })
       ],
       declarations: [
-        ComparisonComponent
+        ComparisonComponent,
+        MatRadioGroup,
+        MatRadioButton
       ]
     }).compileComponents();
     fixture = TestBed.createComponent(ComparisonComponent);

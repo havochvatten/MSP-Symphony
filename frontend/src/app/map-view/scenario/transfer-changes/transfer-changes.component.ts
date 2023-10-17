@@ -1,15 +1,15 @@
-import { Component, ViewChild } from '@angular/core';
-import { DialogRef } from "@shared/dialog/dialog-ref";
-import { DialogConfig } from "@shared/dialog/dialog-config";
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Store } from "@ngrx/store";
-import { State } from "@src/app/app-reducer";
-import { ScenarioSelectors } from "@data/scenario";
 import { Observable } from "rxjs";
-import { ChangesProperty, Scenario, ScenarioArea, ScenarioChangesSelection } from "@data/scenario/scenario.interfaces";
-import { MatSelectChange } from "@angular/material/select";
-import { map} from "rxjs/operators";
+import { map } from "rxjs/operators";
 import { isEmpty, some } from "lodash";
 import { MatRadioChange, MatRadioGroup } from "@angular/material/radio";
+import { MAT_SELECT_CONFIG, MatSelectChange } from "@angular/material/select";
+import { State } from "@src/app/app-reducer";
+import { ScenarioSelectors } from "@data/scenario";
+import { ChangesProperty, Scenario, ScenarioArea, ScenarioChangesSelection } from "@data/scenario/scenario.interfaces";
+import { DialogRef } from "@shared/dialog/dialog-ref";
+import { DialogConfig } from "@shared/dialog/dialog-config";
 
 interface ScenarioWithChanges {
   scenario: Scenario;

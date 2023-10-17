@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { State } from '../app-reducer';
 import { UserSelectors, UserActions } from '@data/user';
@@ -9,7 +9,7 @@ import { tap, take, switchMap, catchError } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthenticationGuard implements CanActivate {
+export class AuthenticationGuard  {
   constructor(private store: Store<State>) {}
 
   getFromStoreOrAPI(): Observable<any> {

@@ -7,11 +7,13 @@ import { calculationSucceeded } from "@data/calculation/calculation.actions";
 import { BandChange } from "@data/metadata/metadata.interfaces";
 import {
   fetchAreaMatricesFailure,
-  fetchAreaMatricesSuccess, fetchAreaMatrixSuccess
+  fetchAreaMatricesSuccess,
+  fetchAreaMatrixSuccess, resetAutoBatch, setAutoBatch
 } from '@data/scenario/scenario.actions';
 import { ScenarioActions, ScenarioInterfaces } from '@data/scenario/index';
 import { ChangesProperty, ScenarioArea } from "@data/scenario/scenario.interfaces";
 import { AreaMatrixData } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
+import { ListItemsSort } from "@data/common/sorting.interfaces";
 
 
 export const initialState: ScenarioInterfaces.State = {
@@ -19,15 +21,23 @@ export const initialState: ScenarioInterfaces.State = {
   active: undefined,
   activeArea: undefined,
   matrixData: null,
-  matricesLoading: false
+  matricesLoading: false,
+  sortScenarios: ListItemsSort.None,
+  autoBatch: []
 };
 
 export const scenarioReducer = createReducer(
   initialState,
-  on(ScenarioActions.fetchScenariosSuccess, (state, { scenarios }) => ({
+  on(ScenarioActions.fetchScenariosSuccess, (state, { scenarios }) => {
+    let newActiveIndex = undefined;
+    if(state.active !== undefined) {
+      newActiveIndex = scenarios.findIndex(s => s.id === state.scenarios[state.active!].id);
+    }
+    return {
     ...state,
-    scenarios
-  })),
+    active: newActiveIndex,
+    scenarios }
+  }),
   on(ScenarioActions.openScenario, (state, { index }) => ({
     ...state,
     active: index,
@@ -61,6 +71,10 @@ export const scenarioReducer = createReducer(
     // Optimistically close scenario to reduce latency
     active: undefined,
     activeArea: undefined
+  })),
+  on(ScenarioActions.setScenarioSortType, (state, { sortType }) => ({
+    ...state,
+    sortScenarios: sortType
   })),
   on(ScenarioActions.saveScenarioSuccess, (state, { savedScenario }) => ({
     ...state,
@@ -128,16 +142,16 @@ export const scenarioReducer = createReducer(
             () => ({[bandId]: change}))
         }
       } else {
-        return state.scenarios[state.active].changes !== null ?
-          {
-            ...state,
-            scenarios: updateIn(state.scenarios, [state.active, 'changes', bandId],
-              () => change)
-          } : {
-            ...state,
-            scenarios: updateIn(state.scenarios, [state.active, 'changes'],
-              () => ({[bandId]: change}))
-          };
+          return state.scenarios[state.active].changes !== null ?
+              {
+                  ...state,
+                  scenarios: updateIn(state.scenarios, [state.active, 'changes', bandId],
+                      () => change)
+              } : {
+                  ...state,
+                  scenarios: updateIn(state.scenarios, [state.active, 'changes'],
+                      () => ({[bandId]: change}))
+              };
       }
     }
   ),
@@ -165,6 +179,73 @@ export const scenarioReducer = createReducer(
         } : state;
     }
     return state;
+  }),
+  on(ScenarioActions.updateBandAttributeForAreaIndex, (state, { areaIndex, componentType, bandId, band, attribute, value }) => {
+      const change: BandChange = {
+          type: componentType,
+          band: band,
+          [attribute]: value
+      }
+
+      if(state.active === undefined)
+          return state;
+
+      if(areaIndex === undefined) { // scenario-wide settings
+          return state.scenarios[state.active].changes !== null ?
+              {
+                  ...state,
+                  scenarios: updateIn(state.scenarios, [state.active, 'changes', bandId],
+                      () => change)
+              } : {
+                  ...state,
+                  scenarios: updateIn(state.scenarios, [state.active, 'changes'],
+                      () => ({[bandId]: change}))
+              }
+      } else { // area-specific settings
+          return state.scenarios[state.active].areas[areaIndex].changes !== null ?
+              {
+                  ...state,
+                  scenarios: updateIn(state.scenarios, [state.active, 'areas', areaIndex, 'changes', bandId],
+                      () => change)
+              } : {
+                  ...state,
+                  scenarios: updateIn(state.scenarios, [state.active, 'areas', areaIndex, 'changes'],
+                      () => ({[bandId]: change}))
+              }
+      }
+  }),
+  // some procedural code repetition in below handler preferred over attempting
+  // to abstract this further.
+  // "encapsulation" of the `Action` types makes it exceedingly convoluted (or
+  // indeed impossible) to overload or make the handler generic
+  on(ScenarioActions.deleteBandChangeForAreaIndex, (state,
+                            { areaIndex, bandId }) => {
+
+       if(areaIndex === undefined) { // scenario-wide settings
+          if(state.active !== undefined && state.scenarios[state.active].changes !== null) {
+              const bChanges =
+                  (state.scenarios[state.active].changes as ChangesProperty);
+              return bChanges[bandId] !== undefined ? {
+                  ...state,
+                  scenarios: size(bChanges) === 1 ?
+                      setIn(state.scenarios, [state.active, 'changes'], null) :
+                      removeIn(state.scenarios, [state.active, 'changes', bandId])
+              } : state;
+          }
+          return state;
+      } else { // area-specific settings
+          if(state.active !== undefined && state.scenarios[state.active].areas[areaIndex].changes !== null) {
+              const bChanges =
+                  (state.scenarios[state.active].areas[areaIndex].changes as ChangesProperty);
+              return bChanges !== undefined ? {
+                  ...state,
+                  scenarios: size(bChanges) === 1 ?
+                      setIn(state.scenarios, [state.active, 'areas', areaIndex, 'changes'], null) :
+                      removeIn(state.scenarios, [state.active, 'areas', areaIndex, 'changes', bandId])
+              } : state;
+          }
+          return state;
+      }
   }),
   on(ScenarioActions.setChangeAreaVisibility, (state, { featureIndex, visible }) => ({
     ...state,
@@ -199,6 +280,11 @@ export const scenarioReducer = createReducer(
       matricesLoading: loading
     }
   }),
+  on(ScenarioActions.splitAndReplaceScenarioAreaSuccess, (state, { updatedScenario }) => ({
+    ...state,
+    scenarios: setIn(state.scenarios, [state.active], updatedScenario),
+    matricesLoading: false
+  })),
   on(ScenarioActions.transferChangesSuccess, (state, { scenario: updatedScenario }) => {
     return {
       ...state,
@@ -222,5 +308,13 @@ export const scenarioReducer = createReducer(
   on(fetchAreaMatricesFailure, state => ({
     ...state,
     matricesLoading: false
+  })),
+  on(setAutoBatch, (state, { ids }) => ({
+    ...state,
+    autoBatch: ids
+  })),
+  on(resetAutoBatch, state => ({
+    ...state,
+    autoBatch: []
   }))
 );

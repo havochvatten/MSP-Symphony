@@ -3,7 +3,7 @@ import {
   Scenario,
   ScenarioArea,
   ScenarioAreaCoastalExclusion, ScenarioChangesSelection, ScenarioCopyOptions,
-  ScenarioMatrixDataMap
+  ScenarioMatrixDataMap, ScenarioSplitOptions, ScenarioSplitResponse
 } from "@data/scenario/scenario.interfaces";
 import { ErrorMessage } from "@data/message/message.interfaces";
 import { BandType } from "@data/metadata/metadata.interfaces";
@@ -14,6 +14,7 @@ import {
 import { Feature } from "geojson";
 import { OperationParams } from "@data/calculation/calculation.interfaces";
 import { CalcOperation, NormalizationOptions } from "@data/calculation/calculation.service";
+import { ListItemsSort } from "@data/common/sorting.interfaces";
 
 
 export const fetchScenarios = createAction(
@@ -92,6 +93,16 @@ export const saveScenarioArea = createAction(
   props<{ areaToBeSaved: ScenarioArea }>()
 );
 
+export const splitAndReplaceScenarioArea = createAction(
+  '[Scenario] Split and replace scenario area',
+  props<{ scenarioId: number, replacedAreaId: number, replacementAreas: ScenarioArea[] }>()
+);
+
+export const splitAndReplaceScenarioAreaSuccess = createAction(
+  '[Scenario] Split and replace scenario area success',
+  props<{ updatedScenario: Scenario }>()
+);
+
 export const addScenario = createAction(
   '[Scenario] Add scenario',
   props<{ scenario: Scenario }>()
@@ -143,8 +154,19 @@ export const excludeActiveAreaCoastal = createAction(
   props< ScenarioAreaCoastalExclusion >()
 );
 
+export const updateBandAttributeForAreaIndex = createAction(
+  '[Scenario] Update general intensity attribute or a specific area contained in the active scenario',
+  props<{ areaIndex: number|undefined, componentType: BandType, bandId: string,
+          band: number, attribute: string, value: number }>()
+);
+
+export const deleteBandChangeForAreaIndex = createAction(
+  '[Scenario] Delete general band change or within a specific area contained in the active scenario',
+  props<{ areaIndex: number|undefined, bandId: string }>()
+);
+
 export const updateBandAttribute = createAction(
-  '[Scenario] Update intensity attribute for band in scenario area',
+  '[Scenario] Update intensity attribute for band in active scenario area',
   props<{ componentType: BandType, bandId: string, band: number, attribute: string, value: number }>()
 );
 
@@ -216,4 +238,33 @@ export const fetchAreaMatrixSuccess = createAction(
 export const fetchAreaMatricesFailure = createAction(
   '[Scenario] Fetch matrices failure',
   props<{ error: ErrorMessage }>()
+);
+
+export const setScenarioSortType = createAction(
+  '[Scenario] Set scenario sort type',
+  props<{ sortType: ListItemsSort }>()
+);
+
+export const splitScenarioForBatch = createAction(
+  '[Scenario] Split scenario (usually preparing batch run)',
+  props<{ scenarioId: number, options: ScenarioSplitOptions }>()
+);
+
+export const splitScenarioForBatchSuccess = createAction(
+  '[Scenario] Split scenario success',
+  props< ScenarioSplitResponse >()
+);
+
+export const splitScenarioForBatchFailure = createAction(
+  '[Scenario] Split scenario failure',
+  props<{ error: ErrorMessage }>()
+);
+
+export const setAutoBatch = createAction(
+  '[Scenario] Set auto batch ids',
+  props<{ ids: number[] }>()
+);
+
+export const resetAutoBatch = createAction(
+  '[Scenario] Reset (empty) auto batch ids',
 );

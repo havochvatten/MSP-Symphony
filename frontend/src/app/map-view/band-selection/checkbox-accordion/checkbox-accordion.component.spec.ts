@@ -11,6 +11,7 @@ import { IconComponent } from '@shared/icon/icon.component';
 import { StoreModule } from "@ngrx/store";
 import { provideMockStore } from "@ngrx/store/testing";
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 
 describe('CheckboxAccordionComponent', () => {
   let fixture: ComponentFixture<CheckboxAccordionComponent>,
@@ -19,8 +20,14 @@ describe('CheckboxAccordionComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
-        StoreModule.forRoot({},{})
+        StoreModule.forRoot({},{}),
+        TranslateModule.forRoot()
       ],
+      providers: [
+        TranslateService,
+        provideMockStore({
+          initialState: { scenario: scenario }
+        })],
       declarations: [
         CheckboxAccordionComponent,
         AccordionBoxComponent,
@@ -29,9 +36,6 @@ describe('CheckboxAccordionComponent', () => {
         IconButtonComponent,
         IconComponent
       ],
-      providers: [provideMockStore({
-        initialState: { scenario: scenario }
-      })]
     }).compileComponents();
     fixture = TestBed.createComponent(CheckboxAccordionComponent);
     component = fixture.componentInstance;

@@ -1,6 +1,5 @@
 package se.havochvatten.symphony.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import it.geosolutions.jaiext.stats.HistogramMode;
@@ -18,7 +17,6 @@ import se.havochvatten.symphony.calculation.Operations;
 import se.havochvatten.symphony.calculation.SankeyChart;
 import se.havochvatten.symphony.dto.*;
 import se.havochvatten.symphony.entity.CalculationResult;
-import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.scenario.ScenarioService;
 import se.havochvatten.symphony.scenario.ScenarioSnapshot;
@@ -170,10 +168,7 @@ public class ReportService {
         String matrix, areaName;
 
         for(int areaId : calc.getAreaMatrixMap().keySet()) {
-            if(scenarioService.findAreaById(areaId) == null) {
-                throw new SymphonyStandardAppException(SymphonyModelErrorCode.OTHER_ERROR, "Area with id " + areaId + " not found.");
-            }
-            areaName = scenarioService.findAreaById(areaId).getFeature().getAttribute("name").toString();
+            areaName = scenario.getAreas().get(areaId).areaName();
             try {
                 matrix = matrixService.getSensMatrixbyId(calc.getAreaMatrixMap().get(areaId)).getName();
             } catch (SymphonyStandardAppException e) {
@@ -185,10 +180,12 @@ public class ReportService {
         report.normalization = scenario.getNormalization();
         report.impactPerPressure = impactPerComponent(scenario.getPressuresToInclude(), pTotal);
         report.impactPerEcoComponent = impactPerComponent(scenario.getEcosystemsToInclude(), esTotal);
+        report.chartWeightThreshold =
+            props.getPropertyAsDouble("calc.sankey_chart.link_weight_threshold", 0.001);
         if (computeChart)
             report.chartData = new SankeyChart(scenario.getEcosystemsToInclude(),
                 scenario.getPressuresToInclude(), impactMatrix, total,
-                props.getPropertyAsDouble("calc.sankey_chart.link_weight_threshold", 0.001)
+                report.chartWeightThreshold
             ).getChartData();
 
         report.geographicalArea =  JTS.transform(scenario.getGeometry(),
@@ -202,12 +199,58 @@ public class ReportService {
         return report;
     }
 
+    public double[][] calculateDifferentialImpactMatrix(double[][] imxA, double[][] imxB) {
+
+        int pLen = imxA.length, esLen = imxA[0].length;
+        double[][] diffs = new double[pLen][esLen];
+        for (int b = 0; b < pLen; b++) {
+            for (int e = 0; e < esLen; e++) {
+                diffs[b][e] =  imxB[b][e] - imxA[b][e];
+            }
+        }
+
+        return diffs;
+    }
+
     public ComparisonReportResponseDto generateComparisonReportData(CalculationResult calcA,
                                                                     CalculationResult calcB)
         throws FactoryException, TransformException, SymphonyStandardAppException {
         var report = new ComparisonReportResponseDto();
         report.a = generateReportData(calcA, false);
         report.b = generateReportData(calcB, false);
+
+        double chartWeightThreshold =
+            props.getPropertyAsDouble("calc.sankey_chart.link_weight_threshold", 0.001);
+
+        int[] ecoSystems = calcA.getScenarioSnapshot().getEcosystemsToInclude(),
+              pressures  = calcA.getScenarioSnapshot().getPressuresToInclude();
+
+        double[][] diffImpact = calculateDifferentialImpactMatrix(calcA.getImpactMatrix(), calcB.getImpactMatrix()),
+                   diffImpactPositive = new double[diffImpact.length][diffImpact[0].length],
+                   diffImpactNegative = new double[diffImpact.length][diffImpact[0].length];
+
+        for (int b = 0; b < diffImpact.length; b++) {
+            for (int e = 0; e < diffImpact[0].length; e++) {
+                if (diffImpact[b][e] > 0) {
+                    diffImpactPositive[b][e] = diffImpact[b][e];
+                }
+                if (diffImpact[b][e] < 0) {
+                    diffImpactNegative[b][e] = Math.abs(diffImpact[b][e]);
+                }
+            }
+        }
+
+        double totalPositive = Arrays.stream(diffImpactPositive).flatMapToDouble(Arrays::stream).sum(),
+               totalNegative = Arrays.stream(diffImpactNegative).flatMapToDouble(Arrays::stream).sum();
+
+        report.chartDataPositive =
+            new SankeyChart(ecoSystems, pressures, diffImpactPositive, totalPositive, chartWeightThreshold)
+                .getChartData();
+
+        report.chartDataNegative =
+            new SankeyChart(ecoSystems, pressures, diffImpactNegative, totalNegative, chartWeightThreshold)
+                .getChartData();
+
         return report;
     }
 
@@ -220,7 +263,10 @@ public class ReportService {
     }
 
     private MetadataPropertyDto[] flattenAndSort(MetadataComponentDto component) {
-        return component.getSymphonyTeams().stream().flatMap(team -> team.getProperties().stream()).sorted(Comparator.comparingInt(MetadataPropertyDto::getBandNumber)).toArray(MetadataPropertyDto[]::new);
+        return component.getSymphonyThemes().stream()
+            .flatMap(theme -> theme.getProperties().stream()).sorted(
+                Comparator.comparingInt(MetadataPropertyDto::getBandNumber))
+            .toArray(MetadataPropertyDto[]::new);
     }
 
     static int[] uniqueIntersection(int[] a, int[] b) {

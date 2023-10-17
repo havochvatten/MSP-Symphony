@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 
 @Entity
 @Table(name = "scenarioarea")
-@DynamicInsert
 public class ScenarioArea implements BandChangeEntity {
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -37,8 +36,7 @@ public class ScenarioArea implements BandChangeEntity {
 
     @Id
     @Generated(GenerationTime.INSERT)
-    @SequenceGenerator(name = "sarea_seq", sequenceName = "sarea_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sarea_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -93,12 +91,19 @@ public class ScenarioArea implements BandChangeEntity {
     }
     
     public BandChange[] getAllChanges() {
-        Map<String, BandChange> baseChangeMap = mapper.convertValue(scenario.getChanges(), new TypeReference<>() {});
-        Map<String, BandChange> changeMap = getChangeMap();
+        Map<String, BandChange> baseChangeMap = mapper.convertValue(scenario.getChanges(), new TypeReference<>() {}),
+                                changeMap = getChangeMap();
 
         return Stream.concat(
                 baseChangeMap.entrySet().stream().filter(c -> !changeMap.containsKey(c.getKey())),
                 changeMap.entrySet().stream()).map(Map.Entry::getValue).toArray(BandChange[]::new);
+    }
+
+    public Map<String, BandChange> getCombinedChangeMap() {
+        Map<String, BandChange> changeMap = new HashMap<>();
+        changeMap.putAll(mapper.convertValue(scenario.getChanges(), new TypeReference<>() {}));
+        changeMap.putAll(getChangeMap());
+        return changeMap;
     }
 
     public void setChanges(JsonNode changes) {

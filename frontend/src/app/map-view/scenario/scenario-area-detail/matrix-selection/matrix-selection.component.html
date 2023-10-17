@@ -72,7 +72,6 @@
       </mat-option>
     </mat-select>
     <button mat-flat-button
-      [ngClass]="'secondary'"
       [disabled]="matrixOption !== 'CUSTOM' || !(selectedCustomMatrix && selectedCustomMatrix.id)"
       (click)="editMatrix()"
     >

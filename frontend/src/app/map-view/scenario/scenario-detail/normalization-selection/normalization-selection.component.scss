@@ -10,7 +10,6 @@
 
     &::ng-deep {
       label {
-        padding-left: 1rem;
         font-size: 1.6rem;
       }
 
@@ -19,7 +18,7 @@
         margin: 0.5rem 0;
         align-items: center;
 
-        .mat-radio-label-content {
+        .mdc-label {
           width: 31.3rem;
           display: flex;
           justify-content: space-between;
