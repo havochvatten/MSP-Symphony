@@ -253,7 +253,7 @@ public class ScenarioService {
 
     public ScenarioDto copy(Scenario scenario, ScenarioCopyOptions options) {
 
-        Scenario copiedScenario = new Scenario(scenario, options);
+        Scenario copiedScenario = new Scenario(scenario, options, null);
         em.persist(copiedScenario);
         em.flush();
 
@@ -296,10 +296,9 @@ public class ScenarioService {
 
         for (ScenarioArea area : areas) {
             ScenarioCopyOptions copyOptions = new ScenarioCopyOptions(area, options);
-            scenario.setScenarioAreas(List.of(area));
             scenario.setChanges(options.applyAreaChanges() && !area.getChangeMap().isEmpty() ?
                 mapper.valueToTree(area.getCombinedChangeMap()) : commonChanges);
-            Scenario newScenario = new Scenario(scenario, copyOptions);
+            Scenario newScenario = new Scenario(scenario, copyOptions, List.of(area));
             em.persist(newScenario);
             newScenarioIds[aix++] = (em.merge(newScenario)).getId();
         }

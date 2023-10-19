@@ -10,8 +10,10 @@ import org.geotools.coverage.util.IntersectUtils;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.precision.GeometryPrecisionReducer;
 import org.opengis.coverage.Coverage;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.geometry.MismatchedDimensionException;
@@ -62,6 +64,8 @@ import static javax.ws.rs.core.Response.status;
 @Api(value = "/calculation")
 public class CalculationREST {
     private static final Logger logger = Logger.getLogger(CalculationREST.class.getName());
+
+    private static final GeometryPrecisionReducer precisionReducer = new GeometryPrecisionReducer(new PrecisionModel(10000));
 
     @Inject
     private CalcService calcService;
@@ -428,7 +432,7 @@ public class CalculationREST {
         throws MismatchedDimensionException, TransformException {
 
         GridCoverage2D resultCoverage;
-        Geometry areaPoly = JTS.transform((Geometry) areaFeature.getDefaultGeometry(), transform);
+        Geometry areaPoly = precisionReducer.reduce(JTS.transform((Geometry) areaFeature.getDefaultGeometry(), transform));
         RenderedImage canvas = this.coverage.getRenderedImage();
 
         // Weirdly, we cannot instantiate a BufferedImage directly since it's encapsulated to java.awt,
