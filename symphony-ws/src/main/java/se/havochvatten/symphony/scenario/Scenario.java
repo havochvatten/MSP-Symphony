@@ -132,7 +132,7 @@ public class Scenario implements Serializable, BandChangeEntity {
         operation = dto.operation;
     }
 
-    public Scenario(Scenario s, ScenarioCopyOptions options) {
+    public Scenario(Scenario s, ScenarioCopyOptions options, List<ScenarioArea> altAreas) {
         id = null;
         owner = s.getOwner();
         timestamp = new Date();
@@ -147,8 +147,10 @@ public class Scenario implements Serializable, BandChangeEntity {
         List<Integer> changesToInclude =
             Arrays.stream(options.areaChangesToInclude).boxed().collect(Collectors.toList());
 
-        for(ScenarioArea a : s.areas) {
-            areas.add(new ScenarioArea(
+        var areasToAdd = altAreas == null ? s.areas : altAreas;
+
+        for(ScenarioArea a : areasToAdd) {
+            this.areas.add(new ScenarioArea(
                 new ScenarioAreaDto(
                     -1,
                     changesToInclude.contains(a.getId()) ?
