@@ -466,7 +466,7 @@ public class CalculationREST {
 
         Geometry intersection = null;
         try {
-            intersection = IntersectUtils.intersection(areaPoly, this.scenario.getGeometry());
+            intersection = IntersectUtils.intersection(areaPoly, this.scenario.getGeometry().getEnvelope());
         } catch (Exception e) {
             e = e;
         }
