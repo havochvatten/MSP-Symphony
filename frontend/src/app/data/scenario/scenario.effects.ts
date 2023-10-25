@@ -41,7 +41,7 @@ export class ScenarioEffects {
     )
   ));
 
-  saveScenario$ = this.actions$.pipe(
+  saveScenario$ = createEffect(() => this.actions$.pipe(
     ofType(ScenarioActions.saveActiveScenario),
     mergeMap(({ scenarioToBeSaved }) => {
       return this.scenarioService.save(scenarioToBeSaved).pipe(
@@ -52,7 +52,7 @@ export class ScenarioEffects {
         )
       );
     })
-  );
+  ));
 
   saveScenarioArea$ = createEffect(() => this.actions$.pipe(
     ofType(ScenarioActions.saveScenarioArea),
