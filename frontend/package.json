@@ -71,7 +71,7 @@
     "@angular/cli": "^16.2.1",
     "@angular/compiler-cli": "^16.2.4",
     "@angular/language-service": "^16.2.4",
-    "@babel/core": "^7.3.4",
+    "@babel/core": "^7.23.2",
     "@storybook/addon-a11y": "^7.2.3",
     "@storybook/addon-actions": "^7.2.3",
     "@storybook/addon-knobs": "^7.0.2",
