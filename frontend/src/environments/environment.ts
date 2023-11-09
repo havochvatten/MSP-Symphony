@@ -47,8 +47,8 @@ export const environment = {
     }
   },
   login: {
-    noAccountUrl: undefined,
-    forgotPasswordUrl: undefined
+    noAccountUrl: 'mailto:wiosym@nairobiconvention.org?subject=Requesting%20user%20account%20for%20WIO%20Symphony',
+    forgotPasswordUrl: 'mailto:wiosym@nairobiconvention.org?subject=Requesting%20password%20reset%20for%20WIO%20Symphony'
   },
   meta: {
     visible_fields: ['methodSummary',
