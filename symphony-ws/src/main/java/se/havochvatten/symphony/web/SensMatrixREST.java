@@ -7,6 +7,7 @@ import se.havochvatten.symphony.dto.FrontendErrorDto;
 import se.havochvatten.symphony.dto.SensMatrixDto;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.service.CalcAreaSensMatrixService;
+import se.havochvatten.symphony.service.PropertiesService;
 import se.havochvatten.symphony.service.SensMatrixService;
 
 import javax.annotation.security.RolesAllowed;
@@ -40,8 +41,9 @@ public class SensMatrixREST {
     @Produces({MediaType.APPLICATION_JSON})
     @Path("{baselineName}")
     @RolesAllowed("GRP_SYMPHONY_ADMIN")
-    public List<SensMatrixDto> findAll(@PathParam("baselineName") String baselineName) {
-        return sensMatrixService.findSensMatrixDtos(baselineName);
+    public List<SensMatrixDto> findAll(@PathParam("baselineName") String baselineName,
+                                       @DefaultValue("") @QueryParam("lang") String preferredLanguage) {
+        return sensMatrixService.findSensMatrixDtos(baselineName, preferredLanguage);
     }
 
     @GET
@@ -50,8 +52,9 @@ public class SensMatrixREST {
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/user/{baselineName}")
     public List<SensMatrixDto> findByOwner(@Context HttpServletRequest req,
-                                           @PathParam("baselineName") String baselineName) {
-        return sensMatrixService.findSensMatrixDtosByOwner(baselineName, req.getUserPrincipal());
+                                           @PathParam("baselineName") String baselineName,
+                                           @DefaultValue("") @QueryParam("lang") String preferredLanguage) {
+        return sensMatrixService.findSensMatrixDtosByOwner(baselineName, req.getUserPrincipal(), preferredLanguage);
     }
 
     @GET
@@ -59,9 +62,10 @@ public class SensMatrixREST {
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Get user defined SensMatrixDto by id", response = SensMatrixDto.class)
     @Path("/id/{id}")
-    public Response getSensMatrix(@PathParam("id") Integer id) {
+    public Response getSensMatrix(@PathParam("id") Integer id,
+                                  @DefaultValue("") @QueryParam("lang") String preferredLanguage) {
         try {
-            return Response.ok(sensMatrixService.getSensMatrixbyId(id)).build();
+            return Response.ok(sensMatrixService.getSensMatrixbyId(id, preferredLanguage)).build();
         } catch (SymphonyStandardAppException ex) {
             return Response.status(Response.Status.BAD_REQUEST).entity(
                     new FrontendErrorDto(ex.getErrorCode().getErrorKey(),
@@ -76,12 +80,13 @@ public class SensMatrixREST {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{baselineName}")
     public Response createSensMatrix(@Context HttpServletRequest req, @Context UriInfo uriInfo, @PathParam(
-			"baselineName") String baselineName, SensMatrixDto sensMatrixDto) {
+			"baselineName") String baselineName, SensMatrixDto sensMatrixDto,
+            @DefaultValue("") @QueryParam("lang") String preferredLanguage) {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
 
         try {
-            sensMatrixDto = sensMatrixService.createSensMatrix(sensMatrixDto, baselineName,
+            sensMatrixDto = sensMatrixService.createSensMatrix(sensMatrixDto, baselineName, preferredLanguage,
 					req.getUserPrincipal());
             URI uri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(sensMatrixDto.getId())).build();
             return Response.created(uri).entity(sensMatrixDto).build();
@@ -98,13 +103,14 @@ public class SensMatrixREST {
     @ApiOperation(value = "Update user defined sensitivity matrix for current user", response =
 			SensMatrixDto.class)
     public Response updateSensMatrix(@Context HttpServletRequest req,
-									 @PathParam("id") Integer id, SensMatrixDto sensMatrixDto) {
+									 @PathParam("id") Integer id, SensMatrixDto sensMatrixDto,
+                                     @DefaultValue("") @QueryParam("lang") String preferredLanguage) {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
 
         try {
             sensMatrixDto.setId(id);
-			return Response.ok(sensMatrixService.updateSensMatrix(sensMatrixDto,
+			return Response.ok(sensMatrixService.updateSensMatrix(sensMatrixDto, preferredLanguage,
 					req.getUserPrincipal())).build();
         } catch (SymphonyStandardAppException ex) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new FrontendErrorDto(ex.getErrorCode().getErrorKey(), ex.getErrorCode().getErrorMessage())).build();
@@ -120,12 +126,13 @@ public class SensMatrixREST {
     public Response createSensMatrixForArea(@Context HttpServletRequest req, @Context UriInfo uriInfo,
 											@PathParam("baselineName") String baselineName,
                                             @PathParam("areaid") int areaid,
+                                            @DefaultValue("") @QueryParam("lang") String preferredLanguage,
 											SensMatrixDto sensMatrixDto) {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
 
         try {
-            sensMatrixDto = sensMatrixService.createSensMatrix(sensMatrixDto, baselineName,
+            sensMatrixDto = sensMatrixService.createSensMatrix(sensMatrixDto, baselineName, preferredLanguage,
 					req.getUserPrincipal());
             CalcAreaSensMatrixDto calcAreaSensMatrixDto = new CalcAreaSensMatrixDto();
             calcAreaSensMatrixDto.setCalcareaId(areaid);

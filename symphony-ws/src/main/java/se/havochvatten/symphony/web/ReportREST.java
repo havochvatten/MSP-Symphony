@@ -11,9 +11,11 @@ import se.havochvatten.symphony.dto.ReportResponseDto;
 import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.calculation.CalcService;
+import se.havochvatten.symphony.service.PropertiesService;
 import se.havochvatten.symphony.service.ReportService;
 
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -37,6 +39,9 @@ public class ReportREST {
     @Inject
     private CalcService calcService;
 
+    @EJB
+    PropertiesService props;
+
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -45,6 +50,7 @@ public class ReportREST {
             response = ReportResponseDto.class)
     public Response getReport(@Context HttpServletRequest req,
                               @PathParam("id") int id,
+                              @DefaultValue("") @QueryParam("lang") String preferredLanguage,
                               @Context UriInfo uriInfo)
         throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
         logger.info("Fetching report "+id);
@@ -52,7 +58,10 @@ public class ReportREST {
             calcService).orElseThrow(NotFoundException::new);
 
         if (hasAccess(calc, req.getUserPrincipal()))
-            return ok(reportService.generateReportData(calc, true)).build();
+            return ok(reportService.generateReportData(calc, true,
+                preferredLanguage.isEmpty() ?
+                    props.getProperty("meta.default_language") :
+                    preferredLanguage)).build();
         else
             return status(Response.Status.UNAUTHORIZED).build();
     }
@@ -131,6 +140,7 @@ public class ReportREST {
     public Response getComparisonReport(@Context HttpServletRequest req,
                                         @PathParam("a") int baseId,
                                         @PathParam("b") int scenarioId,
+                                        @DefaultValue("") @QueryParam("lang") String preferredLanguage,
                                         @Context UriInfo uriInfo) {
         logger.info("Comparing report "+baseId+" and "+scenarioId);
         try {
@@ -142,7 +152,7 @@ public class ReportREST {
                     .orElseThrow(javax.ws.rs.BadRequestException::new);
 
             if (hasAccess(baseRes, req.getUserPrincipal()) && hasAccess(scenarioRes, req.getUserPrincipal()) )
-                return ok(reportService.generateComparisonReportData(baseRes, scenarioRes)).build();
+                return ok(reportService.generateComparisonReportData(baseRes, scenarioRes, preferredLanguage)).build();
             else
                 return status(Response.Status.UNAUTHORIZED).build();
         } catch (Exception e) {
