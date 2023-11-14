@@ -180,7 +180,7 @@
             },
             "changes": {
                 "title": "Scenario Changes",
-                "no-changes": "No scenario changes",
+                "no-changes": "No changes",
                 "make-changes-hint": "Make changes in the Ecosystem or Pressures tabs.",
                 "clear-change": "Clear change",
                 "units": "u.",
