@@ -160,8 +160,7 @@ public class ScenarioService {
                 var gridROI = (ROI) new ROIShape(
                     new LiteShape2(projectedROI, gridGeometry.getCRSToGrid2D(), null, false));
 
-                List<BandChange> bandChanges = Arrays.stream(area.getAllChanges(alternateChangeSource))
-                    .filter(c -> c.type == changeType)
+                List<BandChange> bandChanges = Arrays.stream(area.getAllChangesByType(alternateChangeSource, changeType))
                     .collect(Collectors.toList());
 
                 return Util.reduce(bandChanges, // iterate over band changes

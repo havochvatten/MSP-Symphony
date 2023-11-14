@@ -134,7 +134,7 @@ public class ReportService {
                 .collect(toMap(i -> components[i], i -> totals[i]));
     }
 
-    public ReportResponseDto generateReportData(CalculationResult calc, boolean computeChart)
+    public ReportResponseDto generateReportData(CalculationResult calc, boolean computeChart, String preferredLanguage)
         throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
         var scenario = calc.getScenarioSnapshot();
         var coverage = calc.getCoverage();
@@ -185,7 +185,7 @@ public class ReportService {
         for(int areaId : calc.getAreaMatrixMap().keySet()) {
             areaName = scenario.getAreas().get(areaId).areaName();
             try {
-                matrix = matrixService.getSensMatrixbyId(calc.getAreaMatrixMap().get(areaId)).getName();
+                matrix = matrixService.getSensMatrixbyId(calc.getAreaMatrixMap().get(areaId), preferredLanguage).getName();
             } catch (SymphonyStandardAppException e) {
                 matrix = "<unknown>";
             }
@@ -228,11 +228,12 @@ public class ReportService {
     }
 
     public ComparisonReportResponseDto generateComparisonReportData(CalculationResult calcA,
-                                                                    CalculationResult calcB)
+                                                                    CalculationResult calcB,
+                                                                    String preferredLanguage)
         throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
         var report = new ComparisonReportResponseDto();
-        report.a = generateReportData(calcA, false);
-        report.b = generateReportData(calcB, false);
+        report.a = generateReportData(calcA, false, preferredLanguage);
+        report.b = generateReportData(calcB, false, preferredLanguage);
 
         double chartWeightThreshold =
             props.getPropertyAsDouble("calc.sankey_chart.link_weight_threshold", 0.001);
@@ -271,7 +272,7 @@ public class ReportService {
 
     private String getMatrixName(int id) {
         try {
-            return matrixService.getSensMatrixbyId(id).getName();
+            return matrixService.getSensMatrixbyId(id, null).getName();
         } catch (SymphonyStandardAppException e) {
             throw new RuntimeException(e);
         }
@@ -294,7 +295,7 @@ public class ReportService {
     static final String rptRowFormat = "%s" + CSV_FIELD_SEPARATOR + "%.2f%%";
 
     public String generateCSVReport(CalculationResult calc, Locale locale) throws SymphonyStandardAppException {
-        var metadata = metaDataService.findMetadata(calc.getBaselineVersion().getName());
+        var metadata = metaDataService.findMetadata(calc.getBaselineVersion().getName(), locale.getLanguage());
         var ecocomponentMetadata = flattenAndSort(metadata.getEcoComponent());
         var pressureMetadata = flattenAndSort(metadata.getPressureComponent());
 
@@ -351,7 +352,7 @@ public class ReportService {
     static final String cmpRowFormat = "%s" + CSV_FIELD_SEPARATOR + "%.2f" + CSV_FIELD_SEPARATOR + "%.2f" + CSV_FIELD_SEPARATOR + "%.2f%%";
 
     public String generateCSVComparisonReport(CalculationResult calcA, CalculationResult calcB, Locale locale) throws SymphonyStandardAppException {
-        MetadataDto metadata = metaDataService.findMetadata(calcA.getBaselineVersion().getName());
+        MetadataDto metadata = metaDataService.findMetadata(calcA.getBaselineVersion().getName(), locale.getLanguage());
         MetadataPropertyDto[]   ecocomponentMetadata = flattenAndSort(metadata.getEcoComponent()),
                                 pressureMetadata = flattenAndSort(metadata.getPressureComponent());
 

@@ -10,6 +10,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.locationtech.jts.geom.Geometry;
 import se.havochvatten.symphony.dto.NormalizationOptions;
+import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.entity.CalculationResult;
 
 import javax.persistence.*;
@@ -163,7 +164,7 @@ public class ScenarioSnapshot implements BandChangeEntity {
         this.areas = mapper.valueToTree(areaMap);
     }
 
-    public Map<String, BandChange> getChangeMap() {
+    public Map<LayerType, Map<Integer, BandChange>> getChangeMap() {
         ScenarioChanges sc = mapper.convertValue(changes, new TypeReference<>() {});
         return sc.baseChanges();
     }

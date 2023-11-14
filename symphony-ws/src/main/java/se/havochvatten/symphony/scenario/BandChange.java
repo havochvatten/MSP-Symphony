@@ -7,7 +7,7 @@ import se.havochvatten.symphony.dto.LayerType;
 public class BandChange {
     public LayerType type; // TODO: Use Jackson subtype deserialization?
 
-    public Integer band;
+    public Integer band; // Only used detached in calculation step on server side, not persisted
 
     /**
      * Number to multiply intensity value by

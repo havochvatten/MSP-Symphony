@@ -9,6 +9,7 @@ import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
+import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.MatrixParameters;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 
@@ -89,24 +90,29 @@ public class ScenarioArea implements BandChangeEntity {
         return changes;
     }
 
-    public BandChange[] getAllChanges() {
-        return getAllChanges(this.scenario);
+    public BandChange[] getAllChangesByType(LayerType layerType) {
+        return getAllChangesByType(this.scenario, layerType);
     }
     
-    public BandChange[] getAllChanges(BandChangeEntity altScenario) {
+    public BandChange[] getAllChangesByType(BandChangeEntity altScenario, LayerType layerType) {
         BandChangeEntity bcEntity = altScenario == null ? scenario : altScenario;
 
-        Map<String, BandChange> baseChangeMap = mapper.convertValue(bcEntity.getChanges(), new TypeReference<>() {}),
-                                changeMap = getChangeMap();
+        Map<Integer, BandChange> baseChangeMap =
+            ((Map<LayerType, Map<Integer, BandChange>>)
+                mapper.convertValue(bcEntity.getChanges(), new TypeReference<>() {})).getOrDefault(layerType, new HashMap<>()),
+                                 changeMap = getChangeMap().getOrDefault(layerType, new HashMap<>());
 
         return Stream.concat(
                 baseChangeMap.entrySet().stream().filter(c -> !changeMap.containsKey(c.getKey())),
-                changeMap.entrySet().stream()).map(Map.Entry::getValue).toArray(BandChange[]::new);
+                changeMap.entrySet().stream()).map(entry -> {
+                    BandChange bc = entry.getValue();
+                    bc.band = entry.getKey();
+                    return bc;}).toArray(BandChange[]::new);
     }
 
-    public Map<String, BandChange> getCombinedChangeMap() {
-        Map<String, BandChange> changeMap = new HashMap<>();
-        changeMap.putAll(mapper.convertValue(scenario.getChanges(), new TypeReference<>() {}));
+    public Map<LayerType, Map<Integer, BandChange>> getCombinedChangeMap() {
+        Map<LayerType, Map<Integer, BandChange>> changeMap = new HashMap<>();
+        changeMap.putAll((mapper.convertValue(scenario.getChanges(), new TypeReference<>() {})));
         changeMap.putAll(getChangeMap());
         return changeMap;
     }
