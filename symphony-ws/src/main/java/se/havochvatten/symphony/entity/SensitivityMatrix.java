@@ -49,7 +49,7 @@ public class SensitivityMatrix implements Serializable {
     @Column(name = "sensm_name")
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sensitivityMatrix")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "matrix")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Sensitivity> sensitivityList;
 
