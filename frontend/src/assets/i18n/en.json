@@ -180,7 +180,7 @@
             },
             "changes": {
                 "title": "Scenario Changes",
-                "no-changes": "No scenario changes",
+                "no-changes": "No changes",
                 "make-changes-hint": "Make changes in the Ecosystem or Pressures tabs.",
                 "clear-change": "Clear change",
                 "units": "u.",
@@ -374,6 +374,10 @@
             "show-report": "Open calculation report “{{ calculationName }}”",
             "delete": "Delete saved calculation result “{{ calculationName }}”",
             "filter-hint": "Filter calculations by name",
+            "show-result": "Show result in map view",
+            "hide-result": "Hide result in map view",
+            "visible-result": "Result is currently visible in map view",
+            "purged-result": "Data for this result has been purged\nThis will take a little longer to load because the result is being recalculated.",
             "delete-modal" : {
                 "header": "Delete calculation",
                 "message": "Confirm deletion of previously saved calculation result: <em>“{{ calculationName }}”</em>",

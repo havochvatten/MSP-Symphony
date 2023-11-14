@@ -23,7 +23,7 @@ import intersects from "@turf/boolean-intersects";
 @Component({
     selector: 'app-scenario-list',
     templateUrl: './scenario-list.component.html',
-    styleUrls: ['./scenario-list.component.scss']
+    styleUrls: ['./scenario-list.component.scss', '../../list-actions.scss']
 })
 export class ScenarioListComponent extends Listable {
 

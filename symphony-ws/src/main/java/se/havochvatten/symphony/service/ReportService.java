@@ -13,6 +13,7 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
+import se.havochvatten.symphony.calculation.CalcService;
 import se.havochvatten.symphony.calculation.Operations;
 import se.havochvatten.symphony.calculation.SankeyChart;
 import se.havochvatten.symphony.dto.*;
@@ -30,9 +31,11 @@ import javax.measure.Quantity;
 import javax.measure.UnconvertibleException;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -40,6 +43,8 @@ import static java.util.stream.Collectors.toMap;
 
 @Singleton
 public class ReportService {
+    private static final Logger logger = Logger.getLogger(ReportService.class.getName());
+
     private static final ObjectMapper mapper = new JsonMapper();
 
     private static final GeometryJSON geoJson = new GeometryJSON();
@@ -58,6 +63,12 @@ public class ReportService {
 
     @Inject
     ScenarioService scenarioService;
+
+    @Inject
+    CalcService calcService;
+
+    @Inject
+    CalculationAreaService calcAreaService;
 
     @Inject
     PropertiesService props;
@@ -123,11 +134,17 @@ public class ReportService {
                 .collect(toMap(i -> components[i], i -> totals[i]));
     }
 
-    public ReportResponseDto generateReportData(CalculationResult calc, boolean computeChart)
-        throws FactoryException, TransformException, SymphonyStandardAppException {
+    public ReportResponseDto generateReportData(CalculationResult calc, boolean computeChart, String preferredLanguage)
+        throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
         var scenario = calc.getScenarioSnapshot();
         var coverage = calc.getCoverage();
-        var stats = getStatistics(coverage);
+        if(coverage == null) {
+            logger.info("Recalculating raster data for purged calculation: '" + calc.getCalculationName() + "' " +
+                             "with id " + calc.getId());
+            coverage = calcService.recreateCoverageFromResult(scenario, calc);
+        }
+
+         var stats = getStatistics(coverage);
 
         var impactMatrix = calc.getImpactMatrix();
         int pLen = impactMatrix.length, esLen = impactMatrix[0].length;
@@ -136,8 +153,6 @@ public class ReportService {
         double[] esTotal = new double[esLen];
         // N.B: Will set pTotal and esTotal as side effect!
         double total = getComponentTotals(impactMatrix, pTotal, esTotal);
-
-        var crs = coverage.getCoordinateReferenceSystem2D();
 
         ReportResponseDto report = new ReportResponseDto();
 
@@ -170,7 +185,7 @@ public class ReportService {
         for(int areaId : calc.getAreaMatrixMap().keySet()) {
             areaName = scenario.getAreas().get(areaId).areaName();
             try {
-                matrix = matrixService.getSensMatrixbyId(calc.getAreaMatrixMap().get(areaId)).getName();
+                matrix = matrixService.getSensMatrixbyId(calc.getAreaMatrixMap().get(areaId), preferredLanguage).getName();
             } catch (SymphonyStandardAppException e) {
                 matrix = "<unknown>";
             }
@@ -193,7 +208,7 @@ public class ReportService {
                     coverage.getCoordinateReferenceSystem2D())).getArea();
 
 
-        report.scenarioChanges = scenario.getChanges();
+        report.scenarioChanges = scenario.getChangesForReport();
         report.timestamp = calc.getTimestamp().getTime();
 
         return report;
@@ -213,11 +228,12 @@ public class ReportService {
     }
 
     public ComparisonReportResponseDto generateComparisonReportData(CalculationResult calcA,
-                                                                    CalculationResult calcB)
-        throws FactoryException, TransformException, SymphonyStandardAppException {
+                                                                    CalculationResult calcB,
+                                                                    String preferredLanguage)
+        throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
         var report = new ComparisonReportResponseDto();
-        report.a = generateReportData(calcA, false);
-        report.b = generateReportData(calcB, false);
+        report.a = generateReportData(calcA, false, preferredLanguage);
+        report.b = generateReportData(calcB, false, preferredLanguage);
 
         double chartWeightThreshold =
             props.getPropertyAsDouble("calc.sankey_chart.link_weight_threshold", 0.001);
@@ -256,7 +272,7 @@ public class ReportService {
 
     private String getMatrixName(int id) {
         try {
-            return matrixService.getSensMatrixbyId(id).getName();
+            return matrixService.getSensMatrixbyId(id, null).getName();
         } catch (SymphonyStandardAppException e) {
             throw new RuntimeException(e);
         }
@@ -279,7 +295,7 @@ public class ReportService {
     static final String rptRowFormat = "%s" + CSV_FIELD_SEPARATOR + "%.2f%%";
 
     public String generateCSVReport(CalculationResult calc, Locale locale) throws SymphonyStandardAppException {
-        var metadata = metaDataService.findMetadata(calc.getBaselineVersion().getName());
+        var metadata = metaDataService.findMetadata(calc.getBaselineVersion().getName(), locale.getLanguage());
         var ecocomponentMetadata = flattenAndSort(metadata.getEcoComponent());
         var pressureMetadata = flattenAndSort(metadata.getPressureComponent());
 
@@ -336,7 +352,7 @@ public class ReportService {
     static final String cmpRowFormat = "%s" + CSV_FIELD_SEPARATOR + "%.2f" + CSV_FIELD_SEPARATOR + "%.2f" + CSV_FIELD_SEPARATOR + "%.2f%%";
 
     public String generateCSVComparisonReport(CalculationResult calcA, CalculationResult calcB, Locale locale) throws SymphonyStandardAppException {
-        MetadataDto metadata = metaDataService.findMetadata(calcA.getBaselineVersion().getName());
+        MetadataDto metadata = metaDataService.findMetadata(calcA.getBaselineVersion().getName(), locale.getLanguage());
         MetadataPropertyDto[]   ecocomponentMetadata = flattenAndSort(metadata.getEcoComponent()),
                                 pressureMetadata = flattenAndSort(metadata.getPressureComponent());
 

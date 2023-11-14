@@ -15,7 +15,10 @@ export interface State {
   legends: LegendState;
   percentileValue: number;
   sortCalculations: ListItemsSort;
-  batchProcesses: {[key: number]: BatchCalculationProcessEntry}
+  batchProcesses: { [key: number]: BatchCalculationProcessEntry },
+  visibleResults: number[];
+  loadingResults: number[];
+  loadingReports: number[];
 }
 
 export interface Report {
@@ -43,9 +46,13 @@ export interface Report {
 }
 
 export interface ReportChanges {
-  baseChanges: ChangesProperty,
+  baseChanges: {
+    [key: string] : ChangesProperty
+  },
   areaChanges: {
-    [key: number]: ChangesProperty
+    [key: number]: {
+      [key: string] : ChangesProperty
+    }
   };
 }
 
@@ -83,9 +90,8 @@ export interface StaticImageOptions {
 }
 
 export interface CalculationSlice extends SortableListItem {
-  // The below are set upon calculation completion
   id: number;
-  loading?: boolean;
+  isPurged: boolean;
 }
 
 export type LegendType = 'result' | 'comparison' | 'ecosystem' | 'pressure';

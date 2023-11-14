@@ -7,7 +7,6 @@ export type BandType_Alt = 'ecoComponents' | 'pressures';
 
 export interface SelectableLayer {
   title: string;
-  titleLocal: string;
   bandNumber: number;
   defaultSelected: boolean;
   selected?: boolean;
@@ -21,7 +20,6 @@ export interface Selection {
 }
 
 export interface Band extends SelectableLayer {
-  displayName: string;
   intensityMultiplier?: number; // TODO Rename
   constantIntensity?: number; // TODO rename
   layerOpacity?: number;
@@ -31,8 +29,6 @@ export interface Band extends SelectableLayer {
 
 export interface BandGroup {
   symphonyThemeName: string;
-  symphonyThemeNameLocal: string;
-  displayName: string;
   properties: Band[];
 }
 
@@ -62,8 +58,6 @@ export interface Components {
 
 export interface Group {
   symphonyThemeName: string;
-  symphonyThemeNameLocal: string;
-  displayName: string;
   properties: Components;
 }
 
@@ -73,7 +67,6 @@ export interface Groups {
 
 export interface BandChange {
   type: BandType,
-  band: number,
   multiplier?: number,
   offset?: number
 }

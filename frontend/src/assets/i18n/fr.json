@@ -180,7 +180,7 @@
             },
             "changes": {
                 "title": "Changements de scénario",
-                "no-changes": "Aucun changement de scénario",
+                "no-changes": "Aucun modifications",
                 "make-changes-hint": "Modifier les paramètres sous les onglets composantes écosystème ou pressions.",
                 "clear-change": "Effacer les modifications",
                 "units": "unités",
@@ -374,6 +374,10 @@
             "show-report": "Ouvrir le rapport de calcul “{{ calculationName }}”",
             "delete": "Supprimer le résultat “{{ calculationName }}”",
             "filter-hint": "Filtrer les calculs par nom",
+            "show-result": "Afficher ce résultat en mode carte",
+            "hide-result": "Masquer ce résultat en mode carte",
+            "visible-result": "Ce résultat est visible en mode carte",
+            "purged-result": "Les données de ce résultat ont été supprimées\nLe chargement peut prendre un peu plus de temps car le résultat doit être recalculé.",
             "delete-modal" : {
                 "header": "Supprimer résultat",
                 "message": "Confirmer la suppression du résultat: <em>“{{ calculationName }}”</em>",
@@ -578,9 +582,9 @@
             "percent-change-with": "Variation de <strong>{{percent}}%</strong>",
             "constant-offset-with": "Impact équivalent à <strong>{{offset}}</strong> unités",
             "and": "et",
-            "base-changes": "Changements à l'échelle du scénario",
-            "area-changes": "Changements spécifiques à la zone",
-            "no-changes": "Aucun changement"
+            "base-changes": "Modifications à l'échelle du scénario",
+            "area-changes": "Modifications spécifiques à la zone",
+            "no-changes": "Aucun modifications"
         },
         "impact-table": {
             "ecoComponent": "Impact par composante écosystème",

@@ -9,6 +9,7 @@ import { MatrixSelectionComponent } from './matrix-selection.component';
 import { MatRadioButton, MatRadioModule } from "@angular/material/radio";
 import { MatSelect, MatSelectModule } from "@angular/material/select";
 import { NormalizationType } from "@data/calculation/calculation.service";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 
 describe('MatrixSelectionComponent', () => {
   let component: MatrixSelectionComponent;
@@ -20,10 +21,13 @@ describe('MatrixSelectionComponent', () => {
         SharedModule,
         TranslationSetupModule,
         MatRadioModule,
-        MatSelectModule
+        MatSelectModule,
+        TranslateModule.forRoot()
       ],
       declarations: [MatrixSelectionComponent, MatRadioButton, MatSelect],
-      providers: [provideMockStore(
+      providers: [
+        TranslateService,
+        provideMockStore(
         { initialState: {
           metadata: metadata,
           area: area,

@@ -35,5 +35,5 @@ export class ScenarioChangesComponent {
     return false;
   }
 
-  isEmpty = isEmpty;
+  protected readonly isEmpty = isEmpty;
 }

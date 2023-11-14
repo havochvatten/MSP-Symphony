@@ -9,11 +9,14 @@ import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
+import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.MatrixParameters;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -23,6 +26,10 @@ import java.util.stream.Stream;
 
 @Entity
 @Table(name = "scenarioarea")
+@NamedQueries({
+    @NamedQuery(name = "ScenarioArea.findMany",
+        query = "SELECT s FROM ScenarioArea s WHERE id IN :ids"),
+})
 public class ScenarioArea implements BandChangeEntity {
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -83,25 +90,29 @@ public class ScenarioArea implements BandChangeEntity {
         return changes;
     }
 
-    public Map<String, BandChange> getChangeMap() {
-        Map<String, BandChange> changeMap =
-            changes == null || changes.isNull() ? new HashMap<>() :
-            mapper.convertValue(this.changes, new TypeReference<>() {});
-        return changeMap;
+    public BandChange[] getAllChangesByType(LayerType layerType) {
+        return getAllChangesByType(this.scenario, layerType);
     }
     
-    public BandChange[] getAllChanges() {
-        Map<String, BandChange> baseChangeMap = mapper.convertValue(scenario.getChanges(), new TypeReference<>() {}),
-                                changeMap = getChangeMap();
+    public BandChange[] getAllChangesByType(BandChangeEntity altScenario, LayerType layerType) {
+        BandChangeEntity bcEntity = altScenario == null ? scenario : altScenario;
+
+        Map<Integer, BandChange> baseChangeMap =
+            ((Map<LayerType, Map<Integer, BandChange>>)
+                mapper.convertValue(bcEntity.getChanges(), new TypeReference<>() {})).getOrDefault(layerType, new HashMap<>()),
+                                 changeMap = getChangeMap().getOrDefault(layerType, new HashMap<>());
 
         return Stream.concat(
                 baseChangeMap.entrySet().stream().filter(c -> !changeMap.containsKey(c.getKey())),
-                changeMap.entrySet().stream()).map(Map.Entry::getValue).toArray(BandChange[]::new);
+                changeMap.entrySet().stream()).map(entry -> {
+                    BandChange bc = entry.getValue();
+                    bc.band = entry.getKey();
+                    return bc;}).toArray(BandChange[]::new);
     }
 
-    public Map<String, BandChange> getCombinedChangeMap() {
-        Map<String, BandChange> changeMap = new HashMap<>();
-        changeMap.putAll(mapper.convertValue(scenario.getChanges(), new TypeReference<>() {}));
+    public Map<LayerType, Map<Integer, BandChange>> getCombinedChangeMap() {
+        Map<LayerType, Map<Integer, BandChange>> changeMap = new HashMap<>();
+        changeMap.putAll((mapper.convertValue(scenario.getChanges(), new TypeReference<>() {})));
         changeMap.putAll(getChangeMap());
         return changeMap;
     }
@@ -109,6 +120,8 @@ public class ScenarioArea implements BandChangeEntity {
     public void setChanges(JsonNode changes) {
         this.changes = changes;
     }
+
+    public ObjectMapper getMapper() { return mapper; }
 
     public SimpleFeature getFeature() {
         try {

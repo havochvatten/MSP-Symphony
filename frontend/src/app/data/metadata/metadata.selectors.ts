@@ -50,12 +50,15 @@ export const selectMetadata = createSelector(
   }
 );
 
-// assumes no duplicate band 'titles'
+const metaDictReducer = (m:{[key: string]: string}, v: Band ) => { m[v.bandNumber] = v.title; return m; };
+
 export const selectMetaDisplayDictionary = createSelector(
   selectMetadata,
-  ({ ecoComponent, pressureComponent }): {[key: string]: string} => {
-    return [...ecoComponent.flatMap((c) => {return c.properties}), ...pressureComponent.flatMap((c) =>
-      { return c.properties}) ].reduce((m:{[key: string]: string}, v) => { m[v.title] = v.displayName; return m; }, {});
+  ({ ecoComponent, pressureComponent }) => {
+    return {
+      "ECOSYSTEM" : flattenBands(ecoComponent).reduce(metaDictReducer, {}),
+      "PRESSURE"  : flattenBands(pressureComponent).reduce(metaDictReducer, {})
+    };
   });
 
 export const selectSelectedComponents = createSelector(

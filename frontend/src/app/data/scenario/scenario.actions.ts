@@ -156,18 +156,18 @@ export const excludeActiveAreaCoastal = createAction(
 
 export const updateBandAttributeForAreaIndex = createAction(
   '[Scenario] Update general intensity attribute or a specific area contained in the active scenario',
-  props<{ areaIndex: number|undefined, componentType: BandType, bandId: string,
+  props<{ areaIndex: number|undefined, componentType: BandType,
           band: number, attribute: string, value: number }>()
 );
 
 export const deleteBandChangeForAreaIndex = createAction(
   '[Scenario] Delete general band change or within a specific area contained in the active scenario',
-  props<{ areaIndex: number|undefined, bandId: string }>()
+  props<{ areaIndex: number|undefined, componentType: BandType, band: number }>()
 );
 
 export const updateBandAttribute = createAction(
   '[Scenario] Update intensity attribute for band in active scenario area',
-  props<{ componentType: BandType, bandId: string, band: number, attribute: string, value: number }>()
+  props<{ componentType: BandType, band: number, attribute: string, value: number }>()
 );
 
 export const toggleChangeAreaVisibility = createAction(
@@ -210,14 +210,22 @@ export const transferChangesFailure = createAction(
   props<{ error: ErrorMessage }>()
 );
 
+export const resetActiveScenarioChanges = createAction(
+  '[Scenario] Resets all changes for the active scenario',
+);
+
+export const resetActiveScenarioAreaChanges = createAction(
+  '[Scenario] Resets all changes for the active scenario area',
+);
+
 export const deleteBandChange = createAction(
   '[Scenario] Delete band change in scenario',
-  props<{ bandId: string }>()
+  props<{ componentType: BandType, bandNumber: number }>()
 );
 
 export const deleteAreaBandChange = createAction(
   '[Scenario] Delete band change in scenario area',
-  props<{ bandId: string }>()
+  props<{ componentType: BandType, bandNumber: number }>()
 );
 
 export const fetchAreaMatrices = createAction(

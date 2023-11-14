@@ -66,6 +66,7 @@ export class CalculationReportComponent {
               that.area = reportService.calculateArea(report);
               that.loadingReport = false;
               that.store.dispatch(MetadataActions.fetchMetadata({ baseline: report.baselineName }));
+              window.parent.postMessage({ type: 'calcReportLoaded', calcId: +calcId! }, window.origin);
               that.areaDict = reportService.setAreaDict(report);
             },
             error() {

@@ -5,7 +5,7 @@
       [disabled]="disabled"
       (change)="onSelect($event, band.statePath)"
       checkboxSize="small"
-    >{{ band.displayName }}</mat-checkbox>
+    >{{ band.title }}</mat-checkbox>
     <div class="editing">
       <button
         *ngIf="hasPublicMeta"

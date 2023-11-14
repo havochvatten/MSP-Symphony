@@ -17,7 +17,6 @@ import { State } from '@src/app/app-reducer';
 import { getIn } from 'immutable';
 import { ScenarioActions } from '@data/scenario';
 import { getComponentType } from '@data/metadata/metadata.selectors';
-import { findBestLanguageMatch } from '@src/app/app-translation-setup.module';
 
 @Injectable()
 export class MetadataEffects {
@@ -73,7 +72,6 @@ export class MetadataEffects {
 
       return of(ScenarioActions.updateBandAttribute({
         componentType: getComponentType(bandPath),
-        bandId: bandPath[bandPath.length - 1] as string,
         band: getBand,
         attribute: 'multiplier',
         value: value
@@ -82,20 +80,18 @@ export class MetadataEffects {
   ));
 
   private formatComponentData(layerData: APILayerData, componentType: ComponentKey): Groups {
-    const useMetadataLocalLang = findBestLanguageMatch([layerData.language]);
     return layerData[componentType].symphonyThemes.reduce((themes: Groups, theme: BandGroup) => {
       themes[theme.symphonyThemeName] = {
         ...theme,
-        displayName: useMetadataLocalLang ? theme.symphonyThemeNameLocal : theme.symphonyThemeName,
         properties: theme.properties
           .map((property: Band) => ({
             ...property,
-            displayName: useMetadataLocalLang ? property.titleLocal : property.title,
+            displayName: property.title,
             selected: property.defaultSelected,
-            statePath: [componentType, theme.symphonyThemeName, 'properties', property.title]
+            statePath: [componentType, theme.symphonyThemeName, 'properties', property.bandNumber]
           }))
           .reduce((properties: Components, property: Band) => {
-            properties[property.title] = property;
+            properties[property.bandNumber] = property;
             return properties;
           }, {})
       };

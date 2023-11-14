@@ -14,40 +14,47 @@ import java.util.stream.Collectors;
 
 public class EntityToSensMatrixDtoMapper {
 
-    public static SensMatrixDto map(SensitivityMatrix sensMatrix) {
+    public static SensMatrixDto map(SensitivityMatrix sensMatrix, String preferredLanguage) {
         SensMatrixDto dto = new SensMatrixDto();
         dto.setId(sensMatrix.getId());
         dto.setName(sensMatrix.getName());
         dto.setOwner(sensMatrix.getOwner());
-        Comparator<Sensitivity> compP = Comparator.comparing(s -> s.getPresMetadata().getBandNumber());
-        Comparator<Sensitivity> compE = Comparator.comparing(s -> s.getEcoMetadata().getBandNumber());
+        Comparator<Sensitivity> compE = Comparator.comparing(s -> s.getEcoBand().getBandNumber());
         List<Sensitivity> sortedSensitivities =
-            sensMatrix.getSensitivityList().stream().sorted(compP.thenComparing(compE)).collect(Collectors.toList());
+            sensMatrix.getSensitivityList().stream().sorted(compE).collect(Collectors.toList());
 
-        dto.setSensMatrix(mapToMatrixDto(sortedSensitivities));
+        dto.setSensMatrix(mapToMatrixDto(sortedSensitivities, preferredLanguage));
 
         return dto;
     }
 
-    private static SensitivityDto mapToMatrixDto(List<Sensitivity> sensitivities) {
+    private static SensitivityDto mapToMatrixDto(List<Sensitivity> sensitivities, String preferredLanguage) {
         Map<Integer, SensitivityDto.SensRow> rowMap = new HashMap<>();
+        Map<Integer, Integer> rowOrderMap = new HashMap<>();
+
+        if(preferredLanguage == null) {
+            preferredLanguage = sensitivities.stream().findFirst()
+                                    .map(s -> s.getEcoBand().getBaseline().getLocale())
+                                    .orElseThrow(Error::new);
+        }
+        preferredLanguage = preferredLanguage == null ? "en" : preferredLanguage;
+
         for (Sensitivity sens : sensitivities) {
             SensitivityDto.SensCol scolumn = new SensitivityDto.SensCol();
 
             scolumn.setSensId(Optional.ofNullable(sens.getId()).orElse(-1));
-            scolumn.setEcoMetaId(sens.getEcoMetadata().getId());
-            scolumn.setName(sens.getEcoMetadata().getTitle());
-            scolumn.setNameLocal(sens.getEcoMetadata().getTitleLocal());
+            scolumn.setEcoMetaId(sens.getPressureBand().getId());
+            scolumn.setName(sens.getEcoBand().getTitle(preferredLanguage));
             scolumn.setValue(sens.getValue());
 
-            Integer rid = sens.getPresMetadata().getId();
+            Integer rid = sens.getPressureBand().getId();
             if (!rowMap.containsKey(rid)) {
                 SensitivityDto.SensRow srow = new SensitivityDto.SensRow();
                 srow.setPresMetaId(rid);
-                srow.setName(sens.getPresMetadata().getTitle());
-                srow.setNameLocal(sens.getPresMetadata().getTitleLocal());
+                srow.setName(sens.getPressureBand().getTitle(preferredLanguage));
                 srow.getColumns().add(scolumn);
                 rowMap.put(rid, srow);
+                rowOrderMap.put(rid, sens.getPressureBand().getBandNumber());
             } else {
                 SensitivityDto.SensRow srow = rowMap.get(rid);
                 srow.getColumns().add(scolumn);
@@ -55,9 +62,13 @@ public class EntityToSensMatrixDtoMapper {
         }
 
         SensitivityDto sensDto = new SensitivityDto();
-        rowMap.values().forEach(s -> {
+
+        rowMap.values().stream().sorted(
+            Comparator.comparingInt(r -> rowOrderMap.get(r.getPresMetaId()))
+        ).collect(Collectors.toList()).stream().forEach(s -> {
             sensDto.getRows().add(s);
         });
+
         return sensDto;
     }
 }

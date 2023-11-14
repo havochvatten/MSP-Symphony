@@ -7,7 +7,7 @@
           class="impact-color"
           [style.background-color]="getColor(getImpact(impact.bandNumber))"
         ></span>
-        {{ impact.displayName }}
+        {{ impact.title }}
       </td>
       <td>{{ getImpact(impact.bandNumber) | number: '1.1-2':locale }}%</td>
     </tr>

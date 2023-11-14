@@ -73,13 +73,36 @@ section {
         display: none;
       }
 
+      &.visible {
+        background: linear-gradient(0deg, #e8d18680 0%, white 33%);
+      }
+
+      &.purged {
+        background-color: #f7f4f4;
+
+        .calculation-info {
+          h4 {
+            font-style: oblique;
+            font-weight: 300;
+            color: $hav-map-graphitegrey;
+          }
+
+          .timestamp {
+            color: $hav-grey;
+            text-decoration: line-through;
+          }
+        }
+
+        &:hover {
+          background-color: #f1e9e9;
+        }
+      }
+
       &:hover {
         cursor: pointer;
-        background-color: $hav-turquoise;
 
-        .calculation-info h4, .calculation-info span,
-        .actions app-icon, .actions app-icon[icontype='delete'] {
-          color: white;
+        &.visible {
+          background: linear-gradient(0deg, #e8d18680 0%, $hav-coldgrey 33%);
         }
       }
 
@@ -88,33 +111,23 @@ section {
         flex-direction: column;
         box-sizing: border-box;
         padding: 0 0.2rem 0 1rem;
-        max-width: calc(100% - 5.1rem);
+        max-width: calc(100% - 0.15rem);
 
         h4 {
           margin: 0;
           text-align: left;
-          font: Medium 1.4rem/1.3rem;
+          font-size: 1.4rem;
           line-height: 1.9rem;
           color: #232323;
           text-overflow: ellipsis;
           white-space: nowrap;
           overflow: hidden;
+          padding-right: 0.5rem;
           display: inline-block;
         }
         .name {
           display: flex;
           flex-direction: row;
-          //h4:not(.baseline) {
-          //  cursor: text;
-          //}
-          //&:hover {
-          //
-          //}
-          app-icon {
-            display: none; //none; //inline;
-            font-size: 1.2rem;
-            margin-left: 0.4rem;
-          }
           input { // TODO grow to 100%
             border-radius: 4px;
             border: 1px solid $hav-darkcoldgrey;
@@ -123,38 +136,32 @@ section {
             flex: 1;
           }
         }
-        span {
+        span.timestamp {
           text-align: left;
-          font: Medium 1rem/1.3rem;
           letter-spacing: 0;
           color: #919191;
         }
       }
 
-      .actions {
-        display: flex;
-
-        app-icon {
-          color: $hav-turquoise;
-          font-size: 2.3rem;
-
-
-          &[icontype='delete'] {
-            color: $red;
-            opacity: 0.3;
-            margin-right: 0.3rem;
-
-            &:hover {
-              opacity: 1;
-            }
-          }
+      app-icon {
+        &.visible, &.purged {
+          position: absolute;
+          right: 1rem;
+          bottom: 0.7rem;
         }
 
-        ::ng-deep app-status-icon svg {
-          height: 3rem;
-          width: 3rem;
-          margin-right: 0.5rem;
+        &.purged {
+          color: $hav-ext-scarlet-red;
+          opacity: 0.3;
         }
+
+        &.visible {
+          color: $hav-lightyellow;
+        }
+      }
+
+      mat-spinner {
+        margin-right: 1rem;
       }
     }
   }

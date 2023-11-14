@@ -164,18 +164,22 @@ export class CalculationService implements OnDestroy {
     });
   }
 
-  public removeResult(id: number){
+  public deleteResult(id: number){
     const that = this;
     return new Promise<void>((resolve, reject) => {
       this.delete(id).subscribe({
         next(response) {
-          that.resultRemoved$.emit(+id);
+          that.resultRemoved$.emit(id);
           resolve();
         },
         error(err: HttpErrorResponse) {
           reject('Server error');
         }});
     });
+  }
+
+  public removeResultPixels(id: number) {
+    this.resultRemoved$.emit(id);
   }
 
   public getBaselineCalculations(id: string) {

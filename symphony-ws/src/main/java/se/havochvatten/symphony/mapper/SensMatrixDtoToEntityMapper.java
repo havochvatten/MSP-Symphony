@@ -17,7 +17,7 @@ public class SensMatrixDtoToEntityMapper {
         sensitivityMatrix.setName(sensMatrixDto.getName());
         sensitivityMatrix.setBaselineVersion(baselineVersion);
         sensitivities.forEach(s -> {
-            s.setSensitivityMatrix(sensitivityMatrix);
+            s.setMatrix(sensitivityMatrix);
         });
         sensitivityMatrix.setSensitivityList(sensitivities);
 

@@ -103,172 +103,114 @@ $buttons-row-gap: 1rem;
           display: none;
         }
 
-        .scenario {
-          box-sizing: border-box;
-          position: relative;
-          background-color: white;
-          border: 1px solid #707070;
-          padding: 1.2rem;
-          display: flex;
-          flex-direction: column;
-          width: 100%;
-          cursor: pointer;
-          align-items: stretch;
-
-          &:hover {
-            background-color: $hav-coldgrey;
-
-            .scenario-info h4, .scenario-info span, app-icon {
-              //color: white;
-            }
-
-            //&:has(li:hover) {
-            //  background-color: white;
-            //}
-
-            ul.scenario-areas li.more-areas {
-              background-color: $hav-coldgrey;
-            }
-          }
-
-          .scenario-info {
-            display: flex;
-            flex-direction: column;
-            box-sizing: border-box;
-
-            h4 {
-              margin: 0;
-              text-align: left;
-              font-size: 1.4rem;
-              line-height: 1.9rem;
-              color: #232323;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-              overflow: hidden;
-              display: inline-block;
-            }
-
-            .name {
-              display: flex;
-              flex-direction: row;
-
-              app-icon {
-                display: none;
-                font-size: 1.2rem;
-                margin-left: 0.4rem;
-              }
-
-              input { // TODO grow to 100%
-                border-radius: 4px;
-                border: 1px solid $hav-darkcoldgrey;
-                margin-left: -3px;
-                font-size: 1.6rem;
-                flex: 1;
-              }
-            }
-
-            span {
-              text-align: left;
-              font: Medium 1rem/1.3rem;
-              letter-spacing: 0;
-              color: #919191;
-            }
-          }
-
-          ul.scenario-areas {
-            display: flex;
-            flex-direction: column;
-            list-style: none;
-            padding: 0;
-            margin: 1rem 0 0;
-
-            li {
-              display: flex;
-              background-color: white;
-              padding: 1rem;
-              margin: 0 0 0.5rem;
-              border: 1px dotted black;
-              font-size: 1.4rem;
-              align-items: center;
-              line-height: 2rem;
-              flex: 1;
-
-              .feature-name {
-
-              }
-
-              &:last-child {
-                margin-bottom: 0;
-              }
-
-              &.more-areas {
-                border: 1px solid transparent;
-                color: $hav-darkergrey;
-              }
-            }
-
-            &.abundant {
-              li {
-                padding: 0.4rem 0.8rem 0.3rem;
-                margin: 0 0 0.45rem;
-                line-height: 1.55rem;
-                font-size: 1.25rem;
-              }
-            }
-          }
-
-          &:hover {
-            .scenario-actions {
-              opacity: 0.6;
-            }
-          }
-
-          .scenario-actions {
-            position: absolute;
-            opacity: 0;
-            display: flex;
-            top: 2px;
-            right: 2px;
-            background-color: white;
-            border: 1px solid gray;
-            padding: 4px 2px 4px 6px;
-
-            app-icon {
-              background-color: transparent;
-              opacity: 0.3;
-              position: relative;
-              font-size: 4rem;
-              height: 2.8rem;
-              width: 2.8rem;
-
-              ::ng-deep svg {
-                height: 1.75rem;
-                width: 1.75rem;
-              }
-
-              &[icontype='copy'], &[icontype='report'] {
-                color: $hav-turquoise;
-              }
-
-              &[icontype='delete'] {
-                color: $red;
-              }
-
-              &:hover {
-                opacity: 1;
-              }
-            }
-
-            &:hover {
-              opacity: 1;
-            }
-          }
-        }
-
         .batch-selected-wrap {
           position: absolute;
           background-color: white;
           top: 14px;
+        }
+      }
+
+      .scenario {
+        box-sizing: border-box;
+        background-color: white;
+        border: 1px solid #707070;
+        padding: 1.2rem;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        cursor: pointer;
+        align-items: stretch;
+
+        &:hover {
+          ul.scenario-areas li.more-areas {
+            background-color: $hav-coldgrey;
+          }
+        }
+
+        .scenario-info {
+          display: flex;
+          flex-direction: column;
+          box-sizing: border-box;
+
+          h4 {
+            margin: 0;
+            text-align: left;
+            font-size: 1.4rem;
+            line-height: 1.9rem;
+            color: #232323;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            display: inline-block;
+          }
+
+          .name {
+            display: flex;
+            flex-direction: row;
+
+            app-icon {
+              display: none;
+              font-size: 1.2rem;
+              margin-left: 0.4rem;
+            }
+
+            input { // TODO grow to 100%
+              border-radius: 4px;
+              border: 1px solid $hav-darkcoldgrey;
+              margin-left: -3px;
+              font-size: 1.6rem;
+              flex: 1;
+            }
+          }
+
+          span {
+            text-align: left;
+            font: Medium 1rem/1.3rem;
+            letter-spacing: 0;
+            color: #919191;
+          }
+        }
+
+        ul.scenario-areas {
+          display: flex;
+          flex-direction: column;
+          list-style: none;
+          padding: 0;
+          margin: 1rem 0 0;
+
+          li {
+            display: flex;
+            background-color: white;
+            padding: 1rem;
+            margin: 0 0 0.5rem;
+            border: 1px dotted black;
+            font-size: 1.4rem;
+            align-items: center;
+            line-height: 2rem;
+            flex: 1;
+
+            .feature-name {
+
+            }
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            &.more-areas {
+              border: 1px solid transparent;
+              color: $hav-darkergrey;
+            }
+          }
+
+          &.abundant {
+            li {
+              padding: 0.4rem 0.8rem 0.3rem;
+              margin: 0 0 0.45rem;
+              line-height: 1.55rem;
+              font-size: 1.25rem;
+            }
+          }
         }
       }
     }

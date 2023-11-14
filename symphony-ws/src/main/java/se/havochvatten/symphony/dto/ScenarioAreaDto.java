@@ -22,7 +22,7 @@ public class ScenarioAreaDto implements Serializable {
     private final Integer scenarioId;
     private final Integer excludedCoastal;
 
-    public ScenarioAreaDto() { /* actually useless no arg constructor to satisfy stream API */
+    public ScenarioAreaDto() {
         id = 0;
         changes = null;
         feature = null;

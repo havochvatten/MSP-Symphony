@@ -6,6 +6,7 @@ import { State } from '@src/app/app-reducer';
 import { UserSelectors } from '@data/user';
 import { SensitivityMatrix } from './matrix.interfaces';
 import { Subscription } from 'rxjs';
+import { TranslateService } from "@ngx-translate/core";
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,10 @@ export class MatrixService implements OnDestroy {
   baseline = '';
   baselineSubscription?: Subscription;
 
-  constructor(private http: HttpClient, private store: Store<State>) {
+  private langParam = `?lang=${this.translate.currentLang}`;
+
+  constructor(private http: HttpClient, private store: Store<State>,
+              private translate: TranslateService) {
     this.baselineSubscription = this.store.select(UserSelectors.selectBaseline).subscribe(baseline => {
       if (baseline) {
         this.baseline = baseline.name;
@@ -23,19 +27,19 @@ export class MatrixService implements OnDestroy {
   }
 
   getSensitivityMatrix(matrixId: number) {
-    return this.http.get<SensitivityMatrix>(`${env.apiBaseUrl}/sensitivitymatrix/id/${matrixId}`);
+    return this.http.get<SensitivityMatrix>(`${env.apiBaseUrl}/sensitivitymatrix/id/${matrixId}${this.langParam}`);
   }
 
   createSensitivityMatrixForArea(areaId: number, sensitivityMatrix: SensitivityMatrix) {
     return this.http.post<SensitivityMatrix>(
-      `${env.apiBaseUrl}/sensitivitymatrix/${this.baseline}/${areaId}`,
+      `${env.apiBaseUrl}/sensitivitymatrix/${this.baseline}/${areaId}${this.langParam}`,
       sensitivityMatrix
     );
   }
 
   updateSensitivityMatrix(matrixId: number, sensitivityMatrix: SensitivityMatrix) {
     return this.http.put<SensitivityMatrix>(
-      `${env.apiBaseUrl}/sensitivitymatrix/${matrixId}`,
+      `${env.apiBaseUrl}/sensitivitymatrix/${matrixId}${this.langParam}`,
       sensitivityMatrix
     );
   }

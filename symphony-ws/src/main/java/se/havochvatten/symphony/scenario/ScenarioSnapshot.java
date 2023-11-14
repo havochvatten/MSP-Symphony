@@ -10,6 +10,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.locationtech.jts.geom.Geometry;
 import se.havochvatten.symphony.dto.NormalizationOptions;
+import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.entity.CalculationResult;
 
 import javax.persistence.*;
@@ -19,7 +20,7 @@ import javax.validation.constraints.Size;
 import java.util.*;
 
 @Entity
-public class ScenarioSnapshot {
+public class ScenarioSnapshot implements BandChangeEntity {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -50,6 +51,9 @@ public class ScenarioSnapshot {
     @Column(columnDefinition = "integer[]", name = "pressures")
     protected int[] pressuresToInclude;
 
+    /**
+     * JSON object serializing the ScenarioChanges record class.
+     */
     @Basic(optional = true)
     @Type(type = "json")
     @Column(columnDefinition = "json")
@@ -101,7 +105,30 @@ public class ScenarioSnapshot {
 
     public NormalizationOptions getNormalization() { return normalization; }
 
-    public JsonNode getChanges() { return changes; }
+    public ObjectMapper getMapper() { return mapper; }
+
+    /* The entity freezes the changes for multiple entities, both Scenario and ScenarioArea.
+    *  JSON object structure serializes the ScenarioChanges record class, exposing two keys:
+    *  "baseChanges" and "areaChanges". The latter is a map of area id to changes for that area.
+    *
+    *  Recalculation method needs to provide both scenario-wide changes and for individual areas,
+    *  and achieves this by implementing the BandChangeEntity interface -
+    *  but note that getChanges differs slightly from both the other implementing classes
+    *  (Scenario and ScenarioArea). This is why the implementation of getChanges doesn't provide
+    *  the backing field, as might be expected. */
+
+    /**
+     * @return Scenario-wide changes map <br>
+     * NOTE - not the actual `changes` field but a subset, satisfying its usage
+     * in the recalculation procedure. <br>
+     * Use getChangesForReport() to access the field.
+    */
+    public JsonNode getChanges() { return changes.get("baseChanges"); }
+
+    /**
+     * @return The actual `changes` field of the entity
+     */
+    public JsonNode getChangesForReport() { return changes; }
 
     public void setChanges(JsonNode changes) { this.changes = changes; }
 
@@ -112,6 +139,8 @@ public class ScenarioSnapshot {
     public Map<Integer, ScenarioAreaRecord> getAreas() {
         return mapper.convertValue(areas, new TypeReference<>() {});
     }
+
+    public Integer getBaselineId() { return baselineId; }
 
     public int[] getEcosystemsToInclude() {
         return ecosystemsToInclude;
@@ -133,6 +162,27 @@ public class ScenarioSnapshot {
                                         area.getFeatureJson()));
         }
         this.areas = mapper.valueToTree(areaMap);
+    }
+
+    public Map<LayerType, Map<Integer, BandChange>> getChangeMap() {
+        ScenarioChanges sc = mapper.convertValue(changes, new TypeReference<>() {});
+        return sc.baseChanges();
+    }
+
+    public List<ScenarioArea> getTmpAreas () {
+        List<ScenarioArea> areas = new ArrayList<>();
+
+
+        for (var areaEntry : getAreas().entrySet()) {
+            Integer areaId = areaEntry.getKey();
+
+            ScenarioArea tmpArea = new ScenarioArea();
+            tmpArea.setId(areaId);
+            tmpArea.setFeature(areaEntry.getValue().featureJson());
+            tmpArea.setChanges(changes.get("areaChanges").get(areaId.toString()));
+            areas.add(tmpArea);
+        }
+        return areas;
     }
 
     public ScenarioSnapshot() {}

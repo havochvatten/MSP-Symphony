@@ -12,7 +12,6 @@ import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmat
 
 interface NamedObject {
   name: string;
-  nameLocal: string;
 }
 
 @Component({
@@ -187,8 +186,7 @@ export class MatrixTableComponent {
   }
 
   getName(object: NamedObject) {
-    // FIXME eliminate 'sv'
-    return this.locale === 'sv' ? object.nameLocal : object.name;
+    return object.name;
   }
 
   nameExists(name:string|undefined = undefined):boolean {

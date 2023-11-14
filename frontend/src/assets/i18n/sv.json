@@ -374,6 +374,10 @@
             "show-report": "Öppna rapport “{{ calculationName }}”",
             "delete": "Radera sparad beräkning “{{ calculationName }}”",
             "filter-hint": "Filtrera beräkningsrapport per namn",
+            "show-result" : "Rendera detta resultat i kartbilden",
+            "hide-result" :  "Tag bort detta resultat från kartbilden",
+            "visible-result" : "Resultatet är synligt i kartbilden",
+            "purged-result": "Data för detta resultat har rensats bort.\nDå resultatet måste beräknas om tar det lite längre tid att ladda.",
             "delete-modal" : {
                 "header": "Radera sparad beräkning",
                 "message": "Bekräfta borttagning av tidigare sparad beräkning: <em>“{{ calculationName }}”</em>",

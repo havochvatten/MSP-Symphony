@@ -13,37 +13,38 @@ import java.math.BigDecimal;
 @Table(name = "sensitivity")
 @XmlRootElement
 @NamedQueries({
-        @NamedQuery(name = "Sensitivity.findAll", query = "SELECT s FROM Sensitivity s"),
-        @NamedQuery(name = "Sensitivity.findById", query = "SELECT s FROM Sensitivity s WHERE s.id = :is")
+    @NamedQuery(name = "Sensitivity.findAll", query = "SELECT s FROM Sensitivity s"),
+    @NamedQuery(name = "Sensitivity.findById", query = "SELECT s FROM Sensitivity s WHERE s.id = :is")
 })
 public class Sensitivity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "sens_id", nullable = false)
     private Integer id;
 
-    @Basic(optional = false)
     @NotNull
-    @Column(name = "sens_value")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "sens_pres_band_id", nullable = false)
+    private SymphonyBand pressureBand;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "sens_eco_band_id", nullable = false)
+    private SymphonyBand ecoBand;
+
+    @NotNull
+    @Column(name = "sens_value", nullable = false)
     private BigDecimal value;
 
-    @JoinColumn(name = "sens_eco_meta_id", referencedColumnName = "meta_id")
-    @ManyToOne(optional = false)
-    private Metadata ecoMetadata;
-
-    @JoinColumn(name = "sens_pres_meta_id", referencedColumnName = "meta_id")
-    @ManyToOne(optional = false)
-    private Metadata presMetadata;
-
-    @JoinColumn(name = "sens_sensm_id", referencedColumnName = "sensm_id")
-    @ManyToOne(optional = false)
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private SensitivityMatrix sensitivityMatrix;
-
-    public Sensitivity() {}
+    @JoinColumn(name = "sens_sensm_id", nullable = false)
+    private SensitivityMatrix matrix;
 
     public Integer getId() {
         return id;
@@ -61,53 +62,28 @@ public class Sensitivity implements Serializable {
         this.value = value;
     }
 
-    public Metadata getEcoMetadata() {
-        return ecoMetadata;
+    public SymphonyBand getPressureBand() {
+        return pressureBand;
     }
 
-    public void setEcoMetadata(Metadata ecoMetadata) {
-        this.ecoMetadata = ecoMetadata;
+    public void setPressureBand(SymphonyBand pressureBand) {
+        this.pressureBand = pressureBand;
     }
 
-    public Metadata getPresMetadata() {
-        return presMetadata;
+    public SymphonyBand getEcoBand() {
+        return ecoBand;
     }
 
-    public void setPresMetadata(Metadata prresMetadata) {
-        this.presMetadata = prresMetadata;
+    public void setEcoBand(SymphonyBand ecoBand) {
+        this.ecoBand = ecoBand;
     }
 
-    public SensitivityMatrix getSensitivityMatrix() {
-        return sensitivityMatrix;
+    public SensitivityMatrix getMatrix() {
+        return matrix;
     }
 
-    public void setSensitivityMatrix(SensitivityMatrix sensitivityMatrix) {
-        this.sensitivityMatrix = sensitivityMatrix;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Sensitivity)) {
-            return false;
-        }
-        Sensitivity other = (Sensitivity) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "se.havochvatten.symphonyws.entity.Sensitivity[ sensId=" + id + " ]";
+    public void setMatrix(SensitivityMatrix matrix) {
+        this.matrix = matrix;
     }
 
 }
