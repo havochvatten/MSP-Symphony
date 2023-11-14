@@ -126,12 +126,12 @@ BEGIN
 
     EXECUTE format('COPY suppliedColumns(csvColumn) FROM PROGRAM %s', copycmd);
     inputColumns := string_to_array((SELECT csvColumn FROM suppliedColumns LIMIT 1), ';');
-	
-	
+
+
         FOREACH foundColumn IN ARRAY inputColumns LOOP
-		
-			currentIndex = currentIndex + 1
-			
+
+			currentIndex = currentIndex + 1;
+
             EXECUTE format('SELECT targetColumn FROM metaColumnsMap WHERE csvColumn = %L', foundColumn) into foundTargetColumn;
             IF foundTargetColumn IS NULL THEN
                 unmappedColumns = array_append(unmappedColumns, foundColumn);
@@ -190,7 +190,7 @@ BEGIN
                                          'ConvertTo-Csv -NoTypeInformation -Delimiter """;""" | Select-Object -Skip 1"'''
                  ELSE
                  '''cut -d ";" -f %3$s %1$s''' END),
-                    metadataFile, array_to_string(quotedColumns, ', '), array_to_string(indexedColumns, ',');
+                    metadataFile, array_to_string(quotedColumns, ', '), array_to_string(columnIndexes, ','));
 
         EXECUTE format('CREATE TEMP TABLE tempMetaTable(tempId integer GENERATED ALWAYS AS IDENTITY, %s)', array_to_string(typedColumns, ', '));
         EXECUTE format('COPY tempMetaTable(%s) FROM PROGRAM %s (FORMAT CSV, DELIMITER '';'', HEADER true, NULL '''')', array_to_string(mappedColumns, ', '), formatcmd);
