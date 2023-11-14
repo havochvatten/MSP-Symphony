@@ -47,14 +47,12 @@ export interface MatrixColumn {
   sensId: number;
   ecoMetaId: number;
   name: string;
-  nameLocal: string,
   value: number;
 }
 
 export interface MatrixRow {
   presMetaId: number;
   name: string;
-  nameLocal: string;
   columns: MatrixColumn[];
 }
 

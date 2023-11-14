@@ -3,7 +3,6 @@ import { ActivatedRoute, Event, NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter, map, mergeMap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import { findBestLanguageMatch, supportedLanguages } from "@src/app/app-translation-setup.module";
 
 @Component({
   selector: 'app-root',
@@ -16,8 +15,7 @@ export class AppComponent implements OnDestroy {
 
   constructor(
     private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private translate: TranslateService
+    private activatedRoute: ActivatedRoute
   ) {
     this.routeDataSubscription = this.router.events
       .pipe(
@@ -34,11 +32,6 @@ export class AppComponent implements OnDestroy {
       .subscribe(data => {
         this.headerTitle = data.hasOwnProperty('headerTitle') ? data.headerTitle : '';
       });
-
-    const languageToUse = findBestLanguageMatch(supportedLanguages);
-    if (languageToUse) {
-      this.translate.use(languageToUse);
-    }
   }
   ngOnDestroy() {
     if (this.routeDataSubscription) {

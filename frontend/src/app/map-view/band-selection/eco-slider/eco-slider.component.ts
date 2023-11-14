@@ -13,8 +13,7 @@ import { fromEvent, throwError } from 'rxjs';
 import { State } from '@src/app/app-reducer';
 import { Band, StatePath } from '@data/metadata/metadata.interfaces';
 import { MetadataActions } from '@data/metadata';
-import { convertMultiplierToPercent, getComponentType } from '@data/metadata/metadata.selectors';
-import { formatPercentage } from '@src/app/shared/common.util';
+import { getComponentType } from '@data/metadata/metadata.selectors';
 import { ScenarioActions } from "@data/scenario";
 import { debounceTime, map } from "rxjs/operators";
 
@@ -64,7 +63,6 @@ export class EcoSliderComponent implements OnInit, OnChanges, AfterViewInit {
     ).subscribe(value =>
       this.store.dispatch(ScenarioActions.updateBandAttribute({
         componentType: getComponentType(this.statePath),
-        bandId: this.band.title,
         band: this.band.bandNumber,
         attribute: 'offset',
         value: parseInt(value)
@@ -72,17 +70,20 @@ export class EcoSliderComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   updateMultiplier(value: number) {
-    this.store.dispatch(MetadataActions.updateMultiplier({
-      bandPath: this.statePath,
+    this.store.dispatch(ScenarioActions.updateBandAttribute({
+      componentType: getComponentType(this.statePath),
+      band: this.band.bandNumber,
+      attribute: 'multiplier',
       value
-    }))
+    }));
   }
 
   setOverride(setOverride: boolean) {
     if(setOverride) {
       this.updateMultiplier(1);
     } else {
-      this.store.dispatch(ScenarioActions.deleteAreaBandChange({ bandId: this.band.title }));
+      this.store.dispatch(ScenarioActions.deleteAreaBandChange(
+          { componentType: getComponentType(this.band.statePath),  bandNumber: this.band.bandNumber }));
     }
   }
 

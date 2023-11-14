@@ -1,10 +1,10 @@
 import { Component, ElementRef, Input, NgModuleRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms'
 import { Observable, OperatorFunction, Subscription } from 'rxjs';
-import { debounceTime, filter, map, take, tap } from 'rxjs/operators';
+import { debounceTime, filter, take, tap } from 'rxjs/operators';
 import { TranslateService } from "@ngx-translate/core";
 import { Store } from '@ngrx/store';
-import { some } from "lodash";
+import { isEmpty, some } from "lodash";
 import { State } from '@src/app/app-reducer';
 import { environment } from '@src/environments/environment';
 import { DialogService } from '@shared/dialog/dialog.service';
@@ -20,7 +20,7 @@ import {
   NormalizationType
 } from '@data/calculation/calculation.service';
 import { MetadataSelectors } from "@data/metadata";
-import { Band } from "@data/metadata/metadata.interfaces";
+import { Band, BandType } from "@data/metadata/metadata.interfaces";
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
 import {
@@ -70,7 +70,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   percentileValue$: Observable<number>;
   areaMatricesLoading$: Observable<boolean>;
-  bandDictionary$: Observable<{ [p: string]: string }>;
+  bandDictionary$: Observable<{ [k: string] : { [p: string]: string } }>;
   unsaved: boolean = false;
   savedByInteraction: boolean = false;
 
@@ -100,7 +100,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(CalculationActions.fetchPercentile());
   }
 
-  changes(): ChangesProperty {
+  changes(): { [ bandType: string ]:  ChangesProperty } {
     return this.scenario.changes;
   }
 
@@ -174,16 +174,17 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   async setChangesText():Promise<void> {
     const bandDict = await this.bandDictionary$.pipe(take(1)).toPromise();
-
-    this.changesText = this.scenario.areas.map((a, ix) => {
-        return Object.entries(a.changes || {}).map(([c, change]) => {
-            return `${bandDict[c]}: ${
-              change.multiplier ? (change.multiplier > 1 ? '+' : '') +
-                Number(convertMultiplierToPercent(change.multiplier) * 100).toFixed(2) + '%' :
-                change.offset
-            }`;
-        }).join('\n');
-    });
+    this.changesText = this.scenario.areas.some((a) => !isEmpty(a.changes)) ?
+        this.scenario.areas.map((a) => {
+          return Object.entries(a.changes || {}).map(([bandType, c]) => {
+            return Object.entries(c).map(([bandNumber, change]) => {
+              return `${bandDict[bandType][bandNumber]}: ${change.multiplier ? (change.multiplier > 1 ? '+' : '') +
+                  Number(convertMultiplierToPercent(change.multiplier) * 100).toFixed(2) + '%' :
+                  change.offset! > 0 ? '+' + change.offset : change.offset
+              }`;
+            }).join('\n');
+          }).join('\n');
+        }) : {};
   }
 
   calculate() {
@@ -259,9 +260,10 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(ScenarioActions.saveActiveScenario({ scenarioToBeSaved: this.scenario }));
   }
 
-  deleteChange = (bandId: string) => {
+  deleteChange = (bandTypeString: string, bandNumber: number) => {
     this.unsaved = true;
-    this.store.dispatch(ScenarioActions.deleteBandChange({ bandId }));
+    const componentType = bandTypeString as BandType;
+    this.store.dispatch(ScenarioActions.deleteBandChange({ componentType, bandNumber }));
   }
 
   close() {
@@ -308,9 +310,9 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  anyChanges() {
-    return  (this.scenario.changes && Object.keys(this.scenario.changes).length > 0) ||
-             this.scenario.areas.some(a => a.changes && Object.keys(a.changes!).length > 0);
+  anyChanges(): boolean {
+    return !!this.scenario.changes &&
+            Object.values(this.scenario.changes).flatMap(x => Object.values(x)).length > 0;
   }
 
   async importChanges() {
@@ -322,10 +324,6 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
       this.unsaved = false;
       await this.setChangesText();
     }
-  }
-
-  getDisplayName(bandId: string): Observable<string> {
-    return this.bandDictionary$.pipe(map((bandDictionary) => bandDictionary[bandId]));
   }
 
   async openSplitOptions(): Promise<void> {
@@ -348,4 +346,6 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
         { scenarioId : this.scenario.id, options: splitOptions }));
     }
   }
+
+  protected readonly isEmpty = isEmpty;
 }

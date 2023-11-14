@@ -46,9 +46,13 @@ export interface Report {
 }
 
 export interface ReportChanges {
-  baseChanges: ChangesProperty,
+  baseChanges: {
+    [key: string] : ChangesProperty
+  },
   areaChanges: {
-    [key: number]: ChangesProperty
+    [key: number]: {
+      [key: string] : ChangesProperty
+    }
   };
 }
 

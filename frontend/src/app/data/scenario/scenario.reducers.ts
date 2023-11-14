@@ -119,133 +119,153 @@ export const scenarioReducer = createReducer(
     ...state,
     scenarios: setIn(state.scenarios, [state.active, 'areas', state.activeArea, 'excludedCoastal'], areaId)
   })),
-  on(
-    ScenarioActions.updateBandAttribute,
-    (state, { componentType, bandId, band, attribute, value }) => {
+  on(ScenarioActions.updateBandAttribute,(state, { componentType, band, attribute, value }) => {
 
       const change: BandChange = {
         type: componentType,
-        band: band,
         [attribute]: value
-      }
+      }, activeArea = typeof state.activeArea === 'number';
+
       if(state.active === undefined)
         return state;
 
-      if(state.activeArea !== undefined) {
-        return state.scenarios[state.active].areas[state.activeArea].changes !== null ? {
-          ...state,
-          scenarios: updateIn(state.scenarios, [state.active, 'areas', state.activeArea, 'changes', bandId],
-            () => change)
-        } : {
-          ...state,
-          scenarios: updateIn(state.scenarios, [state.active, 'areas', state.activeArea, 'changes'],
-            () => ({[bandId]: change}))
-        }
+      const path =  activeArea ?
+                    [state.active, 'areas', state.activeArea, 'changes'] :
+                    [state.active, 'changes'],
+            store = activeArea ?
+                    state.scenarios[state.active].areas[state.activeArea!].changes :
+                    state.scenarios[state.active].changes;
+
+      if(store !== null) {
+        return store[componentType] !== undefined ?
+          {
+            ...state,
+            scenarios: updateIn(state.scenarios, path.concat([componentType, band]),
+              () => change)
+          } : { // need to extend the changes object with component type ( Ecosystem / Pressure )
+            ...state,
+            scenarios: updateIn(state.scenarios, path.concat([componentType]),
+              () => ({[band]: change}))
+          }
       } else {
-          return state.scenarios[state.active].changes !== null ?
-              {
-                  ...state,
-                  scenarios: updateIn(state.scenarios, [state.active, 'changes', bandId],
-                      () => change)
-              } : {
-                  ...state,
-                  scenarios: updateIn(state.scenarios, [state.active, 'changes'],
-                      () => ({[bandId]: change}))
-              };
-      }
-    }
-  ),
-  on(ScenarioActions.deleteBandChange, (state, { bandId }) => {
-    if(state.active !== undefined && state.scenarios[state.active].changes !== null) {
-      const bChanges = (state.scenarios[state.active].changes as ChangesProperty);
-      return bChanges[bandId] !== undefined ? {
-        ...state,
-        scenarios: size(bChanges) === 1 ?
-          setIn(state.scenarios, [state.active, 'changes'], null) :
-          removeIn(state.scenarios, [state.active, 'changes', bandId])
-      } : state;
-    }
-    return state;
-  }),
-  on(ScenarioActions.deleteAreaBandChange, (state, { bandId }) => {
-    if(state.active !== undefined && state.activeArea !== undefined &&
-      state.scenarios[state.active].areas[state.activeArea].changes !== null) {
-        const bChanges = (state.scenarios[state.active].areas[state.activeArea].changes as ChangesProperty);
-        return bChanges !== undefined ? {
+        return {
           ...state,
-          scenarios: size(bChanges) === 1 ?
-            setIn(state.scenarios, [state.active, 'areas', state.activeArea, 'changes'], null) :
-            removeIn(state.scenarios, [state.active, 'areas', state.activeArea, 'changes', bandId])
+          scenarios: updateIn(state.scenarios, path,
+            () => ({[componentType]: {[band]: change}}))
+        }
+      }
+  }),
+  on(ScenarioActions.deleteBandChange, (state, { componentType, bandNumber }) => {
+    if(state.active !== undefined) {
+      const path = [state.active, 'changes', componentType],
+            changes = state.scenarios[state.active].changes;
+
+      return (changes !== null && changes[componentType] !== undefined) ?
+        {
+          ...state,
+          scenarios: size(changes[componentType]) === 1 ?
+            removeIn(state.scenarios, path) :
+            removeIn(state.scenarios, path.concat([bandNumber]))
         } : state;
     }
     return state;
   }),
-  on(ScenarioActions.updateBandAttributeForAreaIndex, (state, { areaIndex, componentType, bandId, band, attribute, value }) => {
+  on(ScenarioActions.deleteAreaBandChange, (state, { componentType, bandNumber }) => {
+    if(state.active !== undefined && state.activeArea !== undefined) {
+      const areaChanges = state.scenarios[state.active].areas[state.activeArea].changes;
+
+      if(areaChanges !== null && areaChanges[componentType] !== undefined) {
+        const bChanges = (areaChanges[componentType] as ChangesProperty),
+              path = [state.active, 'areas', state.activeArea, 'changes', componentType];
+        return bChanges[bandNumber] !== undefined ? {
+          ...state,
+          scenarios: size(bChanges) === 1 ?
+            removeIn(state.scenarios, path) :
+            removeIn(state.scenarios, path.concat([bandNumber]))
+        } : state;
+      }
+    }
+    return state;
+  }),
+  on(ScenarioActions.resetActiveScenarioChanges, state => {
+    if(state.active !== undefined) {
+      return {
+        ...state,
+        scenarios: setIn(state.scenarios, [state.active, 'changes'], null)
+      }
+    }
+    return state;
+  }),
+  on(ScenarioActions.resetActiveScenarioAreaChanges, state => {
+    if(state.active !== undefined && state.activeArea !== undefined) {
+      return {
+        ...state,
+        scenarios: setIn(state.scenarios, [state.active, 'areas', state.activeArea, 'changes'], null)
+      }
+    }
+    return state;
+  }),
+  // Code duplication deemed acceptable given changes object structure
+  // Alternative would be to sacrifice semantics of rxjs operators which is arguably worse
+  on(ScenarioActions.updateBandAttributeForAreaIndex,
+    (state, { areaIndex, componentType, band, attribute, value }) => {
       const change: BandChange = {
           type: componentType,
-          band: band,
           [attribute]: value
-      }
+      };
 
       if(state.active === undefined)
-          return state;
+        return state;
 
-      if(areaIndex === undefined) { // scenario-wide settings
-          return state.scenarios[state.active].changes !== null ?
+      const path = areaIndex === undefined ?
+                      [state.active, 'changes'] :
+                      [state.active, 'areas', areaIndex, 'changes'],
+            store = areaIndex === undefined ?
+                      state.scenarios[state.active].changes :
+                      state.scenarios[state.active].areas[areaIndex].changes;
+
+      if(store !== null) {
+          return store[componentType] !== undefined ?
               {
                   ...state,
-                  scenarios: updateIn(state.scenarios, [state.active, 'changes', bandId],
+                  scenarios: updateIn(state.scenarios, path.concat([componentType, band]),
                       () => change)
-              } : {
+              } : { // need to extend the changes object with component type ( Ecosystem / Pressure )
                   ...state,
-                  scenarios: updateIn(state.scenarios, [state.active, 'changes'],
-                      () => ({[bandId]: change}))
+                  scenarios: updateIn(state.scenarios, path.concat([componentType]),
+                      () => ({[band]: change}))
               }
-      } else { // area-specific settings
-          return state.scenarios[state.active].areas[areaIndex].changes !== null ?
-              {
-                  ...state,
-                  scenarios: updateIn(state.scenarios, [state.active, 'areas', areaIndex, 'changes', bandId],
-                      () => change)
-              } : {
-                  ...state,
-                  scenarios: updateIn(state.scenarios, [state.active, 'areas', areaIndex, 'changes'],
-                      () => ({[bandId]: change}))
-              }
+      } else {
+          return {
+              ...state,
+              scenarios: updateIn(state.scenarios, path,
+                  () => ({[componentType]: {[band]: change}}))
+          }
       }
   }),
-  // some procedural code repetition in below handler preferred over attempting
-  // to abstract this further.
-  // "encapsulation" of the `Action` types makes it exceedingly convoluted (or
-  // indeed impossible) to overload or make the handler generic
-  on(ScenarioActions.deleteBandChangeForAreaIndex, (state,
-                            { areaIndex, bandId }) => {
+  on(ScenarioActions.deleteBandChangeForAreaIndex, (state,{ areaIndex, componentType, band }) => {
+      const activeArea = typeof state.activeArea === 'number';
 
-       if(areaIndex === undefined) { // scenario-wide settings
-          if(state.active !== undefined && state.scenarios[state.active].changes !== null) {
-              const bChanges =
-                  (state.scenarios[state.active].changes as ChangesProperty);
-              return bChanges[bandId] !== undefined ? {
+      if(state.active === undefined)
+        return state;
+
+      const path = activeArea ?
+                      [state.active, 'areas', areaIndex, 'changes'] :
+                      [state.active, 'changes'],
+            store = activeArea ?
+                      state.scenarios[state.active].areas[areaIndex!].changes :
+                      state.scenarios[state.active].changes;
+
+      if(store !== null) {
+          return store[componentType] !== undefined ?
+              {
                   ...state,
-                  scenarios: size(bChanges) === 1 ?
-                      setIn(state.scenarios, [state.active, 'changes'], null) :
-                      removeIn(state.scenarios, [state.active, 'changes', bandId])
+                  scenarios: size(store[componentType]) === 1 ?
+                      removeIn(state.scenarios, path.concat([componentType])) :
+                      removeIn(state.scenarios, path.concat([componentType, band]))
               } : state;
-          }
-          return state;
-      } else { // area-specific settings
-          if(state.active !== undefined && state.scenarios[state.active].areas[areaIndex].changes !== null) {
-              const bChanges =
-                  (state.scenarios[state.active].areas[areaIndex].changes as ChangesProperty);
-              return bChanges !== undefined ? {
-                  ...state,
-                  scenarios: size(bChanges) === 1 ?
-                      setIn(state.scenarios, [state.active, 'areas', areaIndex, 'changes'], null) :
-                      removeIn(state.scenarios, [state.active, 'areas', areaIndex, 'changes', bandId])
-              } : state;
-          }
-          return state;
       }
+      return state;
   }),
   on(ScenarioActions.setChangeAreaVisibility, (state, { featureIndex, visible }) => ({
     ...state,

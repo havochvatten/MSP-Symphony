@@ -121,8 +121,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.scenarioLayer.clearLayers();
 
       this.scenarioLayer.setScenarioBoundary(scenario);
-      if (scenario.changes)
-        this.scenarioLayer.addScenarioChangeAreas(scenario.changes);
+
+      // TODO: Should probably be removed as obsolete
+      // if (scenario.changes)
+      //   this.scenarioLayer.addScenarioChangeAreas(scenario.changes);
 
       this.zoomToExtent(this.scenarioLayer.getBoundaryFeature()!.getGeometry()!.getExtent(),
         500);
