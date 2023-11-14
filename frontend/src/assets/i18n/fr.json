@@ -180,7 +180,7 @@
             },
             "changes": {
                 "title": "Changements de scénario",
-                "no-changes": "Aucun changement de scénario",
+                "no-changes": "Aucun modifications",
                 "make-changes-hint": "Modifier les paramètres sous les onglets composantes écosystème ou pressions.",
                 "clear-change": "Effacer les modifications",
                 "units": "unités",
@@ -581,9 +581,9 @@
             "percent-change-with": "Variation de <strong>{{percent}}%</strong>",
             "constant-offset-with": "Impact équivalent à <strong>{{offset}}</strong> unités",
             "and": "et",
-            "base-changes": "Changements à l'échelle du scénario",
-            "area-changes": "Changements spécifiques à la zone",
-            "no-changes": "Aucun changement"
+            "base-changes": "Modifications à l'échelle du scénario",
+            "area-changes": "Modifications spécifiques à la zone",
+            "no-changes": "Aucun modifications"
         },
         "impact-table": {
             "ecoComponent": "Impact par composante écosystème",
