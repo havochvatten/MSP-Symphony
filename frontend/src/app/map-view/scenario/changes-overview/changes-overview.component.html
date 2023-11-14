@@ -47,9 +47,9 @@
                   pressure: $bandType === 'pressures' }"
             >
               <app-overview-inline-band-change
-                [change]="getChange($bandType, +$change.key, $band.id)"
+                [change]="getChange($bandType, +$change.key, $band.number)"
                 [areaIndex]="+$change.key"
-                [bandKey]="$band.key"
+                [bandNumber]="+$band.number"
                 (editModeChange)="setEditingCell($event)"
                 >
               </app-overview-inline-band-change>

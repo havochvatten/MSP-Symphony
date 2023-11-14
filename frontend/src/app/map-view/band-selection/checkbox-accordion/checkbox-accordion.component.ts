@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, Input } from '@angular/core';
-import { StatePath, Band } from '@data/metadata/metadata.interfaces';
+import { StatePath, Band, BandType } from '@data/metadata/metadata.interfaces';
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
 import { ScenarioSelectors } from "@data/scenario";
@@ -15,6 +15,7 @@ import { MatCheckboxChange } from "@angular/material/checkbox";
 export class CheckboxAccordionComponent implements AfterViewInit {
   @Input() title?: string;
   @Input() checked?: boolean;
+  @Input() category!: BandType;
   @Input() bands: Band[] = [];
   @Input() selectedArea = undefined;
   @Input() scenarioActive = false;
@@ -27,10 +28,11 @@ export class CheckboxAccordionComponent implements AfterViewInit {
   private groupBandNumbers = new Set();
 
   constructor(private store: Store<State>) {
-    this.store.select(ScenarioSelectors.selectActiveScenarioChanges).subscribe((changes: ChangesProperty) => {
-      const changesBandNumbers = new Set(Object.values(changes).map(c => c['band']));
-      this.open = intersection(this.groupBandNumbers, changesBandNumbers).size>0
-    });
+    this.store.select(ScenarioSelectors.selectActiveScenarioChanges)
+        .subscribe(( changes: {[bandType: string] : ChangesProperty }) => {
+          const changesBandNumbers = !changes[this.category] ? new Set() : new Set(Object.keys(changes[this.category]).map(n => +n));
+          this.open = intersection(this.groupBandNumbers, changesBandNumbers).size>0
+        });
   }
 
   ngAfterViewInit() {

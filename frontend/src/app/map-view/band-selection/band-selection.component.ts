@@ -14,7 +14,7 @@ function searchTrim(search: string) {
 }
 
 function filterLayers(layers: Band[], search: string): Band[] {
-  return layers.filter(layer => layer.displayName.toLowerCase().includes(search));
+  return layers.filter(layer => layer.title.toLowerCase().includes(search));
 }
 function includesGroup(groupName: string, search: string): boolean {
   return groupName.toLowerCase().includes(search);
@@ -29,12 +29,12 @@ function filterCheckBoxGroups(groups: BandGroup[], search: string): BandGroup[] 
   return groups
     .filter(
       (group: BandGroup) =>
-        includesGroup(group.displayName, search) ||
+        includesGroup(group.symphonyThemeName, search) ||
         filterLayers(group.properties, search).length > 0
     )
     .map(group => ({
       ...group,
-      properties: includesGroup(group.displayName, search)
+      properties: includesGroup(group.symphonyThemeName, search)
         ? group.properties
         : filterLayers(group.properties, search)
     }));
@@ -104,6 +104,6 @@ export class BandSelectionComponent implements OnInit, OnChanges {
   }
 
   displayName(index: number, group: BandGroup) {
-    return group.displayName;
+    return group.symphonyThemeName;
   }
 }

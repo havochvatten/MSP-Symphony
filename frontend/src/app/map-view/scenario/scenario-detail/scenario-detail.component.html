@@ -47,7 +47,7 @@
             <span class="feature-name">{{ area.feature.properties['name'] }}</span>
             <div class="actions">
               <ng-container *ngIf="area.changes">
-                <app-icon iconType="not-equal" *ngIf="area.changes"
+                <app-icon iconType="not-equal" *ngIf="!isEmpty(area.changes)"
                           title="{{ 'map.editor.areas.specific-settings'
                           | translate: { 'feature-changes': getChangesText(aix) }  }}">
                 </app-icon>

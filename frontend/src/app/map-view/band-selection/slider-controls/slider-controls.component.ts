@@ -1,5 +1,5 @@
 import { Component, Input, NgModuleRef, OnDestroy, OnInit } from '@angular/core';
-import { Band, BandChange, StatePath } from '@data/metadata/metadata.interfaces';
+import { Band, BandChange, BandType, StatePath } from '@data/metadata/metadata.interfaces';
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
 import { ScenarioSelectors } from "@data/scenario";
@@ -37,6 +37,7 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
   private groupSetting = false;
 
   @Input() band!: Band;
+  @Input() category!: BandType; // unfortunate "property drilling"
 
   @Input() disabled = false;
   @Input() onSelect = (event: MatCheckboxChange, statePath: StatePath) => {}
@@ -62,10 +63,10 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
     });
 
     this.changesSubscription$ = this.store.select(ScenarioSelectors.selectActiveScenarioChanges)
-      .subscribe((changes: ChangesProperty) => {
-        if (this.band && Object.keys(changes).length>0) {
-          if (this.band.title in changes) {
-            this.change = changes[this.band!.title];
+      .subscribe((changes: {[bandType: string] : ChangesProperty }) => {
+        if (this.band && changes[this.category] && Object.keys(changes[this.category]).length>0) {
+          if (this.band.bandNumber in changes[this.category]) {
+            this.change = changes[this.category][this.band!.bandNumber];
             this.open = true;
             return;
           }
@@ -74,10 +75,10 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
       });
 
     this.overrideChangesSubscription$ = this.store.select(ScenarioSelectors.selectActiveScenarioAreaChanges)
-      .subscribe((changes: ChangesProperty) => {
-        if (this.band && Object.keys(changes).length>0) {
-          if (this.band.title in changes) {
-            this.overriddenChange = changes[this.band!.title];
+      .subscribe((changes: {[bandType: string] : ChangesProperty }) => {
+        if (this.band && changes[this.category] && Object.keys(changes[this.category]).length>0) {
+          if (this.band.bandNumber in changes[this.category]) {
+            this.overriddenChange = changes[this.category][this.band!.bandNumber];
             this.open = true;
             return;
           }

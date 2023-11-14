@@ -2,6 +2,7 @@ import { Component, Input, ViewChild } from '@angular/core';
 import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
 import { ChangesProperty } from "@data/scenario/scenario.interfaces";
 import { AccordionBoxComponent } from "@shared/accordion-box/accordion-box.component";
+import { BandChange, BandType } from "@data/metadata/metadata.interfaces";
 
 @Component({
   selector: 'app-changes-list',
@@ -10,10 +11,9 @@ import { AccordionBoxComponent } from "@shared/accordion-box/accordion-box.compo
 })
 export class ChangesListComponent {
 
-  @Input() changes!: ChangesProperty | null;
-  @Input() displayNames!: Record<string, string>[];
-  @Input() deleteChange!: (bandId: string) => void;
-  @Input() bandDictionary!: { [p: string]: string };
+  @Input() changes!: { [ bandType: string ] : ChangesProperty } | null;
+  @Input() deleteChange!: (componentType: string, bandNumber: number) => void;
+  @Input() bandDictionary!: { [ bandType: string ] : { [p: string]: string }} | null;
 
   @ViewChild('changesAccordion') changesAccordion: AccordionBoxComponent | undefined;
 
@@ -24,10 +24,15 @@ export class ChangesListComponent {
   }
 
   changesCount(): number {
-    return this.changes ? Object.keys(this.changes!).length : 0;
+    return this.changes ? Object.keys(this.changes).reduce((sum, key) => {
+      return sum + Object.keys(this.changes![key as BandType]).length;
+    }, 0) : 0;
   }
 
-  getChanges(): ChangesProperty | null {
-    return this.changes;
+  getChanges() : [BandChange, string][] {
+    return this.changes ? Object.keys(this.changes).reduce((sum, key) => {
+      return sum.concat(Object.keys(this.changes![key as BandType]).map(bandNumber => {
+        return [this.changes![key as BandType][bandNumber], bandNumber];
+      }));}, [] as [BandChange, string][]) : [];
   }
 }

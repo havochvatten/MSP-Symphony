@@ -14,6 +14,7 @@
       <app-slider-controls
         *ngFor="let band of bands; trackBy: bandName"
         [band]="band"
+        [category]="category"
         [disabled]="!scenarioActive"
         [onSelect]="onChange"
         [onChangeVisible]="onChangeVisible"

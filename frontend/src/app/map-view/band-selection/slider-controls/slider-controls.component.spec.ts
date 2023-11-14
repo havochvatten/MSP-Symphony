@@ -32,9 +32,7 @@ describe('SliderControlsComponent', () => {
     fixture = TestBed.createComponent(SliderControlsComponent);
     component = fixture.componentInstance;
     component.band = {
-      displayName: "",
       title: "",
-      titleLocal: "",
       statePath: [''],
       bandNumber: 0,
       defaultSelected: false,

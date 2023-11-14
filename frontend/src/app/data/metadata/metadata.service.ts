@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment as env } from '@src/environments/environment';
 import { MetadataInterfaces } from './';
 import { Band, BandGroup } from "@data/metadata/metadata.interfaces";
+import { TranslateService } from "@ngx-translate/core";
 
 const BASE_URL = env.apiBaseUrl;
 
@@ -10,10 +11,12 @@ const BASE_URL = env.apiBaseUrl;
   providedIn: 'root'
 })
 export default class MetadataService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,
+              private translate: TranslateService) {}
 
   getMetaData(baseline: string) {
-    return this.http.get<MetadataInterfaces.APILayerData>(`${BASE_URL}/metadata/${baseline}`);
+
+    return this.http.get<MetadataInterfaces.APILayerData>(`${BASE_URL}/metadata/${baseline}?lang=${this.translate.currentLang}`);
   }
 
   flattenBandGroups(bandGroups: BandGroup[] = []): Record<number, string> {
@@ -24,7 +27,7 @@ export default class MetadataService {
     return bands.reduce(
       (bandMap: Record<number, string>, band: Band) => ({
         ...bandMap,
-        [band.bandNumber]: band.displayName
+        [band.bandNumber]: band.title
       }),
       {}
     );

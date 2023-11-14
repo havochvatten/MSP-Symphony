@@ -15,17 +15,16 @@ registerLocaleData(localeFr);
 export type Language = 'en' | 'sv' | 'fr';
 export const supportedLanguages = ['en', 'sv', 'fr'];
 
+const defaultLanguage = 'en';
+
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
-export function findBestLanguageMatch(candidateLanguages: string[]) {
-  for (const lang of navigator.languages) {
-    if (candidateLanguages.includes(lang)) {
-      return lang;
-    }
-  }
-  return false;
+export function findBestLanguageMatch() {
+  const userLanguage = navigator.language?.slice(0, 2);
+  return typeof userLanguage !== 'undefined' && supportedLanguages.includes(userLanguage) ?
+      userLanguage : defaultLanguage;
 }
 
 @NgModule({
@@ -44,7 +43,7 @@ export function findBestLanguageMatch(candidateLanguages: string[]) {
 })
 export class TranslationSetupModule {
   constructor(translate: TranslateService) {
-    translate.setDefaultLang('en');
-    translate.use('en');
+    translate.setDefaultLang(defaultLanguage);
+    translate.use(findBestLanguageMatch());
   }
 }

@@ -10,7 +10,8 @@
 >
   <app-checkbox-accordion
     *ngFor="let group of filteredGroups; trackBy: displayName"
-    [title]="group.displayName"
+    [title]="group.symphonyThemeName"
+    [category]="bandType === 'ecoComponents' ? 'ECOSYSTEM' : 'PRESSURE'"
     [bands]="group.properties"
     [searching]="search.length > 0"
     [change]="onChange"
