@@ -44,11 +44,11 @@ export const environment = {
     forgotPasswordUrl: "https://your.server.com/forgot-password.html"
   },
   meta: {
-    visible_fields: ['methodSummary',
-                    'limitationsForSymphony',
-                    'valueRange',
-                    'dataProcessing',
-                    'dataSources'],
-    list_fields:    ['dataSources']
+    visible_fields: ['methodsummary',
+                    'limitationsforsymphony',
+                    'valuerange',
+                    'dataprocessing',
+                    'datasources'],
+    list_fields:    ['datasources']
   }
 };
