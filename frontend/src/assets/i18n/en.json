@@ -460,7 +460,7 @@
         },
         "area-selection-hint": {
             "emphasis": "Select / deselect multiple areas",
-            "detail": "using {{ ctrlbutton }} + click."
+            "detail": "using {{ ctrlButton }} + click."
         },
         "special-actions-hint": {
             "emphasis": "Cut or merge area",
