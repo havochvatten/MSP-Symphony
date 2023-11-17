@@ -107,6 +107,9 @@
     "tslint": "~6.1.0",
     "typescript": "4.9.4"
   },
+  "overrides": {
+    "axios": ">=1.6.0"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "npm run precommit",
