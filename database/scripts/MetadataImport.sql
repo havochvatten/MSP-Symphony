@@ -10,8 +10,7 @@ metadataFile VARCHAR(255) := '';
 	baselineId integer              := ?;
 
 	-- Script settings
-	-- updateExisting boolean      := false;	-- set to true to update existing metadata  -- TODO: reimplement
-	winOS boolean               := true; 	-- set to true if host OS is Windows (assumes powershell is available)
+	winOS boolean               := false; 	-- set to true if host OS is Windows (assumes powershell is available)
 
 	--------- Variables ------------
 		----- Band table columns -----
@@ -53,6 +52,8 @@ metadataFile VARCHAR(255) := '';
 	insertClause_metaValues text = '';
 	insertClause_meta VARCHAR(140) := 'INSERT INTO symphony.meta_values(metaval_band_id, metaval_language, metaval_field, metaval_value) VALUES';
     insertClause_meta_update VARCHAR(120) := 'ON CONFLICT (metaval_band_id, metaval_language, metaval_field) DO UPDATE SET metaval_field = EXCLUDED.metaval_field';
+                             -- NB: this clause automatically updates existing baseline metadata
+                             -- The table defines a unique constraint on these three columns.
     inserted_band_ids integer[] = '{}';
 
     deleteValues_stmt text = 'DELETE from symphony.meta_values WHERE metaband_id IN (%s)';
@@ -126,12 +127,12 @@ BEGIN
 
     EXECUTE format('COPY suppliedColumns(csvColumn) FROM PROGRAM %s', copycmd);
     inputColumns := string_to_array((SELECT csvColumn FROM suppliedColumns LIMIT 1), ';');
-	
-	
+
+
         FOREACH foundColumn IN ARRAY inputColumns LOOP
-		
-			currentIndex = currentIndex + 1
-			
+
+			currentIndex = currentIndex + 1;
+
             EXECUTE format('SELECT targetColumn FROM metaColumnsMap WHERE csvColumn = %L', foundColumn) into foundTargetColumn;
             IF foundTargetColumn IS NULL THEN
                 unmappedColumns = array_append(unmappedColumns, foundColumn);
@@ -189,8 +190,10 @@ BEGIN
              '''chcp 65001 && powershell "Import-Csv """%1$s""" -Delimiter """;""" | Select-Object %2$s | '
                                          'ConvertTo-Csv -NoTypeInformation -Delimiter """;""" | Select-Object -Skip 1"'''
                  ELSE
+    -- TODO: A robust Unix command, as this approach won't work for quoted
+    --       input fields (needed for "list fields" with escaped semicolons)
                  '''cut -d ";" -f %3$s %1$s''' END),
-                    metadataFile, array_to_string(quotedColumns, ', '), array_to_string(indexedColumns, ',');
+                    metadataFile, array_to_string(quotedColumns, ', '), array_to_string(columnIndexes, ','));
 
         EXECUTE format('CREATE TEMP TABLE tempMetaTable(tempId integer GENERATED ALWAYS AS IDENTITY, %s)', array_to_string(typedColumns, ', '));
         EXECUTE format('COPY tempMetaTable(%s) FROM PROGRAM %s (FORMAT CSV, DELIMITER '';'', HEADER true, NULL '''')', array_to_string(mappedColumns, ', '), formatcmd);

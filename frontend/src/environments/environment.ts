@@ -51,12 +51,12 @@ export const environment = {
     forgotPasswordUrl: 'mailto:wiosym@nairobiconvention.org?subject=Requesting%20password%20reset%20for%20WIO%20Symphony'
   },
   meta: {
-    visible_fields: ['methodSummary',
-                    'limitationsForSymphony',
-                    'valueRange',
-                    'dataProcessing',
-                    'dataSources'],
-    list_fields:    ['dataSources']
+    visible_fields: ['methodsummary',
+                    'limitationsforsymphony',
+                    'valuerange',
+                    'dataprocessing',
+                    'datasources'],
+    list_fields:    ['datasources']
   }
 };
 
