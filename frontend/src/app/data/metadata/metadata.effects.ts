@@ -12,11 +12,10 @@ import {
   Components,
   Groups
 } from './metadata.interfaces';
-import { Action, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
-import { getIn } from 'immutable';
-import { ScenarioActions } from '@data/scenario';
-import { getComponentType } from '@data/metadata/metadata.selectors';
+import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
+import { UserSelectors } from "@data/user";
 
 @Injectable()
 export class MetadataEffects {
@@ -27,19 +26,29 @@ export class MetadataEffects {
   ) {}
 
   fetchMetadata$ = createEffect(() => this.actions$.pipe(
-    ofType(MetadataActions.fetchMetadata),
-    mergeMap(({ baseline }) =>
-      this.metadataService.getMetaData(baseline).pipe(
+    ofType(MetadataActions.fetchMetadata, MetadataActions.fetchMetadataForBaseline),
+    concatMap(action =>
+      of(action).pipe(
+        concatLatestFrom(() =>
+          [ this.store.select(UserSelectors.selectBaseline),
+            this.store.select(ScenarioSelectors.selectActiveScenario) ]
+        )
+      ),
+    ),
+    mergeMap(([action, activeBaseline, scenario]) => {
+      const baselineName =
+        action.type === MetadataActions.fetchMetadata.type ?
+          activeBaseline!.name : action.baselineName;
+      return (!scenario ?
+        this.metadataService.getMetaData(baselineName) :
+        this.metadataService.getMetaData(baselineName, scenario!.id)).pipe(
         map(layerData => {
           const newLayerData = {
             ...layerData,
             ecoComponent: this.formatComponentData(layerData, 'ecoComponent'),
-            pressureComponent: this.formatComponentData(
-              layerData,
-              'pressureComponent' /*, language*/
-            )
+            pressureComponent: this.formatComponentData(layerData,'pressureComponent')
           };
-          return MetadataActions.fetchMetadataSuccess({ metadata: newLayerData });
+          return MetadataActions.fetchMetadataSuccess({metadata: newLayerData});
         }),
         catchError(error =>
           of(
@@ -50,9 +59,8 @@ export class MetadataEffects {
               }
             })
           )
-        )
-      )
-    )
+        ))
+    })
   ));
 
   updateMultiplierMapState$ = createEffect(() => this.actions$.pipe(
@@ -63,16 +71,10 @@ export class MetadataEffects {
         concatLatestFrom((action) => this.store.select(MetadataSelectors.selectMetadataState))
       )
     ),
-    switchMap(([{ bandPath, value }, metadata]) => {
-      // Here we could fetch the state from the actual map feature using a Promise or such
-      let getBand = getIn(metadata, [...bandPath, 'bandNumber'], NaN);
-      if (typeof getBand !== 'number') {
-        return of<Action>();
-      }
-
+    switchMap(([{ band, value }, metadata]) => {
       return of(ScenarioActions.updateBandAttribute({
-        componentType: getComponentType(bandPath),
-        band: getBand,
+        componentType: band.symphonyCategory,
+        band: band.bandNumber,
         attribute: 'multiplier',
         value: value
       })).pipe();
@@ -83,12 +85,10 @@ export class MetadataEffects {
     return layerData[componentType].symphonyThemes.reduce((themes: Groups, theme: BandGroup) => {
       themes[theme.symphonyThemeName] = {
         ...theme,
-        properties: theme.properties
+        bands: theme.bands
           .map((property: Band) => ({
             ...property,
-            displayName: property.title,
-            selected: property.defaultSelected,
-            statePath: [componentType, theme.symphonyThemeName, 'properties', property.bandNumber]
+            displayName: property.title
           }))
           .reduce((properties: Components, property: Band) => {
             properties[property.bandNumber] = property;

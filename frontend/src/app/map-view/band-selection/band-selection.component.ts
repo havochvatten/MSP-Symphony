@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { BandGroup, Band, StatePath, BandType_Alt } from '@data/metadata/metadata.interfaces';
+import { BandGroup, Band, BandType_Alt } from '@data/metadata/metadata.interfaces';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { MetadataActions } from '@data/metadata';
@@ -30,13 +30,13 @@ function filterCheckBoxGroups(groups: BandGroup[], search: string): BandGroup[] 
     .filter(
       (group: BandGroup) =>
         includesGroup(group.symphonyThemeName, search) ||
-        filterLayers(group.properties, search).length > 0
+        filterLayers(group.bands, search).length > 0
     )
     .map(group => ({
       ...group,
-      properties: includesGroup(group.symphonyThemeName, search)
-        ? group.properties
-        : filterLayers(group.properties, search)
+      bands: includesGroup(group.symphonyThemeName, search)
+        ? group.bands
+        : filterLayers(group.bands, search)
     }));
 }
 
@@ -74,21 +74,14 @@ export class BandSelectionComponent implements OnInit, OnChanges {
     }
   };
 
-  onChange = (value: any, statePath: StatePath) => {
+  onChange = (value: any, band: Band) => {
     this.store.dispatch(
-      MetadataActions.updateSelections({
-        selections: [
-          {
-            value,
-            statePath
-          }
-        ]
-      })
+      MetadataActions.selectBand({ band, value })
     );
   };
 
-  onChangeVisible = (value: boolean, statePath: StatePath) => {
-    this.store.dispatch(MetadataActions.updateVisible({ selections: [{ value, statePath }] }));
+  onChangeVisible = (value: boolean, band: Band) => {
+    this.store.dispatch(MetadataActions.setVisibility({ band, value }));
   };
 
   get placeholder() {

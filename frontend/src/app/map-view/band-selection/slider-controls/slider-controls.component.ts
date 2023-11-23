@@ -1,5 +1,5 @@
 import { Component, Input, NgModuleRef, OnDestroy, OnInit } from '@angular/core';
-import { Band, BandChange, BandType, StatePath } from '@data/metadata/metadata.interfaces';
+import { Band, BandChange, BandType } from '@data/metadata/metadata.interfaces';
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
 import { ScenarioSelectors } from "@data/scenario";
@@ -40,8 +40,8 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
   @Input() category!: BandType; // unfortunate "property drilling"
 
   @Input() disabled = false;
-  @Input() onSelect = (event: MatCheckboxChange, statePath: StatePath) => {}
-  @Input() onChangeVisible: (value: boolean, statePath: StatePath) => void = () => {};
+  @Input() onSelect = (event: MatCheckboxChange, band: Band) => {};
+  @Input() onChangeVisible: (value: boolean, band: Band) => void = () => {};
 
   isEmpty = isEmpty;
 
@@ -89,7 +89,7 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
 
   ngOnInit(): void {
     this.hasPublicMeta = env.meta.visible_fields.some(
-      visible_field => !!this.band.meta[visible_field]
+      visible_field => !!this.band?.meta && !!this.band.meta[visible_field]
     )
   }
 

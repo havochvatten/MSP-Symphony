@@ -10,6 +10,8 @@ import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmat
 import { TranslateService } from "@ngx-translate/core";
 import { DialogService } from "@shared/dialog/dialog.service";
 import { Observable } from "rxjs";
+import { MetadataActions } from "@data/metadata";
+import { UserSelectors } from "@data/user";
 
 @Component({
   selector: 'app-scenario-editor',
@@ -28,7 +30,12 @@ export class ScenarioEditorComponent {
   ) {
     this.store.dispatch(ScenarioActions.fetchScenarios());
     this.store.select(ScenarioSelectors.selectActiveScenario)
-      .subscribe(scenario => this.activeScenario = scenario);
+      .subscribe(scenario => {
+        this.activeScenario = scenario;
+        if(scenario) {
+          this.store.dispatch(MetadataActions.fetchMetadata());
+        }
+      });
     this.store.select(ScenarioSelectors.selectActiveScenarioArea)
       .subscribe(areaIndex => this.activeAreaIndex = areaIndex);
   }

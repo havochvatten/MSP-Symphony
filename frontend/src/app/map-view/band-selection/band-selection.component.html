@@ -12,7 +12,7 @@
     *ngFor="let group of filteredGroups; trackBy: displayName"
     [title]="group.symphonyThemeName"
     [category]="bandType === 'ecoComponents' ? 'ECOSYSTEM' : 'PRESSURE'"
-    [bands]="group.properties"
+    [bands]="group.bands"
     [searching]="search.length > 0"
     [change]="onChange"
     [changeVisible]="onChangeVisible"
