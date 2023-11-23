@@ -4,16 +4,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vladmihalcea.hibernate.type.array.IntArrayType;
 import org.apache.commons.lang3.tuple.Pair;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.data.geojson.GeoJSONWriter;
-import org.geotools.feature.simple.SimpleFeatureImpl;
-import org.geotools.geojson.GeoJSON;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.LiteShape2;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.hibernate.engine.spi.Mapping;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
@@ -335,5 +335,12 @@ public class ScenarioService {
         }
     }
 
-
+    public int[] getIncludedBands(int activeScenarioId, LayerType category) {
+        return em.createNamedQuery(
+                (category == LayerType.ECOSYSTEM ?
+                    "Scenario.getEcosystemsToInclude" :
+                    "Scenario.getPressuresToInclude"), int[].class)
+            .setParameter("scenarioId", activeScenarioId)
+            .getSingleResult();
+    }
 }

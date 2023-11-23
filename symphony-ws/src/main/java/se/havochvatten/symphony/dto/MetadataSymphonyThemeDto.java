@@ -5,7 +5,7 @@ import java.util.List;
 public class MetadataSymphonyThemeDto {
     String symphonyThemeName;
 
-    List<MetadataPropertyDto> properties;
+    List<SymphonyBandDto> bands;
 
     public String getSymphonyThemeName() {
         return symphonyThemeName;
@@ -15,12 +15,12 @@ public class MetadataSymphonyThemeDto {
         this.symphonyThemeName = themeName;
     }
 
-    public List<MetadataPropertyDto> getProperties() {
-        return properties;
+    public List<SymphonyBandDto> getBands() {
+        return bands;
     }
 
-    public void setProperties(List<MetadataPropertyDto> properties) {
-        this.properties = properties;
+    public void setBands(List<SymphonyBandDto> bands) {
+        this.bands = bands;
     }
 
 }

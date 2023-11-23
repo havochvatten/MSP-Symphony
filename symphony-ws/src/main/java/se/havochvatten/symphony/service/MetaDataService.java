@@ -2,7 +2,7 @@ package se.havochvatten.symphony.service;
 
 import se.havochvatten.symphony.dto.MetadataComponentDto;
 import se.havochvatten.symphony.dto.MetadataDto;
-import se.havochvatten.symphony.dto.MetadataPropertyDto;
+import se.havochvatten.symphony.dto.SymphonyBandDto;
 import se.havochvatten.symphony.dto.MetadataSymphonyThemeDto;
 import se.havochvatten.symphony.entity.Metadata;
 import se.havochvatten.symphony.entity.SymphonyBand;
@@ -62,17 +62,17 @@ public class MetaDataService {
             .forEachOrdered(t -> {
                 MetadataSymphonyThemeDto symphonyThemeDto = new MetadataSymphonyThemeDto();
                 symphonyThemeDto.setSymphonyThemeName(t);
-                symphonyThemeDto.setProperties(new ArrayList<>());
+                symphonyThemeDto.setBands(new ArrayList<>());
                 metadataList.stream()
                     .filter(m2 -> m2.getMetaField().equals("symphonytheme")
                                && m2.getMetaValue().equals(t))
                     .map(m2 -> {
-                        MetadataPropertyDto propertyDto = new MetadataPropertyDto(m2.getBand());
+                        SymphonyBandDto propertyDto = new SymphonyBandDto(m2.getBand());
                         m2.getBand().getMetaValues().stream()
                             .filter(metadataList::contains)
                             .forEach(m -> propertyDto.getMeta().put(m.getMetaField(), m.getMetaValue()));
                         return propertyDto;
-                    }).forEachOrdered(symphonyThemeDto.getProperties()::add);
+                    }).forEachOrdered(symphonyThemeDto.getBands()::add);
                 componentDto.getSymphonyThemes().add(symphonyThemeDto);
             });
 
