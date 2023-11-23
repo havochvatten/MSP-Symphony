@@ -3,8 +3,8 @@
   <!--TODO make this span two columns. Multicol?-->
   <table [class]="(comparisonReport ? 'comparison' : '')">
     <tr *ngIf="anyScenarioChanges()" class="title-row scenario-wide"><th colspan="2">{{ 'report.scenario-changes.base-changes' | translate }}</th></tr>
-    <tr *ngFor="let s_change of scenarioChanges.baseChanges | keyvalue">
-      <th class="change-label">{{ s_change.key }}</th>
+    <tr *ngFor="let s_change of allBaseChanges() | keyvalue">
+      <th class="change-label">{{ bandMap[s_change.value.type === 'ECOSYSTEM' ? 'e' : 'b'][s_change.key] }}</th>
       <td>
         <ng-container
           [ngTemplateOutlet]="s_change.value['multiplier'] && s_change.value['multiplier'] !== 1 &&
@@ -16,17 +16,18 @@
       </td>
     </tr>
     <tr *ngIf="anyAreaChanges()" class="title-row area-change"><th colspan="2">{{ 'report.scenario-changes.area-changes' | translate }}</th></tr>
-    <ng-container *ngFor="let area of scenarioChanges.areaChanges | keyvalue">
+    <ng-container *ngFor="let area of allAreaChanges() | keyvalue">
       <tr class="area-row" *ngIf="!isEmpty(area.value)"><th colspan="2">{{ areaDict.get(+area.key) }}</th></tr>
       <tr *ngFor="let a_change of area.value | keyvalue">
-        <th class="change-label">{{ a_change.key }}</th>
+        <th class="change-label">{{ bandMap[a_change.value.type === 'ECOSYSTEM' ? 'e' : 'b'][a_change.key] }}</th>
         <td>
-          <ng-container
-            [ngTemplateOutlet]="a_change.value['multiplier'] && a_change.value['multiplier'] !== 1 &&
-            a_change.value['offset'] && a_change.value['offset'] !== 0 ?
-            compoundChange :
-             singleChange"
-            [ngTemplateOutletContext]="{change: a_change.value}">
+          <ng-container [ngTemplateOutlet]="singleChange"
+                        [ngTemplateOutletContext]="{change: a_change.value}">
+          <!-- "Compound change" not supported since 1.10 / TODO: decide about removal -->
+<!--            [ngTemplateOutlet]="a_change.value['multiplier'] && a_change.value['multiplier'] !== 1 &&-->
+<!--            a_change.value['offset'] && a_change.value['offset'] !== 0 ?-->
+<!--            compoundChange :-->
+<!--             singleChange"-->
           </ng-container>
         </td>
       </tr>

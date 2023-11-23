@@ -1,40 +1,39 @@
 import { createReducer, on } from '@ngrx/store';
-import { setIn } from 'immutable';
-import { Selection, State } from './metadata.interfaces';
+import { setIn, updateIn } from 'immutable';
+import { State, Band } from './metadata.interfaces';
 import { MetadataActions, MetadataInterfaces } from './';
 import { ScenarioActions } from "@data/scenario";
+import { getBandPath } from "@data/metadata/metadata.selectors";
 
 export const initialState: MetadataInterfaces.State = {
-  ecoComponent: {},
-  pressureComponent: {}
+  ECOSYSTEM: {},
+  PRESSURE: {}
 };
 
 export const metadataReducer = createReducer(
   initialState,
   on(MetadataActions.fetchMetadataSuccess, (state, { metadata }) => ({
     ...state,
-    ...metadata
+    ECOSYSTEM: metadata.ecoComponent,
+    PRESSURE: metadata.pressureComponent
   })),
-  on(MetadataActions.updateSelections, (state, { selections }) => {
-    return updateSelections(state, selections, 'selected');
+  on(MetadataActions.selectBand, (state, { band, value }) => {
+    return setLayerAttribute(state, band, 'selected', value);
   }),
-  on(MetadataActions.updateVisible, (state, { selections }) => {
-    return updateSelections(state, selections, 'visible');
+  on(MetadataActions.setVisibility, (state, { band, value }) => {
+    return setLayerAttribute(state, band, 'visible', value);
   }),
-  on(MetadataActions.updateLayerOpacity, (state, { bandPath, value }) => {
-    return setIn(state, [...bandPath, 'layerOpacity'], value);
+  on(MetadataActions.updateLayerOpacity, (state, { band, value }) => {
+    return setIn(state, [band.symphonyCategory, 'layerOpacity'], value);
   }),
   on(ScenarioActions.closeActiveScenario, (state) => ({
     ...state,
     changeMap: {}
-  }))
+  })),
 );
 
-function updateSelections(state: State, selections: Selection[], attribute: string): State {
-  if (!selections.length)
-    return state;
-
-  const selection = selections[0];
-  const updatedState = setIn(state, [...selection.statePath, attribute], selection.value);
-  return updateSelections(updatedState, selections.slice(1), attribute);
+function setLayerAttribute(state: State, band: Band, attribute: string, value: any): State {
+  // artificial "path" / hierarchy modeled on the previous implementation
+  // TODO: Reimplement
+  return setIn(state, [ ...getBandPath(band), attribute], value);
 }

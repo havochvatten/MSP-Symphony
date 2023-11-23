@@ -14,14 +14,17 @@ export default class MetadataService {
   constructor(private http: HttpClient,
               private translate: TranslateService) {}
 
-  getMetaData(baseline: string) {
-
-    return this.http.get<MetadataInterfaces.APILayerData>(`${BASE_URL}/metadata/${baseline}?lang=${this.translate.currentLang}`);
+  getMetaData(baseline: string, activeScenarioId?: number) {
+    if(activeScenarioId) {
+      return this.http.get<MetadataInterfaces.APILayerData>(`${BASE_URL}/metadata/${baseline}?lang=${this.translate.currentLang}&scenarioId=${activeScenarioId}`);
+    } else {
+      return this.http.get<MetadataInterfaces.APILayerData>(`${BASE_URL}/metadata/${baseline}?lang=${this.translate.currentLang}`);
+    }
   }
 
   flattenBandGroups(bandGroups: BandGroup[] = []): Record<number, string> {
     const bands = bandGroups.reduce(
-      (bandList: Band[], bandGroup: BandGroup) => [...bandList, ...bandGroup.properties],
+      (bandList: Band[], bandGroup: BandGroup) => [...bandList, ...bandGroup.bands],
       []
     );
     return bands.reduce(
