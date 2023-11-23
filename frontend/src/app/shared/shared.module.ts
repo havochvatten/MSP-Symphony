@@ -14,7 +14,6 @@ import { TabComponent } from './tabs/tab/tab.component';
 import { SliderComponent } from './slider/slider.component';
 import { NoteComponent } from './note/note.component';
 import { ModalComponent } from './modal/modal.component';
-import { CheckboxGroupComponent } from './checkbox-group/checkbox-group.component';
 import { ModalHeaderComponent } from './modal/modal-header/modal-header.component';
 import { ModalContentComponent } from './modal/modal-content/modal-content.component';
 import { ModalFooterComponent } from './modal/modal-footer/modal-footer.component';
@@ -57,7 +56,6 @@ import { ListFilterComponent } from './list-filter/list-filter.component';
     SliderComponent,
     NoteComponent,
     ModalComponent,
-    CheckboxGroupComponent,
     ModalHeaderComponent,
     ModalContentComponent,
     ModalFooterComponent,
@@ -116,7 +114,6 @@ import { ListFilterComponent } from './list-filter/list-filter.component';
     TabComponent,
     SliderComponent,
     NoteComponent,
-    CheckboxGroupComponent,
     ModalComponent,
     ModalHeaderComponent,
     ModalContentComponent,
