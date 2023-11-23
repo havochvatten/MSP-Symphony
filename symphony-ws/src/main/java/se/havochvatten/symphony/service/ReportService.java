@@ -278,11 +278,11 @@ public class ReportService {
         }
     }
 
-    private MetadataPropertyDto[] flattenAndSort(MetadataComponentDto component) {
+    private SymphonyBandDto[] flattenAndSort(MetadataComponentDto component) {
         return component.getSymphonyThemes().stream()
-            .flatMap(theme -> theme.getProperties().stream()).sorted(
-                Comparator.comparingInt(MetadataPropertyDto::getBandNumber))
-            .toArray(MetadataPropertyDto[]::new);
+            .flatMap(theme -> theme.getBands().stream()).sorted(
+                Comparator.comparingInt(SymphonyBandDto::getBandNumber))
+            .toArray(SymphonyBandDto[]::new);
     }
 
     static int[] uniqueIntersection(int[] a, int[] b) {
@@ -353,7 +353,7 @@ public class ReportService {
 
     public String generateCSVComparisonReport(CalculationResult calcA, CalculationResult calcB, Locale locale) throws SymphonyStandardAppException {
         MetadataDto metadata = metaDataService.findMetadata(calcA.getBaselineVersion().getName(), locale.getLanguage());
-        MetadataPropertyDto[]   ecocomponentMetadata = flattenAndSort(metadata.getEcoComponent()),
+        SymphonyBandDto[]   ecocomponentMetadata = flattenAndSort(metadata.getEcoComponent()),
                                 pressureMetadata = flattenAndSort(metadata.getPressureComponent());
 
         ScenarioSnapshot scenarioA = calcA.getScenarioSnapshot(), scenarioB = calcB.getScenarioSnapshot();
@@ -404,7 +404,7 @@ public class ReportService {
         return string.toString();
     }
 
-    static void writeReportRows(Locale locale, MetadataPropertyDto[] meta, int[] featured, double[] total, double sum, PrintWriter writer) {
+    static void writeReportRows(Locale locale, SymphonyBandDto[] meta, int[] featured, double[] total, double sum, PrintWriter writer) {
         IntStream.range(0, featured.length).forEach(i -> {
             writer.format(locale, rptRowFormat,
                 meta[featured[i]].getTitle(),
@@ -413,7 +413,7 @@ public class ReportService {
         });
     }
 
-    static void writeComparisonRows(Locale locale, MetadataPropertyDto[] meta, int[] featured, double[] totalA, double[] totalB, PrintWriter writer) {
+    static void writeComparisonRows(Locale locale, SymphonyBandDto[] meta, int[] featured, double[] totalA, double[] totalB, PrintWriter writer) {
         IntStream.range(0, featured.length).forEach(i -> {
                 writer.format(locale, cmpRowFormat,
                     meta[featured[i]].getTitle(), totalA[i], totalB[i],

@@ -1,6 +1,5 @@
 package se.havochvatten.symphony.scenario;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vladmihalcea.hibernate.type.array.IntArrayType;
@@ -10,7 +9,6 @@ import org.hibernate.annotations.CascadeType;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 
-import org.opengis.feature.simple.SimpleFeature;
 import se.havochvatten.symphony.calculation.CalcService;
 import se.havochvatten.symphony.dto.NormalizationOptions;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
@@ -19,6 +17,8 @@ import se.havochvatten.symphony.entity.CalculationResult;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -32,9 +32,13 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "scenario")
 @NamedQueries({
-        @NamedQuery(name = "Scenario.findAllByOwner",
-                query = "SELECT NEW se.havochvatten.symphony.dto.ScenarioDto(s) FROM Scenario s" +
-                        " WHERE s.owner = :owner ORDER BY s.timestamp DESC")
+    @NamedQuery(name = "Scenario.findAllByOwner",
+            query = "SELECT NEW se.havochvatten.symphony.dto.ScenarioDto(s) FROM Scenario s" +
+                    " WHERE s.owner = :owner ORDER BY s.timestamp DESC"),
+    @NamedQuery(name = "Scenario.getEcosystemsToInclude",
+            query = "SELECT ecosystemsToInclude FROM Scenario WHERE id = :scenarioId"),
+    @NamedQuery(name = "Scenario.getPressuresToInclude",
+            query = "SELECT pressuresToInclude FROM Scenario WHERE id = :scenarioId")
 })
 @TypeDefs({
         @TypeDef(name = "json", typeClass = JsonBinaryType.class),
