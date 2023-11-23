@@ -31,10 +31,6 @@ export const areaReducer = createReducer(
     currentSelection: statePaths, //feature?.get("statePath")
     selectionOverlap: overlap
   })),
-  // on(ScenarioActions.openScenario, (state, { scenario, index }) => ({
-  //   ...state,
-  //   currentSelection: scenario.feature?.properties?.['statePath']
-  // })),
   on(ScenarioActions.closeActiveScenario, state => ({
     ...state,
     currentSelection: undefined

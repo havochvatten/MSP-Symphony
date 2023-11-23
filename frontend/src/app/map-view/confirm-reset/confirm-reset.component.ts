@@ -5,7 +5,6 @@ import { State } from "@src/app/app-reducer";
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { MetadataActions } from "@data/metadata";
 import { ScenarioActions, ScenarioSelectors } from "@data/scenario";
-import { UserSelectors } from "@data/user";
 import { Scenario } from "@data/scenario/scenario.interfaces";
 
 @Component({
@@ -16,7 +15,6 @@ import { Scenario } from "@data/scenario/scenario.interfaces";
 
 export class ConfirmResetComponent implements OnInit {
 
-  private baselineName = '';
   public activeScenario? : Scenario;
   public activeArea? : number | undefined;
 
@@ -26,7 +24,7 @@ export class ConfirmResetComponent implements OnInit {
   confirm = () => {
     // Reset default band selection
     this.store.dispatch(
-      MetadataActions.fetchMetadata({ baseline: this.baselineName })
+      MetadataActions.fetchMetadata()
     );
 
     if(this.activeScenario) {
@@ -45,9 +43,6 @@ export class ConfirmResetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.store.select(UserSelectors.selectBaseline)
-      .pipe(first()).subscribe(bl => { if(bl) { this.baselineName = bl.name } });
-
     this.store.select(ScenarioSelectors.selectActiveScenario)
       .pipe(first()).subscribe(s => { this.activeScenario = s });
 

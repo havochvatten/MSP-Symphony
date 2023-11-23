@@ -194,10 +194,16 @@ mat-checkbox.mat-mdc-checkbox {
     }
 
     .mdc-form-field {
-      .mdc-checkbox, .mdc-checkbox__background {
+      .mdc-checkbox, .mdc-checkbox__background,
+      .mdc-checkbox .mdc-checkbox__native-control[disabled]:indeterminate~.mdc-checkbox__background,
+      .mdc-checkbox .mdc-checkbox__native-control[data-indeterminate=true][disabled]~.mdc-checkbox__background {
         color: #b0b0b0;
         background-color: white;
         border-color: #b0b0b0;
+
+        .mdc-checkbox__mixedmark {
+          border-color: #b0b0b0;
+        }
       }
 
       label.mdc-label {

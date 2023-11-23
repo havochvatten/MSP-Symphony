@@ -93,7 +93,7 @@ export class ChangesOverviewComponent implements OnInit {
     const bandMeta = await (this.bands).pipe(take(1)).toPromise();
     for(const bandType in bandMeta) { // ecocomponents, pressures
       for(const bandGroup of bandMeta[bandType]) {
-        for(const band of bandGroup.properties) {
+        for(const band of bandGroup.bands) {
           if(this.allChangedBands.get(this.getBandType(bandType))!.has(band.bandNumber)) {
             this.setGroupedChangeToDisplay(bandType, bandGroup.symphonyThemeName,
               { number: band.bandNumber, name: band.title })

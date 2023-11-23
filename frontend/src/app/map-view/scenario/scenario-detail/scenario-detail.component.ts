@@ -19,7 +19,7 @@ import {
   NormalizationOptions,
   NormalizationType
 } from '@data/calculation/calculation.service';
-import { MetadataSelectors } from "@data/metadata";
+import { MetadataActions, MetadataSelectors } from "@data/metadata";
 import { Band, BandType } from "@data/metadata/metadata.interfaces";
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
@@ -190,15 +190,16 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   calculate() {
     this.store.dispatch(CalculationActions.startCalculation());
 
+    // TODO: call service through rxjs effect and avoid code repetition (ScenarioEffects)
     this.store.select(MetadataSelectors.selectSelectedComponents).pipe(
       take(1))
       .subscribe((selectedComponents: { ecoComponent: Band[]; pressureComponent: Band[]; }) => {
-        const getSortedBandNumbers = (bands: Band[]) => bands
+        const sortedBandNumbers = (bands: Band[]) => bands
           .map(band => band.bandNumber)
           .sort((a, b) => a - b);
         this.scenarioService.save({...this.scenario,
-          ecosystemsToInclude: getSortedBandNumbers(selectedComponents.ecoComponent),
-          pressuresToInclude: getSortedBandNumbers(selectedComponents.pressureComponent)}).pipe(
+          ecosystemsToInclude: sortedBandNumbers(selectedComponents.ecoComponent),
+          pressuresToInclude: sortedBandNumbers(selectedComponents.pressureComponent)}).pipe(
           take(1))
           .subscribe(() => {
               this.calcService.calculate(this.scenario);
@@ -269,6 +270,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   close() {
     this.save();
     this.store.dispatch(ScenarioActions.closeActiveScenario());
+    this.store.dispatch(MetadataActions.fetchMetadata());
   }
 
   async delete () {

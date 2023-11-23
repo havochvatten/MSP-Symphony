@@ -1,22 +1,16 @@
-export type StatePath = Array<string | number>;
-
 export type ComponentKey = keyof Pick<APILayerData, 'ecoComponent' | 'pressureComponent'>;
 
 export type BandType = 'ECOSYSTEM' | 'PRESSURE';
 export type BandType_Alt = 'ecoComponents' | 'pressures';
 
+export const BandTypes = ['ECOSYSTEM', 'PRESSURE'] as const;
+
 export interface SelectableLayer {
   title: string;
   bandNumber: number;
-  defaultSelected: boolean;
-  selected?: boolean;
+  symphonyCategory: BandType;
+  selected: boolean;
   visible?: boolean;
-  statePath: StatePath;
-}
-
-export interface Selection {
-  statePath: StatePath;
-  value: boolean;
 }
 
 export interface Band extends SelectableLayer {
@@ -29,7 +23,7 @@ export interface Band extends SelectableLayer {
 
 export interface BandGroup {
   symphonyThemeName: string;
-  properties: Band[];
+  bands: Band[];
 }
 
 export interface SymphonyTheme {
@@ -58,7 +52,7 @@ export interface Components {
 
 export interface Group {
   symphonyThemeName: string;
-  properties: Components;
+  bands: Components;
 }
 
 export interface Groups {
@@ -72,6 +66,6 @@ export interface BandChange {
 }
 
 export interface State {
-  ecoComponent: Groups;
-  pressureComponent: Groups;
+  ECOSYSTEM: Groups,
+  PRESSURE: Groups
 }

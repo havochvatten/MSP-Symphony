@@ -19,7 +19,7 @@ export class HighestImpactsComponent implements OnChanges {
   ngOnChanges() {
     if (this.bandGroups) {
       this.highestImpacts = this.bandGroups
-        .reduce((bands: Band[], group: BandGroup) => [...bands, ...group.properties], [])
+        .reduce((bands: Band[], group: BandGroup) => [...bands, ...group.bands], [])
         .sort((a, b) => this.compareImpact(a.bandNumber, b.bandNumber))
         .slice(0, 5)
         .filter(band => this.getImpact(band.bandNumber) > 0);
