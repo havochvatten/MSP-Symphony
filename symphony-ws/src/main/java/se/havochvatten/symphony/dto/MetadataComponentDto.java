@@ -12,4 +12,18 @@ public class MetadataComponentDto {
         }
         return symphonyThemes;
     }
+
+    public void setSelectedBands(int[] bands) {
+        for (MetadataSymphonyThemeDto theme : getSymphonyThemes()) {
+            for (SymphonyBandDto band : theme.getBands()) {
+                band.setSelected(false);
+                for (int id : bands) {
+                    if (band.getBandNumber() == id) {
+                        band.setSelected(true);
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }
