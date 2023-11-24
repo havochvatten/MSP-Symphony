@@ -5,32 +5,37 @@ import { StatePath } from "@data/area/area.interfaces";
 
 export const selectMetadataState = createFeatureSelector<AppState, State>('metadata');
 
-export const getComponentType = (bandPath: StatePath): BandType =>
-  bandPath[0] === 'ecoComponent' ? 'ECOSYSTEM' : 'PRESSURE';
+export const getBandPath = (band: Band) =>
+  [band.symphonyCategory, band.meta.symphonytheme, 'bands', band.bandNumber];
+
+export const getBandByTypeAndNumber = (state: State, bandType: BandType, bandNumber: number): Band | undefined => {
+  return flattenBands(selectGroups(state[bandType]))
+    .find(band => band.bandNumber === bandNumber);
+}
 
 export const selectEcoComponents = createSelector(
   selectMetadataState,
-  (state: State) => state.ecoComponent
+  (state: State) => state.ECOSYSTEM
 );
 
 export const selectPressureComponents = createSelector(
   selectMetadataState,
-  (state: State) => state.pressureComponent
+  (state: State) => state.PRESSURE
 );
 
 export const selectGroups = (groups: Groups): BandGroup[] =>
   Object.values(groups).map(group => ({
     ...group,
-    properties: Object.values(group.properties)
+    bands: Object.values(group.bands)
   }));
 
 export const selectedGroups = (groups: Groups): BandGroup[] =>
   Object.values(groups)
     .map(group => ({
       ...group,
-      properties: Object.values(group.properties).filter(property => property.selected)
+      bands: Object.values(group.bands).filter(band => band.selected)
     }))
-    .filter(group => group.properties.length > 0);
+    .filter(group => group.bands.length > 0);
 
 export const selectMetadata = createSelector(
   selectEcoComponents,
@@ -90,7 +95,7 @@ export const selectBandNumbers = createSelector(
 function includeAreaSpecificProperties(groups: BandGroup[]): BandGroup[] {
   return groups.map(group => ({
     ...group,
-    properties: group.properties.map(component => ({
+    bands: group.bands.map(component => ({
       ...component,
       selected: component.selected,
       intensityMultiplier: component.intensityMultiplier ?? 1,
@@ -100,7 +105,7 @@ function includeAreaSpecificProperties(groups: BandGroup[]): BandGroup[] {
 }
 
 function flattenBands(groups: BandGroup[]): Band[] {
-  return groups.reduce((bands: Band[], group) => [...bands, ...group.properties], []);
+  return groups.reduce((bands: Band[], group) => [...bands, ...group.bands], []);
 }
 
 function filterSelectedBand(bands: Band[]) {

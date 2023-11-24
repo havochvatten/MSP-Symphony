@@ -1,9 +1,10 @@
 <li *ngIf="band">
   <div class="controls">
     <mat-checkbox
+      [name]="band.symphonyCategory + '_' + band.bandNumber"
       [checked]="band.selected"
       [disabled]="disabled"
-      (change)="onSelect($event, band.statePath)"
+      (change)="onSelect($event, band)"
       checkboxSize="small"
     >{{ band.title }}</mat-checkbox>
     <div class="editing">
@@ -28,7 +29,7 @@
         class="toggle-visibility-icon"
         [attr.data-visible]="band.visible"
         [iconType]="band.visible ? 'eye' : 'eye-slash'"
-        (click)="onChangeVisible(!band.visible, band.statePath)"
+        (click)="onChangeVisible(!band.visible, band)"
       ></app-icon>
     </div>
   </div>
@@ -38,7 +39,6 @@
     [multiplier]="getMultiplier()"
     [offset]="getOffset()"
     [overridden] = "!isEmpty(overriddenChange)"
-    [statePath]="band.statePath"
     [disabled]="disabled"
     [areaIsVisible]="band.visible"
     [groupSetting]="getGroupSetting()"

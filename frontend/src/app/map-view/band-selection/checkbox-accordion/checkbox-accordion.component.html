@@ -3,23 +3,23 @@
   <app-accordion-box-header>
     <mat-checkbox
       *ngIf="title"
-      [checked]="checked !== undefined ? checked : allBoxesAreChecked"
+      [checked]="allBoxesAreChecked"
+      [indeterminate]="someBoxesAreChecked"
       [disabled]="!scenarioActive"
-      (change)="checked === undefined ? updateAll() : onChange($event, title)"
+      (change)="updateAll()"
       checkboxSize="small"
     >{{ title }}</mat-checkbox>
   </app-accordion-box-header>
   <app-accordion-box-content>
     <ul>
       <app-slider-controls
-        *ngFor="let band of bands; trackBy: bandName"
+        *ngFor="let band of bands; trackBy: bandNumber"
         [band]="band"
         [category]="category"
         [disabled]="!scenarioActive"
         [onSelect]="onChange"
         [onChangeVisible]="onChangeVisible"
-      >
-      </app-slider-controls>
+      ></app-slider-controls>
     </ul>
   </app-accordion-box-content>
 </app-accordion-box>

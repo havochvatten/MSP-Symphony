@@ -1,18 +1,15 @@
-import { Directive, OnDestroy } from '@angular/core';
+import { Directive } from '@angular/core';
 import VectorSource from 'ol/source/Vector';
 import { GeoJSON } from 'ol/format';
 import VectorLayer from 'ol/layer/Vector';
-import { Subscription } from 'rxjs';
 import { Feature } from 'ol';
 import { BandChange } from '@data/metadata/metadata.interfaces';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { AreaStyle } from '@src/app/map-view/map/layers/area-layer';
-import { ScenarioSelectors } from '@data/scenario';
-import { isNotNullOrUndefined } from '@src/util/rxjs';
-import { ChangesProperty, Scenario, ScenarioArea } from '@data/scenario/scenario.interfaces';
+import { ChangesProperty, Scenario } from '@data/scenario/scenario.interfaces';
 import { Fill, Stroke, Style } from 'ol/style';
-import { GeoJSONFeature, GeoJSONFeatureCollection } from 'ol/format/GeoJSON';
+import { GeoJSONFeature } from 'ol/format/GeoJSON';
 import { Coordinate } from 'ol/coordinate';
 import { environment } from '@src/environments/environment';
 import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
@@ -39,9 +36,8 @@ const SCENARIO_BOUNDARY_STYLE = new Style({
 const THE_EMPTY_STYLE = new Style({}); // This style will cause the feature to not be visible
 
 @Directive()
-export class ScenarioLayer extends VectorLayer<VectorSource> implements OnDestroy {
+export class ScenarioLayer extends VectorLayer<VectorSource> {
 
-  private activeFeatureSub: Subscription;
   private boundaryFeature?: Feature;
   private readonly format: GeoJSON;
 
@@ -61,11 +57,6 @@ export class ScenarioLayer extends VectorLayer<VectorSource> implements OnDestro
     this.format = this.getSource()?.getFormat() as GeoJSON;
 
     this.set('name', 'Scenario Layer'); // for debugging only
-
-    this.activeFeatureSub = this.store
-      .select(ScenarioSelectors.selectActiveFeature)
-      .pipe(isNotNullOrUndefined())
-      .subscribe(f => this.addOrChangeColorCodedFeature(f));
 
     this.scenarioService.setScenarioLayer(this);
   }
@@ -112,24 +103,6 @@ export class ScenarioLayer extends VectorLayer<VectorSource> implements OnDestro
         //this.getSource()?.addFeatures(features);
       }
     }
-  }
-
-  addOrChangeColorCodedFeature(feature: GeoJSONFeature) {
-    // const bandChanges = Object.values(feature.properties!['changes'] as ChangesProperty);
-    //
-    // const olFeature = this.getSource()?.getFeatureById(feature.id!);
-    // if (olFeature) {
-    //   if (environment.map.colorCodeIntensityChanges)
-    //     // FIXME add borders
-    //     olFeature.setStyle(this.getColorCodedStyle(bandChanges));
-    // } else {
-    //   const newOlFeature = this.format.readFeature(feature);
-    //
-    //   if (environment.map.colorCodeIntensityChanges)
-    //     newOlFeature.setStyle(this.getColorCodedStyle(bandChanges));
-    //
-    //   this.getSource()?.addFeature(newOlFeature);
-    // }
   }
 
   // TODO override fill style
@@ -205,12 +178,6 @@ export class ScenarioLayer extends VectorLayer<VectorSource> implements OnDestro
     this.boundaryFeature = undefined;
   }
 
-  public removeScenarioChangeFeature(id: string | number) {
-    const toBeRemoved = this.getSource()?.getFeatureById(id);
-    if (toBeRemoved) this.getSource()?.removeFeature(toBeRemoved);
-    else console.error('Unable to find feature for removal, id=', id);
-  }
-
   /** @return true if feature is now visible, false otherwise */
   public toggleChangeAreaVisibility(feature: GeoJSONFeature) {
     const f = this.getSource()?.getFeatureById(feature.id!);
@@ -226,18 +193,7 @@ export class ScenarioLayer extends VectorLayer<VectorSource> implements OnDestro
     return !isVisible;
   }
 
-  public hideChangeAreas() {
-    this.getSource()
-      ?.getFeatures()
-      .filter(f => f !== this.boundaryFeature)
-      .map(ScenarioLayer.hideFeature);
-  }
-
   private static hideFeature(f: Feature) {
     f.setStyle(THE_EMPTY_STYLE);
-  }
-
-  ngOnDestroy(): void {
-    this.activeFeatureSub.unsubscribe();
   }
 }
