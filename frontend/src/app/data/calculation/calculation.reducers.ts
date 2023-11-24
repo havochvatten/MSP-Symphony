@@ -106,6 +106,7 @@ export const calculationReducer = createReducer(
   })),
   on(CalculationActions.setReportLoadingState, (state, { calculationId, loadingState }) => ({
     ...state,
+    calculations: state.calculations.map(c => c.id === calculationId ? {...c, isPurged: c.isPurged && loadingState } : c),
     loadingReports: loadingState ? [...state.loadingReports, calculationId] : state.loadingReports.filter(id => id !== calculationId)
   }))
 );
