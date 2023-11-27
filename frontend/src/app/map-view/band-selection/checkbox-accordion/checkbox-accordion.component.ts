@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, Input } from '@angular/core';
-import { StatePath, Band } from '@data/metadata/metadata.interfaces';
+import { Band, BandType } from '@data/metadata/metadata.interfaces';
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
 import { ScenarioSelectors } from "@data/scenario";
@@ -15,22 +15,24 @@ import { MatCheckboxChange } from "@angular/material/checkbox";
 export class CheckboxAccordionComponent implements AfterViewInit {
   @Input() title?: string;
   @Input() checked?: boolean;
+  @Input() category!: BandType;
   @Input() bands: Band[] = [];
   @Input() selectedArea = undefined;
   @Input() scenarioActive = false;
   @Input() searching = false;
-  @Input() change: (value: any, statePath: StatePath) => void = () => {};
-  @Input() changeVisible: (value: boolean, statePath: StatePath) => void = () => {};
+  @Input() change: (value: any, band: Band) => void = () => {};
+  @Input() changeVisible: (value: boolean, band: Band) => void = () => {};
   @Input() open = false;
   toggle: () => void = () => this.open = !this.open;
 
   private groupBandNumbers = new Set();
 
   constructor(private store: Store<State>) {
-    this.store.select(ScenarioSelectors.selectActiveScenarioChanges).subscribe((changes: ChangesProperty) => {
-      const changesBandNumbers = new Set(Object.values(changes).map(c => c['band']));
-      this.open = intersection(this.groupBandNumbers, changesBandNumbers).size>0
-    });
+    this.store.select(ScenarioSelectors.selectActiveScenarioChanges)
+        .subscribe(( changes: {[bandType: string] : ChangesProperty }) => {
+          const changesBandNumbers = !changes[this.category] ? new Set() : new Set(Object.keys(changes[this.category]).map(n => +n));
+          this.open = intersection(this.groupBandNumbers, changesBandNumbers).size>0
+        });
   }
 
   ngAfterViewInit() {
@@ -38,16 +40,13 @@ export class CheckboxAccordionComponent implements AfterViewInit {
   }
 
   private changeAll(checked: boolean) {
-    this.bands.forEach(band => {
-      const { statePath } = band;
-      this.change(checked, statePath);
-    })
+    this.bands.forEach(band => this.change(checked, band));
   }
 
-  onChange = (evt: MatCheckboxChange, statePath: StatePath) => this.change(evt.checked, statePath);
+  onChange = (evt: MatCheckboxChange, band: Band) => this.change(evt.checked, band);
 
-  onChangeVisible = (visible: boolean, statePath: StatePath) =>
-    this.changeVisible(visible, statePath);
+  onChangeVisible = (visible: boolean, band: Band) =>
+    this.changeVisible(visible, band);
 
   get allBoxesAreChecked(): boolean {
     return this.bands.filter(({ selected }) => !selected).length === 0;
@@ -57,11 +56,15 @@ export class CheckboxAccordionComponent implements AfterViewInit {
     return this.bands.filter(({ selected }) => selected).length === 0;
   }
 
-  updateAll() {
-    this.changeAll(this.noBoxesAreChecked)
+  get someBoxesAreChecked(): boolean {
+    return !this.allBoxesAreChecked && !this.noBoxesAreChecked;
   }
 
-  bandName(index: number, band: Band) {
-    return band.statePath;
+  updateAll() {
+    this.changeAll(!this.allBoxesAreChecked)
+  }
+
+  bandNumber(index: number, band: Band) {
+    return band.bandNumber;
   }
 }

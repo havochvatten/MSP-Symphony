@@ -114,10 +114,12 @@ public class CalibrationService {
         var ecoComponents = dataLayerService.getCoverage(LayerType.ECOSYSTEM, baseline.getId());
 
         // Get component titles in band number order
-        List<String> bandTitles = em.createQuery("select c.title from Metadata c where c.baselineVersion.id = " +
-            ":baselineVersionId and c.symphonyCategory = 'Ecosystem' order by c.bandNumber")
-            .setParameter("baselineVersionId", baseline.getId())
-            .getResultList();
+        List<String> bandTitles =
+            em.createQuery("select metaValue from Metadata m where m.band.baseline.id = :baselineId and " +
+                "m.band.category = 'Ecosystem' and " +
+                "m.metaField = 'title' order by m.band.bandnumber")
+                .setParameter("baselineId", baseline.getId())
+                .getResultList();
 
         var bandNumbers = IntStream.range(0, ecoComponents.getNumSampleDimensions()).toArray();
         var values = calculateGlobalCommonnessIndices(ecoComponents, bandNumbers, baseline.getId());

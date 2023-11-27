@@ -8,7 +8,6 @@ public class SensitivityDto {
         int sensId;
         int ecoMetaId;
         String name;
-        String nameLocal;
         BigDecimal value;
 
         public int getSensId() { return sensId; }
@@ -31,14 +30,6 @@ public class SensitivityDto {
             this.name = name;
         }
 
-        public String getNameLocal() {
-            return nameLocal;
-        }
-
-        public void setNameLocal(String nameLocal) {
-            this.nameLocal = nameLocal;
-        }
-
         public BigDecimal getValue() {
             return value;
         }
@@ -51,7 +42,6 @@ public class SensitivityDto {
     public static class SensRow {
         int presMetaId;
         String name;
-        String nameLocal;
         Vector<SensCol> columns;
 
         public int getPresMetaId() {
@@ -68,14 +58,6 @@ public class SensitivityDto {
 
         public void setName(String name) {
             this.name = name;
-        }
-
-        public String getNameLocal() {
-            return nameLocal;
-        }
-
-        public void setNameLocal(String nameLocal) {
-            this.nameLocal = nameLocal;
         }
 
         public Vector<SensCol> getColumns() {

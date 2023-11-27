@@ -26,4 +26,9 @@ public class MetadataDto {
     public void setLanguage(String language) {
         this.language = language;
     }
+
+    public void setSelectedBands(int[] ecosystemIds, int[] pressureIds) {
+        ecoComponent.setSelectedBands(ecosystemIds);
+        pressureComponent.setSelectedBands(pressureIds);
+    }
 }

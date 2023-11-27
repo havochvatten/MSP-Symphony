@@ -121,8 +121,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.scenarioLayer.clearLayers();
 
       this.scenarioLayer.setScenarioBoundary(scenario);
-      if (scenario.changes)
-        this.scenarioLayer.addScenarioChangeAreas(scenario.changes);
+
+      // TODO: Should probably be removed as obsolete
+      // if (scenario.changes)
+      //   this.scenarioLayer.addScenarioChangeAreas(scenario.changes);
 
       this.zoomToExtent(this.scenarioLayer.getBoundaryFeature()!.getGeometry()!.getExtent(),
         500);
@@ -208,9 +210,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.store.dispatch(CalculationActions.resetComparisonLegend())
   }
 
-  public emitLayerChange(resultCount: number, cmpCount: number):void {
-    this.resultLayerGroupChange.emit(resultCount);
+  public emitLayerChange(resultIds: number[], cmpCount: number):void {
+    this.resultLayerGroupChange.emit(resultIds.length);
     this.resultLayerGroupChangeCmp.emit(cmpCount);
+    this.store.dispatch(CalculationActions.setVisibleResultLayers({ visibleResults: resultIds }));
   }
 
   @HostListener('window:keydown', ['$event'])

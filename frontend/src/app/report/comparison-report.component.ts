@@ -79,7 +79,7 @@ export class ComparisonReportComponent {
         that.area = reportService.calculateArea(report.a);
         that.loadingReport = false;
 
-        that.store.dispatch(MetadataActions.fetchMetadata({ baseline: report.a.baselineName }));
+        that.store.dispatch(MetadataActions.fetchMetadataForBaseline({ baselineName: report.a.baselineName }));
         that.areaDictA = reportService.setAreaDict(report.a);
         that.areaDictB = reportService.setAreaDict(report.b);
 

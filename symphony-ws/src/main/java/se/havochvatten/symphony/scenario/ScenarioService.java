@@ -4,16 +4,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vladmihalcea.hibernate.type.array.IntArrayType;
 import org.apache.commons.lang3.tuple.Pair;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.data.geojson.GeoJSONWriter;
-import org.geotools.feature.simple.SimpleFeatureImpl;
-import org.geotools.geojson.GeoJSON;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.LiteShape2;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.hibernate.engine.spi.Mapping;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
@@ -126,15 +126,16 @@ public class ScenarioService {
      **/
     public Pair<GridCoverage2D, GridCoverage2D> applyScenario(GridCoverage2D ecosystems,
                                                               GridCoverage2D pressures,
-                                                              Scenario scenario) throws FactoryException, TransformException {
+                                                              List<ScenarioArea> areas,
+                                                              BandChangeEntity altScenario) throws FactoryException, TransformException {
         // We assume GeoJSON is in WGS84 and that ecosystem and pressures coverages are of the same CRS
         assert (ecosystems.getCoordinateReferenceSystem().equals(pressures.getCoordinateReferenceSystem()));
         MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
                 ecosystems.getCoordinateReferenceSystem());
 
         return Pair.of(
-                apply(ecosystems, ecosystems.getGridGeometry(), scenario, LayerType.ECOSYSTEM, WGS84toTarget),
-                apply(pressures, pressures.getGridGeometry(), scenario, LayerType.PRESSURE, WGS84toTarget)
+                apply(ecosystems, ecosystems.getGridGeometry(), areas, LayerType.ECOSYSTEM, WGS84toTarget, altScenario),
+                apply(pressures, pressures.getGridGeometry(), areas, LayerType.PRESSURE, WGS84toTarget, altScenario)
         );
     }
 
@@ -143,12 +144,13 @@ public class ScenarioService {
      */
     GridCoverage2D apply(GridCoverage2D coverage,
                GridGeometry2D gridGeometry,
-               Scenario scenario,
+               List<ScenarioArea> areas,
                LayerType changeType,
-               MathTransform roiTransform) {
+               MathTransform roiTransform,
+               BandChangeEntity alternateChangeSource) {
         final int numBands = coverage.getNumSampleDimensions();
 
-        return Util.reduce(scenario.getAreas(), coverage, (state, area) -> {
+        return Util.reduce(areas, coverage, (state, area) -> {
             try {
                 // Reproject ROI to coverage CRS
                 var areaGeometry = area.getGeometry();
@@ -158,8 +160,7 @@ public class ScenarioService {
                 var gridROI = (ROI) new ROIShape(
                     new LiteShape2(projectedROI, gridGeometry.getCRSToGrid2D(), null, false));
 
-                List<BandChange> bandChanges = Arrays.stream(area.getAllChanges())
-                    .filter(c -> c.type == changeType)
+                List<BandChange> bandChanges = Arrays.stream(area.getAllChangesByType(alternateChangeSource, changeType))
                     .collect(Collectors.toList());
 
                 return Util.reduce(bandChanges, // iterate over band changes
@@ -332,5 +333,14 @@ public class ScenarioService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public int[] getIncludedBands(int activeScenarioId, LayerType category) {
+        return em.createNamedQuery(
+                (category == LayerType.ECOSYSTEM ?
+                    "Scenario.getEcosystemsToInclude" :
+                    "Scenario.getPressuresToInclude"), int[].class)
+            .setParameter("scenarioId", activeScenarioId)
+            .getSingleResult();
     }
 }

@@ -56,7 +56,7 @@
     <div *ngFor="let scenario of scenario$ | async; index as scenarioIndex"
          class="scenario-wrap"
          [ngClass]="{'filtered': filter(scenario.name) }">
-      <div class="scenario"
+      <div class="scenario list-item"
            (click)="this.batchMode ? selectForBatch(scenario.id) : open(scenarioIndex)" [title]="scenario.name">
         <div class="scenario-info">
           <div class="name">
@@ -76,7 +76,7 @@
             <span class="feature-name">{{ 'map.editor.list.more-areas' | translate: { more: scenario.areas.length - MAX_AREAS } }}</span>
           </li>
         </ul>
-        <div class="scenario-actions" *ngIf="!getBatchMode()">
+        <div class="list-actions" *ngIf="!getBatchMode()">
           <app-icon *ngIf="scenario.latestCalculationId" iconType="report" [title]="'map.editor.list.show-report-label' | translate"
                     (click)="showReport(scenario.latestCalculationId); $event.stopPropagation()">
           </app-icon>

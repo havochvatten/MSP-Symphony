@@ -29,10 +29,17 @@ export class CalculationEffects {
     )
   ));
 
+  loadCalculationResult$ = createEffect(() => this.actions$.pipe(
+    ofType(CalculationActions.loadCalculationResult),
+    mergeMap(({ calculationId }) =>
+      this.calcService.addResult(calculationId).then(() =>
+        CalculationActions.loadCalculationResultSuccess({ calculationId }))
+  )));
+
   deleteCalculation$ = createEffect(() => this.actions$.pipe(
     ofType(CalculationActions.deleteCalculation),
     mergeMap(({ calculationToBeDeleted }) =>
-      from(this.calcService.removeResult(calculationToBeDeleted.id)).pipe(
+      from(this.calcService.deleteResult(calculationToBeDeleted.id)).pipe(
         mergeMap((_a,_i) => {
           CalculationActions.deleteCalculationSuccess();
           return of(CalculationActions.fetchCalculations(), ScenarioActions.fetchScenarios());

@@ -11,23 +11,23 @@
         </div>
       </app-accordion-box-header>
       <app-accordion-box-content>
-        <div *ngFor="let change of getChanges() | keyvalue" class="change">
-          <div class="band-name">{{ bandDictionary[change.key] }}</div>
-          <div class="spec">
-                <span *ngIf="change.value['multiplier']" class="multiplier">
-                  {{ change.value.multiplier - 1 > 0 ? '+' : '' }}{{
-                  convertMultiplierToPercent(change.value.multiplier) | percent: '.0' }}
-                </span>
-            <span *ngIf="change.value['offset']" class="offset">
-                  {{ change.value.offset > 0 ? '+' : '' }}{{ change.value.offset | number: '.0' }}
-                </span>
-          </div>
-          <div class="icons">
-            <app-icon class="delete-change-icon" iconType="times"
-                      [title]="'map.editor.changes.clear-change' | translate"
-                      (click)="deleteChange(change.key.toString())">
-            </app-icon>
-          </div>
+        <div *ngFor="let change of getChanges()" class="change">
+            <div class="band-name">{{ bandDictionary![change[0].type][change[1]] }}</div>
+            <div class="spec">
+              <span *ngIf="change[0].multiplier" class="multiplier">
+                {{ change[0].multiplier - 1 > 0 ? '+' : '' }}{{
+                convertMultiplierToPercent(change[0].multiplier) | percent: '.0' }}
+              </span>
+              <span *ngIf="change[0].offset" class="offset">
+                    {{ change[0].offset > 0 ? '+' : '' }}{{ change[0].offset | number: '.0' }}
+              </span>
+            </div>
+            <div class="icons">
+              <app-icon class="delete-change-icon" iconType="times"
+                        [title]="'map.editor.changes.clear-change' | translate"
+                        (click)="deleteChange(change[0].type, +change[1])">
+              </app-icon>
+            </div>
         </div>
       </app-accordion-box-content>
     </app-accordion-box>

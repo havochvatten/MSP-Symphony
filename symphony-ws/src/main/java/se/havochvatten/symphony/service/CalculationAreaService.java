@@ -43,6 +43,9 @@ public class CalculationAreaService {
     @EJB
     CalcAreaSensMatrixService calcAreaSensMatrixService;
 
+    @EJB
+    MetaDataService metadataService;
+
     /**
      * @return All CalculationAreas defined in the system (areas meant to be used in calculations)
      */
@@ -201,13 +204,16 @@ public class CalculationAreaService {
     }
 
     public MatrixResponse getAreaCalcMatrices(Scenario scenario) throws SymphonyStandardAppException {
+        return getAreaCalcMatrices(scenario.getAreas(), scenario.getBaselineId());
+    }
+
+    public MatrixResponse getAreaCalcMatrices(List<ScenarioArea> areas, Integer baselineId) throws SymphonyStandardAppException {
 
         Integer areaId, defaultSensMatrixId = null;
         CalculationArea calculationArea;
-        List<ScenarioArea> areas = scenario.getAreas();
         MatrixResponse areaMatrixMap = new MatrixResponse(areas.stream().mapToInt(ScenarioArea::getId).toArray());
 
-        BaselineVersion baseline = baselineVersionService.getBaselineVersionById(scenario.getBaselineId());
+        BaselineVersion baseline = baselineVersionService.getBaselineVersionById(baselineId);
         List<CaPolygon> defaultCalcAreaPolygons = getDefaultCalcAreaPolygonsForBaseline(baseline.getId());
 
         for(ScenarioArea area : areas) {
@@ -233,6 +239,7 @@ public class CalculationAreaService {
         }
 
         return areaMatrixMap;
+
     }
 
     private List<CaPolygon> getDefaultCalcAreaPolygonsForBaseline(Integer id) {
@@ -354,18 +361,15 @@ public class CalculationAreaService {
             return new double[][]{};
         }
 
-        List<Metadata> metadataPressList = em.createQuery("SELECT mp FROM Metadata mp WHERE mp" +
-                ".symphonyCategory = :category AND mp.baselineVersion.id = :versionid ORDER BY mp" +
-                ".bandNumber ASC").setParameter("category", "Pressure").setParameter("versionid",
-                baseDataVersionId).getResultList();
-        List<Metadata> metadataEcoList = em.createQuery("SELECT me FROM Metadata me WHERE me" +
-                ".symphonyCategory = :category AND me.baselineVersion.id = :versionid ORDER BY me" +
-                ".bandNumber ASC").setParameter("category", "Ecosystem").setParameter("versionid",
-                baseDataVersionId).getResultList();
+        List<SymphonyBand> pressuresList =
+            metadataService.getBandsForBaselineComponent("Pressure", baseDataVersionId);
+        List<SymphonyBand> ecosystemsList =
+            metadataService.getBandsForBaselineComponent("Ecosystem", baseDataVersionId);
 
-        double[][] matrix = new double[metadataPressList.size()][metadataEcoList.size()];
-        for (int i = 0; i < metadataPressList.size(); i++) {
-            double[] sensRow = getSensValueRow(matrixId, metadataPressList.get(i).getId(), metadataEcoList);
+        double[][] matrix = new double[pressuresList.size()][ecosystemsList.size()];
+
+        for (int i = 0; i < pressuresList.size(); i++) {
+            double[] sensRow = getSensValueRow(matrixId, pressuresList.get(i).getId(), ecosystemsList);
             matrix[i] = sensRow;
         }
 
@@ -376,14 +380,15 @@ public class CalculationAreaService {
      * @return A row of sensitivity values in the matrix. The ecocomponents connected to pressure. Ordered by
      * band number in metadata,
      */
-    private double[] getSensValueRow(Integer matrixId, Integer presId, List<Metadata> metadataEcoList) {
-        double[] sensRow = new double[metadataEcoList.size()];
+    private double[] getSensValueRow(Integer matrixId, Integer presId, List<SymphonyBand> ecoBandsList) {
+        double[] sensRow = new double[ecoBandsList.size()];
         for (int j = 0; j < sensRow.length; j++) {
             Optional<Sensitivity> optSens =
-                    metadataEcoList.get(j).getEcoSensitivities()
+
+                    ecoBandsList.get(j).getEcoSensitivities()
                             .stream()
-                            .filter(e -> e.getSensitivityMatrix().getId().equals(matrixId) &&
-                                            e.getPresMetadata().getId().equals(presId))
+                            .filter(e -> e.getMatrix().getId().equals(matrixId) &&
+                                            e.getPressureBand().getId().equals(presId))
                             .findAny();
             sensRow[j] = optSens.isPresent() ? optSens.get().getValue().doubleValue() : Double.NaN; // Encode
             // absence of value using NaN

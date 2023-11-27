@@ -32,8 +32,8 @@ export class MetaInfoComponent implements AfterViewInit {
       }
     }
 
-    this.category = this.band.statePath[0] === 'ecoComponent' ? 'ecosystem' : 'pressure';
-    this.title = this.band.displayName;
+    this.category = this.band.symphonyCategory === 'ECOSYSTEM' ? 'ecosystem' : 'pressure';
+    this.title = this.band.title;
   }
 
   close = () => {

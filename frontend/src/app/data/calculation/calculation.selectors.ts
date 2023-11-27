@@ -43,6 +43,19 @@ export const selectPercentileValue = createSelector(
   state => state.percentileValue
 );
 
+export const selectVisibleResults = createSelector(
+  selectCalculationState,
+  state => state.visibleResults
+);
+
+export const selectCalculationLoadingState = createSelector(
+  selectCalculationState,
+  state => ({
+    loadingResults: state.loadingResults,
+    loadingReports: state.loadingReports
+    })
+);
+
 export const selectVisibleLegends = createSelector(
   selectLegends,
   MetadataSelectors.selectVisibleBands,

@@ -10,7 +10,6 @@ import org.geotools.coverage.util.IntersectUtils;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.precision.GeometryPrecisionReducer;
@@ -25,10 +24,12 @@ import se.havochvatten.symphony.dto.BatchCalculationDto;
 import se.havochvatten.symphony.dto.CalculationResultSlice;
 import se.havochvatten.symphony.entity.BatchCalculation;
 import se.havochvatten.symphony.entity.CalculationResult;
+import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.exception.SymphonyStandardSystemException;
 import se.havochvatten.symphony.scenario.ScenarioService;
 import se.havochvatten.symphony.scenario.ScenarioSnapshot;
+import se.havochvatten.symphony.service.DataLayerService;
 import se.havochvatten.symphony.service.PropertiesService;
 import se.havochvatten.symphony.web.WebUtil;
 
@@ -227,14 +228,30 @@ public class CalculationREST {
         if (!hasAccess(this.calculationResult, req.getUserPrincipal()))
             return status(Response.Status.UNAUTHORIZED).build();
 
-        this.coverage = this.calculationResult.getCoverage(); // N.B: raw result data, not normalized nor color-mapped
+        if(this.calculationResult.getImagePNG() != null) {
+            byte[] savedImage = this.calculationResult.getImagePNG();
+            String extent = DataLayerService.readMetaData(savedImage, "extent");
+
+            if(extent != null) {
+                return ok(savedImage, "image/png")
+                    .header("SYM-Image-Extent", extent)
+                    .build();
+            }
+        }
+
         this.scenario = this.calculationResult.getScenarioSnapshot();
+        this.coverage = this.calculationResult.getCoverage() != null ?
+            this.calculationResult.getCoverage() :
+            calcService.recreateCoverageFromResult(this.scenario, this.calculationResult);
+
         this.sldProperty = "data.styles.result";
         this.coverageEnvelope = new ReferencedEnvelope(this.coverage.getEnvelope());
-        this.coveragePixelDimension = this.coverage.getGridGeometry().getGridRange2D();
+        this.coveragePixelDimension = this.coverage.getGridGeometry().toCanonical().getGridRange2D();
+        // canonical needed if coverage is recreated
         this.targetCRS = this.coverage.getCoordinateReferenceSystem2D();
 
-        crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8.toString()) : "EPSG:3035";
+        crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8.toString()) :
+                props.getProperty("data.source.crs", "EPSG:3035");
 
         CoordinateReferenceSystem clientCRS =
             CRS.getAuthorityFactory(true).createCoordinateReferenceSystem(crs);
@@ -261,8 +278,16 @@ public class CalculationREST {
             g2d.drawRenderedImage(image, at);
         }
 
+        String extent = WebUtil.createExtent(JTS.transform(this.coverageEnvelope, clientTransform)).toString();
+
         ByteArrayOutputStream baos = WebUtil.encode(cimage, "png");
-        baos.flush();
+        baos.flush();;
+
+        this.calculationResult.setImagePNG(
+            DataLayerService.addMetaData(cimage, cimage.getColorModel(), cimage.getSampleModel(), "extent", extent)
+        );
+
+        this.calculationResult = calcService.updateCalculation(this.calculationResult);
 
         return ok(baos.toByteArray(), "image/png")
             .header("SYM-Image-Extent", WebUtil.createExtent(JTS.transform(this.coverageEnvelope, clientTransform)).toString())
@@ -307,13 +332,16 @@ public class CalculationREST {
                                        @PathParam("a") int baseId, @PathParam("b") int scenarioId,
                                        @QueryParam("dynamic") boolean dynamic, @QueryParam("crs") String crs)
             throws Exception {
-        crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8.toString()) : "EPSG:3035";
+        crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8.toString()) :
+                props.getProperty("data.source.crs", "EPSG:3035");
 
         try {
             var diff = getDiffCoverageFromCalcIds(calcService, req, baseId, scenarioId);
             return projectedPNGImageResponse(diff, crs, null, dynamic);
         } catch (AccessDeniedException ax) {
             return status(Response.Status.UNAUTHORIZED).build();
+        } catch (SymphonyStandardAppException sx) {
+            return status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -397,7 +425,7 @@ public class CalculationREST {
             calcService).orElseThrow(javax.ws.rs.NotFoundException::new);
         verifyAccessToCalculation(base, req.getUserPrincipal());
 
-        return calcService.findAllMatchingGeometryByUser(req.getUserPrincipal(), base);
+        return calcService.findAllMatchingCalculationsByUser(req.getUserPrincipal(), base);
     }
 
     @GET
@@ -412,7 +440,7 @@ public class CalculationREST {
         return ok(session.getAttribute("mask"), "image/png").build();
     }
 
-    public static GridCoverage2D getDiffCoverageFromCalcIds(CalcService calcService, HttpServletRequest req, int baseId, int relativeId) {
+    public static GridCoverage2D getDiffCoverageFromCalcIds(CalcService calcService, HttpServletRequest req, int baseId, int relativeId) throws SymphonyStandardAppException {
         logger.info("Diffing base line calculations " + baseId + " against calculation " + relativeId);
 
         var base = CalcUtil.getCalculationResultFromSessionOrDb(baseId, req.getSession(),
@@ -424,7 +452,22 @@ public class CalculationREST {
         if (!hasAccess(base, req.getUserPrincipal()) || !hasAccess(scenario, req.getUserPrincipal()))
             throw new NotAuthorizedException("Unauthorized");
 
-        return calcService.relativeDifference(base.getCoverage(), scenario.getCoverage());
+        try {
+            GridCoverage2D baseCoverage = base.getCoverage(),
+                           relativeCoverage = scenario.getCoverage();
+
+            if (baseCoverage == null) {
+                baseCoverage = calcService.recreateCoverageFromResult(base.getScenarioSnapshot(), base);
+            }
+
+            if (relativeCoverage == null) {
+                relativeCoverage = calcService.recreateCoverageFromResult(scenario.getScenarioSnapshot(), scenario);
+            }
+
+            return calcService.relativeDifference(baseCoverage, relativeCoverage);
+        } catch (Exception e) {
+            throw new SymphonyStandardAppException(SymphonyModelErrorCode.OTHER_ERROR);
+        }
         // TODO Store coverage in user session? (and recalc if necessary?)
     }
 
@@ -442,7 +485,7 @@ public class CalculationREST {
 
         Geometry intersection = null;
         try {
-            intersection = IntersectUtils.intersection(areaPoly, this.scenario.getGeometry());
+            intersection = IntersectUtils.intersection(areaPoly, this.scenario.getGeometry().getEnvelope());
         } catch (Exception e) {
             e = e;
         }

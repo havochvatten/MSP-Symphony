@@ -18,8 +18,10 @@ import { UserSelectors } from '@data/user';
 import {
   fetchAreaMatrices,
   fetchAreaMatricesFailure,
-  fetchAreaMatricesSuccess, fetchAreaMatrixSuccess, splitAndReplaceScenarioAreaSuccess
+  fetchAreaMatricesSuccess, fetchAreaMatrixSuccess,
 } from '@data/scenario/scenario.actions';
+import { MetadataSelectors } from "@data/metadata";
+import { Band } from "@data/metadata/metadata.interfaces";
 
 @Injectable()
 export class ScenarioEffects {
@@ -41,10 +43,20 @@ export class ScenarioEffects {
     )
   ));
 
-  saveScenario$ = this.actions$.pipe(
+  saveScenario$ = createEffect(() => this.actions$.pipe(
     ofType(ScenarioActions.saveActiveScenario),
-    mergeMap(({ scenarioToBeSaved }) => {
-      return this.scenarioService.save(scenarioToBeSaved).pipe(
+    concatMap(action =>
+      of(action).pipe(withLatestFrom(this.store.select(MetadataSelectors.selectSelectedComponents)))
+    ),
+    mergeMap(([{ scenarioToBeSaved }, { ecoComponent, pressureComponent }] ) => {
+      const sortedBandNumbers = (bands: Band[]) => bands
+        .map(band => band.bandNumber)
+        .sort((a, b) => a - b);
+      return this.scenarioService.save({
+          ...scenarioToBeSaved,
+          ecosystemsToInclude: sortedBandNumbers(ecoComponent),
+          pressuresToInclude: sortedBandNumbers(pressureComponent)
+      }).pipe(
         retry(2),
         map(savedScenario => ScenarioActions.saveScenarioSuccess({ savedScenario })),
         catchError(({ status, error: message }) =>
@@ -52,7 +64,7 @@ export class ScenarioEffects {
         )
       );
     })
-  );
+  ));
 
   saveScenarioArea$ = createEffect(() => this.actions$.pipe(
     ofType(ScenarioActions.saveScenarioArea),

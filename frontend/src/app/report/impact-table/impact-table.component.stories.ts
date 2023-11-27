@@ -21,7 +21,6 @@ stories.add('default', () => ({
     bandGroups: [
       {
         symphonyThemeName: 'Birds',
-        symphonyThemeNameLocal: 'Fågel',
         displayName: 'Birds',
         properties: [
           {
@@ -35,14 +34,12 @@ stories.add('default', () => ({
           {
             id: 633,
             title: 'Seabird coastal wintering',
-            titleLocal: 'Sjöfågel övervintringsområde kust',
             displayName: 'Seabird coastal wintering',
             bandNumber: 24
           },
           {
             id: 634,
             title: 'Seabird offshore wintering',
-            titleLocal: 'Sjöfågel övervintringsområde utsjö',
             displayName: 'Seabird offshore wintering',
             bandNumber: 25
           }
@@ -50,34 +47,29 @@ stories.add('default', () => ({
       },
       {
         symphonyThemeName: 'Fish',
-        symphonyThemeNameLocal: 'Fisk',
         displayName: 'Fish',
         properties: [
           {
             id: 612,
             title: 'Cod',
-            titleLocal: 'Torsk',
             displayName: 'Cod',
             bandNumber: 3
           },
           {
             id: 622,
             title: 'Herring',
-            titleLocal: 'Sill',
             displayName: 'Herring',
             bandNumber: 13
           },
           {
             id: 629,
             title: 'Rivermouth fish',
-            titleLocal: 'Fisk älvmynning',
             displayName: 'Rivermouth fish',
             bandNumber: 20
           },
           {
             id: 639,
             title: 'Sprat',
-            titleLocal: 'Skarpsill',
             displayName: 'Sprat',
             bandNumber: 5
           }

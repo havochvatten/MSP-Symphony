@@ -31,27 +31,28 @@
         value="0"
         step="1"
         [value]="offset"
-        [disabled]="!(groupSetting || overridden)"
+        [attr.disabled]="getDisabled()"
       />
     </div>
   </div>
 </ng-container>
-<ng-container *ngIf="areaIsVisible">
-  <h4>{{ 'map.editor.band-pressures.opacity' | translate }}</h4>
-  <div class="knobs opacity">
-    <div class="slider">
-      <app-slider
-        [value]="band.layerOpacity"
-        min="0"
-        max="100"
-        step="1"
-        (input)="updateLayerOpacity($event.target.value)"
-      >
-      </app-slider>
-    </div>
-    <span>{{ band.layerOpacity }}%</span>
-  </div>
-</ng-container>
+<!-- TODO: Reimplement or remove. Transparency setting for layer -->
+<!--<ng-container *ngIf="areaIsVisible">-->
+<!--  <h4>{{ 'map.editor.band-pressures.opacity' | translate }}</h4>-->
+<!--  <div class="knobs opacity">-->
+<!--    <div class="slider">-->
+<!--      <app-slider-->
+<!--        [value]="band.layerOpacity"-->
+<!--        min="0"-->
+<!--        max="100"-->
+<!--        step="1"-->
+<!--        (input)="updateLayerOpacity($event.target.value)"-->
+<!--      >-->
+<!--      </app-slider>-->
+<!--    </div>-->
+<!--    <span>{{ band.layerOpacity }}%</span>-->
+<!--  </div>-->
+<!--</ng-container>-->
 <ng-container *ngIf="!groupSetting">
   <div class="override-wrapper">
     <mat-checkbox (change)="setOverride($event.checked)" [checked]="overridden">

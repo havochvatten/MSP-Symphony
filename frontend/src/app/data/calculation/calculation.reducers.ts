@@ -18,7 +18,10 @@ export const initialState: CalculationInterfaces.State = {
     comparison: {}
   },
   sortCalculations: ListItemsSort.None,
-  batchProcesses: []
+  batchProcesses: [],
+  visibleResults: [],
+  loadingResults: [],
+  loadingReports: []
 };
 
 export const calculationReducer = createReducer(
@@ -86,6 +89,25 @@ export const calculationReducer = createReducer(
   on(CalculationActions.cancelBatchProcessSuccess, (state, { id }) => ({
     ...state,
     batchProcesses: setIn(state.batchProcesses, [id], {...state.batchProcesses[id], cancelled: true})
+  })),
+  on(CalculationActions.setVisibleResultLayers, (state, { visibleResults }) => ({
+    ...state,
+    visibleResults: visibleResults,
+    calculations: state.calculations.map(c => ({...c, isPurged: !(visibleResults.includes(c.id) || !c.isPurged)}))
+                                                      // unnecessary to sync, visible results cannot be "purged"
+  })),
+  on(CalculationActions.loadCalculationResult, (state, { calculationId }) => ({
+    ...state,
+    loadingResults: [...state.loadingResults, calculationId]
+  })),
+  on(CalculationActions.loadCalculationResultSuccess, (state, { calculationId }) => ({
+    ...state,
+    loadingResults: state.loadingResults.filter(id => id !== calculationId)
+  })),
+  on(CalculationActions.setReportLoadingState, (state, { calculationId, loadingState }) => ({
+    ...state,
+    calculations: state.calculations.map(c => c.id === calculationId ? {...c, isPurged: c.isPurged && loadingState } : c),
+    loadingReports: loadingState ? [...state.loadingReports, calculationId] : state.loadingReports.filter(id => id !== calculationId)
   }))
 );
 

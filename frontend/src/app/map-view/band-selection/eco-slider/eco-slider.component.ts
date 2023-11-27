@@ -9,12 +9,10 @@ import {
   ViewChild
 } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { fromEvent, throwError } from 'rxjs';
+import { fromEvent } from 'rxjs';
 import { State } from '@src/app/app-reducer';
-import { Band, StatePath } from '@data/metadata/metadata.interfaces';
+import { Band } from '@data/metadata/metadata.interfaces';
 import { MetadataActions } from '@data/metadata';
-import { convertMultiplierToPercent, getComponentType } from '@data/metadata/metadata.selectors';
-import { formatPercentage } from '@src/app/shared/common.util';
 import { ScenarioActions } from "@data/scenario";
 import { debounceTime, map } from "rxjs/operators";
 
@@ -29,7 +27,6 @@ export class EcoSliderComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() band!: Band;
   @Input() groupSetting!: boolean;
   @Input() overridden!: boolean;
-  @Input() statePath: StatePath = [];
   @Input() areaIsVisible = false;
   @Input() disabled = false
   @Input() locale = 'en';
@@ -41,8 +38,7 @@ export class EcoSliderComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   ngOnInit() {
-    if (this.statePath === undefined || this.statePath.length === 0)
-      throwError('Property statePath is missing or empty');
+
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -63,8 +59,7 @@ export class EcoSliderComponent implements OnInit, OnChanges, AfterViewInit {
       debounceTime(300)
     ).subscribe(value =>
       this.store.dispatch(ScenarioActions.updateBandAttribute({
-        componentType: getComponentType(this.statePath),
-        bandId: this.band.title,
+        componentType: this.band.symphonyCategory,
         band: this.band.bandNumber,
         attribute: 'offset',
         value: parseInt(value)
@@ -72,25 +67,28 @@ export class EcoSliderComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   updateMultiplier(value: number) {
-    this.store.dispatch(MetadataActions.updateMultiplier({
-      bandPath: this.statePath,
+    this.store.dispatch(ScenarioActions.updateBandAttribute({
+      componentType: this.band.symphonyCategory,
+      band: this.band.bandNumber,
+      attribute: 'multiplier',
       value
-    }))
+    }));
   }
 
   setOverride(setOverride: boolean) {
     if(setOverride) {
       this.updateMultiplier(1);
     } else {
-      this.store.dispatch(ScenarioActions.deleteAreaBandChange({ bandId: this.band.title }));
+      this.store.dispatch(ScenarioActions.deleteAreaBandChange(
+          { componentType: this.band.symphonyCategory,  bandNumber: this.band.bandNumber }));
     }
   }
 
-  getDisabled() {
+  getDisabled() : boolean {
     return !(this.overridden || this.groupSetting);
   }
 
   updateLayerOpacity(value: number) {
-    this.store.dispatch(MetadataActions.updateLayerOpacity({ value, bandPath: this.statePath }));
+    this.store.dispatch(MetadataActions.updateLayerOpacity({ value, band: this.band }));
   }
 }

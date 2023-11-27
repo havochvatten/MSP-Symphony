@@ -1,10 +1,15 @@
 import { createAction, props } from '@ngrx/store';
-import { Groups, Selection, StatePath } from './metadata.interfaces';
+import { Band, Groups } from './metadata.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
+import { Scenario } from "@data/scenario/scenario.interfaces";
 
 export const fetchMetadata = createAction(
-  '[Metadata] Fetch Metadata',
-  props<{ baseline: string }>()
+  '[Metadata] Fetch Metadata'
+);
+
+export const fetchMetadataForBaseline = createAction(
+  '[Metadata] Fetch Metadata by named baseline',
+  props<{ baselineName: string }>()
 );
 
 export const fetchMetadataSuccess = createAction(
@@ -22,22 +27,27 @@ export const fetchMetadataFailure = createAction(
   props<{ error: ErrorMessage }>()
 );
 
-export const updateSelections = createAction(
-  '[Metadata] Update Layer Selections',
-  props<{ selections: Selection[] }>()
+export const selectBand = createAction(
+  '[Metadata] Select band for inclusion',
+  props<{ band: Band, value: any }>()
 );
 
-export const updateVisible = createAction(
-  '[Metadata] Update Layer Visible',
-  props<{ selections: Selection[] }>()
+export const setVisibility  = createAction(
+  '[Metadata] Set band visibility',
+  props<{ band: Band, value: boolean }>()
 );
 
 export const updateLayerOpacity = createAction(
   '[Metadata] Update Layer Opacity',
-  props<{ bandPath: StatePath; value: number }>()
+  props<{ band: Band; value: number }>()
 );
 
 export const updateMultiplier = createAction(
   '[Metadata] Update intensity multiplier',
-  props<{ bandPath: StatePath; value: number }>()
+  props<{ band: Band, value: number }>()
+);
+
+export const setSelectionFromScenario = createAction(
+  '[Metadata] Set selection from scenario',
+  props<{ scenario: Scenario }>()
 );

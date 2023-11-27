@@ -1,12 +1,12 @@
 <h4>{{ title }}</h4>
 <table *ngFor="let group of bandGroups; first as isFirstGroup">
   <tr class="title-row">
-    <th>{{ group.displayName }}</th>
+    <th>{{ group.symphonyThemeName }}</th>
     <ng-container *ngIf="true">
       <th *ngFor="let name of names">{{ name }}</th>
     </ng-container>
   </tr>
-  <tr *ngFor="let band of group.properties" [class.excluded]="isExcluded(band.bandNumber)">
+  <tr *ngFor="let band of group.bands" [class.excluded]="isExcluded(band.bandNumber)">
     <td class="band-name">
       {{ band.displayName }}
       <span class="line"></span>
