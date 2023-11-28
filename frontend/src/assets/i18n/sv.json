@@ -488,6 +488,7 @@
     "user-menu": {
         "help": "Hjälp",
         "about": "Om",
+        "support": "Support",
         "profile": "Min profil",
         "logout": "Logga ut"
     },

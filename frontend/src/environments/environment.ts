@@ -9,6 +9,7 @@ export const environment = {
   apiBaseUrl: "/symphony-ws/service",
   socketBaseUrl: "/socket",
   baseline: false,
+  externManual: null,
   map: {
     center: [10, -10],
     initialZoom: 4,

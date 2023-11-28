@@ -488,6 +488,7 @@
     "user-menu": {
         "help": "Aide",
         "about": "À propos",
+        "support": "Mode d'emploi",
         "profile": "Mon profil",
         "logout": "Se déconnecter"
     },
