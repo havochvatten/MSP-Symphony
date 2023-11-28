@@ -98,9 +98,8 @@ public class ScenarioArea implements BandChangeEntity {
         BandChangeEntity bcEntity = altScenario == null ? scenario : altScenario;
 
         Map<Integer, BandChange> baseChangeMap =
-            ((Map<LayerType, Map<Integer, BandChange>>)
-                mapper.convertValue(bcEntity.getChanges(), new TypeReference<>() {})).getOrDefault(layerType, new HashMap<>()),
-                                 changeMap = getChangeMap().getOrDefault(layerType, new HashMap<>());
+            bcEntity.getChangeMap().getOrDefault(layerType, new HashMap<>()),
+            changeMap = getChangeMap().getOrDefault(layerType, new HashMap<>());
 
         return Stream.concat(
                 baseChangeMap.entrySet().stream().filter(c -> !changeMap.containsKey(c.getKey())),
