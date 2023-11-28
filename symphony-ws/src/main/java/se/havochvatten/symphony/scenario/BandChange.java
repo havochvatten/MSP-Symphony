@@ -1,5 +1,6 @@
 package se.havochvatten.symphony.scenario;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import se.havochvatten.symphony.dto.LayerType;
 
@@ -7,6 +8,7 @@ import se.havochvatten.symphony.dto.LayerType;
 public class BandChange {
     public LayerType type; // TODO: Use Jackson subtype deserialization?
 
+    @JsonIgnore
     public Integer band; // Only used detached in calculation step on server side, not persisted
 
     /**
