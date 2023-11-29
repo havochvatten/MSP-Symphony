@@ -488,6 +488,7 @@
     "user-menu": {
         "help": "Help",
         "about": "About",
+        "support": "Support",
         "profile": "My profile",
         "logout": "Log out"
     },

@@ -11,7 +11,6 @@ import org.locationtech.jts.geom.Envelope;
 import org.opengis.referencing.crs.CRSAuthorityFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
-import org.w3c.dom.NodeList;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.service.BaselineVersionService;
@@ -21,17 +20,11 @@ import se.havochvatten.symphony.service.PropertiesService;
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.imageio.*;
-import javax.imageio.metadata.IIOMetadataFormatImpl;
-import javax.imageio.metadata.IIOMetadataNode;
 import javax.json.JsonArray;
 import javax.ws.rs.*;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Response;
 import java.awt.image.*;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
@@ -53,7 +46,6 @@ public class DataLayerREST {
     BaselineVersionService baselineVersionService;
 
     private ImageCache cache;
-    private final static String rootNode = "javax_imageio_png_1.0";
 
     @PostConstruct
     void setup() {
@@ -81,7 +73,7 @@ public class DataLayerREST {
         java.nio.file.Path cacheKey = java.nio.file.Path.of(baselineName, type).resolve(bandNo + ".png");
         if (cache != null && cache.containsKey(cacheKey)) { // TODO: check CRS
             byte[] bytes = cache.get(cacheKey);
-            String extent = readMetaData(bytes, "extent");
+            String extent = DataLayerService.readMetaData(bytes, "extent");
             return ok(cache.get(cacheKey), "image/png")
                     .header("SYM-Image-Extent", (extent == null ? "" : extent))
                     .build();
@@ -119,7 +111,7 @@ public class DataLayerREST {
             var image = new BufferedImage(cm, raster, false, null);
             JsonArray extent = WebUtil.createExtent(targetEnvelope);
 
-            byte[] bs = addMetaData(image, cm, sm, "extent", extent.toString());
+            byte[] bs = DataLayerService.addMetaData(image, cm, sm, "extent", extent.toString());
             if (cache != null)
                 cache.put(cacheKey, bs);
 
@@ -133,55 +125,5 @@ public class DataLayerREST {
                     .cacheControl(cc)
                     .build();
         }
-    }
-
-
-    public static byte[] addMetaData(BufferedImage buffImg, ColorModel cm, SampleModel sm, String key,
-                                     String value) throws Exception {
-        ImageWriter writer = ImageIO.getImageWritersByFormatName("png").next();
-
-        ImageWriteParam writeParam = writer.getDefaultWriteParam();
-        ImageTypeSpecifier typeSpecifier = new ImageTypeSpecifier(cm, sm);
-        javax.imageio.metadata.IIOMetadata metadata = writer.getDefaultImageMetadata(typeSpecifier,
-                writeParam);
-
-        IIOMetadataNode textEntry = new IIOMetadataNode("tEXtEntry");
-        textEntry.setAttribute("keyword", key);
-        textEntry.setAttribute("value", value);
-
-        IIOMetadataNode text = new IIOMetadataNode("tEXt");
-        text.appendChild(textEntry);
-
-        IIOMetadataNode root = new IIOMetadataNode(rootNode);
-        root.appendChild(text);
-
-        metadata.mergeTree(rootNode, root);
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try (
-                javax.imageio.stream.ImageOutputStream stream = ImageIO.createImageOutputStream(baos)
-        ) {
-            writer.setOutput(stream);
-            writer.write(metadata, new IIOImage(buffImg, null, metadata), writeParam);
-        }
-        return baos.toByteArray();
-    }
-
-    public static String readMetaData(byte[] imageData, String key) throws IOException {
-        ImageReader imageReader = ImageIO.getImageReadersByFormatName("png").next();
-        imageReader.setInput(ImageIO.createImageInputStream(new ByteArrayInputStream(imageData)), true);
-        javax.imageio.metadata.IIOMetadata metadata = imageReader.getImageMetadata(0);
-        IIOMetadataNode root =
-                (IIOMetadataNode) metadata.getAsTree(IIOMetadataFormatImpl.standardMetadataFormatName);
-        NodeList entries = root.getElementsByTagName("TextEntry");
-
-        for (int i = 0; i < entries.getLength(); i++) {
-            IIOMetadataNode node = (IIOMetadataNode) entries.item(i);
-            if (node.getAttribute("keyword").equals(key)) {
-                return node.getAttribute("value");
-            }
-        }
-
-        return null;
     }
 }

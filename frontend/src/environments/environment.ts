@@ -12,6 +12,7 @@ export const environment = {
   instanceName: "WIO Symphony",
   instanceImage: "assets/wio/wiosym-ideogram.svg",
   instanceDescriptor: "Western Indian Ocean",
+  externManual: null,
   map: {
     center: [39.0, -11.0], // Suitable starting center for WIO region
     initialZoom: 4.5,

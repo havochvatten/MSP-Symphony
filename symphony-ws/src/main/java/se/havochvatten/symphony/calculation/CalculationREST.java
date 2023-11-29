@@ -28,6 +28,7 @@ import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.exception.SymphonyStandardSystemException;
 import se.havochvatten.symphony.scenario.ScenarioService;
 import se.havochvatten.symphony.scenario.ScenarioSnapshot;
+import se.havochvatten.symphony.service.DataLayerService;
 import se.havochvatten.symphony.service.PropertiesService;
 import se.havochvatten.symphony.web.WebUtil;
 
@@ -224,6 +225,17 @@ public class CalculationREST {
         if (!hasAccess(this.calculationResult, req.getUserPrincipal()))
             return status(Response.Status.UNAUTHORIZED).build();
 
+        if(this.calculationResult.getImagePNG() != null) {
+            byte[] savedImage = this.calculationResult.getImagePNG();
+            String extent = DataLayerService.readMetaData(savedImage, "extent");
+
+            if(extent != null) {
+                return ok(savedImage, "image/png")
+                    .header("SYM-Image-Extent", extent)
+                    .build();
+            }
+        }
+
         this.scenario = this.calculationResult.getScenarioSnapshot();
         this.coverage = this.calculationResult.getCoverage() != null ?
             this.calculationResult.getCoverage() :
@@ -263,8 +275,16 @@ public class CalculationREST {
             g2d.drawRenderedImage(image, at);
         }
 
+        String extent = WebUtil.createExtent(JTS.transform(this.coverageEnvelope, clientTransform)).toString();
+
         ByteArrayOutputStream baos = WebUtil.encode(cimage, "png");
-        baos.flush();
+        baos.flush();;
+
+        this.calculationResult.setImagePNG(
+            DataLayerService.addMetaData(cimage, cimage.getColorModel(), cimage.getSampleModel(), "extent", extent)
+        );
+
+        this.calculationResult = calcService.updateCalculation(this.calculationResult);
 
         return ok(baos.toByteArray(), "image/png")
             .header("SYM-Image-Extent", WebUtil.createExtent(JTS.transform(this.coverageEnvelope, clientTransform)).toString())

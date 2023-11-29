@@ -301,13 +301,13 @@
                 "marineplanarea": "Havsplaneområde",
                 "metadatadate": "Datum",
                 "metadataemail": "E-post",
-                "metadatafileName": "Filnamn",
+                "metadatafilename": "Filnamn",
                 "metadatalanguage": "Språk",
                 "metadataorganisation": "Organisation",
                 "methodsummary": "Metodsammanfattning",
                 "owneremail": "E-post (ägare)",
                 "otherrestrictions": "Övriga begränsningar",
-                "rasterfileName": "Filnamn rasterdata",
+                "rasterfilename": "Filnamn rasterdata",
                 "rasterspatialreferencesystem": "Datarastrets koordinatsystem",
                 "recommendations": "Rekommendationer",
                 "resourceType": "Resurstyp",
@@ -488,6 +488,7 @@
     "user-menu": {
         "help": "Hjälp",
         "about": "Om",
+        "support": "Support",
         "profile": "Min profil",
         "logout": "Logga ut"
     },

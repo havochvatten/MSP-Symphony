@@ -150,6 +150,9 @@ public class CalculationResult implements Serializable {
     @Type(type = "int-array")
     private int[][] areaMatrixMap;
 
+    @Column(name = "cares_image")
+    private byte[] imagePNG;
+
     public Map<Integer, Integer> getAreaMatrixMap() {
         Map<Integer, Integer> map = new HashMap<>();
 
@@ -283,6 +286,10 @@ public class CalculationResult implements Serializable {
     public void setOperationOptions(Map<String, String> opts) {
         this.operationOptions = opts;
     }
+
+    public byte[] getImagePNG() { return imagePNG; }
+
+    public void setImagePNG(byte[] imagePNG) { this.imagePNG = imagePNG; }
 
     public Map<String, String> getOperationOptions() { return operationOptions; }
 
