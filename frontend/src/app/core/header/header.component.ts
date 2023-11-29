@@ -126,7 +126,8 @@ export class HeaderComponent implements OnInit {
   };
 
   openManual = () => {
-    window.open(environment.externManual, '_blank');
+    if(environment.externManual)
+      window.open(environment.externManual, '_blank');
   }
 
   showDuck() {
