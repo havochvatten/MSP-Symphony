@@ -7,10 +7,7 @@
       <th class="change-label">{{ bandMap[s_change.value.type === 'ECOSYSTEM' ? 'e' : 'b'][s_change.key] }}</th>
       <td>
         <ng-container
-          [ngTemplateOutlet]="s_change.value['multiplier'] && s_change.value['multiplier'] !== 1 &&
-          s_change.value['offset'] && s_change.value['offset'] !== 0 ?
-          compoundChange :
-           singleChange"
+          [ngTemplateOutlet]="singleChange"
           [ngTemplateOutletContext]="{change: s_change.value}">
         </ng-container>
       </td>
@@ -35,19 +32,19 @@
   </table>
 </div>
 
-<ng-template #compoundChange let-change='change'>
-  <span
-      [innerHTML]="'report.scenario-changes.percent-change-with' | translate:{
-          'percent': (change['multiplier'] < 1 ? '' : '+')+((100*(change['multiplier']-1)) | number:'.0')
-         }">
-  </span>
-  {{ 'report.scenario-changes.and' | translate }}
-  <span
-    [innerHTML]="'report.scenario-changes.constant-offset-with' | translate:{
-        'offset': (change['offset'] < 0 ? '' : '+')+(change['offset'] | number)
-      } | lowercase">
-    </span>
-</ng-template>
+<!--<ng-template #compoundChange let-change='change'>-->
+<!--  <span-->
+<!--      [innerHTML]="'report.scenario-changes.percent-change-with' | translate:{-->
+<!--          'percent': (change['multiplier'] < 1 ? '' : '+')+((100*(change['multiplier']-1)) | number:'.0')-->
+<!--         }">-->
+<!--  </span>-->
+<!--  {{ 'report.scenario-changes.and' | translate }}-->
+<!--  <span-->
+<!--    [innerHTML]="'report.scenario-changes.constant-offset-with' | translate:{-->
+<!--        'offset': (change['offset'] < 0 ? '' : '+')+(change['offset'] | number)-->
+<!--      } | lowercase">-->
+<!--    </span>-->
+<!--</ng-template>-->
 
 <ng-template #singleChange let-change='change'>
   <span *ngIf="change['multiplier'] !== 1"
