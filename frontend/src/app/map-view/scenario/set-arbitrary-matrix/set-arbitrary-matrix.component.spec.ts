@@ -4,7 +4,7 @@ import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { SetArbitraryMatrixComponent } from './set-arbitrary-matrix.component';
 import { TranslateModule } from "@ngx-translate/core";
-
+import { provideMockStore } from '@ngrx/store/testing';
 
 describe('SetArbitraryMatrixComponent', () => {
   let component: SetArbitraryMatrixComponent;
@@ -13,6 +13,7 @@ describe('SetArbitraryMatrixComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+
         TranslateModule.forRoot()
       ],
       providers: [
@@ -26,7 +27,8 @@ describe('SetArbitraryMatrixComponent', () => {
               areaName: ''
             }
           }
-        }
+        },
+        provideMockStore()
       ],
       declarations: [SetArbitraryMatrixComponent]
     });
