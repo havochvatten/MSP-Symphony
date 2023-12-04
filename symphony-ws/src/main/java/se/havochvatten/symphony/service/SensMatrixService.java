@@ -39,7 +39,17 @@ public class SensMatrixService {
 
     public List<SensMatrixDto> findSensMatrixDtosByOwner(String baselineName, Principal principal, String preferredLanguage) {
         List<SensMatrixDto> sensMatrixDtos = new ArrayList<>();
-        List<SensitivityMatrix> matrices = em.createNamedQuery("SensitivityMatrix.findByBaselineNameAndOwner")
+        List<SensitivityMatrix> matrices = em.createNamedQuery("SensitivityMatrix.findOwnByBaselineNameAndOwner")
+                .setParameter("name", baselineName)
+                .setParameter("owner", principal.getName())
+                .getResultList();
+        matrices.forEach(s -> sensMatrixDtos.add(EntityToSensMatrixDtoMapper.map(s, preferredLanguage)));
+        return sensMatrixDtos;
+    }
+
+    public List<SensMatrixDto> findAllSensMatrixDtosByOwner(String baselineName, Principal principal, String preferredLanguage) {
+        List<SensMatrixDto> sensMatrixDtos = new ArrayList<>();
+        List<SensitivityMatrix> matrices = em.createNamedQuery("SensitivityMatrix.findAllByBaselineNameAndOwner")
                 .setParameter("name", baselineName)
                 .setParameter("owner", principal.getName())
                 .getResultList();

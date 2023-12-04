@@ -93,6 +93,11 @@ export const saveScenarioArea = createAction(
   props<{ areaToBeSaved: ScenarioArea }>()
 );
 
+export const saveArbitraryScenarioAreaMatrixSuccess = createAction(
+    '[Scenario] Save arbitrary scenario area matrix success',
+    props<{ savedScenarioArea: ScenarioArea }>()
+);
+
 export const splitAndReplaceScenarioArea = createAction(
   '[Scenario] Split and replace scenario area',
   props<{ scenarioId: number, replacedAreaId: number, replacementAreas: ScenarioArea[] }>()
@@ -143,9 +148,13 @@ export const changeScenarioNormalization = createAction(
   props<{ normalizationOptions: NormalizationOptions }>()
 );
 
+export const setArbitraryScenarioAreaMatrixAndNormalization = createAction(
+  '[Scenario] Set arbitrary matrix in active scenario area',
+  props<{ areaId: number, matrixId: number, calcAreaId: number }>()
+);
+
 export const changeScenarioAreaMatrix = createAction(
   '[Scenario] Change matrix in active scenario area',
-   //props< { areaTypes: AreaTypeRef, userDefinedMatrix: number } >()
   props< MatrixParameters >()
 );
 

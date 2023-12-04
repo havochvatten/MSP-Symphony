@@ -30,6 +30,7 @@ export interface AreaMatrixData {
   defaultArea: DefaultArea | null,
   areaTypes: AreaTypeMatrixMapping[];
   overlap: AreaOverlapFragment[];
+  alternativeMatrices: MatrixRef[] | null
 }
 
 export interface AreaOverlapFragment {

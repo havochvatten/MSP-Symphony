@@ -25,6 +25,7 @@ import { MatInputModule } from "@angular/material/input";
 import { TransferChangesComponent } from './transfer-changes/transfer-changes.component';
 import { OverviewInlineBandChangeComponent } from './changes-overview/overview-inline-band-change/overview-inline-band-change.component';
 import { SplitScenarioSettingsComponent } from './split-scenario-settings/split-scenario-settings.component';
+import { SetArbitraryMatrixComponent } from './set-arbitrary-matrix/set-arbitrary-matrix.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { SplitScenarioSettingsComponent } from './split-scenario-settings/split-
     TransferChangesComponent,
     OverviewInlineBandChangeComponent,
     SplitScenarioSettingsComponent,
+    SetArbitraryMatrixComponent,
   ],
     imports: [
         SharedModule,

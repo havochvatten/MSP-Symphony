@@ -13,6 +13,7 @@ import se.havochvatten.symphony.entity.*;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.scenario.Scenario;
+import se.havochvatten.symphony.scenario.ScenarioService;
 
 import javax.persistence.EntityManager;
 import java.io.IOException;
@@ -142,6 +143,7 @@ public class CalculationAreaServiceTest {
     @Test(expected = java.lang.RuntimeException.class)
     public void testValuesSetInGetCalculationAreas() throws IOException, SymphonyStandardAppException {
         CalculationAreaService calculationAreaServiceSpy = Mockito.spy(calculationAreaService);
+        ScenarioService scenarioService = mock(ScenarioService.class);
         int baselineVersionId = 1;
         List<AreaMatrixMapping> relevantSelectedAreaMatrices = new ArrayList<>();
         AreaMatrixMapping areaMatrixMapping1 = new AreaMatrixMapping(3, 2);
@@ -208,14 +210,14 @@ public class CalculationAreaServiceTest {
 
         var areaDto =
             new ScenarioAreaDto(1, mapper.readTree("{}"), mapper.readTree(featureJson),
-                    mapper.readTree("{\"matrixType\": \"STANDARD\"}"), -1, null);
+                    mapper.readTree("{\"matrixType\": \"STANDARD\"}"), -1, null, null);
 
         var testScenario = new ScenarioDto();
         testScenario.name = "TEST-SCENARIO";
         testScenario.baselineId = baselineVersionId;
         testScenario.areas = new ScenarioAreaDto[]{ areaDto };
 
-        var scenario = new Scenario(testScenario);
+        var scenario = new Scenario(testScenario, scenarioService);
 
         calculationAreaServiceSpy.getAreaCalcMatrices(scenario);
 

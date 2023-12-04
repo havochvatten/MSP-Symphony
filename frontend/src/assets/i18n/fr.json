@@ -104,6 +104,16 @@
                 "enter-batch-mode": "Entrer en mode de sélection par lots",
                 "generate": "Générer"
             },
+            "set-arbitrary-matrix": {
+                "title": "Déterminer une matrice de sensibilité et la zone de calcul",
+                "detail": "Aucun couplage matriciel par défaut n'a pu être déterminé pour la zone \"{{ areaName }}\".\nPour que cette zone soit incluse dans un calcul, une matrice de sensibilité arbitraire et une zone pour normalisation des valeurs* doivent d'abord être déterminées.",
+                "caution": "Veuillez noter que si vous annulez cette action, la zone sera exclue du scénario.",
+                "normalization-description": "*La normalisation des valeurs signifie que le résultat est normalisé par rapport à la valeur à laquelle {{ percentileValue }}% des points de données de la zone sélectionnée appartiennent (y compris les zones côtières).",
+                "calculation-area": "Zone de calcul",
+                "select-matrix-placeholder": "Sélectionnez une matrice de sensibilité",
+                "select-area-placeholder": "Sélectionnez une zone pour normaliser les valeurs",
+                "set-matrix-and-normalization": "Utiliser cette matrice et zone"
+            },
             "operation": {
                 "title": "Algorithme",
                 "choose": "Choisissez l'algorithme",
