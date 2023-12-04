@@ -12,6 +12,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.MatrixParameters;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
+import se.havochvatten.symphony.entity.CalculationArea;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -73,6 +74,10 @@ public class ScenarioArea implements BandChangeEntity {
     @Basic
     @Column(name = "excluded_coastal")
     private Integer excludedCoastal;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "custom_calcarea")
+    private CalculationArea customCalcArea = null;
 
     public ScenarioArea() {
 
@@ -172,6 +177,14 @@ public class ScenarioArea implements BandChangeEntity {
 
     public void setScenario(Scenario scenario) {
         this.scenario = scenario;
+    }
+
+    public CalculationArea getCustomCalcArea() {
+        return customCalcArea;
+    }
+
+    public void setCustomCalcArea(CalculationArea customCalcArea) {
+        this.customCalcArea = customCalcArea;
     }
 
     public ScenarioArea(ScenarioAreaDto dto, Scenario scenario) {

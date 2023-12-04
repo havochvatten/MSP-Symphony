@@ -123,6 +123,11 @@ export interface UploadedUserDefinedArea {
   key: string;
 }
 
+export interface CalculationAreaSlice {
+  id: number;
+  name: string;
+}
+
 export interface State {
   areaTypes: string[];
   area: {
@@ -133,4 +138,5 @@ export interface State {
   currentSelection?: StatePath[]; // currentFeature?
   selectionOverlap: boolean;
   selectionMatrices?: AreaMatrixData;
+  calibratedCalculationAreas: CalculationAreaSlice[];
 }

@@ -38,6 +38,7 @@ export interface ScenarioArea {
   matrix: MatrixParameters;
   scenarioId: number
   excludedCoastal: number | null;
+  customCalcAreaId: number | null;
 }
 
 export interface ScenarioDisplayMeta {

@@ -57,6 +57,25 @@ public class CalculationAreaREST {
         return Response.ok(calculationAreaDto).build();
     }
 
+    @GET
+    @Path("calibrated/{baselineName}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get all calculation areas for baselineName defined in the system " +
+                          "for which a max value has been set",
+                  response = CalculationArea.class, responseContainer = "List")
+    public Response findCalibratedCalculationAreas(@PathParam("baselineName") String baselineName) {
+        List<CalculationArea> resp = calculationAreaService.findCalibratedCalculationAreas(baselineName);
+
+        if (resp != null) {
+            return Response.ok(resp
+                            .stream()
+                            .map(CalculationAreaMapper::mapToSparseDto)
+                            .collect(Collectors.toUnmodifiableList()))
+                    .build();
+        } else
+            return Response.noContent().build();
+    }
+
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Create a CalculationArea", response = Response.class)

@@ -3,6 +3,7 @@ package se.havochvatten.symphony.mapper;
 import org.junit.Before;
 import org.junit.Test;
 import se.havochvatten.symphony.dto.AreaSelectionResponseDto;
+import se.havochvatten.symphony.dto.MatrixSelection;
 import se.havochvatten.symphony.entity.AreaType;
 import se.havochvatten.symphony.entity.CalcAreaSensMatrix;
 import se.havochvatten.symphony.entity.CalculationArea;
@@ -97,7 +98,7 @@ public class AreaSelectionResponseDtoMapperTest {
         assertThat(areaDto.getDefaultMatrix().getName(), is(carea.getDefaultSensitivityMatrix().getName()));
 
         assertThat(areaDto.getMatrices().size(), is(carea.getCalcAreaSensMatrixList().size()));
-        AreaSelectionResponseDto.Matrix areaMatrixDto = areaDto.getMatrices().get(0);
+        MatrixSelection areaMatrixDto = areaDto.getMatrices().get(0);
         SensitivityMatrix calcAreaMatrix = carea.getCalcAreaSensMatrixList().get(0).getSensitivityMatrix();
         assertThat(areaMatrixDto.getId(), is(calcAreaMatrix.getId()));
         assertThat(areaMatrixDto.getName(), is(calcAreaMatrix.getName()));

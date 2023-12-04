@@ -40,7 +40,9 @@ export class ScenarioService {
       changes: null,
       excludedCoastal: -1, // "magic" number to prevent inclusion by default
       matrix: { matrixType: 'STANDARD', matrixId: undefined },
-      scenarioId: -1 })) as ScenarioArea[]
+      scenarioId: -1,
+      customCalcAreaId: null
+      })) as ScenarioArea[]
   }
 
   create(baseline: Baseline, name: string, areas: ScenarioArea[], normalization: NormalizationOptions,

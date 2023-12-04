@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { removeIn, setIn, updateIn } from 'immutable';
+import Immutable, { removeIn, setIn, updateIn } from 'immutable';
 import { size } from "lodash";
 
 import { CalculationActions } from '@data/calculation';
@@ -119,6 +119,16 @@ export const scenarioReducer = createReducer(
     ...state,
     scenarios: setIn(state.scenarios, [state.active, 'areas', state.activeArea, 'excludedCoastal'], areaId)
   })),
+  on(ScenarioActions.setArbitraryScenarioAreaMatrixAndNormalization, (state, { areaId, matrixId, calcAreaId }) => {
+    const areaIndex = state.scenarios[state.active!].areas.findIndex(a => a.id === areaId),
+          updatedArea = Immutable.merge(state.scenarios[state.active!].areas[areaIndex],
+              { matrix: { matrixType: 'CUSTOM', matrixId },
+                         customCalcAreaId: calcAreaId } );
+    return (areaIndex === -1) ? state : {
+        ...state,
+        scenarios: setIn(state.scenarios, [state.active, 'areas', areaIndex], updatedArea)
+    }
+  }),
   on(ScenarioActions.updateBandAttribute,(state, { componentType, band, attribute, value }) => {
 
       const change: BandChange = {

@@ -104,6 +104,16 @@
                 "enter-batch-mode": "Gå till \"batch\"-läget",
                 "generate": "Generera"
             },
+            "set-arbitrary-matrix": {
+                "title": "Välj matris och beräkningsområde",
+                "detail": "Ingen standardmatriskoppling kunde bestämmas för området \"{{ areaName }}\".\nFör att kunna analysera området behöver en godtycklig känslighetsmatris och ett havsplaneområde för värdenormalisering* först väljas.",
+                "caution": "Observera att om du avbryter denna åtgärd kommer området att exkluderas från scenariot.",
+                "normalization-description": "*Värdenormalisering innebär att resultatet normaliseras med avseende på det värde som {{ percentileValue }}% av datapunkterna i det valda området ligger inom (inklusive värden för kustområden).",
+                "calculation-area": "Beräkningsområde",
+                "select-matrix-placeholder": "Välj en matris",
+                "select-area-placeholder": "Välj område för värdenormalisering",
+                "set-matrix-and-normalization": "Spara matris och område"
+            },
             "operation": {
                 "title": "Algoritm",
                 "choose": "Välj algoritm",

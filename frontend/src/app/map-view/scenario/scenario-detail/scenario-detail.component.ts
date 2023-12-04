@@ -39,6 +39,10 @@ import {
 import {
   SplitScenarioSettingsComponent
 } from "@src/app/map-view/scenario/split-scenario-settings/split-scenario-settings.component";
+import { MatrixRef } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
+import {
+  SetArbitraryMatrixComponent
+} from "@src/app/map-view/scenario/set-arbitrary-matrix/set-arbitrary-matrix.component";
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 
@@ -60,6 +64,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   @Input() scenario!: Scenario;
   @Input() deleteAreaDelegate!: ((a:number, e:MouseEvent, s:Scenario) => void);
+  @Input() deleteAreaAction! : (a:number, s:Scenario) => void;
   @ViewChild('name') nameElement!: ElementRef;
   editName = false;
 
@@ -97,6 +102,14 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     this.calculating$ = this.store.select(CalculationSelectors.selectCalculating);
     this.percentileValue$ = this.store.select(CalculationSelectors.selectPercentileValue);
     this.bandDictionary$ = this.store.select(MetadataSelectors.selectMetaDisplayDictionary);
+     this.store.select(ScenarioSelectors.selectActiveScenario).subscribe(
+        async (scenario) => {
+            if (scenario) {
+            this.scenario = scenario;
+            this.operation.setValue([...availableOperations.keys()][this.scenario.operation]);
+            await this.setChangesText();
+            }
+        });
     this.store.dispatch(CalculationActions.fetchPercentile());
   }
 
@@ -116,53 +129,84 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
     this.matrixDataSubscription$ = this.store.select(ScenarioSelectors.selectAreaMatrixData).subscribe(
       async data => {
-      if(data !== null && !some(data, d => d === null)) {
-        for (const area_id of Object.keys(data).map(id => parseInt(id))) {
-          const matrixData = data[area_id];
-          if (!matrixData.defaultArea && matrixData.overlap.length > 0 && !this.replacedAreaIds.includes(area_id)) {
-            this.replacedAreaIds.push(area_id);
-            const selectedAreas = (await this.dialogService.open(SelectIntersectionComponent, this.moduleRef, {
-              data: {
-                areas: matrixData.overlap.map(overlap => {
-                  return {
-                    polygon: overlap.polygon,
-                    metaDescription: overlap.defaultMatrix.name
+        if (data !== null && !some(data, d => d === null)) {
+          for (const area_id of Object.keys(data).map(id => +id)) {
+            const matrixData = data[area_id];
+            if (!matrixData.defaultArea) {
+              const area = this.scenario.areas[this.scenario.areas.findIndex(a => a.id === area_id)];
+
+              // Bring up a dialog to select an arbitrary matrix and a calculationarea (for value normalization)
+              // if no default matrix is found and no matrix has been set previously.
+              // This circumstance should be considered an 'edge case' which could occur for user-defined/imported
+              // area polygons that are entirely outside of a default (MSP) area.
+              // matrixData.alternativeMatrices indicates that no default matrix was found
+              // matrixId would be defined if the user has already selected a matrix
+              if (area && !area.matrix.matrixId && matrixData.alternativeMatrices != null) {
+                const response = (await this.dialogService.open(SetArbitraryMatrixComponent, this.moduleRef, {
+                  data: {
+                    areaName: area.feature.properties && area.feature.properties['name'] ?
+                      area.feature.properties['name'] : '??',
+                    matrices: matrixData.alternativeMatrices,
+                    // TODO: more pragmatic percentile value access applicationwide, this seems convoluted
+                    percentileValue: await this.percentileValue$.pipe(take(1)).toPromise()
                   }
-                }),
-                multi: true,
-                headerTextKey: 'map.editor.select-intersection.header',
-                messageTextKey: 'map.editor.select-intersection.message',
-                confirmTextKey: 'map.editor.select-intersection.confirm-selection',
-                metaDescriptionTextKey: 'map.editor.select-intersection.default-matrix'
-              }
-            }) as boolean[]).filter(a => a);
-
-            if (selectedAreas.length > 0) {
-              const replacementAreas: ScenarioArea[] = selectedAreas.map((selectedArea, ix) => {
-                const area = this.scenario.areas[this.scenario.areas.findIndex(a => a.id == area_id)];
-                return {
-                  ...area,
-                  id: -1,
-                  feature: {...area.feature,
-                    geometry: matrixData.overlap[ix].polygon,
-                    properties: { ...area.feature.properties, statePath: [] } },
-                  matrix: {matrixType: 'STANDARD', matrixId: matrixData.overlap[ix].defaultMatrix.id}
+                }) as [MatrixRef, number] | null);
+                if (response) {
+                  const [ selectedMatrix, selectedCalcAreaId ] = response;
+                  this.store.dispatch(ScenarioActions.setArbitraryScenarioAreaMatrixAndNormalization(
+                    {areaId: area_id, matrixId: selectedMatrix.id, calcAreaId: selectedCalcAreaId}));
+                } else {
+                  this.deleteAreaAction(area_id, this.scenario);
                 }
-              });
+              }
+            }
 
-              this.store.dispatch(ScenarioActions.splitAndReplaceScenarioArea(
-                {scenarioId: this.scenario.id, replacedAreaId: area_id, replacementAreas: replacementAreas}));
+            if (matrixData.overlap.length > 0 && !this.replacedAreaIds.includes(area_id)) {
+              this.replacedAreaIds.push(area_id);
+              const selectedAreas = (await this.dialogService.open(SelectIntersectionComponent, this.moduleRef, {
+                data: {
+                  areas: matrixData.overlap.map(overlap => {
+                    return {
+                      polygon: overlap.polygon,
+                      metaDescription: overlap.defaultMatrix.name
+                    }
+                  }),
+                  multi: true,
+                  headerTextKey: 'map.editor.select-intersection.header',
+                  messageTextKey: 'map.editor.select-intersection.message',
+                  confirmTextKey: 'map.editor.select-intersection.confirm-selection',
+                  metaDescriptionTextKey: 'map.editor.select-intersection.default-matrix'
+                }
+              }) as boolean[]).filter(a => a);
 
-            } else {
-              if(this.scenario.areas.filter(a => a.id !== area_id).length > 0) {
-                this.store.dispatch(ScenarioActions.closeActiveScenario());
+              if (selectedAreas.length > 0) {
+                const replacementAreas: ScenarioArea[] = selectedAreas.map((selectedArea, ix) => {
+                  const area = this.scenario.areas[this.scenario.areas.findIndex(a => a.id == area_id)];
+                  return {
+                    ...area,
+                    id: -1,
+                    feature: {
+                      ...area.feature,
+                      geometry: matrixData.overlap[ix].polygon,
+                      properties: {...area.feature.properties, statePath: []}
+                    },
+                    matrix: {matrixType: 'STANDARD', matrixId: matrixData.overlap[ix].defaultMatrix.id}
+                  }
+                });
+
+                this.store.dispatch(ScenarioActions.splitAndReplaceScenarioArea(
+                  {scenarioId: this.scenario.id, replacedAreaId: area_id, replacementAreas: replacementAreas}));
+
               } else {
-                this.store.dispatch(ScenarioActions.deleteScenarioArea({ areaId: area_id }));
+                if (this.scenario.areas.filter(a => a.id !== area_id).length > 0) {
+                  this.store.dispatch(ScenarioActions.closeActiveScenario());
+                } else {
+                  this.store.dispatch(ScenarioActions.deleteScenarioArea({areaId: area_id}));
+                }
               }
             }
           }
         }
-      }
     });
 
     this.store.dispatch(fetchAreaMatrices({ scenarioId: this.scenario.id }));

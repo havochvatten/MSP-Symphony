@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vladmihalcea.hibernate.type.array.IntArrayType;
 import org.apache.commons.lang3.tuple.Pair;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
@@ -13,7 +12,6 @@ import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.LiteShape2;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.hibernate.engine.spi.Mapping;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
@@ -26,6 +24,7 @@ import se.havochvatten.symphony.calculation.Operations;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
+import se.havochvatten.symphony.entity.CalculationArea;
 import se.havochvatten.symphony.service.CalculationAreaService;
 import se.havochvatten.symphony.util.Util;
 
@@ -103,6 +102,15 @@ public class ScenarioService {
         em.merge(updated);
         em.flush();
         return updated;
+    }
+
+    @Transactional
+    public ScenarioArea updateArea(ScenarioArea updated, Integer calculationAreaId) {
+        if(calculationAreaId != null) {
+            CalculationArea calculationArea = calculationAreaService.findCalculationArea(calculationAreaId);
+            updated.setCustomCalcArea(calculationArea);
+        }
+        return updateArea(updated);
     }
 
     public void delete(Principal principal, int id) {

@@ -21,6 +21,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
@@ -55,9 +56,26 @@ public class CalculationAreaService {
                 .getResultList();
     }
 
+    public List<CalculationArea> findCalibratedCalculationAreas(String baselineName) {
+        return em.createNamedQuery("CalculationArea.findCalibratedByBaselineName")
+                .setParameter("name", baselineName)
+                .getResultList();
+    }
+
     public List<CalculationArea> findCalculationAreas(List<Integer> ids) {
         return em.createNamedQuery("CalculationArea.findByIds")
                 .setParameter("ids", ids)
+                .getResultList();
+    }
+
+    public CalculationArea findCalculationArea(Integer id) {
+        return em.find(CalculationArea.class, id);
+    }
+
+    public List<MatrixSelection> findAvailableMatricesForUser(String baselineName, Principal principal) {
+        return em.createNamedQuery("SensitivityMatrix.findAllByBaselineNameAndOwner", MatrixSelection.class)
+                .setParameter("name", baselineName)
+                .setParameter("owner", principal.getName())
                 .getResultList();
     }
 
@@ -78,6 +96,12 @@ public class CalculationAreaService {
                 .stream()
                 .filter((ca) -> ca.isCareaDefault())
                 .collect(Collectors.toList());
+
+            if(defaultAreas.size() == 0) {
+                return new AreaSelectionResponseDto(){{
+                    setAlternativeMatrices(findAvailableMatricesForUser(baselineName, principal));
+                }};
+            }
 
             if(defaultAreas.size() > 1) {
                 GeometryJSON geoJson = new GeometryJSON();
@@ -128,10 +152,20 @@ public class CalculationAreaService {
 
     public ScenarioAreaSelectionResponseDto scenarioAreaSelect(String baselineName, int scenarioId, Principal principal) throws SymphonyStandardAppException {
         Scenario scenario = em.find(Scenario.class, scenarioId);
+
         int[] areaIds = scenario.getAreas().stream().mapToInt(ScenarioArea::getId).toArray();
         ScenarioAreaSelectionResponseDto resp = new ScenarioAreaSelectionResponseDto();
 
         for(Integer areaId : areaIds) {
+            try {
+                resp.matrixData.put(areaId, areaSelect(baselineName, areaId, principal));
+            } catch (SymphonyStandardAppException e) {
+                if(e.getErrorCode() == SymphonyModelErrorCode.NO_DEFAULT_MATRIX_FOUND) {
+                    resp.matrixData.put(areaId, new AreaSelectionResponseDto());
+                } else {
+                    throw e;
+                }
+            }
             resp.matrixData.put(areaId, areaSelect(baselineName, areaId, principal));
         }
 
@@ -204,7 +238,12 @@ public class CalculationAreaService {
     }
 
     public MatrixResponse getAreaCalcMatrices(Scenario scenario) throws SymphonyStandardAppException {
-        return getAreaCalcMatrices(scenario.getAreas(), scenario.getBaselineId());
+        // Explicit fetch join bringing lazy-loaded customCalcArea into session
+        TypedQuery<ScenarioArea> query = em.createQuery("SELECT area FROM ScenarioArea area LEFT JOIN FETCH area.customCalcArea WHERE area.id IN :ids", ScenarioArea.class);
+        query.setParameter("ids", scenario.getAreas().stream().mapToInt(ScenarioArea::getId).boxed().collect(Collectors.toList()));
+        List<ScenarioArea> j_areas = query.getResultList();
+
+        return getAreaCalcMatrices(j_areas, scenario.getBaselineId());
     }
 
     public MatrixResponse getAreaCalcMatrices(List<ScenarioArea> areas, Integer baselineId) throws SymphonyStandardAppException {
@@ -227,6 +266,13 @@ public class CalculationAreaService {
                     break;
                 }
             }
+
+            CalculationArea customCalcArea = area.getCustomCalcArea();
+
+            if (customCalcArea != null) {
+                areaMatrixMap.setAreaNormalizationValue(areaId, customCalcArea.getMaxValue());
+            }
+
             if(areaMatrixParameters.matrixId != null) {
                 areaMatrixMap.setAreaMatrixId(areaId, areaMatrixParameters.matrixId);
             } else {
