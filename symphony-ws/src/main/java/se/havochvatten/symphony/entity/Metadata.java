@@ -56,4 +56,25 @@ public class Metadata {
         return metaValue;
     }
 
+    // Exposure of setters for unit testing
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setBand(SymphonyBand band) {
+        this.band = band;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public void setMetaField(String metaField) {
+        this.metaField = metaField;
+    }
+
+    public void setMetaValue(String metaValue) {
+        this.metaValue = metaValue;
+    }
+
 }
