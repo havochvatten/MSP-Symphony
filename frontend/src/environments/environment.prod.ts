@@ -1,3 +1,5 @@
+import { NormalizationType } from "@data/calculation/calculation.service";
+
 export const environment = {
   production: true,
   showBaseCalculations: true,
@@ -17,7 +19,8 @@ export const environment = {
   },
   editor: {
     autoSaveIntervalInSeconds: 30, // 0 to disable
-    loadLatestCalculation: false
+    loadLatestCalculation: false,
+    defaultNormalizationType: NormalizationType.Area
   },
   backgroundMap: {
     gebco: {

@@ -2,6 +2,8 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+import { NormalizationType } from "@data/calculation/calculation.service";
+
 export const environment = {
   production: false,
   showBaseCalculations: false,
@@ -21,7 +23,8 @@ export const environment = {
   },
   editor: {
     autoSaveIntervalInSeconds: 60, // 0 to disable
-    loadLatestCalculation: false
+    loadLatestCalculation: false,
+    defaultNormalizationType: NormalizationType.Area
   },
   backgroundMap: {
     gebco: {

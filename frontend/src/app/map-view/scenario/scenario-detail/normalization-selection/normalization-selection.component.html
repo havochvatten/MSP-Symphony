@@ -4,15 +4,15 @@
   <div class="normalization-form">
     <mat-radio-group [value]="this.options.type">
       <mat-radio-button
+        [value]="NormalizationType.Area"
+        (change)="check($event.value)">
+        <span class="normalization-label-text">{{ 'map.editor.normalization.area' | translate }}</span>
+      </mat-radio-button>
+      <mat-radio-button
         [value]="NormalizationType.Domain"
         [disabled]="algorithm === 'RarityAdjustedCumulativeImpact'"
         (change)="check($event.value)"
       ><span class="normalization-label-text">{{ 'map.editor.normalization.domain' | translate : { ordinalPercentileValue: this.percentileValue | ordinal:locale } }}</span>
-      </mat-radio-button>
-      <mat-radio-button
-        [value]="NormalizationType.Area"
-        (change)="check($event.value)">
-        <span class="normalization-label-text">{{ 'map.editor.normalization.area' | translate }}</span>
       </mat-radio-button>
       <mat-radio-button
         [value]="NormalizationType.StandardDeviation"
