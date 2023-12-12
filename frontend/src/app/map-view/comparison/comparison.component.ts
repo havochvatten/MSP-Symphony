@@ -12,6 +12,8 @@ import { map, tap, withLatestFrom } from 'rxjs/operators';
 import { TranslateService } from "@ngx-translate/core";
 import { MatSelect } from "@angular/material/select";
 import { MatOption } from "@angular/material/core";
+import { MatCheckboxChange } from "@angular/material/checkbox";
+import { MatRadioChange } from "@angular/material/radio";
 
 /*export const sameCalculationsValidator: ValidatorFn = (control: AbstractControl):
   ValidationErrors | null => {
@@ -39,6 +41,7 @@ export class ComparisonComponent implements AfterViewInit {
   loadingCandidates?: boolean;
   ScaleOptions = ComparisonScaleOptions;
   public selectedScale = ComparisonScaleOptions.CONSTANT;
+  constant: number = 45;
 
   constructor(
     private store: Store<State>,
@@ -60,16 +63,18 @@ export class ComparisonComponent implements AfterViewInit {
           a =  this.compareForm.value.a as string, b = this.compareForm.value.b as string,
           comparisonTitle = (this.aSelect.selected as MatOption).viewValue + ' ~ ' +
                                    (this.bSelect.selected as MatOption).viewValue,
-          dynamic = this.selectedScale === ComparisonScaleOptions.DYNAMIC;
-    this.calcService.addComparisonResult(a, b, dynamic).then(
+          dynamic = this.selectedScale === ComparisonScaleOptions.DYNAMIC,
+          constantVal = this.constant;
+    this.calcService.addComparisonResult(a, b, dynamic, constantVal).then(
       (dynamicMax: number | null) => {
+        const max = dynamicMax != null ? Math.ceil(dynamicMax * 100) : this.constant;
         this.dialogService.open(ComparisonReportModalComponent, this.moduleRef, {
-          data: { a, b, dynamicMax }
+          data: { a, b, max }
         });
         if(dynamic) {
-          that.store.dispatch(CalculationActions.fetchDynamicComparisonLegend({ dynamicMax: dynamicMax || 0, comparisonTitle }));
+            that.store.dispatch(CalculationActions.fetchComparisonLegend({ maxValue: dynamicMax || 0, comparisonTitle }));
         } else {
-            that.store.dispatch(CalculationActions.fetchComparisonLegend({ comparisonTitle }));
+            that.store.dispatch(CalculationActions.fetchComparisonLegend({ maxValue: that.constant / 100, comparisonTitle }));
         }
       }
     )
@@ -91,7 +96,9 @@ export class ComparisonComponent implements AfterViewInit {
     );
   }
 
-  setComparisonScale(scale: ComparisonScaleOptions) {
-    this.selectedScale = scale;
+  setComparisonScale(ev: MatRadioChange) {
+    if(ev.source.checked) {
+      this.selectedScale = ev.source.value;
+    }
   }
 }

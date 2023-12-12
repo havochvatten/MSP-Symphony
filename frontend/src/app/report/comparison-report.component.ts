@@ -39,15 +39,14 @@ export class ComparisonReportComponent {
   areaDictA: Map<number, string> = new Map<number, string>();
   areaDictB: Map<number, string> = new Map<number, string>();
 
-  isDynamic: boolean;
-  dynamicMax: number;
+  maxValue: number;
 
   chartWeightThresholdPercentage: string = '1%';
   symphonyVersion = buildInfo.version;
 
 
   private imageUrl: string;
-  private legend:Observable<Legend>;
+  legend:Observable<Legend>;
 
   constructor(
     private translate: TranslateService,
@@ -63,15 +62,11 @@ export class ComparisonReportComponent {
           paramMap = route.snapshot.paramMap,
           aId = paramMap.get('aId')!, bId = paramMap.get('bId')!;
 
-    this.isDynamic = route.snapshot.url[0].path === 'compareDynamic'
-    this.dynamicMax = +(paramMap.get('dynamicMax') || 0);
+    this.maxValue = +(paramMap.get('maxValue') || 0);
 
-    this.legend = (this.isDynamic) ?
-      calcService.getDynamicComparisonLegend(this.dynamicMax) :
-      calcService.getLegend('comparison');
+    this.legend = calcService.getComparisonLegend(this.maxValue / 100)
 
-    this.imageUrl = `${env.apiBaseUrl}/calculation/diff/${aId}/${bId}`
-                            + (this.isDynamic ? `?dynamic=true` : '');
+    this.imageUrl = `${env.apiBaseUrl}/calculation/diff/${aId}/${bId}?max=${this.maxValue}`;
 
     reportService.getComparisonReport(aId, bId).subscribe({
       next(report) {

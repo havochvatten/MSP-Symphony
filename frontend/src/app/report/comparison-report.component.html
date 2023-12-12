@@ -14,7 +14,7 @@
   ></app-cumulative-effect-etc>
   <app-result-color-scale
     [perMille]="true"
-    [decimals]="dynamicMax < 0.45"
+    [decimals]="maxValue < 0.45"
     [colors]="(legend | async)?.colorMap"
     unit="%"
   ></app-result-color-scale>

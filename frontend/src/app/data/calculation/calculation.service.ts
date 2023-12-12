@@ -111,7 +111,7 @@ export class CalculationService implements OnDestroy {
     });
   }
 
-  public addComparisonResult(idA: string, idB: string, dynamic: boolean){
+  public addComparisonResult(idA: string, idB: string, dynamic: boolean, max: number){
     //  Bit "hacky" but workable "faux" id constructed as a negative number
     //  to guarantee uniqueness without demanding a separate interface.
     //  Note that this artficially imposes a virtual maximum for calculation
@@ -120,7 +120,7 @@ export class CalculationService implements OnDestroy {
     //  which is -2^53
 
     return this.addResultImage(this.cmpId(+idA, +idB), `diff/${idA}/${idB}`
-                                                  + (dynamic ? '?dynamic=true' : ''));
+                                                  + (dynamic ? '?dynamic=true' : '?max=' + max));
   }
 
   cmpId(a:number, b:number): number {
@@ -206,8 +206,8 @@ export class CalculationService implements OnDestroy {
     return this.http.get<Legend>(`${env.apiBaseUrl}/legend/${type}`);
   }
 
-  public getDynamicComparisonLegend(dynamicMax: number) {
-    return this.http.get<Legend>(`${env.apiBaseUrl}/legend/comparison?dynamicMax=${dynamicMax}`);
+  public getComparisonLegend(maxValue: number) {
+    return this.http.get<Legend>(`${env.apiBaseUrl}/legend/comparison?maxValue=${maxValue}`);
   }
 
   public getPercentileValue() {

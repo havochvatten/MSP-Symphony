@@ -330,14 +330,16 @@ public class CalculationREST {
     @ApiOperation(value = "Computes the difference between two calculations", response = byte[].class)
     public Response getDifferenceImage(@Context HttpServletRequest req,
                                        @PathParam("a") int baseId, @PathParam("b") int scenarioId,
+                                       @QueryParam("max") Integer maxValue,
                                        @QueryParam("dynamic") boolean dynamic, @QueryParam("crs") String crs)
             throws Exception {
         crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8.toString()) :
                 props.getProperty("data.source.crs", "EPSG:3035");
+        maxValue = maxValue != null ? maxValue : 45;
 
         try {
             var diff = getDiffCoverageFromCalcIds(calcService, req, baseId, scenarioId);
-            return projectedPNGImageResponse(diff, crs, null, dynamic);
+            return projectedPNGImageResponse(diff, crs, null, dynamic, maxValue);
         } catch (AccessDeniedException ax) {
             return status(Response.Status.UNAUTHORIZED).build();
         } catch (SymphonyStandardAppException sx) {
@@ -508,7 +510,7 @@ public class CalculationREST {
     }
 
     private Response projectedPNGImageResponse(GridCoverage2D coverage, String crs, Double normalizationValue,
-                                               boolean dynamicComparativeScale) throws Exception {
+                                               boolean dynamicComparativeScale, int maxPercentage) throws Exception {
         Envelope dataEnvelope = new ReferencedEnvelope(coverage.getEnvelope());
         CoordinateReferenceSystem targetCRS;
         Envelope targetEnvelope;
@@ -535,7 +537,7 @@ public class CalculationREST {
                 WebUtil.getSLD(CalculationREST.class.getClassLoader().getResourceAsStream(
                         props.getProperty("data.styles.comparison")));
             // "Dynamic" color maxima
-            if(dynamicComparativeScale) {
+            if(dynamicComparativeScale || maxPercentage == 0) {
                 double[] extrema = StatsNormalizer.getExtrema(coverage, normalizationFactory.getOperations());
 
                 dynamicMax = Math.max(Math.abs(extrema[0]), Math.abs(extrema[1]));
@@ -547,7 +549,7 @@ public class CalculationREST {
 
                 image = WebUtil.renderDynamicComparison(coverage, targetCRS, targetEnvelope, sld, dynamicMax);
             } else {
-                image = WebUtil.render(coverage, targetCRS, targetEnvelope, sld);
+                image = WebUtil.renderDynamicComparison(coverage, targetCRS, targetEnvelope, sld, maxPercentage / 100.0);
             }
         }
 

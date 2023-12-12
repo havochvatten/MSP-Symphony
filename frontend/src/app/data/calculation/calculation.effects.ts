@@ -69,27 +69,11 @@ export class CalculationEffects {
     )
   ));
 
-  fetchComparisonLegend$ = createEffect(() => this.actions$.pipe(
-    ofType(CalculationActions.fetchComparisonLegend),
-    mergeMap(({ comparisonTitle }) =>
-      this.calcService.getLegend('comparison').pipe(
-        map(legend => CalculationActions.fetchComparisonLegendSuccess({ legend, comparisonTitle, maxValue: 0.45 })),
-        catchError(({ status, error: message }) =>
-          of(
-            CalculationActions.fetchLegendFailure({
-              error: { status, message }
-            })
-          )
-        )
-      )
-    )
-  ));
-
   fetchDynamicComparisonLegend$ = createEffect(() => this.actions$.pipe(
-    ofType(CalculationActions.fetchDynamicComparisonLegend),
-    mergeMap(({ dynamicMax, comparisonTitle }) =>
-      this.calcService.getDynamicComparisonLegend(dynamicMax).pipe(
-        map(legend => CalculationActions.fetchComparisonLegendSuccess({ legend, comparisonTitle, maxValue: dynamicMax })),
+    ofType(CalculationActions.fetchComparisonLegend),
+    mergeMap(({ maxValue, comparisonTitle }) =>
+      this.calcService.getComparisonLegend(maxValue).pipe(
+        map(legend => CalculationActions.fetchComparisonLegendSuccess({ legend, comparisonTitle, maxValue })),
         catchError(({ status, error: message }) =>
           of(
             CalculationActions.fetchLegendFailure({

@@ -24,12 +24,8 @@ const routes: Routes = [
     //   import('./report/calculation-report.module').then(mod => mod.CalculationReportModule),
     children: [
       {
-        path: 'compare/:aId/:bId',
+        path: 'compare/:aId/:bId/:maxValue',
         component: ComparisonReportComponent
-      },
-      {
-        path: 'compareDynamic/:aId/:bId/:dynamicMax',
-        component: ComparisonReportComponent,
       },
       {
         path: ':calcId',

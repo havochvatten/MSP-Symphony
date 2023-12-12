@@ -402,7 +402,7 @@
             "base-scenario-suggestion": "",
             "what-if-scenario-suggestion": "",
             "select-scale": "Sélectionnez l'échelle de couleur",
-            "scale-constant": "Maximum constant (45%)",
+            "scale-constant": "Maximum constant",
             "scale-dynamic": "Maximum dynamique"
         },
         "user-area": {

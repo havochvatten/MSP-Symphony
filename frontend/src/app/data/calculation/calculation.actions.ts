@@ -35,14 +35,14 @@ export const fetchLegend = createAction(
   props<{ legendType: LegendType }>()
 );
 
-export const fetchComparisonLegend = createAction(
+createAction(
   '[Calculation] Fetch comparison legend',
   props<{ comparisonTitle: string }>()
 );
 
-export const fetchDynamicComparisonLegend = createAction(
+export const fetchComparisonLegend = createAction(
   '[Calculation] Fetch dynamic comparison legend',
-  props<{ dynamicMax: number, comparisonTitle: string }>()
+  props<{ maxValue: number, comparisonTitle: string }>()
 );
 
 export const fetchLegendSuccess = createAction(

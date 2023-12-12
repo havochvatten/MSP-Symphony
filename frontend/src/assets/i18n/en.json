@@ -402,7 +402,7 @@
             "base-scenario-suggestion": "(typically your baseline analysis)",
             "what-if-scenario-suggestion": "(typically your new scenario analysis)",
             "select-scale": "Customize color scale",
-            "scale-constant": "Constant maximum (45%)",
+            "scale-constant": "Constant maximum",
             "scale-dynamic": "Dynamic maximum"
         },
         "user-area": {

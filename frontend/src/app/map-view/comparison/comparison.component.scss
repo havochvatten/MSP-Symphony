@@ -22,6 +22,25 @@
 
     .container {
       flex: 0;
+
+      .scale-constant {
+        display: flex;
+        margin-bottom: 0.6rem;
+
+        mat-radio-button {
+          margin: 0.4rem 1rem 0 0;
+        }
+
+        input.percentage {
+          text-align: left;
+          height: 4.1rem;
+          width: 8rem;
+          box-sizing: border-box;
+          border-radius: 4px;
+          border: 1px solid #ced4da;
+          font-size: 1.6rem;
+        }
+      }
     }
 
     h2 {

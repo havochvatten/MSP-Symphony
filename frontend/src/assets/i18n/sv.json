@@ -402,7 +402,7 @@
             "base-scenario-suggestion": "(vanligtvis basvärdeanalysen)",
             "what-if-scenario-suggestion": "(vanligtvis den prognostiserade analysen)",
             "select-scale": "Anpassa färgskala",
-            "scale-constant": "Konstant maximum (45%)",
+            "scale-constant": "Konstant maximum",
             "scale-dynamic": "Dynamiskt maximum"
         },
         "user-area": {
