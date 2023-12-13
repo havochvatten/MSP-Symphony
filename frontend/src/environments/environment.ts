@@ -24,7 +24,7 @@ export const environment = {
   editor: {
     autoSaveIntervalInSeconds: 60, // 0 to disable
     loadLatestCalculation: false,
-    defaultNormalizationType: NormalizationType.Area
+    defaultNormalizationType: 'AREA'
   },
   backgroundMap: {
     gebco: {

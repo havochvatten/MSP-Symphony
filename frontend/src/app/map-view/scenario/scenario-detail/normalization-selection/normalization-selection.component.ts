@@ -4,7 +4,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { environment } from "@src/environments/environment";
 
 export const DEFAULT_OPTIONS: NormalizationOptions = {
-  type: environment.editor.defaultNormalizationType,
+  type: environment.editor.defaultNormalizationType as NormalizationType,
   stdDevMultiplier: 0,
   userDefinedValue: 1
 }
