@@ -102,6 +102,11 @@ export const deleteCalculationFailure = createAction(
   props<{ error: ErrorMessage }>()
 );
 
+export const deleteMultipleCalculations = createAction(
+  '[Calculation] Delete multiple calculations (by id)',
+  props<{ calculationIds: number[] }>()
+);
+
 export const updateName = createAction(
   '[Calculation] Update calculation name',
   props<{ index: number, newName: string }>()

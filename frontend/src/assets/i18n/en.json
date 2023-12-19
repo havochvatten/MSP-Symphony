@@ -388,8 +388,17 @@
             "delete-modal" : {
                 "header": "Delete calculation",
                 "message": "Confirm deletion of previously saved calculation result: <em>“{{ calculationName }}”</em>",
+                "header-multiple": "Delete calculations",
+                "message-multiple": "Confirm deletion of <strong>{{ count }}</strong> calculation results?",
+                "message-single": "Confirm deletion of this calculation result?",
                 "cancel": "Cancel",
                 "confirm": "Delete"
+            },
+            "multi-mode": {
+                "enter": "Enter multi-selection mode to delete multiple calculations",
+                "exit": "Exit multi-selection mode",
+                "delete-selected": "Delete selected calculations",
+                "none-selected": "No calculations selected for deletion"
             }
         },
         "compare": {

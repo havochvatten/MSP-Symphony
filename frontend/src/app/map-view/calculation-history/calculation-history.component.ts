@@ -1,4 +1,4 @@
-import { Component, ElementRef, NgModuleRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, NgModuleRef, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { retry, tap } from "rxjs/operators";
 import { select, Store } from '@ngrx/store';
@@ -16,7 +16,6 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 import { TranslateService } from "@ngx-translate/core";
 import { Listable } from "@shared/list-filter/listable.directive";
-
 
 @Component({
   selector: 'app-history',
@@ -37,6 +36,9 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
   private visibleResults: number[] = [];
   private calcLoadingState$: Subscription;
   private checkMessageHandler: any;
+  isMultiMode = signal<boolean>(false);
+  selectedIds: number[] = [];
+
 
   constructor(
     private store: Store<State>,
@@ -183,5 +185,37 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
 
   ngOnInit(): void {
     window.addEventListener("message", this.checkMessageHandler);
+  }
+
+  multiSelect(id: number) {
+    if(!this.selectedIds.includes(id)) {
+      this.selectedIds = [...this.selectedIds, id];
+    } else {
+      this.selectedIds = this.selectedIds.filter(i => i !== id);
+    }
+  }
+
+  isDisabled: () => boolean = () => { return !this.isMultiMode || this.selectedIds.length == 0 };
+
+  deleteSelectedCalculations = async () => {
+    const multi = this.selectedIds.length > 1,
+          deletionConfirmed = await this.dialogService.open(ConfirmationModalComponent, this.moduleRef,
+      { data: {
+          header: this.translateService.instant(
+            multi ? 'map.history.delete-modal.header-multiple' :
+                    'map.history.delete-modal.header'),
+          message: this.translateService.instant(
+            multi ? 'map.history.delete-modal.message-multiple' :
+                    'map.history.delete-modal.message-single', { count: this.selectedIds.length }),
+          confirmText: this.translateService.instant('map.history.delete-modal.confirm'),
+          confirmColor: 'warn',
+          buttonsClass: 'right'
+        }
+      });
+    if(deletionConfirmed) {
+      this.store.dispatch(CalculationActions.deleteMultipleCalculations({calculationIds: this.selectedIds}));
+      this.selectedIds = [];
+      this.isMultiMode.set(false);
+    }
   }
 }

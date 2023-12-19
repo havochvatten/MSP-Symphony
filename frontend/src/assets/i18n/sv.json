@@ -388,8 +388,17 @@
             "delete-modal" : {
                 "header": "Radera sparad beräkning",
                 "message": "Bekräfta borttagning av tidigare sparad beräkning: <em>“{{ calculationName }}”</em>",
+                "header-multiple": "Radera markerade beräkningar",
+                "message-multiple": "Bekräfta borttagning av <strong>{{ count }}</strong> tidigare sparade beräkningar.",
+                "message-single": "Vill du ta bort den valda beräkningen?",
                 "cancel": "Avbryt",
                 "confirm": "Radera"
+            },
+            "multi-mode": {
+                "enter": "Markera flera beräkningar att radera samtidigt",
+                "exit": "Avsluta markering av flera beräkningar",
+                "delete-selected": "Radera markerade beräkningar",
+                "none-selected": "Inga beräkningar har markerats"
             }
         },
         "compare": {

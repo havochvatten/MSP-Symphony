@@ -166,16 +166,25 @@ public class CalculationREST {
 
     @DELETE
     @ApiOperation(value = "Delete calculation result")
-    @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    public Response deleteCalculation(@Context HttpServletRequest req, @PathParam("id") int id) {
+    public Response deleteCalculation(@Context HttpServletRequest req, @QueryParam("ids") String ids) {
         var principal = req.getUserPrincipal();
         if (principal == null)
             throw new NotAuthorizedException("Null principal");
 
+        int[] idArray = intArrayParam(ids);
+
         try {
-            calcService.delete(req.getUserPrincipal(), id);
+            for (int calcId : idArray) {
+                var persistedCalculation = CalcUtil.getCalculationResultFromSessionOrDb(calcId,
+                    req.getSession(), calcService).orElseThrow(NotFoundException::new);
+                if (!persistedCalculation.getOwner().equals(principal.getName())) {
+                    throw new ForbiddenException("User not owner of calculation");
+                } else {
+                    calcService.delete(req.getUserPrincipal(), calcId);
+                }
+            }
             return ok().build();
         } catch (NotFoundException nx) {
             return status(Response.Status.NOT_FOUND).build();
@@ -357,7 +366,7 @@ public class CalculationREST {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
 
-        int[] idArray = Arrays.stream(ids.split(",")).mapToInt(Integer::parseInt).toArray();
+        int[] idArray = intArrayParam(ids);
 
         for(int id : idArray) {
             var persistedScenario = scenarioService.findById(id);
@@ -584,5 +593,9 @@ public class CalculationREST {
                     ? new ForbiddenException("User " + user.getName() + " is not owner of calculation " + calc.getId())
                     : new NotAuthorizedException("User not authorized");
         }
+    }
+
+    public static int[] intArrayParam(String param) {
+        return Arrays.stream(param.split(",")).mapToInt(Integer::parseInt).toArray();
     }
 }
