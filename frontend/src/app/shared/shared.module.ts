@@ -42,6 +42,7 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatRadioModule } from "@angular/material/radio";
 import { MatInputModule } from "@angular/material/input";
 import { ListFilterComponent } from './list-filter/list-filter.component';
+import { MultiToolsComponent } from './multi-tools/multi-tools.component';
 
 @NgModule({
   declarations: [
@@ -81,7 +82,8 @@ import { ListFilterComponent } from './list-filter/list-filter.component';
     InlineMapComponent,
     SelectIntersectionComponent,
     ComparisonColorScaleComponent,
-    ListFilterComponent
+    ListFilterComponent,
+    MultiToolsComponent
   ],
   imports: [
     CommonModule,
@@ -130,7 +132,8 @@ import { ListFilterComponent } from './list-filter/list-filter.component';
     InlineMapComponent,
     SelectIntersectionComponent,
     ComparisonColorScaleComponent,
-    ListFilterComponent
+    ListFilterComponent,
+    MultiToolsComponent
   ]
 })
 export class SharedModule {}

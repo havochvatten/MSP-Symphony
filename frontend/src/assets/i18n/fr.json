@@ -388,8 +388,17 @@
             "delete-modal" : {
                 "header": "Supprimer résultat",
                 "message": "Confirmer la suppression du résultat: <em>“{{ calculationName }}”</em>",
+                "header-multiple": "Supprimer les résultats",
+                "message-multiple": "Confirmer la suppression de <strong>{{ count }}</strong> résultats",
+                "message-single": "Confirmer la suppression du résultat",
                 "cancel": "Annuler",
                 "confirm": "Supprimer"
+            },
+            "multi-mode": {
+                "enter": "Entrer en mode de sélection multiple pour supprimer plusieurs calculs",
+                "exit": "Quitter le mode de sélection multiple",
+                "delete-selected": "Supprimer les calculs sélectionnés",
+                "none-selected": "Aucun calcul sélectionné"
             }
         },
         "compare": {

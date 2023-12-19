@@ -164,18 +164,20 @@ export class CalculationService implements OnDestroy {
     });
   }
 
-  public deleteResult(id: number){
+  public deleteResults(ids: number[]){
     const that = this;
     return new Promise<void>((resolve, reject) => {
-      this.delete(id).subscribe({
-        next(response) {
-          that.resultRemoved$.emit(id);
-          resolve();
-        },
-        error(err: HttpErrorResponse) {
-          reject('Server error');
-        }});
-    });
+        that.delete(ids).subscribe({
+          next(response) {
+            ids.forEach((id) => {
+              that.resultRemoved$.emit(id);
+            });
+            resolve();
+          },
+          error(err: HttpErrorResponse) {
+            reject('Server error');
+          }});
+      });
   }
 
   public removeResultPixels(id: number) {
@@ -219,8 +221,8 @@ export class CalculationService implements OnDestroy {
       headers: new HttpHeaders({ 'Content-Type': 'text/plain' })});
   }
 
-  delete(id: number) {
-    return this.http.delete(`${env.apiBaseUrl}/calculation/${id}`);
+  delete(ids: number[]) {
+    return this.http.delete(`${env.apiBaseUrl}/calculation?ids=${ids.join()}`);
   }
 
   ngOnDestroy() {
