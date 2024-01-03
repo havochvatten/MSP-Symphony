@@ -167,8 +167,8 @@ export class CalculationService implements OnDestroy {
   public deleteResults(ids: number[]){
     const that = this;
     return new Promise<void>((resolve, reject) => {
-        that.delete(ids).subscribe({
-          next(response) {
+        this.delete(ids).subscribe({
+          next() {
             ids.forEach((id) => {
               that.resultRemoved$.emit(id);
             });

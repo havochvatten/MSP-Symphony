@@ -49,7 +49,7 @@
                 'visible': resultIsVisible(calculation.id),
                 'purged': calculation.isPurged }"
               [title]="(calculation.isPurged ? ('map.history.purged-result' | translate) : '')"
-              (click)="this.isMultiMode() ? multiSelect(calculation.id) : showReport(calculation.id)"
+              (click)="isMultiMode() ? multiSelect(calculation.id) : showReport(calculation.id)"
               >
         <div class="calculation-info">
           <div class="name">

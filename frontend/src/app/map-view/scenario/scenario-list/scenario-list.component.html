@@ -46,7 +46,7 @@
          class="scenario-wrap"
          [ngClass]="{'filtered': filter(scenario.name) }">
       <div class="scenario list-item"
-           (click)="this.isBatchMode() ? selectForBatch(scenario.id) : open(scenarioIndex)" [title]="scenario.name">
+           (click)="isBatchMode() ? selectForBatch(scenario.id) : open(scenarioIndex)" [title]="scenario.name">
         <div class="scenario-info">
           <div class="name">
             <h4>{{ scenario.name }}</h4>
