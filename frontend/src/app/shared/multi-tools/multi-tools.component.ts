@@ -9,7 +9,7 @@ import { IconType } from "@shared/icon/icon.component";
 export class MultiToolsComponent {
 
   @Input() isMultiMode!: WritableSignal<boolean>
-  @Input() modeChangeEffect: (() => void | undefined) | undefined;
+  @Input() modeChangeEffect: (() => void) | undefined;
   @Input() disabledPredicate!: () => boolean
   @Input() exitLabel!: string
   @Input() enterLabel!: string

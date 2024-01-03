@@ -195,7 +195,7 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
     }
   }
 
-  isDisabled: () => boolean = () => { return !this.isMultiMode || this.selectedIds.length == 0 };
+  isDisabled: () => boolean = () => { return !this.isMultiMode() || this.selectedIds.length === 0 };
 
   deleteSelectedCalculations = async () => {
     const multi = this.selectedIds.length > 1,
