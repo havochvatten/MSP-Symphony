@@ -13,6 +13,7 @@ import se.havochvatten.symphony.calculation.CalcService;
 import se.havochvatten.symphony.dto.NormalizationOptions;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
+import se.havochvatten.symphony.entity.CalculationArea;
 import se.havochvatten.symphony.entity.CalculationResult;
 
 import javax.persistence.*;
@@ -160,6 +161,7 @@ public class Scenario implements Serializable, BandChangeEntity {
         var areasToAdd = altAreas == null ? s.areas : altAreas;
 
         for(ScenarioArea a : areasToAdd) {
+            CalculationArea calcArea = a.getCustomCalcArea();
             this.areas.add(new ScenarioArea(
                 new ScenarioAreaDto(
                     -1,
@@ -169,7 +171,7 @@ public class Scenario implements Serializable, BandChangeEntity {
                     a.getMatrix(),
                     null,
                     a.getExcludedCoastal(),
-                    a.getCustomCalcArea().getId()), this));
+                    calcArea == null ? null : calcArea.getId()), this));
         }
     }
 
