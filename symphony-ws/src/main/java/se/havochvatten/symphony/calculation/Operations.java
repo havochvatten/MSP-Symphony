@@ -18,6 +18,7 @@ import se.havochvatten.symphony.calculation.jai.CIA.CumulativeImpactDescriptor;
 import se.havochvatten.symphony.calculation.jai.CIA.CumulativeImpactOp;
 import se.havochvatten.symphony.calculation.jai.CIA.RarityAdjustedCumulativeImpactDescriptor;
 import se.havochvatten.symphony.calculation.jai.rescale2.Rescale2Descriptor;
+import se.havochvatten.symphony.dto.LayerType;
 
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
@@ -41,14 +42,11 @@ class SymphonyCoverageProcessor extends CoverageProcessor {
 public class Operations extends org.geotools.coverage.processing.Operations {
 
     /* Additional coverage processor since it's currently not possible to add operation to the default instance */
-    private SymphonyCoverageProcessor processor;
+    private final SymphonyCoverageProcessor processor;
 
-    private Range defaultNoDataRange =
+    private final Range defaultNoDataRange =
         RangeFactory.create(CumulativeImpactOp.NODATA_VALUE, false, CumulativeImpactOp.NODATA_VALUE, true);
 
-//    @PostConstruct
-//    void init() {
-//    }
 
     public Operations() {
         super(null);
@@ -74,8 +72,8 @@ public class Operations extends org.geotools.coverage.processing.Operations {
     }
 
     // Forked version of JAI-Ext's rescale operation with some extra functionality
-    public Coverage rescale(final Coverage source, double[] constants,
-                            double[] offsets, ROI roi, double maxClamp)
+    public Coverage  rescale(final Coverage source, double[] constants,
+                             double[] offsets, ROI roi, double maxClamp, LayerType category, Overflow overflow)
         throws CoverageProcessingException {
         final var rescale = processor.getOperation("se.havochvatten.symphony.Rescale");
 
@@ -85,6 +83,8 @@ public class Operations extends org.geotools.coverage.processing.Operations {
         params.parameter("offsets").setValue(offsets);
         params.parameter("ROI").setValue(roi);
         params.parameter("clamp").setValue(maxClamp);
+        params.parameter("category").setValue(category);
+        params.parameter("overflow").setValue(overflow);
 
         return processor.doOperation(params);
     }
@@ -136,7 +136,7 @@ public class Operations extends org.geotools.coverage.processing.Operations {
      *        access to useful helper methods that javax.media.jai.Histogram defines      */
     public HistogramMode histogram(final Coverage source, double lowValue, double highValue, int numBins, Range noData)
         throws CoverageProcessingException  {
-        final var op = processor.getOperation("histogram");
+        processor.getOperation("histogram");
 
         final var statsOp = processor.getOperation("Stats");
 
