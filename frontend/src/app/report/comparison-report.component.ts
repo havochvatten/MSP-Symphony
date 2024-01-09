@@ -5,12 +5,12 @@ import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { map } from "lodash";
 import { State } from '../app-reducer';
-import { MetadataActions, MetadataSelectors } from '@data/metadata';
+import { MetadataActions } from '@data/metadata';
 import { ComparisonReport, Legend } from '@data/calculation/calculation.interfaces';
 import { environment as env } from "@src/environments/environment";
 import { ReportService } from "@src/app/report/report.service";
 import { CalculationService } from "@data/calculation/calculation.service";
-import { relativeDifference } from "@src/app/report/report.util";
+import { relativeDifference, setOverflowProperty } from "@src/app/report/report.util";
 import { AbstractReport } from "@src/app/report/abstract-report.directive";
 import { formatPercent } from "@angular/common";
 
@@ -60,6 +60,8 @@ export class ComparisonReportComponent extends AbstractReport {
     reportService.getComparisonReport(aId, bId).subscribe({
       next(report) {
         that.report = report;
+        that.report.a = setOverflowProperty(report.a);
+        that.report.b = setOverflowProperty(report.b);
         that.area = reportService.calculateArea(report.a);
         that.loadingReport = false;
 
