@@ -31,7 +31,7 @@ export class CheckboxAccordionComponent implements AfterViewInit {
     this.store.select(ScenarioSelectors.selectActiveScenarioChanges)
         .subscribe(( changes: {[bandType: string] : ChangesProperty }) => {
           const changesBandNumbers = !changes[this.category] ? new Set() : new Set(Object.keys(changes[this.category]).map(n => +n));
-          this.open = intersection(this.groupBandNumbers, changesBandNumbers).size>0
+          this.open ||= intersection(this.groupBandNumbers, changesBandNumbers).size>0
         });
   }
 
