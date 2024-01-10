@@ -16,7 +16,9 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.geometry.DirectPosition;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import se.havochvatten.symphony.calculation.Operations;
+import se.havochvatten.symphony.calculation.Overflow;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
@@ -82,14 +84,12 @@ public class ScenarioServiceTest {
         service = new ScenarioService(new Operations());
     }
 
-    private GridCoverage2D applyChanges(Scenario scenario) {
-
-
-        return service.apply(coverage, coverage.getGridGeometry(), scenario.getAreas(), LayerType.PRESSURE, transform, null);
+    private GridCoverage2D applyChanges(Scenario scenario) throws FactoryException, TransformException {
+        return service.apply(coverage, coverage.getGridGeometry(), scenario.getAreas(), LayerType.PRESSURE, transform, null, new Overflow());
     }
 
     @Test
-    public void applyChange() {
+    public void applyChange() throws FactoryException, TransformException {
 
         final int BAND = 12;
         testScenario.areas = new ScenarioAreaDto[] { testAreas[0] };
@@ -129,7 +129,7 @@ public class ScenarioServiceTest {
 //    }
 
     @Test
-    public void applyBigChange() { // Test clamping of big values
+    public void applyBigChange() throws FactoryException, TransformException { // Test clamping of big values
         int BAND = 12;
 
         testScenario.areas = new ScenarioAreaDto[] { testAreas[1] };
@@ -142,7 +142,7 @@ public class ScenarioServiceTest {
     }
 
     @Test
-    public void applyZeroChange() {
+    public void applyZeroChange() throws FactoryException, TransformException {
 
         int BAND = 12;
 

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { AfterViewInit, Component, Input, OnChanges } from '@angular/core';
 import * as d3 from 'd3';
 import * as d3Sankey from 'd3-sankey';
 import { DecimalPipe } from '@angular/common';
@@ -27,18 +27,16 @@ export interface ChartData {
   templateUrl: './pressure-chart.component.html',
   styleUrls: ['./pressure-chart.component.scss']
 })
-export class PressureChartComponent implements OnChanges {
-  @Input() data?: ChartData;
+export class PressureChartComponent implements AfterViewInit {
+  @Input() data!: ChartData;
   @Input() locale = 'en';
   @Input() diagramId = '';
   @Input() chartWeightThreshold = '';
 
   constructor(private numberPipe: DecimalPipe) {}
 
-  ngOnChanges() {
-    if (this.data?.links.length && this.data?.nodes.length) {
+  ngAfterViewInit() {
       this.DrawChart();
-    }
   }
 
   private DrawChart() {

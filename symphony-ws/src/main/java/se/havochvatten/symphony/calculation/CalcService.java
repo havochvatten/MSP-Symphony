@@ -374,8 +374,10 @@ public class CalcService {
 
         BaselineVersion baseline = baselineVersionService.getBaselineVersionById(scenario.getBaselineId());
 
+        Overflow overflow = new Overflow();
+
         GridCoverage2D coverage = calculateCoverage(scenario.getOperation(), roi, scenario.getBaselineId(), ecosystemsToInclude,
-            scenario.getPressuresToInclude(), areas, matrixResponse, scenario.getOperationOptions(), null);
+            scenario.getPressuresToInclude(), areas, matrixResponse, scenario.getOperationOptions(), null, overflow);
 
         // Trigger actual calculation since GeoTiffWriter requests tiles in the same thread otherwise
         var ignored = ((PlanarImage) coverage.getRenderedImage()).getTiles();
@@ -401,11 +403,7 @@ public class CalcService {
         CalculationResult calculation = scenario.getNormalization().type == PERCENTILE ?
             new CalculationResult(coverage) :
             persistCalculation( coverage, normalizationValues, areaMatrices, scenario,
-                                mapper.valueToTree(sc), ecosystemsToInclude, baseline, JTS.transform(roi, WGS84toTarget));
-
-        // previous approach for caching calculation results in session, apparently not reliable
-        // Cache last calculation in session to speed up subsequent REST call to retrieve result image
-        //req.getSession().setAttribute(CalcUtil.LAST_CALCULATION_PROPERTY_NAME, calculation);
+                                mapper.valueToTree(sc), ecosystemsToInclude, baseline, JTS.transform(roi, WGS84toTarget), overflow);
 
         return calculation;
     }
@@ -424,7 +422,8 @@ public class CalcService {
 
     public GridCoverage2D calculateCoverage(
             int operation, Geometry roi, Integer baselineId, int[] ecosystemsToInclude, int[] pressuresToInclude,
-            List<ScenarioArea> areas, MatrixResponse matrixResponse, Map<String, String> operationOptions, BandChangeEntity altScenario)
+            List<ScenarioArea> areas, MatrixResponse matrixResponse, Map<String, String> operationOptions, BandChangeEntity altScenario,
+            Overflow overflow)
                 throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
 
         GridCoverage2D ecoComponents = data.getCoverage(LayerType.ECOSYSTEM, baselineId);
@@ -434,7 +433,8 @@ public class CalcService {
             ecoComponents,
             pressures,
             areas,
-            altScenario
+            altScenario,
+            overflow
         );
 
         ecoComponents = scenarioComponents.getLeft();
@@ -523,7 +523,7 @@ public class CalcService {
         GridCoverage2D coverage = calculateCoverage(
             calc.getOperationName().equals("CumulativeImpact") ? CalcService.OPERATION_CUMULATIVE : CalcService.OPERATION_RARITYADJUSTED,
             roi, calc.getBaselineVersion().getId(), scenario.getEcosystemsToInclude(), scenario.getPressuresToInclude(),
-            areas, calc.getMatrixResponse(), calc.getOperationOptions(), scenario);
+            areas, calc.getMatrixResponse(), calc.getOperationOptions(), scenario, null);
 
         // Trigger calculation to populate impact matrix
         var ignore = ((PlanarImage) coverage.getRenderedImage()).getTiles();
@@ -612,7 +612,8 @@ public class CalcService {
                                                 JsonNode changesSnapshot,
                                                 int[] includedEcosystems,
                                                 BaselineVersion baselineVersion,
-                                                Geometry projectedRoi)
+                                                Geometry projectedRoi,
+                                                Overflow overflow)
         throws IOException {
         var calculation = new CalculationResult(result);
 
@@ -640,6 +641,7 @@ public class CalcService {
                 calculation.setBaselineVersion(baselineVersion);
                 calculation.setOperationName(scenario.getOperation());
                 calculation.setOperationOptions(scenario.getOperationOptions());
+                calculation.setOverflow(overflow);
 
                 em.persist(calculation);
                 em.flush(); // to have id generated

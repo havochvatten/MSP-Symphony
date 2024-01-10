@@ -47,7 +47,8 @@ describe('HistogramComponent', () => {
       stddev: 0,
       timestamp: 0,
       total: 0,
-      baselineName : ""
+      baselineName : "",
+      overflow: null
     };
     component.report = report;
     fixture.detectChanges();

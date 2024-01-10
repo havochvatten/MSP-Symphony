@@ -63,6 +63,7 @@ export interface BandChange {
   type: BandType,
   multiplier?: number,
   offset?: number
+  hasOverflow?: boolean
 }
 
 export interface State {

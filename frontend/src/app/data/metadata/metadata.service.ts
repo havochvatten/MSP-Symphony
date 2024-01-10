@@ -21,18 +21,4 @@ export default class MetadataService {
       return this.http.get<MetadataInterfaces.APILayerData>(`${BASE_URL}/metadata/${baseline}?lang=${this.translate.currentLang}`);
     }
   }
-
-  flattenBandGroups(bandGroups: BandGroup[] = []): Record<number, string> {
-    const bands = bandGroups.reduce(
-      (bandList: Band[], bandGroup: BandGroup) => [...bandList, ...bandGroup.bands],
-      []
-    );
-    return bands.reduce(
-      (bandMap: Record<number, string>, band: Band) => ({
-        ...bandMap,
-        [band.bandNumber]: band.title
-      }),
-      {}
-    );
-  }
 }

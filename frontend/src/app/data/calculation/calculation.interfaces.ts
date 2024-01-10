@@ -43,6 +43,7 @@ export interface Report {
   chartData: ChartData;
   chartWeightThreshold: number;
   timestamp: number;
+  overflow: Record<BandType, number[]> | null;
 }
 
 export interface ReportChanges {
@@ -61,24 +62,6 @@ export interface ComparisonReport {
   b: Report
   chartDataPositive: ChartData;
   chartDataNegative: ChartData;
-}
-
-export interface DefaultMatrixData {
-  defaultMatrix: string,
-  areaTypes: AreaTypes;
-}
-
-export interface AreaTypes {
-  [key: string]: string[];
-}
-
-export interface ScenarioChange {
-  areaName: string;
-  band: number;
-  multiplier: number;
-  offset: number;
-  roi: any;
-  type: BandType;
 }
 
 export interface StaticImageOptions {

@@ -21,6 +21,7 @@ import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.calculation.Operations;
+import se.havochvatten.symphony.calculation.Overflow;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
@@ -135,15 +136,16 @@ public class ScenarioService {
     public Pair<GridCoverage2D, GridCoverage2D> applyScenario(GridCoverage2D ecosystems,
                                                               GridCoverage2D pressures,
                                                               List<ScenarioArea> areas,
-                                                              BandChangeEntity altScenario) throws FactoryException, TransformException {
+                                                              BandChangeEntity altScenario,
+                                                              Overflow overflow) throws FactoryException, TransformException {
         // We assume GeoJSON is in WGS84 and that ecosystem and pressures coverages are of the same CRS
         assert (ecosystems.getCoordinateReferenceSystem().equals(pressures.getCoordinateReferenceSystem()));
         MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
                 ecosystems.getCoordinateReferenceSystem());
 
         return Pair.of(
-                apply(ecosystems, ecosystems.getGridGeometry(), areas, LayerType.ECOSYSTEM, WGS84toTarget, altScenario),
-                apply(pressures, pressures.getGridGeometry(), areas, LayerType.PRESSURE, WGS84toTarget, altScenario)
+                apply(ecosystems, ecosystems.getGridGeometry(), areas, LayerType.ECOSYSTEM, WGS84toTarget, altScenario, overflow),
+                apply(pressures, pressures.getGridGeometry(), areas, LayerType.PRESSURE, WGS84toTarget, altScenario, overflow)
         );
     }
 
@@ -155,7 +157,8 @@ public class ScenarioService {
                List<ScenarioArea> areas,
                LayerType changeType,
                MathTransform roiTransform,
-               BandChangeEntity alternateChangeSource) {
+               BandChangeEntity alternateChangeSource,
+               Overflow overflow) throws TransformException, FactoryException {
         final int numBands = coverage.getNumSampleDimensions();
 
         return Util.reduce(areas, coverage, (state, area) -> {
@@ -185,8 +188,10 @@ public class ScenarioService {
                         // No need to fill since array is initialized to zero by default
                         offsets[bandChange.band] = bandChange.offset == null ? 0.0 : bandChange.offset;
 
-                        return (GridCoverage2D) operations.rescale(innerState, multipliers, offsets,
-                            gridROI, MAX_IMPACT_VALUE);
+                        GridCoverage2D g2d = (GridCoverage2D) operations.rescale(innerState, multipliers, offsets,
+                            gridROI, MAX_IMPACT_VALUE, changeType, overflow);
+
+                        return g2d;
                     });
             } catch (TransformException | FactoryException e) {
                 LOG.error("Error transforming change ROI: " + e);

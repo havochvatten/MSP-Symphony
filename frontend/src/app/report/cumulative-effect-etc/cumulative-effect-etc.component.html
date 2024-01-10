@@ -2,15 +2,15 @@
   <table>
     <tr>
       <th>{{ 'report.cumulative-effect-etc.baseline' | translate }}:</th>
-      <td>{{ reports[0].baselineName }}</td>
+      <td>{{ reports![0].baselineName }}</td>
     </tr>
     <tr>
       <th>{{ 'report.cumulative-effect-etc.operation' | translate }}:</th>
-      <td>{{ 'map.editor.operation.'+reports[0].operationName+'.title' | translate }}</td>
+      <td>{{ 'map.editor.operation.'+reports![0].operationName+'.title' | translate }}</td>
     </tr>
-    <tr *ngFor="let option of reports[0].operationOptions | keyvalue">
-      <th>{{ 'map.editor.operation.'+reports[0].operationName+'.options.'+option.key+'.title' | translate }}:</th>
-      <td>{{ 'map.editor.operation.'+reports[0].operationName+'.options.'+option.key+'.'+option.value | translate }}</td>
+    <tr *ngFor="let option of reports![0].operationOptions | keyvalue">
+      <th>{{ 'map.editor.operation.'+reports![0].operationName+'.options.'+option.key+'.title' | translate }}:</th>
+      <td>{{ 'map.editor.operation.'+reports![0].operationName+'.options.'+option.key+'.'+option.value | translate }}</td>
     </tr>
     <!-- TODO Add relative diff of total impact in header -->
     <tr *ngIf="normalization">
@@ -39,17 +39,17 @@
   <table class="totals">
     <tr *ngIf="reports.length===2">
       <th></th>
-      <th *ngFor="let r of reports">{{ r.name }}</th>
+      <th *ngFor="let r of reports" [ngClass]="{ 'has-overflow': r.overflow !== null }">{{ r.name }}</th>
       <th>{{ 'report.cumulative-effect-etc.relative-diff' | translate }}</th>
     </tr>
     <tr>
       <th>{{ 'report.cumulative-effect-etc.total' | translate }}:</th>
-      <td *ngFor="let r of reports">{{ r.total | number: '1.':locale }}</td>
+      <td *ngFor="let r of reports" [ngClass]="{ 'has-overflow': r.overflow !== null }">{{ r.total | number: '1.':locale }}</td>
       <td *ngIf="reports.length==2">{{ relativeDifferencePercentage('total') }}</td>
     </tr>
     <tr>
       <th>{{ 'report.cumulative-effect-etc.average' | translate }}:</th>
-      <td *ngFor="let r of reports">{{ r.average | number: '1.0-4':locale }}</td>
+      <td *ngFor="let r of reports" [ngClass]="{ 'has-overflow': r.overflow !== null }">{{ r.average | number: '1.0-4':locale }}</td>
       <td *ngIf="reports.length==2">{{ relativeDifferencePercentage('average') }}</td>
     </tr>
     <tr>
@@ -59,12 +59,12 @@
     </tr>
     <tr>
       <th>{{ 'report.cumulative-effect-etc.max' | translate }}:</th>
-      <td *ngFor="let r of reports">{{ r.max | number: '1.0-4':locale }}</td>
+      <td *ngFor="let r of reports" [ngClass]="{ 'has-overflow': r.overflow !== null }">{{ r.max | number: '1.0-4':locale }}</td>
       <td *ngIf="reports.length==2">{{ relativeDifferencePercentage('max') }}</td>
     </tr>
     <tr>
       <th>{{ 'report.cumulative-effect-etc.std-dev' | translate }}:</th>
-      <td *ngFor="let r of reports">{{ r.stddev | number: '1.0-4':locale }}</td>
+      <td *ngFor="let r of reports" [ngClass]="{ 'has-overflow': r.overflow !== null }">{{ r.stddev | number: '1.0-4':locale }}</td>
       <td *ngIf="reports.length==2">{{ relativeDifferencePercentage('stddev') }}</td>
     </tr>
     <tr class="ruled">
@@ -78,4 +78,13 @@
     <span class='star'>&lowast;</span>
     {{ 'report.cumulative-effect-etc.normalization.domain-desc' | translate:{ percentileValue: this.percentileValue } }}
   </fn>
+
+  <div class="change-overflow" *ngIf="overflowBands.length > 0">
+    <h5>{{ 'report.cumulative-effect-etc.overflow.title' | translate }}</h5>
+    <p>{{ 'report.cumulative-effect-etc.overflow.detail' | translate }}</p>
+    <div class="band-titles" *ngIf="reports.length === 1">
+      <h6>{{ 'report.cumulative-effect-etc.overflow.list-description' | translate }}</h6>
+      <span *ngFor="let b of overflowBands">{{ b }}</span>
+    </div>
+  </div>
 </section>
