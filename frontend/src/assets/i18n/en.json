@@ -566,7 +566,7 @@
             "overflow": {
                 "title": "Cumulative impact exceeds maximum value",
                 "detail": "Note that the part of the cumulative result that has exceeded the maximum value per pixel is not reflected in the report. Hence, the result for the affected bands is lower than the value would be if the entire parameterized change was factored in, without limiting each pixel value.",
-                "list-description": "The following bands would exceed maximum value :"
+                "list-description": "The following changes exceed maximum value:"
             }
         },
         "sensitivity-matrices": {
@@ -606,14 +606,14 @@
             "base-changes": "Common changes",
             "area-changes": "Area-specific changes",
             "no-changes": "No changes",
-            "overflow-notice": "Change exceeding maximum"
+            "overflow-notice": "Change exceeds maximum"
         },
         "impact-table": {
             "ecoComponent": "Impact per nature value",
             "pressure": "Impact per pressure",
             "cumulative": "Cumulative",
             "percentage-of-total": "% of Total",
-            "overflow": "Maximum exceeded, entire change misreported"
+            "overflow": "Maximum exceeded, entire change incorrectly reported"
         },
         "toolbar": {
             "export-csv": "Export as CSV",
