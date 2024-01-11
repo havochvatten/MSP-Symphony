@@ -20,7 +20,6 @@ import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 import { Scenario } from '@data/scenario/scenario.interfaces';
 import { UserSelectors } from "@data/user";
-import { transformExtent } from "ol/proj";
 
 export enum NormalizationType {
   Area = 'AREA',
@@ -48,9 +47,9 @@ export class CalculationService implements OnDestroy {
   public resultRemoved$ = new EventEmitter<number>();
   private ecoBands: number[] = [];
   private pressureBands: number[] = [];
-  private bandNumbersSubscription$: Subscription;
-  private aliasingSubscription$: Subscription;
-  private aliasing: boolean = true;
+  private readonly bandNumbersSubscription$: Subscription;
+  private readonly aliasingSubscription$: Subscription;
+  private aliasing = true;
 
   constructor(private http: HttpClient, private store: Store<State>) {
     proj4.defs('EPSG:3035', '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs');
@@ -84,7 +83,7 @@ export class CalculationService implements OnDestroy {
           }));
         });
       },
-      error(err) {
+      error() {
         that.store.dispatch(CalculationActions.calculationFailed());
         that.store.dispatch(
           MessageActions.addPopupMessage({
@@ -174,7 +173,7 @@ export class CalculationService implements OnDestroy {
             });
             resolve();
           },
-          error(err: HttpErrorResponse) {
+          error() {
             reject('Server error');
           }});
       });
@@ -196,7 +195,7 @@ export class CalculationService implements OnDestroy {
     return this.http.get<CalculationSlice[]>(`${env.apiBaseUrl}/calculation/matching/${id}`);
   }
 
-  public updateName(id: number, newName: String) {
+  public updateName(id: number, newName: string) {
     return this.http.post<CalculationSlice>(`${env.apiBaseUrl}/calculation/${id}`,
       newName,
       {

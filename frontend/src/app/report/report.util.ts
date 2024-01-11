@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// TODO: try to implement w/o `any` (presumably prohibited by the chart library)
 import { ChartData } from "@src/app/report/pressure-chart/pressure-chart.component";
 import { BandType, BandTypes } from "@data/metadata/metadata.interfaces";
 import { cloneDeep } from "lodash";
 import { Report } from "@data/calculation/calculation.interfaces";
 import { ChangesProperty } from "@data/scenario/scenario.interfaces";
 
-export function relativeDifference(a: any, b: any) {
+export function relativeDifference(a: unknown, b: unknown) {
   const na = a as number,
     nb = b as number,
     numeric_zero_diff = typeof a === 'number' && typeof b === 'number' && nb === 0 && na === 0;

@@ -24,7 +24,7 @@ export class ScenarioEditorComponent {
   constructor(
     private translateService: TranslateService,
     private dialogService: DialogService,
-    private moduleRef: NgModuleRef<any>,
+    private moduleRef: NgModuleRef<never>,
     private store: Store<State>,
   ) {
     this.store.dispatch(ScenarioActions.fetchScenarios());

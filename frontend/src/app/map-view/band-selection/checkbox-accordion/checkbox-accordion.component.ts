@@ -20,8 +20,8 @@ export class CheckboxAccordionComponent implements AfterViewInit {
   @Input() selectedArea = undefined;
   @Input() scenarioActive = false;
   @Input() searching = false;
-  @Input() change: (value: any, band: Band) => void = () => {};
-  @Input() changeVisible: (value: boolean, band: Band) => void = () => {};
+  @Input() change!: (value: boolean|undefined, band: Band) => void;
+  @Input() changeVisible!: (value: boolean, band: Band) => void;
   @Input() open = false;
   toggle: () => void = () => this.open = !this.open;
 

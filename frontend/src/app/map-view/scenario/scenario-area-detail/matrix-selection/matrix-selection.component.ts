@@ -46,7 +46,7 @@ export class MatrixSelectionComponent implements OnInit, OnDestroy {
     private translateService: TranslateService,
     private matrixService: MatrixService,
     private dialogService: DialogService,
-    private moduleRef: NgModuleRef<any>,
+    private moduleRef: NgModuleRef<never>,
     private store: Store<State>
   ) {
     this.translateService.get('map.editor.matrix.default-matrix').subscribe(res => {
@@ -91,12 +91,11 @@ export class MatrixSelectionComponent implements OnInit, OnDestroy {
     if (matrixId) {
       switch (this.matrixOption) {
         case 'STANDARD':
-          const allAreaTypeMatrixOptions = this.getAllAreaTypeMatrixOptions();
           this.selectedAreaType = this.areaTypes.find(type =>
-            type.areas.find(area => area.defaultMatrix?.id == matrixId || area.matrices.find(mx => mx.id === matrixId)));
+            type.areas.find(area => area.defaultMatrix?.id === matrixId || area.matrices.find(mx => mx.id === matrixId)));
           if(this.selectedAreaType) {
             this.areaTypeSelect(this.selectedAreaType);
-            this.selectedTypedMatrix = allAreaTypeMatrixOptions.find(mx => mx.id === matrixId);
+            this.selectedTypedMatrix = this.getAllAreaTypeMatrixOptions().find(mx => mx.id === matrixId);
           }
           break;
         case 'OPTIONAL':

@@ -38,7 +38,7 @@ export interface AreaGroup {
   visible: boolean;
   statePath: StatePath;
   areas: Area[];
-  [lang: string]: any;
+  [lang: string]: unknown;
 }
 
 export interface NationalArea {

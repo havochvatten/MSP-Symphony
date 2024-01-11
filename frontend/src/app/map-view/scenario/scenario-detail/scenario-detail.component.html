@@ -1,6 +1,6 @@
 <section class="padded-container">
   <div class="title">
-    <h2 *ngIf="!editName" (click)="editTheName()">{{ scenario.name }}</h2>
+    <h2 *ngIf="!editName" (click)="editTheName()" tabindex="0">{{ scenario.name }}</h2>
     <input *ngIf="editName" #name type="text" [value]="scenario.name"
            (keydown.enter)="onChangeName($event.target.value)"
            (blur)="onChangeName($event.target.value)">
@@ -27,7 +27,7 @@
         class="batch-options-button"
         *ngIf="scenario.areas.length > 1"
         [label]="'map.editor.split-scenario-settings.title' | translate"
-        (click)="openSplitOptions()">
+        (iconClick)="openSplitOptions()">
       </app-icon-button>
       <app-add-scenario-areas
         [disabled]="(calculating$ | async) || (areaMatricesLoading$ | async)"
@@ -43,7 +43,8 @@
           <span class="loadingMessage">{{ 'map.editor.areas.loading-matrices' | translate }}</span>
         </div>
         <ul [class]="(areaMatricesLoading$ | async) ? 'pendingMatrices' : ''">
-          <li *ngFor="let area of scenario.areas; let aix = index" (click)="openScenarioArea(aix)">
+          <li *ngFor="let area of scenario.areas; let aix = index" (click)="openScenarioArea(aix)"
+              tabindex="0">
             <span class="feature-name">{{ area.feature.properties['name'] }}</span>
             <div class="actions">
               <ng-container *ngIf="area.changes">
@@ -88,10 +89,10 @@
           </mat-radio-button>
         </mat-radio-group>
       </article>
-      <article *ngIf="operation.value == 'RarityAdjustedCumulativeImpact'">
+      <article *ngIf="operation.value === 'RarityAdjustedCumulativeImpact'">
         <p>{{ 'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.description' | translate}}</p>
         <mat-radio-button *ngFor="let paramValue of ['GLOBAL', 'LOCAL']"
-                          value="{{paramValue}}" [checked]="getParams().domain == paramValue"
+                          value="{{paramValue}}" [checked]="getParams().domain === paramValue"
                           (change)="onCheckRarityIndicesDomain(paramValue)">
           {{ 'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.' + paramValue | translate }}
         </mat-radio-button>
@@ -127,10 +128,10 @@
     {{ 'map.editor.calculate' | translate }}
   </button>
 
-  <button mat-flat-button id="report-button" [ngClass]="{'green' : !(calculating$ | async), 'mat-button-disabled' : calculating$ | async }"
+  <button mat-flat-button id="report-button" [ngClass]="{'green' : (calculating$ | async) === false, 'mat-button-disabled' : calculating$ | async }"
           (click)="showReport(scenario.latestCalculationId+'')"
           [disabled]="!scenario.latestCalculationId">
     <mat-spinner *ngIf="calculating$ | async" diameter="20" color="#22bb00"></mat-spinner>
-    <app-icon *ngIf="!(calculating$ | async)" iconType="report"></app-icon>
+    <app-icon *ngIf="(calculating$ | async) === false" iconType="report"></app-icon>
   </button>
 </div>

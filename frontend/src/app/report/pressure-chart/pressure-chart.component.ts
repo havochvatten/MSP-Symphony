@@ -1,7 +1,10 @@
-import { AfterViewInit, Component, Input, OnChanges } from '@angular/core';
+/* eslint-disable @typescript-eslint/ban-ts-comment, @typescript-eslint/no-explicit-any */
+
+import { AfterViewInit, Component, Input } from '@angular/core';
 import * as d3 from 'd3';
 import * as d3Sankey from 'd3-sankey';
 import { DecimalPipe } from '@angular/common';
+import { SankeyExtraProperties  } from "d3-sankey";
 
 interface SNodeExtra {
   nodeId: number;
@@ -45,7 +48,7 @@ export class PressureChartComponent implements AfterViewInit {
       height = +svg.attr('height');
 
     const formatNumber = (d: number) => this.numberPipe.transform(d, '1.1-2', this.locale),
-      format = function(d: any) {
+      format = function(d: number) {
         return formatNumber(100 * d) + '%';
       },
       color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -83,7 +86,7 @@ export class PressureChartComponent implements AfterViewInit {
         .enter()
         .append('path')
         .attr('d', d3Sankey.sankeyLinkHorizontal())
-        .attr('stroke-width', (d: any) => Math.max(1, d.width));
+        .attr('stroke-width', (d: SLink) => Math.max(1, d.width!));
 
       link
         .append('title')

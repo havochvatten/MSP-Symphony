@@ -627,7 +627,10 @@
         "fetching-report": "Hämtar rapport",
         "error-message": "Ett fel inträffade. Det finns ingen rapport att visa för tillfället – var god testa att göra en ny beräkning."
     },
-    "footer": "Havs och Vattenmyndigheten",
+    "branding": {
+        "SwAM": "Havs och Vattenmyndigheten",
+        "SI-Sweden": "Sverige"
+    },
     "api-messages": {
         "areas": {
             "import-success" : {

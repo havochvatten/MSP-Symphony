@@ -1,7 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { State as AppState } from '@src/app/app-reducer';
 import { Band, BandGroup, BandType, Groups, State } from './metadata.interfaces';
-import { StatePath } from "@data/area/area.interfaces";
 
 export const selectMetadataState = createFeatureSelector<AppState, State>('metadata');
 
@@ -116,11 +115,10 @@ function filterVisibleBand(bands: Band[]) {
   return bands.filter(band => band.visible);
 }
 
-function isEmpty(object: Record<string, any>): boolean {
+function isEmpty(object: Record<string, unknown>): boolean {
   return Object.values(object).length === 0;
 }
 
 export function convertMultiplierToPercent(mul: number) {
-  const fraction = mul-1;
-  return fraction;
+  return mul - 1;
 }

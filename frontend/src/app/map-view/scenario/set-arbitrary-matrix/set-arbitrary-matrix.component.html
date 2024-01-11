@@ -30,7 +30,7 @@
     'confirmation-modal.cancel' | translate
   }}</button>
   <button mat-flat-button (click)="confirm()"
-          [disabled]="selectedMatrix == null || selectedCalculationArea == null">{{
+          [disabled]="selectedMatrix === null || selectedCalculationArea === null">{{
     'map.editor.set-arbitrary-matrix.set-matrix-and-normalization' | translate
   }}</button>
 </div>

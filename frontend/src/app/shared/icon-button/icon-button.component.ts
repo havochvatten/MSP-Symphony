@@ -11,7 +11,7 @@ export class IconButtonComponent implements OnInit {
   @Input() icon?: IconType;
   @Input() label: string | undefined;
   @Input() onDarkBackground = false;
-  @Output() click = new EventEmitter<MouseEvent | KeyboardEvent>();
+  @Output() iconClick = new EventEmitter<MouseEvent | KeyboardEvent>();
 
   ngOnInit(): void {
     if (this.label === undefined) {
@@ -24,7 +24,7 @@ export class IconButtonComponent implements OnInit {
 
   onClick = (event: MouseEvent) => {
     this.handleEvent(event);
-    this.click.emit(event);
+    this.iconClick.emit(event);
   };
 
   onEnterKeyDown = (event: KeyboardEvent) => {
@@ -33,7 +33,7 @@ export class IconButtonComponent implements OnInit {
 
   onEnterKeyUp = (event: KeyboardEvent) => {
     this.handleEvent(event);
-    this.click.emit(event);
+    this.iconClick.emit(event);
   };
 
   private handleEvent = (event: KeyboardEvent | MouseEvent) => {

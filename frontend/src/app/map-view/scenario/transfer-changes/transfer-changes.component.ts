@@ -71,7 +71,7 @@ export class TransferChangesComponent {
   }
 
   async setChangesToTransfer($event: MatRadioChange) {
-    if($event.value == -1) {
+    if($event.value === -1) {
       this.selectedChanges.scenarioId = this.selectedScenario?.scenario.id ?? null;
       this.selectedChanges.areaId = null;
     } else {

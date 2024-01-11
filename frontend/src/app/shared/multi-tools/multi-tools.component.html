@@ -5,7 +5,7 @@
   [label]="
           (isMultiMode() ? exitLabel :
                            enterLabel) | translate"
-  (click)="toggleMultiMode()"></app-icon-button>
+  (iconClick)="toggleMultiMode()"></app-icon-button>
 <app-icon-button
   [icon]="multiActionIcon"
   class="multi-action"
@@ -16,4 +16,4 @@
             ((disabledPredicate() ? multiActionLabelDisabled :
                                     multiActionLabel) | translate
             ): ''"
-  (click)="multiActionDelegate()"></app-icon-button>
+  (iconClick)="multiActionDelegate()"></app-icon-button>

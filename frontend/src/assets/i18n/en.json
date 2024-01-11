@@ -627,7 +627,10 @@
         "fetching-report": "Fetching report",
         "error-message": "An error occurred. There is no report to show now. Please check options and try a calculation again."
     },
-    "footer": "Swedish Agency for Marine and Water Management",
+    "branding": {
+        "SwAM": "Swedish Agency for Marine and Water Management",
+        "SI-Sweden": "Sweden"
+    },
     "api-messages": {
         "areas": {
             "import-success" : {

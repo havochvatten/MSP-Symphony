@@ -7,7 +7,7 @@ import { textFilter } from "@shared/common.util";
 })
 export abstract class Listable {
 
-  filterString: string = '';
+  filterString = '';
   abstract setSort(sortType: ListItemsSort): void;
 
   setFilter(filterString: string) {

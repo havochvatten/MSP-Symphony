@@ -76,14 +76,14 @@ export class ScenarioService {
   }
 
   getAreaMatrixParams(scenarioId: number, baseline: string) {
-    return this.http.get<ScenarioMatrixDataMap>(env.apiBaseUrl+ '/calculationparams/areamatrices/'+baseline+'/'+scenarioId);
+    return this.http.get<{ matrixData: ScenarioMatrixDataMap }>(env.apiBaseUrl+ '/calculationparams/areamatrices/'+baseline+'/'+scenarioId);
   }
 
   getSingleAreaMatrixParams(scenarioAreaId: number, baseline: string) {
     return this.http.get<AreaMatrixData>(env.apiBaseUrl+ '/calculationparams/areamatrix/'+baseline+'/'+scenarioAreaId);
   }
 
-  deleteArea(areaId: any) {
+  deleteArea(areaId: number) {
     return this.http.delete(this.scenarioApiBaseUrl+'/area/'+areaId);
   }
 

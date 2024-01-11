@@ -41,7 +41,7 @@
     ></app-list-filter>
   </div>
 
-  <main *ngIf="!(loading$ | async) else loading">
+  <main *ngIf="(loading$ | async) === false else loading">
     <div class="calculation-wrap" *ngFor="let calculation of calculations$ | async; index as i">
       <button [ngClass]="{
                 'calculation list-item' : true,

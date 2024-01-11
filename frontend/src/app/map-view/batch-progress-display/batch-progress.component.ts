@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, NgModuleRef } from '@angular/core';
+import { Component, NgModuleRef } from '@angular/core';
 import { TranslateService } from "@ngx-translate/core";
 import { Store } from '@ngrx/store';
 import { Observable } from "rxjs";
@@ -26,7 +26,7 @@ export class BatchProgressComponent {
               private batchStatusService: BatchStatusService,
               private dialogService: DialogService,
               private translateService: TranslateService,
-              private moduleRef: NgModuleRef<any>) {
+              private moduleRef: NgModuleRef<never>) {
     this.processes$ = this.store.select(CalculationSelectors.selectBatchProcesses);
     this.scenarioNames = this.store.select(ScenarioSelectors.selectScenarioNamesIndexed);
     this.processes$.subscribe(processes => {

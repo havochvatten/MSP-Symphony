@@ -21,7 +21,7 @@ export class MapToolbarComponent implements OnDestroy {
 
   @Output() setMapOpacity: EventEmitter<number> = new EventEmitter<number>();
 
-  hasImageSmoothing: boolean = true;
+  hasImageSmoothing = true;
 
   constructor(
     private readonly store: Store<State>

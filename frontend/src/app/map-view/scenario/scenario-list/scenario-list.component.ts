@@ -1,4 +1,4 @@
-import { Component, NgModuleRef, signal } from '@angular/core';
+import { Component, NgModuleRef, OnDestroy, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
@@ -24,7 +24,7 @@ import { CalculationActions } from "@data/calculation";
     templateUrl: './scenario-list.component.html',
     styleUrls: ['./scenario-list.component.scss', '../../list-actions.scss']
 })
-export class ScenarioListComponent extends Listable {
+export class ScenarioListComponent extends Listable implements OnDestroy {
 
   scenario$ = this.store.select(ScenarioSelectors.selectScenarios);
 
@@ -45,7 +45,7 @@ export class ScenarioListComponent extends Listable {
     private translateService: TranslateService,
     private dialogService: DialogService,
     private calculationService: CalculationService,
-    private moduleRef: NgModuleRef<any>
+    private moduleRef: NgModuleRef<never>
   ) {
     super();
     this.areaSubscription$ = this.store

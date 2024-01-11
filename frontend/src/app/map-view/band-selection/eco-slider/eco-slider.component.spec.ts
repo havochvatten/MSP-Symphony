@@ -25,7 +25,8 @@ describe('EcoSliderComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(EcoSliderComponent);
     component = fixture.componentInstance;
-    component.ngOnInit();
+    fixture.detectChanges();
+    component.ngAfterViewInit();
   }));
 
   it('should create', () => {

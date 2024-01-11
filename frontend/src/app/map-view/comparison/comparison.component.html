@@ -53,7 +53,7 @@
          max="999"
          step="1"
          [(ngModel)]="constant"
-         [disabled]="selectedScale != ScaleOptions.CONSTANT"
+         [disabled]="selectedScale !== ScaleOptions.CONSTANT"
         />
       </div>
       <mat-radio-button name="scaleOption"

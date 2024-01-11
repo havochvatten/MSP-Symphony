@@ -4,6 +4,7 @@
     class="tab"
     [class.active]="tab.active"
     (click)="selectTab(tab.id)"
+    tabindex="0"
   >
     <app-icon [iconType]="tab.icon"></app-icon>
     {{ tab.title }}

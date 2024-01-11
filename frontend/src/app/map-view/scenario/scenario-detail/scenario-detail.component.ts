@@ -76,8 +76,8 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   percentileValue$: Observable<number>;
   areaMatricesLoading$: Observable<boolean>;
   bandDictionary$: Observable<{ [k: string] : { [p: string]: string } }>;
-  unsaved: boolean = false;
-  savedByInteraction: boolean = false;
+  unsaved = false;
+  savedByInteraction = false;
 
   constructor(
     private store: Store<State>,
@@ -85,7 +85,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private translateService: TranslateService,
     private scenarioService: ScenarioService,
-    private moduleRef: NgModuleRef<any>
+    private moduleRef: NgModuleRef<never>
   ) {
     // https://stackoverflow.com/questions/59684733/how-to-access-previous-state-and-current-state-and-compare-them-when-you-subscri
     if (AUTO_SAVE_TIMEOUT) {
@@ -94,7 +94,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
         .pipe(
           filter(s => s !== undefined) as OperatorFunction<Scenario | undefined, Scenario>,
           debounceTime(AUTO_SAVE_TIMEOUT * 1000), // TODO use fixed interval instead
-          tap((s: Scenario) => console.debug('Auto-saving scenario ' + s.name))
+          tap((s: Scenario) => console.info('Auto-saving scenario ' + s.name))
         )
         .subscribe((_: Scenario) => { this.savedByInteraction = false; this.save() });
     }
@@ -141,7 +141,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
               // area polygons that are entirely outside of a default (MSP) area.
               // matrixData.alternativeMatrices indicates that no default matrix was found
               // matrixId would be defined if the user has already selected a matrix
-              if (area && !area.matrix.matrixId && matrixData.alternativeMatrices != null) {
+              if (area && !area.matrix.matrixId && matrixData.alternativeMatrices !== null) {
                 const response = (await this.dialogService.open(SetArbitraryMatrixComponent, this.moduleRef, {
                   data: {
                     areaName: area.feature.properties && area.feature.properties['name'] ?
@@ -181,7 +181,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
               if (selectedAreas.length > 0) {
                 const replacementAreas: ScenarioArea[] = selectedAreas.map((selectedArea, ix) => {
-                  const area = this.scenario.areas[this.scenario.areas.findIndex(a => a.id == area_id)];
+                  const area = this.scenario.areas[this.scenario.areas.findIndex(a => a.id === area_id)];
                   return {
                     ...area,
                     id: -1,

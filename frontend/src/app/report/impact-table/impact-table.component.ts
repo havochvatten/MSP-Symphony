@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { BandGroup, BandType } from '@data/metadata/metadata.interfaces';
+import { BandGroup } from '@data/metadata/metadata.interfaces';
 import { formatPercentage } from '@src/app/shared/common.util';
 
 @Component({

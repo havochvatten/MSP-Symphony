@@ -5,7 +5,7 @@ import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { Scenario, ScenarioChangeMap } from "@data/scenario/scenario.interfaces";
 import { BandChange, BandGroup } from "@data/metadata/metadata.interfaces";
-import { BandType_Alt as BandType, BandType as _BandType } from "@data/metadata/metadata.interfaces";
+import { BandType_Alt as BandType } from "@data/metadata/metadata.interfaces";
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
 import { MetadataSelectors } from "@data/metadata";
@@ -30,11 +30,11 @@ export class ChangesOverviewComponent implements OnInit {
   allChangedBands: Map<BandType, Set<number>> =
     new Map([['ecoComponents', new Set<number>()],
              ['pressures', new Set<number>()]]);
-  ecoChanges: boolean = false;
-  pressureChanges: boolean = false;
-  bothTypes: boolean = false;
-  editingCell: boolean = false;
-  hasChanged: boolean = false;
+  ecoChanges = false;
+  pressureChanges = false;
+  bothTypes = false;
+  editingCell = false;
+  hasChanged = false;
 
   // these naming discrepancies should be consolidated at some point
   bandTypeDict: Map<string, BandType> = new Map([

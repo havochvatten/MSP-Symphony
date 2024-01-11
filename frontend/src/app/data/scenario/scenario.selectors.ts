@@ -22,7 +22,7 @@ export const selectActiveScenarioArea = createSelector(
   (state) =>
     state?.active !== undefined &&
     state?.activeArea !== undefined &&
-    state?.activeArea in state?.scenarios[state?.active].areas ? state.activeArea : undefined
+    state?.activeArea in state.scenarios[state?.active].areas ? state.activeArea : undefined
 );
 
 export const selectActiveScenarioChanges = createSelector(

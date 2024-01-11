@@ -1,6 +1,6 @@
 import { Component, ElementRef, NgModuleRef, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
-import { retry, tap } from "rxjs/operators";
+import { tap } from "rxjs/operators";
 import { select, Store } from '@ngrx/store';
 import { environment } from "@src/environments/environment";
 import { State } from '@src/app/app-reducer';
@@ -12,7 +12,6 @@ import { CalculationSlice } from '@data/calculation/calculation.interfaces';
 import { UserSelectors } from "@data/user";
 import { Baseline } from "@data/user/user.interfaces";
 import { CalculationReportModalComponent } from "@shared/report-modal/calculation-report-modal.component";
-import { HttpErrorResponse } from "@angular/common/http";
 import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 import { TranslateService } from "@ngx-translate/core";
 import { Listable } from "@shared/list-filter/listable.directive";
@@ -35,7 +34,7 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
 
   private visibleResults: number[] = [];
   private calcLoadingState$: Subscription;
-  private checkMessageHandler: any;
+  private checkMessageHandler: ((this: Window, ev: MessageEvent<unknown>) => unknown) = () => undefined;
   isMultiMode = signal<boolean>(false);
   selectedIds: number[] = [];
 
@@ -45,7 +44,7 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
     private calcService: CalculationService,
     private dialogService: DialogService,
     private translateService: TranslateService,
-    private moduleRef: NgModuleRef<any>
+    private moduleRef: NgModuleRef<never>
   ) {
     super();
     this.store.dispatch(CalculationActions.fetchCalculations());
@@ -142,26 +141,26 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
     $event.stopPropagation();
   }
 
-  saveName($event: any, calc: CalculationSlice, index: number) {
-    this.store.dispatch(     // optimistically set new name
-      CalculationActions.updateName({ index, newName: $event.target.value }));
-
-    const that = this,
-          oldName = calc.name;
-    this.calcService.updateName(calc.id, $event.target.value).pipe(
-      retry(2),
-    ).subscribe({
-      next (updatedCalc) {
-        ; // Already changed name above
-      },
-      error(err: HttpErrorResponse) {
-        // TODO Show popup with error
-        that.store.dispatch(CalculationActions.updateName({ index, newName: oldName }));
-      }
-    });
-
-    this.editingName = false;
-  }
+  // saveName($event: any, calc: CalculationSlice, index: number) {
+  //   this.store.dispatch(     // optimistically set new name
+  //     CalculationActions.updateName({ index, newName: $event.target.value }));
+  //
+  //   const that = this,
+  //         oldName = calc.name;
+  //   this.calcService.updateName(calc.id, $event.target.value).pipe(
+  //     retry(2),
+  //   ).subscribe({
+  //     next (updatedCalc) {
+  //        // Already changed name above
+  //     },
+  //     error(err: HttpErrorResponse) {
+  //       // TODO Show popup with error
+  //       that.store.dispatch(CalculationActions.updateName({ index, newName: oldName }));
+  //     }
+  //   });
+  //
+  //   this.editingName = false;
+  // }
 
   cancelEdit($event: FocusEvent) {
     setTimeout(() => {

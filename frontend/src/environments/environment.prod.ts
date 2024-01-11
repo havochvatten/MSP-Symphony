@@ -1,5 +1,3 @@
-import { NormalizationType } from "@data/calculation/calculation.service";
-
 export const environment = {
   production: true,
   showBaseCalculations: true,

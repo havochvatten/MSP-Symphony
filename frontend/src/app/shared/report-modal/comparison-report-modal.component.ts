@@ -16,8 +16,7 @@ export class ComparisonReportModalComponent extends ReportModalComponent {
     config: DialogConfig,
     dom: DomSanitizer
   ) {
-    const dynamic = !(config.data.dynamicMax === null),
-      location = window.location.origin + '/report/compare/' +
+    const location = window.location.origin + '/report/compare/' +
       config.data.a + '/' + config.data.b + '/' + config.data.max;
 
     super(dialog, dom, location,

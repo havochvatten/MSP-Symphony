@@ -31,7 +31,7 @@ export class ComparisonReportComponent extends AbstractReport {
 
   maxValue: number;
 
-  chartWeightThresholdPercentage: string = '1%';
+  chartWeightThresholdPercentage = '1%';
 
   legend:Observable<Legend>;
 

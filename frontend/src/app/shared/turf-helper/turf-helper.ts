@@ -23,14 +23,14 @@ function turfAsSymphonyPoly(turfPolygon: TFeature<TPolygon|MultiPolygon>): Polyg
     }
 }
 
-function turfSubtract(polygon: Feature, intersector: Feature): Polygon | null {
-  const tFeature = extractTurfPolygon(polygon),
+function turfSubtract(_polygon: Feature, intersector: Feature): Polygon | null {
+  const tFeature = extractTurfPolygon(_polygon),
         turfDiff = difference(tFeature, extractTurfPolygon(intersector));
   return turfDiff && !booleanEqual(tFeature, turfDiff) ? turfAsSymphonyPoly(turfDiff) : null;
 }
 
-export function turfMerge(polygon: Feature, extension: Feature): Polygon | null {
-  const merged = union(extractTurfPolygon(polygon), extractTurfPolygon(extension));
+export function turfMerge(_polygon: Feature, extension: Feature): Polygon | null {
+  const merged = union(extractTurfPolygon(_polygon), extractTurfPolygon(extension));
 
   return merged ? turfAsSymphonyPoly(cleanCoords(merged)) : null;
 }
@@ -42,12 +42,12 @@ export function turfMergeAll(polygons: Feature[]): Polygon | null {
   return merged ? turfAsSymphonyPoly(cleanCoords(merged)) : null;
 }
 
-export function turfIntersects(polygon: Feature, intersector: Feature): boolean {
-  return intersects(extractTurfPolygon(polygon), extractTurfPolygon(intersector));
+export function turfIntersects(_polygon: Feature, intersector: Feature): boolean {
+  return intersects(extractTurfPolygon(_polygon), extractTurfPolygon(intersector));
 }
 
-function turfIntersect(polygon: Feature, intersector: Feature): Polygon | null {
-  const tPoly1 = extractTurfPolygon(polygon),
+function turfIntersect(_polygon: Feature, intersector: Feature): Polygon | null {
+  const tPoly1 = extractTurfPolygon(_polygon),
         tPoly2 = extractTurfPolygon(intersector),
         turfIntersection = intersect(tPoly1, tPoly2);
   return turfIntersection && !(booleanEqual(turfIntersection, tPoly2) || booleanEqual(turfIntersection, tPoly1)) ?

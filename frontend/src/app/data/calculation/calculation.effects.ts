@@ -40,10 +40,10 @@ export class CalculationEffects {
     ofType(CalculationActions.deleteCalculation, CalculationActions.deleteMultipleCalculations),
     mergeMap((action) =>
       from(this.calcService.deleteResults(
-          action.type == CalculationActions.deleteCalculation.type ?
+          action.type === CalculationActions.deleteCalculation.type ?
               [action.calculationToBeDeleted.id] :
               action.calculationIds)).pipe(
-        mergeMap((_a,_i) => {
+        mergeMap(() => {
           CalculationActions.deleteCalculationSuccess();
           return of(CalculationActions.fetchCalculations(), ScenarioActions.fetchScenarios());
         }),

@@ -627,7 +627,10 @@
         "fetching-report": "Assemblage du rapport",
         "error-message": "Une erreur est survenue. Aucun rapport n'a pu être produit. Veuillez vérifier les paramètres et réessayer."
     },
-    "footer": "Agence Suédoise pour la Gestion de l'Eau et des Zones Maritimes (Havs och Vattenmyndigheten)",
+    "branding": {
+        "SwAM": "Agence Suédoise pour la Gestion de l'Eau et des Zones Maritimes (Havs och Vattenmyndigheten)",
+        "SI-Sweden": "Suède"
+    },
     "api-messages": {
         "areas": {
             "import-success" : {

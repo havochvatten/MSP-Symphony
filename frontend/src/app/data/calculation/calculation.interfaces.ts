@@ -109,12 +109,12 @@ export interface ComparisonLegendState {
   legend: Legend,
 }
 
-export type LegendState = {
+export interface LegendState {
   result: Legend | undefined,
   ecosystem: Legend | undefined,
   pressure: Legend | undefined,
   comparison: { [value: string] : ComparisonLegendState }
-};
+}
 
 export interface OperationParams {
   [param: string]: string;

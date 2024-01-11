@@ -1,8 +1,8 @@
 <ng-container *ngIf="hasChanges() else noChanges">
   <div id="areas-list">
     <app-accordion-box #changesAccordion
-                       [open]="changesCount() == 1"
-                       [ngClass]="changesCount() == 1 ? 'single-change' : ''">
+                       [open]="changesCount() === 1"
+                       [ngClass]="changesCount() === 1 ? 'single-change' : ''">
       <app-accordion-box-header *ngIf="changesCount() > 1">
         <div class="area-title"
              [innerHTML]="changesAccordion.open ?

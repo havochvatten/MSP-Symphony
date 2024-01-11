@@ -12,5 +12,5 @@ export class SearchInputComponent {
   @Input() withLabel = false;
   @Input() value = '';
   @Input() placeholder?: string;
-  @Input() onChange: (value: string) => void = () => {};
+  @Input() onChange: ((value: string) => void) | undefined;
 }

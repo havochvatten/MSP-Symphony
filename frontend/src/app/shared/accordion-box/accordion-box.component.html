@@ -4,7 +4,7 @@
     <app-icon-button [icon]="open ? 'chevron-up' : 'chevron-down'"
                      [label]="(open ? 'controls.accordion.contract' :
                                       'controls.accordion.expand') | translate"
-                     (click)="onToggle()"></app-icon-button>
+                     (iconClick)="onToggle()"></app-icon-button>
   </header>
   <section [attr.data-open]="open">
     <ng-content select="app-accordion-box-content"></ng-content>

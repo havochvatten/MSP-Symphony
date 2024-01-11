@@ -4,7 +4,6 @@ import {
   ElementRef,
   Input,
   OnChanges,
-  OnInit,
   SimpleChanges,
   ViewChild
 } from '@angular/core';
@@ -21,7 +20,7 @@ import { debounceTime, map } from "rxjs/operators";
   templateUrl: './eco-slider.component.html',
   styleUrls: ['./eco-slider.component.scss']
 })
-export class EcoSliderComponent implements OnInit, OnChanges, AfterViewInit {
+export class EcoSliderComponent implements  OnChanges, AfterViewInit {
   @Input() multiplier!: number;
   @Input() offset!: number;
   @Input() band!: Band;
@@ -37,9 +36,7 @@ export class EcoSliderComponent implements OnInit, OnChanges, AfterViewInit {
 
   }
 
-  ngOnInit() {
 
-  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['layerOpacity'] && changes['layerOpacity'].currentValue === undefined) {
@@ -55,7 +52,8 @@ export class EcoSliderComponent implements OnInit, OnChanges, AfterViewInit {
 
   ngAfterViewInit() {
     fromEvent(this.constantEl.nativeElement, 'input').pipe(
-      map((event: any) => (event.target as HTMLInputElement).value),
+      map((event: unknown) =>
+        ((event as InputEvent).target as HTMLInputElement).value),
       debounceTime(300)
     ).subscribe(value =>
       this.store.dispatch(ScenarioActions.updateBandAttribute({

@@ -12,7 +12,7 @@ import { GeoJSON } from "ol/format";
 import * as proj from "ol/proj";
 
 @Directive({
-  selector: 'app-inline-map',
+  selector: '[appInlineMap]',
 })
 
 export class InlineMapComponent implements OnInit {
@@ -21,7 +21,7 @@ export class InlineMapComponent implements OnInit {
   @Input() projectionId = 'EPSG:3857';
   @Input() maxZoom = Infinity;
   @Input() padding: number | number[] = 10;
-  @Input() polygon!: any;
+  @Input() polygon!: unknown;
   @Input() vectorStyle = new Style({
     stroke: new Stroke({ width: 2, color: 'black'})
   });

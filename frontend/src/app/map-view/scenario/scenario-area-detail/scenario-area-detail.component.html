@@ -6,7 +6,7 @@
     <div>
       <h3>{{ 'map.editor.operation.title' | translate }}</h3>
       <span>{{ 'map.editor.operation.'+ availableOperations.get(scenario.operation) +'.title' | translate }}</span>
-      <span class="rarityOptions" *ngIf="scenario.operation == operation.RarityAdjusted">{{ 'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.' + getOptions().domain | translate }}</span>
+      <span class="rarityOptions" *ngIf="scenario.operation === operation.RarityAdjusted">{{ 'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.' + getOptions().domain | translate }}</span>
     </div>
     <div>
       <h3>{{ 'map.editor.normalization.title' | translate }}</h3>

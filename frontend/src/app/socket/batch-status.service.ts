@@ -23,7 +23,6 @@ export class BatchStatusService {
 
       this.sockets[id].onopen = () => {
         //this.statusUpdates[id] = new BehaviorSubject<BatchCalculationProcessEntry|undefined>(undefined);
-        console.log('Connected to batch status service');
       };
       this.sockets[id].onmessage = (event) => {
         const process : BatchCalculationProcessEntry = JSON.parse(event.data);

@@ -3,12 +3,17 @@
 <mat-radio-group name="selected-area" (change)="select($event.value)">
   <ul>
       <li *ngFor="let fragment of areas; index as ix">
-        <div class="intersection-alt" (click)="multi ? selectMulti(ix) : select(ix)">
-          <app-inline-map [polygon]="fragment.polygon" [maxZoom]="9" [projectionId]="this.projection"></app-inline-map>
+        <div class="intersection-alt" (click)="multi ? selectMulti(ix) : select(ix)"
+             tabindex="0">
+          <div appInlineMap
+               class="inline-map"
+               [polygon]="fragment.polygon"
+               [maxZoom]="9"
+               [projectionId]="this.projection"></div>
           <span class="area-measure">{{ squareKm(fragment.polygon) }} km<sup>2</sup></span>
           <mat-radio-button *ngIf="!multi" [value]="ix" [checked]="ix === this.selected"></mat-radio-button>
           <mat-checkbox *ngIf="multi && areas.length > 1" [checked]="multiselect[ix]"></mat-checkbox>
-          <div *ngIf="metaDescriptionTextKey != null" class="meta-cpl-label"><strong>{{ metaDescriptionTextKey | translate }}</strong>{{ fragment.metaDescription }}</div>
+          <div *ngIf="metaDescriptionTextKey !== null" class="meta-cpl-label"><strong>{{ metaDescriptionTextKey | translate }}</strong>{{ fragment.metaDescription }}</div>
         </div>
       </li>
   </ul>

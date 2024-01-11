@@ -12,7 +12,6 @@ import { map, tap, withLatestFrom } from 'rxjs/operators';
 import { TranslateService } from "@ngx-translate/core";
 import { MatSelect } from "@angular/material/select";
 import { MatOption } from "@angular/material/core";
-import { MatCheckboxChange } from "@angular/material/checkbox";
 import { MatRadioChange } from "@angular/material/radio";
 
 /*export const sameCalculationsValidator: ValidatorFn = (control: AbstractControl):
@@ -41,7 +40,7 @@ export class ComparisonComponent implements AfterViewInit {
   loadingCandidates?: boolean;
   ScaleOptions = ComparisonScaleOptions;
   public selectedScale = ComparisonScaleOptions.CONSTANT;
-  constant: number = 45;
+  constant = 45;
 
   constructor(
     private store: Store<State>,
@@ -49,7 +48,7 @@ export class ComparisonComponent implements AfterViewInit {
     private calcService: CalculationService,
     private translate: TranslateService,
     private builder: FormBuilder,
-    private moduleRef: NgModuleRef<any>
+    private moduleRef: NgModuleRef<never>
   ) {
     this.calculations$ = this.store.select(CalculationSelectors.selectCalculations);
   }
@@ -67,7 +66,7 @@ export class ComparisonComponent implements AfterViewInit {
           constantVal = this.constant;
     this.calcService.addComparisonResult(a, b, dynamic, constantVal).then(
       (dynamicMax: number | null) => {
-        const max = dynamicMax != null ? Math.ceil(dynamicMax * 100) : this.constant;
+        const max = dynamicMax !== null ? Math.ceil(dynamicMax * 100) : this.constant;
         this.dialogService.open(ComparisonReportModalComponent, this.moduleRef, {
           data: { a, b, max }
         });
@@ -92,7 +91,7 @@ export class ComparisonComponent implements AfterViewInit {
         this.bSelect.placeholder = trans;
         this.bSelect.disabled = res.length === 0;
       }),
-      map(([res, _]) => res)
+      map(([res]) => res)
     );
   }
 

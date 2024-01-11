@@ -2,8 +2,8 @@ import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 export interface MenuItem {
-  url?: string | any[];
-  click?: Function;
+  url?: string | unknown[];
+  click?:(event: MouseEvent) => void;
   name: string;
   icon?: IconDefinition;
 }

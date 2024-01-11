@@ -16,9 +16,9 @@ import { BandGroup } from "@data/metadata/metadata.interfaces";
 })
 export class AbstractReport {
 
-  locale = 'en';
-  loadingReport = true;
-  imageUrl?: string;
+  protected locale = 'en';
+  protected loadingReport = true;
+  protected imageUrl?: string;
 
   protected readonly percentileValue$: Observable<number>; // FIXME: shouldn't be an observable!
   protected readonly bandDictionary$: Observable<{ [k: string] : { [p: string]: string } }>;
@@ -27,16 +27,16 @@ export class AbstractReport {
     pressureComponent: BandGroup[];
   }>;
 
-  symphonyVersion = buildInfo.version;
+  protected symphonyVersion = buildInfo.version;
 
-  metadata$: Observable<{
+  protected metadata$: Observable<{
     metadata: { ecoComponent: BandGroup[]; pressureComponent: BandGroup[] };
     bandDictionary: { [p: string]: { [p: string]: string } };
     percentileValue: number;
   } | null>;
 
-  formatChartData = formatChartData;
-  formatPercent = formatPercent;
+  protected formatChartData = formatChartData;
+  protected formatPercent = formatPercent;
 
   constructor(
     translate: TranslateService,
