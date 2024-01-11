@@ -1,0 +1,75 @@
+{
+  "root": true,
+  "ignorePatterns": [
+    "projects/**/*"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "parserOptions": {
+          "project": ["tsconfig.json"]
+      },
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates"
+      ],
+      "rules": {
+        "@angular-eslint/directive-selector": [
+          "error",
+          {
+            "type": "attribute",
+            "prefix": "app",
+            "style": "camelCase"
+          }
+        ],
+        "@angular-eslint/component-selector": [
+          "error",
+          {
+            "type": "element",
+            "prefix": "app",
+            "style": "kebab-case"
+          }
+        ],
+        "arrow-body-style": ["error", "always"],
+        "@typescript-eslint/prefer-function-type": "error",
+        "@typescript-eslint/consistent-type-definitions": "error",
+        "@typescript-eslint/explicit-member-accessibility": "error",
+        "@typescript-eslint/no-misused-new": "error",
+        "@typescript-eslint/no-non-null-assertion": "error",
+        "@typescript-eslint/unified-signatures": "error",
+        "no-throw-literal": "off",
+        "@typescript-eslint/no-throw-literal": "error",
+        "no-unused-labels": "error",
+        "no-unused-vars": ["error", { "varsIgnorePattern" : "_" }],
+        "no-caller": "error",
+        "no-debugger": "error",
+        "no-new-wrappers": "error",
+        "constructor-super": "error",
+        "no-empty": "off",
+        "no-eval": "error",
+        "no-shadow": "error",
+        "no-var": "error",
+        "no-fallthrough": "error",
+        "no-undef": "error",
+        "no-unused-expressions": "error",
+        "prefer-const": "error",
+        "eqeqeq": "error",
+        "no-console": "error"
+      }
+    },
+    {
+      "files": [
+        "*.html"
+      ],
+      "extends": [
+        "plugin:@angular-eslint/template/recommended",
+        "plugin:@angular-eslint/template/accessibility"
+      ],
+      "rules": {}
+    }
+  ]
+}
