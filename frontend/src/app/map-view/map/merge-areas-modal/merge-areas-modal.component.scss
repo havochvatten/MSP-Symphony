@@ -1,7 +1,7 @@
 :host {
   max-width: 540px;
 
-  .intersection-alt.merged app-inline-map {
+  .intersection-alt.merged div[appinlinemap] {
     width: 384px;
     height: 384px;
     margin: 0 auto;
