@@ -81,6 +81,11 @@ export interface ScenarioSplitOptions {
   batchSelect: boolean;
 }
 
+export interface ScenarioSplitDialogResult {
+  options: ScenarioSplitOptions;
+  immediate: boolean;
+}
+
 export interface ScenarioSplitResponse {
   scenarioId: number;
   splitScenarioIds: number[];

@@ -78,10 +78,16 @@ export const calculationReducer = createReducer(
     ...state,
     sortCalculations: sortType
   })),
-  on(CalculationActions.updateBatchProcess, (state, { id, process }) => ({
-    ...state,
-    batchProcesses: setIn(state.batchProcesses, [id], process)
-  })),
+  on(CalculationActions.updateBatchProcess, (state, { id, process }) => {
+    const batchProcess = state.batchProcesses[id];
+
+    return typeof batchProcess === 'undefined' ? {
+      ...state,
+      batchProcesses: setIn(state.batchProcesses, [id], process)
+    } : {
+      ...state,
+      batchProcesses: setIn(state.batchProcesses, [id], {...process, entityNames: batchProcess.entityNames })
+  }}),
   on(CalculationActions.removeBatchProcessSuccess, (state, { id }) => ({
     ...state,
     batchProcesses: setIn(state.batchProcesses, [id], undefined)

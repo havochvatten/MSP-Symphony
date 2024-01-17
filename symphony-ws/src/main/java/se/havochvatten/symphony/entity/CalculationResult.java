@@ -130,10 +130,6 @@ public class CalculationResult implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 
-    @Column(name = "cares_normalizationvalue", columnDefinition = "double precision[]")
-    @Type(type = "double-array")
-    private double[] normalizationValue;
-
     @OneToOne
     @NotNull
     private ScenarioSnapshot scenarioSnapshot;
@@ -151,38 +147,12 @@ public class CalculationResult implements Serializable {
     @Transient
     private GridCoverage2D coverage;
 
-    @NotNull
-    @Column(name = "cares_areamatrix_map", nullable = false)
-    @Type(type = "int-array")
-    private int[][] areaMatrixMap;
-
     @Column(name = "cares_image")
     private byte[] imagePNG;
 
     @Column(name = "cares_overflow")
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType")
     private JsonNode overflow;
-
-    public Map<Integer, Integer> getAreaMatrixMap() {
-        Map<Integer, Integer> map = new HashMap<>();
-
-        for (int[] ints : areaMatrixMap) {
-            map.put(ints[0], ints[1]);
-        }
-
-        return map;
-    }
-
-    public void setAreaMatrixMap(Map<Integer, Integer> areaMatrixMap) {
-        int[][] map = new int[areaMatrixMap.size()][2];
-        int i = 0;
-        for (Integer key : areaMatrixMap.keySet()) {
-            map[i][0] = key;
-            map[i][1] = areaMatrixMap.get(key);
-            i++;
-        }
-        this.areaMatrixMap = map;
-    }
 
     public CalculationResult() {}
 
@@ -228,14 +198,6 @@ public class CalculationResult implements Serializable {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public double[] getNormalizationValue() {
-        return normalizationValue;
-    }
-
-    public void setNormalizationValue(double[] value) {
-        this.normalizationValue = value;
     }
 
     public double[][] getImpactMatrix() {
@@ -319,10 +281,6 @@ public class CalculationResult implements Serializable {
     }
 
     public Map<String, String> getOperationOptions() { return operationOptions; }
-
-    public MatrixResponse getMatrixResponse() {
-        return new MatrixResponse(getAreaMatrixMap(), getNormalizationValue());
-    }
 
     @Override
     public int hashCode() {

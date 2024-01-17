@@ -96,13 +96,14 @@
                 "select-area-first-label": "Start by selecting an area"
             },
             "split-scenario-settings": {
-                "title": "Split scenario by area",
-                "detail": "Generate a new scenario for each included area",
+                "title": "Multiple area actions",
+                "detail": "Generate a new scenario for each included area, or run a batch calculation on the included areas individually. Note that the latter action will not generate new scenarios.",
                 "set-batch-name": "Batch name to use for generated scenarios",
                 "apply-scenario-changes": "Apply scenario-level intensity changes",
-                "apply-area-changes": "Apply specific area changes to their corresponding scenarios",
-                "enter-batch-mode": "Enter batch selection mode",
-                "generate": "Generate"
+                "apply-area-changes": "Apply specific area changes to their corresponding scenarios/calculations",
+                "enter-batch-mode": "Enter batch selection mode (applicable to \"Generate\" action only)",
+                "generate": "Generate",
+                "batch-calculate": "Calculate"
             },
             "set-arbitrary-matrix": {
                 "title": "Set sensitivity matrix and calculation area",

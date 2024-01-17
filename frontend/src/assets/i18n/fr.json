@@ -96,13 +96,14 @@
                 "select-area-first-label": "Sélectionnez d'abord une zone."
             },
             "split-scenario-settings": {
-                "title": "Scénarios à partir de zones",
-                "detail": "Générer un nouveau scénario pour chaque zone incluse dans le scénario en cours.",
+                "title": "Actions multi-zones",
+                "detail": "Générer un nouveau scénario pour chaque zone incluse dans le scénario en cours, ou lancez un \"calcul par lots\" sur les zones incluses. Notez que cette dernière action ne génère pas de nouveaux scénarios",
                 "set-batch-name": "Nom du calcul par lots",
                 "apply-scenario-changes": "Dupliquer les paramètres d'intensité du scénario",
-                "apply-area-changes": "Appliquer les paramètres spécifiques à la zone aux scénarios correspondants",
-                "enter-batch-mode": "Entrer en mode de sélection par lots",
-                "generate": "Générer"
+                "apply-area-changes": "Appliquer les paramètres spécifiques à la zone aux scénarios/calculs correspondants",
+                "enter-batch-mode": "Entrer en mode de sélection par lots (l'action \"Générer\" uniquement)",
+                "generate": "Générer",
+                "batch-calculate": "Calculer"
             },
             "set-arbitrary-matrix": {
                 "title": "Déterminer une matrice de sensibilité et la zone de calcul",

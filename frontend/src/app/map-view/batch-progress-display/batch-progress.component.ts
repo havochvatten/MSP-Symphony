@@ -20,7 +20,6 @@ import { DialogService } from "@shared/dialog/dialog.service";
 export class BatchProgressComponent {
 
   processes$: Observable<BatchCalculationProcessEntry[]>;
-  scenarioNames: Observable<Map<number, string>>;
 
   constructor(private store : Store<State>,
               private batchStatusService: BatchStatusService,
@@ -28,11 +27,10 @@ export class BatchProgressComponent {
               private translateService: TranslateService,
               private moduleRef: NgModuleRef<never>) {
     this.processes$ = this.store.select(CalculationSelectors.selectBatchProcesses);
-    this.scenarioNames = this.store.select(ScenarioSelectors.selectScenarioNamesIndexed);
     this.processes$.subscribe(processes => {
         for(const bcp of processes) {
             if(bcp) {
-                if (bcp.currentScenario === null && bcp.calculated.length + bcp.failed.length === 0) {
+                if (bcp.currentEntity === null && bcp.calculated.length + bcp.failed.length === 0) {
                     this.batchStatusService.connect(bcp.id)
                 }
             }
@@ -49,7 +47,7 @@ export class BatchProgressComponent {
   }
 
   checkCompleted(process: BatchCalculationProcessEntry): boolean {
-    return process.calculated.length + process.failed.length === process.scenarios.length;
+    return process.calculated.length + process.failed.length === process.entities.length;
   }
 
   removeFinishedProcess(id: number) {

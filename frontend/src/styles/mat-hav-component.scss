@@ -61,6 +61,18 @@ button.mdc-button.mat-mdc-unelevated-button.mat-primary {
     }
   }
 
+  &.primary-alt {
+    background-color: $hav-ext-emerald;
+    color: white;
+    border-color: $hav-ext-emerald;
+
+    &:hover {
+      background-color: $hav-ext-emerald-hover;
+      border-color: $hav-ext-emerald-hover;
+      color: white !important;
+    }
+  }
+
   &.secondary, &.basic {
     background-color: white;
     color: $primary-border-blue;

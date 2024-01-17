@@ -13,7 +13,7 @@ public class ScenarioCopyOptions {
     public ScenarioCopyOptions() {}
 
     public ScenarioCopyOptions(ScenarioArea area, ScenarioSplitOptions options) {
-        name = "%s - %s".formatted(options.batchName(), area.getFeature().getProperty("name").getValue().toString());
+        name = "%s - %s".formatted(options.batchName(), area.getName());
         includeScenarioChanges = options.applyScenarioChanges();
         areaChangesToInclude = new int[0];
     }
