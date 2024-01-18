@@ -151,7 +151,7 @@ public class CalculationResult implements Serializable {
     private byte[] imagePNG;
 
     @Column(name = "cares_overflow")
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType")
+    @Type(type = "json")
     private JsonNode overflow;
 
     public CalculationResult() {}
