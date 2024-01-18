@@ -25,8 +25,7 @@ import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
 import {
   ChangesProperty,
-  Scenario, ScenarioArea,
-  ScenarioSplitOptions,
+  Scenario, ScenarioArea, ScenarioSplitDialogResult
 } from '@data/scenario/scenario.interfaces';
 import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
 import { ScenarioService } from "@data/scenario/scenario.service";
@@ -372,8 +371,8 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  async openSplitOptions(): Promise<void> {
-    const splitOptions = await this.dialogService.open<ScenarioSplitOptions>(
+  async openSplitDialog(): Promise<void> {
+    const splitDialogResult = await this.dialogService.open<ScenarioSplitDialogResult>(
       SplitScenarioSettingsComponent,
       this.moduleRef,
       { data: {
@@ -384,12 +383,16 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
         }}
     );
 
-    if (splitOptions) {
-      if(splitOptions.batchSelect) {
+    if (splitDialogResult) {
+      if(splitDialogResult.immediate) {
+        this.calcService.queueBatchCalculation([this.scenario.id], splitDialogResult.options);
+      } else {
+        if(splitDialogResult.options.batchSelect) {
           this.store.dispatch(ScenarioActions.closeActiveScenario());
+        }
+        this.store.dispatch(ScenarioActions.splitScenarioForBatch(
+          { scenarioId : this.scenario.id, options: splitDialogResult.options }));
       }
-      this.store.dispatch(ScenarioActions.splitScenarioForBatch(
-        { scenarioId : this.scenario.id, options: splitOptions }));
     }
   }
 

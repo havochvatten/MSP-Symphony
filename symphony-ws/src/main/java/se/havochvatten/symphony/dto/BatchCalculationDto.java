@@ -4,23 +4,27 @@ import se.havochvatten.symphony.entity.BatchCalculation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 
 public class BatchCalculationDto {
     private final int id;
-    private final int[] scenarios;
+    private final int[] entities;
     private Integer[] reports;
     private ArrayList<Integer> calculated;
     private ArrayList<Integer> failed;
 
-    private Integer currentScenario;
+    private Integer currentEntity;
+
+    private final Map<Integer, String> entityNames;
 
     private boolean cancelled = false;
 
-    public BatchCalculationDto(BatchCalculation batchCalculation) {
+    public BatchCalculationDto(BatchCalculation batchCalculation, Map<Integer, String> entityNames) {
         this.id = batchCalculation.getId();
-        this.scenarios = batchCalculation.getScenarios();
+        this.entities = batchCalculation.getEntities();
         this.calculated = new ArrayList<>(Arrays.stream(batchCalculation.getCalculated()).boxed().toList());
-        this.reports = new Integer[batchCalculation.getScenarios().length];
+        this.reports = new Integer[batchCalculation.getEntities().length];
+        this.entityNames = entityNames;
         setFailed(batchCalculation.getFailed());
     }
 
@@ -28,8 +32,8 @@ public class BatchCalculationDto {
         return id;
     }
 
-    public int[] getScenarios() {
-        return scenarios;
+    public int[] getEntities() {
+        return entities;
     }
 
     public ArrayList<Integer> getCalculated() { return calculated; }
@@ -38,11 +42,11 @@ public class BatchCalculationDto {
 
     public Integer[] getReports() { return reports; }
 
-    public void setCurrentScenario(Integer currentScenario) {
-        this.currentScenario = currentScenario;
+    public void setCurrentEntity(Integer currentEntity) {
+        this.currentEntity = currentEntity;
     }
 
-    public Integer getCurrentScenario() { return currentScenario; }
+    public Integer getCurrentEntity() { return currentEntity; }
 
     public void setCancelled(boolean cancelled) {
         this.cancelled = cancelled;
@@ -54,5 +58,9 @@ public class BatchCalculationDto {
 
     public boolean isCancelled() {
         return cancelled;
+    }
+
+    public Map<Integer, String> getEntityNames() {
+        return entityNames;
     }
 }

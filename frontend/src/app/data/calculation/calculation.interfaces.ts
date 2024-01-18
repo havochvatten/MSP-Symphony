@@ -97,11 +97,13 @@ export interface PercentileResponse {
 export interface BatchCalculationProcessEntry {
   id: number;
   cancelled: boolean;
-  currentScenario: number|null;
-  scenarios: number[];
+  currentEntity: number|null;
+  entities: number[];
   calculated: number[];
   failed: number[];
   reports: number|null[];
+  isAreaCalculation: boolean;
+  entityNames: { [key: number]: string };
 }
 
 export interface ComparisonLegendState {

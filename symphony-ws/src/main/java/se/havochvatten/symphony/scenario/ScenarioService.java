@@ -178,7 +178,7 @@ public class ScenarioService {
                     state,
                     (GridCoverage2D innerState, BandChange bandChange) -> {
                         LOG.info("Applying changes for feature {}: " + bandChange,
-                            area.getFeature().getProperty("name").getValue().toString());
+                            area.getName());
 
                         var multipliers = new double[numBands];
                         Arrays.fill(multipliers, 1.0);  // default to no change
@@ -354,6 +354,12 @@ public class ScenarioService {
                     "Scenario.getEcosystemsToInclude" :
                     "Scenario.getPressuresToInclude"), int[].class)
             .setParameter("scenarioId", activeScenarioId)
+            .getSingleResult();
+    }
+
+    public int[] getAreaIdsForScenario(Integer id) {
+        return em.createNamedQuery("Scenario.getAreaIdsForScenario", int[].class)
+            .setParameter("scenarioId", id)
             .getSingleResult();
     }
 }

@@ -199,4 +199,9 @@ public class ScenarioArea implements BandChangeEntity {
         this.scenario = scenario;
         excludedCoastal = dto.getExcludedCoastal();
     }
+
+    public String getName() {
+        Object nameValue = getFeature().getProperty("name").getValue();
+        return nameValue == null ? this.scenario.getName() + ": (area)" : nameValue.toString();
+    }
 }

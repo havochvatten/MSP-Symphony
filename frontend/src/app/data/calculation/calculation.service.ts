@@ -18,7 +18,7 @@ import { CalculationActions } from '.';
 import { AppSettings } from '@src/app/app.settings';
 import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
-import { Scenario } from '@data/scenario/scenario.interfaces';
+import { Scenario, ScenarioSplitOptions } from '@data/scenario/scenario.interfaces';
 import { UserSelectors } from "@data/user";
 
 export enum NormalizationType {
@@ -179,6 +179,25 @@ export class CalculationService implements OnDestroy {
       });
   }
 
+  public queueBatchCalculation(scenarioIds: number[], splitOptions?: ScenarioSplitOptions) {
+    if(scenarioIds.length === 0)
+      return;
+
+    const batchProcess = splitOptions ?
+      this.queueBatchAreaCalculation(scenarioIds[0], splitOptions) :
+      this.queueBatchScenarioCalculation(scenarioIds);
+
+    batchProcess.pipe()
+      .subscribe({
+        next: (qbr) => {
+          if(qbr) {
+            this.store.dispatch(CalculationActions.updateBatchProcess({ id: qbr.id, process: qbr }));
+          }
+        }
+      }
+    );
+  }
+
   public removeResultPixels(id: number) {
     this.resultRemoved$.emit(id);
   }
@@ -215,9 +234,13 @@ export class CalculationService implements OnDestroy {
     return this.http.get<PercentileResponse>(`${env.apiBaseUrl}/calibration/percentile-value`);
   }
 
-  public queueBatchCalculation(scenarioIds: number[]) {
+  private queueBatchScenarioCalculation(scenarioIds: number[]) {
     return this.http.post<BatchCalculationProcessEntry>(`${env.apiBaseUrl}/calculation/batch`, scenarioIds.join(), {
       headers: new HttpHeaders({ 'Content-Type': 'text/plain' })});
+  }
+
+  private queueBatchAreaCalculation(scenarioId: number, splitOptions: ScenarioSplitOptions) {
+    return this.http.post<BatchCalculationProcessEntry>(`${env.apiBaseUrl}/calculation/batch/areas/${scenarioId}`, splitOptions);
   }
 
   delete(ids: number[]) {

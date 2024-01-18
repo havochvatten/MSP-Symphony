@@ -27,7 +27,7 @@
         class="batch-options-button"
         *ngIf="scenario.areas.length > 1"
         [label]="'map.editor.split-scenario-settings.title' | translate"
-        (iconClick)="openSplitOptions()">
+        (iconClick)="openSplitDialog()">
       </app-icon-button>
       <app-add-scenario-areas
         [disabled]="(calculating$ | async) || (areaMatricesLoading$ | async)"

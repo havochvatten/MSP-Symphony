@@ -137,15 +137,7 @@ export class ScenarioListComponent extends Listable implements OnDestroy {
 
   triggerBatchRun = async () => {
     if(this.isBatchMode() && this.selectedBatchIds.length > 1) {
-      this.calculationService.queueBatchCalculation(this.selectedBatchIds).pipe()
-        .subscribe({
-          next: (qbr) => {
-            if(qbr) {
-              this.store.dispatch(CalculationActions.updateBatchProcess({ id: qbr.id, process: qbr }));
-            }
-          }
-        }
-      );
+      this.calculationService.queueBatchCalculation(this.selectedBatchIds);
     }
   }
 
