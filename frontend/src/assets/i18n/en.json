@@ -97,7 +97,7 @@
             },
             "split-scenario-settings": {
                 "title": "Multiple area actions",
-                "detail": "Generate a new scenario for each included area, or run a batch calculation on the included areas individually. Note that the latter action will not generate new scenarios.",
+                "detail": "Generate a new scenario for each included area or run a batch calculation on the included areas individually. Note that the latter action will not generate new scenarios.",
                 "set-batch-name": "Batch name to use for generated scenarios",
                 "apply-scenario-changes": "Apply scenario-level intensity changes",
                 "apply-area-changes": "Apply specific area changes to their corresponding scenarios/calculations",
