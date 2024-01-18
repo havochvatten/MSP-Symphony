@@ -9,7 +9,7 @@ import { State } from "@src/app/app-reducer";
 import { TransferChangesComponent } from "@src/app/map-view/scenario/transfer-changes/transfer-changes.component";
 
 export async function deleteScenario(
-  dialogService:DialogService, translateService: TranslateService, store:Store<State>, moduleRef:NgModuleRef<any>, scenario: Scenario):Promise<void> {
+  dialogService:DialogService, translateService: TranslateService, store:Store<State>, moduleRef:NgModuleRef<never>, scenario: Scenario):Promise<void> {
   const confirmDelete = await dialogService.open<boolean>(
     ConfirmationModalComponent, moduleRef,
     {
@@ -32,7 +32,7 @@ function isScenario(target: Scenario | ScenarioArea): target is Scenario {
 }
 
 export async function transferChanges(
-  dialogService:DialogService, translateService: TranslateService, store: Store<State>, moduleRef:NgModuleRef<any>, target: Scenario | ScenarioArea):Promise<boolean> {
+  dialogService:DialogService, translateService: TranslateService, store: Store<State>, moduleRef:NgModuleRef<never>, target: Scenario | ScenarioArea):Promise<boolean> {
   const selectedChanges = await dialogService.open<ScenarioChangesSelection>(
     TransferChangesComponent, moduleRef,
     {

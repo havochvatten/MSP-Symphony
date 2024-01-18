@@ -9,6 +9,7 @@ export const environment = {
   apiBaseUrl: "/symphony-ws/service",
   socketBaseUrl: "/socket",
   baseline: false,
+  externManual: null,
   map: {
     center: [10, -10],
     initialZoom: 4,
@@ -20,7 +21,8 @@ export const environment = {
   },
   editor: {
     autoSaveIntervalInSeconds: 60, // 0 to disable
-    loadLatestCalculation: false
+    loadLatestCalculation: false,
+    defaultNormalizationType: 'AREA'
   },
   backgroundMap: {
     gebco: {

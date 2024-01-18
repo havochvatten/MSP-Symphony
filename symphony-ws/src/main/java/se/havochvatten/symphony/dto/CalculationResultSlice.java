@@ -47,7 +47,7 @@ public class CalculationResultSlice {
 
     @JsonCreator
     public CalculationResultSlice(@JsonProperty("id") int id, @JsonProperty("name") String name,
-                                  @JsonProperty("timestamp") Date timestamp, boolean isPurged) {
+                                  @JsonProperty("timestamp") Date timestamp, @JsonProperty("isPurged") boolean isPurged) {
         this.id = id;
         this.name = name;
         this.timestamp = timestamp.getTime();

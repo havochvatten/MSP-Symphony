@@ -11,16 +11,16 @@ export enum ListItemsSort {
   DateDesc
 }
 
-export type SortActionProps = {
-    sortType: ListItemsSort;
-};
+export interface SortActionProps {
+  sortType: ListItemsSort;
+}
 
 export const sortFuncMap = {
   [ListItemsSort.AlphaAsc]:   (a: SortableListItem, b: SortableListItem) => a.name.localeCompare(b.name),
   [ListItemsSort.AlphaDesc]:  (a: SortableListItem, b: SortableListItem) => b.name.localeCompare(a.name),
   [ListItemsSort.DateAsc]:    (a: SortableListItem, b: SortableListItem) => a.timestamp - b.timestamp,
   [ListItemsSort.DateDesc]:   (a: SortableListItem, b: SortableListItem) => b.timestamp - a.timestamp,
-  [ListItemsSort.None]:       (a: any, b: any) => 0
+  [ListItemsSort.None]:       (a: unknown, b: unknown) => 0
 };
 
 const nextSortType :Map<ListItemsSort, ListItemsSort> =

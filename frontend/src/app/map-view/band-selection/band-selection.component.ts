@@ -74,7 +74,7 @@ export class BandSelectionComponent implements OnInit, OnChanges {
     }
   };
 
-  onChange = (value: any, band: Band) => {
+  onChange = (value: boolean|undefined, band: Band) => {
     this.store.dispatch(
       MetadataActions.selectBand({ band, value })
     );

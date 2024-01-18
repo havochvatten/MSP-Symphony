@@ -178,14 +178,14 @@ public class ReportService {
                                 // Round to two decimal places and guard for NaN
                                 // since Math.round(Double.NaN) returns 0
 
-        report.areaMatrices = new ReportResponseDto.AreaMatrix[calc.getAreaMatrixMap().size()];
+        report.areaMatrices = new ReportResponseDto.AreaMatrix[scenario.getAreaMatrixMap().size()];
         int am_ix = 0;
         String matrix, areaName;
 
-        for(int areaId : calc.getAreaMatrixMap().keySet()) {
+        for(int areaId : scenario.getAreaMatrixMap().keySet()) {
             areaName = scenario.getAreas().get(areaId).areaName();
             try {
-                matrix = matrixService.getSensMatrixbyId(calc.getAreaMatrixMap().get(areaId), preferredLanguage).getName();
+                matrix = matrixService.getSensMatrixbyId(scenario.getAreaMatrixMap().get(areaId), preferredLanguage).getName();
             } catch (SymphonyStandardAppException e) {
                 matrix = "<unknown>";
             }
@@ -210,6 +210,7 @@ public class ReportService {
 
         report.scenarioChanges = scenario.getChangesForReport();
         report.timestamp = calc.getTimestamp().getTime();
+        report.overflow = calc.getOverflowForReport();
 
         return report;
     }

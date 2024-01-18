@@ -361,7 +361,7 @@ public class CalcService {
      *
      * @return coverage in input coordinate system (EPSG 3035 in the Swedish case)
      */
-    public CalculationResult calculateScenarioImpact(Scenario scenario)
+    public CalculationResult calculateScenarioImpact(Scenario scenario, boolean isAreaCalculation)
             throws FactoryException, TransformException, IOException, SymphonyStandardAppException {
 
         Geometry roi = coastalComplement(scenario);
@@ -374,8 +374,10 @@ public class CalcService {
 
         BaselineVersion baseline = baselineVersionService.getBaselineVersionById(scenario.getBaselineId());
 
+        Overflow overflow = new Overflow();
+
         GridCoverage2D coverage = calculateCoverage(scenario.getOperation(), roi, scenario.getBaselineId(), ecosystemsToInclude,
-            scenario.getPressuresToInclude(), areas, matrixResponse, scenario.getOperationOptions(), null);
+            scenario.getPressuresToInclude(), areas, matrixResponse, scenario.getOperationOptions(), null, overflow);
 
         // Trigger actual calculation since GeoTiffWriter requests tiles in the same thread otherwise
         var ignored = ((PlanarImage) coverage.getRenderedImage()).getTiles();
@@ -398,16 +400,11 @@ public class CalcService {
         MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
             coverage.getCoordinateReferenceSystem());
 
-        CalculationResult calculation = scenario.getNormalization().type == PERCENTILE ?
+        return scenario.getNormalization().type == PERCENTILE ?
             new CalculationResult(coverage) :
             persistCalculation( coverage, normalizationValues, areaMatrices, scenario,
-                                mapper.valueToTree(sc), ecosystemsToInclude, baseline, JTS.transform(roi, WGS84toTarget));
-
-        // previous approach for caching calculation results in session, apparently not reliable
-        // Cache last calculation in session to speed up subsequent REST call to retrieve result image
-        //req.getSession().setAttribute(CalcUtil.LAST_CALCULATION_PROPERTY_NAME, calculation);
-
-        return calculation;
+                                mapper.valueToTree(sc), ecosystemsToInclude, baseline,
+                                JTS.transform(roi, WGS84toTarget), overflow, isAreaCalculation);
     }
 
     private GridGeometry2D getTargetGridGeometry(Envelope targetGridEnvelope, ReferencedEnvelope targetEnv) {
@@ -424,7 +421,8 @@ public class CalcService {
 
     public GridCoverage2D calculateCoverage(
             int operation, Geometry roi, Integer baselineId, int[] ecosystemsToInclude, int[] pressuresToInclude,
-            List<ScenarioArea> areas, MatrixResponse matrixResponse, Map<String, String> operationOptions, BandChangeEntity altScenario)
+            List<ScenarioArea> areas, MatrixResponse matrixResponse, Map<String, String> operationOptions, BandChangeEntity altScenario,
+            Overflow overflow)
                 throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
 
         GridCoverage2D ecoComponents = data.getCoverage(LayerType.ECOSYSTEM, baselineId);
@@ -434,7 +432,8 @@ public class CalcService {
             ecoComponents,
             pressures,
             areas,
-            altScenario
+            altScenario,
+            overflow
         );
 
         ecoComponents = scenarioComponents.getLeft();
@@ -523,7 +522,7 @@ public class CalcService {
         GridCoverage2D coverage = calculateCoverage(
             calc.getOperationName().equals("CumulativeImpact") ? CalcService.OPERATION_CUMULATIVE : CalcService.OPERATION_RARITYADJUSTED,
             roi, calc.getBaselineVersion().getId(), scenario.getEcosystemsToInclude(), scenario.getPressuresToInclude(),
-            areas, calc.getMatrixResponse(), calc.getOperationOptions(), scenario);
+            areas, scenario.getMatrixResponse(), calc.getOperationOptions(), scenario, null);
 
         // Trigger calculation to populate impact matrix
         var ignore = ((PlanarImage) coverage.getRenderedImage()).getTiles();
@@ -534,10 +533,12 @@ public class CalcService {
     }
 
     @Transactional
-    public BatchCalculation queueBatchCalculation(int[] idArray, String owner) {
+    public BatchCalculation queueBatchCalculation(int[] idArray, String owner, ScenarioSplitOptions options) {
         BatchCalculation batchCalculation = new BatchCalculation();
-        batchCalculation.setScenarios(idArray);
+        batchCalculation.setEntities(idArray);
         batchCalculation.setOwner(owner);
+        batchCalculation.setAreasCalculation(options != null);
+        batchCalculation.setAreasOptions(options);
 
         em.persist(batchCalculation);
         em.flush();
@@ -612,7 +613,9 @@ public class CalcService {
                                                 JsonNode changesSnapshot,
                                                 int[] includedEcosystems,
                                                 BaselineVersion baselineVersion,
-                                                Geometry projectedRoi)
+                                                Geometry projectedRoi,
+                                                Overflow overflow,
+                                                boolean isAreaCalculation)
         throws IOException {
         var calculation = new CalculationResult(result);
 
@@ -623,7 +626,7 @@ public class CalcService {
             try {
                 transaction.begin();
 
-                var snapshot = ScenarioSnapshot.makeSnapshot(scenario, projectedRoi);
+                var snapshot = ScenarioSnapshot.makeSnapshot(scenario, projectedRoi, areaMatrixMap, normalizationValue);
                 snapshot.setEcosystemsToInclude(includedEcosystems); // Override actually used only in snapshot
                 snapshot.setChanges(changesSnapshot);
                 em.persist(snapshot);
@@ -632,20 +635,21 @@ public class CalcService {
                 calculation.setRasterData(tiff);
                 calculation.setOwner(scenario.getOwner());
                 calculation.setCalculationName(makeCalculationName(scenario));
-                calculation.setNormalizationValue(normalizationValue);
-                calculation.setAreaMatrixMap(areaMatrixMap);
                 calculation.setTimestamp(new Date());
                 var impactMatrix = (double[][]) result.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME);
                 calculation.setImpactMatrix(impactMatrix);
                 calculation.setBaselineVersion(baselineVersion);
                 calculation.setOperationName(scenario.getOperation());
                 calculation.setOperationOptions(scenario.getOperationOptions());
+                calculation.setOverflow(overflow);
 
                 em.persist(calculation);
                 em.flush(); // to have id generated
 
-                scenario.setLatestCalculation(calculation);
-                em.merge(scenario); // N.B: Will also persist any changes user has made to scenario since last save
+                if(!isAreaCalculation) {
+                    scenario.setLatestCalculation(calculation);
+                    em.merge(scenario);
+                }
 
                 transaction.commit();
             } catch (Exception e) {

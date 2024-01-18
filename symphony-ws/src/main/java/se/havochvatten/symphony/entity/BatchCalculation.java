@@ -1,7 +1,10 @@
 package se.havochvatten.symphony.entity;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Type;
+import se.havochvatten.symphony.scenario.ScenarioSplitOptions;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,6 +14,9 @@ import java.util.ArrayList;
 @Entity
 @Table(name = "batchcalculation")
 public class BatchCalculation {
+
+    private static final ObjectMapper mapper = new ObjectMapper();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "batchcalc_id", nullable = false)
@@ -21,14 +27,14 @@ public class BatchCalculation {
     @Column(name = "owner", nullable = false)
     private String owner;
 
-    @Column(name = "execution_id", nullable = true)
+    @Column(name = "execution_id")
     @ColumnDefault("NULL")
     private Integer executionId;
 
     @NotNull
-    @Column(name = "scenarios", nullable = false)
+    @Column(name = "entities", nullable = false)
     @Type(type = "com.vladmihalcea.hibernate.type.array.IntArrayType")
-    private int[] scenarios;
+    private int[] entities;
 
     @Column(name = "calculated", nullable = false)
     @ColumnDefault("ARRAY[]::integer[]")
@@ -39,6 +45,14 @@ public class BatchCalculation {
     @ColumnDefault("ARRAY[]::integer[]")
     @Type(type = "com.vladmihalcea.hibernate.type.array.IntArrayType")
     private int[] failed = new int[0];
+
+    @NotNull
+    @Column(name = "areas_calculation", nullable = false)
+    private Boolean areasCalculation = false;
+
+    @Column(name = "areas_options", columnDefinition = "json")
+    @Type(type = "json")
+    private JsonNode areasOptions;
 
     public Integer getId() {
         return id;
@@ -64,12 +78,12 @@ public class BatchCalculation {
         this.executionId = executionId;
     }
 
-    public int[] getScenarios() {
-        return scenarios;
+    public int[] getEntities() {
+        return entities;
     }
 
-    public void setScenarios(int[] scenarios) {
-        this.scenarios = scenarios;
+    public void setEntities(int[] entities) {
+        this.entities = entities;
     }
 
     public int[] getCalculated() {
@@ -88,4 +102,18 @@ public class BatchCalculation {
 
     public void setFailed(ArrayList<Integer> failed) { this.failed = failed.stream().mapToInt(i -> i).toArray(); }
 
+    public Boolean isAreasCalculation() { return areasCalculation; }
+
+    public void setAreasCalculation(Boolean areasCalculation) { this.areasCalculation = areasCalculation; }
+
+    public ScenarioSplitOptions getAreasOptions() {
+        if (areasOptions == null) {
+            return null;
+        }
+        return mapper.convertValue(areasOptions, ScenarioSplitOptions.class);
+    }
+
+    public void setAreasOptions(ScenarioSplitOptions areasOptions) {
+        this.areasOptions = mapper.valueToTree(areasOptions);
+    }
 }

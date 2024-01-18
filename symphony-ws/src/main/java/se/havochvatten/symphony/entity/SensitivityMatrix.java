@@ -2,6 +2,8 @@ package se.havochvatten.symphony.entity;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import se.havochvatten.symphony.dto.CalculationResultSlice;
+import se.havochvatten.symphony.dto.MatrixSelection;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -9,6 +11,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -27,10 +30,31 @@ import java.util.List;
 						"FROM SensitivityMatrix s WHERE s.owner = :matrixName AND s.owner = :owner AND s" +
 						".baselineVersion" +
 						".name = :baseLineName"),
-		@NamedQuery(name = "SensitivityMatrix.findByBaselineNameAndOwner",
+		@NamedQuery(name = "SensitivityMatrix.findOwnByBaselineNameAndOwner",
 				query = "SELECT s FROM " +
 						"SensitivityMatrix s WHERE s.baselineVersion.name = :name AND s.owner = :owner")
 })
+@NamedNativeQuery(name = "SensitivityMatrix.findAllByBaselineNameAndOwner",
+        query = "SELECT sensm_id id, sensm_name name, (sensm_owner IS NULL) immutable FROM sensitivitymatrix s " +
+                "WHERE s.sensm_bver_id = " +
+                    "(SELECT bver_id FROM baselineversion b " +
+                    " WHERE b.bver_name = :name) " +
+                "AND (s.sensm_owner = :owner OR s.sensm_owner IS NULL)",
+        resultSetMapping = "MatrixSelectionMapping"
+)
+
+@SqlResultSetMapping(
+    name = "MatrixSelectionMapping",
+    classes = @ConstructorResult(
+        targetClass = MatrixSelection.class,
+        columns = {
+            @ColumnResult(name = "id", type = Integer.class),
+            @ColumnResult(name = "name", type = String.class),
+            @ColumnResult(name = "immutable", type = Boolean.class)
+        }
+    )
+)
+
 public class SensitivityMatrix implements Serializable {
     private static final long serialVersionUID = 1L;
 

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { getNextSortType, ListItemsSort } from "@data/common/sorting.interfaces";
 
 @Component({
@@ -8,7 +8,7 @@ import { getNextSortType, ListItemsSort } from "@data/common/sorting.interfaces"
 })
 export class ListFilterComponent {
 
-  @Input()  filterPlaceholder: string = '';
+  @Input()  filterPlaceholder = '';
   @Output() filterChange    = new EventEmitter<string>();
   @Output() sortChange      = new EventEmitter<ListItemsSort>();
 

@@ -20,8 +20,6 @@ import { Subscription } from "rxjs";
   templateUrl: './matrix-selection.component.html',
   styleUrls: ['./matrix-selection.component.scss']
 })
-// TODO We would like to deserialize the matrix options from the scenario so as not to have to load them each time
-// the scenario is opened. But still need to fetch matrices from server (but perhaps in background, i.e. no spinner?)
 export class MatrixSelectionComponent implements OnInit, OnDestroy {
   matrixOption: MatrixOption = 'STANDARD';
   loadingMatrix = false;
@@ -48,7 +46,7 @@ export class MatrixSelectionComponent implements OnInit, OnDestroy {
     private translateService: TranslateService,
     private matrixService: MatrixService,
     private dialogService: DialogService,
-    private moduleRef: NgModuleRef<any>,
+    private moduleRef: NgModuleRef<never>,
     private store: Store<State>
   ) {
     this.translateService.get('map.editor.matrix.default-matrix').subscribe(res => {
@@ -63,6 +61,10 @@ export class MatrixSelectionComponent implements OnInit, OnDestroy {
             [this.matrixData.defaultArea.defaultMatrix,
             ...this.matrixData.defaultArea.commonBaselineMatrices,
             ...this.matrixData.defaultArea.userDefinedMatrices];
+        } else if (this.matrixData && this.matrixData.alternativeMatrices) {
+          this.matrixOptions = [
+              ...this.matrixData.alternativeMatrices.filter(mx => mx.immutable),
+              ...this.matrixData.alternativeMatrices.filter(mx => !mx.immutable)];
         }
         if(this.scenario && this.scenario.areas[this.areaIndex].matrix) { // scenario may be undefined before component initialization
           this.setSelectedCustomMatrix(this.scenario.areas[this.areaIndex].matrix.matrixId);
@@ -89,12 +91,11 @@ export class MatrixSelectionComponent implements OnInit, OnDestroy {
     if (matrixId) {
       switch (this.matrixOption) {
         case 'STANDARD':
-          const allAreaTypeMatrixOptions = this.getAllAreaTypeMatrixOptions();
           this.selectedAreaType = this.areaTypes.find(type =>
-            type.areas.find(area => area.defaultMatrix?.id == matrixId || area.matrices.find(mx => mx.id === matrixId)));
+            type.areas.find(area => area.defaultMatrix?.id === matrixId || area.matrices.find(mx => mx.id === matrixId)));
           if(this.selectedAreaType) {
             this.areaTypeSelect(this.selectedAreaType);
-            this.selectedTypedMatrix = allAreaTypeMatrixOptions.find(mx => mx.id === matrixId);
+            this.selectedTypedMatrix = this.getAllAreaTypeMatrixOptions().find(mx => mx.id === matrixId);
           }
           break;
         case 'OPTIONAL':
@@ -183,8 +184,10 @@ export class MatrixSelectionComponent implements OnInit, OnDestroy {
   }
 
   customSelect(matrix: MatrixRef) {
-    this.setSelectedCustomMatrix(matrix.id);
-    this.setMatrix.emit({ matrixType: this.matrixOption, matrixId: matrix.id });
+    if(matrix) {
+      this.setSelectedCustomMatrix(matrix.id);
+      this.setMatrix.emit({ matrixType: this.matrixOption, matrixId: matrix.id });
+    }
   }
 
   async editMatrix() {
@@ -215,5 +218,10 @@ export class MatrixSelectionComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.matrixDataSubscription$.unsubscribe();
+  }
+
+  arbitraryMatrixSelection(): boolean {
+    // alternativeMatrices is only set if no default matrix was found on load
+    return !this.matrixData?.defaultArea && !!this.matrixData?.alternativeMatrices;
   }
 }

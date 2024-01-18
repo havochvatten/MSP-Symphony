@@ -37,10 +37,13 @@ export class CalculationEffects {
   )));
 
   deleteCalculation$ = createEffect(() => this.actions$.pipe(
-    ofType(CalculationActions.deleteCalculation),
-    mergeMap(({ calculationToBeDeleted }) =>
-      from(this.calcService.deleteResult(calculationToBeDeleted.id)).pipe(
-        mergeMap((_a,_i) => {
+    ofType(CalculationActions.deleteCalculation, CalculationActions.deleteMultipleCalculations),
+    mergeMap((action) =>
+      from(this.calcService.deleteResults(
+          action.type === CalculationActions.deleteCalculation.type ?
+              [action.calculationToBeDeleted.id] :
+              action.calculationIds)).pipe(
+        mergeMap(() => {
           CalculationActions.deleteCalculationSuccess();
           return of(CalculationActions.fetchCalculations(), ScenarioActions.fetchScenarios());
         }),
@@ -69,27 +72,11 @@ export class CalculationEffects {
     )
   ));
 
-  fetchComparisonLegend$ = createEffect(() => this.actions$.pipe(
-    ofType(CalculationActions.fetchComparisonLegend),
-    mergeMap(({ comparisonTitle }) =>
-      this.calcService.getLegend('comparison').pipe(
-        map(legend => CalculationActions.fetchComparisonLegendSuccess({ legend, comparisonTitle, maxValue: 0.45 })),
-        catchError(({ status, error: message }) =>
-          of(
-            CalculationActions.fetchLegendFailure({
-              error: { status, message }
-            })
-          )
-        )
-      )
-    )
-  ));
-
   fetchDynamicComparisonLegend$ = createEffect(() => this.actions$.pipe(
-    ofType(CalculationActions.fetchDynamicComparisonLegend),
-    mergeMap(({ dynamicMax, comparisonTitle }) =>
-      this.calcService.getDynamicComparisonLegend(dynamicMax).pipe(
-        map(legend => CalculationActions.fetchComparisonLegendSuccess({ legend, comparisonTitle, maxValue: dynamicMax })),
+    ofType(CalculationActions.fetchComparisonLegend),
+    mergeMap(({ maxValue, comparisonTitle }) =>
+      this.calcService.getComparisonLegend(maxValue).pipe(
+        map(legend => CalculationActions.fetchComparisonLegendSuccess({ legend, comparisonTitle, maxValue })),
         catchError(({ status, error: message }) =>
           of(
             CalculationActions.fetchLegendFailure({

@@ -24,7 +24,7 @@
     [icon]="'edit'"
     [label]="'map.editor.changes-overview.edit-value' | translate"
     [className]="'edit-button'"
-    (click)="editValue()">
+    (iconClick)="editValue()">
   </app-icon-button>
   <mat-radio-group
     [name]="'value-type-for-' + change.type "
@@ -45,14 +45,14 @@
       [icon]="'check'"
       [label]="'map.editor.changes-overview.confirm-change' | translate"
       [className]="'confirmation-button change'"
-      (click)="confirmChange()">
+      (iconClick)="confirmChange()">
     </app-icon-button>
     <app-icon-button
       *ngIf="editMode"
       [className]="'confirmation-button discard'"
       [icon]="'cross'"
       [label]="'map.editor.changes-overview.discard-change' | translate"
-      (click)="exitEditMode()">
+      (iconClick)="exitEditMode()">
     </app-icon-button>
   </div>
 </div>

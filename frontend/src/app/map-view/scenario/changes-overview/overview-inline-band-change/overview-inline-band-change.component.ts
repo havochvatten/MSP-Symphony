@@ -18,17 +18,17 @@ export class OverviewInlineBandChangeComponent implements OnInit {
   @Input() areaIndex!: number;
   @Input() bandNumber!: number;
 
-  @Output() editModeChange = new EventEmitter<{} | null>();
+  @Output() editModeChange = new EventEmitter<object | null>();
   @HostBinding('className') componentClass = '';
 
   @ViewChild("offsetInput") offsetInput!: ElementRef;
   @ViewChild("multiplierInput") multiplierInput!: ElementRef;
 
   changeType: 'constant' | 'relative' = 'constant';
-  editMode: boolean = false;
+  editMode = false;
 
-  localMultiplier: number = 1;
-  localOffset: number = 0;
+  localMultiplier = 1;
+  localOffset = 0;
 
   constructor(private store: Store<State>) {}
 

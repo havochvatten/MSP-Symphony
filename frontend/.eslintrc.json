@@ -1,0 +1,99 @@
+{
+  "root": true,
+  "ignorePatterns": [
+    "dist/**/*",
+    "*.stories.ts"
+  ],
+  "env": {
+    "es6": true,
+    "browser": true,
+    "jasmine": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2020
+  },
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "parserOptions": {
+        "project": ["tsconfig.json"],
+        "sourceType": "module"
+      },
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates"
+      ],
+      "rules": {
+        "@angular-eslint/directive-selector": [
+          "error",
+          {
+            "type": "attribute",
+            "prefix": "app",
+            "style": "camelCase"
+          }
+        ],
+        "@angular-eslint/component-selector": [
+          "error",
+          {
+            "type": "element",
+            "prefix": "app",
+            "style": "kebab-case"
+          }
+        ],
+        "@angular-eslint/directive-class-suffix": "off",
+        "@typescript-eslint/prefer-function-type": "error",
+        "@typescript-eslint/consistent-type-definitions": "error",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-misused-new": "error",
+        "@typescript-eslint/no-unused-vars": ["off", { "args": "none" }],
+        "@typescript-eslint/no-empty-interface": "error",
+        "@typescript-eslint/no-empty-function": ["error", { "allow": ["constructors"] }],
+        "@typescript-eslint/no-this-alias": ["error", { "allowedNames": ["that"] } ],
+        "@typescript-eslint/unified-signatures": "error",
+        "@typescript-eslint/no-shadow": "error",
+        "no-throw-literal": "off",
+        "@typescript-eslint/no-throw-literal": "error",
+        "arrow-body-style": "off",
+        "no-unused-labels": "error",
+        "no-unused-vars": ["off", { "args": "none" }],
+        "no-caller": "error",
+        "no-debugger": "error",
+        "no-new-wrappers": "error",
+        "constructor-super": "error",
+        "no-empty": "off",
+        "no-eval": "error",
+        "no-var": "error",
+        "no-fallthrough": "error",
+        "no-undef": "error",
+        "no-unused-expressions": "error",
+        "prefer-const": "error",
+        "eqeqeq": "error",
+        "no-console": ["error", { "allow": ["warn", "error", "info"] }]
+      }
+    },
+    {
+        "files": [
+            "*.spec.ts"
+        ],
+        "rules": {
+            "@typescript-eslint/no-empty-function": "off"
+        }
+    },
+    {
+      "files": [
+        "*.html"
+      ],
+      "extends": [
+        "plugin:@angular-eslint/template/recommended",
+        "plugin:@angular-eslint/template/accessibility"
+      ],
+      "rules": {
+        "@angular-eslint/template/click-events-have-key-events": "off"
+      }
+    }
+  ]
+}

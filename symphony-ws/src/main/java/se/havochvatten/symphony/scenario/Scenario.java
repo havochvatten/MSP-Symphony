@@ -13,12 +13,11 @@ import se.havochvatten.symphony.calculation.CalcService;
 import se.havochvatten.symphony.dto.NormalizationOptions;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
+import se.havochvatten.symphony.entity.CalculationArea;
 import se.havochvatten.symphony.entity.CalculationResult;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -122,7 +121,7 @@ public class Scenario implements Serializable, BandChangeEntity {
 
     public Scenario() {}
 
-    public Scenario(ScenarioDto dto) {
+    public Scenario(ScenarioDto dto, ScenarioService service) {
         id = dto.id;
         owner = dto.owner;
         timestamp = new Date();
@@ -132,7 +131,15 @@ public class Scenario implements Serializable, BandChangeEntity {
         normalization = dto.normalization;
         ecosystemsToInclude = dto.ecosystemsToInclude;
         pressuresToInclude = dto.pressuresToInclude;
-        areas.addAll(Arrays.stream(dto.areas).map(a -> new ScenarioArea(a, this)).toList());
+
+        for(ScenarioAreaDto a : dto.areas) {
+            ScenarioArea area = new ScenarioArea(a, this);
+            if(a.getCustomCalcAreaId() != null) {
+                service.updateArea(area, a.getCustomCalcAreaId());
+            }
+            this.areas.add(area);
+        }
+
         operation = dto.operation;
     }
 
@@ -154,6 +161,7 @@ public class Scenario implements Serializable, BandChangeEntity {
         var areasToAdd = altAreas == null ? s.areas : altAreas;
 
         for(ScenarioArea a : areasToAdd) {
+            CalculationArea calcArea = a.getCustomCalcArea();
             this.areas.add(new ScenarioArea(
                 new ScenarioAreaDto(
                     -1,
@@ -162,7 +170,8 @@ public class Scenario implements Serializable, BandChangeEntity {
                     a.getFeatureJson(),
                     a.getMatrix(),
                     null,
-                    a.getExcludedCoastal()), this));
+                    a.getExcludedCoastal(),
+                    calcArea == null ? null : calcArea.getId()), this));
         }
     }
 

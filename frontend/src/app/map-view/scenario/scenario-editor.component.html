@@ -5,7 +5,7 @@
 <ng-template #scenario>
   <ng-container *ngIf="getActiveAreaIndex() !== undefined; then scenarioAreaDetail else scenarioDetail"></ng-container>
   <ng-template #scenarioDetail>
-    <app-scenario-detail [scenario]="getActiveScenario()" [deleteAreaDelegate]="confirmDeleteArea"></app-scenario-detail>
+    <app-scenario-detail [scenario]="getActiveScenario()" [deleteAreaDelegate]="confirmDeleteArea" [deleteAreaAction]="deleteAreaAction"></app-scenario-detail>
   </ng-template>
   <ng-template #scenarioAreaDetail>
     <app-scenario-area-detail

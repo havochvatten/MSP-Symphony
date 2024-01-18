@@ -1,6 +1,7 @@
 package se.havochvatten.symphony.mapper;
 
 import se.havochvatten.symphony.dto.AreaSelectionResponseDto;
+import se.havochvatten.symphony.dto.MatrixSelection;
 import se.havochvatten.symphony.entity.AreaType;
 import se.havochvatten.symphony.entity.CalcAreaSensMatrix;
 import se.havochvatten.symphony.entity.CalculationArea;
@@ -16,9 +17,9 @@ public class AreaSelectionResponseDtoMapper {
                                                     List<CalcAreaSensMatrix> userDefinedMatrices,
                                                     List<CalcAreaSensMatrix> commonBaselineMatrices) throws SymphonyStandardAppException {
         AreaSelectionResponseDto resp = new AreaSelectionResponseDto();
-        List<AreaSelectionResponseDto.Matrix> userDefinedMatrixDtos =
+        List<MatrixSelection> userDefinedMatrixDtos =
 				mapToCalcAreaSensMatrixDtos(userDefinedMatrices, false);
-        List<AreaSelectionResponseDto.Matrix> commonBaselineMatrixDtos =
+        List<MatrixSelection> commonBaselineMatrixDtos =
                 mapToCalcAreaSensMatrixDtos(commonBaselineMatrices, true);
         AreaSelectionResponseDto.DefaultArea defaultAreaDto = new AreaSelectionResponseDto.DefaultArea();
         defaultAreaDto.setAreaAttributes(mapToAreaDto(defaultArea));
@@ -57,8 +58,8 @@ public class AreaSelectionResponseDtoMapper {
         return areaDto;
     }
 
-    private static List<AreaSelectionResponseDto.Matrix> mapToCalcAreaSensMatrixDtos(List<CalcAreaSensMatrix> calcAreaSensMatrices, boolean publicMatrices) {
-        List<AreaSelectionResponseDto.Matrix> dtos = new ArrayList<>();
+    private static List<MatrixSelection> mapToCalcAreaSensMatrixDtos(List<CalcAreaSensMatrix> calcAreaSensMatrices, boolean publicMatrices) {
+        List<MatrixSelection> dtos = new ArrayList<>();
         calcAreaSensMatrices.forEach(m -> {
             boolean include =
 					!publicMatrices || (publicMatrices && m.getSensitivityMatrix() != null && m.getSensitivityMatrix().getOwner() == null);
@@ -69,17 +70,15 @@ public class AreaSelectionResponseDtoMapper {
         return dtos;
     }
 
-    private static AreaSelectionResponseDto.Matrix mapCalcAreaSensMatrixToDto(CalcAreaSensMatrix calcAreaSensMatrix) {
-        AreaSelectionResponseDto.Matrix dto = new AreaSelectionResponseDto.Matrix();
-        dto.setId(calcAreaSensMatrix.getSensitivityMatrix().getId());
-        dto.setName(calcAreaSensMatrix.getSensitivityMatrix().getName());
-        dto.setImmutable(calcAreaSensMatrix.getSensitivityMatrix().getOwner() == null);
-        return dto;
+    private static MatrixSelection mapCalcAreaSensMatrixToDto(CalcAreaSensMatrix calcAreaSensMatrix) {
+        return new MatrixSelection(
+            calcAreaSensMatrix.getSensitivityMatrix().getId(),
+            calcAreaSensMatrix.getSensitivityMatrix().getName(),
+            calcAreaSensMatrix.getSensitivityMatrix().getOwner() == null);
     }
 
-    public static AreaSelectionResponseDto.Matrix mapSensitivityMatrixToDto(SensitivityMatrix sensitivityMatrix) {
-        AreaSelectionResponseDto.Matrix dto = new AreaSelectionResponseDto.Matrix();
-        ;
+    public static MatrixSelection mapSensitivityMatrixToDto(SensitivityMatrix sensitivityMatrix) {
+        MatrixSelection dto = new MatrixSelection();
         if (sensitivityMatrix != null) {
             dto.setId(sensitivityMatrix.getId());
             dto.setName(sensitivityMatrix.getName());

@@ -87,7 +87,7 @@ export class HistogramChartComponent implements OnInit, OnChanges {
 
   chartViewBox() {
     return '0 0 ' + this.chartWidth + ' ' + this.chartHeight
-  };
+  }
 
   phDraw(ix : number, info: boolean):string {
     const v = info ? 1 : this.bins[ix] / this.max,

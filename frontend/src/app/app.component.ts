@@ -2,7 +2,6 @@ import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Event, NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter, map, mergeMap } from 'rxjs/operators';
-import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -30,7 +29,7 @@ export class AppComponent implements OnDestroy {
         mergeMap(route => route.data)
       )
       .subscribe(data => {
-        this.headerTitle = data.hasOwnProperty('headerTitle') ? data.headerTitle : '';
+        this.headerTitle = data['headerTitle'] ? data['headerTitle'] : '';
       });
   }
   ngOnDestroy() {

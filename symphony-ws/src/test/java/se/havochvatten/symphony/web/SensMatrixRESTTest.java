@@ -53,6 +53,11 @@ public class SensMatrixRESTTest extends RESTTest {
 
     }
 
+// Below test is extremely brittle! Success relies on that existing PK ids are provided
+// for the band entities in the json mock data (/test/matrices/sensmatrixdto.json)
+// FIXME: applies to entire API test suite
+// This is obviously unworkable and should be fixed. For robust API testing, the test module
+// should provide a standalone test db instead of scattered files and inline object declarations.
     @Test
     public void userMatrixAndAreaCreateGetDelete() throws IOException {
         String endpoint = endpoint("/sensitivitymatrix/{baselineName}/{areaid}");
@@ -110,8 +115,7 @@ public class SensMatrixRESTTest extends RESTTest {
         Assert.assertTrue(createdSensMatrixIdFound);
 
         // Update SensMatrix
-        sensMatrixDto.getSensMatrix().getRows().get(0).getColumns().get(0).setValue(BigDecimal.valueOf(0.123));
-        sensMatrixDto.setName(endpoint);
+        sensMatrixDtoWithId.getSensMatrix().getRows().get(0).getColumns().get(0).setValue(BigDecimal.valueOf(0.123));
         response = given().
             auth().
             preemptive().
@@ -119,7 +123,7 @@ public class SensMatrixRESTTest extends RESTTest {
             pathParam("id", createdSensMatrixDtoId).
             when().
             header("Content-Type", "application/json").
-            body(sensMatrixDto).
+            body(sensMatrixDtoWithId).
             put(endpoint("/sensitivitymatrix/{id}"));
         assertThat(response.getStatusCode(), is(200));
         SensMatrixDto sensMatrixDtoUpd = response.jsonPath().getObject("", SensMatrixDto.class);

@@ -5,6 +5,6 @@ export function formatPercentage(value: number, decimals: number, locale: string
     (value > 0 && relative ? "+" : "") + formatNumber(value * 100, locale, '1.0-' + decimals) + "%";
 }
 
-export function textFilter(input: any, filter: string) {
+export function textFilter(input: string, filter: string) {
   return input.toLowerCase().indexOf(filter.toLowerCase()) === -1;
 }

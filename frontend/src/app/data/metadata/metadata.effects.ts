@@ -68,7 +68,7 @@ export class MetadataEffects {
     debounceTime(200),
     concatMap(action =>
       of(action).pipe(
-        concatLatestFrom((action) => this.store.select(MetadataSelectors.selectMetadataState))
+        concatLatestFrom(() => this.store.select(MetadataSelectors.selectMetadataState))
       )
     ),
     switchMap(([{ band, value }, metadata]) => {

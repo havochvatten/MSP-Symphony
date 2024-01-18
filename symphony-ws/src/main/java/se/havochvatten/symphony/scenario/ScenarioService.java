@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vladmihalcea.hibernate.type.array.IntArrayType;
 import org.apache.commons.lang3.tuple.Pair;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
@@ -13,7 +12,6 @@ import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.LiteShape2;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.hibernate.engine.spi.Mapping;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
@@ -23,9 +21,11 @@ import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.calculation.Operations;
+import se.havochvatten.symphony.calculation.Overflow;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
+import se.havochvatten.symphony.entity.CalculationArea;
 import se.havochvatten.symphony.service.CalculationAreaService;
 import se.havochvatten.symphony.util.Util;
 
@@ -105,6 +105,15 @@ public class ScenarioService {
         return updated;
     }
 
+    @Transactional
+    public ScenarioArea updateArea(ScenarioArea updated, Integer calculationAreaId) {
+        if(calculationAreaId != null) {
+            CalculationArea calculationArea = calculationAreaService.findCalculationArea(calculationAreaId);
+            updated.setCustomCalcArea(calculationArea);
+        }
+        return updateArea(updated);
+    }
+
     public void delete(Principal principal, int id) {
         var s = em.find(Scenario.class, id);
 
@@ -127,15 +136,16 @@ public class ScenarioService {
     public Pair<GridCoverage2D, GridCoverage2D> applyScenario(GridCoverage2D ecosystems,
                                                               GridCoverage2D pressures,
                                                               List<ScenarioArea> areas,
-                                                              BandChangeEntity altScenario) throws FactoryException, TransformException {
+                                                              BandChangeEntity altScenario,
+                                                              Overflow overflow) throws FactoryException, TransformException {
         // We assume GeoJSON is in WGS84 and that ecosystem and pressures coverages are of the same CRS
         assert (ecosystems.getCoordinateReferenceSystem().equals(pressures.getCoordinateReferenceSystem()));
         MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
                 ecosystems.getCoordinateReferenceSystem());
 
         return Pair.of(
-                apply(ecosystems, ecosystems.getGridGeometry(), areas, LayerType.ECOSYSTEM, WGS84toTarget, altScenario),
-                apply(pressures, pressures.getGridGeometry(), areas, LayerType.PRESSURE, WGS84toTarget, altScenario)
+                apply(ecosystems, ecosystems.getGridGeometry(), areas, LayerType.ECOSYSTEM, WGS84toTarget, altScenario, overflow),
+                apply(pressures, pressures.getGridGeometry(), areas, LayerType.PRESSURE, WGS84toTarget, altScenario, overflow)
         );
     }
 
@@ -147,7 +157,8 @@ public class ScenarioService {
                List<ScenarioArea> areas,
                LayerType changeType,
                MathTransform roiTransform,
-               BandChangeEntity alternateChangeSource) {
+               BandChangeEntity alternateChangeSource,
+               Overflow overflow) throws TransformException, FactoryException {
         final int numBands = coverage.getNumSampleDimensions();
 
         return Util.reduce(areas, coverage, (state, area) -> {
@@ -167,7 +178,7 @@ public class ScenarioService {
                     state,
                     (GridCoverage2D innerState, BandChange bandChange) -> {
                         LOG.info("Applying changes for feature {}: " + bandChange,
-                            area.getFeature().getProperty("name").getValue().toString());
+                            area.getName());
 
                         var multipliers = new double[numBands];
                         Arrays.fill(multipliers, 1.0);  // default to no change
@@ -177,8 +188,10 @@ public class ScenarioService {
                         // No need to fill since array is initialized to zero by default
                         offsets[bandChange.band] = bandChange.offset == null ? 0.0 : bandChange.offset;
 
-                        return (GridCoverage2D) operations.rescale(innerState, multipliers, offsets,
-                            gridROI, MAX_IMPACT_VALUE);
+                        GridCoverage2D g2d = (GridCoverage2D) operations.rescale(innerState, multipliers, offsets,
+                            gridROI, MAX_IMPACT_VALUE, changeType, overflow);
+
+                        return g2d;
                     });
             } catch (TransformException | FactoryException e) {
                 LOG.error("Error transforming change ROI: " + e);
@@ -341,6 +354,12 @@ public class ScenarioService {
                     "Scenario.getEcosystemsToInclude" :
                     "Scenario.getPressuresToInclude"), int[].class)
             .setParameter("scenarioId", activeScenarioId)
+            .getSingleResult();
+    }
+
+    public int[] getAreaIdsForScenario(Integer id) {
+        return em.createNamedQuery("Scenario.getAreaIdsForScenario", int[].class)
+            .setParameter("scenarioId", id)
             .getSingleResult();
     }
 }

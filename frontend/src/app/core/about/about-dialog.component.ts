@@ -9,12 +9,12 @@ import attributions from 'attributions';
   styleUrls: ['./about-dialog.component.scss']
 })
 export class AboutDialogComponent {
-  buildInfo = buildInfo; // make available to template
-  thirdPartyLibraries: string[][] = attributions;
+  protected buildInfo = buildInfo; // make available to template
+  protected thirdPartyLibraries: string[][] = attributions;
 
   constructor(private dialog: DialogRef) {}
 
-  close = () => {
+  close() {
     this.dialog.close();
-  };
+  }
 }

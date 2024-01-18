@@ -12,6 +12,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.MatrixParameters;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
+import se.havochvatten.symphony.entity.CalculationArea;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -74,6 +75,10 @@ public class ScenarioArea implements BandChangeEntity {
     @Column(name = "excluded_coastal")
     private Integer excludedCoastal;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "custom_calcarea")
+    private CalculationArea customCalcArea = null;
+
     public ScenarioArea() {
 
     }
@@ -98,9 +103,8 @@ public class ScenarioArea implements BandChangeEntity {
         BandChangeEntity bcEntity = altScenario == null ? scenario : altScenario;
 
         Map<Integer, BandChange> baseChangeMap =
-            ((Map<LayerType, Map<Integer, BandChange>>)
-                mapper.convertValue(bcEntity.getChanges(), new TypeReference<>() {})).getOrDefault(layerType, new HashMap<>()),
-                                 changeMap = getChangeMap().getOrDefault(layerType, new HashMap<>());
+            bcEntity.getChangeMap().getOrDefault(layerType, new HashMap<>()),
+            changeMap = getChangeMap().getOrDefault(layerType, new HashMap<>());
 
         return Stream.concat(
                 baseChangeMap.entrySet().stream().filter(c -> !changeMap.containsKey(c.getKey())),
@@ -175,6 +179,14 @@ public class ScenarioArea implements BandChangeEntity {
         this.scenario = scenario;
     }
 
+    public CalculationArea getCustomCalcArea() {
+        return customCalcArea;
+    }
+
+    public void setCustomCalcArea(CalculationArea customCalcArea) {
+        this.customCalcArea = customCalcArea;
+    }
+
     public ScenarioArea(ScenarioAreaDto dto, Scenario scenario) {
         int tmpId = dto.getId();
         if(tmpId != -1) {
@@ -186,5 +198,10 @@ public class ScenarioArea implements BandChangeEntity {
         matrix = mapper.valueToTree(dto.getMatrix());
         this.scenario = scenario;
         excludedCoastal = dto.getExcludedCoastal();
+    }
+
+    public String getName() {
+        Object nameValue = getFeature().getProperty("name").getValue();
+        return nameValue == null ? this.scenario.getName() + ": (area)" : nameValue.toString();
     }
 }

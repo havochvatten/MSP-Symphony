@@ -1,5 +1,6 @@
 package se.havochvatten.symphony.web;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.MissingNode;
@@ -44,6 +45,7 @@ public class MetaDataRESTTest extends RESTTest {
             preemptive().
             basic(getUsername(), getPassword()).
             pathParam("baselineName", baselineName).
+            queryParam("lang", "sv").
             when().
             get(endpoint).
             then().
@@ -65,6 +67,7 @@ public class MetaDataRESTTest extends RESTTest {
         String pressureComponentJSON = res.path("pressureComponent").toString();
         String ecoComponentJSON = res.path("ecoComponent").toString();
         ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         MetadataComponentDto pressure = mapper.readValue(pressureComponentJSON, MetadataComponentDto.class);
         MetadataComponentDto eco = mapper.readValue(ecoComponentJSON, MetadataComponentDto.class);
 

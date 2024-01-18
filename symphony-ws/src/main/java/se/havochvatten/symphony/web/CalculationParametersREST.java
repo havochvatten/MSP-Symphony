@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import se.havochvatten.symphony.dto.AreaSelectionResponseDto;
 import se.havochvatten.symphony.dto.FrontendErrorDto;
+import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.service.CalculationAreaService;
 
@@ -41,14 +42,8 @@ public class CalculationParametersREST {
         try {
             return Response.ok(calculationAreaService.areaSelect(baselineName, areaId, req.getUserPrincipal()))
                     .build();
-        } catch (SymphonyStandardAppException ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(new FrontendErrorDto(ex.getErrorCode().getErrorKey(), ex.getErrorCode().getErrorMessage()))
-                    .build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(new FrontendErrorDto("Exception thrown", "Unable to find area matrix"))
-                    .build();
+            return areaMatrixErrorResponse(ex);
         }
     }
 
@@ -67,14 +62,26 @@ public class CalculationParametersREST {
         try {
             return Response.ok(calculationAreaService.scenarioAreaSelect(baselineName, scenarioId, req.getUserPrincipal()))
                     .build();
-        } catch (SymphonyStandardAppException ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(new FrontendErrorDto(ex.getErrorCode().getErrorKey(), ex.getErrorCode().getErrorMessage()))
-                    .build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(new FrontendErrorDto("Exception thrown", "Unable to find area matrices"))
+            return areaMatrixErrorResponse(ex);
+        }
+    }
+
+    private static Response areaMatrixErrorResponse(Exception ex) {
+        if (ex instanceof SymphonyStandardAppException) {
+            SymphonyStandardAppException ssx = (SymphonyStandardAppException) ex;
+            if (ssx.getErrorCode() == SymphonyModelErrorCode.NO_DEFAULT_MATRIX_FOUND) {
+                return Response.status(Response.Status.NOT_FOUND)
+                    .entity(new FrontendErrorDto(ssx.getErrorCode().getErrorKey(), ssx.getErrorCode().getErrorMessage()))
                     .build();
+            }
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(new FrontendErrorDto(ssx.getErrorCode().getErrorKey(), ssx.getErrorCode().getErrorMessage()))
+                .build();
+        } else {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(new FrontendErrorDto("Exception thrown", "Error querying area matrices"))
+                .build();
         }
     }
 }

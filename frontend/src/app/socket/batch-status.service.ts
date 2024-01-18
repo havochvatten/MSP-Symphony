@@ -23,44 +23,27 @@ export class BatchStatusService {
 
       this.sockets[id].onopen = () => {
         //this.statusUpdates[id] = new BehaviorSubject<BatchCalculationProcessEntry|undefined>(undefined);
-        console.log('Connected to batch status service');
       };
       this.sockets[id].onmessage = (event) => {
         const process : BatchCalculationProcessEntry = JSON.parse(event.data);
         this.store.dispatch(CalculationActions.updateBatchProcess({ id: process.id, process }));
 
-        if(process.currentScenario === null &&
-           process.calculated.length + process.failed.length === process.scenarios.length) {
+        if(process.currentEntity === null &&
+           process.calculated.length + process.failed.length === process.entities.length) {
           this.disconnect(id);
+          this.store.dispatch(CalculationActions.fetchCalculations());
         }
       };
       this.sockets[id].onclose = () => {
         this.disconnect(id);
       };
     }
-
-
-    // this.socket = new WebSocket( 'wss://' + window.location.host + env.socketBaseUrl + '/batch-status/' + id, );
-    //
-    // this.socket.onopen = () => {
-    //   console.log('Connected to batch status service');
-    // };
-    // this.socket.onmessage = (event) => {
-    //   this.statusUpdate$.next(JSON.parse(event.data));
-    // };
-    // this.socket.onclose = () => {
-    //   console.log('Disconnected from batch status service');
-    // };
   }
 
   public disconnect(id:number) {
     if (this.sockets[id]) {
       this.sockets[id].close();
       delete this.sockets[id];
-      // if(this.statusUpdates[id]) {
-      //   this.statusUpdates[id].complete();
-      //   delete this.statusUpdates[id];
-      // }
     }
   }
 }

@@ -29,7 +29,7 @@ export const fetchMetadataFailure = createAction(
 
 export const selectBand = createAction(
   '[Metadata] Select band for inclusion',
-  props<{ band: Band, value: any }>()
+  props<{ band: Band, value: boolean|undefined }>()
 );
 
 export const setVisibility  = createAction(

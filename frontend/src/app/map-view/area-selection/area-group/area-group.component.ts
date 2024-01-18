@@ -17,13 +17,13 @@ export class AreaGroupComponent {
   @Input() deleteUserArea?: (areaId: number, areaName: string) => void;
   @Input() renameUserArea?: (userArea: UserArea) => void;
   @Input() selectArea?: (statePath: StatePath[], visible: boolean, groupStatePath: StatePath) => void;
-  @Input() updateVisible: (statePath: StatePath) => void = (statePath: StatePath) => {};
+  @Input() updateVisible!: (statePath: StatePath) => void;
   @Input() importArea?: () => void;
   faCloudUpload = faCloudUploadAlt;
 
   constructor(
     private dialogService: DialogService,
-    private moduleRef: NgModuleRef<any>
+    private moduleRef: NgModuleRef<never>
   ) {}
 
   // onDrawUserArea() {
@@ -60,11 +60,13 @@ export class AreaGroupComponent {
         [attr.data-active]="open"
         icon="edit"
         label="{{ 'map.user-area.edit.label' | translate }}"
-        (click)="toggleOpen()"
+        (iconClick)="toggleOpen()"
       ></app-icon-button>
       <ul *ngIf="open" class="edit-options">
-        <li (click)="onRenameUserArea($event)">{{ 'map.user-area.rename.label' | translate }}</li>
-        <li class="delete" (click)="onDeleteUserArea($event)">
+        <li (click)="onRenameUserArea($event)"
+            tabindex="0">{{ 'map.user-area.rename.label' | translate }}</li>
+        <li class="delete" (click)="onDeleteUserArea($event)"
+            tabindex="0">
           {{ 'map.user-area.delete.label' | translate }}
         </li>
       </ul>
@@ -77,7 +79,7 @@ export class EditAreaComponent {
   @Input() renameUserArea?: () => void;
   open = false;
 
-  private onClick(event: any) {
+  private onClick(event: Event) {
     event.stopPropagation();
     this.open = false;
   }
@@ -86,14 +88,14 @@ export class EditAreaComponent {
     this.open = !this.open;
   }
 
-  onDeleteUserArea(event: any) {
+  onDeleteUserArea(event: Event) {
     this.onClick(event);
     if (typeof this.deleteUserArea === 'function') {
       this.deleteUserArea();
     }
   }
 
-  onRenameUserArea(event: any) {
+  onRenameUserArea(event: Event) {
     this.onClick(event);
     if (typeof this.renameUserArea === 'function') {
       this.renameUserArea();

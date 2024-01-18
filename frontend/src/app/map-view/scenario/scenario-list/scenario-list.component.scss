@@ -22,39 +22,8 @@ $buttons-row-gap: 1rem;
         margin: 0 0 0.5em;
       }
 
-      .batch-tools {
+      app-multi-tools {
         margin-top: 0.7rem;
-
-        ::ng-deep app-icon-button {
-          display: inline-block;
-          margin-left: 0;
-          opacity: 0.2;
-
-          &.active {
-            opacity: 1;
-          }
-
-          &.set-batch-mode {
-            font-size: 18px;
-            width: 28px;
-
-            &:not(.active):hover {
-              opacity: 0.6;
-            }
-          }
-
-          &.run-batch {
-            margin-right: 1.3rem;
-
-            &.active {
-              color: $hav-blue;
-
-              button.disabled {
-                cursor: not-allowed;
-              }
-            }
-          }
-        }
       }
     }
 

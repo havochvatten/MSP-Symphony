@@ -49,6 +49,11 @@ export const selectOverlap = createSelector(selectAreaState, state => state.sele
 
 export const selectBoundaries = createSelector(selectAreaState, state => state.boundaries);
 
+export const selectCalibratedCalculationAreas = createSelector(
+  selectAreaState,
+  state => state.calibratedCalculationAreas
+);
+
 export const selectAll = createSelector(
   selectNationalAreas,
   selectUserAreas,

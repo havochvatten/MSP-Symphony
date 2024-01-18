@@ -7,6 +7,7 @@
   <mat-radio-button
     [checked]="matrixOption === 'STANDARD'"
     (change)="check('STANDARD', null)"
+    [disabled]="arbitraryMatrixSelection()"
   > {{ standardLabel }}
   </mat-radio-button>
   <section *ngIf="hasOptionalMatrices()">

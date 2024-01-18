@@ -1,6 +1,6 @@
 <nav>
   <h2>{{ this.titleKey | translate }}</h2>
-  <app-icon-button icon="times" label="{{ 'controls.close' | translate }}" (click)="close()"></app-icon-button>
+  <app-icon-button icon="times" label="{{ 'controls.close' | translate }}" (iconClick)="close()"></app-icon-button>
 </nav>
 <iframe #frame [src]="getSafeUrl()"></iframe>
 <div class="toolbar">

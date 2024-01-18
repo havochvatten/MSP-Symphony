@@ -5,6 +5,7 @@ export const environment = {
   apiBaseUrl: "/symphony-ws/service",
   socketBaseUrl: "/socket",
   baseline: false, // Set to some false value to get "latest" baseline
+  externManual: null,
   map: {
     center: [0, 0],
     initialZoom: 6,
@@ -16,7 +17,8 @@ export const environment = {
   },
   editor: {
     autoSaveIntervalInSeconds: 30, // 0 to disable
-    loadLatestCalculation: false
+    loadLatestCalculation: false,
+    defaultNormalizationType: 'AREA'
   },
   backgroundMap: {
     gebco: {

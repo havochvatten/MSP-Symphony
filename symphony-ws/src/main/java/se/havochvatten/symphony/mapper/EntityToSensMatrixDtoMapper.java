@@ -43,7 +43,7 @@ public class EntityToSensMatrixDtoMapper {
             SensitivityDto.SensCol scolumn = new SensitivityDto.SensCol();
 
             scolumn.setSensId(Optional.ofNullable(sens.getId()).orElse(-1));
-            scolumn.setEcoMetaId(sens.getPressureBand().getId());
+            scolumn.setEcoMetaId(sens.getEcoBand().getId());
             scolumn.setName(sens.getEcoBand().getTitle(preferredLanguage));
             scolumn.setValue(sens.getValue());
 

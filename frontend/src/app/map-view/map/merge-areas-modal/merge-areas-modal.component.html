@@ -1,7 +1,7 @@
 <h4>{{ headerTextKey | translate }}</h4>
 <p [innerHTML]=" messageTextKey | translate"></p>
   <div class="intersection-alt merged">
-    <app-inline-map [polygon]="areas[0].polygon" [maxZoom]="9" [projectionId]="this.projection"></app-inline-map>
+    <div appInlineMap [polygon]="areas[0].polygon" [maxZoom]="9" [projectionId]="this.projection"></div>
   </div>
 <mat-radio-group name="merged-area-options" (change)="select($event.value)"
                  *ngIf="altAreas.length > 0" [ngClass]="'merged-area-options'">

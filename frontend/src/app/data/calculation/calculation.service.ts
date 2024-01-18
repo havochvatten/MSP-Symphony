@@ -18,9 +18,8 @@ import { CalculationActions } from '.';
 import { AppSettings } from '@src/app/app.settings';
 import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
-import { Scenario } from '@data/scenario/scenario.interfaces';
+import { Scenario, ScenarioSplitOptions } from '@data/scenario/scenario.interfaces';
 import { UserSelectors } from "@data/user";
-import { transformExtent } from "ol/proj";
 
 export enum NormalizationType {
   Area = 'AREA',
@@ -48,9 +47,9 @@ export class CalculationService implements OnDestroy {
   public resultRemoved$ = new EventEmitter<number>();
   private ecoBands: number[] = [];
   private pressureBands: number[] = [];
-  private bandNumbersSubscription$: Subscription;
-  private aliasingSubscription$: Subscription;
-  private aliasing: boolean = true;
+  private readonly bandNumbersSubscription$: Subscription;
+  private readonly aliasingSubscription$: Subscription;
+  private aliasing = true;
 
   constructor(private http: HttpClient, private store: Store<State>) {
     proj4.defs('EPSG:3035', '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs');
@@ -84,7 +83,7 @@ export class CalculationService implements OnDestroy {
           }));
         });
       },
-      error(err) {
+      error() {
         that.store.dispatch(CalculationActions.calculationFailed());
         that.store.dispatch(
           MessageActions.addPopupMessage({
@@ -111,7 +110,7 @@ export class CalculationService implements OnDestroy {
     });
   }
 
-  public addComparisonResult(idA: string, idB: string, dynamic: boolean){
+  public addComparisonResult(idA: string, idB: string, dynamic: boolean, max: number){
     //  Bit "hacky" but workable "faux" id constructed as a negative number
     //  to guarantee uniqueness without demanding a separate interface.
     //  Note that this artficially imposes a virtual maximum for calculation
@@ -120,7 +119,7 @@ export class CalculationService implements OnDestroy {
     //  which is -2^53
 
     return this.addResultImage(this.cmpId(+idA, +idB), `diff/${idA}/${idB}`
-                                                  + (dynamic ? '?dynamic=true' : ''));
+                                                  + (dynamic ? '?dynamic=true' : '?max=' + max));
   }
 
   cmpId(a:number, b:number): number {
@@ -164,18 +163,39 @@ export class CalculationService implements OnDestroy {
     });
   }
 
-  public deleteResult(id: number){
+  public deleteResults(ids: number[]){
     const that = this;
     return new Promise<void>((resolve, reject) => {
-      this.delete(id).subscribe({
-        next(response) {
-          that.resultRemoved$.emit(id);
-          resolve();
-        },
-        error(err: HttpErrorResponse) {
-          reject('Server error');
-        }});
-    });
+        this.delete(ids).subscribe({
+          next() {
+            ids.forEach((id) => {
+              that.resultRemoved$.emit(id);
+            });
+            resolve();
+          },
+          error() {
+            reject('Server error');
+          }});
+      });
+  }
+
+  public queueBatchCalculation(scenarioIds: number[], splitOptions?: ScenarioSplitOptions) {
+    if(scenarioIds.length === 0)
+      return;
+
+    const batchProcess = splitOptions ?
+      this.queueBatchAreaCalculation(scenarioIds[0], splitOptions) :
+      this.queueBatchScenarioCalculation(scenarioIds);
+
+    batchProcess.pipe()
+      .subscribe({
+        next: (qbr) => {
+          if(qbr) {
+            this.store.dispatch(CalculationActions.updateBatchProcess({ id: qbr.id, process: qbr }));
+          }
+        }
+      }
+    );
   }
 
   public removeResultPixels(id: number) {
@@ -194,7 +214,7 @@ export class CalculationService implements OnDestroy {
     return this.http.get<CalculationSlice[]>(`${env.apiBaseUrl}/calculation/matching/${id}`);
   }
 
-  public updateName(id: number, newName: String) {
+  public updateName(id: number, newName: string) {
     return this.http.post<CalculationSlice>(`${env.apiBaseUrl}/calculation/${id}`,
       newName,
       {
@@ -206,21 +226,25 @@ export class CalculationService implements OnDestroy {
     return this.http.get<Legend>(`${env.apiBaseUrl}/legend/${type}`);
   }
 
-  public getDynamicComparisonLegend(dynamicMax: number) {
-    return this.http.get<Legend>(`${env.apiBaseUrl}/legend/comparison?dynamicMax=${dynamicMax}`);
+  public getComparisonLegend(maxValue: number) {
+    return this.http.get<Legend>(`${env.apiBaseUrl}/legend/comparison?maxValue=${maxValue}`);
   }
 
   public getPercentileValue() {
     return this.http.get<PercentileResponse>(`${env.apiBaseUrl}/calibration/percentile-value`);
   }
 
-  public queueBatchCalculation(scenarioIds: number[]) {
+  private queueBatchScenarioCalculation(scenarioIds: number[]) {
     return this.http.post<BatchCalculationProcessEntry>(`${env.apiBaseUrl}/calculation/batch`, scenarioIds.join(), {
       headers: new HttpHeaders({ 'Content-Type': 'text/plain' })});
   }
 
-  delete(id: number) {
-    return this.http.delete(`${env.apiBaseUrl}/calculation/${id}`);
+  private queueBatchAreaCalculation(scenarioId: number, splitOptions: ScenarioSplitOptions) {
+    return this.http.post<BatchCalculationProcessEntry>(`${env.apiBaseUrl}/calculation/batch/areas/${scenarioId}`, splitOptions);
+  }
+
+  delete(ids: number[]) {
+    return this.http.delete(`${env.apiBaseUrl}/calculation?ids=${ids.join()}`);
   }
 
   ngOnDestroy() {

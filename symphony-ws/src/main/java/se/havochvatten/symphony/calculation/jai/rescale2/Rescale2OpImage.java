@@ -20,6 +20,8 @@ package se.havochvatten.symphony.calculation.jai.rescale2;
 import com.sun.media.jai.util.ImageUtil;
 import it.geosolutions.jaiext.iterators.RandomIterFactory;
 import it.geosolutions.jaiext.range.Range;
+import se.havochvatten.symphony.calculation.Overflow;
+import se.havochvatten.symphony.dto.LayerType;
 
 import javax.media.jai.*;
 import javax.media.jai.iterator.RandomIter;
@@ -51,9 +53,6 @@ public class Rescale2OpImage extends PointOpImage {
     /** Offset factors for each band */
     private final double[] offsetArray;
 
-    /** Boolean indicating if a No Data Range is used */
-    private final boolean hasNoData;
-
     /** Boolean indicating if a ROI object is used */
     private final boolean hasROI;
 
@@ -61,10 +60,10 @@ public class Rescale2OpImage extends PointOpImage {
     private Range noData;
 
     /** ROI image */
-    private PlanarImage srcROIImage;
+    private final PlanarImage srcROIImage;
 
     /** Rectangle containing ROI bounds */
-    private Rectangle roiBounds;
+    private final Rectangle roiBounds;
 
     /** Boolean indicating if a ROI RasterAccessor should be used */
     private final boolean useROIAccessor;
@@ -83,6 +82,10 @@ public class Rescale2OpImage extends PointOpImage {
 
     /** Precalculated rescale lookup table for fast computations */
     private byte[][] byteRescaleTable = null;
+    private short[][] uncappedRescaleTable = null;
+
+    private final Overflow overflow;
+    private final LayerType symphonyCategory;
 
     /** Destination value for No Data byte */
     private byte destinationNoDataByte;
@@ -102,11 +105,19 @@ public class Rescale2OpImage extends PointOpImage {
     /** Extended ROI image */
     private RenderedOp srcROIImgExt;
 
+    private void accumulateOverflow(int band, int value) {
+        if (uncappedRescaleTable[band][value] > byteRescaleTable[band][value]) {
+            overflow.register(symphonyCategory, band);
+        }
+    }
+
     public Rescale2OpImage(RenderedImage source, ImageLayout layout, Map configuration,
                            double[] valueScale, double[] valueOffsets, double destinationNoData, ROI roi,
-                           Range noData, boolean useROIAccessor, double clamp) {
+                           Range noData, boolean useROIAccessor, double clamp, LayerType category, Overflow overflow) {
         super(source, layout, configuration, true);
 
+        this.symphonyCategory = category;
+        this.overflow = overflow;
         // Selection of the band number
         int numBands = getSampleModel().getNumBands();
 
@@ -145,6 +156,7 @@ public class Rescale2OpImage extends PointOpImage {
         permitInPlaceOperation();
 
         // Check if No Data control must be done
+        boolean hasNoData;
         if (noData != null) {
             hasNoData = true;
             this.noData = noData;
@@ -156,23 +168,22 @@ public class Rescale2OpImage extends PointOpImage {
         if (roi != null) {
             hasROI = true;
             // Roi object
-            ROI srcROI = roi;
             // Creation of a PlanarImage containing the ROI data
-            srcROIImage = srcROI.getAsImage();
+            srcROIImage = roi.getAsImage();
             // Source Bounds
             Rectangle srcRect = new Rectangle(source.getMinX(), source.getMinY(),
                     source.getWidth(), source.getHeight());
             // Padding of the input ROI image in order to avoid the call of the getExtendedData() method
             // ROI bounds are saved
             roiBounds = srcROIImage.getBounds();
-            int deltaX0 = (roiBounds.x - srcRect.x);
-            int leftP = deltaX0 > 0 ? deltaX0 : 0;
-            int deltaY0 = (roiBounds.y - srcRect.y);
-            int topP = deltaY0 > 0 ? deltaY0 : 0;
-            int deltaX1 = (srcRect.x + srcRect.width - roiBounds.x + roiBounds.width);
-            int rightP = deltaX1 > 0 ? deltaX1 : 0;
-            int deltaY1 = (srcRect.y + srcRect.height - roiBounds.y + roiBounds.height);
-            int bottomP = deltaY1 > 0 ? deltaY1 : 0;
+            int deltaX0 = (roiBounds.x - srcRect.x),
+                leftP = Math.max(deltaX0, 0),
+                deltaY0 = (roiBounds.y - srcRect.y),
+                topP = Math.max(deltaY0, 0),
+                deltaX1 = (srcRect.x + srcRect.width - roiBounds.x + roiBounds.width),
+                rightP = Math.max(deltaX1, 0),
+                deltaY1 = (srcRect.y + srcRect.height - roiBounds.y + roiBounds.height),
+                bottomP = Math.max(deltaY1, 0);
             // Extend the ROI image
             ParameterBlock pb = new ParameterBlock();
             pb.setSource(srcROIImage, 0);
@@ -208,6 +219,7 @@ public class Rescale2OpImage extends PointOpImage {
 
         if (isByte) {
             byteRescaleTable = new byte[numBands][256];
+            uncappedRescaleTable = new short[numBands][256];
 
             // Initialize table which implements Rescale and clamping
             for (int b = 0; b < numBands; b++) {
@@ -216,6 +228,7 @@ public class Rescale2OpImage extends PointOpImage {
                 double o = offsetArray[b];
                 for (int i = 0; i < 256; i++) {
                     band[i] = clampTo(i * c + o, (byte)clamp);
+                    uncappedRescaleTable[b][i] = (short) (i * c + o);
                 }
             }
         }
@@ -256,7 +269,7 @@ public class Rescale2OpImage extends PointOpImage {
     }
 
     private byte clampTo(double in, byte value) {
-        return in > 100 ? 100 : (in >= 0 ? (byte)in : 0);
+        return in > value ? value : (in >= 0 ? (byte)in : 0);
     }
 
     /**
@@ -287,7 +300,7 @@ public class Rescale2OpImage extends PointOpImage {
             // Note that the getExtendedData() method is not called because the input images are padded.
             // For each image there is a check if the rectangle is contained inside the source image;
             // if this not happen, the data is taken from the padded image.
-            Raster roiRaster = null;
+            Raster roiRaster;
             if (roiBounds.contains(srcRect)) {
                 roiRaster = srcROIImage.getData(srcRect);
             } else {
@@ -389,6 +402,7 @@ public class Rescale2OpImage extends PointOpImage {
                     // Cycle on the x-axis
                     for (int x = 0; x < dstWidth; x++) {
                         // Rescale operation
+                        accumulateOverflow(b, srcData[b][srcPixelOffset + srcBandOffsets[b]]);
                         dstData[b][dstPixelOffset] = clamp[srcData[b][srcPixelOffset] & 0xFF];
                         // update of the pixel offsets
                         dstPixelOffset += dstPixelStride;
@@ -399,10 +413,10 @@ public class Rescale2OpImage extends PointOpImage {
             // ROI WITHOUT NODATA
         } else if (caseB) {
             // ROI RASTERACCESSOR USED
+            int dstOffset = 0;
+            int srcOffset = 0;
             if (useROIAccessor) {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -422,6 +436,7 @@ public class Rescale2OpImage extends PointOpImage {
                             // Cycle on all the bands
                             for (int b = 0; b < dstBands; b++) {
                                 // Rescale operation
+                                accumulateOverflow(b, srcData[b][srcPixelOffset + srcBandOffsets[b]]);
                                 byte[] clamp = byteRescaleTable[b];
                                 dstData[b][dstPixelOffset + dstBandOffsets[b]] = clamp[srcData[b][srcPixelOffset
                                         + srcBandOffsets[b]] & 0xFF];
@@ -443,8 +458,6 @@ public class Rescale2OpImage extends PointOpImage {
                 // ROI RASTERACCESSOR NOT USED
             } else {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -465,6 +478,7 @@ public class Rescale2OpImage extends PointOpImage {
                                 // TODO only cycle the band we change? (which is always just one)
                                 for (int b = 0; b < dstBands; b++) {
                                     // Rescale operation
+                                    accumulateOverflow(b, srcData[b][srcPixelOffset + srcBandOffsets[b]]);
                                     byte[] clamp = byteRescaleTable[b];
                                     dstData[b][dstPixelOffset + dstBandOffsets[b]] = clamp[srcData[b][srcPixelOffset
                                             + srcBandOffsets[b]] & 0xFF];
@@ -518,6 +532,7 @@ public class Rescale2OpImage extends PointOpImage {
                         // Check if the value is not a NoData
                         if (booleanLookupTable[value]) {
                             // Rescale operation
+                            accumulateOverflow(b, value);
                             bandDataOut[dstPixelOffset] = clamp[value];
                         } else {
                             // Else, destination No Data is set
@@ -533,10 +548,10 @@ public class Rescale2OpImage extends PointOpImage {
             // ROI AND NODATA
         } else {
             // ROI RASTERACCESSOR USED
+            int dstOffset = 0;
+            int srcOffset = 0;
             if (useROIAccessor) {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -560,6 +575,7 @@ public class Rescale2OpImage extends PointOpImage {
                                 // Check if the value is not a NoData
                                 if (booleanLookupTable[value]) {
                                     // Rescale operation
+                                    accumulateOverflow(b, value);
                                     byte[] clamp = byteRescaleTable[b];
                                     dstData[b][dstPixelOffset + dstBandOffsets[b]] = clamp[value];
                                 } else {
@@ -584,8 +600,6 @@ public class Rescale2OpImage extends PointOpImage {
                 // ROI RASTERACCESSOR NOT USED
             } else {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -610,6 +624,7 @@ public class Rescale2OpImage extends PointOpImage {
                                     // Check if the value is not a NoData
                                     if (booleanLookupTable[value]) {
                                         // Rescale operation
+                                        accumulateOverflow(b, value);
                                         byte[] clamp = byteRescaleTable[b];
                                         dstData[b][dstPixelOffset + dstBandOffsets[b]] = clamp[value];
                                     } else {
@@ -709,10 +724,10 @@ public class Rescale2OpImage extends PointOpImage {
             // ROI WITHOUT NODATA
         } else if (caseB) {
             // ROI RASTERACCESSOR USED
+            int dstOffset = 0;
+            int srcOffset = 0;
             if (useROIAccessor) {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -757,8 +772,6 @@ public class Rescale2OpImage extends PointOpImage {
                 // ROI RASTERACCESSOR NOT USED
             } else {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -852,10 +865,10 @@ public class Rescale2OpImage extends PointOpImage {
             // ROI AND NODATA
         } else {
             // ROI RASTERACCESSOR USED
+            int dstOffset = 0,
+                srcOffset = 0;
             if (useROIAccessor) {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -907,8 +920,6 @@ public class Rescale2OpImage extends PointOpImage {
                 // ROI RASTERACCESSOR NOT USED
             } else {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -1035,10 +1046,10 @@ public class Rescale2OpImage extends PointOpImage {
             // ROI WITHOUT NODATA
         } else if (caseB) {
             // ROI RASTERACCESSOR USED
+            int dstOffset = 0,
+                srcOffset = 0;
             if (useROIAccessor) {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -1083,8 +1094,6 @@ public class Rescale2OpImage extends PointOpImage {
                 // ROI RASTERACCESSOR NOT USED
             } else {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -1179,10 +1188,10 @@ public class Rescale2OpImage extends PointOpImage {
             // ROI AND NODATA
         } else {
             // ROI RASTERACCESSOR USED
+            int dstOffset = 0,
+                srcOffset = 0;
             if (useROIAccessor) {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -1234,8 +1243,6 @@ public class Rescale2OpImage extends PointOpImage {
                 // ROI RASTERACCESSOR NOT USED
             } else {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -1362,10 +1369,10 @@ public class Rescale2OpImage extends PointOpImage {
             // ROI WITHOUT NODATA
         } else if (caseB) {
             // ROI RASTERACCESSOR USED
+            int dstOffset = 0,
+                srcOffset = 0;
             if (useROIAccessor) {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -1410,8 +1417,6 @@ public class Rescale2OpImage extends PointOpImage {
                 // ROI RASTERACCESSOR NOT USED
             } else {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -1507,10 +1512,10 @@ public class Rescale2OpImage extends PointOpImage {
             // ROI AND NODATA
         } else {
             // ROI RASTERACCESSOR USED
+            int dstOffset = 0,
+                srcOffset = 0;
             if (useROIAccessor) {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -1562,8 +1567,6 @@ public class Rescale2OpImage extends PointOpImage {
                 // ROI RASTERACCESSOR NOT USED
             } else {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -1689,10 +1692,10 @@ public class Rescale2OpImage extends PointOpImage {
             // ROI WITHOUT NODATA
         } else if (caseB) {
             // ROI RASTERACCESSOR USED
+            int dstOffset = 0,
+                srcOffset = 0;
             if (useROIAccessor) {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -1736,8 +1739,6 @@ public class Rescale2OpImage extends PointOpImage {
                 // ROI RASTERACCESSOR NOT USED
             } else {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -1829,10 +1830,10 @@ public class Rescale2OpImage extends PointOpImage {
             // ROI AND NODATA
         } else {
             // ROI RASTERACCESSOR USED
+            int dstOffset = 0,
+                srcOffset = 0;
             if (useROIAccessor) {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -1884,8 +1885,6 @@ public class Rescale2OpImage extends PointOpImage {
                 // ROI RASTERACCESSOR NOT USED
             } else {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -2011,10 +2010,10 @@ public class Rescale2OpImage extends PointOpImage {
             // ROI WITHOUT NODATA
         } else if (caseB) {
             // ROI RASTERACCESSOR USED
+            int dstOffset = 0,
+                srcOffset = 0;
             if (useROIAccessor) {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -2058,8 +2057,6 @@ public class Rescale2OpImage extends PointOpImage {
                 // ROI RASTERACCESSOR NOT USED
             } else {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -2151,10 +2148,10 @@ public class Rescale2OpImage extends PointOpImage {
             // ROI AND NODATA
         } else {
             // ROI RASTERACCESSOR USED
+            int dstOffset = 0,
+                srcOffset = 0;
             if (useROIAccessor) {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -2206,8 +2203,6 @@ public class Rescale2OpImage extends PointOpImage {
                 // ROI RASTERACCESSOR NOT USED
             } else {
                 // Initial offsets
-                int dstOffset = 0;
-                int srcOffset = 0;
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets

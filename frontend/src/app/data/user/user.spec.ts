@@ -13,17 +13,17 @@ describe('UserReducer', () => {
 
   it('should set loading to true on login', () => {
     expect(initialState.loading).toEqual(false);
-    const state = userReducer(initialState, UserActions.loginUser);
-    expect(state.loading).toEqual(true);
+    const _state = userReducer(initialState, UserActions.loginUser);
+    expect(_state.loading).toEqual(true);
   });
 
   it('should set isLoggedIn to true on login success', () => {
     expect(initialState.isLoggedIn).toEqual(false);
-    const state = userReducer(initialState, UserActions.loginUserSuccess({ user }));
-    expect(state.loading).toEqual(false);
-    expect(state.isLoggedIn).toEqual(true);
-    expect(state.error).toEqual(undefined);
-    expect(state.user).toEqual(testUser);
+    const _state = userReducer(initialState, UserActions.loginUserSuccess({ user }));
+    expect(_state.loading).toEqual(false);
+    expect(_state.isLoggedIn).toEqual(true);
+    expect(_state.error).toEqual(undefined);
+    expect(_state.user).toEqual(testUser);
   });
 });
 

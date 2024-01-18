@@ -40,7 +40,9 @@ export class ScenarioService {
       changes: null,
       excludedCoastal: -1, // "magic" number to prevent inclusion by default
       matrix: { matrixType: 'STANDARD', matrixId: undefined },
-      scenarioId: -1 })) as ScenarioArea[]
+      scenarioId: -1,
+      customCalcAreaId: null
+      })) as ScenarioArea[]
   }
 
   create(baseline: Baseline, name: string, areas: ScenarioArea[], normalization: NormalizationOptions,
@@ -74,14 +76,14 @@ export class ScenarioService {
   }
 
   getAreaMatrixParams(scenarioId: number, baseline: string) {
-    return this.http.get<ScenarioMatrixDataMap>(env.apiBaseUrl+ '/calculationparams/areamatrices/'+baseline+'/'+scenarioId);
+    return this.http.get<{ matrixData: ScenarioMatrixDataMap }>(env.apiBaseUrl+ '/calculationparams/areamatrices/'+baseline+'/'+scenarioId);
   }
 
   getSingleAreaMatrixParams(scenarioAreaId: number, baseline: string) {
     return this.http.get<AreaMatrixData>(env.apiBaseUrl+ '/calculationparams/areamatrix/'+baseline+'/'+scenarioAreaId);
   }
 
-  deleteArea(areaId: any) {
+  deleteArea(areaId: number) {
     return this.http.delete(this.scenarioApiBaseUrl+'/area/'+areaId);
   }
 

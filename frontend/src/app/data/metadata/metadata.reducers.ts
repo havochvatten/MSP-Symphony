@@ -32,7 +32,7 @@ export const metadataReducer = createReducer(
   })),
 );
 
-function setLayerAttribute(state: State, band: Band, attribute: string, value: any): State {
+function setLayerAttribute(state: State, band: Band, attribute: string, value: unknown): State {
   // artificial "path" / hierarchy modeled on the previous implementation
   // TODO: Reimplement
   return setIn(state, [ ...getBandPath(band), attribute], value);

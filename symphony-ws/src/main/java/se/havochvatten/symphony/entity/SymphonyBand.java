@@ -98,4 +98,18 @@ public class SymphonyBand {
                 .map(Metadata::getMetaValue).findFirst().orElse("Band " + bandnumber));
         return title;
     }
+
+    // Exposure of setters for unit testing
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    public void setBaseline(BaselineVersion baseline) {
+        this.baseline = baseline;
+    }
+    public void setCategory(String category) {
+        this.category = category;
+    }
+    public void setBandNumber(Integer bandnumber) {
+        this.bandnumber = bandnumber;
+    }
 }

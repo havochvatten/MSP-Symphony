@@ -28,4 +28,5 @@ stories.addDecorator(
 
 stories.add('default', () => ({
   component: PopupMessageComponent,
+  props:{}
 }));

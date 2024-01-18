@@ -3,6 +3,6 @@
   <span class="active-scenario-name" [innerText]="getScenarioName()"></span>
   <span *ngIf="getAreaName()" class="active-area-name" [innerText]="getAreaName()"></span>
 </div>
-<div class="exit-button" (click)="exitScenario()">
+<button class="exit-button" (click)="exitScenario()">
   <span>{{ 'map.active-scenario.exit' | translate }}</span>
-</div>
+</button>

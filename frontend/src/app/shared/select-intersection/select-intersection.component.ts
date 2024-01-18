@@ -3,7 +3,9 @@ import { DialogRef } from "@shared/dialog/dialog-ref";
 import { AreaSelectionConfig } from "@shared/select-intersection/select-intersection.interfaces";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { getArea } from "ol/sphere";
-import { Polygon } from "ol/geom";
+import { MultiPolygon, Polygon } from "ol/geom";
+import { Geometry } from "geojson";
+import { GeoJSON } from "ol/format";
 
 @Component({
   selector: 'app-select-intersection',
@@ -39,10 +41,10 @@ export class SelectIntersectionComponent {
     this.multiselect  = Array(this.areas.length).fill(false);
   }
 
-  public squareKm(geometry: any): number {
+  public squareKm(geometry: GeoJSON.Polygon | GeoJSON.MultiPolygon): number {
 
     // First, check for MultiPolygon geometries
-    const coords = (typeof geometry.coordinates[0][0][0] === "number") ?
+    const coords = (geometry.type === "Polygon") ?
       [geometry.coordinates] : geometry.coordinates,
       wgs = { projection: this.reprojection };
     let measure = 0;

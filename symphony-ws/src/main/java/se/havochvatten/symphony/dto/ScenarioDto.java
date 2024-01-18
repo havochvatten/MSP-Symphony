@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import se.havochvatten.symphony.calculation.CalcService;
 import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.scenario.Scenario;
-import se.havochvatten.symphony.scenario.ScenarioArea;
 
 import java.io.IOException;
 import java.util.Date;

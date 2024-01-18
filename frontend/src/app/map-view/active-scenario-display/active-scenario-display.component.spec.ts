@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { ActiveScenarioDisplayComponent } from './active-scenario-display.component';
-import { provideMockStore } from "@ngrx/store/testing";
 import { NormalizationType } from "@data/calculation/calculation.service";
 
 describe('ActiveScenarioDisplayComponent', () => {

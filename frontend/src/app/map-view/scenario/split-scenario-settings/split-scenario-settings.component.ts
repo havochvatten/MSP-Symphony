@@ -1,7 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
-import { ScenarioSplitOptions } from "@data/scenario/scenario.interfaces";
+import { ScenarioSplitDialogResult, ScenarioSplitOptions } from "@data/scenario/scenario.interfaces";
 
 
 @Component({
@@ -28,8 +28,22 @@ export class SplitScenarioSettingsComponent {
     this.noAreaChanges = this.config.data.noAreaChanges;
   }
 
-  confirmSplitScenario() {
-    this.options.batchName = this.scenarioNameInput.nativeElement.value;
-    this.dialog.close(this.options);
+  splitScenario() {
+    const result : ScenarioSplitDialogResult = {
+      options: this.options,
+      immediate: false
+    };
+
+    result.options.batchName = this.scenarioNameInput.nativeElement.value;
+
+    this.dialog.close(result);
   }
+
+  batchCalculate() {
+    this.dialog.close({
+      options: this.options,
+      immediate: true
+    });
+  }
+
 }

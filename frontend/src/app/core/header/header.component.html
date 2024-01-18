@@ -1,10 +1,10 @@
 <div class="header-top">
   <div class="header-overlay"></div>
-  <h1 (click)="showDuck()">
+  <h1>
     {{ title }}
   </h1>
-  <img class="flag" src="assets/Sweden-SwAM-white-horizontal-no-borders.svg" />
-  <img @openCloseMenu *ngIf="displayDuck" class="duck" src="assets/long-tailed-duck.svg" />
+  <img class="flag" src="assets/Sweden-SwAM-white-horizontal-no-borders.svg"
+       alt="{{ 'branding.SI-Sweden' | translate }} : {{ 'branding.SwAM' | translate }}"/>
   <app-user-menu-toggle [user]="user$ | async" (click)="toggleOpenMenu('USER')"></app-user-menu-toggle>
 </div>
 <div
