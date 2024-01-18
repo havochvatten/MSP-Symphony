@@ -66,17 +66,6 @@ public class CalculationArea implements Serializable {
 	@ManyToOne(optional = true)
 	private AreaType areaType;
 
-    @OneToMany(mappedBy = "customCalcArea")
-    private Set<ScenarioArea> scenarioareas = new LinkedHashSet<>();
-
-    public Set<ScenarioArea> getScenarioareas() {
-        return scenarioareas;
-    }
-
-    public void setScenarioareas(Set<ScenarioArea> scenarioareas) {
-        this.scenarioareas = scenarioareas;
-    }
-
     public CalculationArea() {}
 
 	public Integer getId() {
