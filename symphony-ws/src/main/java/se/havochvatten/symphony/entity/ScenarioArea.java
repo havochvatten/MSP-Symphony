@@ -1,4 +1,4 @@
-package se.havochvatten.symphony.scenario;
+package se.havochvatten.symphony.entity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -13,6 +13,9 @@ import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.MatrixParameters;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.entity.CalculationArea;
+import se.havochvatten.symphony.entity.Scenario;
+import se.havochvatten.symphony.scenario.BandChange;
+import se.havochvatten.symphony.scenario.BandChangeEntity;
 
 import javax.persistence.*;
 import javax.persistence.Entity;

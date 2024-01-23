@@ -1,4 +1,4 @@
-package se.havochvatten.symphony.calculation;
+package se.havochvatten.symphony.web;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,17 +20,21 @@ import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+import se.havochvatten.symphony.calculation.CalcUtil;
 import se.havochvatten.symphony.dto.BatchCalculationDto;
 import se.havochvatten.symphony.dto.CalculationResultSlice;
-import se.havochvatten.symphony.entity.BatchCalculation;
-import se.havochvatten.symphony.entity.CalculationResult;
+import se.havochvatten.symphony.entity.*;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.exception.SymphonyStandardSystemException;
 import se.havochvatten.symphony.scenario.*;
+import se.havochvatten.symphony.service.CalcService;
 import se.havochvatten.symphony.service.DataLayerService;
 import se.havochvatten.symphony.service.PropertiesService;
-import se.havochvatten.symphony.web.WebUtil;
+import se.havochvatten.symphony.service.ScenarioService;
+import se.havochvatten.symphony.service.normalizer.NormalizerService;
+import se.havochvatten.symphony.service.normalizer.RasterNormalizer;
+import se.havochvatten.symphony.service.normalizer.StatsNormalizer;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;

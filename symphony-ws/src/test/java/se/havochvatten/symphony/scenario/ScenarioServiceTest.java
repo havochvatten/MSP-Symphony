@@ -22,6 +22,8 @@ import se.havochvatten.symphony.calculation.Overflow;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
+import se.havochvatten.symphony.entity.Scenario;
+import se.havochvatten.symphony.service.ScenarioService;
 
 import java.io.File;
 import java.io.IOException;

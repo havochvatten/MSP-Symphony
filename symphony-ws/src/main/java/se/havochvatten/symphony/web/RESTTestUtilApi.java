@@ -3,7 +3,7 @@ package se.havochvatten.symphony.web;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import se.havochvatten.symphony.entity.*;
-import se.havochvatten.symphony.scenario.Scenario;
+import se.havochvatten.symphony.entity.Scenario;
 import se.havochvatten.symphony.service.PropertiesService;
 
 import javax.annotation.security.RolesAllowed;

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.dto.SensitivityMatrix;
 import se.havochvatten.symphony.entity.CalculationResult;
+import se.havochvatten.symphony.service.CalcService;
 
 import javax.servlet.http.HttpSession;
 import java.awt.*;

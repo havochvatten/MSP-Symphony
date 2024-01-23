@@ -2,8 +2,12 @@ package se.havochvatten.symphony.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vladmihalcea.hibernate.type.array.IntArrayType;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 import se.havochvatten.symphony.scenario.ScenarioSplitOptions;
 
 import javax.persistence.*;
@@ -12,6 +16,10 @@ import javax.validation.constraints.Size;
 import java.util.ArrayList;
 
 @Entity
+@TypeDefs({
+    @TypeDef(name = "int-array", typeClass = IntArrayType.class),
+    @TypeDef(name = "json", typeClass = JsonBinaryType.class)
+})
 @Table(name = "batchcalculation")
 public class BatchCalculation {
 
@@ -33,17 +41,17 @@ public class BatchCalculation {
 
     @NotNull
     @Column(name = "entities", nullable = false)
-    @Type(type = "com.vladmihalcea.hibernate.type.array.IntArrayType")
+    @Type(type = "int-array")
     private int[] entities;
 
     @Column(name = "calculated", nullable = false)
     @ColumnDefault("ARRAY[]::integer[]")
-    @Type(type = "com.vladmihalcea.hibernate.type.array.IntArrayType")
+    @Type(type = "int-array")
     private int[] calculated = new int[0];
 
     @Column(name = "failed", nullable = false)
     @ColumnDefault("ARRAY[]::integer[]")
-    @Type(type = "com.vladmihalcea.hibernate.type.array.IntArrayType")
+    @Type(type = "int-array")
     private int[] failed = new int[0];
 
     @NotNull

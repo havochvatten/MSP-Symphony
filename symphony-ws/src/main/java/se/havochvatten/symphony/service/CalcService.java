@@ -1,6 +1,5 @@
-package se.havochvatten.symphony.calculation;
+package se.havochvatten.symphony.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.geosolutions.jaiext.utilities.ImageLayout2;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -28,6 +27,7 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.havochvatten.symphony.calculation.*;
 import se.havochvatten.symphony.calculation.jai.CIA.CumulativeImpactOp;
 import se.havochvatten.symphony.dto.*;
 import se.havochvatten.symphony.dto.SensitivityMatrix;
@@ -36,10 +36,6 @@ import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.exception.SymphonyStandardSystemException;
 import se.havochvatten.symphony.scenario.*;
-import se.havochvatten.symphony.service.BaselineVersionService;
-import se.havochvatten.symphony.service.CalculationAreaService;
-import se.havochvatten.symphony.service.DataLayerService;
-import se.havochvatten.symphony.service.PropertiesService;
 
 import javax.annotation.PostConstruct;
 import javax.batch.operations.JobOperator;
@@ -359,7 +355,7 @@ public class CalcService {
     /**
      * Calculate an area
      *
-     * @return coverage in input coordinate system (EPSG 3035 in the Swedish case)
+     * @return CalculationResult entity containing resulting coverage
      */
     public CalculationResult calculateScenarioImpact(Scenario scenario, boolean isAreaCalculation)
             throws FactoryException, TransformException, IOException, SymphonyStandardAppException {
@@ -403,7 +399,7 @@ public class CalcService {
         return scenario.getNormalization().type == PERCENTILE ?
             new CalculationResult(coverage) :
             persistCalculation( coverage, normalizationValues, areaMatrices, scenario,
-                                mapper.valueToTree(sc), ecosystemsToInclude, baseline,
+                                sc, ecosystemsToInclude, baseline,
                                 JTS.transform(roi, WGS84toTarget), overflow, isAreaCalculation);
     }
 
@@ -600,7 +596,7 @@ public class CalcService {
                 (int) envelope.getHeight());
     }
 
-    static double[][][] preprocessMatrices(List<SensitivityMatrix> sensitivityMatrices) {
+    public static double[][][] preprocessMatrices(List<SensitivityMatrix> sensitivityMatrices) {
         return sensitivityMatrices.stream().
                 map(m -> m == null ? null : m.getMatrixValues()).
                 toArray(double[][][]::new);
@@ -610,7 +606,7 @@ public class CalcService {
                                                 double[] normalizationValue,
                                                 Map<Integer, Integer> areaMatrixMap,
                                                 Scenario scenario,
-                                                JsonNode changesSnapshot,
+                                                ScenarioChanges changes,
                                                 int[] includedEcosystems,
                                                 BaselineVersion baselineVersion,
                                                 Geometry projectedRoi,
@@ -628,7 +624,7 @@ public class CalcService {
 
                 var snapshot = ScenarioSnapshot.makeSnapshot(scenario, projectedRoi, areaMatrixMap, normalizationValue);
                 snapshot.setEcosystemsToInclude(includedEcosystems); // Override actually used only in snapshot
-                snapshot.setChanges(changesSnapshot);
+                snapshot.setChanges(mapper.valueToTree(changes));
                 em.persist(snapshot);
                 calculation.setScenarioSnapshot(snapshot);
 
@@ -646,7 +642,7 @@ public class CalcService {
                 em.persist(calculation);
                 em.flush(); // to have id generated
 
-                if(!isAreaCalculation) {
+                if (!isAreaCalculation) {
                     scenario.setLatestCalculation(calculation);
                     em.merge(scenario);
                 }
@@ -654,7 +650,7 @@ public class CalcService {
                 transaction.commit();
             } catch (Exception e) {
                 throw new SymphonyStandardSystemException(SymphonyModelErrorCode.OTHER_ERROR, e,
-                    "Error persisting calculation "+calculation);
+                    "Error persisting calculation " + calculation);
             } finally {
                 try {
                     if (transaction.getStatus() == Status.STATUS_ACTIVE)
@@ -724,7 +720,7 @@ public class CalcService {
         }
     }
 
-    String findSequentialUniqueName(String scenarioName, List<String> previousNames, int counter) {
+    public String findSequentialUniqueName(String scenarioName, List<String> previousNames, int counter) {
         var tentativeName = makeNumberedCalculationName(scenarioName, counter);
         if (!previousNames.contains(tentativeName))
             return tentativeName;

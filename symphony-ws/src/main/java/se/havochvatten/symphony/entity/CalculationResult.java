@@ -11,11 +11,9 @@ import org.geotools.gce.geotiff.GeoTiffReader;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
-import se.havochvatten.symphony.calculation.CalcService;
+import se.havochvatten.symphony.service.CalcService;
 import se.havochvatten.symphony.calculation.Overflow;
 import se.havochvatten.symphony.dto.CalculationResultSlice;
-import se.havochvatten.symphony.dto.MatrixResponse;
-import se.havochvatten.symphony.scenario.ScenarioSnapshot;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

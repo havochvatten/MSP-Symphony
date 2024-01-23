@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.MetadataDto;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
-import se.havochvatten.symphony.scenario.ScenarioService;
+import se.havochvatten.symphony.service.ScenarioService;
 import se.havochvatten.symphony.service.MetaDataService;
 import se.havochvatten.symphony.service.PropertiesService;
 
