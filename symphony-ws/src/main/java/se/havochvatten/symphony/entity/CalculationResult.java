@@ -48,7 +48,10 @@ import java.util.Map;
                 query = "SELECT c FROM CalculationResult c WHERE c.owner = :username ORDER BY c.timestamp " +
                         "DESC"),
         @NamedQuery(name = "CalculationResult.removeOldCalculationTiff",
-                query = "UPDATE CalculationResult c SET c.rasterData = null WHERE c.timestamp < :timestamp")
+                query = "UPDATE CalculationResult c SET c.rasterData = null WHERE c.timestamp < :timestamp"),
+        @NamedQuery(name = "CalculationResult.findByIds_Owner_Baseline",
+                query = "SELECT c FROM CalculationResult c WHERE c.id IN :ids AND c.owner = :username AND " +
+                        "c.baselineVersion.id = :baselineId"),
 })
 
 @SqlResultSetMapping(
@@ -279,6 +282,12 @@ public class CalculationResult implements Serializable {
     }
 
     public Map<String, String> getOperationOptions() { return operationOptions; }
+
+    public int getOperation() {
+        return operationName.equals("CumulativeImpact") ?
+            CalcService.OPERATION_CUMULATIVE :
+            CalcService.OPERATION_RARITYADJUSTED;
+    }
 
     @Override
     public int hashCode() {
