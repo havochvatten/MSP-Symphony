@@ -19,7 +19,7 @@
         <version.rest.assured>4.5.1</version.rest.assured>
         <version.swagger>1.5.13</version.swagger>
         <version.postgresql-jdbc-driver>42.5.0</version.postgresql-jdbc-driver>
-        <version.hibernate>4.3.1.Final</version.hibernate>
+        <version.hibernate>5.3.28.Final</version.hibernate>
         <version.api.all>2.0.0.AM4</version.api.all>
         <version.junit>4.13.2</version.junit>
         <version.javax.xml.bind>2.3.0</version.javax.xml.bind>
@@ -27,8 +27,8 @@
         <version.jackson>2.12.6</version.jackson>
         <version.slf4j>1.7.35</version.slf4j>
         <version.javax.json.api>1.1.4</version.javax.json.api>
-        <version.resteasy.jackson2.provider>4.4.2.Final</version.resteasy.jackson2.provider>
-        <version.resteasy>3.9.0.Final</version.resteasy>
+        <version.resteasy>4.7.7.Final</version.resteasy>
+        <version.resteasy-jaxrs>3.15.6.Final</version.resteasy-jaxrs>
         <version.java.lang3>3.9</version.java.lang3>
         <version.catalina.corsfilter>7.0.109</version.catalina.corsfilter>
         <version.harmcrest>2.0.0.0</version.harmcrest>
@@ -93,13 +93,13 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>4.3.1.Final</version>
+            <version>${version.hibernate}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.vladmihalcea</groupId>
-            <artifactId>hibernate-types-52</artifactId><!-- Wildfly 19 ships with Hibernate 5.3-->
-            <version>2.19.0</version>
+            <artifactId>hibernate-types-52</artifactId><!-- Wildfly 26 ships with Hibernate 5.3-->
+            <version>2.21.1</version>
         </dependency>
         <!--<dependency>
             <groupId>org.hibernate</groupId>
@@ -241,7 +241,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>${version.resteasy}</version>
+            <version>${version.resteasy-jaxrs}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -257,7 +257,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jackson2-provider</artifactId>
-            <version>${version.resteasy.jackson2.provider}</version>
+            <version>${version.resteasy}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
