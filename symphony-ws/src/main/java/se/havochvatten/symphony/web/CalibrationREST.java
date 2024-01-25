@@ -1,4 +1,4 @@
-package se.havochvatten.symphony.calculation;
+package se.havochvatten.symphony.web;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,14 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.dto.NormalizationOptions;
 import se.havochvatten.symphony.dto.NormalizationType;
-import se.havochvatten.symphony.scenario.ScenarioService;
+import se.havochvatten.symphony.service.ScenarioService;
 import se.havochvatten.symphony.service.CalculationAreaService;
+import se.havochvatten.symphony.service.CalibrationService;
 import se.havochvatten.symphony.service.PropertiesService;
-import se.havochvatten.symphony.web.WebUtil;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;

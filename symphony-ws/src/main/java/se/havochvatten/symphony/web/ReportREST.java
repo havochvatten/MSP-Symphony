@@ -5,12 +5,11 @@ import io.swagger.annotations.ApiOperation;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import se.havochvatten.symphony.calculation.CalcUtil;
-import se.havochvatten.symphony.calculation.CalculationREST;
 import se.havochvatten.symphony.dto.ComparisonReportResponseDto;
 import se.havochvatten.symphony.dto.ReportResponseDto;
 import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
-import se.havochvatten.symphony.calculation.CalcService;
+import se.havochvatten.symphony.service.CalcService;
 import se.havochvatten.symphony.service.PropertiesService;
 import se.havochvatten.symphony.service.ReportService;
 
@@ -25,7 +24,7 @@ import java.util.logging.Logger;
 
 import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.status;
-import static se.havochvatten.symphony.calculation.CalculationREST.hasAccess;
+import static se.havochvatten.symphony.web.CalculationREST.hasAccess;
 
 
 @Path("/report")

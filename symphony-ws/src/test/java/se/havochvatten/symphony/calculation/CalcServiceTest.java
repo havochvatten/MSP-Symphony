@@ -2,6 +2,7 @@ package se.havochvatten.symphony.calculation;
 
 import org.junit.Before;
 import org.junit.Test;
+import se.havochvatten.symphony.service.CalcService;
 
 import java.util.Collections;
 import java.util.List;

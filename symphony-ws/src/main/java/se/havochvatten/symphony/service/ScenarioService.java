@@ -1,4 +1,4 @@
-package se.havochvatten.symphony.scenario;
+package se.havochvatten.symphony.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -26,7 +26,12 @@ import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
 import se.havochvatten.symphony.entity.CalculationArea;
-import se.havochvatten.symphony.service.CalculationAreaService;
+import se.havochvatten.symphony.entity.Scenario;
+import se.havochvatten.symphony.entity.ScenarioArea;
+import se.havochvatten.symphony.scenario.BandChange;
+import se.havochvatten.symphony.scenario.BandChangeEntity;
+import se.havochvatten.symphony.scenario.ScenarioCopyOptions;
+import se.havochvatten.symphony.scenario.ScenarioSplitOptions;
 import se.havochvatten.symphony.util.Util;
 
 import javax.ejb.EJB;
@@ -152,13 +157,13 @@ public class ScenarioService {
     /**
      * @return coverage containing scenario changes
      */
-    GridCoverage2D apply(GridCoverage2D coverage,
-               GridGeometry2D gridGeometry,
-               List<ScenarioArea> areas,
-               LayerType changeType,
-               MathTransform roiTransform,
-               BandChangeEntity alternateChangeSource,
-               Overflow overflow) throws TransformException, FactoryException {
+    public GridCoverage2D apply(GridCoverage2D coverage,
+                                GridGeometry2D gridGeometry,
+                                List<ScenarioArea> areas,
+                                LayerType changeType,
+                                MathTransform roiTransform,
+                                BandChangeEntity alternateChangeSource,
+                                Overflow overflow) throws TransformException, FactoryException {
         final int numBands = coverage.getNumSampleDimensions();
 
         return Util.reduce(areas, coverage, (state, area) -> {

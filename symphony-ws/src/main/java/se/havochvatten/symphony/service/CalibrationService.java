@@ -1,4 +1,4 @@
-package se.havochvatten.symphony.calculation;
+package se.havochvatten.symphony.service;
 
 import it.geosolutions.jaiext.stats.Statistics;
 import org.apache.commons.lang3.time.StopWatch;
@@ -14,10 +14,10 @@ import java.util.Arrays;
 import org.opengis.feature.simple.SimpleFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.havochvatten.symphony.calculation.Operations;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
-import se.havochvatten.symphony.service.DataLayerService;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,9 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import se.havochvatten.symphony.dto.NormalizationType;
 import se.havochvatten.symphony.entity.CalculationResult;
-import se.havochvatten.symphony.scenario.Scenario;
+import se.havochvatten.symphony.entity.Scenario;
+import se.havochvatten.symphony.service.normalizer.NormalizerService;
+import se.havochvatten.symphony.service.normalizer.PercentileNormalizer;
 
 import static javax.ejb.ConcurrencyManagementType.BEAN;
 

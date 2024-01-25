@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.dto.NormalizationOptions;
 import se.havochvatten.symphony.dto.NormalizationType;
 import se.havochvatten.symphony.entity.BaselineVersion;
-import se.havochvatten.symphony.scenario.ScenarioService;
+import se.havochvatten.symphony.service.ScenarioService;
 import se.havochvatten.symphony.service.PropertiesService;
 
 import java.util.Date;

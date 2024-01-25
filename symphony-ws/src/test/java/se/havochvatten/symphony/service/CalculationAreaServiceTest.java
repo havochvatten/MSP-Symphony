@@ -12,8 +12,7 @@ import se.havochvatten.symphony.entity.SensitivityMatrix;
 import se.havochvatten.symphony.entity.*;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
-import se.havochvatten.symphony.scenario.Scenario;
-import se.havochvatten.symphony.scenario.ScenarioService;
+import se.havochvatten.symphony.entity.Scenario;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;

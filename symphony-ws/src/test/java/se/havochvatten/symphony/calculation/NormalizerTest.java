@@ -1,14 +1,14 @@
 package se.havochvatten.symphony.calculation;
 
 import it.geosolutions.jaiext.JAIExt;
-import org.geotools.coverage.grid.GridCoordinates2D;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.util.factory.Hints;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import se.havochvatten.symphony.dto.NormalizationType;
+import se.havochvatten.symphony.service.normalizer.NormalizerService;
+import se.havochvatten.symphony.service.normalizer.PercentileNormalizer;
 
 import java.io.File;
 import java.io.IOException;
