@@ -32,7 +32,7 @@ export class AddScenarioAreasComponent implements OnDestroy {
 
   format: GeoJSON;
 
-  public selectedComponents?: { ecoComponent: Band[]; pressureComponent: Band[] };
+  public selectedComponents?: { ecoComponent: Band[], pressureComponent: Band[] };
   private areaSubscription$: Subscription;
   private componentSubscription$: Subscription;
 

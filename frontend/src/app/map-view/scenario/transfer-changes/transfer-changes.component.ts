@@ -58,7 +58,7 @@ export class TransferChangesComponent {
   async onScenarioChange($event: MatSelectChange) {
     this.selectedScenario = $event.value;
     if(this.selectedScenario !== null) {
-      this.selectableAreas = $event.value.scenario.areas.filter((area: { changes: ChangesProperty; }) => !isEmpty(area.changes) && area !== this.targetChanges.changes);
+      this.selectableAreas = $event.value.scenario.areas.filter((area: { changes: ChangesProperty }) => !isEmpty(area.changes) && area !== this.targetChanges.changes);
       this.selectedChanges.scenarioId = this.selectedScenario.hasGlobalChanges ? $event.value.scenario.id : null;
       this.selectedChanges.areaId = this.selectedScenario.hasGlobalChanges ? null : this.selectableAreas[0].id;
 

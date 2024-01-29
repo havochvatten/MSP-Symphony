@@ -55,6 +55,7 @@
         "@typescript-eslint/no-this-alias": ["error", { "allowedNames": ["that"] } ],
         "@typescript-eslint/unified-signatures": "error",
         "@typescript-eslint/no-shadow": "error",
+        "@typescript-eslint/member-delimiter-style": ["error", { "singleline": { "delimiter": "comma" } }],
         "no-throw-literal": "off",
         "@typescript-eslint/no-throw-literal": "error",
         "arrow-body-style": "off",

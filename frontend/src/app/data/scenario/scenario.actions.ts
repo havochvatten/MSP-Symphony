@@ -165,8 +165,8 @@ export const excludeActiveAreaCoastal = createAction(
 
 export const updateBandAttributeForAreaIndex = createAction(
   '[Scenario] Update general intensity attribute or a specific area contained in the active scenario',
-  props<{ areaIndex: number|undefined, componentType: BandType,
-          band: number, attribute: string, value: number }>()
+  props<{ areaIndex: number|undefined; componentType: BandType;
+          band: number; attribute: string; value: number; }>()
 );
 
 export const deleteBandChangeForAreaIndex = createAction(
