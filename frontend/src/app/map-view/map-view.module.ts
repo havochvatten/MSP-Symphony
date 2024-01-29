@@ -40,6 +40,7 @@ import { MergeAreasModalComponent } from './map/merge-areas-modal/merge-areas-mo
 import { MatRadioModule } from "@angular/material/radio";
 import { ActiveScenarioDisplayComponent } from './active-scenario-display/active-scenario-display.component';
 import { BatchProgressComponent } from './batch-progress-display/batch-progress.component';
+import { ConfirmGenerateComparisonComponent } from './calculation-history/confirm-generate-comparison/confirm-generate-comparison.component';
 
 @NgModule({
   declarations: [
@@ -68,6 +69,7 @@ import { BatchProgressComponent } from './batch-progress-display/batch-progress.
     MergeAreasModalComponent,
     ActiveScenarioDisplayComponent,
     BatchProgressComponent,
+    ConfirmGenerateComparisonComponent,
   ],
     imports: [
         SharedModule,

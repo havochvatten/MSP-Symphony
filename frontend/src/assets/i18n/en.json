@@ -395,11 +395,18 @@
                 "cancel": "Cancel",
                 "confirm": "Delete"
             },
+            "generate-comparison-modal": {
+                "header": "Generate compound comparison",
+                "message": "Set a title for the compound comparison result.",
+                "placeholder": "Set a title",
+                "calculate": "Calculate"
+            },
             "multi-mode": {
-                "enter": "Enter multi-selection mode to delete multiple calculations",
+                "enter": "Enter multi-selection mode",
                 "exit": "Exit multi-selection mode",
                 "delete-selected": "Delete selected calculations",
-                "none-selected": "No calculations selected for deletion"
+                "generate-comparison": "Generate comparison data",
+                "none-selected": "No calculations selected"
             }
         },
         "compare": {
@@ -510,6 +517,7 @@
         "about": "About",
         "support": "Support",
         "profile": "My profile",
+        "change-language": "Change language",
         "logout": "Log out"
     },
     "about-dialog": {

@@ -19,6 +19,9 @@ export interface State {
   visibleResults: number[];
   loadingResults: number[];
   loadingReports: number[];
+  generatingComparisonsFor: number[];
+  loadingCompoundComparisons: boolean;
+  compoundComparisons: CompoundComparisonSlice[];
 }
 
 export interface Report {
@@ -107,8 +110,8 @@ export interface BatchCalculationProcessEntry {
 }
 
 export interface ComparisonLegendState {
-  title: string[]
-  legend: Legend,
+  title: string[],
+  legend: Legend
 }
 
 export interface LegendState {
@@ -116,6 +119,21 @@ export interface LegendState {
   ecosystem: Legend | undefined,
   pressure: Legend | undefined,
   comparison: { [value: string] : ComparisonLegendState }
+}
+
+export interface ComparisonResult {
+  includedEcosystems: number[],
+  includedPressures: number[],
+  result: number[][]
+}
+
+export interface CompoundComparisonSlice {
+  id: number,
+  name: string,
+}
+
+export interface CompoundComparison extends CompoundComparisonSlice {
+  results: { [key: number]: ComparisonResult }
 }
 
 export interface OperationParams {

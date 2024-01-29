@@ -7,11 +7,14 @@
         [enterLabel]="'map.editor.list.batch-tools.enter-batch-mode'"
         [exitLabel]="'map.editor.list.batch-tools.exit-batch-mode'"
         [disabledPredicate]="isDisabled"
-        [multiActionDelegate]="triggerBatchRun"
-        [multiActionIcon]="'play-arrow'"
-        [multiActionLabel]="'map.editor.list.batch-tools.run-batch'"
-        [multiActionLabelDisabled]="'map.editor.list.batch-tools.batch-too-small'"
-      ></app-multi-tools>
+      >
+        <app-multi-action-button slot="button-1"
+          [multiActionDelegate]="triggerBatchRun"
+          [multiActionIcon]="'play-arrow'"
+          [multiActionLabel]="'map.editor.list.batch-tools.run-batch'"
+          [multiActionLabelDisabled]="'map.editor.list.batch-tools.batch-too-small'"
+          ></app-multi-action-button>
+      </app-multi-tools>
     </div>
     <ng-container *ngIf="!((selectionOverlap | async) ?? false)">
       <p *ngFor="let selectedArea of selectedAreas" class="area-name">{{ selectedArea.displayName }}</p>

@@ -43,6 +43,7 @@ import { MatRadioModule } from "@angular/material/radio";
 import { MatInputModule } from "@angular/material/input";
 import { ListFilterComponent } from './list-filter/list-filter.component';
 import { MultiToolsComponent } from './multi-tools/multi-tools.component';
+import { MultiActionButtonComponent } from '@shared/multi-action-button/multi-action-button.component';
 
 @NgModule({
   declarations: [
@@ -83,7 +84,8 @@ import { MultiToolsComponent } from './multi-tools/multi-tools.component';
     SelectIntersectionComponent,
     ComparisonColorScaleComponent,
     ListFilterComponent,
-    MultiToolsComponent
+    MultiToolsComponent,
+    MultiActionButtonComponent
   ],
   imports: [
     CommonModule,
@@ -133,7 +135,8 @@ import { MultiToolsComponent } from './multi-tools/multi-tools.component';
     SelectIntersectionComponent,
     ComparisonColorScaleComponent,
     ListFilterComponent,
-    MultiToolsComponent
+    MultiToolsComponent,
+    MultiActionButtonComponent
   ]
 })
 export class SharedModule {}

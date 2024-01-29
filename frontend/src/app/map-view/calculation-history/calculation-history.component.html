@@ -26,11 +26,20 @@
       [enterLabel]="'map.history.multi-mode.enter'"
       [exitLabel]="'map.history.multi-mode.exit'"
       [disabledPredicate]="isDisabled"
-      [multiActionDelegate]="deleteSelectedCalculations"
-      [multiActionIcon]="'delete'"
-      [multiActionLabel]="'map.history.multi-mode.delete-selected'"
-      [multiActionLabelDisabled]="'map.history.multi-mode.none-selected'"
-    ></app-multi-tools>
+    >
+      <app-multi-action-button class="action-compare"
+         [multiActionDelegate]="generateComparisonDataSet"
+         [multiActionIcon]="'compare'"
+         [multiActionLabel]="'map.history.multi-mode.generate-comparison'"
+         [multiActionLabelDisabled]="'map.history.multi-mode.none-selected'"
+      ></app-multi-action-button>
+      <app-multi-action-button class="action-delete"
+         [multiActionDelegate]="deleteSelectedCalculations"
+         [multiActionIcon]="'delete'"
+         [multiActionLabel]="'map.history.multi-mode.delete-selected'"
+         [multiActionLabelDisabled]="'map.history.multi-mode.none-selected'"
+      ></app-multi-action-button>
+    </app-multi-tools>
   </div>
 
   <div class="list-filter-container">
@@ -75,13 +84,14 @@
           >
           </app-icon>
         </div>
-        <mat-spinner *ngIf="loadingCalculations.has(calculation.id)" diameter="20" ></mat-spinner>
+        <mat-spinner *ngIf="(comparedCalculations$ | async).includes(calculation.id)" diameter="20" ></mat-spinner>
         <app-icon iconType="eye" class="visible" *ngIf="resultIsVisible(calculation.id)"
                   title="{{ 'map.history.visible-result' | translate }}"></app-icon>
         <app-icon iconType="cross" class="purged" *ngIf="!loadingCalculations.has(calculation.id) && calculation.isPurged"></app-icon>
       </button>
       <div class="multi-selected-wrap" *ngIf="isMultiMode()">
         <mat-checkbox [checked]="selectedIds.includes(calculation.id)"
+                      [disabled]="(comparedCalculations$ | async).includes(calculation.id)"
                       (change)="multiSelect(calculation.id)"
                       (click)="$event.stopPropagation()">
         </mat-checkbox>

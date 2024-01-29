@@ -1,0 +1,15 @@
+<h3>{{ 'map.history.generate-comparison-modal.header' | translate }}</h3>
+<p>{{ 'map.history.generate-comparison-modal.message' | translate }}</p>
+<input matInput
+  [(ngModel)]="cmpName"
+  [placeholder]="'map.history.generate-comparison-modal.placeholder' | translate"
+/>
+<div>
+  <button mat-flat-button [ngClass]="'secondary'" (click)="close()">{{
+      'confirmation-modal.cancel' | translate
+    }}</button>
+  <button mat-flat-button
+          (click)="calculate()"
+          [disabled]="cmpName.length === 0"
+  >{{ 'map.history.generate-comparison-modal.calculate' | translate }}</button>
+</div>

@@ -24,8 +24,18 @@ section {
     }
 
     app-multi-tools {
-      ::ng-deep .multi-action.active button:not(.disabled) {
-        color: $red;
+      ::ng-deep {
+        .action-delete .multi-action.active button:not(.disabled) {
+          color: $red;
+        }
+
+        .action-compare .multi-action button {
+          justify-content: flex-end;
+
+          app-icon svg {
+            height: 0.9em;
+          }
+        }
       }
     }
   }

@@ -1,0 +1,11 @@
+<app-icon-button
+  [icon]="multiActionIcon"
+  class="multi-action"
+  [disabled]="disabledPredicate()"
+  [ngClass]="{ 'active': isMultiMode() }"
+  [label]="
+          isMultiMode() ?
+            ((disabledPredicate() ? multiActionLabelDisabled :
+                                    multiActionLabel) | translate
+            ): ''"
+  (iconClick)="multiActionDelegate()"></app-icon-button>
