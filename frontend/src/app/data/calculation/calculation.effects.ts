@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { from, of } from 'rxjs';
-import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
+import { catchError, concatMap, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
 import { CalculationActions } from './';
 import { CalculationService } from './calculation.service';
 import { ScenarioActions } from "@data/scenario";
+import { UserSelectors } from "@data/user";
+import { Store } from "@ngrx/store";
+import { State } from "@src/app/app-reducer";
 
 @Injectable()
 export class CalculationEffects {
   constructor(private actions$: Actions,
+              private store: Store<State>,
               private calcService: CalculationService) {
 
   }
@@ -125,6 +129,25 @@ export class CalculationEffects {
     mergeMap(({ id }) =>
       this.calcService.cancelBatchProcess(id).pipe(
         map(() => CalculationActions.cancelBatchProcessSuccess({ id }))
+      )
+    )
+  ));
+
+  generateCompoundComparison$ = createEffect(() => this.actions$.pipe(
+    ofType(CalculationActions.generateCompoundComparison),
+    concatMap(action =>
+      of(action).pipe(withLatestFrom(this.store.select(UserSelectors.selectBaseline)))
+    ),
+    mergeMap(([ { comparisonName, calculationIds }, baseline ]) =>
+      this.calcService.generateCompoundComparison(comparisonName, calculationIds, baseline).pipe(
+        map(comparison => CalculationActions.generateCompoundComparisonSuccess({ comparison })),
+        catchError(({ status, message }) =>
+          of(
+            CalculationActions.generateCompoundComparisonFailure({
+              error: { status, message }
+            })
+          )
+        )
       )
     )
   ));

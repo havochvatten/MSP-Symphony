@@ -376,7 +376,21 @@ public class CalcService {
 
         Overflow overflow = new Overflow();
 
-        GridCoverage2D coverage = calculateCoverage(scenario.getOperation(), roi, scenario.getBaselineId(), ecosystemsToInclude,
+        // To ensure consistency between results when recreating 'purged' calculations
+        // and "implicit baseline calculations" for comparative calculations from the
+        // resulting ScenarioSnapshots, we need to do this conspicuous "back-and-forth"
+        // reprojection once before the calculation step.
+        // Should we forgo this, we get tiny marginal geometric discrepancies, owing to
+        // inexactness of the inverse transform operation. In turn these may (or may not)
+        // produce minute numerical differences in the calculation result because of occasional
+        // pixel outliers.
+
+        MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
+            getSrcCRS());
+        MathTransform targetToWGS84 = CRS.findMathTransform(getSrcCRS(), DefaultGeographicCRS.WGS84);
+        Geometry targetGeometry = JTS.transform(roi, WGS84toTarget);
+
+        GridCoverage2D coverage = calculateCoverage(scenario.getOperation(), JTS.transform(targetGeometry, targetToWGS84), scenario.getBaselineId(), ecosystemsToInclude,
             scenario.getPressuresToInclude(), areas, matrixResponse, scenario.getOperationOptions(), null, overflow);
 
         // Trigger actual calculation since GeoTiffWriter requests tiles in the same thread otherwise
@@ -397,14 +411,11 @@ public class CalcService {
             ++a_ix;
         }
 
-        MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
-            coverage.getCoordinateReferenceSystem());
-
         return scenario.getNormalization().type == PERCENTILE ?
             new CalculationResult(coverage) :
             persistCalculation( coverage, normalizationValues, areaMatrices, scenario,
                                 sc, ecosystemsToInclude, baseline,
-                                JTS.transform(roi, WGS84toTarget), overflow, isAreaCalculation);
+                                targetGeometry, overflow, isAreaCalculation);
     }
 
     private GridGeometry2D getTargetGridGeometry(Envelope targetGridEnvelope, ReferencedEnvelope targetEnv) {
@@ -417,26 +428,6 @@ public class CalcService {
                 ),
                 targetEnv
         );
-    }
-
-    public GridCoverage2D calculateCoverage(
-        int operation, Geometry roi, Integer baselineId, int[] ecosystemsToInclude, int[] pressuresToInclude,
-        List<ScenarioArea> areas, MatrixResponse matrixResponse, Map<String, String> operationOptions, BandChangeEntity altScenario,
-        Overflow overflow)
-            throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
-        return calculateCoverage(operation, roi, baselineId, ecosystemsToInclude, pressuresToInclude, areas, matrixResponse,
-            operationOptions, altScenario, overflow, false);
-    }
-
-    public GridCoverage2D getImplicitBaselineCoverage(CalculationResult calc)
-        throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
-        Geometry roi = JTS.transform(calc.getScenarioSnapshot().getGeometry(),
-            CRS.findMathTransform(getSrcCRS(), DefaultGeographicCRS.WGS84));
-
-        return calculateCoverage(
-            calc.getOperation(), roi, calc.getBaselineVersion().getId(),
-            calc.getScenarioSnapshot().getEcosystemsToInclude(), calc.getScenarioSnapshot().getPressuresToInclude(),
-            calc.getScenarioSnapshot().getTmpAreas(), calc.getScenarioSnapshot().getMatrixResponse(), calc.getOperationOptions(), calc.getScenarioSnapshot(), null, true);
     }
 
     public CompoundComparisonDto createCompoundComparison(int[] calcResultIds, String name, Principal owner, BaselineVersion baseline) throws SymphonyStandardSystemException {
@@ -491,6 +482,26 @@ public class CalcService {
         }
 
         return cmpDto;
+    }
+
+    public GridCoverage2D calculateCoverage(
+        int operation, Geometry roi, Integer baselineId, int[] ecosystemsToInclude, int[] pressuresToInclude,
+        List<ScenarioArea> areas, MatrixResponse matrixResponse, Map<String, String> operationOptions, BandChangeEntity altScenario,
+        Overflow overflow)
+        throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
+        return calculateCoverage(operation, roi, baselineId, ecosystemsToInclude, pressuresToInclude, areas, matrixResponse,
+            operationOptions, altScenario, overflow, false);
+    }
+
+    public GridCoverage2D getImplicitBaselineCoverage(CalculationResult calc)
+        throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
+        Geometry roi = JTS.transform(calc.getScenarioSnapshot().getGeometry(),
+            CRS.findMathTransform(getSrcCRS(), DefaultGeographicCRS.WGS84));
+
+        return calculateCoverage(
+            calc.getOperation(), roi, calc.getBaselineVersion().getId(),
+            calc.getScenarioSnapshot().getEcosystemsToInclude(), calc.getScenarioSnapshot().getPressuresToInclude(),
+            calc.getScenarioSnapshot().getTmpAreas(), calc.getScenarioSnapshot().getMatrixResponse(), calc.getOperationOptions(), calc.getScenarioSnapshot(), null, true);
     }
 
     private GridCoverage2D calculateCoverage(

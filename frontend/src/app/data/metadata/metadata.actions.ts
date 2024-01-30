@@ -39,7 +39,7 @@ export const setVisibility  = createAction(
 
 export const updateLayerOpacity = createAction(
   '[Metadata] Update Layer Opacity',
-  props<{ band: Band; value: number }>()
+  props<{ band: Band, value: number }>()
 );
 
 export const updateMultiplier = createAction(

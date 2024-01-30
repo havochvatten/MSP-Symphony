@@ -4,7 +4,7 @@ import {
   LegendType,
   Legend,
   PercentileResponse,
-  BatchCalculationProcessEntry
+  BatchCalculationProcessEntry, CompoundComparison
 } from './calculation.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
 import { SortActionProps } from "@data/common/sorting.interfaces";
@@ -155,4 +155,18 @@ export const setVisibleResultLayers = createAction(
 export const setReportLoadingState = createAction(
   '[Calculation] Set loading state for report',
   props<{ calculationId: number, loadingState: boolean }>()
+);
+
+export const generateCompoundComparison = createAction(
+    '[Calculation] Generate new compound comparison',
+    props<{ comparisonName: string, calculationIds: number[] }>()
+);
+export const generateCompoundComparisonSuccess = createAction(
+    '[Calculation] Generate new compound comparison success',
+    props<{ comparison: CompoundComparison }>()
+);
+
+export const generateCompoundComparisonFailure = createAction(
+    '[Calculation] Generate new compound comparison failed',
+    props<{ error: ErrorMessage }>()
 );

@@ -395,10 +395,17 @@
                 "cancel": "Avbryt",
                 "confirm": "Radera"
             },
+            "generate-comparison-modal": {
+                "header": "Generera sammanslagen jämförelseberäkning",
+                "message": "Ange en titel för den sammanslagna jämförelseberäkningen.",
+                "placeholder": "Ange titel",
+                "calculate": "Beräkna"
+            },
             "multi-mode": {
-                "enter": "Markera flera beräkningar att radera samtidigt",
+                "enter": "Markera flera beräkningar",
                 "exit": "Avsluta markering av flera beräkningar",
                 "delete-selected": "Radera markerade beräkningar",
+                "generate-comparison": "Generera jämförelsedata",
                 "none-selected": "Inga beräkningar har markerats"
             }
         },

@@ -15,10 +15,13 @@ export interface State {
   legends: LegendState;
   percentileValue: number;
   sortCalculations: ListItemsSort;
-  batchProcesses: { [key: number]: BatchCalculationProcessEntry },
+  batchProcesses: { [key: number]: BatchCalculationProcessEntry };
   visibleResults: number[];
   loadingResults: number[];
   loadingReports: number[];
+  generatingComparisonsFor: number[];
+  loadingCompoundComparisons: boolean;
+  compoundComparisons: CompoundComparisonSlice[];
 }
 
 export interface Report {
@@ -48,18 +51,18 @@ export interface Report {
 
 export interface ReportChanges {
   baseChanges: {
-    [key: string] : ChangesProperty
-  },
+    [key: string] : ChangesProperty;
+  };
   areaChanges: {
     [key: number]: {
-      [key: string] : ChangesProperty
-    }
+      [key: string] : ChangesProperty;
+    };
   };
 }
 
 export interface ComparisonReport {
-  a: Report,
-  b: Report
+  a: Report;
+  b: Report;
   chartDataPositive: ChartData;
   chartDataNegative: ChartData;
 }
@@ -107,15 +110,30 @@ export interface BatchCalculationProcessEntry {
 }
 
 export interface ComparisonLegendState {
-  title: string[]
-  legend: Legend,
+  title: string[];
+  legend: Legend;
 }
 
 export interface LegendState {
-  result: Legend | undefined,
-  ecosystem: Legend | undefined,
-  pressure: Legend | undefined,
-  comparison: { [value: string] : ComparisonLegendState }
+  result: Legend | undefined;
+  ecosystem: Legend | undefined;
+  pressure: Legend | undefined;
+  comparison: { [value: string] : ComparisonLegendState };
+}
+
+export interface ComparisonResult {
+  includedEcosystems: number[];
+  includedPressures: number[];
+  result: number[][];
+}
+
+export interface CompoundComparisonSlice {
+  id: number;
+  name: string;
+}
+
+export interface CompoundComparison extends CompoundComparisonSlice {
+  results: { [key: number]: ComparisonResult };
 }
 
 export interface OperationParams {

@@ -30,7 +30,7 @@ export class AbstractReport {
   protected symphonyVersion = buildInfo.version;
 
   protected metadata$: Observable<{
-    metadata: { ecoComponent: BandGroup[]; pressureComponent: BandGroup[] };
+    metadata: { ecoComponent: BandGroup[], pressureComponent: BandGroup[] };
     bandDictionary: { [p: string]: { [p: string]: string } };
     percentileValue: number;
   } | null>;

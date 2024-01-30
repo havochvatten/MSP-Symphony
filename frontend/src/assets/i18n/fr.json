@@ -395,10 +395,17 @@
                 "cancel": "Annuler",
                 "confirm": "Supprimer"
             },
+            "generate-comparison-modal": {
+                "header": "Générer une comparaison composée",
+                "message": "Entrez un titre pour la comparaison composée.",
+                "placeholder": "Entrez un titre",
+                "calculate": "Calculer"
+            },
             "multi-mode": {
-                "enter": "Entrer en mode de sélection multiple pour supprimer plusieurs calculs",
+                "enter": "Entrer en mode de sélection multiple",
                 "exit": "Quitter le mode de sélection multiple",
                 "delete-selected": "Supprimer les calculs sélectionnés",
+                "generate-comparison": "Générer des données de comparaison",
                 "none-selected": "Aucun calcul sélectionné"
             }
         },

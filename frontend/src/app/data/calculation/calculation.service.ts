@@ -12,7 +12,8 @@ import {
   LegendType,
   PercentileResponse,
   BatchCalculationProcessEntry,
-  StaticImageOptions
+  StaticImageOptions,
+  CompoundComparison
 } from './calculation.interfaces';
 import { CalculationActions } from '.';
 import { AppSettings } from '@src/app/app.settings';
@@ -20,6 +21,7 @@ import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 import { Scenario, ScenarioSplitOptions } from '@data/scenario/scenario.interfaces';
 import { UserSelectors } from "@data/user";
+import { Baseline } from "@data/user/user.interfaces";
 
 export enum NormalizationType {
   Area = 'AREA',
@@ -232,6 +234,16 @@ export class CalculationService implements OnDestroy {
 
   public getPercentileValue() {
     return this.http.get<PercentileResponse>(`${env.apiBaseUrl}/calibration/percentile-value`);
+  }
+
+  public generateCompoundComparison(comparisonName: string, calculationIds: number[], baseline?: Baseline) {
+    if(baseline) {
+      return this.http.post<CompoundComparison>(`${env.apiBaseUrl}/calculation/multi-comparison/${baseline.name}`, {
+        ids: calculationIds,
+        name: comparisonName
+      });
+    }
+    throw new Error('No baseline selected');
   }
 
   private queueBatchScenarioCalculation(scenarioIds: number[]) {

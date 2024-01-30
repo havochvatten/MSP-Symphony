@@ -23,19 +23,19 @@ export interface AreaTypeMatrixMapping {
   id: number;
   name: string;
   coastalArea: boolean;
-  areas: Area[]
+  areas: Area[];
 }
 
 export interface AreaMatrixData {
-  defaultArea: DefaultArea | null,
+  defaultArea: DefaultArea | null;
   areaTypes: AreaTypeMatrixMapping[];
   overlap: AreaOverlapFragment[];
-  alternativeMatrices: MatrixRef[] | null
+  alternativeMatrices: MatrixRef[] | null;
 }
 
 export interface AreaOverlapFragment {
-  polygon: GeoJSONGeometry,
-  defaultMatrix: MatrixRef,
+  polygon: GeoJSONGeometry;
+  defaultMatrix: MatrixRef;
 }
 
 // se.havochvatten.symphony.dto.AreaMatrixMapping

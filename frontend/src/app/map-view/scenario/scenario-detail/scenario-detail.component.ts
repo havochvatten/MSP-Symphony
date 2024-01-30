@@ -57,7 +57,7 @@ const availableOperations: Map<string, CalcOperation> = new Map<string, CalcOper
 export class ScenarioDetailComponent implements OnInit, OnDestroy {
   env = environment;
   autoSaveSubscription$?: Subscription;
-  changesText: { [key: number]: string; } = {};
+  changesText: { [key: number]: string } = {};
 
   replacedAreaIds: number[] = [];
 
@@ -236,7 +236,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     // TODO: call service through rxjs effect and avoid code repetition (ScenarioEffects)
     this.store.select(MetadataSelectors.selectSelectedComponents).pipe(
       take(1))
-      .subscribe((selectedComponents: { ecoComponent: Band[]; pressureComponent: Band[]; }) => {
+      .subscribe((selectedComponents: { ecoComponent: Band[], pressureComponent: Band[] }) => {
         const sortedBandNumbers = (bands: Band[]) => bands
           .map(band => band.bandNumber)
           .sort((a, b) => a - b);
