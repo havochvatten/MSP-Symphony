@@ -42,10 +42,11 @@
   </div>
 
   <main *ngIf="(loading$ | async) === false else loading">
-    <div class="calculation-wrap" *ngFor="let calculation of calculations$ | async; index as i">
-      <button [ngClass]="{
-                'calculation list-item' : true,
-                'filtered': filter(calculation.name),
+    <div class="calculation-wrap"
+         [ngClass]="{ 'filtered': filter(calculation.name) }"
+         *ngFor="let calculation of calculations$ | async; index as i">
+      <button class="calculation list-item"
+              [ngClass]="{
                 'visible': resultIsVisible(calculation.id),
                 'purged': calculation.isPurged }"
               [title]="(calculation.isPurged ? ('map.history.purged-result' | translate) : '')"
