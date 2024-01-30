@@ -122,7 +122,8 @@ export const calculationReducer = createReducer(
     ...state,
     generatingComparisonsFor: calculationIds,
   })),
-  on(CalculationActions.generateCompoundComparisonSuccess, (state, { comparison }) => ({
+  on(CalculationActions.generateCompoundComparisonSuccess,
+     CalculationActions.generateCompoundComparisonFailure, (state, any) => ({
     ...state,
     generatingComparisonsFor: []
   }))

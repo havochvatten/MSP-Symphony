@@ -165,3 +165,8 @@ export const generateCompoundComparisonSuccess = createAction(
     '[Calculation] Generate new compound comparison success',
     props<{ comparison: CompoundComparison }>()
 );
+
+export const generateCompoundComparisonFailure = createAction(
+    '[Calculation] Generate new compound comparison failed',
+    props<{ error: ErrorMessage }>()
+);

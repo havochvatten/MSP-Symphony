@@ -141,9 +141,11 @@ export class CalculationEffects {
     mergeMap(([ { comparisonName, calculationIds }, baseline ]) =>
       this.calcService.generateCompoundComparison(comparisonName, calculationIds, baseline).pipe(
         map(comparison => CalculationActions.generateCompoundComparisonSuccess({ comparison })),
-        catchError(({ status, error: message }) =>
+        catchError(({ status, message }) =>
           of(
-            CalculationActions.calculationFailed()
+            CalculationActions.generateCompoundComparisonFailure({
+              error: { status, message }
+            })
           )
         )
       )
