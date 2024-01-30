@@ -82,6 +82,10 @@ section {
       position: relative;
       width: 100%;
 
+      &.filtered {
+        display: none;
+      }
+
       .calculation {
         box-sizing: border-box;
         background: none;
@@ -94,10 +98,6 @@ section {
         height: $button-height;
         width: 98%;
         max-width: 100%;
-
-        &.filtered {
-          display: none;
-        }
 
         &.visible {
           background: linear-gradient(0deg, #e8d18680 0%, white 33%);
