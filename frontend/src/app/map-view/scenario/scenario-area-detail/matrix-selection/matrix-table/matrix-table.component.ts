@@ -129,7 +129,7 @@ export class MatrixTableComponent {
             header: this.translateService.instant('map.editor.matrix.table.changes.header'),
             confirmText: this.translateService.instant('map.editor.matrix.table.changes.save'),
             cancelText: this.translateService.instant('map.editor.matrix.table.changes.abandon'),
-            buttonsClass: 'right',
+            buttonsClass: 'right no-margin',
             cancelColor: 'warn',
             message: null,
           };

@@ -1,0 +1,30 @@
+.app-dialog {
+
+  div.button-pane {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+
+    &.left {
+      -webkit-box-pack: start;
+      justify-content: flex-start;
+    }
+
+    &.right {
+      -webkit-box-pack: end;
+      justify-content: flex-end;
+    }
+
+    &.no-margin {
+      margin: 0;
+    }
+  }
+}
+
+.app-confirmation-modal {
+  &.block-identifier {
+    p > em {
+      display: block;
+    }
+  }
+}

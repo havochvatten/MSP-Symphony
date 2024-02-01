@@ -46,16 +46,7 @@
     color: $hav-darkergrey;
   }
 
-  .button-pane {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    margin-top: 2rem;
-
-    button {
-      &:first-child {
-        margin-left: 0;
-      }
-    }
+  .button-pane button:first-child {
+    margin-left: 0;
   }
 }

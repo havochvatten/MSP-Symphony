@@ -81,13 +81,11 @@ $buttons-row-gap: 1rem;
 
       .scenario {
         box-sizing: border-box;
-        background-color: white;
         border: 1px solid #707070;
         padding: 1.2rem;
         display: flex;
         flex-direction: column;
         width: 100%;
-        cursor: pointer;
         align-items: stretch;
 
         &:hover {
@@ -130,13 +128,6 @@ $buttons-row-gap: 1rem;
               font-size: 1.6rem;
               flex: 1;
             }
-          }
-
-          span {
-            text-align: left;
-            font: Medium 1rem/1.3rem;
-            letter-spacing: 0;
-            color: #919191;
           }
         }
 

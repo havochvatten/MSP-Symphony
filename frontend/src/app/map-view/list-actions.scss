@@ -1,13 +1,25 @@
 @import 'src/styles/hav-colors';
 
-section main .list-item {
+.list-item {
   position: relative;
 
-  &:hover {
-    background-color: $hav-coldgrey;
+  &.scenario, &.calculation {
+    background-color: white;
+  }
+
+  &:hover, &.scenario:hover, &.calculation:hover {
+
+    &.interactive {
+      background-color: $hav-coldgrey;
+      cursor: pointer;
+    }
 
     .list-actions {
       opacity: 0.6;
+
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 
@@ -47,10 +59,6 @@ section main .list-item {
       &:hover {
         opacity: 1;
       }
-    }
-
-    &:hover {
-      opacity: 1;
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, ElementRef } from '@angular/core';
+import { Component, ElementRef, HostBinding } from '@angular/core';
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 
@@ -8,6 +8,8 @@ import { DialogConfig } from "@shared/dialog/dialog-config";
   styleUrls: ['./confirmation-modal.component.scss']
 })
 export class ConfirmationModalComponent  {
+
+  @HostBinding('class.app-confirmation-modal') dialogClass = true;
 
   header!: string;
   message?: string | null;

@@ -71,14 +71,4 @@
       color: $hav-ext-scarlet-red;
     }
   }
-
-  #toolbar {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 2rem;
-
-    hav-button:first-child {
-      margin-right: 1.4rem;
-    }
-  }
 }

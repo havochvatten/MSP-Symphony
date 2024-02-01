@@ -11,7 +11,7 @@
 <mat-checkbox [(ngModel)]="options.batchSelect">{{
   'map.editor.split-scenario-settings.enter-batch-mode' | translate
   }}</mat-checkbox>
-<section class="buttons">
+<div class="button-pane">
   <button mat-flat-button (click)="splitScenario()" [ngClass]="'primary'" >
     {{ 'map.editor.split-scenario-settings.generate' | translate }}
   </button>
@@ -21,4 +21,4 @@
   <button mat-flat-button (click)="dialog.close()" [ngClass]="'secondary'">
     {{ 'confirmation-modal.cancel' | translate }}
   </button>
-</section>
+</div>
