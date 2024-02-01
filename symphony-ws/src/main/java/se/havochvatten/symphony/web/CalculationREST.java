@@ -24,6 +24,7 @@ import se.havochvatten.symphony.calculation.CalcUtil;
 import se.havochvatten.symphony.dto.BatchCalculationDto;
 import se.havochvatten.symphony.dto.CalculationResultSlice;
 import se.havochvatten.symphony.dto.CompoundComparisonDto;
+import se.havochvatten.symphony.dto.CompoundComparisonSlice;
 import se.havochvatten.symphony.entity.*;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
@@ -502,7 +503,8 @@ public class CalculationREST {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Computes compound difference matrix (relative to an implicit baseline) for multiple calculations", response = CompoundComparisonDto.class)
+    @ApiOperation(value = "Computes compound difference matrix (relative to an implicit baseline) for multiple calculations.\n" +
+                          "Returns entity PK id (if successful)", response = Integer.class)
     public Response multiComparison(@Context HttpServletRequest req, @PathParam("baselineName") String baselineName, CompoundComparisonRequest request)
             throws SymphonyStandardAppException, SymphonyStandardSystemException {
         if (req.getUserPrincipal() == null)
@@ -512,15 +514,57 @@ public class CalculationREST {
 
         try {
             BaselineVersion baseline = baselineVersionService.getVersionByName(baselineName);
-            CompoundComparisonDto comparison = calcService.createCompoundComparison(request.ids, request.name, principal, baseline);
+             Integer createdCompoundCmpId = calcService.createCompoundComparison(request.ids, request.name, principal, baseline);
 
-            return ok(comparison).build();
+            return ok(createdCompoundCmpId).build();
         } catch (SymphonyStandardAppException | SymphonyStandardSystemException sx) {
             return status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (NotAuthorizedException ax) {
             return status(Response.Status.UNAUTHORIZED).build();
         }
     }
+
+    @GET
+    @Path("/multi-comparison/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Returns all compound comparisons for the given baseline", response = CompoundComparisonSlice.class, responseContainer = "List")
+    public Response getCompoundComparisons(@Context HttpServletRequest req) {
+
+        Principal principal = req.getUserPrincipal();
+
+        if(principal == null)
+            return status(Response.Status.UNAUTHORIZED).build();
+
+        try {
+            List<CompoundComparisonSlice> comparisons = calcService.getCompoundComparisons(principal);
+            return ok(comparisons).build();
+        } catch (SymphonyStandardSystemException sx) {
+            return status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @DELETE
+    @Path("/multi-comparison/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Deletes compound comparison with the given id")
+    public Response deleteCompoundComparison(@Context HttpServletRequest req, @PathParam("id") int id) {
+        var principal = req.getUserPrincipal();
+        if (principal == null)
+            return status(Response.Status.UNAUTHORIZED).build();
+
+        try {
+            if (calcService.deleteCompoundComparison(principal, id)) {
+                return ok().build();
+            } else {
+                return status(Response.Status.NOT_FOUND).build();
+            }
+        } catch (SymphonyStandardSystemException sx) {
+            return status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 
     public static GridCoverage2D getDiffCoverageFromCalcIds(CalcService calcService, HttpServletRequest req, int baseId, int relativeId) throws SymphonyStandardAppException {
         logger.info("Diffing base line calculations " + baseId + " against calculation " + relativeId);

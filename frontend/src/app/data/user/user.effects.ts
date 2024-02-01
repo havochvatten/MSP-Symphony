@@ -107,6 +107,7 @@ export class UserEffects {
       AreaActions.fetchUserDefinedAreas(),
       AreaActions.fetchBoundaries(),
       UserActions.fetchBaseline(),
+      CalculationActions.fetchCompoundComparisons(),
       ...legendTypes.map(legendType => CalculationActions.fetchLegend({ legendType }))
     ])
   ));

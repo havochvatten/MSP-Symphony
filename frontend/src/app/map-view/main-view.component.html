@@ -2,8 +2,10 @@
 <!--TODO Migrate to use routerLinks instead-->
 <app-slide-view position="left"
                 [open]="leftSidebarIsOpen"
+                [compoundComparisonCount$]="compoundComparisonCount$"
                 (toggle)="toggleLeftSidebar()"
-                (navigate)="onNavigate($event)">
+                (navigate)="onNavigate($event)"
+                (openCCList)="onOpenCCList()">
   <app-slide-view-tab [title]="'map.areas' | translate" icon="globe">
     <app-area-selection
       [areas]="areas | async"

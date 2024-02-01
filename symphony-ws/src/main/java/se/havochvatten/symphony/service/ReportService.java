@@ -114,7 +114,7 @@ public class ReportService {
      * @param pTotal  output param containing pressure row total
      * @param esTotal output param containing ecosystem column total
      */
-    static double getComponentTotals(double[][] matrix, double[] pTotal, double[] esTotal) {
+    public static double getComponentTotals(double[][] matrix, double[] pTotal, double[] esTotal) {
         double totalTotal = 0;
         for (int b = 0; b < matrix.length; b++) {
             for (int e = 0; e < matrix[b].length; e++) {
@@ -126,7 +126,7 @@ public class ReportService {
         return totalTotal;
     }
 
-    private static Map<Integer, Double> impactPerComponent(int[] components, double[] totals) {
+    public static Map<Integer, Double> impactPerComponent(int[] components, double[] totals) {
         return IntStream
                 .range(0, components.length).boxed()
                 .collect(toMap(i -> components[i], i -> totals[i]));

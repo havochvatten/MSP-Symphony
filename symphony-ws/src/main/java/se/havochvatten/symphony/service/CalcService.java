@@ -430,7 +430,7 @@ public class CalcService {
         );
     }
 
-    public CompoundComparisonDto createCompoundComparison(int[] calcResultIds, String name, Principal owner, BaselineVersion baseline) throws SymphonyStandardSystemException {
+    public Integer createCompoundComparison(int[] calcResultIds, String name, Principal owner, BaselineVersion baseline) throws SymphonyStandardSystemException {
 
         List<CalculationResult> calcResults = em.createNamedQuery("CalculationResult.findByIds_Owner_Baseline", CalculationResult.class).
                 setParameter("ids", Arrays.stream(calcResultIds).boxed().toList()).
@@ -441,22 +441,25 @@ public class CalcService {
         if (calcResults.size() != calcResultIds.length)
             throw new NotFoundException();
 
-        CompoundComparisonDto cmpDto = new CompoundComparisonDto(name);
-
         try {
 
             Raster[] tmp;
-            CompoundComparison cmp = new CompoundComparison(baseline, name, owner.getName(), calcResultIds);
+            CompoundComparison cmp = new CompoundComparison(baseline, name, owner.getName(), calcResultIds, new Date());
 
             for (CalculationResult calc : calcResults) {
                 GridCoverage2D implicitBaseline = getImplicitBaselineCoverage(calc);
                 tmp = ((PlanarImage) implicitBaseline.getRenderedImage()).getTiles(); // trigger calculation
 
-                cmp.setCmpResultForCalculation(calc.getId(),
-                    reportService.calculateDifferentialImpactMatrix(
-                        (double[][]) implicitBaseline.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME),
-                        calc.getImpactMatrix()
-                    ));
+                double[][] differentiaImpact = reportService.calculateDifferentialImpactMatrix(
+                    (double[][]) implicitBaseline.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME),
+                    calc.getImpactMatrix());
+
+                cmp.setCmpResultForCalculation(
+                    calc.getId(),
+                    calc.getScenarioSnapshot().getEcosystemsToInclude(),
+                    calc.getScenarioSnapshot().getPressuresToInclude(),
+                    differentiaImpact,
+                    calc.getCalculationName());
             }
 
             transaction.begin();
@@ -464,12 +467,7 @@ public class CalcService {
             em.flush();
             transaction.commit();
 
-            cmpDto.setId(cmp.getId());
-
-            for(int calcId : calcResultIds) {
-                ScenarioSnapshot calcSettings = getCalculation(calcId).getScenarioSnapshot();
-                cmpDto.setResult(calcId, calcSettings.getEcosystemsToInclude(), calcSettings.getPressuresToInclude(), cmp.getCmpResult().get(calcId));
-            }
+            return cmp.getId();
 
         } catch (Exception e) {
             throw new SymphonyStandardSystemException(SymphonyModelErrorCode.OTHER_ERROR, e, "CompoundComparison " +
@@ -480,8 +478,6 @@ public class CalcService {
                     transaction.rollback();
             } catch (Throwable e) {/* ignore */}
         }
-
-        return cmpDto;
     }
 
     public GridCoverage2D calculateCoverage(
@@ -835,6 +831,22 @@ public class CalcService {
         // TODO: Add promote operation?
         var floatbase = operations.add(base, new double[]{0.0});
         return (GridCoverage2D) operations.divide(difference, floatbase);
+    }
+
+    public List<CompoundComparisonSlice> getCompoundComparisons(Principal principal) {
+        return em.createNamedQuery("CompoundComparison.findByOwner", CompoundComparisonSlice.class).
+                setParameter("username", principal.getName()).
+                getResultList();
+    }
+
+    public boolean deleteCompoundComparison(Principal principal, int id) {
+        var cmp = em.find(CompoundComparison.class, id);
+
+        if (cmp == null || !cmp.getCmpOwner().equals(principal.getName()))
+            return false;
+
+        delete(principal, cmp);
+        return true;
     }
 }
 

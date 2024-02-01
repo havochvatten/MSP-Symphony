@@ -1,5 +1,7 @@
-import { Component, ViewChild, OnInit,
-         AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import {
+  Component, ViewChild, OnInit,
+  AfterViewInit, ChangeDetectorRef, Signal, signal, NgModuleRef
+} from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 import { take } from "rxjs/operators";
@@ -16,6 +18,10 @@ import { ScenarioActions, ScenarioSelectors } from "@data/scenario";
 import { Scenario } from "@data/scenario/scenario.interfaces";
 import { MapComponent } from './map/map.component';
 import { isMacOS } from '@src/util/agent';
+import {
+  CompoundComparisonListDialogComponent
+} from "@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component";
+import { DialogService } from "@shared/dialog/dialog.service";
 
 @Component({
   selector: 'app-main-view',
@@ -29,6 +35,7 @@ export class MainViewComponent implements OnInit, AfterViewInit {
   areas?: Observable<AllAreas>;
   legends$?: Observable<LegendState>;
   cmpLegends$?: Observable<ComparisonLegendState[]>;
+  compoundComparisonCount$: Observable<number>;
   center = environment.map.center;
   visibleImpact = false;
   visibleComparison = false;
@@ -41,11 +48,15 @@ export class MainViewComponent implements OnInit, AfterViewInit {
   protected scenarioAreaSelection = false
   private selectedAreas$?: Subscription;
 
+
   constructor(
     private store: Store<State>,
-    private cd: ChangeDetectorRef) {
+    private cd: ChangeDetectorRef,
+    private moduleRef: NgModuleRef<never>,
+    private dialogService: DialogService) {
     this.activeScenario$ = this.store.select(ScenarioSelectors.selectActiveScenario);
     this.activeScenarioArea$ = this.store.select(ScenarioSelectors.selectActiveScenarioArea);
+    this.compoundComparisonCount$ = this.store.select(CalculationSelectors.selectCompoundComparisonCount);
   }
 
   ngOnInit() {
@@ -91,6 +102,10 @@ export class MainViewComponent implements OnInit, AfterViewInit {
 
   onNavigate(tabId: string) {
     this.scenarioAreaSelection = tabId === 'scenario';
+  }
+
+  onOpenCCList() {
+    this.dialogService.open(CompoundComparisonListDialogComponent, this.moduleRef);
   }
 
   getVisibleImpact(): boolean {

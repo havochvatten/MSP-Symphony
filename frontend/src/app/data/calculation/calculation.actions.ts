@@ -163,10 +163,39 @@ export const generateCompoundComparison = createAction(
 );
 export const generateCompoundComparisonSuccess = createAction(
     '[Calculation] Generate new compound comparison success',
-    props<{ comparison: CompoundComparison }>()
+    props<{ comparisonId: number }>()
 );
 
 export const generateCompoundComparisonFailure = createAction(
     '[Calculation] Generate new compound comparison failed',
     props<{ error: ErrorMessage }>()
+);
+
+export const fetchCompoundComparisons = createAction(
+  '[Calculation] Fetch compound comparisons'
+);
+
+export const fetchCompoundComparisonsSuccess = createAction(
+  '[Calculation] Fetch compound comparisons success',
+  props<{ compoundComparisons: CompoundComparison[] }>()
+);
+
+export const fetchCompoundComparisonsFailure = createAction(
+  '[Calculation] Fetch compound comparisons failure',
+  props<{ error: ErrorMessage }>()
+);
+
+export const deleteCompoundComparison = createAction(
+  '[Calculation] Delete compound comparison',
+  props<{ id: number }>()
+);
+
+export const deleteCompoundComparisonFailure = createAction(
+  '[Calculation] Delete compound comparison failure',
+  props<{ error: ErrorMessage }>()
+);
+
+export const setCompoundComparisonSortType = createAction(
+  '[Calculation] Set compound comparison sort type',
+  props<SortActionProps>()
 );

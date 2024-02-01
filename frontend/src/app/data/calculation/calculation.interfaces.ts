@@ -22,6 +22,7 @@ export interface State {
   generatingComparisonsFor: number[];
   loadingCompoundComparisons: boolean;
   compoundComparisons: CompoundComparisonSlice[];
+  sortCompoundComparisons: ListItemsSort;
 }
 
 export interface Report {
@@ -125,14 +126,19 @@ export interface ComparisonResult {
   includedEcosystems: number[];
   includedPressures: number[];
   result: number[][];
+  cumulativeTotal: number;
+  totalPerEcosystem: Record<string, number>;
+  totalPerPressure: Record<string, number>;
 }
 
-export interface CompoundComparisonSlice {
+export interface CompoundComparisonSlice extends SortableListItem {
   id: number;
-  name: string;
+  calculationNames: string[];
 }
 
 export interface CompoundComparison extends CompoundComparisonSlice {
+  id: number;
+  name: string;
   results: { [key: number]: ComparisonResult };
 }
 
@@ -143,4 +149,27 @@ export interface OperationParams {
 export interface AreaMatrix {
   areaName: string;
   matrix: string;
+}
+
+export class CompoundComparisonItem implements CompoundComparisonSlice {
+  private static maxCalcNames = 10;
+
+  id: number;
+  calculationNames: string[];
+  name: string;
+  timestamp: number;
+
+  constructor(item: CompoundComparisonSlice) {
+    this.id = item.id;
+    this.calculationNames = item.calculationNames;
+    this.name = item.name;
+    this.timestamp = item.timestamp;
+  }
+
+  public calcNamesList(moreLabel: string): string {
+    const more = `(${this.calculationNames.length - CompoundComparisonItem.maxCalcNames} ${moreLabel}) ...`;
+
+    return  `${this.calculationNames.slice(0, CompoundComparisonItem.maxCalcNames).join(', ')} `+
+            `${this.calculationNames.length > CompoundComparisonItem.maxCalcNames ? more : ''}`;
+  }
 }

@@ -13,13 +13,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { MatSelect } from "@angular/material/select";
 import { MatOption } from "@angular/material/core";
 import { MatRadioChange } from "@angular/material/radio";
-
-/*export const sameCalculationsValidator: ValidatorFn = (control: AbstractControl):
-  ValidationErrors | null => {
-    const a = control.get('a');
-    const b = control.get('b');
-    return a && b && a.value === b.value ? { identicalCalculations: true } : null;
-}*/
+import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component';
 
 enum ComparisonScaleOptions { CONSTANT, DYNAMIC }
 
@@ -99,5 +93,9 @@ export class ComparisonComponent implements AfterViewInit {
     if(ev.source.checked) {
       this.selectedScale = ev.source.value;
     }
+  }
+
+  openCCList() {
+    this.dialogService.open(CompoundComparisonListDialogComponent, this.moduleRef);
   }
 }

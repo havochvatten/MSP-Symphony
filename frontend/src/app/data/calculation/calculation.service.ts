@@ -238,12 +238,16 @@ export class CalculationService implements OnDestroy {
 
   public generateCompoundComparison(comparisonName: string, calculationIds: number[], baseline?: Baseline) {
     if(baseline) {
-      return this.http.post<CompoundComparison>(`${env.apiBaseUrl}/calculation/multi-comparison/${baseline.name}`, {
+      return this.http.post<number>(`${env.apiBaseUrl}/calculation/multi-comparison/${baseline.name}`, {
         ids: calculationIds,
         name: comparisonName
       });
     }
     throw new Error('No baseline selected');
+  }
+
+  public deleteCompoundComparison(id: number) {
+    return this.http.delete(`${env.apiBaseUrl}/calculation/multi-comparison/${id}`);
   }
 
   private queueBatchScenarioCalculation(scenarioIds: number[]) {
@@ -274,5 +278,9 @@ export class CalculationService implements OnDestroy {
 
   cancelBatchProcess(id: number) {
     return this.http.post(`${env.apiBaseUrl}/calculation/batch/${id}/cancel`, null);
+  }
+
+  getAllCompoundComparisons() {
+    return this.http.get<CompoundComparison[]>(`${env.apiBaseUrl}/calculation/multi-comparison/all`);
   }
 }

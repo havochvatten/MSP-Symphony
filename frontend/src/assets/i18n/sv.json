@@ -24,6 +24,7 @@
         "reset-preselected": "Återställ",
         "reset-preselected-description": "Återställ valda naturvärden och belastningar till standardurvalet och nollställ ändringar",
         "selection-overlap": "Kan inte välja överlappande områden",
+        "open-compound-data-list": "Sammanslagen jämförelse ({{ count }})",
         "intensity": {
             "ecosystems": "Naturvärden",
             "pressures": "Belastningar",
@@ -496,6 +497,18 @@
         "merge-areas-hint" : {
             "emphasis": "Sammanfoga områden",
             "detail": "{{ altButton }} + Shift + klick på 'sista' området för att sammanfoga."
+        },
+        "compound-data-list": {
+            "title": "Sammanslagen jämförelsedata",
+            "compound-comparison-data": "Sammanslagen jämförelsedata",
+            "calculation-basis-info": "Jämförelsevärdena baserar sig på följande beräkningar",
+            "more": "till",
+            "delete": "Radera sammanslagen jämförelse",
+            "filter-hint": "Filtrera listan per namn",
+            "delete-modal": {
+                "header": "Radera sammanslagen jämförelse",
+                "message": "Bekräfta borttagning av sammanslagen jämförelse: <em>“{{ comparisonName }}”</em>"
+            }
         }
     },
     "controls": {

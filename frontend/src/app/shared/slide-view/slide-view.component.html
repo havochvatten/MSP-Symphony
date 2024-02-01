@@ -7,13 +7,20 @@
   <nav class="nav-tabs">
     <a
       *ngFor="let tab of tabs"
-      class="tab"
+      class="tab for-panel"
       [class.active]="tab.active"
       [title]="tab.title"
       (click)="selectTab(tab.id)"
       tabindex="0"
     >
       <app-icon [iconType]="tab.icon"></app-icon>
+    </a>
+    <a *ngIf="(compoundComparisonCount$ | async) > 0"
+       class="tab for-dialog"
+       [title]="'map.open-compound-data-list' | translate: { count: (compoundComparisonCount$ | async) }"
+       (click)="openCompoundComparisonList()"
+       tabindex="0">
+      <app-icon [iconType]="'compare-table'"></app-icon>
     </a>
   </nav>
   <div *ngIf="open" class="icon-bar">
