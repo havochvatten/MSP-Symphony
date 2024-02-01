@@ -16,11 +16,14 @@
     margin-top: 0.6em;
   }
 
-  ::ng-deep app-result-color-scale svg {
-    margin-top: 0.7em;
-  }
+  ::ng-deep app-result-color-scale {
 
-  ::ng-deep app-result-color-scale:not(:last-child) svg {
-    margin-bottom: 0.7em;
+    svg {
+      margin-top: 0.7em;
+    }
+
+    &:not(:last-child) svg {
+      margin-bottom: 0.7em;
+    }
   }
 }

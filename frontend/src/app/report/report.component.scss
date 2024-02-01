@@ -92,6 +92,12 @@
       }
     }
 
+    &.comparison-report {
+      app-result-color-scale {
+        margin: 0 0 0 12mm;
+      }
+    }
+
     app-result-color-scale {
       grid-column-start: 1;
       width: 150%;
