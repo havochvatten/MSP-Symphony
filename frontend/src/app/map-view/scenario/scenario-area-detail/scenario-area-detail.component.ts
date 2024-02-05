@@ -48,7 +48,7 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
 
   percentileValue$: Observable<number>;
   calculating$?: Observable<boolean>;
-  areaFeatureName: string = '';
+  areaFeatureName = '';
   locale = 'en';
   private matrixDataSubscription$: Subscription;
   bandDictionary$: Observable<{[t: string]: { [p: string]: string } }>;
@@ -59,7 +59,7 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
     private scenarioService: ScenarioService,
     private dialogService: DialogService,
     private translateService: TranslateService,
-    private moduleRef: NgModuleRef<any>
+    private moduleRef: NgModuleRef<never>
   ) {
     const that = this;
     this.calculating$ = this.store.select(CalculationSelectors.selectCalculating);

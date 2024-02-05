@@ -50,4 +50,8 @@ export default class AreaService {
     return this.http.get<{ areas: AreaInterfaces.Boundary[] }>(`${BASE_URL}/areas/boundary`
     );
   }
+
+  getCalibratedCalculationAreas(baselineName: string) {
+    return this.http.get<AreaInterfaces.CalculationAreaSlice[]>(`${BASE_URL}/calculationarea/calibrated/${baselineName}`)
+  }
 }

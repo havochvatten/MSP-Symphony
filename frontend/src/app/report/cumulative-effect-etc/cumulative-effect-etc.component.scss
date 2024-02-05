@@ -50,6 +50,12 @@
         }
       }
 
+      th, td {
+        &.has-overflow {
+          background-color: $hav-ext-lightpale-salmon;
+        }
+      }
+
     }
     tr.ruled>* {
       border-top: 1px solid;
@@ -83,6 +89,42 @@
       position: absolute;
       top: 0;
       left: -1rem;
+    }
+  }
+
+  .change-overflow {
+    margin-top: 1rem;
+    padding: 0.2rem 0.8rem 0.8rem;
+    background-color: $hav-ext-lightpale-salmon;
+
+    h5 {
+      margin: 0;
+    }
+
+    p {
+      margin: 0.4rem 0;
+      font-size: 1.1rem;
+      line-height: 1.6rem;
+    }
+
+    .band-titles {
+      line-height: 1.5rem;
+
+      h6 {
+        margin: 0.8rem 0 0.4rem;
+        font-size: 1.3rem;
+        font-weight: 600;
+      }
+
+      span {
+        display: inline-block;
+        margin-right: 1ch;
+        font-size: 1.15rem;
+
+        &:not(:last-child):after {
+          content: ',';
+        }
+      }
     }
   }
 

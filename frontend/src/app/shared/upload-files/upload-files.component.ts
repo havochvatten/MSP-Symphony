@@ -6,12 +6,12 @@ import { Component } from '@angular/core';
   styleUrls: ['./upload-files.component.scss']
 })
 export class UploadFilesComponent {
-  files: any = [];
+  files: string[] = [];
 
-  uploadFile(event: any) {
-    event.forEach((element: any) => {
-      this.files.push(element.name)
-    });
+  uploadFile(fileList: FileList) {
+    for(const file of fileList) {
+      this.files.push(file.name);
+    }
   }
 
   deleteAttachment(index: number) {

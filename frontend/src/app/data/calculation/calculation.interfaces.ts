@@ -43,6 +43,7 @@ export interface Report {
   chartData: ChartData;
   chartWeightThreshold: number;
   timestamp: number;
+  overflow: Record<BandType, number[]> | null;
 }
 
 export interface ReportChanges {
@@ -61,24 +62,6 @@ export interface ComparisonReport {
   b: Report
   chartDataPositive: ChartData;
   chartDataNegative: ChartData;
-}
-
-export interface DefaultMatrixData {
-  defaultMatrix: string,
-  areaTypes: AreaTypes;
-}
-
-export interface AreaTypes {
-  [key: string]: string[];
-}
-
-export interface ScenarioChange {
-  areaName: string;
-  band: number;
-  multiplier: number;
-  offset: number;
-  roi: any;
-  type: BandType;
 }
 
 export interface StaticImageOptions {
@@ -114,11 +97,13 @@ export interface PercentileResponse {
 export interface BatchCalculationProcessEntry {
   id: number;
   cancelled: boolean;
-  currentScenario: number|null;
-  scenarios: number[];
+  currentEntity: number|null;
+  entities: number[];
   calculated: number[];
   failed: number[];
   reports: number|null[];
+  isAreaCalculation: boolean;
+  entityNames: { [key: number]: string };
 }
 
 export interface ComparisonLegendState {
@@ -126,12 +111,12 @@ export interface ComparisonLegendState {
   legend: Legend,
 }
 
-export type LegendState = {
+export interface LegendState {
   result: Legend | undefined,
   ecosystem: Legend | undefined,
   pressure: Legend | undefined,
   comparison: { [value: string] : ComparisonLegendState }
-};
+}
 
 export interface OperationParams {
   [param: string]: string;

@@ -37,7 +37,7 @@ export class MatrixTableComponent {
     protected dialog: DialogRef,
     private config: DialogConfig,
     private dialogService: DialogService,
-    private moduleRef: NgModuleRef<any>,
+    private moduleRef: NgModuleRef<never>,
     private matrixService: MatrixService,
     private translateService: TranslateService
   ) {
@@ -87,10 +87,10 @@ export class MatrixTableComponent {
   }
 
   async save(then: () => void) {
-    await this.matrixService
+    this.matrixService
       .updateSensitivityMatrix(this.matrixData.id as number, this.matrixData)
       .pipe(
-        tap(_ => {
+        tap(() => {
           then();
         }),
         catchError(error => of(console.error(error)))

@@ -9,6 +9,7 @@ import org.geotools.data.geojson.GeoJSONWriter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.locationtech.jts.geom.Geometry;
+import se.havochvatten.symphony.dto.MatrixResponse;
 import se.havochvatten.symphony.dto.NormalizationOptions;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.entity.CalculationResult;
@@ -92,8 +93,25 @@ public class ScenarioSnapshot implements BandChangeEntity {
     @Column(columnDefinition = "json")
     protected JsonNode polygon;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    protected CalculationResult latestCalculation;
+    @Column(name = "normalization_value")
+    @Type(type = "com.vladmihalcea.hibernate.type.array.DoubleArrayType")
+    private double[] normalizationValue;
+
+    @NotNull
+    @Column(name = "area_matrix_map", nullable = false)
+    @Type(type = "com.vladmihalcea.hibernate.type.array.IntArrayType")
+    private int[][] areaMatrixMap;
+
+    @OneToOne(mappedBy = "scenarioSnapshot")
+    private CalculationResult calculationresults;
+
+    public CalculationResult getCalculationresults() {
+        return calculationresults;
+    }
+
+    public void setCalculationresults(CalculationResult calculationresults) {
+        this.calculationresults = calculationresults;
+    }
 
     public JsonNode getPolygon() {
         return polygon;
@@ -154,11 +172,44 @@ public class ScenarioSnapshot implements BandChangeEntity {
         this.ecosystemsToInclude = ecosystems;
     }
 
+    public Map<Integer, Integer> getAreaMatrixMap() {
+        Map<Integer, Integer> map = new HashMap<>();
+
+        for (int[] ints : areaMatrixMap) {
+            map.put(ints[0], ints[1]);
+        }
+
+        return map;
+    }
+
+    public void setAreaMatrixMap(Map<Integer, Integer> areaMatrixMap) {
+        int[][] map = new int[areaMatrixMap.size()][2];
+        int i = 0;
+        for (Integer key : areaMatrixMap.keySet()) {
+            map[i][0] = key;
+            map[i][1] = areaMatrixMap.get(key);
+            i++;
+        }
+        this.areaMatrixMap = map;
+    }
+
+    public double[] getNormalizationValue() {
+        return normalizationValue;
+    }
+
+    public void setNormalizationValue(double[] normalizationValue) {
+        this.normalizationValue = normalizationValue;
+    }
+
+    public MatrixResponse getMatrixResponse() {
+        return new MatrixResponse(getAreaMatrixMap(), getNormalizationValue());
+    }
+
     public void setAreas(List<ScenarioArea> areas) {
         var areaMap = new HashMap<Integer, ScenarioAreaRecord>() {};
         for (var area : areas) {
             areaMap.put(area.getId(),
-                new ScenarioAreaRecord( area.getFeature().getAttribute("name").toString(),
+                new ScenarioAreaRecord( area.getName(),
                                         area.getFeatureJson()));
         }
         this.areas = mapper.valueToTree(areaMap);
@@ -187,7 +238,10 @@ public class ScenarioSnapshot implements BandChangeEntity {
 
     public ScenarioSnapshot() {}
 
-    public static ScenarioSnapshot makeSnapshot(Scenario s, Geometry polygon) throws JsonProcessingException {
+    public static ScenarioSnapshot makeSnapshot(Scenario s,
+                                                Geometry polygon,
+                                                Map<Integer, Integer> matrixMap,
+                                                double[] normalizationValue) throws JsonProcessingException {
         var snapshot = new ScenarioSnapshot();
 
         snapshot.id = null;
@@ -200,7 +254,8 @@ public class ScenarioSnapshot implements BandChangeEntity {
         snapshot.ecosystemsToInclude = s.ecosystemsToInclude;
         snapshot.pressuresToInclude = s.pressuresToInclude;
         snapshot.normalization = s.normalization;
-        snapshot.latestCalculation = s.getLatestCalculation();
+        snapshot.normalizationValue = normalizationValue;
+        snapshot.setAreaMatrixMap(matrixMap);
         snapshot.setAreas(s.getAreas());
 
         return snapshot;

@@ -35,14 +35,14 @@ export const fetchLegend = createAction(
   props<{ legendType: LegendType }>()
 );
 
-export const fetchComparisonLegend = createAction(
+createAction(
   '[Calculation] Fetch comparison legend',
   props<{ comparisonTitle: string }>()
 );
 
-export const fetchDynamicComparisonLegend = createAction(
+export const fetchComparisonLegend = createAction(
   '[Calculation] Fetch dynamic comparison legend',
-  props<{ dynamicMax: number, comparisonTitle: string }>()
+  props<{ maxValue: number, comparisonTitle: string }>()
 );
 
 export const fetchLegendSuccess = createAction(
@@ -100,6 +100,11 @@ export const deleteCalculationSuccess = createAction(
 export const deleteCalculationFailure = createAction(
   '[Calculation] Delete calculation failure',
   props<{ error: ErrorMessage }>()
+);
+
+export const deleteMultipleCalculations = createAction(
+  '[Calculation] Delete multiple calculations (by id)',
+  props<{ calculationIds: number[] }>()
 );
 
 export const updateName = createAction(

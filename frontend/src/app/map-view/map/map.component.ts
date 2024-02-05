@@ -82,7 +82,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     private dialogService: DialogService,
     private translateService: TranslateService,
     private dataLayerService: DataLayerService,
-    private moduleRef: NgModuleRef<any>
+    private moduleRef: NgModuleRef<never>
   ) {
     this.userSubscription = this.store        /* TOOD: Just get from static environment?*/
       .select(UserSelectors.selectBaseline).pipe(isNotNullOrUndefined())
@@ -133,7 +133,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.scenarioCloseSubscription = this.activeScenario$.pipe(
       skip(1), // undefined as always emitted on start, which does indicate a scenario close
       filter(s => s === undefined)
-    ).subscribe(_ => {  // A scenario was closed
+    ).subscribe(() => {  // A scenario was closed
       // TODO: Remove result layer if loadResultLayerOnOpen is true
       this.scenarioLayer.clearLayers();
 
@@ -371,10 +371,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     };
   }
 
-  static convertToSave(polygon : any): Polygon {
-     const transformed = polygon.type === 'MultiPolygon' ?
-        new MultiPolygon((polygon).coordinates) :
-        new OLPolygon((polygon).coordinates);
+  static convertToSave(polygon : unknown): Polygon {
+     const transformed = (polygon as Polygon).type === 'MultiPolygon' ?
+        new MultiPolygon((polygon as GeoJSON.MultiPolygon).coordinates) :
+        new OLPolygon((polygon as GeoJSON.Polygon).coordinates);
     transformed.transform('EPSG:3857', 'EPSG:4326');
 
     return {  type:        transformed.getType().toString(),
@@ -387,11 +387,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   public zoomIn() {
     this.setZoom(this.map!.getView()!.getZoom()! + 1);
-  };
+  }
 
   public zoomOut() {
     this.setZoom(this.map!.getView()!.getZoom()! - 1);
-  };
+  }
 
   private setZoom = (zoomLevel: number, duration = 250, center?: Coordinate) => {
     this.map!.getView().animate({ zoom: zoomLevel, duration }, { center });
@@ -414,7 +414,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   public setMapOpacity(opacity: number) {
     // The event object is sometimes emitted when using this function
     // in an input event, which makes the opacity reset to 1
-    if (typeof opacity === 'number' && this.background)
+    if (this.background)
       this.background.setOpacity(opacity);
   }
 }

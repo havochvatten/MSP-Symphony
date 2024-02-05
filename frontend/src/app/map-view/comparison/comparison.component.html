@@ -37,17 +37,32 @@
   <div class="container select-scale">
     <h4>{{ 'map.compare.select-scale' | translate }}</h4>
     <article>
-      <mat-radio-group (change)="setComparisonScale($event.value)">
-        <mat-radio-button [value]="ScaleOptions.CONSTANT"
-                          [checked]="selectedScale == ScaleOptions.CONSTANT">
+      <div class="scale-constant">
+        <!-- Numeric input field prevents using a radio-group bound with ngModel -->
+        <mat-radio-button name="scaleOption"
+                          (change)="setComparisonScale($event)"
+                          [value]="ScaleOptions.CONSTANT"
+                          [checked]="selectedScale === ScaleOptions.CONSTANT">
           {{ 'map.compare.scale-constant' | translate }}
         </mat-radio-button>
-        <mat-radio-button [value]="ScaleOptions.DYNAMIC"
-                          [checked]="selectedScale == ScaleOptions.DYNAMIC">
-          {{ 'map.compare.scale-dynamic' | translate }}
-        </mat-radio-button>
-      </mat-radio-group>
-    </article>
+        <input
+         type="number"
+         value="45"
+         class="percentage"
+         min="0"
+         max="999"
+         step="1"
+         [(ngModel)]="constant"
+         [disabled]="selectedScale !== ScaleOptions.CONSTANT"
+        />
+      </div>
+      <mat-radio-button name="scaleOption"
+                        (change)="setComparisonScale($event)"
+                        [value]="ScaleOptions.DYNAMIC"
+                        [checked]="selectedScale === ScaleOptions.DYNAMIC">
+        {{ 'map.compare.scale-dynamic' | translate }}
+      </mat-radio-button>
+  </article>
   </div>
 </section>
 

@@ -1,3 +1,5 @@
+import { ErrorMessage } from "@data/message/message.interfaces";
+
 export interface User {
   username: string;
 }
@@ -8,7 +10,7 @@ export interface State {
   loading: boolean;
   redirectUrl: string;
   baseline?: Baseline;
-  error?: any;
+  error?: { login?: ErrorMessage };
   aliasing: boolean;
 }
 

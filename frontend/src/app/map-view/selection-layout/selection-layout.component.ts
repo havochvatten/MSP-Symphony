@@ -19,7 +19,7 @@ export class SelectionLayoutComponent {
   @Input() areaTab = false;
 
   constructor(private dialogService: DialogService,
-              private moduleRef: NgModuleRef<any>) {}
+              private moduleRef: NgModuleRef<never>) {}
 
   reset() : void {
     this.dialogService.open(ConfirmResetComponent, this.moduleRef, {});

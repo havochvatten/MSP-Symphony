@@ -1,7 +1,7 @@
-<label *ngIf="withLabel; else searchInput">
+<span *ngIf="withLabel; else searchInput">
   {{ label }}
   <ng-container *ngTemplateOutlet="searchInput"></ng-container>
-</label>
+</span>
 
 <ng-template #searchInput>
   <div>

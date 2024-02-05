@@ -6,11 +6,11 @@ import { Component, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./map-opacity-slider.component.scss']
 })
 export class MapOpacitySliderComponent {
-  @Output() change: EventEmitter<number> = new EventEmitter<number>();
+  @Output() opacityChange: EventEmitter<number> = new EventEmitter<number>();
 
   onChange(value: string) {
     if (typeof value === 'string') {
-      this.change.emit(Number(value));
+      this.opacityChange.emit(Number(value));
     }
   }
 }

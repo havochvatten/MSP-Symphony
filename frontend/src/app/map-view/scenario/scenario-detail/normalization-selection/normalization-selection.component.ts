@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { NormalizationOptions, NormalizationType } from "@data/calculation/calculation.service";
 import { TranslateService } from "@ngx-translate/core";
+import { environment } from "@src/environments/environment";
 
 export const DEFAULT_OPTIONS: NormalizationOptions = {
-  type: NormalizationType.Domain,
+  type: environment.editor.defaultNormalizationType as NormalizationType,
   stdDevMultiplier: 0,
   userDefinedValue: 1
 }

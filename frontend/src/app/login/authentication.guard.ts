@@ -12,7 +12,7 @@ import { tap, take, switchMap, catchError } from 'rxjs/operators';
 export class AuthenticationGuard  {
   constructor(private store: Store<State>) {}
 
-  getFromStoreOrAPI(): Observable<any> {
+  getFromStoreOrAPI(): Observable<unknown> {
     return this.store.select(UserSelectors.selectIsLoggedIn).pipe(
       tap((isLoggedIn: boolean) => {
         if (!isLoggedIn) {
@@ -30,7 +30,7 @@ export class AuthenticationGuard  {
     this.store.dispatch(UserActions.updateRedirectUrl({ url }));
     return this.getFromStoreOrAPI().pipe(
       switchMap(() => of(true)),
-      catchError(error => of(false))
+      catchError(() => of(false))
     );
   };
 }

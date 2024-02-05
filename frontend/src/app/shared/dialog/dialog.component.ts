@@ -20,20 +20,20 @@ export class DialogComponent implements OnDestroy, AfterViewInit {
   constructor(
     private changeDetectorRef: ChangeDetectorRef
   ) {}
-  componentRef: ComponentRef<any> | undefined;
-  childComponentType: Type<any> | undefined;
+  componentRef: ComponentRef<unknown> | undefined;
+  childComponentType: Type<unknown> | undefined;
 
   @ViewChild(InsertionDirective)
   insertionPoint: InsertionDirective | undefined;
 
-  private readonly _onClose = new Subject<any>();
+  private readonly _onClose = new Subject<unknown>();
   public onClose = this._onClose.asObservable();
 
   @HostBinding('attr.aria-role') ariaRole = 'dialog';
 
   ngAfterViewInit(): void {
     if (this.childComponentType) {
-      this.loadChildComponent(this.childComponentType);
+      this.loadChildComponent();
       this.changeDetectorRef.detectChanges();
     }
   }
@@ -44,7 +44,7 @@ export class DialogComponent implements OnDestroy, AfterViewInit {
     }
   }
 
-  loadChildComponent = (componentType: Type<any>) => {
+  loadChildComponent = () => {
     if (this.insertionPoint) {
       const viewContainerRef = this.insertionPoint.viewContainerRef;
       viewContainerRef.clear();

@@ -40,15 +40,15 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
   @Input() category!: BandType; // unfortunate "property drilling"
 
   @Input() disabled = false;
-  @Input() onSelect = (event: MatCheckboxChange, band: Band) => {};
-  @Input() onChangeVisible: (value: boolean, band: Band) => void = () => {};
+  @Input() onSelect!: (event: MatCheckboxChange, band: Band)=> void;
+  @Input() onChangeVisible!: (value: boolean, band: Band) => void;
 
   isEmpty = isEmpty;
 
   constructor(
     private store: Store<State>,
     private dialogService: DialogService,
-    private moduleRef: NgModuleRef<any>
+    private moduleRef: NgModuleRef<never>
   ) {
     this.scenarioSubscription$ = this.store.select(selectActiveScenario)
       .subscribe(s => {

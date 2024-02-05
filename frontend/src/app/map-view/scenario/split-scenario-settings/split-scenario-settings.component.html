@@ -12,8 +12,11 @@
   'map.editor.split-scenario-settings.enter-batch-mode' | translate
   }}</mat-checkbox>
 <section class="buttons">
-  <button mat-flat-button (click)="confirmSplitScenario()" [ngClass]="'primary'" >
-    {{ 'confirmation-modal.confirm' | translate }}
+  <button mat-flat-button (click)="splitScenario()" [ngClass]="'primary'" >
+    {{ 'map.editor.split-scenario-settings.generate' | translate }}
+  </button>
+  <button mat-flat-button (click)="batchCalculate()" [ngClass]="'primary-alt'" >
+    {{ 'map.editor.split-scenario-settings.batch-calculate' | translate }}
   </button>
   <button mat-flat-button (click)="dialog.close()" [ngClass]="'secondary'">
     {{ 'confirmation-modal.cancel' | translate }}

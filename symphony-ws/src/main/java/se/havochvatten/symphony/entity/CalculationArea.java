@@ -2,6 +2,7 @@ package se.havochvatten.symphony.entity;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import se.havochvatten.symphony.scenario.ScenarioArea;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -9,7 +10,9 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "calculationarea")
@@ -18,6 +21,8 @@ import java.util.List;
 		@NamedQuery(name = "CalculationArea.findAll", query = "SELECT c FROM CalculationArea c"),
 		@NamedQuery(name = "CalculationArea.findByBaselineName", query = "SELECT c FROM CalculationArea c " +
 				"WHERE c.defaultSensitivityMatrix.baselineVersion.name = :name"),
+        @NamedQuery(name = "CalculationArea.findCalibratedByBaselineName", query = "SELECT c FROM CalculationArea c " +
+                "WHERE c.defaultSensitivityMatrix.baselineVersion.name = :name AND c.maxValue IS NOT NULL"),
         @NamedQuery(name = "CalculationArea.findByIds", query = "SELECT c FROM CalculationArea c " +
                 "WHERE c.id IN :ids")
 })
@@ -61,7 +66,7 @@ public class CalculationArea implements Serializable {
 	@ManyToOne(optional = true)
 	private AreaType areaType;
 
-	public CalculationArea() {}
+    public CalculationArea() {}
 
 	public Integer getId() {
 		return id;

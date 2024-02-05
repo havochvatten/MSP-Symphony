@@ -2,6 +2,8 @@ package se.havochvatten.symphony.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vladmihalcea.hibernate.type.array.DoubleArrayType;
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -10,6 +12,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 import se.havochvatten.symphony.calculation.CalcService;
+import se.havochvatten.symphony.calculation.Overflow;
 import se.havochvatten.symphony.dto.CalculationResultSlice;
 import se.havochvatten.symphony.dto.MatrixResponse;
 import se.havochvatten.symphony.scenario.ScenarioSnapshot;
@@ -21,6 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -78,6 +82,8 @@ import java.util.Map;
 public class CalculationResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    private static final ObjectMapper mapper = new ObjectMapper();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -114,7 +120,7 @@ public class CalculationResult implements Serializable {
     @Column(name = "cares_impactmatrix", columnDefinition = "double precision[][]")
     private double[][] impactMatrix;
 
-    @Basic(optional = true)
+    @Basic()
     @Column(name = "cares_geotiff", columnDefinition = "bytea")
     private byte[] rasterData;
 
@@ -123,10 +129,6 @@ public class CalculationResult implements Serializable {
     @Column(name = "cares_timestamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
-
-    @Column(name = "cares_normalizationvalue", columnDefinition = "double precision[]")
-    @Type(type = "double-array")
-    private double[] normalizationValue;
 
     @OneToOne
     @NotNull
@@ -145,34 +147,12 @@ public class CalculationResult implements Serializable {
     @Transient
     private GridCoverage2D coverage;
 
-    @NotNull
-    @Column(name = "cares_areamatrix_map", nullable = false)
-    @Type(type = "int-array")
-    private int[][] areaMatrixMap;
-
     @Column(name = "cares_image")
     private byte[] imagePNG;
 
-    public Map<Integer, Integer> getAreaMatrixMap() {
-        Map<Integer, Integer> map = new HashMap<>();
-
-        for (int i = 0; i < areaMatrixMap.length; i++) {
-            map.put(areaMatrixMap[i][0], areaMatrixMap[i][1]);
-        }
-
-        return map;
-    }
-
-    public void setAreaMatrixMap(Map areaMatrixMap) {
-        int[][] map = new int[areaMatrixMap.size()][2];
-        int i = 0;
-        for (Object key : areaMatrixMap.keySet()) {
-            map[i][0] = (int) key;
-            map[i][1] = (int) areaMatrixMap.get(key);
-            i++;
-        }
-        this.areaMatrixMap = map;
-    }
+    @Column(name = "cares_overflow")
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType")
+    private JsonNode overflow;
 
     public CalculationResult() {}
 
@@ -218,14 +198,6 @@ public class CalculationResult implements Serializable {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public double[] getNormalizationValue() {
-        return normalizationValue;
-    }
-
-    public void setNormalizationValue(double[] value) {
-        this.normalizationValue = value;
     }
 
     public double[][] getImpactMatrix() {
@@ -291,11 +263,24 @@ public class CalculationResult implements Serializable {
 
     public void setImagePNG(byte[] imagePNG) { this.imagePNG = imagePNG; }
 
-    public Map<String, String> getOperationOptions() { return operationOptions; }
+    public Map<String, Integer[]> getOverflowForReport() {
+        var tmpOverflow = (Map<String, ArrayList<Integer>>) mapper.convertValue(this.overflow, Map.class);
 
-    public MatrixResponse getMatrixResponse() {
-        return new MatrixResponse(getAreaMatrixMap(), getNormalizationValue());
+        if(tmpOverflow == null)
+            return null;
+
+        Map<String, Integer[]> overflow = new HashMap<>();
+        for (String key : tmpOverflow.keySet()) {
+            overflow.put(key, tmpOverflow.get(key).toArray(new Integer[0]));
+        }
+        return overflow;
     }
+
+    public void setOverflow(Overflow overflow) {
+        this.overflow = mapper.valueToTree(overflow.bandOverflow);
+    }
+
+    public Map<String, String> getOperationOptions() { return operationOptions; }
 
     @Override
     public int hashCode() {
@@ -307,14 +292,10 @@ public class CalculationResult implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof CalculationResult)) {
+        if (!(object instanceof CalculationResult other)) {
             return false;
         }
-        CalculationResult other = (CalculationResult) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override

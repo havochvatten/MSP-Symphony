@@ -18,5 +18,5 @@
   [active]="hasImageSmoothing"
   (click)="onToggleSmooth()"></app-toolbar-button>
 <div style="position: relative;">
-  <app-map-opacity-slider (change)="onClickSetMapOpacity($event)"></app-map-opacity-slider>
+  <app-map-opacity-slider (opacityChange)="onClickSetMapOpacity($event)"></app-map-opacity-slider>
 </div>

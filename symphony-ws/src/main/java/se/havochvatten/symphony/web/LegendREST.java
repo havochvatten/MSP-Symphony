@@ -34,15 +34,15 @@ public class LegendREST {
     public Response get(
             @ApiParam(  value = "type of legend",
                         allowableValues = "result,ecosystem,pressure,comparison")
-            @PathParam("type") String legendType, @QueryParam("dynamicMax") String dynamicMaxParam) {
+            @PathParam("type") String legendType, @QueryParam("maxValue") String maxParam) {
         try {
             var type = LegendDto.Type.valueOf(legendType.toUpperCase());
 
             // parsing instead of directly typing 'dynamicMax' query parameter for locale independence
             // arbitrarily use 0.0001 as threshold if dynamic max = 0, to provide "mappable" range
             // nb: duplicate calls to parseDouble() are intentional here since we need a final variable for lambda
-            final Double dynamicMax = dynamicMaxParam != null ?
-                (Double.parseDouble(dynamicMaxParam) == 0 ? 0.0001 : Double.parseDouble(dynamicMaxParam)) : null;
+            final Double dynamicMax = maxParam != null ?
+                (Double.parseDouble(maxParam) == 0 ? 0.0001 : Double.parseDouble(maxParam)) : null;
 
             StyledLayerDescriptor sld =
 					WebUtil.getSLD(LegendREST.class.getClassLoader().getResourceAsStream(props.getProperty(

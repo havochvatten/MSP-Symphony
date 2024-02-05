@@ -12,7 +12,7 @@
   tbody {
     display: grid;
     grid-template-columns: 1fr 1fr 12mm 1fr 1fr;
-    grid-template-rows: 20mm 50mm 50mm 15mm auto;
+    grid-template-rows: 20mm 100mm auto;
     row-gap: 8mm;
     margin-bottom: 3rem;
 
@@ -48,7 +48,7 @@
 
     app-calculation-image {
       grid-column: 1 / 3;
-      grid-row: 2 / 4;
+      grid-row: 2 / 3;
       display: table-cell;
     }
 
@@ -63,7 +63,10 @@
 
     #matrix-selection {
       grid-column: 1 / 6;
-      grid-row: 4 / 6;
+      grid-row: 4 / 5;
+
+      /* workaround for single row override */
+      margin-top: -8mm;
 
       h4 {
         font-weight: 600;
@@ -96,12 +99,12 @@
       align-self: end;
 
       &.calc-report-legend {
-        grid-row: 8 / 9;
+        grid-row: 7 / 8;
       }
     }
 
     app-highest-impacts {
-      grid-row: 7 / 8;
+      grid-row: 6 / 7;
 
       &.pressure-impacts {
         grid-column: 1 / 3;
@@ -113,18 +116,17 @@
     }
 
     app-pressure-chart {
-
       grid-column: 1 / 6;
 
       &#sankey-single {
-        grid-row: 9 / 10;
+        grid-row: 8 / 9;
       }
 
     }
 
     app-scenario-changes {
       grid-column: 1 / 4;
-      grid-row: 10 / 11;
+      grid-row: 9 / 10;
     }
 
     app-scenario-changes.right {
@@ -132,7 +134,7 @@
     }
 
     app-impact-table {
-      grid-row: 11 / 12;
+      grid-row: 10 / 11;
 
       &.ecocomponent-impacts {
         grid-column: 4 / 6;
@@ -150,12 +152,12 @@
 
   app-histogram {
     grid-column: 1 / 6;
-    grid-row: 12 / 13;
+    grid-row: 11 / 12;
   }
 
   .closing-matter {
     grid-column: 1 / 6;
-    grid-row: 13 / 14;
+    grid-row: 12 / 13;
     font-size: 13px;
     text-align: center;
     margin: 0 3rem;
@@ -163,7 +165,7 @@
 
   .closing-matter-smaller {
     grid-column: 1 / 6;
-    grid-row: 14 / 15;
+    grid-row: 13 / 14;
     font-size: 12px;
     text-align: center;
     margin: 0 3rem;
@@ -171,7 +173,7 @@
 
   .date {
     grid-column: 1 / 6;
-    grid-row: 14 / 15;
+    grid-row: 13 / 14;
     display: flex;
     justify-content: center;
     font-size: 12px;
@@ -223,7 +225,7 @@
 
   tbody.comparison-report {
     app-scenario-changes {
-      grid-row: 7 / 11;
+      grid-row: 7 / 10;
 
       &.left {
         grid-column: 1 / 3;

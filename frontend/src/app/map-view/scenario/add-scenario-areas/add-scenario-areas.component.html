@@ -8,5 +8,5 @@
             (multipleSelectedTipKey | translate)"
   [label]="selectedAreas && selectedAreas.length > 0 ? (multipleSelectedTipKey | translate :
         { area: selectedAreas![0].name }) : (noneSelectedTipKey | translate)"
-  (click)="callDelegate()"
+  (iconClick)="callDelegate()"
 ></app-icon-button>

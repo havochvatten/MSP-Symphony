@@ -18,7 +18,7 @@
         "useDefineForClassFields": false, // Actions injection in Effects classes breaks when true,
                                           // could refactorise to use default setting
         "typeRoots": ["node_modules/@types"],
-        "lib": ["es2019", "dom"],
+        "lib": ["es2019", "dom", "es6", "dom.iterable"],
         "paths": {
             "@data/*": ["src/app/data/*"],
             "@src/*": ["src/*"],

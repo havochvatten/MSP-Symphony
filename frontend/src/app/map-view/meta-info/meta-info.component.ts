@@ -25,7 +25,7 @@ export class MetaInfoComponent implements AfterViewInit {
     for (const metaField of env.meta.visible_fields) {
       let sep: string;
       if (this.band.meta[metaField]) {
-        let listType = env.meta.list_fields.includes(metaField);
+        const listType = env.meta.list_fields.includes(metaField);
         sep = (listType) ? ';' : '\\n';
         (listType ? this.bandMetadataLists : this.bandMetadata)
           .set(metaField, this.band.meta[metaField].split(sep));

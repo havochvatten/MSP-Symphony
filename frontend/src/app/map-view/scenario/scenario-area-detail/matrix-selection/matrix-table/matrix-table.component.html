@@ -1,7 +1,7 @@
 <!--TODO add close app-icon button -->
 <header>
   <div class="title">
-    <h2 *ngIf="!editName" (click)="editName = true">{{ matrixData.name }}</h2>
+    <h2 *ngIf="!editName" (click)="editName = true" tabindex="0">{{ matrixData.name }}</h2>
     <input
       *ngIf="editName"
       [value]="matrixData.name"

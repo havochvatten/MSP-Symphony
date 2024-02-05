@@ -29,6 +29,7 @@ public class MetaDataService {
         MetadataDto metadataDto = new MetadataDto();
         metadataDto.setEcoComponent(getComponentDto("Ecosystem", baseline.getId(), preferredLanguage));
         metadataDto.setPressureComponent(getComponentDto("Pressure", baseline.getId(), preferredLanguage));
+        metadataDto.setLanguage(preferredLanguage);
         return metadataDto;
     }
 

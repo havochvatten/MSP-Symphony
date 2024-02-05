@@ -15,5 +15,6 @@ stories.addDecorator(
 );
 
 stories.add('default', () => ({
-  component: HavLoaderComponent
+  component: HavLoaderComponent,
+  props:{}
 }));

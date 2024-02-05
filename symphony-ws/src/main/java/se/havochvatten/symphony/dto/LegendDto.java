@@ -15,7 +15,7 @@ public class LegendDto {
         @JsonInclude(JsonInclude.Include.NON_NULL)
         public Float opacity; // [0,1]
 
-        public ColorMapEntry(org.geotools.styling.ColorMapEntry entry, Type type, int index, Double dynMax) {
+        public ColorMapEntry(org.geotools.styling.ColorMapEntry entry, Type type, int index, Double maxValue) {
             color = Filters.asString(entry.getColor());
             double q = Filters.asDouble(entry.getQuantity());
             switch (type) {
@@ -23,8 +23,7 @@ public class LegendDto {
                     quantity = (int) (100 * q);
                     break;
                 case COMPARISON:
-                    quantity = (int) (dynMax == null ? (1000 * q) :
-                                     (WebUtil.COMPARISON_STEPS[index] * dynMax * 1000));
+                    quantity = (int) (WebUtil.COMPARISON_STEPS[index] * maxValue * 1000);
                     break;
                 default:
                     quantity = (int) q;

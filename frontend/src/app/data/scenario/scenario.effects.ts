@@ -22,6 +22,8 @@ import {
 } from '@data/scenario/scenario.actions';
 import { MetadataSelectors } from "@data/metadata";
 import { Band } from "@data/metadata/metadata.interfaces";
+import { AreaMatrixData } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
+import { ScenarioMatrixDataMap } from "@data/scenario/scenario.interfaces";
 
 @Injectable()
 export class ScenarioEffects {
@@ -151,7 +153,7 @@ export class ScenarioEffects {
       // introducing excessive code complexity.
       if(action.type === ScenarioActions.addScenarioAreasSuccess.type && action.newAreas.length === 1) {
         return this.scenarioService.getSingleAreaMatrixParams(action.newAreas[0].id, baseline!.name).pipe(
-          mergeMap((singleMatrixDataResponse: any) =>
+          mergeMap((singleMatrixDataResponse: AreaMatrixData) =>
             of(fetchAreaMatrixSuccess({
               areaId: action.newAreas[0].id,
               matrixData: singleMatrixDataResponse
@@ -163,7 +165,7 @@ export class ScenarioEffects {
         );
       } else {
         return this.scenarioService.getAreaMatrixParams(scenarioId, baseline!.name).pipe(
-          mergeMap((matrixDataResponse: any) =>
+          mergeMap((matrixDataResponse: { matrixData: ScenarioMatrixDataMap }) =>
             of(fetchAreaMatricesSuccess({matrixDataMap: matrixDataResponse.matrixData}))
           ),
           catchError(({status, error}) =>
@@ -216,7 +218,7 @@ export class ScenarioEffects {
           scenario.id,
           changesSelection.scenarioId!,
           changesSelection.overwrite)).pipe(
-          map((scenario) => ScenarioActions.transferChangesSuccess({scenario})),
+          map((_scenario) => ScenarioActions.transferChangesSuccess({scenario: _scenario})),
           catchError(({status, error: message}) =>
             of(ScenarioActions.transferChangesFailure({error: {status, message}}))
           )
@@ -247,7 +249,7 @@ export class ScenarioEffects {
           scenario.areas[area].id,
           changesSelection.scenarioId!,
           changesSelection.overwrite)).pipe(
-          map((scenario) => ScenarioActions.transferChangesSuccess({scenario})),
+          map((_scenario) => ScenarioActions.transferChangesSuccess({scenario: _scenario})),
           catchError(({status, error: message}) =>
             of(ScenarioActions.transferChangesFailure({error: {status, message}}))
           )

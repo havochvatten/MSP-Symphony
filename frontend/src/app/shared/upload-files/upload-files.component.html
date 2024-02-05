@@ -3,6 +3,7 @@
   (click)="fileInput.click()"
   appDragDrop
   (fileDropped)="uploadFile($event)"
+  tabindex="0"
 >
   <input hidden type="file" #fileInput (change)="uploadFile($event.target.files)" />
 </div>
@@ -12,6 +13,6 @@
     class="delete-file"
     icon="delete"
     label="{{ 'controls.delete' | translate }}"
-    (click)="deleteAttachment(i)"
+    (iconClick)="deleteAttachment(i)"
   ></app-icon-button>
 </div>

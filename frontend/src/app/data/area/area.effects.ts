@@ -10,6 +10,7 @@ import { ServerError } from "../message/message.interfaces";
 import { TranslateService } from '@ngx-translate/core';
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
+import { UserActions } from "@data/user";
 
 @Injectable()
 export class AreaEffects {
@@ -86,6 +87,21 @@ export class AreaEffects {
       )
     )
   ));
+
+  fetchCalibratedCalculationAreas$ = createEffect(() => this.actions$.pipe(
+    ofType(UserActions.fetchBaselineSuccess),
+    mergeMap(({ baseline }) =>
+        this.areaService.getCalibratedCalculationAreas(baseline!.name).pipe(
+          map(calibratedAreas =>
+            AreaActions.fetchCalibratedCalculationAreasSuccess({ calibratedAreas })
+          ),
+          catchError(({ status, error: message }) =>
+            of(AreaActions.fetchCalibratedCalculationAreasFailure({ error: { status, message } }))
+          )
+        )
+      )
+    )
+  );
 
   createUserDefinedArea$ = createEffect(() => this.actions$.pipe(
     ofType(AreaActions.createUserDefinedArea),

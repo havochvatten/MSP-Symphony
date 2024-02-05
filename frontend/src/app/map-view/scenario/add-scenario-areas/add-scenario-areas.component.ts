@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { AreaSelectors } from "@data/area";
 import { Area } from "@data/area/area.interfaces";
 import { Store } from "@ngrx/store";
@@ -12,22 +12,21 @@ import { UserSelectors } from "@data/user";
 import { Subscription } from "rxjs";
 import { Scenario } from "@data/scenario/scenario.interfaces";
 import { GeoJSON } from "ol/format";
-import intersects from "@turf/boolean-intersects";
 
 @Component({
   selector: 'app-add-scenario-areas',
   templateUrl: './add-scenario-areas.component.html',
   styleUrls: ['./add-scenario-areas.component.scss']
 })
-export class AddScenarioAreasComponent {
+export class AddScenarioAreasComponent implements OnDestroy {
   public selectedAreas: Area[] = [];
   baseline?: Baseline; // required in delegate context
 
-  @Input() clickDelegate = (a: Area[], c: AddScenarioAreasComponent):void => {};
+  @Input() clickDelegate?: (a: Area[], c: AddScenarioAreasComponent) => void;
   @Input() noneSelectedTipKey!: string;
   @Input() singleSelectedTipKey!: string;
   @Input() multipleSelectedTipKey!: string;
-  @Input() selectionOverlap: boolean = false;
+  @Input() selectionOverlap = false;
   @Input() scenario?: Scenario;
   @Input() disabled = false;
 
@@ -55,7 +54,7 @@ export class AddScenarioAreasComponent {
   }
 
   callDelegate() {
-    if(!(this.disabled || this.selectedAreas.length === 0 || this.selectionOverlap)) {
+    if(this.clickDelegate && !(this.disabled || this.selectedAreas.length === 0 || this.selectionOverlap)) {
       this.clickDelegate(this.selectedAreas, this);
     }
   }

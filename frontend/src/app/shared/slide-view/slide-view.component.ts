@@ -12,7 +12,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { IconType } from '@shared/icon/icon.component';
 import * as uuid from 'uuid/v4';
 
-const DEFAULT_TAB: number = 0;
+const DEFAULT_TAB = 0;
 
 @Component({
   selector: 'app-slide-view-tab',
