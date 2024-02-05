@@ -142,21 +142,25 @@ public class CalcService {
                 getResultList();
     }
 
-    public List<CalculationResultSlice> findAllByUser(String username) {
+    public List<CalculationResultSlice> findAllByUser(Principal user) {
+        return findAllByUsername(user.getName());
+    }
+
+    private List<CalculationResultSlice> findAllByUsername(String username) {
         return em.createNamedQuery("CalculationResult.findByOwner", CalculationResultSlice.class).
                 setParameter("username", username).
                 getResultList();
     }
 
-    public List<CalculationResultSlice> findAllCmpByUser(Principal principal, int operation) {
+    public List<CalculationResultSlice> findAllCmpByUser(Principal user, int operation) {
         return em.createNamedQuery("CalculationResult.findCmpByOwner", CalculationResultSlice.class).
-                setParameter("username", principal.getName()).
+                setParameter("username", user.getName()).
                 setParameter("operation", operationName(operation)).
                 getResultList();
     }
 
     public List<CalculationResultSlice> findAllMatchingCalculationsByUser (
-            Principal principal, CalculationResult base) {
+            Principal user, CalculationResult base) {
         // Ideally we would do a spatial query to the database, but since areas are not stored as proper
         // PostGIS geometries this is not possible at it stands.
 
@@ -165,7 +169,7 @@ public class CalcService {
         int operation = base.getOperationName().equals("CumulativeImpact") ?
                 OPERATION_CUMULATIVE : OPERATION_RARITYADJUSTED;
 
-        var candidates = findAllCmpByUser(principal, operation);
+        var candidates = findAllCmpByUser(user, operation);
         List<Integer> ecoList       = Arrays.stream(base.getScenarioSnapshot().getEcosystemsToInclude()).boxed().toList(),
                       pressureList  = Arrays.stream(base.getScenarioSnapshot().getPressuresToInclude()).boxed().toList();
 
@@ -204,14 +208,14 @@ public class CalcService {
         return em.find(BatchCalculation.class, id);
     }
 
-    public BatchCalculation getBatchCalculationStatusAuthorized(Principal userPrincipal, Integer id)
+    public BatchCalculation getBatchCalculationStatusAuthorized(Principal user, Integer id)
         throws NotFoundException, NotAuthorizedException {
         BatchCalculation batchCalculation = getBatchCalculationStatus(id);
 
         if (batchCalculation == null)
             throw new NotFoundException();
-        if (!batchCalculation.getOwner().equals(userPrincipal.getName()))
-            throw new NotAuthorizedException(userPrincipal.getName());
+        if (!batchCalculation.getOwner().equals(user.getName()))
+            throw new NotAuthorizedException(user.getName());
 
         return batchCalculation;
     }
@@ -233,7 +237,7 @@ public class CalcService {
         }
     }
 
-    public synchronized void delete(Principal principal, Object entity) {
+    public synchronized void delete(Principal user, Object entity) {
         try {
             transaction.begin();
             em.remove(em.merge(entity));
@@ -250,15 +254,15 @@ public class CalcService {
 
     }
 
-    public synchronized void delete(Principal principal, int id) {
+    public synchronized void delete(Principal user, int id) {
         var calc = getCalculation(id);
 
         if (calc == null)
             throw new NotFoundException();
-        if (!calc.getOwner().equals(principal.getName()))
-            throw new NotAuthorizedException(principal.getName());
+        if (!calc.getOwner().equals(user.getName()))
+            throw new NotAuthorizedException(user.getName());
         else {
-            delete(principal, calc);
+            delete(user, calc);
         }
     }
 
@@ -803,7 +807,7 @@ public class CalcService {
         else {
             var matcher = Pattern.compile(".*(\\d+)").matcher(previousCalc.getCalculationName());
             var lastSequenceNumber = matcher.find() ? Integer.parseInt(matcher.group(1)) : 1;
-            var previousCalculations = findAllByUser(scenario.getOwner());
+            var previousCalculations = findAllByUsername(scenario.getOwner());
             return findSequentialUniqueName(scenario.getName(),
                     previousCalculations.stream().map(CalculationResultSlice::getName).collect(Collectors.toList()),
                     lastSequenceNumber);
@@ -833,20 +837,19 @@ public class CalcService {
         return (GridCoverage2D) operations.divide(difference, floatbase);
     }
 
-    public List<CompoundComparisonSlice> getCompoundComparisons(Principal principal) {
+    public List<CompoundComparisonSlice> getCompoundComparisons(Principal user) {
         return em.createNamedQuery("CompoundComparison.findByOwner", CompoundComparisonSlice.class).
-                setParameter("username", principal.getName()).
+                setParameter("username", user.getName()).
                 getResultList();
     }
 
-    public boolean deleteCompoundComparison(Principal principal, int id) {
+    public boolean deleteCompoundComparison(Principal user, int id) {
         var cmp = em.find(CompoundComparison.class, id);
 
-        if (cmp == null || !cmp.getCmpOwner().equals(principal.getName()))
+        if (cmp == null || !cmp.getCmpOwner().equals(user.getName()))
             return false;
 
-        delete(principal, cmp);
+        delete(user, cmp);
         return true;
     }
 }
-
