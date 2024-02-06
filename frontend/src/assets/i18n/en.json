@@ -24,6 +24,7 @@
         "reset-preselected": "Reset",
         "reset-preselected-description": "Reset selected components/pressures and intensity values",
         "selection-overlap": "Unable to select overlapping areas",
+        "open-compound-data-list": "Compound comparisons ({{ count }})",
         "intensity": {
             "ecosystems": "Ecosystem Components",
             "pressures": "Pressures",
@@ -496,6 +497,18 @@
         "merge-areas-hint" : {
             "emphasis": "Merge areas",
             "detail": "{{ altButton }} + Shift + click on final area to merge selected."
+        },
+        "compound-data-list": {
+            "title": "Compound comparisons",
+            "compound-comparison-data": "Compound comparison data",
+            "calculation-basis-info": "The comparative values are based on the following calculations",
+            "more": "more",
+            "delete": "Delete compound comparison",
+            "filter-hint": "Filter list item by name",
+            "delete-modal": {
+                "header": "Delete compound comparison",
+                "message": "Confirm deletion of compound comparison: <em>“{{ comparisonName }}”</em>"
+            }
         }
     },
     "controls": {

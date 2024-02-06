@@ -1,6 +1,6 @@
 import { Component, ElementRef, NgModuleRef, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
-import { tap } from "rxjs/operators";
+import { shareReplay, tap } from "rxjs/operators";
 import { select, Store } from '@ngrx/store';
 import { environment } from "@src/environments/environment";
 import { State } from '@src/app/app-reducer';
@@ -27,6 +27,7 @@ import {
 export class CalculationHistoryComponent extends Listable implements OnInit, OnDestroy {
   calculations$ = this.store.select(CalculationSelectors.selectCalculations);
   comparedCalculations$ = this.store.select(CalculationSelectors.selectComparedCalculations);
+  comparedCalculationsRepeat$ = this.comparedCalculations$.pipe(shareReplay(1));
   baselineCalculations$?: Observable<CalculationSlice[]>;
   loading$?: Observable<boolean>;
   baseline?: Baseline;
@@ -126,7 +127,7 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
                 message: this.translateService.instant('map.history.delete-modal.message', { calculationName: calculation.name }),
                 confirmText: this.translateService.instant('map.history.delete-modal.confirm'),
                 confirmColor: 'warn',
-                buttonsClass: 'right'
+                buttonsClass: 'right no-margin'
               }
             });
 
@@ -212,7 +213,7 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
                     'map.history.delete-modal.message-single', { count: this.selectedIds.length }),
           confirmText: this.translateService.instant('map.history.delete-modal.confirm'),
           confirmColor: 'warn',
-          buttonsClass: 'right'
+          buttonsClass: 'right no-margin'
         }
       });
     if(deletionConfirmed) {

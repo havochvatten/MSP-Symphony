@@ -41,6 +41,7 @@ import { MatRadioModule } from "@angular/material/radio";
 import { ActiveScenarioDisplayComponent } from './active-scenario-display/active-scenario-display.component';
 import { BatchProgressComponent } from './batch-progress-display/batch-progress.component';
 import { ConfirmGenerateComparisonComponent } from './calculation-history/confirm-generate-comparison/confirm-generate-comparison.component';
+import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component';
 
 @NgModule({
   declarations: [
@@ -70,6 +71,7 @@ import { ConfirmGenerateComparisonComponent } from './calculation-history/confir
     ActiveScenarioDisplayComponent,
     BatchProgressComponent,
     ConfirmGenerateComparisonComponent,
+    CompoundComparisonListDialogComponent,
   ],
     imports: [
         SharedModule,

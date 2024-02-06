@@ -44,17 +44,18 @@
 
   <div class="list-filter-container">
     <app-list-filter
-            [filterPlaceholder]="'map.history.filter-hint' | translate"
-            (filterChange)="setFilter($event)"
-            (sortChange)="setSort($event)"
+        [filterPlaceholder]="'map.history.filter-hint' | translate"
+        (filterChange)="setFilter($event)"
+        (sortChange)="setSort($event)"
     ></app-list-filter>
   </div>
 
   <main *ngIf="(loading$ | async) === false else loading">
-    <div class="calculation-wrap" *ngFor="let calculation of calculations$ | async; index as i">
-      <button [ngClass]="{
-                'calculation list-item' : true,
-                'filtered': filter(calculation.name),
+    <div class="calculation-wrap"
+         [ngClass]="{ 'filtered': filter(calculation.name) }"
+         *ngFor="let calculation of calculations$ | async; index as i">
+      <button class="calculation list-item interactive"
+              [ngClass]="{
                 'visible': resultIsVisible(calculation.id),
                 'purged': calculation.isPurged }"
               [title]="(calculation.isPurged ? ('map.history.purged-result' | translate) : '')"
@@ -71,7 +72,7 @@
           </div>
           <span class="timestamp">{{ calculation.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
         </div>
-        <div class="list-actions" *ngIf="!isMultiMode()">
+        <div class="list-actions" *ngIf="!(isMultiMode() || (comparedCalculationsRepeat$ | async).includes(calculation.id))">
           <app-icon *ngIf="!resultIsVisible(calculation.id)" iconType="eye" (click)="loadResult(calculation.id); $event.stopPropagation()"
                     title="{{ 'map.history.show-result' | translate }}"></app-icon>
           <app-icon *ngIf="resultIsVisible(calculation.id)" iconType="eye-slash" (click)="removeResult(calculation.id); $event.stopPropagation()"
@@ -84,14 +85,14 @@
           >
           </app-icon>
         </div>
-        <mat-spinner *ngIf="(comparedCalculations$ | async).includes(calculation.id)" diameter="20" ></mat-spinner>
+        <mat-spinner *ngIf="(comparedCalculationsRepeat$ | async).includes(calculation.id)" diameter="20" ></mat-spinner>
         <app-icon iconType="eye" class="visible" *ngIf="resultIsVisible(calculation.id)"
                   title="{{ 'map.history.visible-result' | translate }}"></app-icon>
         <app-icon iconType="cross" class="purged" *ngIf="!loadingCalculations.has(calculation.id) && calculation.isPurged"></app-icon>
       </button>
       <div class="multi-selected-wrap" *ngIf="isMultiMode()">
         <mat-checkbox [checked]="selectedIds.includes(calculation.id)"
-                      [disabled]="(comparedCalculations$ | async).includes(calculation.id)"
+                      [disabled]="(comparedCalculationsRepeat$ | async).includes(calculation.id)"
                       (change)="multiSelect(calculation.id)"
                       (click)="$event.stopPropagation()">
         </mat-checkbox>

@@ -8,9 +8,16 @@ import {
   OnChanges,
   AfterViewInit
 } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { IconType } from '@shared/icon/icon.component';
 import * as uuid from 'uuid/v4';
+import { State } from "@src/app/app-reducer";
+import { CalculationSelectors } from "@data/calculation";
+import { Observable } from 'rxjs/internal/Observable';
+import {
+  CompoundComparisonListDialogComponent
+} from "@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component";
 
 const DEFAULT_TAB = 0;
 
@@ -45,8 +52,10 @@ type ViewOrientation = 'right' | 'left';
 export class SlideViewComponent implements OnChanges, AfterViewInit {
   @Input() open = false;
   @Input() position: ViewOrientation = 'right';
+  @Input() compoundComparisonCount$!: Observable<number>;
   @Output() toggle = new EventEmitter<void>();
   @Output() navigate = new EventEmitter<string>();
+  @Output() openCCList = new EventEmitter<void>();
   @ContentChildren(SlideViewTabComponent) tabs!: QueryList<SlideViewTabComponent>;
   @Input() routeTabIdIsAvailable = false;
 
@@ -79,5 +88,9 @@ export class SlideViewComponent implements OnChanges, AfterViewInit {
 
   onClick() {
     this.toggle.emit();
+  }
+
+  openCompoundComparisonList() {
+    this.openCCList.emit();
   }
 }

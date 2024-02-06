@@ -24,6 +24,7 @@
         "reset-preselected": "Réinitialiser",
         "reset-preselected-description": "Réinitialiser les composants et les pressions sélectionnés à la sélection par défaut, supprimez tous les changements d'intensité pour le scénario actif",
         "selection-overlap": "Impossible de sélectionner des zones superposées",
+        "open-compound-data-list": "Comparaisons composées ({{ count }})",
         "intensity" : {
             "ecosystems": "Composante écosystèmes",
             "pressures": "Pressions",
@@ -496,6 +497,18 @@
         "merge-areas-hint" : {
             "emphasis": "Fusionner les zones",
             "detail": "{{ altButton }} + Shift + clic pour fusionner la sélection."
+        },
+        "compound-data-list": {
+            "title": "Comparaisons composées",
+            "compound-comparison-data": "Données de comparaison composée",
+            "calculation-basis-info": "La comparaison des valeurs est basée sur les calculs suivants",
+            "more": "de plus",
+            "delete": "Supprimer ca comparaison composée",
+            "filter-hint": "Filtrer la liste par nom",
+            "delete-modal": {
+                "header": "Supprimer la comparaison composée",
+                "message": "Confirmer la suppression de la comparaison composée: <em>“{{ comparisonName }}”</em>",
+            }
         }
     },
     "controls": {

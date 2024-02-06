@@ -1,4 +1,4 @@
-import { State, LegendState } from './calculation.interfaces';
+import { State, LegendState, CompoundComparisonItem } from './calculation.interfaces';
 import { State as AppState } from '@src/app/app-reducer';
 import { createSelector, createFeatureSelector } from '@ngrx/store';
 import { MetadataSelectors } from '@data/metadata';
@@ -75,4 +75,14 @@ export const selectVisibleLegends = createSelector(
 export const selectBatchProcesses = createSelector(
   selectCalculationState,
   state => [...Object.values(state.batchProcesses)].filter(p => p !== undefined)
+);
+
+export const selectCompoundComparisons = createSelector(
+  selectCalculationState,
+  state => [...state.compoundComparisons].sort(sortFuncMap[state.sortCompoundComparisons]).map(c => new CompoundComparisonItem(c))
+);
+
+export const selectCompoundComparisonCount = createSelector(
+  selectCompoundComparisons,
+  compoundComparisons => compoundComparisons.length
 );

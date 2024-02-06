@@ -24,7 +24,8 @@ export const initialState: CalculationInterfaces.State = {
   loadingReports: [],
   generatingComparisonsFor: [],
   loadingCompoundComparisons: false,
-  compoundComparisons: []
+  compoundComparisons: [],
+  sortCompoundComparisons: ListItemsSort.None
 };
 
 export const calculationReducer = createReducer(
@@ -126,6 +127,19 @@ export const calculationReducer = createReducer(
      CalculationActions.generateCompoundComparisonFailure, (state, any) => ({
     ...state,
     generatingComparisonsFor: []
+  })),
+  on(CalculationActions.fetchCompoundComparisons, (state) => ({
+    ...state,
+    loadingCompoundComparisons: true
+  })),
+  on(CalculationActions.fetchCompoundComparisonsSuccess, (state, { compoundComparisons }) => ({
+    ...state,
+    compoundComparisons,
+    loadingCompoundComparisons: false
+  })),
+  on(CalculationActions.setCompoundComparisonSortType, (state, { sortType }) => ({
+    ...state,
+    sortCompoundComparisons: sortType
   }))
 );
 

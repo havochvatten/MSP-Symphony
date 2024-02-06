@@ -24,6 +24,7 @@ import se.havochvatten.symphony.calculation.CalcUtil;
 import se.havochvatten.symphony.dto.BatchCalculationDto;
 import se.havochvatten.symphony.dto.CalculationResultSlice;
 import se.havochvatten.symphony.dto.CompoundComparisonDto;
+import se.havochvatten.symphony.dto.CompoundComparisonSlice;
 import se.havochvatten.symphony.entity.*;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
@@ -44,6 +45,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.io.ByteArrayOutputStream;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
@@ -53,8 +55,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static javax.ws.rs.core.Response.ok;
-import static javax.ws.rs.core.Response.status;
+import static javax.ws.rs.core.Response.*;
 
 /**
  * Calculation REST API
@@ -208,7 +209,7 @@ public class CalculationREST {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
         else
-            return calcService.findAllByUser(req.getUserPrincipal().getName());
+            return calcService.findAllByUser(req.getUserPrincipal());
     }
 
     @GET
@@ -500,10 +501,12 @@ public class CalculationREST {
     @POST
     @Path("/multi-comparison/{baselineName}")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Computes compound difference matrix (relative to an implicit baseline) for multiple calculations", response = CompoundComparisonDto.class)
-    public Response multiComparison(@Context HttpServletRequest req, @PathParam("baselineName") String baselineName, CompoundComparisonRequest request)
+    @ApiOperation(value = "Computes compound difference matrix (relative to an implicit baseline) for multiple calculations.\n" +
+                          "Returns entity PK id (if successful)", response = Integer.class)
+    public Response multiComparison(@Context HttpServletRequest req, @PathParam("baselineName") String baselineName,
+                                    @Context UriInfo uriInfo, CompoundComparisonRequest request)
             throws SymphonyStandardAppException, SymphonyStandardSystemException {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
@@ -512,15 +515,58 @@ public class CalculationREST {
 
         try {
             BaselineVersion baseline = baselineVersionService.getVersionByName(baselineName);
-            CompoundComparisonDto comparison = calcService.createCompoundComparison(request.ids, request.name, principal, baseline);
+            Integer createdCompoundCmpId = calcService.createCompoundComparison(request.ids, request.name, principal, baseline);
+            URI uri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(createdCompoundCmpId)).build();
 
-            return ok(comparison).build();
+            return created(uri).build();
         } catch (SymphonyStandardAppException | SymphonyStandardSystemException sx) {
             return status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (NotAuthorizedException ax) {
             return status(Response.Status.UNAUTHORIZED).build();
         }
     }
+
+    @GET
+    @Path("/multi-comparison/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Returns all compound comparisons for the given baseline", response = CompoundComparisonSlice.class, responseContainer = "List")
+    public Response getCompoundComparisons(@Context HttpServletRequest req) {
+
+        Principal principal = req.getUserPrincipal();
+
+        if(principal == null)
+            return status(Response.Status.UNAUTHORIZED).build();
+
+        try {
+            List<CompoundComparisonSlice> comparisons = calcService.getCompoundComparisons(principal);
+            return ok(comparisons).build();
+        } catch (SymphonyStandardSystemException sx) {
+            return status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @DELETE
+    @Path("/multi-comparison/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Deletes compound comparison with the given id")
+    public Response deleteCompoundComparison(@Context HttpServletRequest req, @PathParam("id") int id) {
+        var principal = req.getUserPrincipal();
+        if (principal == null)
+            return status(Response.Status.UNAUTHORIZED).build();
+
+        try {
+            if (calcService.deleteCompoundComparison(principal, id)) {
+                return ok().build();
+            } else {
+                return status(Response.Status.NOT_FOUND).build();
+            }
+        } catch (SymphonyStandardSystemException sx) {
+            return status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 
     public static GridCoverage2D getDiffCoverageFromCalcIds(CalcService calcService, HttpServletRequest req, int baseId, int relativeId) throws SymphonyStandardAppException {
         logger.info("Diffing base line calculations " + baseId + " against calculation " + relativeId);

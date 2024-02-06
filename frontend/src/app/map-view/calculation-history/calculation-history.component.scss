@@ -82,9 +82,12 @@ section {
       position: relative;
       width: 100%;
 
+      &.filtered {
+        display: none;
+      }
+
       .calculation {
         box-sizing: border-box;
-        background: none;
         border: 1px solid #707070;
         padding: 0.4rem;
         display: flex;
@@ -94,10 +97,6 @@ section {
         height: $button-height;
         width: 98%;
         max-width: 100%;
-
-        &.filtered {
-          display: none;
-        }
 
         &.visible {
           background: linear-gradient(0deg, #e8d18680 0%, white 33%);
@@ -124,12 +123,8 @@ section {
           }
         }
 
-        &:hover {
-          cursor: pointer;
-
-          &.visible {
-            background: linear-gradient(0deg, #e8d18680 0%, $hav-coldgrey 33%);
-          }
+        &.visible:hover {
+          background: linear-gradient(0deg, #e8d18680 0%, $hav-coldgrey 33%);
         }
 
         .calculation-info {
@@ -163,12 +158,6 @@ section {
               font-size: 1.6rem;
               flex: 1;
             }
-          }
-
-          span.timestamp {
-            text-align: left;
-            letter-spacing: 0;
-            color: #919191;
           }
         }
 
