@@ -12,7 +12,7 @@
 <mat-radio-group class="area-selection" #changesSelection (change)="setChangesToTransfer($event)" (click)="$event.stopPropagation()">
   <mat-radio-button [value]="-1"
                     [checked]="selectedChange === -1"
-                    [disabled]="selectedScenario == null ||
+                    [disabled]="selectedScenario === null ||
                                 !selectedScenario.hasGlobalChanges">{{ 'map.editor.transfer-changes.use-scenario-wide' | translate }}
   </mat-radio-button>
   <h4 *ngIf="getSelectableAreas().length > 0">{{ 'map.editor.transfer-changes.area-changes' | translate }}</h4>

@@ -1,4 +1,4 @@
-import { Component, NgModuleRef, ViewChild } from '@angular/core';
+import { Component, NgModuleRef, OnDestroy, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
@@ -18,14 +18,13 @@ import { Listable } from "@shared/list-filter/listable.directive";
 import { ListItemsSort } from "@data/common/sorting.interfaces";
 import { CalculationService } from "@data/calculation/calculation.service";
 import { CalculationActions } from "@data/calculation";
-import intersects from "@turf/boolean-intersects";
 
 @Component({
     selector: 'app-scenario-list',
     templateUrl: './scenario-list.component.html',
-    styleUrls: ['./scenario-list.component.scss']
+    styleUrls: ['./scenario-list.component.scss', '../../list-actions.scss']
 })
-export class ScenarioListComponent extends Listable {
+export class ScenarioListComponent extends Listable implements OnDestroy {
 
   scenario$ = this.store.select(ScenarioSelectors.selectScenarios);
 
@@ -33,19 +32,20 @@ export class ScenarioListComponent extends Listable {
   ABUNDANT_AREA_COUNT = 4;
   MAX_AREAS = 9;
 
-  batchMode = false;
   selectedBatchIds: number[] = [];
 
   private areaSubscription$: Subscription;
   private autoBatchSubscription$: Subscription;
   public selectionOverlap: Observable<boolean>;
 
+  isBatchMode = signal<boolean>(false);
+
   constructor(
     protected store: Store<State>,
     private translateService: TranslateService,
     private dialogService: DialogService,
     private calculationService: CalculationService,
-    private moduleRef: NgModuleRef<any>
+    private moduleRef: NgModuleRef<never>
   ) {
     super();
     this.areaSubscription$ = this.store
@@ -59,7 +59,7 @@ export class ScenarioListComponent extends Listable {
       .select(ScenarioSelectors.selectAutoBatch).subscribe(
         (autoBatch) => {
           if(autoBatch && autoBatch.length > 0) {
-            this.batchMode = true;
+            this.isBatchMode.set(true);
             this.selectedBatchIds = autoBatch;
             this.store.dispatch(ScenarioActions.resetAutoBatch());
           }
@@ -103,7 +103,7 @@ export class ScenarioListComponent extends Listable {
   }
 
   open(index: number) {
-    if(!this.batchMode) {
+    if(!this.isBatchMode()) {
       this.store.dispatch(ScenarioActions.openScenario({ index: index }));
     }
   }
@@ -135,30 +135,13 @@ export class ScenarioListComponent extends Listable {
       this.autoBatchSubscription$.unsubscribe();
   }
 
-  triggerBatchRun() {
-    if(this.batchMode && this.selectedBatchIds.length > 1) {
-      this.calculationService.queueBatchCalculation(this.selectedBatchIds).pipe()
-        .subscribe({
-          next: (qbr) => {
-            if(qbr) {
-              this.store.dispatch(CalculationActions.updateBatchProcess({ id: qbr.id, process: qbr }));
-            }
-          }
-        }
-      );
+  triggerBatchRun = async () => {
+    if(this.isBatchMode() && this.selectedBatchIds.length > 1) {
+      this.calculationService.queueBatchCalculation(this.selectedBatchIds);
     }
   }
 
-  getBatchMode(): boolean {
-    return this.batchMode;
-  }
-
-  setBatchMode() {
-    this.batchMode = !this.batchMode;
-    if(!this.batchMode) {
-      this.selectedBatchIds = [];
-    }
-  }
+  isDisabled = () => { return !(this.isBatchMode() && this.selectedBatchIds.length > 1) };
 
   async selectForBatch(id: number) {
     if(!this.selectedBatchIds.includes(id)) {

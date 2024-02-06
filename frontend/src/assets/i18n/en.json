@@ -96,13 +96,24 @@
                 "select-area-first-label": "Start by selecting an area"
             },
             "split-scenario-settings": {
-                "title": "Split scenario by area",
-                "detail": "Generate a new scenario for each included area",
+                "title": "Multiple area actions",
+                "detail": "Generate a new scenario for each included area or run a batch calculation on the included areas individually. Note that the latter action will not generate new scenarios.",
                 "set-batch-name": "Batch name to use for generated scenarios",
                 "apply-scenario-changes": "Apply scenario-level intensity changes",
-                "apply-area-changes": "Apply specific area changes to their corresponding scenarios",
-                "enter-batch-mode": "Enter batch selection mode",
-                "generate": "Generate"
+                "apply-area-changes": "Apply specific area changes to their corresponding scenarios/calculations",
+                "enter-batch-mode": "Enter batch selection mode (applicable to \"Generate\" action only)",
+                "generate": "Generate",
+                "batch-calculate": "Calculate"
+            },
+            "set-arbitrary-matrix": {
+                "title": "Set sensitivity matrix and calculation area",
+                "detail": "No default matrix coupling could be determined for the area \"{{ areaName }}\".\nTo allow the inclusion of this area in a calculation, an arbitrary sensitivity matrix and a area for value normalization* must first be set, manually.",
+                "caution": "Note that cancelling this action will exclude the area from the scenario.",
+                "normalization-description": "*Value normalization means that the result is normalized with respect to the value that {{ percentileValue }}% of data points in the selected area belong to (including coastal areas).",
+                "calculation-area": "Calculation area",
+                "select-matrix-placeholder": "Select sensitivity matrix",
+                "select-area-placeholder": "Select area for normalizing values",
+                "set-matrix-and-normalization": "Set matrix and normalization"
             },
             "operation": {
                 "title": "Algorithm",
@@ -133,7 +144,7 @@
                 "no-scenario-selected": "Select a scenario to adjust intensity values"
             },
             "matrix": {
-                "sensitivity-matrix": "Sensitivity Matrix",
+                "sensitivity-matrix": "Sensitivity matrix",
                 "default-matrix": "Default matrix",
                 "alt-matrix": "Alternate matrix",
                 "user-matrix": "User-defined matrix",
@@ -180,7 +191,7 @@
             },
             "changes": {
                 "title": "Scenario Changes",
-                "no-changes": "No scenario changes",
+                "no-changes": "No changes",
                 "make-changes-hint": "Make changes in the Ecosystem or Pressures tabs.",
                 "clear-change": "Clear change",
                 "units": "u.",
@@ -285,46 +296,43 @@
             "pressure": "pressure",
             "no-info": "Metadatum missing.",
             "properties": {
-                "accessUseRestrictions": "Access and use restrictions",
-                "authorEmail": "Author email address",
-                "authorOrganisation": "Author organisation",
-                "dataOwner": "Data owner",
-                "dataOwnerLocal": "Data owner",
-                "dataProcessing": "Data processing",
-                "dataSources": "Data sources",
-                "dateCreated": "Date created",
-                "descriptiveKeywords": "Keywords",
+                "accessuserestrictions": "Access and use restrictions",
+                "authoremail": "Author email address",
+                "authororganisation": "Author organisation",
+                "dataowner": "Data owner",
+                "dataprocessing": "Data processing",
+                "datasources": "Data sources",
+                "datecreated": "Date created",
+                "descriptivekeywords": "Keywords",
                 "format": "Format",
-                "limitationsForSymphony": "Known limitations",
+                "limitationsforsymphony": "Known limitations",
                 "lineage": "Lineage",
-                "maintenanceInformation": "Maintenance information",
-                "mapAcknowledgement": "Map acknowledgement",
-                "marinePlaneArea": "Marine spatial planning area",
-                "metadataDate": "Date",
-                "metadataEmail": "Email address",
-                "metadataFileName": "File name",
-                "metadataLanguage": "Language",
-                "metadataOrganisation": "Organisation",
-                "metadataOrganisationLocal": "Organisation",
-                "methodSummary": "Method summary",
-                "ownerEmail": "Owner email address",
-                "otherRestrictions": "Other restrictions",
-                "rasterFileName": "Raster data file name",
-                "rasterSpatialReferenceSystem": "Raster coordinate reference system",
+                "maintenanceinformation": "Maintenance information",
+                "mapacknowledgement": "Map acknowledgement",
+                "marineplanarea": "Marine spatial planning area",
+                "metadatadate": "Date",
+                "metadataemail": "Email address",
+                "metadatafilename": "File name",
+                "metadatalanguage": "Language",
+                "metadataorganisation": "Organisation",
+                "methodsummary": "Method summary",
+                "owneremail": "Owner email address",
+                "otherrestrictions": "Other restrictions",
+                "rasterfilename": "Raster data file name",
+                "rasterspatialreferencesystem": "Raster coordinate reference system",
                 "recommendations": "Recommendations",
-                "resourceType": "Resource type",
-                "securityClassification": "Security classification",
+                "resourcetype": "Resource type",
+                "securityclassification": "Security classification",
                 "status": "Status",
                 "summary": "Summary",
-                "summaryLocal": "Summary",
-                "symphonyCategory": "Category",
-                "symphonyDatatype": "",
-                "symphonyTheme": "Metadata group",
-                "temporalPeriod": "Period",
+                "symphonycategory": "Category",
+                "symphonydatatype": "",
+                "symphonytheme": "Metadata group",
+                "temporalperiod": "Period",
                 "theme": "Theme",
-                "topicCategory": "Topic category",
-                "useLimitations": "Usage limitations",
-                "valueRange": "Value range"
+                "topiccategory": "Topic category",
+                "uselimitations": "Usage limitations",
+                "valuerange": "Value range"
             }
         },
         "toolbar": {
@@ -374,11 +382,24 @@
             "show-report": "Open calculation report “{{ calculationName }}”",
             "delete": "Delete saved calculation result “{{ calculationName }}”",
             "filter-hint": "Filter calculations by name",
+            "show-result": "Show result in map view",
+            "hide-result": "Hide result in map view",
+            "visible-result": "Result is currently visible in map view",
+            "purged-result": "Data for this result has been purged\nThis will take a little longer to load because the result is being recalculated.",
             "delete-modal" : {
                 "header": "Delete calculation",
                 "message": "Confirm deletion of previously saved calculation result: <em>“{{ calculationName }}”</em>",
+                "header-multiple": "Delete calculations",
+                "message-multiple": "Confirm deletion of <strong>{{ count }}</strong> calculation results?",
+                "message-single": "Confirm deletion of this calculation result?",
                 "cancel": "Cancel",
                 "confirm": "Delete"
+            },
+            "multi-mode": {
+                "enter": "Enter multi-selection mode to delete multiple calculations",
+                "exit": "Exit multi-selection mode",
+                "delete-selected": "Delete selected calculations",
+                "none-selected": "No calculations selected for deletion"
             }
         },
         "compare": {
@@ -391,7 +412,7 @@
             "base-scenario-suggestion": "(typically your baseline analysis)",
             "what-if-scenario-suggestion": "(typically your new scenario analysis)",
             "select-scale": "Customize color scale",
-            "scale-constant": "Constant maximum (45%)",
+            "scale-constant": "Constant maximum",
             "scale-dynamic": "Dynamic maximum"
         },
         "user-area": {
@@ -459,7 +480,7 @@
         },
         "area-selection-hint": {
             "emphasis": "Select / deselect multiple areas",
-            "detail": "using {{ ctrlbutton }} + click."
+            "detail": "using {{ ctrlButton }} + click."
         },
         "special-actions-hint": {
             "emphasis": "Cut or merge area",
@@ -487,6 +508,7 @@
     "user-menu": {
         "help": "Help",
         "about": "About",
+        "support": "Support",
         "profile": "My profile",
         "logout": "Log out"
     },
@@ -542,6 +564,11 @@
             },
             "comparison": {
                 "legend-desc": "The image shows the relative difference in total cumulative impact between the base and what-if scenario."
+            },
+            "overflow": {
+                "title": "Cumulative impact exceeds maximum value",
+                "detail": "Note that the part of the cumulative result that has exceeded the maximum value per pixel is not reflected in the report. Hence, the result for the affected bands is lower than the value would be if the entire parameterized change was factored in, without limiting each pixel value.",
+                "list-description": "The following changes exceed maximum value:"
             }
         },
         "sensitivity-matrices": {
@@ -580,13 +607,15 @@
             "and": "and",
             "base-changes": "Common changes",
             "area-changes": "Area-specific changes",
-            "no-changes": "No changes"
+            "no-changes": "No changes",
+            "overflow-notice": "Change exceeds maximum"
         },
         "impact-table": {
             "ecoComponent": "Impact per nature value",
             "pressure": "Impact per pressure",
             "cumulative": "Cumulative",
-            "percentage-of-total": "% of Total"
+            "percentage-of-total": "% of Total",
+            "overflow": "Maximum exceeded, entire change incorrectly reported"
         },
         "toolbar": {
             "export-csv": "Export as CSV",
@@ -603,9 +632,13 @@
         },
         "description": "Calculations of the cumulative environmental impact is made using the Swedish Agency for Marine and Water Management's application Symphony.",
         "more-info": "For more information about Symphony please visit ",
-        "link": "https://www.havochvatten.se/en/swam/eu--international/marine-spatial-planning/symphony---a-tool-for-ecosystem-based-marine-spatial-planning.html",
+        "link": "https://www.havochvatten.se/en/eu-and-international/marine-spatial-planning/swedish-marine-spatial-planning/the-marine-spatial-planning-process/development-of-plan-proposals/symphony---a-tool-for-ecosystem-based-marine-spatial-planning.html",
         "fetching-report": "Fetching report",
         "error-message": "An error occurred. There is no report to show now. Please check options and try a calculation again."
+    },
+    "branding": {
+        "SwAM": "Swedish Agency for Marine and Water Management",
+        "SI-Sweden": "Sweden"
     },
     "api-messages": {
         "areas": {

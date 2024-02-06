@@ -41,7 +41,7 @@ export class DialogService {
 
     this.appRef.attachView(componentRef.hostView);
 
-    const domElement = (componentRef.hostView as EmbeddedViewRef<any>).rootNodes[0] as HTMLElement;
+    const domElement = (componentRef.hostView as EmbeddedViewRef<never>).rootNodes[0] as HTMLElement;
     document.body.appendChild(domElement);
 
     this.dialogRefs.set(dialogRef, componentRef);
@@ -62,14 +62,16 @@ export class DialogService {
     }
   };
 
-  public open<T>(componentType: Type<any>, moduleRef: NgModuleRef<any>, config?: DialogConfig) {
+  public open<T>(componentType: Type<unknown>, moduleRef: NgModuleRef<never>, config?: DialogConfig) {
     const injector = moduleRef.injector;
     const dialogRef = this.appendDialogComponentToBody(injector, config);
     if (this.dialogRefs.get(dialogRef)) {
       this.dialogRefs.get(dialogRef)!.instance.childComponentType = componentType;
     }
-    return new Promise<T>((resolve, _) => {
-      dialogRef.afterClosed.subscribe(resolve);
+    return new Promise<T>((resolve) => {
+      dialogRef.afterClosed.subscribe((result) => {
+        resolve(result as T);
+      });
     });
   }
 }

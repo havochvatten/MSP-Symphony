@@ -10,6 +10,7 @@ import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmat
 import { TranslateService } from "@ngx-translate/core";
 import { DialogService } from "@shared/dialog/dialog.service";
 import { Observable } from "rxjs";
+import { MetadataActions } from "@data/metadata";
 
 @Component({
   selector: 'app-scenario-editor',
@@ -23,12 +24,17 @@ export class ScenarioEditorComponent {
   constructor(
     private translateService: TranslateService,
     private dialogService: DialogService,
-    private moduleRef: NgModuleRef<any>,
+    private moduleRef: NgModuleRef<never>,
     private store: Store<State>,
   ) {
     this.store.dispatch(ScenarioActions.fetchScenarios());
     this.store.select(ScenarioSelectors.selectActiveScenario)
-      .subscribe(scenario => this.activeScenario = scenario);
+      .subscribe(scenario => {
+        this.activeScenario = scenario;
+        if(scenario) {
+          this.store.dispatch(MetadataActions.fetchMetadata());
+        }
+      });
     this.store.select(ScenarioSelectors.selectActiveScenarioArea)
       .subscribe(areaIndex => this.activeAreaIndex = areaIndex);
   }
@@ -64,13 +70,17 @@ export class ScenarioEditorComponent {
             }
           });
       if (confirmDeleteArea) {
-        this.store.dispatch(ScenarioActions.closeActiveScenarioArea());
-        if (scenario.areas.length > 1) {
-          this.store.dispatch(ScenarioActions.deleteScenarioArea({areaId}));
-        } else {
-          this.store.dispatch(ScenarioActions.deleteScenario({scenarioToBeDeleted: scenario}));
-        }
+        this.deleteAreaAction(areaId, scenario);
       }
+    }
+  }
+
+  deleteAreaAction = (areaId: number, scenario: Scenario) => {
+    this.store.dispatch(ScenarioActions.closeActiveScenarioArea());
+    if (scenario.areas.length > 1) {
+      this.store.dispatch(ScenarioActions.deleteScenarioArea({areaId}));
+    } else {
+      this.store.dispatch(ScenarioActions.deleteScenario({ scenarioToBeDeleted: scenario }));
     }
   }
 }

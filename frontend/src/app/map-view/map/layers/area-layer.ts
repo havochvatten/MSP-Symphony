@@ -16,6 +16,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { isEqual, some } from "lodash";
 import { turfIntersects as intersects } from "@shared/turf-helper/turf-helper";
 import { Geometry } from "ol/geom";
+import { DrawEvent } from "ol/interaction/Draw";
 
 function unique<T>(value: T, index: number, self: T[]) {
   return self.indexOf(value) === index;
@@ -64,7 +65,7 @@ class DrawAreaInteraction extends Draw {
     });
     map.addInteraction(snap);
 
-    this.on('drawend', (event: any) => {
+    this.on('drawend', (event: DrawEvent) => {
       //source.addFeature(event.feature);
       this.clearCoordinates();
       onDrawEnd(getPolygon(event.feature));
@@ -96,10 +97,10 @@ class AreaLayer extends VectorLayer<VectorSource> {
     private map: OLMap,
     private setSelection: (features: Feature[] | undefined, overlap: boolean) => void,
     private zoomToExtent: (extent: Extent, duration: number) => void,
-    private onDrawEnd = (polygon: Polygon) => {},
-    private onDrawInvalid = () => {},
-    onSplitClick: (feature: Feature, prevFeature: Feature) => {},
-    onMergeClick: (features: Feature[]) => {},
+    private onDrawEnd: (polygon: Polygon)=> void,
+    private onDrawInvalid: () => void,
+    onSplitClick: (feature: Feature, prevFeature: Feature) => void,
+    onMergeClick: (features: Feature[]) => void,
     private scenarioLayer: ScenarioLayer,
     private translateService: TranslateService,
     private geoJson: GeoJSON
@@ -137,22 +138,14 @@ class AreaLayer extends VectorLayer<VectorSource> {
             );
           },
           filter: (feature, layer) => {
-            console.debug('filter', feature.get('title') ?? feature.get('id'), layer.get('name'));
             if(that.scenarioLayer.getBoundaryFeature()) {
               if (feature === that.scenarioLayer.getBoundaryFeature()) return false; // don't allow selection of whole scenario for now
               if (intersects(feature, that.scenarioLayer.getBoundaryFeature()!)) return false; // don't allow selection of features inside scenario
             }
             const source = that.scenarioLayer.getSource();
-            if (
-              layer === that &&
+            return !(layer === that &&
               source &&
-              getFeaturesByStatePaths(source, [feature.get('statePath')])
-            ) {
-              console.debug('Preventing double selection since feature exists in scenario');
-              return false;
-            } else {
-              return true;
-            }
+              getFeaturesByStatePaths(source, [feature.get('statePath')]));
           }
         });
         this.on('select', event => {
@@ -292,7 +285,7 @@ class AreaLayer extends VectorLayer<VectorSource> {
     } else {
       this.onDrawInvalid();
     }
-  };
+  }
 
   // FIXME: This is called each time an area is selected!
   setAreaLayers(featureCollections: FeatureCollection[], selected: StatePath[] | undefined) {

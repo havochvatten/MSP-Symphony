@@ -96,13 +96,24 @@
                 "select-area-first-label": "Sélectionnez d'abord une zone."
             },
             "split-scenario-settings": {
-                "title": "Scénarios à partir de zones",
-                "detail": "Générer un nouveau scénario pour chaque zone incluse dans le scénario en cours.",
+                "title": "Actions multi-zones",
+                "detail": "Générer un nouveau scénario pour chaque zone incluse dans le scénario en cours, ou lancez un \"calcul par lots\" sur les zones incluses. Notez que cette dernière action ne génère pas de nouveaux scénarios",
                 "set-batch-name": "Nom du calcul par lots",
                 "apply-scenario-changes": "Dupliquer les paramètres d'intensité du scénario",
-                "apply-area-changes": "Appliquer les paramètres spécifiques à la zone aux scénarios correspondants",
-                "enter-batch-mode": "Entrer en mode de sélection par lots",
-                "generate": "Générer"
+                "apply-area-changes": "Appliquer les paramètres spécifiques à la zone aux scénarios/calculs correspondants",
+                "enter-batch-mode": "Entrer en mode de sélection par lots (l'action \"Générer\" uniquement)",
+                "generate": "Générer",
+                "batch-calculate": "Calculer"
+            },
+            "set-arbitrary-matrix": {
+                "title": "Déterminer une matrice de sensibilité et la zone de calcul",
+                "detail": "Aucun couplage matriciel par défaut n'a pu être déterminé pour la zone \"{{ areaName }}\".\nPour que cette zone soit incluse dans un calcul, une matrice de sensibilité arbitraire et une zone pour normalisation des valeurs* doivent d'abord être déterminées.",
+                "caution": "Veuillez noter que si vous annulez cette action, la zone sera exclue du scénario.",
+                "normalization-description": "*La normalisation des valeurs signifie que le résultat est normalisé par rapport à la valeur à laquelle {{ percentileValue }}% des points de données de la zone sélectionnée appartiennent (y compris les zones côtières).",
+                "calculation-area": "Zone de calcul",
+                "select-matrix-placeholder": "Sélectionnez une matrice de sensibilité",
+                "select-area-placeholder": "Sélectionnez une zone pour normaliser les valeurs",
+                "set-matrix-and-normalization": "Utiliser cette matrice et zone"
             },
             "operation": {
                 "title": "Algorithme",
@@ -180,7 +191,7 @@
             },
             "changes": {
                 "title": "Changements de scénario",
-                "no-changes": "Aucun changement de scénario",
+                "no-changes": "Aucun modifications",
                 "make-changes-hint": "Modifier les paramètres sous les onglets composantes écosystème ou pressions.",
                 "clear-change": "Effacer les modifications",
                 "units": "unités",
@@ -285,46 +296,43 @@
             "pressure": "pression",
             "no-info": "Métadonnée manquante.",
             "properties": {
-                "accessUseRestrictions": "Restrictions d'accès et d'utilisation",
-                "authorEmail": "Adresse e-mail de l'auteur",
-                "authorOrganisation": "Organisation de l'auteur",
-                "dataOwner": "Propriétaire des données",
-                "dataOwnerLocal": "Propriétaire des données",
-                "dataProcessing": "Traitement de l'information",
-                "dataSources": "Sources de données",
-                "dateCreated": "Date de création",
-                "descriptiveKeywords": "Mots clef",
+                "accessuserestrictions": "Restrictions d'accès et d'utilisation",
+                "authoremail": "Adresse e-mail de l'auteur",
+                "authororganisation": "Organisation de l'auteur",
+                "dataowner": "Propriétaire des données",
+                "dataprocessing": "Traitement de l'information",
+                "datasources": "Sources de données",
+                "datecreated": "Date de création",
+                "descriptivekeywords": "Mots clef",
                 "format": "Format",
-                "limitationsForSymphony": "Limites connues",
+                "limitationsforsymphony": "Limites connues",
                 "lineage": "Origine",
-                "maintenanceInformation": "Informations d'entretien",
-                "mapAcknowledgement": "",
-                "marinePlaneArea": "Zone MSP",
-                "metadataDate": "Date",
-                "metadataEmail": "Adresse e-mail",
-                "metadataFileName": "Nom de fichier",
-                "metadataLanguage": "Langue",
-                "metadataOrganisation": "Organisation",
-                "metadataOrganisationLocal": "Organisation",
-                "methodSummary": "Résumé de la méthode",
-                "ownerEmail": "Adresse e-mail du propriétaire",
-                "otherRestrictions": "Autres limites",
-                "rasterFileName": "Nom du fichier de données raster",
-                "rasterSpatialReferenceSystem": "Système de référence de coordonnées raster",
+                "maintenanceinformation": "Informations d'entretien",
+                "mapacknowledgement": "",
+                "marineplanarea": "Zone MSP",
+                "metadatadate": "Date",
+                "metadataemail": "Adresse e-mail",
+                "metadatafilename": "Nom de fichier",
+                "metadatalanguage": "Langue",
+                "metadataorganisation": "Organisation",
+                "methodsummary": "Résumé de la méthode",
+                "owneremail": "Adresse e-mail du propriétaire",
+                "otherrestrictions": "Autres limites",
+                "rasterfilename": "Nom du fichier de données raster",
+                "rasterspatialreferencesystem": "Système de référence de coordonnées raster",
                 "recommendations": "Recommandations",
-                "resourceType": "Type de ressource",
-                "securityClassification": "Classement de sécurité",
+                "resourcetype": "Type de ressource",
+                "securityclassification": "Classement de sécurité",
                 "status": "Statut",
                 "summary": "Résumé",
-                "summaryLocal": "Résumé",
-                "symphonyCategory": "Catégorie",
-                "symphonyDatatype": "",
-                "symphonyTheme": "Groupe métadonnées",
-                "temporalPeriod": "Période",
+                "symphonycategory": "Catégorie",
+                "symphonydatatype": "",
+                "symphonytheme": "Groupe métadonnées",
+                "temporalperiod": "Période",
                 "theme": "Thème",
-                "topicCategory": "Catégorie de sujet",
-                "useLimitations": "Limites d'utilisation",
-                "valueRange": "Plage de valeurs"
+                "topiccategory": "Catégorie de sujet",
+                "uselimitations": "Limites d'utilisation",
+                "valuerange": "Plage de valeurs"
             }
         },
         "toolbar": {
@@ -374,11 +382,24 @@
             "show-report": "Ouvrir le rapport de calcul “{{ calculationName }}”",
             "delete": "Supprimer le résultat “{{ calculationName }}”",
             "filter-hint": "Filtrer les calculs par nom",
+            "show-result": "Afficher ce résultat en mode carte",
+            "hide-result": "Masquer ce résultat en mode carte",
+            "visible-result": "Ce résultat est visible en mode carte",
+            "purged-result": "Les données de ce résultat ont été supprimées\nLe chargement peut prendre un peu plus de temps car le résultat doit être recalculé.",
             "delete-modal" : {
                 "header": "Supprimer résultat",
                 "message": "Confirmer la suppression du résultat: <em>“{{ calculationName }}”</em>",
+                "header-multiple": "Supprimer les résultats",
+                "message-multiple": "Confirmer la suppression de <strong>{{ count }}</strong> résultats",
+                "message-single": "Confirmer la suppression du résultat",
                 "cancel": "Annuler",
                 "confirm": "Supprimer"
+            },
+            "multi-mode": {
+                "enter": "Entrer en mode de sélection multiple pour supprimer plusieurs calculs",
+                "exit": "Quitter le mode de sélection multiple",
+                "delete-selected": "Supprimer les calculs sélectionnés",
+                "none-selected": "Aucun calcul sélectionné"
             }
         },
         "compare": {
@@ -391,7 +412,7 @@
             "base-scenario-suggestion": "",
             "what-if-scenario-suggestion": "",
             "select-scale": "Sélectionnez l'échelle de couleur",
-            "scale-constant": "Maximum constant (45%)",
+            "scale-constant": "Maximum constant",
             "scale-dynamic": "Maximum dynamique"
         },
         "user-area": {
@@ -487,6 +508,7 @@
     "user-menu": {
         "help": "Aide",
         "about": "À propos",
+        "support": "Mode d'emploi",
         "profile": "Mon profil",
         "logout": "Se déconnecter"
     },
@@ -542,6 +564,11 @@
             },
             "comparison": {
                 "legend-desc": "L'image montre la différence relative d'impact cumulé entre le scénario de référence et le scénario anticipé."
+            },
+            "overflow": {
+                "title": "Dépassement de la valeur maximale",
+                "detail": "Veuillez noter que la partie du résultat cumulé qui dépasse la valeur maximale par pixel n'est pas reflétée dans le rapport. Le résultat pour les bandes affectées est inférieur à ce qui serait attendu si l'ensemble du changement paramétré était pris en compte, sans limiter la valeur au maximum.",
+                "list-description": "La valeur maximale a été dépassée dans les bandes suivantes:"
             }
         },
         "sensitivity-matrices": {
@@ -578,15 +605,17 @@
             "percent-change-with": "Variation de <strong>{{percent}}%</strong>",
             "constant-offset-with": "Impact équivalent à <strong>{{offset}}</strong> unités",
             "and": "et",
-            "base-changes": "Changements à l'échelle du scénario",
-            "area-changes": "Changements spécifiques à la zone",
-            "no-changes": "Aucun changement"
+            "base-changes": "Modifications à l'échelle du scénario",
+            "area-changes": "Modifications spécifiques à la zone",
+            "no-changes": "Aucun modifications",
+            "overflow-notice": "Dépasse valeur maximale"
         },
         "impact-table": {
             "ecoComponent": "Impact par composante écosystème",
             "pressure": "Impact par pression",
             "cumulative": "Cumulatif",
-            "percentage-of-total": "% du total"
+            "percentage-of-total": "% du total",
+            "overflow": "Dépassement max, rapport de changement erroné"
         },
         "toolbar": {
             "export-csv": "Exporter en tant que CSV",
@@ -606,6 +635,10 @@
         "link": "www.nairobiconvention.org/wio-symphony",
         "fetching-report": "Assemblage du rapport",
         "error-message": "Une erreur est survenue. Aucun rapport n'a pu être produit. Veuillez vérifier les paramètres et réessayer."
+    },
+    "branding": {
+        "SwAM": "Agence Suédoise pour la Gestion de l'Eau et des Zones Maritimes (Havs och Vattenmyndigheten)",
+        "SI-Sweden": "Suède"
     },
     "api-messages": {
         "areas": {

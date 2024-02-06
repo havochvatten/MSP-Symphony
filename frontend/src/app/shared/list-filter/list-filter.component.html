@@ -5,14 +5,14 @@
 <app-icon-button
   [label]="'list-sorting-options.indicate-order' | translate :
   { orderHint: i18n_key(false) | translate }"
-  (click)="cycle(false)"
+  (iconClick)="cycle(false)"
   [icon]="sortType === ListItemsSort.AlphaDesc ? 'sort-alphaD' : 'sort-alphaA'"
   [ngClass]="{ 'active' : isActive(false) }">
 </app-icon-button>
 <app-icon-button
   [label]="'list-sorting-options.indicate-order' | translate :
   { orderHint: i18n_key(true) | translate }"
-  (click)="cycle(true)"
+  (iconClick)="cycle(true)"
   [icon]="sortType === ListItemsSort.DateAsc ? 'sort-dateA' : 'sort-dateD'"
   [ngClass]="{ 'active' : isActive(true) }">
 </app-icon-button>

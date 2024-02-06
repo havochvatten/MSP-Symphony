@@ -1,10 +1,10 @@
 import { Component, ElementRef, Input, NgModuleRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms'
 import { Observable, OperatorFunction, Subscription } from 'rxjs';
-import { debounceTime, filter, map, take, tap } from 'rxjs/operators';
+import { debounceTime, filter, take, tap } from 'rxjs/operators';
 import { TranslateService } from "@ngx-translate/core";
 import { Store } from '@ngrx/store';
-import { some } from "lodash";
+import { isEmpty, some } from "lodash";
 import { State } from '@src/app/app-reducer';
 import { environment } from '@src/environments/environment';
 import { DialogService } from '@shared/dialog/dialog.service';
@@ -19,14 +19,13 @@ import {
   NormalizationOptions,
   NormalizationType
 } from '@data/calculation/calculation.service';
-import { MetadataSelectors } from "@data/metadata";
-import { Band } from "@data/metadata/metadata.interfaces";
+import { MetadataActions, MetadataSelectors } from "@data/metadata";
+import { Band, BandType } from "@data/metadata/metadata.interfaces";
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
 import {
   ChangesProperty,
-  Scenario, ScenarioArea,
-  ScenarioSplitOptions,
+  Scenario, ScenarioArea, ScenarioSplitDialogResult
 } from '@data/scenario/scenario.interfaces';
 import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
 import { ScenarioService } from "@data/scenario/scenario.service";
@@ -39,6 +38,10 @@ import {
 import {
   SplitScenarioSettingsComponent
 } from "@src/app/map-view/scenario/split-scenario-settings/split-scenario-settings.component";
+import { MatrixRef } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
+import {
+  SetArbitraryMatrixComponent
+} from "@src/app/map-view/scenario/set-arbitrary-matrix/set-arbitrary-matrix.component";
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 
@@ -60,6 +63,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   @Input() scenario!: Scenario;
   @Input() deleteAreaDelegate!: ((a:number, e:MouseEvent, s:Scenario) => void);
+  @Input() deleteAreaAction! : (a:number, s:Scenario) => void;
   @ViewChild('name') nameElement!: ElementRef;
   editName = false;
 
@@ -70,9 +74,9 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   percentileValue$: Observable<number>;
   areaMatricesLoading$: Observable<boolean>;
-  bandDictionary$: Observable<{ [p: string]: string }>;
-  unsaved: boolean = false;
-  savedByInteraction: boolean = false;
+  bandDictionary$: Observable<{ [k: string] : { [p: string]: string } }>;
+  unsaved = false;
+  savedByInteraction = false;
 
   constructor(
     private store: Store<State>,
@@ -80,7 +84,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private translateService: TranslateService,
     private scenarioService: ScenarioService,
-    private moduleRef: NgModuleRef<any>
+    private moduleRef: NgModuleRef<never>
   ) {
     // https://stackoverflow.com/questions/59684733/how-to-access-previous-state-and-current-state-and-compare-them-when-you-subscri
     if (AUTO_SAVE_TIMEOUT) {
@@ -89,7 +93,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
         .pipe(
           filter(s => s !== undefined) as OperatorFunction<Scenario | undefined, Scenario>,
           debounceTime(AUTO_SAVE_TIMEOUT * 1000), // TODO use fixed interval instead
-          tap((s: Scenario) => console.debug('Auto-saving scenario ' + s.name))
+          tap((s: Scenario) => console.info('Auto-saving scenario ' + s.name))
         )
         .subscribe((_: Scenario) => { this.savedByInteraction = false; this.save() });
     }
@@ -97,10 +101,18 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     this.calculating$ = this.store.select(CalculationSelectors.selectCalculating);
     this.percentileValue$ = this.store.select(CalculationSelectors.selectPercentileValue);
     this.bandDictionary$ = this.store.select(MetadataSelectors.selectMetaDisplayDictionary);
+     this.store.select(ScenarioSelectors.selectActiveScenario).subscribe(
+        async (scenario) => {
+            if (scenario) {
+            this.scenario = scenario;
+            this.operation.setValue([...availableOperations.keys()][this.scenario.operation]);
+            await this.setChangesText();
+            }
+        });
     this.store.dispatch(CalculationActions.fetchPercentile());
   }
 
-  changes(): ChangesProperty {
+  changes(): { [ bandType: string ]:  ChangesProperty } {
     return this.scenario.changes;
   }
 
@@ -116,53 +128,84 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
     this.matrixDataSubscription$ = this.store.select(ScenarioSelectors.selectAreaMatrixData).subscribe(
       async data => {
-      if(data !== null && !some(data, d => d === null)) {
-        for (const area_id of Object.keys(data).map(id => parseInt(id))) {
-          const matrixData = data[area_id];
-          if (!matrixData.defaultArea && matrixData.overlap.length > 0 && !this.replacedAreaIds.includes(area_id)) {
-            this.replacedAreaIds.push(area_id);
-            const selectedAreas = (await this.dialogService.open(SelectIntersectionComponent, this.moduleRef, {
-              data: {
-                areas: matrixData.overlap.map(overlap => {
-                  return {
-                    polygon: overlap.polygon,
-                    metaDescription: overlap.defaultMatrix.name
+        if (data !== null && !some(data, d => d === null)) {
+          for (const area_id of Object.keys(data).map(id => +id)) {
+            const matrixData = data[area_id];
+            if (!matrixData.defaultArea) {
+              const area = this.scenario.areas[this.scenario.areas.findIndex(a => a.id === area_id)];
+
+              // Bring up a dialog to select an arbitrary matrix and a calculationarea (for value normalization)
+              // if no default matrix is found and no matrix has been set previously.
+              // This circumstance should be considered an 'edge case' which could occur for user-defined/imported
+              // area polygons that are entirely outside of a default (MSP) area.
+              // matrixData.alternativeMatrices indicates that no default matrix was found
+              // matrixId would be defined if the user has already selected a matrix
+              if (area && !area.matrix.matrixId && matrixData.alternativeMatrices !== null) {
+                const response = (await this.dialogService.open(SetArbitraryMatrixComponent, this.moduleRef, {
+                  data: {
+                    areaName: area.feature.properties && area.feature.properties['name'] ?
+                      area.feature.properties['name'] : '??',
+                    matrices: matrixData.alternativeMatrices,
+                    // TODO: more pragmatic percentile value access applicationwide, this seems convoluted
+                    percentileValue: await this.percentileValue$.pipe(take(1)).toPromise()
                   }
-                }),
-                multi: true,
-                headerTextKey: 'map.editor.select-intersection.header',
-                messageTextKey: 'map.editor.select-intersection.message',
-                confirmTextKey: 'map.editor.select-intersection.confirm-selection',
-                metaDescriptionTextKey: 'map.editor.select-intersection.default-matrix'
-              }
-            }) as boolean[]).filter(a => a);
-
-            if (selectedAreas.length > 0) {
-              const replacementAreas: ScenarioArea[] = selectedAreas.map((selectedArea, ix) => {
-                const area = this.scenario.areas[this.scenario.areas.findIndex(a => a.id == area_id)];
-                return {
-                  ...area,
-                  id: -1,
-                  feature: {...area.feature,
-                    geometry: matrixData.overlap[ix].polygon,
-                    properties: { ...area.feature.properties, statePath: [] } },
-                  matrix: {matrixType: 'STANDARD', matrixId: matrixData.overlap[ix].defaultMatrix.id}
+                }) as [MatrixRef, number] | null);
+                if (response) {
+                  const [ selectedMatrix, selectedCalcAreaId ] = response;
+                  this.store.dispatch(ScenarioActions.setArbitraryScenarioAreaMatrixAndNormalization(
+                    {areaId: area_id, matrixId: selectedMatrix.id, calcAreaId: selectedCalcAreaId}));
+                } else {
+                  this.deleteAreaAction(area_id, this.scenario);
                 }
-              });
+              }
+            }
 
-              this.store.dispatch(ScenarioActions.splitAndReplaceScenarioArea(
-                {scenarioId: this.scenario.id, replacedAreaId: area_id, replacementAreas: replacementAreas}));
+            if (matrixData.overlap.length > 0 && !this.replacedAreaIds.includes(area_id)) {
+              this.replacedAreaIds.push(area_id);
+              const selectedAreas = (await this.dialogService.open(SelectIntersectionComponent, this.moduleRef, {
+                data: {
+                  areas: matrixData.overlap.map(overlap => {
+                    return {
+                      polygon: overlap.polygon,
+                      metaDescription: overlap.defaultMatrix.name
+                    }
+                  }),
+                  multi: true,
+                  headerTextKey: 'map.editor.select-intersection.header',
+                  messageTextKey: 'map.editor.select-intersection.message',
+                  confirmTextKey: 'map.editor.select-intersection.confirm-selection',
+                  metaDescriptionTextKey: 'map.editor.select-intersection.default-matrix'
+                }
+              }) as boolean[]).filter(a => a);
 
-            } else {
-              if(this.scenario.areas.filter(a => a.id !== area_id).length > 0) {
-                this.store.dispatch(ScenarioActions.closeActiveScenario());
+              if (selectedAreas.length > 0) {
+                const replacementAreas: ScenarioArea[] = selectedAreas.map((selectedArea, ix) => {
+                  const area = this.scenario.areas[this.scenario.areas.findIndex(a => a.id === area_id)];
+                  return {
+                    ...area,
+                    id: -1,
+                    feature: {
+                      ...area.feature,
+                      geometry: matrixData.overlap[ix].polygon,
+                      properties: {...area.feature.properties, statePath: []}
+                    },
+                    matrix: {matrixType: 'STANDARD', matrixId: matrixData.overlap[ix].defaultMatrix.id}
+                  }
+                });
+
+                this.store.dispatch(ScenarioActions.splitAndReplaceScenarioArea(
+                  {scenarioId: this.scenario.id, replacedAreaId: area_id, replacementAreas: replacementAreas}));
+
               } else {
-                this.store.dispatch(ScenarioActions.deleteScenarioArea({ areaId: area_id }));
+                if (this.scenario.areas.filter(a => a.id !== area_id).length > 0) {
+                  this.store.dispatch(ScenarioActions.closeActiveScenario());
+                } else {
+                  this.store.dispatch(ScenarioActions.deleteScenarioArea({areaId: area_id}));
+                }
               }
             }
           }
         }
-      }
     });
 
     this.store.dispatch(fetchAreaMatrices({ scenarioId: this.scenario.id }));
@@ -174,30 +217,32 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   async setChangesText():Promise<void> {
     const bandDict = await this.bandDictionary$.pipe(take(1)).toPromise();
-
-    this.changesText = this.scenario.areas.map((a, ix) => {
-        return Object.entries(a.changes || {}).map(([c, change]) => {
-            return `${bandDict[c]}: ${
-              change.multiplier ? (change.multiplier > 1 ? '+' : '') +
-                Number(convertMultiplierToPercent(change.multiplier) * 100).toFixed(2) + '%' :
-                change.offset
-            }`;
-        }).join('\n');
-    });
+    this.changesText = this.scenario.areas.some((a) => !isEmpty(a.changes)) ?
+        this.scenario.areas.map((a) => {
+          return Object.entries(a.changes || {}).map(([bandType, c]) => {
+            return Object.entries(c).map(([bandNumber, change]) => {
+              return `${bandDict[bandType][bandNumber]}: ${change.multiplier ? (change.multiplier > 1 ? '+' : '') +
+                  Number(convertMultiplierToPercent(change.multiplier) * 100).toFixed(2) + '%' :
+                  change.offset! > 0 ? '+' + change.offset : change.offset
+              }`;
+            }).join('\n');
+          }).join('\n');
+        }) : {};
   }
 
   calculate() {
     this.store.dispatch(CalculationActions.startCalculation());
 
+    // TODO: call service through rxjs effect and avoid code repetition (ScenarioEffects)
     this.store.select(MetadataSelectors.selectSelectedComponents).pipe(
       take(1))
       .subscribe((selectedComponents: { ecoComponent: Band[]; pressureComponent: Band[]; }) => {
-        const getSortedBandNumbers = (bands: Band[]) => bands
+        const sortedBandNumbers = (bands: Band[]) => bands
           .map(band => band.bandNumber)
           .sort((a, b) => a - b);
         this.scenarioService.save({...this.scenario,
-          ecosystemsToInclude: getSortedBandNumbers(selectedComponents.ecoComponent),
-          pressuresToInclude: getSortedBandNumbers(selectedComponents.pressureComponent)}).pipe(
+          ecosystemsToInclude: sortedBandNumbers(selectedComponents.ecoComponent),
+          pressuresToInclude: sortedBandNumbers(selectedComponents.pressureComponent)}).pipe(
           take(1))
           .subscribe(() => {
               this.calcService.calculate(this.scenario);
@@ -259,14 +304,16 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(ScenarioActions.saveActiveScenario({ scenarioToBeSaved: this.scenario }));
   }
 
-  deleteChange = (bandId: string) => {
+  deleteChange = (bandTypeString: string, bandNumber: number) => {
     this.unsaved = true;
-    this.store.dispatch(ScenarioActions.deleteBandChange({ bandId }));
+    const componentType = bandTypeString as BandType;
+    this.store.dispatch(ScenarioActions.deleteBandChange({ componentType, bandNumber }));
   }
 
   close() {
     this.save();
     this.store.dispatch(ScenarioActions.closeActiveScenario());
+    this.store.dispatch(MetadataActions.fetchMetadata());
   }
 
   async delete () {
@@ -308,9 +355,9 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  anyChanges() {
-    return  (this.scenario.changes && Object.keys(this.scenario.changes).length > 0) ||
-             this.scenario.areas.some(a => a.changes && Object.keys(a.changes!).length > 0);
+  anyChanges(): boolean {
+    return !!this.scenario.changes &&
+            Object.values(this.scenario.changes).flatMap(x => Object.values(x)).length > 0;
   }
 
   async importChanges() {
@@ -324,12 +371,8 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  getDisplayName(bandId: string): Observable<string> {
-    return this.bandDictionary$.pipe(map((bandDictionary) => bandDictionary[bandId]));
-  }
-
-  async openSplitOptions(): Promise<void> {
-    const splitOptions = await this.dialogService.open<ScenarioSplitOptions>(
+  async openSplitDialog(): Promise<void> {
+    const splitDialogResult = await this.dialogService.open<ScenarioSplitDialogResult>(
       SplitScenarioSettingsComponent,
       this.moduleRef,
       { data: {
@@ -340,12 +383,18 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
         }}
     );
 
-    if (splitOptions) {
-      if(splitOptions.batchSelect) {
+    if (splitDialogResult) {
+      if(splitDialogResult.immediate) {
+        this.calcService.queueBatchCalculation([this.scenario.id], splitDialogResult.options);
+      } else {
+        if(splitDialogResult.options.batchSelect) {
           this.store.dispatch(ScenarioActions.closeActiveScenario());
+        }
+        this.store.dispatch(ScenarioActions.splitScenarioForBatch(
+          { scenarioId : this.scenario.id, options: splitDialogResult.options }));
       }
-      this.store.dispatch(ScenarioActions.splitScenarioForBatch(
-        { scenarioId : this.scenario.id, options: splitOptions }));
     }
   }
+
+  protected readonly isEmpty = isEmpty;
 }

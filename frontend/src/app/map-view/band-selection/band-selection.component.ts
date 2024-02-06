@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { BandGroup, Band, StatePath, BandType_Alt } from '@data/metadata/metadata.interfaces';
+import { BandGroup, Band, BandType_Alt } from '@data/metadata/metadata.interfaces';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { MetadataActions } from '@data/metadata';
@@ -14,7 +14,7 @@ function searchTrim(search: string) {
 }
 
 function filterLayers(layers: Band[], search: string): Band[] {
-  return layers.filter(layer => layer.displayName.toLowerCase().includes(search));
+  return layers.filter(layer => layer.title.toLowerCase().includes(search));
 }
 function includesGroup(groupName: string, search: string): boolean {
   return groupName.toLowerCase().includes(search);
@@ -29,14 +29,14 @@ function filterCheckBoxGroups(groups: BandGroup[], search: string): BandGroup[] 
   return groups
     .filter(
       (group: BandGroup) =>
-        includesGroup(group.displayName, search) ||
-        filterLayers(group.properties, search).length > 0
+        includesGroup(group.symphonyThemeName, search) ||
+        filterLayers(group.bands, search).length > 0
     )
     .map(group => ({
       ...group,
-      properties: includesGroup(group.displayName, search)
-        ? group.properties
-        : filterLayers(group.properties, search)
+      bands: includesGroup(group.symphonyThemeName, search)
+        ? group.bands
+        : filterLayers(group.bands, search)
     }));
 }
 
@@ -74,21 +74,14 @@ export class BandSelectionComponent implements OnInit, OnChanges {
     }
   };
 
-  onChange = (value: any, statePath: StatePath) => {
+  onChange = (value: boolean|undefined, band: Band) => {
     this.store.dispatch(
-      MetadataActions.updateSelections({
-        selections: [
-          {
-            value,
-            statePath
-          }
-        ]
-      })
+      MetadataActions.selectBand({ band, value })
     );
   };
 
-  onChangeVisible = (value: boolean, statePath: StatePath) => {
-    this.store.dispatch(MetadataActions.updateVisible({ selections: [{ value, statePath }] }));
+  onChangeVisible = (value: boolean, band: Band) => {
+    this.store.dispatch(MetadataActions.setVisibility({ band, value }));
   };
 
   get placeholder() {
@@ -104,6 +97,6 @@ export class BandSelectionComponent implements OnInit, OnChanges {
   }
 
   displayName(index: number, group: BandGroup) {
-    return group.displayName;
+    return group.symphonyThemeName;
   }
 }

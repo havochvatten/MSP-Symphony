@@ -6,8 +6,7 @@ import se.havochvatten.symphony.calculation.CalcService;
 import se.havochvatten.symphony.dto.BatchCalculationDto;
 import se.havochvatten.symphony.entity.BatchCalculation;
 import se.havochvatten.symphony.entity.CalculationResult;
-import se.havochvatten.symphony.scenario.Scenario;
-import se.havochvatten.symphony.scenario.ScenarioService;
+import se.havochvatten.symphony.scenario.*;
 import se.havochvatten.symphony.service.PropertiesService;
 
 import javax.annotation.Resource;
@@ -23,6 +22,7 @@ import javax.transaction.*;
 import javax.websocket.*;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.List;
 
 import static javax.ejb.LockType.READ;
 import static javax.ejb.LockType.WRITE;
@@ -59,6 +59,8 @@ public class BatchCalculateScenario extends AbstractBatchlet {
     private static volatile boolean cancelled = false;
 
     private static final ObjectMapper mapper = new ObjectMapper();
+
+    private ScenarioSplitOptions areasOptions;
 
     private Session getSocketSession() {
         try {
@@ -97,23 +99,33 @@ public class BatchCalculateScenario extends AbstractBatchlet {
                 getParameters( jobContext.getExecutionId() ).getProperty("batchCalculationId"));
 
         batchCalculation = em.find(BatchCalculation.class, batchCalculationId);
-        batchCalculationDto = new BatchCalculationDto(batchCalculation);
+        batchCalculationDto = new BatchCalculationDto(batchCalculation, null);
+        areasOptions = batchCalculation.getAreasOptions();
 
-        int[] scenarioIds = batchCalculation.getScenarios();
+        int[] ids = batchCalculation.getEntities();
 
         Scenario currentScenario;
 
-        for(int ix = 0; ix < scenarioIds.length; ++ix) {
+        for(int ix = 0; ix < ids.length; ++ix) {
+            if(batchCalculation.isAreasCalculation()) {
+                ScenarioArea area = em.find(ScenarioArea.class, ids[ix]);
+                ScenarioCopyOptions copyOptions = new ScenarioCopyOptions(area, areasOptions);
+                copyOptions.areaChangesToInclude =
+                    areasOptions.applyAreaChanges() ? new int[]{ area.getId() } : new int[0];
+                currentScenario = new Scenario(area.getScenario(), copyOptions, List.of(area));
+                currentScenario.getAreas().get(0).setId(area.getId());
+            } else {
+                currentScenario = scenarioService.findById(ids[ix]);
+            }
 
-            currentScenario = scenarioService.findById(scenarioIds[ix]);
-            batchCalculationDto.setCurrentScenario(scenarioIds[ix]);
+            batchCalculationDto.setCurrentEntity(ids[ix]);
             dispatchStatus();
 
             if (isCancelled()) {
                 setCancelled(false);
                 int[] allFailed =
-                        Arrays.stream(batchCalculation.getScenarios()).filter(
-                                        scenarioId -> !batchCalculationDto.getCalculated().contains(scenarioId))
+                        Arrays.stream(batchCalculation.getEntities()).filter(
+                                        entityId -> !batchCalculationDto.getCalculated().contains(entityId))
                                 .toArray();
 
                 batchCalculation.setFailed(allFailed);
@@ -123,17 +135,18 @@ public class BatchCalculateScenario extends AbstractBatchlet {
             }
 
             try {
-                CalculationResult calculationResult = calcService.calculateScenarioImpact(currentScenario);
+                CalculationResult calculationResult =
+                    calcService.calculateScenarioImpact(currentScenario, batchCalculation.isAreasCalculation());
                 batchCalculationDto.getReports()[ix] = calculationResult.getId();
             } catch (Exception e) {
-                batchCalculationDto.getFailed().add(scenarioIds[ix]);
+                batchCalculationDto.getFailed().add(ids[ix]);
                 continue;
             }
 
-            batchCalculationDto.getCalculated().add(scenarioIds[ix]);
+            batchCalculationDto.getCalculated().add(ids[ix]);
         }
 
-        batchCalculationDto.setCurrentScenario(null);
+        batchCalculationDto.setCurrentEntity(null);
         dispatchStatus();
 
         persistBatchStatus();

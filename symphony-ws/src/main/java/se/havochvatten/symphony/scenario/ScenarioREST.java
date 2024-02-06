@@ -9,13 +9,16 @@ import se.havochvatten.symphony.calculation.CalcService;
 import se.havochvatten.symphony.calculation.CalcUtil;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
+import se.havochvatten.symphony.entity.CalculationArea;
 import se.havochvatten.symphony.entity.CalculationResult;
+import se.havochvatten.symphony.service.CalculationAreaService;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -64,7 +67,7 @@ public class ScenarioREST {
     @RolesAllowed("GRP_SYMPHONY")
     public Response createScenario(@Context HttpServletRequest req, @Context UriInfo uriInfo,
                                    ScenarioDto dto) {
-        var persistedScenario = service.create(new Scenario(dto), req.getUserPrincipal());
+        var persistedScenario = service.create(new Scenario(dto, service), req.getUserPrincipal());
         logger.info("Create {} (id={})", persistedScenario.getName(), persistedScenario.getId());
         var uri = uriInfo.getAbsolutePathBuilder().path(persistedScenario.getId().toString()).build();
         return Response.created(uri).entity(new ScenarioDto(persistedScenario)).build();
@@ -84,7 +87,7 @@ public class ScenarioREST {
             throw new NoContentException("Scenario to update does not exist");
 
         if (req.getUserPrincipal().getName().equals(previous.getOwner())) {
-            Scenario scenarioToSave = new Scenario(updated);
+            Scenario scenarioToSave = new Scenario(updated, service);
             if(updated.latestCalculationId != null) {
                 CalculationResult calc = CalcUtil.getCalculationResultFromSessionOrDb(
                     updated.latestCalculationId, req.getSession(), calcService).orElseThrow(NotFoundException::new);
@@ -95,6 +98,8 @@ public class ScenarioREST {
         } else throw new NotAuthorizedException("Not owner of scenario");
     }
 
+    // Unused endpoint at the moment.
+    // Might be useful for future functionality.
     @PUT
     @ApiOperation(value = "Update scenario area")
     @Path("/area")
@@ -112,8 +117,7 @@ public class ScenarioREST {
         Scenario scenario = service.findById(updated.getScenarioId());
 
         if (req.getUserPrincipal().getName().equals(scenario.getOwner()))
-
-            return new ScenarioAreaDto(service.updateArea(new ScenarioArea(updated, scenario)), scenario.getId());
+            return new ScenarioAreaDto(service.updateArea(new ScenarioArea(updated, scenario), updated.getCustomCalcAreaId()), scenario.getId());
         else
             throw new NotAuthorizedException("Not owner of scenario area");
     }

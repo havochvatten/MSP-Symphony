@@ -1,0 +1,56 @@
+@import 'src/styles/hav-colors';
+
+section main .list-item {
+  position: relative;
+
+  &:hover {
+    background-color: $hav-coldgrey;
+
+    .list-actions {
+      opacity: 0.6;
+    }
+  }
+
+  .list-actions {
+    position: absolute;
+    opacity: 0;
+    display: flex;
+    top: 2px;
+    right: 2px;
+    z-index: 1;
+    background-color: white;
+    border: 1px solid gray;
+    padding: 4px 2px 4px 6px;
+
+    app-icon {
+      background-color: transparent;
+      opacity: 0.3;
+      position: relative;
+      font-size: 4rem;
+      height: 2.8rem;
+      width: 2.8rem;
+
+      ::ng-deep svg {
+        height: 1.75rem;
+        width: 1.75rem;
+      }
+
+      &[icontype='copy'], &[icontype='report'],
+      &[icontype='eye'], &[icontype='eye-slash'] {
+        color: $hav-turquoise;
+      }
+
+      &[icontype='delete'] {
+        color: $red;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}

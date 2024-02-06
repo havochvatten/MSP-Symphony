@@ -10,7 +10,7 @@ export class ResultColorScaleComponent {
   @Input() locale = 'en';
   @Input() title?: string;
   @Input() unit = '%';
-  @Input() perMille: boolean = false
+  @Input() perMille = false
   @Input() decimals = true;
 
   digitsInfo(): string {

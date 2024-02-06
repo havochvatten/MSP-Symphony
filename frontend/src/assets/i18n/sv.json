@@ -96,13 +96,24 @@
                 "select-area-first-label": "Markera först ett område"
             },
             "split-scenario-settings": {
-                "title": "Scenarier från områden",
-                "detail": "Generera ett nytt scenario för varje område som omfattas av det aktuella",
+                "title": "Åtgärder för områdesgrupp",
+                "detail": "Generera ett nytt scenario för varje område som omfattas av det aktuella, eller kör en \"batch\"-beräkning på de ingående områdena. Observera att den senare åtgärden inte genererar nya scenarion.",
                 "set-batch-name": "Namn på \"batch\"-beräkning",
                 "apply-scenario-changes": "Applicera gemensamma förekomständringar",
-                "apply-area-changes": "Applicera områdesspecifika inställningar på dess motsvarande scenarier",
-                "enter-batch-mode": "Gå till \"batch\"-läget",
-                "generate": "Generera"
+                "apply-area-changes": "Applicera områdesspecifika inställningar på dess motsvarande scenarier/beräkningar",
+                "enter-batch-mode": "Gå till \"batch\"-läget (gäller endast \"Generera\")",
+                "generate": "Generera",
+                "batch-calculate": "Beräkna"
+            },
+            "set-arbitrary-matrix": {
+                "title": "Välj matris och beräkningsområde",
+                "detail": "Ingen standardmatriskoppling kunde bestämmas för området \"{{ areaName }}\".\nFör att kunna analysera området behöver en godtycklig känslighetsmatris och ett havsplaneområde för värdenormalisering* först väljas.",
+                "caution": "Observera att om du avbryter denna åtgärd kommer området att exkluderas från scenariot.",
+                "normalization-description": "*Värdenormalisering innebär att resultatet normaliseras med avseende på det värde som {{ percentileValue }}% av datapunkterna i det valda området ligger inom (inklusive värden för kustområden).",
+                "calculation-area": "Beräkningsområde",
+                "select-matrix-placeholder": "Välj en matris",
+                "select-area-placeholder": "Välj område för värdenormalisering",
+                "set-matrix-and-normalization": "Spara matris och område"
             },
             "operation": {
                 "title": "Algoritm",
@@ -285,46 +296,43 @@
             "pressure": "belastning",
             "no-info": "Uppgift saknas.",
             "properties": {
-                "accessUseRestrictions": "Användningsbegränsningar",
-                "authorEmail": "Författares e-post",
-                "authorOrganisation": "Ansvarig organisation",
-                "dataOwner": "Ägare av datamängden",
-                "dataOwnerLocal": "Ägare av datamängden",
-                "dataProcessing": "Databehandling",
-                "dataSources": "Datakällor",
-                "dateCreated": "Upphovsdatum",
-                "descriptiveKeywords": "Nyckelord",
+                "accessuserestrictions": "Användningsbegränsningar",
+                "authoremail": "Författares e-post",
+                "authororganisation": "Ansvarig organisation",
+                "dataowner": "Ägare av datamängden",
+                "dataprocessing": "Databehandling",
+                "datasources": "Datakällor",
+                "datecreated": "Upphovsdatum",
+                "descriptivekeywords": "Nyckelord",
                 "format": "Dataformat",
-                "limitationsForSymphony": "Begränsningar",
+                "limitationsforsymphony": "Begränsningar",
                 "lineage": "Upphov",
-                "maintenanceInformation": "Underhållsinformation",
-                "mapAcknowledgement": "",
-                "marinePlaneArea": "Havsplaneområde",
-                "metadataDate": "Datum",
-                "metadataEmail": "E-post",
-                "metadataFileName": "Filnamn",
-                "metadataLanguage": "Språk",
-                "metadataOrganisation": "Organisation",
-                "metadataOrganisationLocal": "Organisation",
-                "methodSummary": "Metodsammanfattning",
-                "ownerEmail": "E-post (ägare)",
-                "otherRestrictions": "Övriga begränsningar",
-                "rasterFileName": "Filnamn rasterdata",
-                "rasterSpatialReferenceSystem": "Datarastrets koordinatsystem",
+                "maintenanceinformation": "Underhållsinformation",
+                "mapacknowledgement": "",
+                "marineplanarea": "Havsplaneområde",
+                "metadatadate": "Datum",
+                "metadataemail": "E-post",
+                "metadatafilename": "Filnamn",
+                "metadatalanguage": "Språk",
+                "metadataorganisation": "Organisation",
+                "methodsummary": "Metodsammanfattning",
+                "owneremail": "E-post (ägare)",
+                "otherrestrictions": "Övriga begränsningar",
+                "rasterfilename": "Filnamn rasterdata",
+                "rasterspatialreferencesystem": "Datarastrets koordinatsystem",
                 "recommendations": "Rekommendationer",
                 "resourceType": "Resurstyp",
-                "securityClassification": "Säkerhetsklassning",
+                "securityclassification": "Säkerhetsklassning",
                 "status": "Status",
                 "summary": "Sammanfattning",
-                "summaryLocal": "Sammanfattning",
-                "symphonyCategory": "Kategori",
-                "symphonyDatatype": "",
-                "symphonyTheme": "Metadatagrupp",
-                "temporalPeriod": "Tidsperiod",
+                "symphonycategory": "Kategori",
+                "symphonydatatype": "",
+                "symphonytheme": "Metadatagrupp",
+                "temporalperiod": "Tidsperiod",
                 "theme": "Ämne",
-                "topicCategory": "Ämneskategori",
-                "useLimitations": "Användningsbegränsningar",
-                "valueRange": "Värdeintervall"
+                "topiccategory": "Ämneskategori",
+                "uselimitations": "Användningsbegränsningar",
+                "valuerange": "Värdeintervall"
             }
         },
         "toolbar": {
@@ -374,11 +382,24 @@
             "show-report": "Öppna rapport “{{ calculationName }}”",
             "delete": "Radera sparad beräkning “{{ calculationName }}”",
             "filter-hint": "Filtrera beräkningsrapport per namn",
+            "show-result" : "Rendera detta resultat i kartbilden",
+            "hide-result" :  "Tag bort detta resultat från kartbilden",
+            "visible-result" : "Resultatet är synligt i kartbilden",
+            "purged-result": "Data för detta resultat har rensats bort.\nDå resultatet måste beräknas om tar det lite längre tid att ladda.",
             "delete-modal" : {
                 "header": "Radera sparad beräkning",
                 "message": "Bekräfta borttagning av tidigare sparad beräkning: <em>“{{ calculationName }}”</em>",
+                "header-multiple": "Radera markerade beräkningar",
+                "message-multiple": "Bekräfta borttagning av <strong>{{ count }}</strong> tidigare sparade beräkningar.",
+                "message-single": "Vill du ta bort den valda beräkningen?",
                 "cancel": "Avbryt",
                 "confirm": "Radera"
+            },
+            "multi-mode": {
+                "enter": "Markera flera beräkningar att radera samtidigt",
+                "exit": "Avsluta markering av flera beräkningar",
+                "delete-selected": "Radera markerade beräkningar",
+                "none-selected": "Inga beräkningar har markerats"
             }
         },
         "compare": {
@@ -391,7 +412,7 @@
             "base-scenario-suggestion": "(vanligtvis basvärdeanalysen)",
             "what-if-scenario-suggestion": "(vanligtvis den prognostiserade analysen)",
             "select-scale": "Anpassa färgskala",
-            "scale-constant": "Konstant maximum (45%)",
+            "scale-constant": "Konstant maximum",
             "scale-dynamic": "Dynamiskt maximum"
         },
         "user-area": {
@@ -487,6 +508,7 @@
     "user-menu": {
         "help": "Hjälp",
         "about": "Om",
+        "support": "Support",
         "profile": "Min profil",
         "logout": "Logga ut"
     },
@@ -542,6 +564,11 @@
             },
             "comparison": {
                 "legend-desc": "Bilden visar den relativa skillnaden i total kumulativ belastning mellan grund- och what-if-scenario."
+            },
+            "overflow": {
+                "title": "Förekomständring överstiger maxvärdet",
+                "detail": "Observera att den del av det kumulativa resultatet som överstigit maxvärdet per pixel, inte avspeglas i rapporten. Resultatet för de påverkade banden är lägre än värdet skulle vara om förekomständringen räknats in, utan hänsyn till maxvärdet per pixel.",
+                "list-description": "Maxvärdet överstigs inom följande band:"
             }
         },
         "sensitivity-matrices": {
@@ -580,13 +607,15 @@
             "and": "och",
             "base-changes": "Gemensamma förändringar",
             "area-changes": "Områdesspecifika förändringar",
-            "no-changes": "Inga förändringar"
+            "no-changes": "Inga förändringar",
+            "overflow-notice": "Förändringen överstiger maxvärdet"
         },
         "impact-table": {
             "ecoComponent": "Påverkan per naturvärde",
             "pressure": "Påverkan per belastning",
             "cumulative": "Kumulativt",
-            "percentage-of-total": "Av totalsumman"
+            "percentage-of-total": "Av totalsumman",
+            "overflow": "Överstiger maxvärde, förändringen redovisas felaktigt"
         },
         "toolbar": {
             "export-csv": "Ladda ner CSV",
@@ -606,6 +635,10 @@
         "link": "www.nairobiconvention.org/wio-symphony",
         "fetching-report": "Hämtar rapport",
         "error-message": "Ett fel inträffade. Det finns ingen rapport att visa för tillfället – var god testa att göra en ny beräkning."
+    },
+    "branding": {
+        "SwAM": "Havs och Vattenmyndigheten",
+        "SI-Sweden": "Sverige"
     },
     "api-messages": {
         "areas": {

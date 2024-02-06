@@ -35,14 +35,14 @@ export const fetchLegend = createAction(
   props<{ legendType: LegendType }>()
 );
 
-export const fetchComparisonLegend = createAction(
+createAction(
   '[Calculation] Fetch comparison legend',
   props<{ comparisonTitle: string }>()
 );
 
-export const fetchDynamicComparisonLegend = createAction(
+export const fetchComparisonLegend = createAction(
   '[Calculation] Fetch dynamic comparison legend',
-  props<{ dynamicMax: number, comparisonTitle: string }>()
+  props<{ maxValue: number, comparisonTitle: string }>()
 );
 
 export const fetchLegendSuccess = createAction(
@@ -78,6 +78,16 @@ export const fetchPercentileFailure = createAction(
   props<{ error: ErrorMessage }>()
 );
 
+export const loadCalculationResult = createAction(
+  '[Calculation] Load calculation result (pixels)',
+  props<{ calculationId: number }>()
+);
+
+export const loadCalculationResultSuccess = createAction(
+  '[Calculation] Load calculation result success',
+  props<{ calculationId: number }>()
+);
+
 export const deleteCalculation = createAction(
   '[Calculation] Delete calculation',
   props<{ calculationToBeDeleted: CalculationSlice }>()
@@ -90,6 +100,11 @@ export const deleteCalculationSuccess = createAction(
 export const deleteCalculationFailure = createAction(
   '[Calculation] Delete calculation failure',
   props<{ error: ErrorMessage }>()
+);
+
+export const deleteMultipleCalculations = createAction(
+  '[Calculation] Delete multiple calculations (by id)',
+  props<{ calculationIds: number[] }>()
 );
 
 export const updateName = createAction(
@@ -130,4 +145,14 @@ export const removeBatchProcessSuccess = createAction(
 export const removeBatchProcessFailure = createAction(
   '[Calculation] Remove batch process failure',
   props<{ error: ErrorMessage }>()
+);
+
+export const setVisibleResultLayers = createAction(
+  '[Calculation] Set visible result layers',
+  props<{ visibleResults: number[] }>()
+);
+
+export const setReportLoadingState = createAction(
+  '[Calculation] Set loading state for report',
+  props<{ calculationId: number, loadingState: boolean }>()
 );

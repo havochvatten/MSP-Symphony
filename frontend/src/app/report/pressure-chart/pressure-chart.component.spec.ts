@@ -16,7 +16,6 @@ describe('PressureChartComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(PressureChartComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   }));
 
   it('should create', () => {

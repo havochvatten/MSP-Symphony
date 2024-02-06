@@ -5,15 +5,14 @@ import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { Scenario, ScenarioChangeMap } from "@data/scenario/scenario.interfaces";
 import { BandChange, BandGroup } from "@data/metadata/metadata.interfaces";
-import { BandType_Alt as BandType, BandType as _BandType } from "@data/metadata/metadata.interfaces";
+import { BandType_Alt as BandType } from "@data/metadata/metadata.interfaces";
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
 import { MetadataSelectors } from "@data/metadata";
 
 interface BandShim {
-  id: number;
+  number: number;
   name: string;
-  key: string;
 }
 
 @Component({
@@ -31,11 +30,11 @@ export class ChangesOverviewComponent implements OnInit {
   allChangedBands: Map<BandType, Set<number>> =
     new Map([['ecoComponents', new Set<number>()],
              ['pressures', new Set<number>()]]);
-  ecoChanges: boolean = false;
-  pressureChanges: boolean = false;
-  bothTypes: boolean = false;
-  editingCell: boolean = false;
-  hasChanged: boolean = false;
+  ecoChanges = false;
+  pressureChanges = false;
+  bothTypes = false;
+  editingCell = false;
+  hasChanged = false;
 
   // these naming discrepancies should be consolidated at some point
   bandTypeDict: Map<string, BandType> = new Map([
@@ -59,10 +58,14 @@ export class ChangesOverviewComponent implements OnInit {
       this.bands = this.store.select(MetadataSelectors.selectMetadata)
 
       if(this.scenario.changes) {
-        for (const band in this.scenario.changes) {
-          const bandChange = this.scenario.changes[band];
-          if(bandChange) {
-            this.addChange(-1, bandChange.band, bandChange)
+        for(const category of ['ECOSYSTEM', 'PRESSURE']) {
+          if(this.scenario.changes[category]) {
+            for (const band in this.scenario.changes[category]) {
+              const bandChange = this.scenario.changes[category][band];
+              if (bandChange) {
+                this.addChange(-1, +band, bandChange)
+              }
+            }
           }
         }
       }
@@ -70,10 +73,14 @@ export class ChangesOverviewComponent implements OnInit {
       for(const area in this.scenario.areas) {
         const areaChange = this.scenario.areas[area].changes;
         if(areaChange) {
-          for (const band in areaChange) {
-            const bandChange = areaChange[band];
-            if(bandChange) {
-              this.addChange(+area, bandChange.band, bandChange)
+          for(const category of ['ECOSYSTEM', 'PRESSURE']) {
+            if(areaChange[category]) {
+              for (const band in areaChange[category]) {
+                const bandChange = areaChange[category][band];
+                if(bandChange) {
+                  this.addChange(+area, +band, bandChange)
+                }
+              }
             }
           }
         }
@@ -86,17 +93,17 @@ export class ChangesOverviewComponent implements OnInit {
     const bandMeta = await (this.bands).pipe(take(1)).toPromise();
     for(const bandType in bandMeta) { // ecocomponents, pressures
       for(const bandGroup of bandMeta[bandType]) {
-        for(const band of bandGroup.properties) {
+        for(const band of bandGroup.bands) {
           if(this.allChangedBands.get(this.getBandType(bandType))!.has(band.bandNumber)) {
-            this.setGroupedChangeToDisplay(bandType, bandGroup.displayName,
-              { id: band.bandNumber, name: band.displayName, key: band.title })
+            this.setGroupedChangeToDisplay(bandType, bandGroup.symphonyThemeName,
+              { number: band.bandNumber, name: band.title })
           }
         }
       }
     }
   }
 
-  private getChange(bandType: string, areaIndex: number, id: number): BandChange {
+  getChange(bandType: string, areaIndex: number, id: number): BandChange {
     const thisType = this.getBandType(bandType);
     if( Object.keys(this.areaChangeMap[areaIndex]).includes(thisType) &&
       Object.keys(this.areaChangeMap[areaIndex][thisType]).includes(String(id))
@@ -104,7 +111,6 @@ export class ChangesOverviewComponent implements OnInit {
       return this.areaChangeMap[areaIndex][thisType][id];
     }
     return { type: bandType === 'ecoComponents' ? 'ECOSYSTEM' : 'PRESSURE',
-             band: id,
              multiplier: 1,
              offset: undefined };
   }
@@ -113,7 +119,7 @@ export class ChangesOverviewComponent implements OnInit {
     const thisType = this.getBandType(bandChange.type);
     this.ecoChanges ||=      bandChange.type === 'ECOSYSTEM';
     this.pressureChanges ||= bandChange.type === 'PRESSURE';
-    this.allChangedBands.get(thisType)!.add(bandChange.band);
+    this.allChangedBands.get(thisType)!.add(bandId);
     this.areaChangeMap[areaIndex] = this.areaChangeMap[areaIndex] || {};
     this.areaChangeMap[areaIndex][thisType] = this.areaChangeMap[areaIndex][thisType] || {};
     this.areaChangeMap[areaIndex][thisType][bandId] = bandChange;
@@ -137,19 +143,19 @@ export class ChangesOverviewComponent implements OnInit {
     this.pressureChanges  = value === 'both' || value === 'pressures';
   }
 
-  setEditingCell($event: {areaIndex: number, change: BandChange} | null) {
+  setEditingCell($event: {areaIndex: number, change: BandChange, bandNumber: number} | null) {
     this.editingCell = $event === null;
 
     if(!this.editingCell) {
-      const change = $event!.change;
+      const change = $event!.change, bandNumber = $event!.bandNumber, areaIndex = $event!.areaIndex
       if((change.multiplier !== undefined && change.multiplier === 1) ||
          (change.offset !== undefined && change.offset === 0)) {
         this.hasChanged = true;
-        this.allChangedBands.get(this.getBandType(change.type))!.delete(change.band);
+        this.allChangedBands.get(this.getBandType(change.type))!.delete(bandNumber);
       } else {
-        const prevChange = this.getChange(change.type, $event!.areaIndex, change.band);
+        const prevChange = this.getChange(change.type, areaIndex, bandNumber);
         this.hasChanged = prevChange.multiplier !== change.multiplier || prevChange.offset !== change.offset;
-        this.addChange($event!.areaIndex, $event!.change!.band, $event!.change!);
+        this.addChange(areaIndex, bandNumber, change!);
       }
     }
   }

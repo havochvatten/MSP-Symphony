@@ -16,6 +16,7 @@ import { OrdinalPipe } from "@shared/ordinal.pipe";
 import { HistogramComponent } from './histogram/histogram.component';
 import { HistogramChartComponent } from './histogram/histogram-chart/histogram-chart.component';
 import { ReportBottomComponent } from './report-bottom/report-bottom.component';
+import { AbstractReport } from './abstract-report.directive';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { ReportBottomComponent } from './report-bottom/report-bottom.component';
     ScenarioChangesComponent,
     HistogramComponent,
     HistogramChartComponent,
+    AbstractReport,
     ReportBottomComponent
   ],
   imports: [CommonModule, SharedModule, CalculationReportRoutingModule, MatProgressSpinnerModule],

@@ -1,0 +1,36 @@
+<h3>{{ 'map.editor.set-arbitrary-matrix.title' | translate }}</h3>
+<p>{{ 'map.editor.set-arbitrary-matrix.detail' | translate:{ areaName } }}</p>
+<p class="caution">{{ 'map.editor.set-arbitrary-matrix.caution' | translate:{ areaName } }}</p>
+<mat-label>{{ 'map.editor.matrix.sensitivity-matrix' | translate }}</mat-label>
+<mat-form-field>
+  <mat-select [(ngModel)]="selectedMatrix" placeholder="{{
+    'map.editor.set-arbitrary-matrix.select-matrix-placeholder' | translate }}"
+              [panelClass]="'select-sensitivity-matrix-panel'">
+    <mat-option *ngFor="let matrix of matrices" [value]="matrix">
+      {{ matrix.name }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+<mat-label>{{ 'map.editor.set-arbitrary-matrix.calculation-area' | translate }}</mat-label>
+<mat-form-field floatLabel="never">
+  <mat-select [(ngModel)]="selectedCalculationArea" placeholder="{{
+    'map.editor.set-arbitrary-matrix.select-area-placeholder' | translate }}"
+              [panelClass]="'select-calibrated-area-panel'"
+              [disabled]="(calibratedAreas$ | async)?.length < 2">
+    <mat-option *ngFor="let area of calibratedAreas$ | async" [value]="area">
+      {{ area.name }}
+      </mat-option>
+  </mat-select>
+</mat-form-field>
+<div class="normalization-note">
+    <p>{{ 'map.editor.set-arbitrary-matrix.normalization-description' | translate:{ percentileValue } }}</p>
+</div>
+<div class="button-pane">
+  <button mat-flat-button [ngClass]="'secondary'" (click)="close()">{{
+    'confirmation-modal.cancel' | translate
+  }}</button>
+  <button mat-flat-button (click)="confirm()"
+          [disabled]="selectedMatrix === null || selectedCalculationArea === null">{{
+    'map.editor.set-arbitrary-matrix.set-matrix-and-normalization' | translate
+  }}</button>
+</div>

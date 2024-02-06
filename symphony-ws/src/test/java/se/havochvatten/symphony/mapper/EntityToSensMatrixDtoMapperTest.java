@@ -4,14 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import se.havochvatten.symphony.dto.SensMatrixDto;
 import se.havochvatten.symphony.dto.SensitivityDto;
-import se.havochvatten.symphony.entity.Metadata;
-import se.havochvatten.symphony.entity.Sensitivity;
 import se.havochvatten.symphony.entity.SensitivityMatrix;
 import se.havochvatten.symphony.util.SymphonyDtoUtil;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,55 +23,16 @@ public class EntityToSensMatrixDtoMapperTest {
         sensMatrix = new SensitivityMatrix();
         sensMatrix.setId(MATRIX_ID);
         sensMatrix.setName(MATRIX_NAME);
-        sensMatrix.setSensitivityList(new ArrayList<>());
 
-        Sensitivity sensitivity11 = new Sensitivity();
-        Metadata presMetadata1 = new Metadata();
-        presMetadata1.setId(576);
-        presMetadata1.setTitle("Explosion peak");
-        presMetadata1.setTitleLocal("Explosionermaximaltryck(peakmaximumpressure)");
-        Metadata ecoMetadata1 = new Metadata();
-        ecoMetadata1.setId(626);
-        ecoMetadata1.setTitle("Porpoise Belt Sea");
-        ecoMetadata1.setTitleLocal("TumlareBälthavet");
-        sensitivity11.setPresMetadata(presMetadata1);
-        sensitivity11.setEcoMetadata(ecoMetadata1);
-        sensitivity11.setValue(BigDecimal.valueOf(0.1));
-        sensMatrix.getSensitivityList().add(sensitivity11);
-
-        Sensitivity sensitivity12 = new Sensitivity();
-        Metadata ecoMetadata2 = new Metadata();
-        ecoMetadata2.setId(627);
-        ecoMetadata2.setTitle("Porpoise North Sea");
-        ecoMetadata2.setTitleLocal("TumlareNordsjön");
-        sensitivity12.setPresMetadata(presMetadata1);
-        sensitivity12.setEcoMetadata(ecoMetadata2);
-        sensitivity12.setValue(BigDecimal.valueOf(0.2));
-        sensMatrix.getSensitivityList().add(sensitivity12);
-
-        Sensitivity sensitivity21 = new Sensitivity();
-        Metadata presMetadata2 = new Metadata();
-        presMetadata2.setId(577);
-        presMetadata2.setTitle("Explosion Sound Exposure Level (SEL)");
-        presMetadata2.setTitleLocal("Explosionerljudnivå(SoundExposureLevel)");
-        sensitivity21.setPresMetadata(presMetadata2);
-        sensitivity21.setEcoMetadata(ecoMetadata1);
-        sensitivity21.setValue(BigDecimal.valueOf(0.3));
-        sensMatrix.getSensitivityList().add(sensitivity21);
-
-        Sensitivity sensitivity22 = new Sensitivity();
-        sensitivity22.setPresMetadata(presMetadata2);
-        sensitivity22.setEcoMetadata(ecoMetadata2);
-        sensitivity22.setValue(BigDecimal.valueOf(0.4));
-        sensMatrix.getSensitivityList().add(sensitivity22);
-
+        sensMatrix.setSensitivityList(SymphonyDtoUtil.commonSensitivities());
     }
 
     @Test
     public void testMap() throws IOException {
         SensMatrixDto sensMatrixDto = SymphonyDtoUtil.createSensMatrixDto(MATRIX_NAME);
-        SensMatrixDto mappedDto = EntityToSensMatrixDtoMapper.map(sensMatrix);
-        assertThat(mappedDto.getId(), is(sensMatrixDto.getId()));
+        SensMatrixDto mappedDto = EntityToSensMatrixDtoMapper.map(sensMatrix, "sv");
+
+        assertThat(mappedDto.getId(), is(MATRIX_ID));
         assertThat(mappedDto.getName(), is(sensMatrixDto.getName()));
         assertThat(mappedDto.getSensMatrix().getRows().size(), is(2));
 
@@ -107,5 +64,4 @@ public class EntityToSensMatrixDtoMapperTest {
         assertThat(mappedCol22.getName(), is(col22.getName()));
         assertThat(mappedCol22.getValue(), is(col22.getValue()));
     }
-
 }

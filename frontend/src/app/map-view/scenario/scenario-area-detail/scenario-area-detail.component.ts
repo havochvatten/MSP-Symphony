@@ -20,6 +20,7 @@ import { OperationParams } from "@data/calculation/calculation.interfaces";
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
 import { transferChanges } from "@src/app/map-view/scenario/scenario-common";
 import { MetadataSelectors } from "@data/metadata";
+import { BandType } from "@data/metadata/metadata.interfaces";
 
 const availableOperationsByValue: Map<CalcOperation, string> = new Map<CalcOperation, string>(
   [ [CalcOperation.Cumulative, 'CumulativeImpact' ] ,
@@ -47,10 +48,10 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
 
   percentileValue$: Observable<number>;
   calculating$?: Observable<boolean>;
-  areaFeatureName: string = '';
+  areaFeatureName = '';
   locale = 'en';
   private matrixDataSubscription$: Subscription;
-  bandDictionary$: Observable<{ [p: string]: string }>;
+  bandDictionary$: Observable<{[t: string]: { [p: string]: string } }>;
 
   constructor(
     private store: Store<State>,
@@ -58,7 +59,7 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
     private scenarioService: ScenarioService,
     private dialogService: DialogService,
     private translateService: TranslateService,
-    private moduleRef: NgModuleRef<any>
+    private moduleRef: NgModuleRef<never>
   ) {
     const that = this;
     this.calculating$ = this.store.select(CalculationSelectors.selectCalculating);
@@ -79,7 +80,7 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
     this.matrixDataSubscription$.unsubscribe();
   }
 
-  changes(): ChangesProperty | null {
+  changes(): { [ bandType: string ] : ChangesProperty } | null {
     return this.area().changes;
   }
 
@@ -104,8 +105,9 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
     return this.scenario.operationOptions ?? { 'domain' : 'GLOBAL' };
   }
 
-  deleteChange = (bandId: string) => {
-    this.store.dispatch(ScenarioActions.deleteAreaBandChange({ bandId }));
+  deleteChange = (bandTypeString: string, bandNumber: number) => {
+    const componentType = bandTypeString as BandType;
+    this.store.dispatch(ScenarioActions.deleteAreaBandChange({ componentType, bandNumber }));
   }
 
   close() {

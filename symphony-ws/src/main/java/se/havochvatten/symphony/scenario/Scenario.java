@@ -1,6 +1,5 @@
 package se.havochvatten.symphony.scenario;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vladmihalcea.hibernate.type.array.IntArrayType;
@@ -10,11 +9,11 @@ import org.hibernate.annotations.CascadeType;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 
-import org.opengis.feature.simple.SimpleFeature;
 import se.havochvatten.symphony.calculation.CalcService;
 import se.havochvatten.symphony.dto.NormalizationOptions;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
+import se.havochvatten.symphony.entity.CalculationArea;
 import se.havochvatten.symphony.entity.CalculationResult;
 
 import javax.persistence.*;
@@ -32,9 +31,13 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "scenario")
 @NamedQueries({
-        @NamedQuery(name = "Scenario.findAllByOwner",
-                query = "SELECT NEW se.havochvatten.symphony.dto.ScenarioDto(s) FROM Scenario s" +
-                        " WHERE s.owner = :owner ORDER BY s.timestamp DESC")
+    @NamedQuery(name = "Scenario.findAllByOwner",
+            query = "SELECT NEW se.havochvatten.symphony.dto.ScenarioDto(s) FROM Scenario s" +
+                    " WHERE s.owner = :owner ORDER BY s.timestamp DESC"),
+    @NamedQuery(name = "Scenario.getEcosystemsToInclude",
+            query = "SELECT ecosystemsToInclude FROM Scenario WHERE id = :scenarioId"),
+    @NamedQuery(name = "Scenario.getPressuresToInclude",
+            query = "SELECT pressuresToInclude FROM Scenario WHERE id = :scenarioId")
 })
 @TypeDefs({
         @TypeDef(name = "json", typeClass = JsonBinaryType.class),
@@ -118,7 +121,7 @@ public class Scenario implements Serializable, BandChangeEntity {
 
     public Scenario() {}
 
-    public Scenario(ScenarioDto dto) {
+    public Scenario(ScenarioDto dto, ScenarioService service) {
         id = dto.id;
         owner = dto.owner;
         timestamp = new Date();
@@ -128,7 +131,15 @@ public class Scenario implements Serializable, BandChangeEntity {
         normalization = dto.normalization;
         ecosystemsToInclude = dto.ecosystemsToInclude;
         pressuresToInclude = dto.pressuresToInclude;
-        areas.addAll(Arrays.stream(dto.areas).map(a -> new ScenarioArea(a, this)).toList());
+
+        for(ScenarioAreaDto a : dto.areas) {
+            ScenarioArea area = new ScenarioArea(a, this);
+            if(a.getCustomCalcAreaId() != null) {
+                service.updateArea(area, a.getCustomCalcAreaId());
+            }
+            this.areas.add(area);
+        }
+
         operation = dto.operation;
     }
 
@@ -150,6 +161,7 @@ public class Scenario implements Serializable, BandChangeEntity {
         var areasToAdd = altAreas == null ? s.areas : altAreas;
 
         for(ScenarioArea a : areasToAdd) {
+            CalculationArea calcArea = a.getCustomCalcArea();
             this.areas.add(new ScenarioArea(
                 new ScenarioAreaDto(
                     -1,
@@ -158,9 +170,12 @@ public class Scenario implements Serializable, BandChangeEntity {
                     a.getFeatureJson(),
                     a.getMatrix(),
                     null,
-                    a.getExcludedCoastal()), this));
+                    a.getExcludedCoastal(),
+                    calcArea == null ? null : calcArea.getId()), this));
         }
     }
+
+    public ObjectMapper getMapper() { return mapper; }
 
     public Integer getId() {
         return id;
@@ -208,13 +223,6 @@ public class Scenario implements Serializable, BandChangeEntity {
 
     public void setChanges(JsonNode changes) {
         this.changes = changes;
-    }
-
-    public Map<String, BandChange> getChangeMap() {
-        Map<String, BandChange> changeMap =
-            changes == null || changes.isNull() ? new HashMap<>() :
-                mapper.convertValue(this.changes, new TypeReference<>() {});
-        return changeMap;
     }
 
     public NormalizationOptions getNormalization() { return normalization; }
@@ -267,9 +275,5 @@ public class Scenario implements Serializable, BandChangeEntity {
     public Map<Integer, Integer> getAreasExcludingCoastal() {
         return areas.stream().filter(a -> a.getExcludedCoastal() != null)
                 .collect(Collectors.toMap(a -> a.getId(), a -> a.getExcludedCoastal()));
-    }
-
-    public List<SimpleFeature> compileZones() {
-        return areas.stream().map(a -> a.getFeature()).collect(Collectors.toList());
     }
 }

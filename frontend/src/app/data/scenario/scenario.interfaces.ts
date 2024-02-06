@@ -21,7 +21,7 @@ export interface State {
 export interface Scenario extends SortableListItem {
   id: number;
   baselineId: number;
-  changes: ChangesProperty;
+  changes: { [key: string] : ChangesProperty };
   normalization: NormalizationOptions;
   ecosystemsToInclude: number[];
   pressuresToInclude: number[];
@@ -34,10 +34,11 @@ export interface Scenario extends SortableListItem {
 export interface ScenarioArea {
   id: number;
   feature: GeoJSONFeature;
-  changes: ChangesProperty | null;
+  changes: { [key: string] : ChangesProperty } | null;
   matrix: MatrixParameters;
   scenarioId: number
   excludedCoastal: number | null;
+  customCalcAreaId: number | null;
 }
 
 export interface ScenarioDisplayMeta {
@@ -78,6 +79,11 @@ export interface ScenarioSplitOptions {
   applyScenarioChanges: boolean;
   applyAreaChanges: boolean;
   batchSelect: boolean;
+}
+
+export interface ScenarioSplitDialogResult {
+  options: ScenarioSplitOptions;
+  immediate: boolean;
 }
 
 export interface ScenarioSplitResponse {

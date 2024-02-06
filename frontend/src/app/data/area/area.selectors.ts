@@ -27,13 +27,6 @@ export const selectSelectedAreaData = createSelector(
       (selectedAreas ? selectedAreas.map(s_area => getIn(area, s_area, [])) : [])
 );
 
-// Not used anywhere.. also problem with type of the selectSelectedAreaData
-// export const selectSelectedAreaDataAndBaseline = createSelector(
-//   selectSelectedAreaData,
-//   selectBaseline,
-//   (area?: Area, baseline?: Baseline) => ({ area, baseline })
-// );
-
 export const selectNationalAreas = createSelector(selectAreaState, (state: State) => {
   const { area } = state;
   const areaTypes = state.areaTypes.filter(areaType => Object.keys(area).includes(areaType));
@@ -55,6 +48,11 @@ export const selectUserAreas = createSelector(selectAreaState, (state: State) =>
 export const selectOverlap = createSelector(selectAreaState, state => state.selectionOverlap);
 
 export const selectBoundaries = createSelector(selectAreaState, state => state.boundaries);
+
+export const selectCalibratedCalculationAreas = createSelector(
+  selectAreaState,
+  state => state.calibratedCalculationAreas
+);
 
 export const selectAll = createSelector(
   selectNationalAreas,

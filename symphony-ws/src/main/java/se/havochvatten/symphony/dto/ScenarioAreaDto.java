@@ -22,14 +22,18 @@ public class ScenarioAreaDto implements Serializable {
     private final Integer scenarioId;
     private final Integer excludedCoastal;
 
-    public ScenarioAreaDto() { /* actually useless no arg constructor to satisfy stream API */
+    private final Integer customCalcAreaId;
+
+    public ScenarioAreaDto() {
         id = 0;
         changes = null;
         feature = null;
         matrix = null;
         scenarioId = 0;
         excludedCoastal = null;
+        customCalcAreaId = null;
     }
+
     public ScenarioAreaDto(ScenarioArea area, Integer scenarioId) {
         this.id = area.getId();
         this.changes = area.getChanges();
@@ -37,15 +41,19 @@ public class ScenarioAreaDto implements Serializable {
         this.matrix = area.getMatrix();
         this.scenarioId = scenarioId;
         this.excludedCoastal = area.getExcludedCoastal();
+        this.customCalcAreaId = area.getCustomCalcArea() == null ? null :
+                                area.getCustomCalcArea().getId();
     }
 
-    public ScenarioAreaDto(Integer id, JsonNode changes, JsonNode feature, JsonNode matrix, Integer scenarioId, Integer excludedCoastal) {
+    public ScenarioAreaDto(Integer id, JsonNode changes, JsonNode feature, JsonNode matrix,
+                           Integer scenarioId, Integer excludedCoastal, Integer customCalcAreaId) {
         this.id = id;
         this.changes = changes;
         this.feature = feature;
         this.matrix = matrix;
         this.scenarioId = scenarioId;
         this.excludedCoastal = excludedCoastal;
+        this.customCalcAreaId = customCalcAreaId;
     }
 
     public Integer getId() {
@@ -97,5 +105,9 @@ public class ScenarioAreaDto implements Serializable {
 
     public Integer getExcludedCoastal() {
         return excludedCoastal;
+    }
+
+    public Integer getCustomCalcAreaId() {
+        return customCalcAreaId;
     }
 }

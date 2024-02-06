@@ -15,7 +15,10 @@ export interface State {
   legends: LegendState;
   percentileValue: number;
   sortCalculations: ListItemsSort;
-  batchProcesses: {[key: number]: BatchCalculationProcessEntry}
+  batchProcesses: { [key: number]: BatchCalculationProcessEntry },
+  visibleResults: number[];
+  loadingResults: number[];
+  loadingReports: number[];
 }
 
 export interface Report {
@@ -40,12 +43,17 @@ export interface Report {
   chartData: ChartData;
   chartWeightThreshold: number;
   timestamp: number;
+  overflow: Record<BandType, number[]> | null;
 }
 
 export interface ReportChanges {
-  baseChanges: ChangesProperty,
+  baseChanges: {
+    [key: string] : ChangesProperty
+  },
   areaChanges: {
-    [key: number]: ChangesProperty
+    [key: number]: {
+      [key: string] : ChangesProperty
+    }
   };
 }
 
@@ -54,24 +62,6 @@ export interface ComparisonReport {
   b: Report
   chartDataPositive: ChartData;
   chartDataNegative: ChartData;
-}
-
-export interface DefaultMatrixData {
-  defaultMatrix: string,
-  areaTypes: AreaTypes;
-}
-
-export interface AreaTypes {
-  [key: string]: string[];
-}
-
-export interface ScenarioChange {
-  areaName: string;
-  band: number;
-  multiplier: number;
-  offset: number;
-  roi: any;
-  type: BandType;
 }
 
 export interface StaticImageOptions {
@@ -83,9 +73,8 @@ export interface StaticImageOptions {
 }
 
 export interface CalculationSlice extends SortableListItem {
-  // The below are set upon calculation completion
   id: number;
-  loading?: boolean;
+  isPurged: boolean;
 }
 
 export type LegendType = 'result' | 'comparison' | 'ecosystem' | 'pressure';
@@ -108,11 +97,13 @@ export interface PercentileResponse {
 export interface BatchCalculationProcessEntry {
   id: number;
   cancelled: boolean;
-  currentScenario: number|null;
-  scenarios: number[];
+  currentEntity: number|null;
+  entities: number[];
   calculated: number[];
   failed: number[];
   reports: number|null[];
+  isAreaCalculation: boolean;
+  entityNames: { [key: number]: string };
 }
 
 export interface ComparisonLegendState {
@@ -120,12 +111,12 @@ export interface ComparisonLegendState {
   legend: Legend,
 }
 
-export type LegendState = {
+export interface LegendState {
   result: Legend | undefined,
   ecosystem: Legend | undefined,
   pressure: Legend | undefined,
   comparison: { [value: string] : ComparisonLegendState }
-};
+}
 
 export interface OperationParams {
   [param: string]: string;

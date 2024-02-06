@@ -14,7 +14,6 @@ import { TabComponent } from './tabs/tab/tab.component';
 import { SliderComponent } from './slider/slider.component';
 import { NoteComponent } from './note/note.component';
 import { ModalComponent } from './modal/modal.component';
-import { CheckboxGroupComponent } from './checkbox-group/checkbox-group.component';
 import { ModalHeaderComponent } from './modal/modal-header/modal-header.component';
 import { ModalContentComponent } from './modal/modal-content/modal-content.component';
 import { ModalFooterComponent } from './modal/modal-footer/modal-footer.component';
@@ -43,6 +42,7 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatRadioModule } from "@angular/material/radio";
 import { MatInputModule } from "@angular/material/input";
 import { ListFilterComponent } from './list-filter/list-filter.component';
+import { MultiToolsComponent } from './multi-tools/multi-tools.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +57,6 @@ import { ListFilterComponent } from './list-filter/list-filter.component';
     SliderComponent,
     NoteComponent,
     ModalComponent,
-    CheckboxGroupComponent,
     ModalHeaderComponent,
     ModalContentComponent,
     ModalFooterComponent,
@@ -83,7 +82,8 @@ import { ListFilterComponent } from './list-filter/list-filter.component';
     InlineMapComponent,
     SelectIntersectionComponent,
     ComparisonColorScaleComponent,
-    ListFilterComponent
+    ListFilterComponent,
+    MultiToolsComponent
   ],
   imports: [
     CommonModule,
@@ -116,7 +116,6 @@ import { ListFilterComponent } from './list-filter/list-filter.component';
     TabComponent,
     SliderComponent,
     NoteComponent,
-    CheckboxGroupComponent,
     ModalComponent,
     ModalHeaderComponent,
     ModalContentComponent,
@@ -133,7 +132,8 @@ import { ListFilterComponent } from './list-filter/list-filter.component';
     InlineMapComponent,
     SelectIntersectionComponent,
     ComparisonColorScaleComponent,
-    ListFilterComponent
+    ListFilterComponent,
+    MultiToolsComponent
   ]
 })
 export class SharedModule {}

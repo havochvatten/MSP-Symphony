@@ -44,7 +44,8 @@ describe('ScenarioAreaDetailComponent', () => {
         changes: {},
         matrix: {matrixType: 'STANDARD'},
         scenarioId: -1,
-        excludedCoastal: null
+        excludedCoastal: null,
+        customCalcAreaId: null
       }],
       latestCalculationId: null
     };

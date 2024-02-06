@@ -11,7 +11,7 @@ export class HighestImpactsComponent implements OnChanges {
   @Input() title?: string;
   @Input() bandGroups?: BandGroup[];
   @Input() impacts: Record<number, number> = {};
-  @Input() total: number = 0;
+  @Input() total = 0;
   @Input() locale = 'en';
 
   highestImpacts: Band[] = [];
@@ -19,7 +19,7 @@ export class HighestImpactsComponent implements OnChanges {
   ngOnChanges() {
     if (this.bandGroups) {
       this.highestImpacts = this.bandGroups
-        .reduce((bands: Band[], group: BandGroup) => [...bands, ...group.properties], [])
+        .reduce((bands: Band[], group: BandGroup) => [...bands, ...group.bands], [])
         .sort((a, b) => this.compareImpact(a.bandNumber, b.bandNumber))
         .slice(0, 5)
         .filter(band => this.getImpact(band.bandNumber) > 0);
@@ -47,7 +47,7 @@ export class HighestImpactsComponent implements OnChanges {
     return 'black';
   }
 
-  bar(x: number, y: number, w: number, h: number, r: number, f: number = 1) {
+  bar(x: number, y: number, w: number, h: number, r: number, f = 1) {
     // f -> Flag for sweep
     // x coordinates of top of arcs
     const x0 = x + r;

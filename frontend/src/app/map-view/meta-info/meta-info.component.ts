@@ -25,15 +25,15 @@ export class MetaInfoComponent implements AfterViewInit {
     for (const metaField of env.meta.visible_fields) {
       let sep: string;
       if (this.band.meta[metaField]) {
-        let listType = env.meta.list_fields.includes(metaField);
+        const listType = env.meta.list_fields.includes(metaField);
         sep = (listType) ? ';' : '\\n';
         (listType ? this.bandMetadataLists : this.bandMetadata)
           .set(metaField, this.band.meta[metaField].split(sep));
       }
     }
 
-    this.category = this.band.statePath[0] === 'ecoComponent' ? 'ecosystem' : 'pressure';
-    this.title = this.band.displayName;
+    this.category = this.band.symphonyCategory === 'ECOSYSTEM' ? 'ecosystem' : 'pressure';
+    this.title = this.band.title;
   }
 
   close = () => {

@@ -13,9 +13,7 @@ import java.util.List;
 public class CalculationAreaMapper {
 
     public static CalculationAreaDto mapToDto(CalculationArea calculationArea) {
-        CalculationAreaDto calculationAreaDto = new CalculationAreaDto();
-        calculationAreaDto.setId(calculationArea.getId());
-        calculationAreaDto.setName(calculationArea.getName());
+        CalculationAreaDto calculationAreaDto = mapToSparseDto(calculationArea);
         calculationAreaDto.setCareaDefault(calculationArea.isCareaDefault());
         calculationAreaDto.setDefaultSensitivityMatrixId(calculationArea.getDefaultSensitivityMatrix() == null ? null : calculationArea.getDefaultSensitivityMatrix().getId());
         calculationAreaDto.getPolygons().addAll(mapPolygonToDto(calculationArea.getCaPolygonList()));
@@ -45,6 +43,13 @@ public class CalculationAreaMapper {
             caPolygons.add(caPolygon);
         }
         return caPolygons;
+    }
+
+    public static CalculationAreaDto mapToSparseDto(CalculationArea calculationArea) {
+        CalculationAreaDto calculationAreaDto = new CalculationAreaDto();
+        calculationAreaDto.setId(calculationArea.getId());
+        calculationAreaDto.setName(calculationArea.getName());
+        return calculationAreaDto;
     }
 
     private static List<CaPolygonDto> mapPolygonToDto(List<CaPolygon> caPolygons) {

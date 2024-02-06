@@ -1,3 +1,5 @@
+@import 'src/styles/hav-colors';
+
 :host {
   display: block;
   max-width: 500px;
@@ -16,6 +18,7 @@
     max-width: 500px;
     font-size: 12px;
     margin-bottom: 24px;
+    border-spacing: 0 2px;
 
     tr {
       &.title-row {
@@ -32,6 +35,11 @@
         span.line {
           visibility: hidden;
         }
+      }
+
+      &.overflow {
+        background-color: $hav-ext-lightpale-salmon;
+        color: $alert-active-red;
       }
     }
 

@@ -5,80 +5,86 @@
   </header>
   <div class="logo">
     <img class="report-logos" src="assets/wio/nc_logo-tmp.png" />
-    <img class="report-logos" src="assets/sweden-logotype-english.svg" />
+    <img class="report-logos" src="assets/sweden-logotype-english.svg"
+         alt="{{ 'branding.SI-Sweden' | translate }}"/>
   </div>
   <span id="report-in-collaboration">{{ 'wio.in-collaboration-with' | translate }}:</span>
   <app-calculation-image [imageURL]="imageUrl"></app-calculation-image>
-  <app-cumulative-effect-etc [reports]="report ? [report] : undefined"
-    [area]="area"
-    [normalization]="report.normalization"
-    [percentileValue]="this.percentileValue$ | async"
-    [normalized]="isDomainNormalization(report)"
-    [locale]="locale"
-  ></app-cumulative-effect-etc>
-  <ng-container>
-    <div id="matrix-selection">
-      <h4>{{'report.sensitivity-matrices.title' | translate}}</h4>
-      <table>
-        <tr *ngFor="let matrixMap of getGroupedMatrixMap() | keyvalue">
-          <th>{{ matrixMap.value.join(", ") }}</th>
-          <td>{{ matrixMap.key }}</td>
-        </tr>
-      </table>
-<!--      <ng-container *ngIf="hasAreaTypes(matrix)">-->
-<!--        <h5>{{'report.cumulative-effect-etc.sensitivity-matrices.area-type-matrices' | translate}}</h5>-->
-<!--        <table>-->
-<!--          <tr *ngFor="let areaType of matrix.areaTypes | keyvalue">-->
-<!--            <th>{{ areaType.key | titlecase }}:</th>-->
-<!--            <td>{{ areaType.value.join() }}</td>-->
-<!--          </tr>-->
-<!--        </table>-->
-<!--      </ng-container>-->
-    </div>
+  <ng-container *ngIf="(metadata$ | async) as metadata">
+    <app-cumulative-effect-etc [reports]="report ? [report] : undefined"
+      [area]="area"
+      [normalization]="report.normalization"
+      [percentileValue]="metadata.percentileValue"
+      [bandDict]="metadata.bandDictionary"
+      [normalized]="isDomainNormalization"
+      [locale]="locale"
+    ></app-cumulative-effect-etc>
+    <ng-container>
+      <div id="matrix-selection">
+        <h4>{{'report.sensitivity-matrices.title' | translate}}</h4>
+        <table>
+          <tr *ngFor="let matrixMap of getGroupedMatrixMap() | keyvalue">
+            <th>{{ matrixMap.value.join(", ") }}</th>
+            <td>{{ matrixMap.key }}</td>
+          </tr>
+        </table>
+  <!--      <ng-container *ngIf="hasAreaTypes(matrix)">-->
+  <!--        <h5>{{'report.cumulative-effect-etc.sensitivity-matrices.area-type-matrices' | translate}}</h5>-->
+  <!--        <table>-->
+  <!--          <tr *ngFor="let areaType of matrix.areaTypes | keyvalue">-->
+  <!--            <th>{{ areaType.key | titlecase }}:</th>-->
+  <!--            <td>{{ areaType.value.join() }}</td>-->
+  <!--          </tr>-->
+  <!--        </table>-->
+  <!--      </ng-container>-->
+      </div>
+    </ng-container>
+    <app-highest-impacts
+      class="pressure-impacts"
+      [title]="'report.highest-impact.pressure' | translate"
+      [bandGroups]="metadata.metadata.pressureComponent"
+      [impacts]="report.impactPerPressure"
+      [total]="report.total"
+      [locale]="locale"
+    ></app-highest-impacts>
+    <app-highest-impacts *ngIf="report.impactPerEcoComponent"
+      class="ecocomponent-impacts"
+      [title]="'report.highest-impact.ecocomponent' | translate"
+      [bandGroups]="metadata.metadata.ecoComponent"
+      [impacts]="report.impactPerEcoComponent"
+      [total]="report.total"
+      [locale]="locale"
+    ></app-highest-impacts>
+    <app-result-color-scale [locale]="locale" class="calc-report-legend"></app-result-color-scale>
+    <app-pressure-chart [id]="'sankey-single'" [diagramId]="'sankey-single'"
+      [chartWeightThreshold]="formatPercent(report.chartWeightThreshold, this.locale)"
+      [data]="formatChartData(report.chartData, metadata.bandDictionary)"
+      [locale]="locale"
+    ></app-pressure-chart>
+    <app-scenario-changes
+      [scenarioChanges]="report.scenarioChanges"
+      [bandDict]="metadata.bandDictionary"
+      [areaDict]="areaDict"
+      [overflow]="report.overflow"
+    ></app-scenario-changes>
+    <!--TODO Localize names -->
+    <app-impact-table class="pressure-impacts"
+      [title]="'report.impact-table.pressure' | translate"
+      [bandGroups]="metadata.metadata.pressureComponent"
+      [scenarioImpacts]="[report.impactPerPressure, calculatePercentOfTotal(report.impactPerPressure, report.total)]"
+      [names]="['report.impact-table.cumulative' | translate, 'report.impact-table.percentage-of-total' | translate]"
+      [overflow]="report.overflow?.PRESSURE || null"
+      [locale]="locale"
+    ></app-impact-table>
+    <app-impact-table class="ecocomponent-impacts"
+      [title]="'report.impact-table.ecoComponent' | translate"
+      [bandGroups]="metadata.metadata.ecoComponent"
+      [scenarioImpacts]="[report.impactPerEcoComponent, calculatePercentOfTotal(report.impactPerEcoComponent, report.total)]"
+      [names]="['report.impact-table.cumulative' | translate, 'report.impact-table.percentage-of-total' | translate]"
+      [overflow]="report.overflow?.ECOSYSTEM || null"
+      [locale]="locale"
+    ></app-impact-table>
   </ng-container>
-  <app-highest-impacts
-    class="pressure-impacts"
-    [title]="'report.highest-impact.pressure' | translate"
-    [bandGroups]="(metadata$ | async)?.pressureComponent"
-    [impacts]="report.impactPerPressure"
-    [total]="report.total"
-    [locale]="locale"
-  ></app-highest-impacts>
-  <app-highest-impacts *ngIf="report.impactPerEcoComponent"
-    class="ecocomponent-impacts"
-    [title]="'report.highest-impact.ecocomponent' | translate"
-    [bandGroups]="(metadata$ | async)?.ecoComponent"
-    [impacts]="report.impactPerEcoComponent"
-    [total]="report.total"
-    [locale]="locale"
-  ></app-highest-impacts>
-  <app-result-color-scale [locale]="locale" class="calc-report-legend"></app-result-color-scale>
-  <!--TODO Avoid calling expensive function in template-->
-  <app-pressure-chart [id]="'sankey-single'" [diagramId]="'sankey-single'"
-    [chartWeightThreshold]="formatPercent(report.chartWeightThreshold, this.locale)"
-    [data]="formatChartData(report.chartData, metadata$ | async, bandMap)"
-    [locale]="locale"
-  ></app-pressure-chart>
-  <app-scenario-changes
-    [scenarioChanges]="report.scenarioChanges"
-    [bandMap]="bandMap"
-    [areaDict]="areaDict"
-  ></app-scenario-changes>
-  <!--TODO Localize names -->
-  <app-impact-table class="pressure-impacts"
-    [title]="'report.impact-table.pressure' | translate"
-    [bandGroups]="(metadata$ | async)?.pressureComponent"
-    [scenarioImpacts]="[report.impactPerPressure, calculatePercentOfTotal(report.impactPerPressure, report.total)]"
-    [names]="['report.impact-table.cumulative' | translate, 'report.impact-table.percentage-of-total' | translate]"
-    [locale]="locale"
-  ></app-impact-table>
-  <app-impact-table class="ecocomponent-impacts"
-    [title]="'report.impact-table.ecoComponent' | translate"
-    [bandGroups]="(metadata$ | async)?.ecoComponent"
-    [scenarioImpacts]="[report.impactPerEcoComponent, calculatePercentOfTotal(report.impactPerEcoComponent, report.total)]"
-    [names]="['report.impact-table.cumulative' | translate, 'report.impact-table.percentage-of-total' | translate]"
-    [locale]="locale"
-  ></app-impact-table>
   <app-histogram
     [title]="('report.histogram.caption'| translate) +
         ' (' + ('map.editor.operation.'+ (report.operationName) + '.title' | translate | lowercase) +')'"

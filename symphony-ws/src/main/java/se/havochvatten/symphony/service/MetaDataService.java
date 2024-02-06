@@ -2,12 +2,13 @@ package se.havochvatten.symphony.service;
 
 import se.havochvatten.symphony.dto.MetadataComponentDto;
 import se.havochvatten.symphony.dto.MetadataDto;
+import se.havochvatten.symphony.dto.SymphonyBandDto;
 import se.havochvatten.symphony.dto.MetadataSymphonyThemeDto;
-import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.entity.Metadata;
+import se.havochvatten.symphony.entity.SymphonyBand;
+import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
-import se.havochvatten.symphony.mapper.EntityToMetadataDtoMapper;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -23,54 +24,77 @@ public class MetaDataService {
     @EJB
     BaselineVersionService baselineVersionService;
 
-    public MetadataDto findMetadata(String baselineName) throws SymphonyStandardAppException {
+    public MetadataDto findMetadata(String baselineName, String preferredLanguage) throws SymphonyStandardAppException {
         BaselineVersion baseline = baselineVersionService.getVersionByName(baselineName);
         MetadataDto metadataDto = new MetadataDto();
-        metadataDto.setEcoComponent(getComponentDto("Ecosystem", baseline.getId()));
-        metadataDto.setPressureComponent(getComponentDto("Pressure", baseline.getId()));
-        metadataDto.setLanguage(getLanguageFromLocale(baseline.getLocale()));
+        metadataDto.setEcoComponent(getComponentDto("Ecosystem", baseline.getId(), preferredLanguage));
+        metadataDto.setPressureComponent(getComponentDto("Pressure", baseline.getId(), preferredLanguage));
+        metadataDto.setLanguage(preferredLanguage);
         return metadataDto;
     }
 
-    private String getLanguageFromLocale(String locale) {
-        // Resort to hackish way to get language instead of using the proper Locale class since we
-        // may want some leeway in using non-national country codes
-        return locale.substring(0,2).toLowerCase();
-    }
-
-    public MetadataComponentDto getComponentDto(String componentName, int baselineVersionId) {
+    public MetadataComponentDto getComponentDto(String componentName, int baselineVersionId, String language) {
         MetadataComponentDto componentDto = new MetadataComponentDto();
-		Set<String> symphonyThemes = new HashSet(em.createQuery("Select o.symphonyTheme from Metadata o where " +
-						"o.symphonyCategory = :categ AND o.baselineVersion.id = :baselineVersionId")
-				.setParameter("categ", componentName)
-				.setParameter("baselineVersionId", baselineVersionId)
-				.getResultList());
-        SortedSet<String> symphonyThemesSort = new TreeSet<>(symphonyThemes);
-        symphonyThemesSort.forEach(t -> {
-            List<Metadata> themeMetaData = getSymphonyThemeMetaData(componentName, t, baselineVersionId);
-            MetadataSymphonyThemeDto symphonyThemeDto =
-					EntityToMetadataDtoMapper.mapEntitiesToMetaDataThemeDto(t, themeMetaData);
-            componentDto.getSymphonyThemes().add(symphonyThemeDto);
-        });
+
+        List<SymphonyBand> bandsList = getBandsForBaselineComponent(componentName, baselineVersionId);
+
+        // Select all Metadata for the given SymphonyBands and the given language.
+        // If a translation for a field is not found, fall back to baseline default language.
+        List<Metadata> metadataList =
+            em.createQuery("SELECT m FROM Metadata m " +
+                              "WHERE m.band IN :bandsList " +
+                                "AND (m.language = :language " +
+                                    "OR (m.language = m.band.baseline.locale " +
+                                        "AND m.metaField NOT IN " +
+                                            "(SELECT m2.metaField FROM Metadata m2 " +
+                                                "WHERE m2.band IN :bandsList " +
+                                                "AND m2.language = :language)))")
+                .setParameter("bandsList", bandsList)
+                .setParameter("language", language)
+                .getResultList();
+
+        // Group Metadata (metadataList) by SymphonyTheme
+        // and add in alphabetical order to the componentDto's getSymphonyThemes list
+        metadataList.stream()
+            .filter(m -> m.getMetaField().equals("symphonytheme"))
+            .sorted(Comparator.comparing(Metadata::getMetaValue))
+            .map(Metadata::getMetaValue)
+            .distinct()
+            .forEachOrdered(t -> {
+                MetadataSymphonyThemeDto symphonyThemeDto = new MetadataSymphonyThemeDto();
+                symphonyThemeDto.setSymphonyThemeName(t);
+                symphonyThemeDto.setBands(new ArrayList<>());
+                metadataList.stream()
+                    .filter(m2 -> m2.getMetaField().equals("symphonytheme")
+                               && m2.getMetaValue().equals(t))
+                    .map(m2 -> {
+                        SymphonyBandDto propertyDto = new SymphonyBandDto(m2.getBand());
+                        m2.getBand().getMetaValues().stream()
+                            .filter(metadataList::contains)
+                            .forEach(m -> propertyDto.getMeta().put(m.getMetaField(), m.getMetaValue()));
+                        return propertyDto;
+                    }).forEachOrdered(symphonyThemeDto.getBands()::add);
+                componentDto.getSymphonyThemes().add(symphonyThemeDto);
+            });
+
         return componentDto;
     }
 
-    public List<Metadata> getSymphonyThemeMetaData(String componentName, String theme, int baselineVersionId) {
-        List<Metadata> themeMetaData = em.createQuery("Select o from Metadata o where o.symphonyCategory = " +
-						":categ and o.symphonyTheme = :symphonyTheme AND o.baselineVersion.id = " +
-						":baselineVersionId order by o.title")
-                .setParameter("categ", componentName)
-                .setParameter("symphonyTheme", theme)
-                .setParameter("baselineVersionId", baselineVersionId)
-                .getResultList();
-        return themeMetaData;
+    public List<SymphonyBand> getBandsForBaselineComponent(String componentName, int baselineVersionId) {
+        return em.createQuery(
+            "SELECT b FROM SymphonyBand b " +
+                "WHERE b.baseline.id = :baselineVersionId " +
+                "AND b.category = :category")
+            .setParameter("baselineVersionId", baselineVersionId)
+            .setParameter("category", componentName)
+            .getResultList();
     }
 
-    public Metadata getMetadataById(Integer id) throws SymphonyStandardAppException {
-        Metadata metadata = em.find(Metadata.class, id);
-        if (metadata == null) {
+    public SymphonyBand getBandById(Integer id) throws SymphonyStandardAppException {
+        SymphonyBand band = em.find(SymphonyBand.class, id);
+        if (band == null) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.METADATA_NOT_FOUND_FOR_ID);
         }
-        return metadata;
+        return band;
     }
 }

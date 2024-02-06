@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { FormsModule } from "@angular/forms";
 
 import { MainViewComponent } from './main-view.component';
 import { SharedModule } from '../shared/shared.module';
@@ -29,9 +30,10 @@ import { CalculationHistoryComponent } from "@src/app/map-view/calculation-histo
 import { ComparisonComponent } from "@src/app/map-view/comparison/comparison.component";
 import { FormBuilder } from "@angular/forms";
 import { MatSelectModule } from "@angular/material/select";
+import { MatRadioModule } from "@angular/material/radio";
 import { AreaGroupComponent } from "@src/app/map-view/area-selection/area-group/area-group.component";
 import { ScenarioListComponent } from "@src/app/map-view/scenario/scenario-list/scenario-list.component";
-
+import { BatchProgressComponent } from './batch-progress-display/batch-progress.component';
 describe('MainViewComponent', () => {
   let fixture: ComponentFixture<MainViewComponent>,
       component: MainViewComponent;
@@ -44,6 +46,8 @@ describe('MainViewComponent', () => {
         TranslationSetupModule,
         RouterTestingModule,
         MatSelectModule,
+        MatRadioModule,
+        FormsModule,
         StoreModule.forRoot({},{}),
       ],
       declarations: [
@@ -63,7 +67,8 @@ describe('MainViewComponent', () => {
         BandSelectionComponent,
         SelectionLayoutComponent,
         CalculationHistoryComponent,
-        ComparisonComponent
+        ComparisonComponent,
+        BatchProgressComponent
       ],
       providers: [
         FormBuilder,

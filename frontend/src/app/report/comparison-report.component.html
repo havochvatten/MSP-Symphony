@@ -4,71 +4,77 @@
   </header>
   <div class="logo">
     <img class="report-logos" src="assets/wio/nc_logo-tmp.png" />
-    <img class="report-logos" src="assets/sweden-logotype-english.svg" />
+    <img class="report-logos" src="assets/sweden-logotype-english.svg"
+         alt="{{ 'branding.SwAM' | translate }}"/>
   </div>
   <span id="report-in-collaboration">{{ 'wio.in-collaboration-with' | translate }}:</span>
   <app-calculation-image [imageURL]="imageUrl"></app-calculation-image>
-  <app-cumulative-effect-etc [reports]="[report.a, report.b]"
-                             [area]="area"
-                             [footnote]="'report.cumulative-effect-etc.comparison.legend-desc' | translate"
-                             [locale]="locale"
-  ></app-cumulative-effect-etc>
-  <app-result-color-scale
-    [perMille]="true"
-    [decimals]="dynamicMax < 0.45"
-    [colors]="(legend | async)?.colorMap"
-    unit="%"
-  ></app-result-color-scale>
-  <app-scenario-changes
-    [name]="report.a.name"
-    [scenarioChanges]="report.a.scenarioChanges"
-    [bandMap]="bandMap"
-    [areaDict]="areaDictA"
-    [comparisonReport]="true"
-  ></app-scenario-changes>
-  <app-scenario-changes class="right"
-    [name]="report.b.name"
-    [scenarioChanges]="report.b.scenarioChanges"
-    [bandMap]="bandMap"
-    [areaDict]="areaDictB"
-    [comparisonReport]="true"
-  ></app-scenario-changes>
-  <app-pressure-chart *ngIf="report.chartDataPositive.links.length > 1"
-    [id]="'sankey-cmp-positive'" [diagramId]="'sankey-cmp-positive'"
-    [chartWeightThreshold]="getChartThresholdPercentage()"
-    [data]="formatChartData(report.chartDataPositive, metadata$ | async, bandMap)"
-    [locale]="locale"
-  ></app-pressure-chart>
-  <app-pressure-chart *ngIf="report.chartDataNegative.links.length > 1"
-    [id]="'sankey-cmp-negative'" [diagramId]="'sankey-cmp-negative'"
-    [chartWeightThreshold]="getChartThresholdPercentage()"
-    [data]="formatChartData(report.chartDataNegative, metadata$ | async, bandMap)"
-    [locale]="locale"
-  ></app-pressure-chart>
- <app-impact-table
-    class="pressure-impacts"
-    [title]="'report.impact-table.pressure' | translate"
-    [bandGroups]="(metadata$ | async)!.pressureComponent"
-    [scenarioImpacts]="[report.a.impactPerPressure, report.b.impactPerPressure,
-      calculateRelativeDifference([report.a.impactPerPressure, report.b.impactPerPressure])
-     ]"
-    [names]="[report.a.name, report.b.name, 'report.cumulative-effect-etc.relative-diff' | translate]"
-    [locale]="locale"
-  ></app-impact-table>
-  <app-impact-table
-    class="ecocomponent-impacts"
-    [title]="'report.impact-table.ecoComponent' | translate"
-    [bandGroups]="(metadata$ | async)!.ecoComponent"
-    [scenarioImpacts]="[report.a.impactPerEcoComponent, report.b.impactPerEcoComponent,
-      calculateRelativeDifference([report.a.impactPerEcoComponent, report.b.impactPerEcoComponent])
-     ]"
-    [names]="[report.a.name, report.b.name, 'report.cumulative-effect-etc.relative-diff' | translate]"
-    [locale]="locale"
-  ></app-impact-table>
+  <ng-container *ngIf="(metadata$ | async) as metadata">
+    <app-cumulative-effect-etc [reports]="[report.a, report.b]"
+                               [area]="area"
+                               [locale]="locale"
+                               [bandDict]="metadata.bandDictionary"
+    ></app-cumulative-effect-etc>
+    <app-result-color-scale
+      [perMille]="true"
+      [decimals]="maxValue < 0.45"
+      [colors]="(legend | async)?.colorMap"
+      unit="%"
+    ></app-result-color-scale>
+    <app-pressure-chart *ngIf="report.chartDataPositive.links.length > 1"
+      [id]="'sankey-cmp-positive'" [diagramId]="'sankey-cmp-positive'"
+      [chartWeightThreshold]="getChartThresholdPercentage()"
+      [data]="formatChartData(report.chartDataPositive, metadata.bandDictionary)"
+      [locale]="locale"
+    ></app-pressure-chart>
+    <app-pressure-chart *ngIf="report.chartDataNegative.links.length > 1"
+      [id]="'sankey-cmp-negative'" [diagramId]="'sankey-cmp-negative'"
+      [chartWeightThreshold]="getChartThresholdPercentage()"
+      [data]="formatChartData(report.chartDataNegative, metadata.bandDictionary)"
+      [locale]="locale"
+    ></app-pressure-chart>
+    <app-scenario-changes
+      [name]="report.a.name"
+      [scenarioChanges]="report.a.scenarioChanges"
+      [bandDict]="metadata.bandDictionary"
+      [areaDict]="areaDictA"
+      [comparisonReport]="true"
+      [overflow]="report.a.overflow"
+    ></app-scenario-changes>
+    <app-scenario-changes class="right"
+      [name]="report.b.name"
+      [scenarioChanges]="report.b.scenarioChanges"
+      [bandDict]="metadata.bandDictionary"
+      [areaDict]="areaDictB"
+      [comparisonReport]="true"
+      [overflow]="report.b.overflow"
+    ></app-scenario-changes>
+    <app-impact-table
+      class="pressure-impacts"
+      [title]="'report.impact-table.pressure' | translate"
+      [bandGroups]="metadata.metadata.pressureComponent"
+      [scenarioImpacts]="[report.a.impactPerPressure, report.b.impactPerPressure,
+        calculateRelativeDifference([report.a.impactPerPressure, report.b.impactPerPressure])
+       ]"
+      [names]="[report.a.name, report.b.name, 'report.cumulative-effect-etc.relative-diff' | translate]"
+      [overflow]="allOverflow.PRESSURE || null"
+      [locale]="locale"
+    ></app-impact-table>
+    <app-impact-table
+      class="ecocomponent-impacts"
+      [title]="'report.impact-table.ecoComponent' | translate"
+      [bandGroups]="metadata.metadata.ecoComponent"
+      [scenarioImpacts]="[report.a.impactPerEcoComponent, report.b.impactPerEcoComponent,
+        calculateRelativeDifference([report.a.impactPerEcoComponent, report.b.impactPerEcoComponent])
+       ]"
+      [names]="[report.a.name, report.b.name, 'report.cumulative-effect-etc.relative-diff' | translate]"
+      [overflow]="allOverflow.ECOSYSTEM || null"
+      [locale]="locale"
+    ></app-impact-table>
+  </ng-container>
   <app-report-bottom
-  [formattedDate]="now | date:  'yyyy-MM-dd&nbsp;&nbsp;&nbsp;HH:mm'"
+    [formattedDate]="now | date:  'yyyy-MM-dd&nbsp;&nbsp;&nbsp;HH:mm'"
   ></app-report-bottom>
-
 </tbody>
 
 <div *ngIf="loadingReport" class="loading-report">

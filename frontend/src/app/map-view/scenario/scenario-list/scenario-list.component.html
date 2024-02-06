@@ -1,28 +1,17 @@
-<section class="padded-container" [ngClass]="{ 'batch-mode': getBatchMode() }">
+<section class="padded-container" [ngClass]="{ 'batch-mode': isBatchMode() }">
   <div>
     <div class="top-tray">
       <h2>{{ 'map.editor.title' | translate }}</h2>
-      <div class="batch-tools">
-        <app-icon-button
-          icon="choice"
-          class="set-batch-mode"
-          [ngClass]="{ 'active': getBatchMode() }"
-          [label]="
-            (getBatchMode() ? 'map.editor.list.batch-tools.exit-batch-mode' :
-                              'map.editor.list.batch-tools.enter-batch-mode') | translate"
-          (click)="setBatchMode()"></app-icon-button>
-        <app-icon-button
-          icon="play-arrow"
-          class="run-batch"
-          [disabled]="!(getBatchMode() && selectedBatchIds.length > 1)"
-          [ngClass]="{ 'active': getBatchMode() }"
-          [label]="
-            getBatchMode() ?
-              ((selectedBatchIds.length > 1 ? 'map.editor.list.batch-tools.run-batch' :
-                                          'map.editor.list.batch-tools.batch-too-small') | translate
-              ): ''"
-          (click)="triggerBatchRun()"></app-icon-button>
-      </div>
+      <app-multi-tools
+        [isMultiMode]="isBatchMode"
+        [enterLabel]="'map.editor.list.batch-tools.enter-batch-mode'"
+        [exitLabel]="'map.editor.list.batch-tools.exit-batch-mode'"
+        [disabledPredicate]="isDisabled"
+        [multiActionDelegate]="triggerBatchRun"
+        [multiActionIcon]="'play-arrow'"
+        [multiActionLabel]="'map.editor.list.batch-tools.run-batch'"
+        [multiActionLabelDisabled]="'map.editor.list.batch-tools.batch-too-small'"
+      ></app-multi-tools>
     </div>
     <ng-container *ngIf="!((selectionOverlap | async) ?? false)">
       <p *ngFor="let selectedArea of selectedAreas" class="area-name">{{ selectedArea.displayName }}</p>
@@ -56,8 +45,10 @@
     <div *ngFor="let scenario of scenario$ | async; index as scenarioIndex"
          class="scenario-wrap"
          [ngClass]="{'filtered': filter(scenario.name) }">
-      <div class="scenario"
-           (click)="this.batchMode ? selectForBatch(scenario.id) : open(scenarioIndex)" [title]="scenario.name">
+      <div class="scenario list-item"
+           (click)="isBatchMode() ? selectForBatch(scenario.id) : open(scenarioIndex)"
+           [title]="scenario.name"
+           tabindex="0">
         <div class="scenario-info">
           <div class="name">
             <h4>{{ scenario.name }}</h4>
@@ -76,7 +67,7 @@
             <span class="feature-name">{{ 'map.editor.list.more-areas' | translate: { more: scenario.areas.length - MAX_AREAS } }}</span>
           </li>
         </ul>
-        <div class="scenario-actions" *ngIf="!getBatchMode()">
+        <div class="list-actions" *ngIf="!isBatchMode()">
           <app-icon *ngIf="scenario.latestCalculationId" iconType="report" [title]="'map.editor.list.show-report-label' | translate"
                     (click)="showReport(scenario.latestCalculationId); $event.stopPropagation()">
           </app-icon>
@@ -88,7 +79,7 @@
           </app-icon>
         </div>
       </div>
-      <div class="batch-selected-wrap" *ngIf="getBatchMode()">
+      <div class="batch-selected-wrap" *ngIf="isBatchMode()">
         <mat-checkbox [checked]="selectedBatchIds.includes(scenario.id)"
                       (change)="selectForBatch(scenario.id)"
                       (click)="$event.stopPropagation()">

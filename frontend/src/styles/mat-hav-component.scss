@@ -61,6 +61,18 @@ button.mdc-button.mat-mdc-unelevated-button.mat-primary {
     }
   }
 
+  &.primary-alt {
+    background-color: $hav-ext-emerald;
+    color: white;
+    border-color: $hav-ext-emerald;
+
+    &:hover {
+      background-color: $hav-ext-emerald-hover;
+      border-color: $hav-ext-emerald-hover;
+      color: white !important;
+    }
+  }
+
   &.secondary, &.basic {
     background-color: white;
     color: $primary-border-blue;
@@ -194,10 +206,16 @@ mat-checkbox.mat-mdc-checkbox {
     }
 
     .mdc-form-field {
-      .mdc-checkbox, .mdc-checkbox__background {
+      .mdc-checkbox, .mdc-checkbox__background,
+      .mdc-checkbox .mdc-checkbox__native-control[disabled]:indeterminate~.mdc-checkbox__background,
+      .mdc-checkbox .mdc-checkbox__native-control[data-indeterminate=true][disabled]~.mdc-checkbox__background {
         color: #b0b0b0;
         background-color: white;
         border-color: #b0b0b0;
+
+        .mdc-checkbox__mixedmark {
+          border-color: #b0b0b0;
+        }
       }
 
       label.mdc-label {

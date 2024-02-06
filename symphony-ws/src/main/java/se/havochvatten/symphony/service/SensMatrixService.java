@@ -2,10 +2,7 @@ package se.havochvatten.symphony.service;
 
 import se.havochvatten.symphony.dto.SensMatrixDto;
 import se.havochvatten.symphony.dto.SensitivityDto;
-import se.havochvatten.symphony.entity.BaselineVersion;
-import se.havochvatten.symphony.entity.Metadata;
-import se.havochvatten.symphony.entity.Sensitivity;
-import se.havochvatten.symphony.entity.SensitivityMatrix;
+import se.havochvatten.symphony.entity.*;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.mapper.EntityToSensMatrixDtoMapper;
@@ -31,34 +28,45 @@ public class SensMatrixService {
     @EJB
     MetaDataService metaDataService;
 
-    public List<SensMatrixDto> findSensMatrixDtos(String baselineName) {
+    public List<SensMatrixDto> findSensMatrixDtos(String baselineName, String preferredLanguage) {
         List<SensMatrixDto> sensMatrixDtos = new ArrayList<>();
         List<SensitivityMatrix> matrices = em.createNamedQuery("SensitivityMatrix.findByBaselineName")
                 .setParameter("name", baselineName)
                 .getResultList();
-        matrices.forEach(s -> sensMatrixDtos.add(EntityToSensMatrixDtoMapper.map(s)));
+        matrices.forEach(s -> sensMatrixDtos.add(EntityToSensMatrixDtoMapper.map(s, preferredLanguage)));
         return sensMatrixDtos;
     }
 
-    public List<SensMatrixDto> findSensMatrixDtosByOwner(String baselineName, Principal principal) {
+    public List<SensMatrixDto> findSensMatrixDtosByOwner(String baselineName, Principal principal, String preferredLanguage) {
         List<SensMatrixDto> sensMatrixDtos = new ArrayList<>();
-        List<SensitivityMatrix> matrices = em.createNamedQuery("SensitivityMatrix.findByBaselineNameAndOwner")
+        List<SensitivityMatrix> matrices = em.createNamedQuery("SensitivityMatrix.findOwnByBaselineNameAndOwner")
                 .setParameter("name", baselineName)
                 .setParameter("owner", principal.getName())
                 .getResultList();
-        matrices.forEach(s -> sensMatrixDtos.add(EntityToSensMatrixDtoMapper.map(s)));
+        matrices.forEach(s -> sensMatrixDtos.add(EntityToSensMatrixDtoMapper.map(s, preferredLanguage)));
         return sensMatrixDtos;
     }
 
-    public SensMatrixDto getSensMatrixbyId(Integer id) throws SymphonyStandardAppException {
+    public List<SensMatrixDto> findAllSensMatrixDtosByOwner(String baselineName, Principal principal, String preferredLanguage) {
+        List<SensMatrixDto> sensMatrixDtos = new ArrayList<>();
+        List<SensitivityMatrix> matrices = em.createNamedQuery("SensitivityMatrix.findAllByBaselineNameAndOwner")
+                .setParameter("name", baselineName)
+                .setParameter("owner", principal.getName())
+                .getResultList();
+        matrices.forEach(s -> sensMatrixDtos.add(EntityToSensMatrixDtoMapper.map(s, preferredLanguage)));
+        return sensMatrixDtos;
+    }
+
+    public SensMatrixDto getSensMatrixbyId(Integer id, String preferredLanguage) throws SymphonyStandardAppException {
         SensitivityMatrix sensitivityMatrix = em.find(SensitivityMatrix.class, id);
         if (sensitivityMatrix == null) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.SENSITIVITY_MATRIX_NOT_FOUND);
         }
-        return EntityToSensMatrixDtoMapper.map(sensitivityMatrix);
+        return EntityToSensMatrixDtoMapper.map(sensitivityMatrix, preferredLanguage);
     }
 
     public SensMatrixDto createSensMatrix(SensMatrixDto sensMatrixDto, String baseLineName,
+                                          String preferredLanguage,
 										  Principal principal) throws SymphonyStandardAppException {
         List<Sensitivity> sensitivities = getEntitySensitivities(sensMatrixDto, false);
         BaselineVersion baselineVersion = baselineVersionService.getVersionByName(baseLineName);
@@ -68,11 +76,11 @@ public class SensMatrixService {
         sensitivityMatrix.setOwner(principal.getName());
         em.persist(sensitivityMatrix);
 
-        sensMatrixDto = EntityToSensMatrixDtoMapper.map(sensitivityMatrix);
+        sensMatrixDto = EntityToSensMatrixDtoMapper.map(sensitivityMatrix, preferredLanguage);
         return sensMatrixDto;
     }
 
-    public SensMatrixDto updateSensMatrix(SensMatrixDto sensMatrixDto, Principal principal) throws SymphonyStandardAppException {
+    public SensMatrixDto updateSensMatrix(SensMatrixDto sensMatrixDto, String preferredLanguage, Principal principal) throws SymphonyStandardAppException {
         SensitivityMatrix sensMatrixFound = em.find(SensitivityMatrix.class, sensMatrixDto.getId());
         if (sensMatrixFound == null) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.SENSITIVITY_MATRIX_NOT_FOUND);
@@ -91,7 +99,7 @@ public class SensMatrixService {
         sensitivityMatrix.setOwner(principal.getName());
         em.merge(sensitivityMatrix);
 
-        sensMatrixDto = EntityToSensMatrixDtoMapper.map(sensitivityMatrix);
+        sensMatrixDto = EntityToSensMatrixDtoMapper.map(sensitivityMatrix, preferredLanguage);
         return sensMatrixDto;
     }
 
@@ -110,14 +118,14 @@ public class SensMatrixService {
         List<Sensitivity> sensitivities = new ArrayList<>();
         Sensitivity sens;
         for (SensitivityDto.SensRow r : sensMatrixDto.getSensMatrix().getRows()) {
-            Metadata presMetadata = metaDataService.getMetadataById(r.getPresMetaId());
+            SymphonyBand pressureBand = metaDataService.getBandById(r.getPresMetaId());
             for (SensitivityDto.SensCol c : r.getColumns()) {
                 sens = new Sensitivity();
                 if(forUpdate) { /* merge/update */
                     sens.setId(c.getSensId());
                 }
-                sens.setPresMetadata(presMetadata);
-                sens.setEcoMetadata(metaDataService.getMetadataById(c.getEcoMetaId()));
+                sens.setPressureBand(pressureBand);
+                sens.setEcoBand(metaDataService.getBandById(c.getEcoMetaId()));
                 sens.setValue(c.getValue());
                 sensitivities.add(sens);
             }

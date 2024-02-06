@@ -14,6 +14,7 @@
     *ngFor="let group of areas"
     [attr.data-visible]="group.visible"
     (click)="updateVisible(group.statePath)"
+    tabindex="0"
   >
     <div class="group-title">
       <span>
@@ -31,6 +32,7 @@
         *ngFor="let area of group.areas"
         [attr.data-selected]="area.statePath === selectedArea"
         (click)="onSelectArea(area.statePath, group.visible, group.statePath); $event.stopPropagation()"
+        tabindex="0"
       >
         <app-icon iconType="enter-arrow"></app-icon>
         {{ area.displayName }}

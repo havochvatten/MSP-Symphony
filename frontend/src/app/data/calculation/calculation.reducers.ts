@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { setIn, updateIn } from "immutable";
+import { setIn } from "immutable";
 import { CalculationActions, CalculationInterfaces } from './';
 import { AreaActions } from '@data/area';
 import { Legend } from "@data/calculation/calculation.interfaces";
@@ -18,7 +18,10 @@ export const initialState: CalculationInterfaces.State = {
     comparison: {}
   },
   sortCalculations: ListItemsSort.None,
-  batchProcesses: []
+  batchProcesses: [],
+  visibleResults: [],
+  loadingResults: [],
+  loadingReports: []
 };
 
 export const calculationReducer = createReducer(
@@ -45,7 +48,7 @@ export const calculationReducer = createReducer(
     calculations,
     loadingCalculations: false
   })),
-  on(AreaActions.updateSelectedArea, (state, _) => ({
+  on(AreaActions.updateSelectedArea, (state) => ({
     ...state,
     calculating: false,
     latestCalculationId: undefined
@@ -75,10 +78,16 @@ export const calculationReducer = createReducer(
     ...state,
     sortCalculations: sortType
   })),
-  on(CalculationActions.updateBatchProcess, (state, { id, process }) => ({
-    ...state,
-    batchProcesses: setIn(state.batchProcesses, [id], process)
-  })),
+  on(CalculationActions.updateBatchProcess, (state, { id, process }) => {
+    const batchProcess = state.batchProcesses[id];
+
+    return typeof batchProcess === 'undefined' ? {
+      ...state,
+      batchProcesses: setIn(state.batchProcesses, [id], process)
+    } : {
+      ...state,
+      batchProcesses: setIn(state.batchProcesses, [id], {...process, entityNames: batchProcess.entityNames })
+  }}),
   on(CalculationActions.removeBatchProcessSuccess, (state, { id }) => ({
     ...state,
     batchProcesses: setIn(state.batchProcesses, [id], undefined)
@@ -86,6 +95,25 @@ export const calculationReducer = createReducer(
   on(CalculationActions.cancelBatchProcessSuccess, (state, { id }) => ({
     ...state,
     batchProcesses: setIn(state.batchProcesses, [id], {...state.batchProcesses[id], cancelled: true})
+  })),
+  on(CalculationActions.setVisibleResultLayers, (state, { visibleResults }) => ({
+    ...state,
+    visibleResults: visibleResults,
+    calculations: state.calculations.map(c => ({...c, isPurged: !(visibleResults.includes(c.id) || !c.isPurged)}))
+                                                      // unnecessary to sync, visible results cannot be "purged"
+  })),
+  on(CalculationActions.loadCalculationResult, (state, { calculationId }) => ({
+    ...state,
+    loadingResults: [...state.loadingResults, calculationId]
+  })),
+  on(CalculationActions.loadCalculationResultSuccess, (state, { calculationId }) => ({
+    ...state,
+    loadingResults: state.loadingResults.filter(id => id !== calculationId)
+  })),
+  on(CalculationActions.setReportLoadingState, (state, { calculationId, loadingState }) => ({
+    ...state,
+    calculations: state.calculations.map(c => c.id === calculationId ? {...c, isPurged: c.isPurged && loadingState } : c),
+    loadingReports: loadingState ? [...state.loadingReports, calculationId] : state.loadingReports.filter(id => id !== calculationId)
   }))
 );
 

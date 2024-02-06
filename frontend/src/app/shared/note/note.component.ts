@@ -9,5 +9,5 @@ import { IconType } from '../icon/icon.component';
 export class NoteComponent {
   icon: IconType = 'times';
   @Input() active = true;
-  @Output() close = new EventEmitter();
+  @Output() closeNote = new EventEmitter();
 }

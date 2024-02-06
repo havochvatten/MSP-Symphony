@@ -8,6 +8,7 @@ export const environment = {
   instanceName: "WIO Symphony",
   instanceImage: "assets/wio/wiosym-ideogram.svg",
   instanceDescriptor: "Western Indian Ocean",
+  externManual: null,
   map: {
     center: [39.0, -11.0], // Suitable starting center for WIO region
     initialZoom: 4.5,
@@ -19,7 +20,8 @@ export const environment = {
   },
   editor: {
     autoSaveIntervalInSeconds: 30, // 0 to disable
-    loadLatestCalculation: false
+    loadLatestCalculation: false,
+    defaultNormalizationType: 'AREA'
   },
   backgroundMap: {
     gebco: {
@@ -47,11 +49,11 @@ export const environment = {
     forgotPasswordUrl: 'mailto:wiosym@nairobiconvention.org?subject=Requesting%20password%20reset%20for%20WIO%20Symphony'
    },
   meta: {
-    visible_fields: ['methodSummary',
-                    'limitationsForSymphony',
-                    'valueRange',
-                    'dataProcessing',
-                    'dataSources'],
-    list_fields:    ['dataSources']
+    visible_fields: ['methodsummary',
+                    'limitationsforsymphony',
+                    'valuerange',
+                    'dataprocessing',
+                    'datasources'],
+    list_fields:    ['datasources']
   }
 };

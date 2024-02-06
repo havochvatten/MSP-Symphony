@@ -23,10 +23,11 @@ import se.havochvatten.symphony.dto.BatchCalculationDto;
 import se.havochvatten.symphony.dto.CalculationResultSlice;
 import se.havochvatten.symphony.entity.BatchCalculation;
 import se.havochvatten.symphony.entity.CalculationResult;
+import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.exception.SymphonyStandardSystemException;
-import se.havochvatten.symphony.scenario.ScenarioService;
-import se.havochvatten.symphony.scenario.ScenarioSnapshot;
+import se.havochvatten.symphony.scenario.*;
+import se.havochvatten.symphony.service.DataLayerService;
 import se.havochvatten.symphony.service.PropertiesService;
 import se.havochvatten.symphony.web.WebUtil;
 
@@ -111,7 +112,7 @@ public class CalculationREST {
         var watch = new StopWatch();
         watch.start();
         logger.info("Performing "+CalcService.operationName(persistedScenario.getOperation())+" calculation for " + persistedScenario.getName() + "...");
-        CalculationResult result = calcService.calculateScenarioImpact(persistedScenario);
+        CalculationResult result = calcService.calculateScenarioImpact(persistedScenario, false);
         watch.stop();
         logger.log(Level.INFO, "DONE ({0} ms)", watch.getTime());
 
@@ -161,16 +162,25 @@ public class CalculationREST {
 
     @DELETE
     @ApiOperation(value = "Delete calculation result")
-    @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    public Response deleteCalculation(@Context HttpServletRequest req, @PathParam("id") int id) {
+    public Response deleteCalculation(@Context HttpServletRequest req, @QueryParam("ids") String ids) {
         var principal = req.getUserPrincipal();
         if (principal == null)
             throw new NotAuthorizedException("Null principal");
 
+        int[] idArray = intArrayParam(ids);
+
         try {
-            calcService.delete(req.getUserPrincipal(), id);
+            for (int calcId : idArray) {
+                var persistedCalculation = CalcUtil.getCalculationResultFromSessionOrDb(calcId,
+                    req.getSession(), calcService).orElseThrow(NotFoundException::new);
+                if (!persistedCalculation.getOwner().equals(principal.getName())) {
+                    throw new ForbiddenException("User not owner of calculation");
+                } else {
+                    calcService.delete(req.getUserPrincipal(), calcId);
+                }
+            }
             return ok().build();
         } catch (NotFoundException nx) {
             return status(Response.Status.NOT_FOUND).build();
@@ -223,14 +233,30 @@ public class CalculationREST {
         if (!hasAccess(this.calculationResult, req.getUserPrincipal()))
             return status(Response.Status.UNAUTHORIZED).build();
 
-        this.coverage = this.calculationResult.getCoverage(); // N.B: raw result data, not normalized nor color-mapped
+        if(this.calculationResult.getImagePNG() != null) {
+            byte[] savedImage = this.calculationResult.getImagePNG();
+            String extent = DataLayerService.readMetaData(savedImage, "extent");
+
+            if(extent != null) {
+                return ok(savedImage, "image/png")
+                    .header("SYM-Image-Extent", extent)
+                    .build();
+            }
+        }
+
         this.scenario = this.calculationResult.getScenarioSnapshot();
+        this.coverage = this.calculationResult.getCoverage() != null ?
+            this.calculationResult.getCoverage() :
+            calcService.recreateCoverageFromResult(this.scenario, this.calculationResult);
+
         this.sldProperty = "data.styles.result";
         this.coverageEnvelope = new ReferencedEnvelope(this.coverage.getEnvelope());
-        this.coveragePixelDimension = this.coverage.getGridGeometry().getGridRange2D();
+        this.coveragePixelDimension = this.coverage.getGridGeometry().toCanonical().getGridRange2D();
+        // canonical needed if coverage is recreated
         this.targetCRS = this.coverage.getCoordinateReferenceSystem2D();
 
-        crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8.toString()) : "EPSG:3035";
+        crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8.toString()) :
+                props.getProperty("data.source.crs", "EPSG:3035");
 
         CoordinateReferenceSystem clientCRS =
             CRS.getAuthorityFactory(true).createCoordinateReferenceSystem(crs);
@@ -239,13 +265,13 @@ public class CalculationREST {
 
         RasterNormalizer normalizer = normalizationFactory.getNormalizer(scenario.getNormalization().type);
 
-        int[] areas = this.calculationResult.getAreaMatrixMap().keySet().stream().sorted().mapToInt(i -> i).toArray();
+        int[] areas = scenario.getAreaMatrixMap().keySet().stream().sorted().mapToInt(i -> i).toArray();
         int areaIndex = 0;
 
         RenderedImage[] renderedImages = new RenderedImage[areas.length];
 
         for(int areaId : areas) {
-            Double normalizationValue = normalizer.apply(coverage, this.calculationResult.getNormalizationValue()[areaIndex]);
+            Double normalizationValue = normalizer.apply(coverage, scenario.getNormalizationValue()[areaIndex]);
             renderedImages[areaIndex] = renderAreaImage(scenario.getAreas().get(areaId).getFeature(), normalizationValue);
             ++areaIndex;
         }
@@ -257,8 +283,16 @@ public class CalculationREST {
             g2d.drawRenderedImage(image, at);
         }
 
+        String extent = WebUtil.createExtent(JTS.transform(this.coverageEnvelope, clientTransform)).toString();
+
         ByteArrayOutputStream baos = WebUtil.encode(cimage, "png");
-        baos.flush();
+        baos.flush();;
+
+        this.calculationResult.setImagePNG(
+            DataLayerService.addMetaData(cimage, cimage.getColorModel(), cimage.getSampleModel(), "extent", extent)
+        );
+
+        this.calculationResult = calcService.updateCalculation(this.calculationResult);
 
         return ok(baos.toByteArray(), "image/png")
             .header("SYM-Image-Extent", WebUtil.createExtent(JTS.transform(this.coverageEnvelope, clientTransform)).toString())
@@ -301,15 +335,20 @@ public class CalculationREST {
     @ApiOperation(value = "Computes the difference between two calculations", response = byte[].class)
     public Response getDifferenceImage(@Context HttpServletRequest req,
                                        @PathParam("a") int baseId, @PathParam("b") int scenarioId,
+                                       @QueryParam("max") Integer maxValue,
                                        @QueryParam("dynamic") boolean dynamic, @QueryParam("crs") String crs)
             throws Exception {
-        crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8.toString()) : "EPSG:3035";
+        crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8.toString()) :
+                props.getProperty("data.source.crs", "EPSG:3035");
+        maxValue = maxValue != null ? maxValue : 45;
 
         try {
             var diff = getDiffCoverageFromCalcIds(calcService, req, baseId, scenarioId);
-            return projectedPNGImageResponse(diff, crs, null, dynamic);
+            return projectedPNGImageResponse(diff, crs, null, dynamic, maxValue);
         } catch (AccessDeniedException ax) {
             return status(Response.Status.UNAUTHORIZED).build();
+        } catch (SymphonyStandardAppException sx) {
+            return status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -323,18 +362,58 @@ public class CalculationREST {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
 
-        int[] idArray = Arrays.stream(ids.split(",")).mapToInt(Integer::parseInt).toArray();
+        int[] idArray = intArrayParam(ids);
+        Map<Integer, String> scenarioNames = new HashMap<>();
 
         for(int id : idArray) {
             var persistedScenario = scenarioService.findById(id);
             if (!persistedScenario.getOwner().equals(req.getUserPrincipal().getName()))
                 throw new ForbiddenException("User not owner of scenario");
+            scenarioNames.put(id, persistedScenario.getName());
         }
 
-        BatchCalculation queuedBatchCalculation = calcService.queueBatchCalculation(idArray, req.getUserPrincipal().getName());
+        BatchCalculation queuedBatchCalculation =
+            calcService.queueBatchCalculation(idArray, req.getUserPrincipal().getName(), null);
         logger.log(Level.INFO, "Queuing batch calculation for ids: {0}", Arrays.toString(idArray));
 
-        return new BatchCalculationDto(queuedBatchCalculation);
+        return new BatchCalculationDto(queuedBatchCalculation, scenarioNames);
+    }
+
+    @POST
+    @Path("/batch/areas/{scenarioId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Queues batch run of scenario area calculations for the given scenario", response = BatchCalculationDto.class)
+    public BatchCalculationDto queueAreaBatchCalculation(@Context HttpServletRequest req, @PathParam("scenarioId") Integer id,
+                                                         ScenarioSplitOptions options) {
+        if (req.getUserPrincipal() == null)
+            throw new NotAuthorizedException("Null principal");
+
+        Scenario persistedScenario = null;
+
+        Map<Integer, String> areaNames = new HashMap<>();
+
+        if(id != null) {
+            persistedScenario = scenarioService.findById(id);
+            if (!persistedScenario.getOwner().equals(req.getUserPrincipal().getName()))
+                throw new ForbiddenException("User not owner of scenario");
+        }
+
+        if (persistedScenario == null)
+            throw new BadRequestException();
+
+        for(ScenarioArea area : persistedScenario.getAreas()) {
+            areaNames.put(area.getId(), area.getName());
+        }
+
+        int[] idArray = areaNames.keySet().stream().mapToInt(i -> i).toArray();
+
+        BatchCalculation queuedBatchCalculation =
+            calcService.queueBatchCalculation(idArray, req.getUserPrincipal().getName(), options);
+        logger.log(Level.INFO, "Queuing batch area calculation for ids: {0}", Arrays.toString(idArray));
+
+        return new BatchCalculationDto(queuedBatchCalculation, areaNames);
     }
 
     @POST
@@ -390,10 +469,10 @@ public class CalculationREST {
     public List<CalculationResultSlice> getCalculationsWithMatchingGeometry(@Context HttpServletRequest req,
                                                                             @PathParam("id") int id) {
         var base = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
-            calcService).orElseThrow(javax.ws.rs.NotFoundException::new);
+            calcService).orElseThrow(NotFoundException::new);
         verifyAccessToCalculation(base, req.getUserPrincipal());
 
-        return calcService.findAllMatchingGeometryByUser(req.getUserPrincipal(), base);
+        return calcService.findAllMatchingCalculationsByUser(req.getUserPrincipal(), base);
     }
 
     @GET
@@ -404,23 +483,38 @@ public class CalculationREST {
     public Response getMask(@Context HttpServletRequest req) {
         var session = req.getSession(false);
         if (session == null)
-            return Response.status(Response.Status.NO_CONTENT).build();
+            return status(Response.Status.NO_CONTENT).build();
         return ok(session.getAttribute("mask"), "image/png").build();
     }
 
-    public static GridCoverage2D getDiffCoverageFromCalcIds(CalcService calcService, HttpServletRequest req, int baseId, int relativeId) {
+    public static GridCoverage2D getDiffCoverageFromCalcIds(CalcService calcService, HttpServletRequest req, int baseId, int relativeId) throws SymphonyStandardAppException {
         logger.info("Diffing base line calculations " + baseId + " against calculation " + relativeId);
 
         var base = CalcUtil.getCalculationResultFromSessionOrDb(baseId, req.getSession(),
-            calcService).orElseThrow(javax.ws.rs.BadRequestException::new);
+            calcService).orElseThrow(BadRequestException::new);
         var scenario =
             CalcUtil.getCalculationResultFromSessionOrDb(relativeId, req.getSession(),
-                calcService).orElseThrow(javax.ws.rs.BadRequestException::new);
+                calcService).orElseThrow(BadRequestException::new);
 
         if (!hasAccess(base, req.getUserPrincipal()) || !hasAccess(scenario, req.getUserPrincipal()))
             throw new NotAuthorizedException("Unauthorized");
 
-        return calcService.relativeDifference(base.getCoverage(), scenario.getCoverage());
+        try {
+            GridCoverage2D baseCoverage = base.getCoverage(),
+                           relativeCoverage = scenario.getCoverage();
+
+            if (baseCoverage == null) {
+                baseCoverage = calcService.recreateCoverageFromResult(base.getScenarioSnapshot(), base);
+            }
+
+            if (relativeCoverage == null) {
+                relativeCoverage = calcService.recreateCoverageFromResult(scenario.getScenarioSnapshot(), scenario);
+            }
+
+            return calcService.relativeDifference(baseCoverage, relativeCoverage);
+        } catch (Exception e) {
+            throw new SymphonyStandardAppException(SymphonyModelErrorCode.OTHER_ERROR);
+        }
         // TODO Store coverage in user session? (and recalc if necessary?)
     }
 
@@ -461,7 +555,7 @@ public class CalculationREST {
     }
 
     private Response projectedPNGImageResponse(GridCoverage2D coverage, String crs, Double normalizationValue,
-                                               boolean dynamicComparativeScale) throws Exception {
+                                               boolean dynamicComparativeScale, int maxPercentage) throws Exception {
         Envelope dataEnvelope = new ReferencedEnvelope(coverage.getEnvelope());
         CoordinateReferenceSystem targetCRS;
         Envelope targetEnvelope;
@@ -488,7 +582,7 @@ public class CalculationREST {
                 WebUtil.getSLD(CalculationREST.class.getClassLoader().getResourceAsStream(
                         props.getProperty("data.styles.comparison")));
             // "Dynamic" color maxima
-            if(dynamicComparativeScale) {
+            if(dynamicComparativeScale || maxPercentage == 0) {
                 double[] extrema = StatsNormalizer.getExtrema(coverage, normalizationFactory.getOperations());
 
                 dynamicMax = Math.max(Math.abs(extrema[0]), Math.abs(extrema[1]));
@@ -500,7 +594,7 @@ public class CalculationREST {
 
                 image = WebUtil.renderDynamicComparison(coverage, targetCRS, targetEnvelope, sld, dynamicMax);
             } else {
-                image = WebUtil.render(coverage, targetCRS, targetEnvelope, sld);
+                image = WebUtil.renderDynamicComparison(coverage, targetCRS, targetEnvelope, sld, maxPercentage / 100.0);
             }
         }
 
@@ -535,5 +629,9 @@ public class CalculationREST {
                     ? new ForbiddenException("User " + user.getName() + " is not owner of calculation " + calc.getId())
                     : new NotAuthorizedException("User not authorized");
         }
+    }
+
+    public static int[] intArrayParam(String param) {
+        return Arrays.stream(param.split(",")).mapToInt(Integer::parseInt).toArray();
     }
 }

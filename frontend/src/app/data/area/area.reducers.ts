@@ -11,6 +11,7 @@ export const initialState: AreaInterfaces.State = {
   boundaries: [],
   currentSelection: undefined,
   selectionOverlap: false,
+  calibratedCalculationAreas: [],
 };
 
 export const areaReducer = createReducer(
@@ -31,10 +32,6 @@ export const areaReducer = createReducer(
     currentSelection: statePaths, //feature?.get("statePath")
     selectionOverlap: overlap
   })),
-  // on(ScenarioActions.openScenario, (state, { scenario, index }) => ({
-  //   ...state,
-  //   currentSelection: scenario.feature?.properties?.['statePath']
-  // })),
   on(ScenarioActions.closeActiveScenario, state => ({
     ...state,
     currentSelection: undefined
@@ -68,6 +65,10 @@ export const areaReducer = createReducer(
         }),
         {}
       )
+  })),
+  on(AreaActions.fetchCalibratedCalculationAreasSuccess, (state, { calibratedAreas }) => ({
+    ...state,
+    calibratedCalculationAreas: calibratedAreas
   })),
   on(AreaActions.toggleVisibleArea, (state, { statePath }) => {
     return setIn(state, [...statePath, 'visible'], !getIn(state, [...statePath, 'visible'], false));

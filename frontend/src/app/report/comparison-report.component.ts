@@ -1,87 +1,82 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { filter } from "rxjs/operators";
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { map } from "lodash";
 import { State } from '../app-reducer';
-import { MetadataActions, MetadataSelectors } from '@data/metadata';
+import { MetadataActions } from '@data/metadata';
 import { ComparisonReport, Legend } from '@data/calculation/calculation.interfaces';
 import { environment as env } from "@src/environments/environment";
-import { BandMap } from "@src/app/report/report.component";
-import { formatChartData } from "@src/app/report/report.util";
-import { BandGroup } from "@data/metadata/metadata.interfaces";
-import MetadataService from "@data/metadata/metadata.service";
 import { ReportService } from "@src/app/report/report.service";
 import { CalculationService } from "@data/calculation/calculation.service";
-import { relativeDifference } from "@src/app/report/report.util";
+import { relativeDifference, setOverflowProperty } from "@src/app/report/report.util";
+import { AbstractReport } from "@src/app/report/abstract-report.directive";
 import { formatPercent } from "@angular/common";
-import buildInfo from '@src/build-info';
 
 @Component({
   selector: 'app-calculation-report',
   templateUrl: './comparison-report.component.html',
   styleUrls: ['./report.component.scss'],
 })
-export class ComparisonReportComponent {
-  locale = 'en';
+export class ComparisonReportComponent extends AbstractReport {
   report?: ComparisonReport;
-  loadingReport = true;
   area?: number;
 
-  bandMap: BandMap = { b: {}, e: {}};
-  metadata$: Observable<{
-    ecoComponent: BandGroup[];
-    pressureComponent: BandGroup[];
-  }>;
   now = new Date();
   areaDictA: Map<number, string> = new Map<number, string>();
   areaDictB: Map<number, string> = new Map<number, string>();
 
-  isDynamic: boolean;
-  dynamicMax: number;
+  allOverflow: { [bandType: string]: number[] } = {};
 
-  chartWeightThresholdPercentage: string = '1%';
-  symphonyVersion = buildInfo.version;
+  maxValue: number;
 
+  chartWeightThresholdPercentage = '1%';
 
-  private imageUrl: string;
-  private legend:Observable<Legend>;
+  legend:Observable<Legend>;
 
   constructor(
     private translate: TranslateService,
     private store: Store<State>,
     private route: ActivatedRoute,
     private reportService: ReportService,
-    private calcService: CalculationService,
-    private metadataService: MetadataService,
+    private calcService: CalculationService
   ) {
-    this.locale = this.translate.currentLang;
+    super(
+      translate,
+      store
+    );
 
     const that = this,
           paramMap = route.snapshot.paramMap,
           aId = paramMap.get('aId')!, bId = paramMap.get('bId')!;
 
-    this.isDynamic = route.snapshot.url[0].path === 'compareDynamic'
-    this.dynamicMax = +(paramMap.get('dynamicMax') || 0);
+    this.maxValue = +(paramMap.get('maxValue') || 0);
 
-    this.legend = (this.isDynamic) ?
-      calcService.getDynamicComparisonLegend(this.dynamicMax) :
-      calcService.getLegend('comparison');
+    this.legend = calcService.getComparisonLegend(this.maxValue / 100)
 
-    this.imageUrl = `${env.apiBaseUrl}/calculation/diff/${aId}/${bId}`
-                            + (this.isDynamic ? `?dynamic=true` : '');
+    this.imageUrl = `${env.apiBaseUrl}/calculation/diff/${aId}/${bId}?max=${this.maxValue}`;
 
     reportService.getComparisonReport(aId, bId).subscribe({
       next(report) {
         that.report = report;
+        that.report.a = setOverflowProperty(report.a);
+        that.report.b = setOverflowProperty(report.b);
         that.area = reportService.calculateArea(report.a);
         that.loadingReport = false;
 
-        that.store.dispatch(MetadataActions.fetchMetadata({ baseline: report.a.baselineName }));
+        that.store.dispatch(MetadataActions.fetchMetadataForBaseline({ baselineName: report.a.baselineName }));
         that.areaDictA = reportService.setAreaDict(report.a);
         that.areaDictB = reportService.setAreaDict(report.b);
+
+        that.allOverflow = {
+          'ECOSYSTEM': [...new Set([
+          ...(report.a.overflow?.ECOSYSTEM || []),
+          ...(report.b.overflow?.ECOSYSTEM || [])])],
+          'PRESSURE': [...new Set([
+          ...(report.a.overflow?.PRESSURE || []),
+          ...(report.b.overflow?.PRESSURE || [])])]
+        };
 
         that.chartWeightThresholdPercentage = formatPercent(report.a.chartWeightThreshold, that.locale);
       },
@@ -89,23 +84,11 @@ export class ComparisonReportComponent {
         that.loadingReport = false;
       }
     });
-
-    this.metadata$ = this.store.select(MetadataSelectors.selectMetadata);
-    this.metadata$.pipe(
-      filter(data => data.ecoComponent.length>0)
-    ).subscribe((layerData) => {
-      this.bandMap = {
-        b: this.metadataService.flattenBandGroups(layerData.pressureComponent),
-        e: this.metadataService.flattenBandGroups(layerData.ecoComponent)
-      };
-    });
   }
 
   getChartThresholdPercentage(): string {
     return this.chartWeightThresholdPercentage;
   }
-
-  formatChartData = formatChartData;
 
   // Compute relative difference with regard to first scenario element in components
   calculateRelativeDifference(components: Record<string, number>[]) {

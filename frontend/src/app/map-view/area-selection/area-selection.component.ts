@@ -36,14 +36,14 @@ export class AreaSelectionComponent implements OnChanges {
   private userAreas: UserArea[] = [];
   filteredNationalAreas: NationalArea[] = [];
   filteredUserAreas: UserArea[] = [];
-  @Input() drawUserArea: () => void = () => {};
-  @Input() zoomToArea: (statePaths: StatePath[]) => void = () => {};
+  @Input() drawUserArea!: () => void;
+  @Input() zoomToArea!: (statePaths: StatePath[]) => void;
 
   constructor(
     private store: Store<State>,
     private dialogService: DialogService,
     private translateService: TranslateService,
-    private moduleRef: NgModuleRef<any>
+    private moduleRef: NgModuleRef<never>
   ) {
     this.selectedAreas$ = this.store.select(AreaSelectors.selectSelectedArea);
   }

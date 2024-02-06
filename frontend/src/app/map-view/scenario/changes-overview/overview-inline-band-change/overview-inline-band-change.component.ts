@@ -16,19 +16,19 @@ export class OverviewInlineBandChangeComponent implements OnInit {
   @Input() change!: BandChange;
   @Input() currentValueAsString!: string;
   @Input() areaIndex!: number;
-  @Input() bandKey!: string;
+  @Input() bandNumber!: number;
 
-  @Output() editModeChange = new EventEmitter<{} | null>();
+  @Output() editModeChange = new EventEmitter<object | null>();
   @HostBinding('className') componentClass = '';
 
   @ViewChild("offsetInput") offsetInput!: ElementRef;
   @ViewChild("multiplierInput") multiplierInput!: ElementRef;
 
   changeType: 'constant' | 'relative' = 'constant';
-  editMode: boolean = false;
+  editMode = false;
 
-  localMultiplier: number = 1;
-  localOffset: number = 0;
+  localMultiplier = 1;
+  localOffset = 0;
 
   constructor(private store: Store<State>) {}
 
@@ -78,7 +78,7 @@ export class OverviewInlineBandChangeComponent implements OnInit {
 
   exitEditMode() {
     this.editMode = false;
-    this.editModeChange.emit({areaIndex: this.areaIndex, change: this.getChange()});
+    this.editModeChange.emit({areaIndex: this.areaIndex, change: this.getChange(), bandNumber: this.bandNumber});
     this.componentClass = '';
   }
 
@@ -86,15 +86,15 @@ export class OverviewInlineBandChangeComponent implements OnInit {
     const change = this.getChange();
     if (this.checkEmptyValue()) {
       this.store.dispatch(ScenarioActions.deleteBandChangeForAreaIndex({
+        componentType: this.change!.type,
         areaIndex: this.areaIndex === -1 ? undefined : this.areaIndex,
-        bandId: this.bandKey
+        band: this.bandNumber
       }));
     } else {
         this.store.dispatch(ScenarioActions.updateBandAttributeForAreaIndex({
             areaIndex: this.areaIndex === -1 ? undefined : this.areaIndex,
             componentType: this.change!.type,
-            bandId: this.bandKey,
-            band: this.change!.band,
+            band: this.bandNumber,
             attribute: this.changeType === 'constant' ? 'offset' : 'multiplier',
             value: this.changeType === 'constant' ? this.localOffset : this.localMultiplier,
         }));

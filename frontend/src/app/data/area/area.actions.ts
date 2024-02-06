@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
-import { Boundary, NationalAreaState, Polygon, StatePath, UserArea, UserAreasState } from './area.interfaces';
+import { Boundary, NationalAreaState, Polygon, StatePath,
+         UserArea, UserAreasState, CalculationAreaSlice } from './area.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
 import { MatrixRef } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
 
@@ -31,6 +32,16 @@ export const fetchNationalAreaSuccess = createAction(
 
 export const fetchNationalAreaFailure = createAction(
   '[Area] Fetch national areas data failure',
+  props<{ error: ErrorMessage }>()
+);
+
+export const fetchCalibratedCalculationAreasSuccess = createAction(
+  '[Area] Fetch all calibrated calculation areas for baseline success',
+  props<{ calibratedAreas: CalculationAreaSlice[] }>()
+);
+
+export const fetchCalibratedCalculationAreasFailure = createAction(
+  '[Area] Fetch all calibrated calculation areas for baseline failure',
   props<{ error: ErrorMessage }>()
 );
 

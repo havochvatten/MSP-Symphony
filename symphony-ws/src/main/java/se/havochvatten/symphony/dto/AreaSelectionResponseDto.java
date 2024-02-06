@@ -6,37 +6,11 @@ import java.util.List;
 
 public class AreaSelectionResponseDto {
 
-    public static class Matrix {
-        Integer id;
-        String name;
-        boolean immutable;
-
-        public Integer getId() {
-            return id;
-        }
-
-        public void setId(Integer id) {
-            this.id = id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public boolean isImmutable() { return immutable; }
-
-        public void setImmutable(boolean immutable) { this.immutable = immutable; }
-    }
-
     public static class Area {
         Integer id;
         String name;
-        Matrix defaultMatrix;
-        List<Matrix> matrices;
+        MatrixSelection defaultMatrix;
+        List<MatrixSelection> matrices;
 
         public Integer getId() {
             return id;
@@ -54,15 +28,15 @@ public class AreaSelectionResponseDto {
             this.name = name;
         }
 
-        public Matrix getDefaultMatrix() {
+        public MatrixSelection getDefaultMatrix() {
             return defaultMatrix;
         }
 
-        public void setDefaultMatrix(Matrix defaultMatrix) {
+        public void setDefaultMatrix(MatrixSelection defaultMatrix) {
             this.defaultMatrix = defaultMatrix;
         }
 
-        public List<Matrix> getMatrices() {
+        public List<MatrixSelection> getMatrices() {
             if (matrices == null) {
                 matrices = new ArrayList<>();
             }
@@ -71,8 +45,8 @@ public class AreaSelectionResponseDto {
     }
 
     public static class DefaultArea extends Area {
-        List<Matrix> userDefinedMatrices;
-        List<Matrix> commonBaselineMatrices;
+        List<MatrixSelection> userDefinedMatrices;
+        List<MatrixSelection> commonBaselineMatrices;
 
         public void setAreaAttributes(Area area) {
             this.setId(area.getId());
@@ -81,14 +55,14 @@ public class AreaSelectionResponseDto {
             this.getMatrices().addAll(area.getMatrices());
         }
 
-        public List<Matrix> getUserDefinedMatrices() {
+        public List<MatrixSelection> getUserDefinedMatrices() {
             if (userDefinedMatrices == null) {
                 userDefinedMatrices = new ArrayList<>();
             }
             return userDefinedMatrices;
         }
 
-        public List<Matrix> getCommonBaselineMatrices() {
+        public List<MatrixSelection> getCommonBaselineMatrices() {
             if (commonBaselineMatrices == null) {
                 commonBaselineMatrices = new ArrayList<>();
             }
@@ -136,12 +110,13 @@ public class AreaSelectionResponseDto {
 
     public static class AreaOverlapFragment {
         public JsonNode polygon;
-        public Matrix defaultMatrix;
+        public MatrixSelection defaultMatrix;
     }
 
     DefaultArea defaultArea;
     List<AreaTypeArea> areaTypes;
     List<AreaOverlapFragment> overlap;
+    List<MatrixSelection> alternativeMatrices; // set only if no matrices are found
 
     public DefaultArea getDefaultArea() {
         return defaultArea;
@@ -153,6 +128,10 @@ public class AreaSelectionResponseDto {
 
     public void setOverlap(List<AreaOverlapFragment> areaOverlapFragments) {
         this.overlap = areaOverlapFragments;
+    }
+
+    public void setAlternativeMatrices(List<MatrixSelection> alternativeMatrices) {
+        this.alternativeMatrices = alternativeMatrices;
     }
 
     public List<AreaTypeArea> getAreaTypes() {
@@ -167,5 +146,9 @@ public class AreaSelectionResponseDto {
             overlap = new ArrayList<>();
         }
         return overlap;
+    }
+
+    public List<MatrixSelection> getAlternativeMatrices() {
+        return alternativeMatrices;
     }
 }

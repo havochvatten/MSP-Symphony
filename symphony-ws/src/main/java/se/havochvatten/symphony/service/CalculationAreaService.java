@@ -21,6 +21,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
@@ -43,6 +44,9 @@ public class CalculationAreaService {
     @EJB
     CalcAreaSensMatrixService calcAreaSensMatrixService;
 
+    @EJB
+    MetaDataService metadataService;
+
     /**
      * @return All CalculationAreas defined in the system (areas meant to be used in calculations)
      */
@@ -52,9 +56,26 @@ public class CalculationAreaService {
                 .getResultList();
     }
 
+    public List<CalculationArea> findCalibratedCalculationAreas(String baselineName) {
+        return em.createNamedQuery("CalculationArea.findCalibratedByBaselineName")
+                .setParameter("name", baselineName)
+                .getResultList();
+    }
+
     public List<CalculationArea> findCalculationAreas(List<Integer> ids) {
         return em.createNamedQuery("CalculationArea.findByIds")
                 .setParameter("ids", ids)
+                .getResultList();
+    }
+
+    public CalculationArea findCalculationArea(Integer id) {
+        return em.find(CalculationArea.class, id);
+    }
+
+    public List<MatrixSelection> findAvailableMatricesForUser(String baselineName, Principal principal) {
+        return em.createNamedQuery("SensitivityMatrix.findAllByBaselineNameAndOwner", MatrixSelection.class)
+                .setParameter("name", baselineName)
+                .setParameter("owner", principal.getName())
                 .getResultList();
     }
 
@@ -75,6 +96,12 @@ public class CalculationAreaService {
                 .stream()
                 .filter((ca) -> ca.isCareaDefault())
                 .collect(Collectors.toList());
+
+            if(defaultAreas.size() == 0) {
+                return new AreaSelectionResponseDto(){{
+                    setAlternativeMatrices(findAvailableMatricesForUser(baselineName, principal));
+                }};
+            }
 
             if(defaultAreas.size() > 1) {
                 GeometryJSON geoJson = new GeometryJSON();
@@ -125,10 +152,20 @@ public class CalculationAreaService {
 
     public ScenarioAreaSelectionResponseDto scenarioAreaSelect(String baselineName, int scenarioId, Principal principal) throws SymphonyStandardAppException {
         Scenario scenario = em.find(Scenario.class, scenarioId);
+
         int[] areaIds = scenario.getAreas().stream().mapToInt(ScenarioArea::getId).toArray();
         ScenarioAreaSelectionResponseDto resp = new ScenarioAreaSelectionResponseDto();
 
         for(Integer areaId : areaIds) {
+            try {
+                resp.matrixData.put(areaId, areaSelect(baselineName, areaId, principal));
+            } catch (SymphonyStandardAppException e) {
+                if(e.getErrorCode() == SymphonyModelErrorCode.NO_DEFAULT_MATRIX_FOUND) {
+                    resp.matrixData.put(areaId, new AreaSelectionResponseDto());
+                } else {
+                    throw e;
+                }
+            }
             resp.matrixData.put(areaId, areaSelect(baselineName, areaId, principal));
         }
 
@@ -201,13 +238,21 @@ public class CalculationAreaService {
     }
 
     public MatrixResponse getAreaCalcMatrices(Scenario scenario) throws SymphonyStandardAppException {
+        // Explicit fetch join bringing lazy-loaded customCalcArea into session
+        TypedQuery<ScenarioArea> query = em.createQuery("SELECT area FROM ScenarioArea area LEFT JOIN FETCH area.customCalcArea WHERE area.id IN :ids", ScenarioArea.class);
+        query.setParameter("ids", scenario.getAreas().stream().mapToInt(ScenarioArea::getId).boxed().collect(Collectors.toList()));
+        List<ScenarioArea> j_areas = query.getResultList();
+
+        return getAreaCalcMatrices(j_areas, scenario.getBaselineId());
+    }
+
+    public MatrixResponse getAreaCalcMatrices(List<ScenarioArea> areas, Integer baselineId) throws SymphonyStandardAppException {
 
         Integer areaId, defaultSensMatrixId = null;
         CalculationArea calculationArea;
-        List<ScenarioArea> areas = scenario.getAreas();
         MatrixResponse areaMatrixMap = new MatrixResponse(areas.stream().mapToInt(ScenarioArea::getId).toArray());
 
-        BaselineVersion baseline = baselineVersionService.getBaselineVersionById(scenario.getBaselineId());
+        BaselineVersion baseline = baselineVersionService.getBaselineVersionById(baselineId);
         List<CaPolygon> defaultCalcAreaPolygons = getDefaultCalcAreaPolygonsForBaseline(baseline.getId());
 
         for(ScenarioArea area : areas) {
@@ -221,6 +266,13 @@ public class CalculationAreaService {
                     break;
                 }
             }
+
+            CalculationArea customCalcArea = area.getCustomCalcArea();
+
+            if (customCalcArea != null) {
+                areaMatrixMap.setAreaNormalizationValue(areaId, customCalcArea.getMaxValue());
+            }
+
             if(areaMatrixParameters.matrixId != null) {
                 areaMatrixMap.setAreaMatrixId(areaId, areaMatrixParameters.matrixId);
             } else {
@@ -233,6 +285,7 @@ public class CalculationAreaService {
         }
 
         return areaMatrixMap;
+
     }
 
     private List<CaPolygon> getDefaultCalcAreaPolygonsForBaseline(Integer id) {
@@ -354,18 +407,15 @@ public class CalculationAreaService {
             return new double[][]{};
         }
 
-        List<Metadata> metadataPressList = em.createQuery("SELECT mp FROM Metadata mp WHERE mp" +
-                ".symphonyCategory = :category AND mp.baselineVersion.id = :versionid ORDER BY mp" +
-                ".bandNumber ASC").setParameter("category", "Pressure").setParameter("versionid",
-                baseDataVersionId).getResultList();
-        List<Metadata> metadataEcoList = em.createQuery("SELECT me FROM Metadata me WHERE me" +
-                ".symphonyCategory = :category AND me.baselineVersion.id = :versionid ORDER BY me" +
-                ".bandNumber ASC").setParameter("category", "Ecosystem").setParameter("versionid",
-                baseDataVersionId).getResultList();
+        List<SymphonyBand> pressuresList =
+            metadataService.getBandsForBaselineComponent("Pressure", baseDataVersionId);
+        List<SymphonyBand> ecosystemsList =
+            metadataService.getBandsForBaselineComponent("Ecosystem", baseDataVersionId);
 
-        double[][] matrix = new double[metadataPressList.size()][metadataEcoList.size()];
-        for (int i = 0; i < metadataPressList.size(); i++) {
-            double[] sensRow = getSensValueRow(matrixId, metadataPressList.get(i).getId(), metadataEcoList);
+        double[][] matrix = new double[pressuresList.size()][ecosystemsList.size()];
+
+        for (int i = 0; i < pressuresList.size(); i++) {
+            double[] sensRow = getSensValueRow(matrixId, pressuresList.get(i).getId(), ecosystemsList);
             matrix[i] = sensRow;
         }
 
@@ -376,14 +426,15 @@ public class CalculationAreaService {
      * @return A row of sensitivity values in the matrix. The ecocomponents connected to pressure. Ordered by
      * band number in metadata,
      */
-    private double[] getSensValueRow(Integer matrixId, Integer presId, List<Metadata> metadataEcoList) {
-        double[] sensRow = new double[metadataEcoList.size()];
+    private double[] getSensValueRow(Integer matrixId, Integer presId, List<SymphonyBand> ecoBandsList) {
+        double[] sensRow = new double[ecoBandsList.size()];
         for (int j = 0; j < sensRow.length; j++) {
             Optional<Sensitivity> optSens =
-                    metadataEcoList.get(j).getEcoSensitivities()
+
+                    ecoBandsList.get(j).getEcoSensitivities()
                             .stream()
-                            .filter(e -> e.getSensitivityMatrix().getId().equals(matrixId) &&
-                                            e.getPresMetadata().getId().equals(presId))
+                            .filter(e -> e.getMatrix().getId().equals(matrixId) &&
+                                            e.getPressureBand().getId().equals(presId))
                             .findAny();
             sensRow[j] = optSens.isPresent() ? optSens.get().getValue().doubleValue() : Double.NaN; // Encode
             // absence of value using NaN

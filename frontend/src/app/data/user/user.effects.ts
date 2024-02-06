@@ -132,6 +132,6 @@ export class UserEffects {
 
   fetchedMetadata$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.fetchBaselineSuccess),
-    map(props => MetadataActions.fetchMetadata({ baseline: props.baseline.name }))
+    map(props => MetadataActions.fetchMetadataForBaseline({ baselineName: props.baseline.name }))
   ));
 }
