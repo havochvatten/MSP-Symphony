@@ -27,9 +27,6 @@ export class CalculationReportComponent extends AbstractReport {
   areaDict: Map<number, string> = new Map<number, string>();
   isDomainNormalization = false;
 
-  env = env;
-  buildInfo = buildInfo;
-
   constructor(
     private translate: TranslateService,
     private store: Store<State>,

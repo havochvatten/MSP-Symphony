@@ -537,7 +537,8 @@
             "vs": "and"
         },
         "common" : {
-            "not-measurable": "(not measurable)"
+            "not-measurable": "(not measurable)",
+            "date-and-time": "Date and time:"
         },
         "cumulative-effect-etc": {
             "baseline": "Baseline version",

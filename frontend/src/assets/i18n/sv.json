@@ -537,7 +537,8 @@
             "vs": "kontra"
         },
         "common" : {
-            "not-measurable": "(ej mätbar)"
+            "not-measurable": "(ej mätbar)",
+            "date-and-time": "Datum och tid:"
         },
         "cumulative-effect-etc": {
             "baseline": "Basdataversion",

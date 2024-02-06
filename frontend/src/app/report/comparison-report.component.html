@@ -72,17 +72,9 @@
       [locale]="locale"
     ></app-impact-table>
   </ng-container>
-  <p class="closing-matter">
-    {{ 'report.description' | translate }}<br/>
-    {{ 'report.more-info' | translate }}
-    <a [href]="'report.link' | translate" target="_blank" rel="noreferrer">
-      www.havochvatten.se
-    </a>.
-  </p>
-  <p class="closing-matter-smaller">
-    Symphony version {{ symphonyVersion }}<br/>
-    {{ now | date: 'yyyy-MM-dd HH:mm' }}
-  </p>
+  <app-report-bottom
+    [formattedDate]="now | date:  'yyyy-MM-dd&nbsp;&nbsp;&nbsp;HH:mm'"
+  ></app-report-bottom>
 </tbody>
 
 <div *ngIf="loadingReport" class="loading-report">
