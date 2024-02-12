@@ -3,14 +3,18 @@ import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { CalculationActions, CalculationSelectors } from "@data/calculation";
-import { CompoundComparisonSlice } from "@data/calculation/calculation.interfaces";
+import { CompoundComparisonSlice, DownloadCompoundComparisonOptions } from "@data/calculation/calculation.interfaces";
 import { TranslateService } from '@ngx-translate/core';
 import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 import { catchError, take, tap } from "rxjs/operators";
-import { of } from "rxjs";
+import { environment as env } from "@src/environments/environment";
 import { DialogService } from '@src/app/shared/dialog/dialog.service';
 import { Listable } from '@src/app/shared/list-filter/listable.directive';
 import { ListItemsSort } from "@data/common/sorting.interfaces";
+import { addWarning } from "@angular-devkit/build-angular/src/utils/webpack-diagnostics";
+import {
+  DownloadCompoundComparisonDialogComponent
+} from "@src/app/map-view/compound-comparison-list-dialog/download-compound-comparison-dialog/download-compound-comparison-dialog.component";
 
 @Component({
   selector: 'app-compound-comparison-list-dialog',
@@ -20,6 +24,7 @@ import { ListItemsSort } from "@data/common/sorting.interfaces";
 export class CompoundComparisonListDialogComponent extends Listable {
 
   compoundComparison$ = this.store.select(CalculationSelectors.selectCompoundComparisons);
+  apiUrl: string;
 
   constructor(private store: Store<State>,
               private dialog: DialogRef,
@@ -27,6 +32,7 @@ export class CompoundComparisonListDialogComponent extends Listable {
               private dialogService: DialogService,
               private translateService: TranslateService) {
     super();
+    this.apiUrl = env.apiBaseUrl + '/report/multi-comparison';
   }
 
   close = () => {
@@ -49,6 +55,30 @@ export class CompoundComparisonListDialogComponent extends Listable {
 
     if (confirmDelete) {
       this.store.dispatch(CalculationActions.deleteCompoundComparison({ id: cmp.id }));
+    }
+  }
+
+  async downloadCC(cmp: CompoundComparisonSlice) {
+    const ccDownloadOptions =
+      await this.dialogService.open<DownloadCompoundComparisonOptions>(
+        DownloadCompoundComparisonDialogComponent, this.moduleRef, {
+          data: {
+            comparisonName: cmp.name
+          }
+        });
+
+    if(ccDownloadOptions) {
+      const params = new URLSearchParams({
+        lang: this.translateService.currentLang,
+        nonzero: !ccDownloadOptions.allowZeroes + ''
+      });
+
+      if (!ccDownloadOptions.asJson) {
+        params.set('heading', this.translateService.instant('map.compound-data-list.compound-comparison-data'));
+      }
+
+      document.location.href =
+        `${this.apiUrl}/${cmp.id}/${ccDownloadOptions.asJson ? 'json' : 'ods'}?${params.toString()}`;
     }
   }
 

@@ -233,7 +233,7 @@ public class CalcService {
         }
     }
 
-    public synchronized void delete(Principal principal, Object entity) {
+    public synchronized void delete(Principal user, Object entity) {
         try {
             transaction.begin();
             em.remove(em.merge(entity));
@@ -833,20 +833,30 @@ public class CalcService {
         return (GridCoverage2D) operations.divide(difference, floatbase);
     }
 
-    public List<CompoundComparisonSlice> getCompoundComparisons(Principal principal) {
+    public List<CompoundComparisonSlice> getCompoundComparisons(Principal user) {
         return em.createNamedQuery("CompoundComparison.findByOwner", CompoundComparisonSlice.class).
-                setParameter("username", principal.getName()).
+                setParameter("username", user.getName()).
                 getResultList();
     }
 
-    public boolean deleteCompoundComparison(Principal principal, int id) {
+    public boolean deleteCompoundComparison(Principal user, int id) {
         var cmp = em.find(CompoundComparison.class, id);
 
-        if (cmp == null || !cmp.getCmpOwner().equals(principal.getName()))
+        if (cmp == null || !cmp.getOwner().equals(user.getName()))
             return false;
 
-        delete(principal, cmp);
+        delete(user, cmp);
         return true;
+    }
+
+    public CompoundComparison getCompoundComparison(int id, Principal user) {
+        CompoundComparison cmp = em.find(CompoundComparison.class, id);
+        if (cmp == null)
+            throw new NotFoundException();
+        if (!cmp.getOwner().equals(user.getName()))
+            throw new NotAuthorizedException(user.getName());
+        em.detach(cmp);
+        return cmp;
     }
 }
 

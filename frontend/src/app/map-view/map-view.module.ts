@@ -42,6 +42,7 @@ import { ActiveScenarioDisplayComponent } from './active-scenario-display/active
 import { BatchProgressComponent } from './batch-progress-display/batch-progress.component';
 import { ConfirmGenerateComparisonComponent } from './calculation-history/confirm-generate-comparison/confirm-generate-comparison.component';
 import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component';
+import { DownloadCompoundComparisonDialogComponent } from './compound-comparison-list-dialog/download-compound-comparison-dialog/download-compound-comparison-dialog.component';
 
 @NgModule({
   declarations: [
@@ -72,6 +73,7 @@ import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compoun
     BatchProgressComponent,
     ConfirmGenerateComparisonComponent,
     CompoundComparisonListDialogComponent,
+    DownloadCompoundComparisonDialogComponent,
   ],
     imports: [
         SharedModule,

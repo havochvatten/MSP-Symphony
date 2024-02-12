@@ -13,7 +13,7 @@ public class CompoundComparisonDto {
 
     public CompoundComparisonDto(CompoundComparison compoundComparison) {
         this.id = compoundComparison.getId();
-        this.name = compoundComparison.getCmpName();
-        this.results = compoundComparison.getCmpResult();
+        this.name = compoundComparison.getName();
+        this.results = compoundComparison.getResult();
     }
 }

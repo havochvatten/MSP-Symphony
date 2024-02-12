@@ -504,6 +504,14 @@
             "calculation-basis-info": "Jämförelsevärdena baserar sig på följande beräkningar",
             "more": "till",
             "delete": "Radera sammanslagen jämförelse",
+            "download": "Spara ned sammanslagen jämförelse",
+            "download-select-format": "Välj format att ladda ned",
+            "download-format": {
+                "json": "Som data (JSON)",
+                "ods": "Som kalkylblad (ODS)"
+            },
+            "download-allow-zero": "Tillåt nollvärden",
+            "confirm-download": "Ladda ned",
             "filter-hint": "Filtrera listan per namn",
             "delete-modal": {
                 "header": "Radera sammanslagen jämförelse",
