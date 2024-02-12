@@ -137,8 +137,6 @@ export interface CompoundComparisonSlice extends SortableListItem {
 }
 
 export interface CompoundComparison extends CompoundComparisonSlice {
-  id: number;
-  name: string;
   results: { [key: number]: ComparisonResult };
 }
 

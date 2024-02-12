@@ -209,7 +209,7 @@ public class CalculationREST {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
         else
-            return calcService.findAllByUser(req.getUserPrincipal().getName());
+            return calcService.findAllByUser(req.getUserPrincipal());
     }
 
     @GET

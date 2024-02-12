@@ -19,6 +19,7 @@
        class="tab for-dialog"
        [title]="'map.open-compound-data-list' | translate: { count: (compoundComparisonCount$ | async) }"
        (click)="openCompoundComparisonList()"
+       role="button"
        tabindex="0">
       <app-icon [iconType]="'compare-table'"></app-icon>
     </a>

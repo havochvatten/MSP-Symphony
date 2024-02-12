@@ -36,7 +36,7 @@ export class CompoundComparisonListDialogComponent extends Listable {
   }
 
   close = () => {
-    this.store.dispatch(CalculationActions.setCompoundComparisonSortType({ sortType: ListItemsSort.None }));
+    this.setSort(ListItemsSort.None);
     this.dialog.close();
   }
 
