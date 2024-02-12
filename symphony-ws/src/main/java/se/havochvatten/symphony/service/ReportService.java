@@ -52,6 +52,7 @@ public class ReportService {
 
     private static final int ODF_TITLE_ROWS = 6;
     private static final int ODF_TITLE_ROWS_TOTAL = 3;
+    private static final int ODF_CALC_TOTALS_SECTION = 7;
     private static final int ODF_TITLE_COLWIDTH = 55;
 
     @EJB
@@ -503,6 +504,7 @@ public class ReportService {
         return newSheet;
     }
 
+    // TODO: Probable opportunity to refactor for less repetitive code.
     public byte[] generateMultiComparisonAsODS(
         CompoundComparison comparison, String preferredLanguage, String localisedHeading, boolean excludeZeroes) throws Exception {
 
@@ -532,11 +534,11 @@ public class ReportService {
                 comparison.getResult().values().stream()
                     .filter(cmp -> cmp.cumulativeTotal != 0)
                     .toArray(ComparisonResult[]::new) :
-            comparison.getResult().values().toArray(new ComparisonResult[0]);
+            comparison.getResult().values().toArray(new ComparisonResult[comparison.getResult().size()]);
 
         OdfTable totalSheet = createSheet(
             templateDocument,
-            cmpResults.length * 7 + ODF_TITLE_ROWS_TOTAL, 3,
+            cmpResults.length * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL, 3,
             title);
 
         totalSheet.setTableName(comparison.getName() + " - Total");
@@ -576,7 +578,7 @@ public class ReportService {
                     ODF_TITLE_ROWS - 1);
                 nextCell.setStringValue(pressureTitles.get(cmp.includedPressures[layersToList.pressures[p]]));
                 nextCell.getOdfElement().setStyleName("pressureHeader");
-                nextSheet.getColumnByIndex(1 + p).setWidth(ODF_TITLE_COLWIDTH);
+                nextSheet.getColumnByIndex(2 + p).setWidth(ODF_TITLE_COLWIDTH);
             }
 
             for (e = 0; e < layersToList.result[0].length; e++) {
@@ -625,42 +627,55 @@ public class ReportService {
 
             // ----- Total sheet -----
 
-            nextCell = totalSheet.getCellByPosition(1, cmpIndex * 7 + ODF_TITLE_ROWS_TOTAL);
+            nextCell = totalSheet.getCellByPosition(1,
+                cmpIndex * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL);
             nextCell.setStringValue(cmp.calculationName);
             nextCell.getOdfElement().setStyleName("calcName");
-            totalSheet.getRowByIndex(cmpIndex * 7 + ODF_TITLE_ROWS_TOTAL + 2).setHeight(2, false);
-            totalSheet.getRowByIndex(cmpIndex * 7 + ODF_TITLE_ROWS_TOTAL + 5).setHeight(2, false);
+            totalSheet.getRowByIndex(cmpIndex * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL + 2)
+                .setHeight(2, false);
+            totalSheet.getRowByIndex(cmpIndex * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL + 5)
+                .setHeight(2, false);
 
-            nextCell = totalSheet.getCellByPosition(2, cmpIndex * 7 + ODF_TITLE_ROWS_TOTAL);
+            // Left aligned table with row titles column in third column (index 2)
+            nextCell = totalSheet.getCellByPosition(2,
+                cmpIndex * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL);
             nextCell.setStringValue("Pressure");
             nextCell.getOdfElement().setStyleName("pressureHeader");
-            nextCell = totalSheet.getCellByPosition(2, cmpIndex * 7 + ODF_TITLE_ROWS_TOTAL + 1);
+            nextCell = totalSheet.getCellByPosition(2,
+                cmpIndex * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL + 1);
             nextCell.setStringValue("TOTAL");
             nextCell.getOdfElement().setStyleName("totalHP");
 
-            nextCell = totalSheet.getCellByPosition(2, cmpIndex * 7 + ODF_TITLE_ROWS_TOTAL + 3);
+            nextCell = totalSheet.getCellByPosition(2,
+                cmpIndex * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL + 3);
             nextCell.setStringValue("Ecosystem");
             nextCell.getOdfElement().setStyleName("pressureHeader");
-            nextCell = totalSheet.getCellByPosition(2, cmpIndex * 7 + ODF_TITLE_ROWS_TOTAL + 4);
+            nextCell = totalSheet.getCellByPosition(2,
+                cmpIndex * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL + 4);
             nextCell.setStringValue("TOTAL");
             nextCell.getOdfElement().setStyleName("totalHP");
 
-
+            // Left aligned table with horizontal title column in second column:
+            // values start in fourth column, hence index + 3
             for(p = 0; p < layersToList.pressures.length; p++) {
-                nextCell = totalSheet.getCellByPosition(3 + p, cmpIndex * 7 + ODF_TITLE_ROWS_TOTAL);
+                nextCell = totalSheet.getCellByPosition(3 + p,
+                    cmpIndex * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL);
                 nextCell.setStringValue(pressureTitles.get(cmp.includedPressures[layersToList.pressures[p]]));
                 nextCell.getOdfElement().setStyleName("pressureHeader");
-                nextCell = totalSheet.getCellByPosition(3 + p, cmpIndex * 7 + ODF_TITLE_ROWS_TOTAL + 1);
+                nextCell = totalSheet.getCellByPosition(3 + p,
+                    cmpIndex * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL + 1);
                 nextCell.setDoubleValue(cmp.totalPerPressure.get(cmp.includedPressures[layersToList.pressures[p]]));
                 nextCell.getOdfElement().setStyleName("totalP");
                 totalSheet.getColumnByIndex(3 + p).setWidth(ODF_TITLE_COLWIDTH);
             }
 
             for(e = 0; e < layersToList.ecosystems.length; e++) {
-                nextCell = totalSheet.getCellByPosition(3 + e, cmpIndex * 7 + ODF_TITLE_ROWS_TOTAL + 3);
+                nextCell = totalSheet.getCellByPosition(3 + e,
+                    cmpIndex * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL + 3);
                 nextCell.setStringValue(ecoTitles.get(cmp.includedEcosystems[layersToList.ecosystems[e]]));
                 nextCell.getOdfElement().setStyleName("pressureHeader");
-                nextCell = totalSheet.getCellByPosition(3 + e, cmpIndex * 7 + ODF_TITLE_ROWS_TOTAL + 4);
+                nextCell = totalSheet.getCellByPosition(3 + e,
+                    cmpIndex * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL + 4);
                 nextCell.setDoubleValue(cmp.totalPerEcosystem.get(cmp.includedEcosystems[layersToList.ecosystems[e]]));
                 nextCell.getOdfElement().setStyleName("totalP");
             }
@@ -668,7 +683,7 @@ public class ReportService {
             if(cmpIndex < cmpResults.length - 1) {
                 j = 0;
                 while (j < Math.max(layersToList.pressures.length, layersToList.ecosystems.length) + 2) {
-                    nextCell = totalSheet.getCellByPosition(1 + j, cmpIndex * 7 + ODF_TITLE_ROWS_TOTAL + 6);
+                    nextCell = totalSheet.getCellByPosition(1 + j, cmpIndex * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL + 6);
                     nextCell.getOdfElement().setStyleName("resultSep");
                     ++j;
                 }
@@ -679,22 +694,6 @@ public class ReportService {
 
         // Remove the empty sheet from the template document
         templateDocument.getSpreadsheetTables().get(0).remove();
-
-        List<OdfTable> sheets = templateDocument.getSpreadsheetTables();
-
-        // The "Automatic styles" generated by newTable() factory method apparently causes a
-        // compatibility issue with MS Excel.
-        // Using 'default' table and column styles "ta1" and "co1" effectively remedies this.
-        for (OdfTable sheet: sheets) {
-            sheet.getOdfElement().setStyleName("ta1");
-            List<OdfTableColumn> columns = sheet.getColumnList();
-
-            for (OdfTableColumn c : columns) {
-                long tmpWidth = c.getWidth(); // setting the style resets the width
-                c.getOdfElement().setStyleName("co1");
-                c.setWidth(tmpWidth);
-            }
-        }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         odfPackage.save(out);
