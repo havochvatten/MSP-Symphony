@@ -6,12 +6,10 @@ import { CalculationActions, CalculationSelectors } from "@data/calculation";
 import { CompoundComparisonSlice, DownloadCompoundComparisonOptions } from "@data/calculation/calculation.interfaces";
 import { TranslateService } from '@ngx-translate/core';
 import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
-import { catchError, take, tap } from "rxjs/operators";
 import { environment as env } from "@src/environments/environment";
 import { DialogService } from '@src/app/shared/dialog/dialog.service';
 import { Listable } from '@src/app/shared/list-filter/listable.directive';
 import { ListItemsSort } from "@data/common/sorting.interfaces";
-import { addWarning } from "@angular-devkit/build-angular/src/utils/webpack-diagnostics";
 import {
   DownloadCompoundComparisonDialogComponent
 } from "@src/app/map-view/compound-comparison-list-dialog/download-compound-comparison-dialog/download-compound-comparison-dialog.component";
