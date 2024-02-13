@@ -37,6 +37,12 @@ public interface WebUtil {
 
     FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
+    static final String fileNameRx = "[^\\p{L}\\p{N}._-]+";
+
+    public static String escapeFilename(String s) {
+        return s.replaceAll(fileNameRx, "-");
+    }
+
     static JsonArray createExtent(Envelope targetEnvelope) {
         return Json.createArrayBuilder(List.of(targetEnvelope.getMinX(), targetEnvelope.getMinY(),
                 targetEnvelope.getMaxX(), targetEnvelope.getMaxY())).build();

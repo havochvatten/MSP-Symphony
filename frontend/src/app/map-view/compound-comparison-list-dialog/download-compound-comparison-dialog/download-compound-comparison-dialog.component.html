@@ -1,0 +1,32 @@
+<h3>{{ 'map.compound-data-list.download' | translate }}</h3>
+<p>
+  <em>“{{ comparisonName }}”</em>
+</p>
+<div class="format-options">
+  <label for="format" class="format-label">{{ 'map.compound-data-list.download-select-format' | translate }}</label>
+  <mat-radio-group (change)="setFormat($event)" name="format">
+    <mat-radio-button value="json" checked>{{
+        'map.compound-data-list.download-format.json' | translate
+      }}</mat-radio-button>
+    <mat-radio-button value="ods">{{
+        'map.compound-data-list.download-format.ods' | translate
+      }}</mat-radio-button>
+  </mat-radio-group>
+  <div class="allow-zeroes">
+    <label>
+      <mat-checkbox [(ngModel)]="downloadOptions.allowZeroes">{{
+          'map.compound-data-list.download-allow-zero' | translate
+      }}</mat-checkbox>
+    </label>
+  </div>
+</div>
+<div class="button-pane">
+  <button mat-flat-button
+          (click)="download()">{{
+      'map.compound-data-list.confirm-download' | translate
+    }}</button>
+  <button mat-flat-button [ngClass]="'secondary'"
+          (click)="close()">{{
+      'confirmation-modal.cancel' | translate
+    }}</button>
+</div>

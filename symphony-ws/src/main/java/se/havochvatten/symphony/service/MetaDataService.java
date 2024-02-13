@@ -1,9 +1,6 @@
 package se.havochvatten.symphony.service;
 
-import se.havochvatten.symphony.dto.MetadataComponentDto;
-import se.havochvatten.symphony.dto.MetadataDto;
-import se.havochvatten.symphony.dto.SymphonyBandDto;
-import se.havochvatten.symphony.dto.MetadataSymphonyThemeDto;
+import se.havochvatten.symphony.dto.*;
 import se.havochvatten.symphony.entity.Metadata;
 import se.havochvatten.symphony.entity.SymphonyBand;
 import se.havochvatten.symphony.entity.BaselineVersion;
@@ -14,6 +11,8 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
 import java.util.*;
 
 @Stateless
@@ -31,6 +30,32 @@ public class MetaDataService {
         metadataDto.setPressureComponent(getComponentDto("Pressure", baseline.getId(), preferredLanguage));
         metadataDto.setLanguage(preferredLanguage);
         return metadataDto;
+    }
+
+    public Map<Integer, String>
+        getComponentTitles(int baselineVersionId, LayerType category, String preferredLanguage)
+        throws SymphonyStandardAppException {
+
+        TypedQuery<Tuple> bandTitlesQuery = em.createQuery(
+            "SELECT m.band.bandnumber, m.metaValue FROM Metadata m " +
+                    "WHERE m.band.baseline.id = :baselineVersionId " +
+                    "AND m.metaField = 'title' " +
+                    "AND m.band.category = :category " +
+                    "AND (m.language = :language " +
+                        "OR (m.language = m.band.baseline.locale " +
+                        "AND m.metaField NOT IN " +
+                            "(SELECT m2.metaField FROM Metadata m2 " +
+                            "WHERE m2.band.baseline.id = :baselineVersionId " +
+                            "AND m2.metaField = 'title' " +
+                            "AND m2.language = :language)))" +
+                    "ORDER BY m.band.bandnumber", Tuple.class);
+
+        return bandTitlesQuery
+            .setParameter("baselineVersionId", baselineVersionId)
+            .setParameter("category", category == LayerType.ECOSYSTEM ? "Ecosystem" : "Pressure")
+            .setParameter("language", preferredLanguage)
+            .getResultStream()
+            .collect(HashMap::new, (m, t) -> m.put(t.get(0, Integer.class), t.get(1, String.class)), HashMap::putAll);
     }
 
     public MetadataComponentDto getComponentDto(String componentName, int baselineVersionId, String language) {

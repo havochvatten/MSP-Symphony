@@ -1,23 +1,18 @@
 package se.havochvatten.symphony.entity;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vladmihalcea.hibernate.type.array.IntArrayType;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import org.hibernate.annotations.*;
 import se.havochvatten.symphony.calculation.ComparisonResult;
-import se.havochvatten.symphony.dto.CalculationResultSlice;
 import se.havochvatten.symphony.dto.CompoundComparisonSlice;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.NamedNativeQuery;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
@@ -69,36 +64,36 @@ public class CompoundComparison {
     @Size(max = 255)
     @NotNull
     @Column(name = "cmp_name", nullable = false)
-    private String cmpName;
+    private String name;
 
     @NotNull
     @Column(name = "cmp_calculations", nullable = false)
     @Type(type = "int-array")
-    private int[] cmpCalculations;
+    private int[] calculations;
 
     @NotNull
     @Column(name = "cmp_result", nullable = false)
     @Type(type = "json")
-    private Map<Integer, ComparisonResult> cmpResult = new java.util.HashMap<>();
+    private Map<Integer, ComparisonResult> result = new java.util.HashMap<>();
 
     @Size(max = 255)
     @NotNull
     @Column(name = "cmp_owner", nullable = false)
-    private String cmpOwner;
+    private String owner;
 
     @NotNull
     @Column(name = "cmp_timestamp", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date cmpTimestamp;
+    private Date timestamp;
 
     public CompoundComparison() {}
 
-    public CompoundComparison(BaselineVersion baseline, String cmpName, String cmpOwner, int[] calcResults, Date cmpTimestamp) {
+    public CompoundComparison(BaselineVersion baseline, String name, String owner, int[] calcResults, Date timestamp) {
         this.baseline = baseline;
-        this.cmpName = cmpName;
-        this.cmpOwner = cmpOwner;
-        this.cmpCalculations = calcResults;
-        this.cmpTimestamp = cmpTimestamp;
+        this.name = name;
+        this.owner = owner;
+        this.calculations = calcResults;
+        this.timestamp = timestamp;
     }
 
     public Integer getId() {
@@ -117,44 +112,44 @@ public class CompoundComparison {
         this.baseline = baseline;
     }
 
-    public String getCmpName() {
-        return cmpName;
+    public String getName() {
+        return name;
     }
 
-    public void setCmpName(String cmpName) {
-        this.cmpName = cmpName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public int[] getCmpCalculations() {
-        return cmpCalculations;
+    public int[] getCalculations() {
+        return calculations;
     }
 
-    public void setCmpCalculations(int[] cmpCalculations) {
-        this.cmpCalculations = cmpCalculations;
+    public void setCalculations(int[] calculations) {
+        this.calculations = calculations;
     }
 
-    public @NotNull Map<Integer, ComparisonResult> getCmpResult() {
-        return cmpResult;
+    public @NotNull Map<Integer, ComparisonResult> getResult() {
+        return result;
     }
 
     public void setCmpResultForCalculation(int calculationId, int[] ecosystems, int[] pressures, double[][] result, String calculationName) {
         ComparisonResult comparisonResult = new ComparisonResult(ecosystems, pressures, result, calculationName);
-        cmpResult.put(calculationId, comparisonResult);
+        this.result.put(calculationId, comparisonResult);
     }
 
-    public String getCmpOwner() {
-        return cmpOwner;
+    public String getOwner() {
+        return owner;
     }
 
-    public void setCmpOwner(String cmpOwner) {
-        this.cmpOwner = cmpOwner;
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
-    public Date getCmpTimestamp() {
-        return cmpTimestamp;
+    public Date getTimestamp() {
+        return timestamp;
     }
 
-    public void setCmpTimestamp(Date cmpTimestamp) {
-        this.cmpTimestamp = cmpTimestamp;
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
     }
 }

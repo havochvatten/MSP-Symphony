@@ -504,6 +504,14 @@
             "calculation-basis-info": "La comparaison des valeurs est basée sur les calculs suivants",
             "more": "de plus",
             "delete": "Supprimer ca comparaison composée",
+            "download": "Télécharger la comparaison composée",
+            "download-select-format": "Choisissez le format de téléchargement",
+            "download-format": {
+                "json": "En tant que données (JSON)",
+                "ods": "En tant que feuille de calcul (ODS)"
+            },
+            "download-allow-zero": "Inclure les valeurs nulles",
+            "confirm-download": "Télécharger",
             "filter-hint": "Filtrer la liste par nom",
             "delete-modal": {
                 "header": "Supprimer la comparaison composée",

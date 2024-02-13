@@ -31,7 +31,6 @@
         <version.resteasy-jaxrs>3.15.6.Final</version.resteasy-jaxrs>
         <version.java.lang3>3.9</version.java.lang3>
         <version.catalina.corsfilter>7.0.109</version.catalina.corsfilter>
-        <version.harmcrest>2.0.0.0</version.harmcrest>
         <version.jts>1.18.2</version.jts> <!--Synced with GeoTools 26.1 -->
         <version.javax.batch>1.0.1</version.javax.batch>
         <version.jberet>1.4.2.Final</version.jberet>
@@ -295,6 +294,16 @@
             <groupId>org.jberet</groupId>
             <artifactId>jberet-se</artifactId>
             <version>${version.jberet}</version>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.12.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.odftoolkit</groupId>
+            <artifactId>odfdom-java</artifactId>
+            <version>0.12.0</version>
         </dependency>
 
         <!-- Benchmarking -->

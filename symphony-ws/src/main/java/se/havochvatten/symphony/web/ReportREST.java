@@ -8,6 +8,7 @@ import se.havochvatten.symphony.calculation.CalcUtil;
 import se.havochvatten.symphony.dto.ComparisonReportResponseDto;
 import se.havochvatten.symphony.dto.ReportResponseDto;
 import se.havochvatten.symphony.entity.CalculationResult;
+import se.havochvatten.symphony.entity.CompoundComparison;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.service.CalcService;
 import se.havochvatten.symphony.service.PropertiesService;
@@ -65,10 +66,6 @@ public class ReportREST {
             return status(Response.Status.UNAUTHORIZED).build();
     }
 
-    private static String escapeFilename(String s) {
-        return s.replaceAll("\\W+", "-"); // Use RFC 5987 to quote properly?
-    }
-
     @GET
     @Path("/{id}/geotiff")
     @Produces({"image/geotiff"})
@@ -81,7 +78,7 @@ public class ReportREST {
         if (calc.isBaselineCalculation() || calc.getOwner().equals(req.getUserPrincipal().getName()))
             return ok(calc.getRasterData()).
                     header("Content-Disposition",
-                            "attachment; filename=\""+calc.getId()+"-" + escapeFilename(calc.getCalculationName()) +
+                            "attachment; filename=\""+calc.getId()+"-" + WebUtil.escapeFilename(calc.getCalculationName()) +
                                     ".tiff\"").
                     build();
         else
@@ -123,7 +120,7 @@ public class ReportREST {
         if (hasAccess(calc, req.getUserPrincipal()))
             return ok(reportService.generateCSVReport(calc, req.getLocale())).
                     header("Content-Disposition",
-                            "attachment; filename=\""+calc.getId()+"-"+escapeFilename(calc.getCalculationName())+
+                            "attachment; filename=\""+calc.getId()+"-"+WebUtil.escapeFilename(calc.getCalculationName())+
                                     "-utf8.csv\"").
                     build();
         else
@@ -186,4 +183,40 @@ public class ReportREST {
             return status(Response.Status.UNAUTHORIZED).build();
     }
 
+    @GET
+    @Path("/multi-comparison/{id}/{format: (json|ods)}")
+    @Produces({ MediaType.APPLICATION_JSON,
+                "application/vnd.oasis.opendocument.spreadsheet" })
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Return compound comparison data as ODS file")
+    public Response getMultiComparisonReport(@Context HttpServletRequest req,
+                                             @PathParam("id") Integer id,
+                                             @PathParam("format") String format,
+                                             @DefaultValue("false") @QueryParam("nonzero") boolean excludeZeroes,
+                                             @DefaultValue("") @QueryParam("heading") String localisedHeading,
+                                             @DefaultValue("en") @QueryParam("lang") String preferredLanguage) {
+
+        try {
+            CompoundComparison cmp = calcService.getCompoundComparison(id, req.getUserPrincipal());
+            String attachmentHeader =
+                "attachment; filename=\"Compound_comparison_-_" + WebUtil.escapeFilename(cmp.getName()) +
+                    (format.equals("json") ? ".json" : ".ods");
+
+            try {
+                if(format.equals("json"))
+                    return ok(reportService.generateMultiComparisonAsJSON(cmp, preferredLanguage, excludeZeroes)).
+                        header("Content-Disposition", attachmentHeader).build();
+                else {
+                    byte[] ods = reportService.generateMultiComparisonAsODS(cmp, preferredLanguage, localisedHeading, excludeZeroes);
+                    return ok(ods).
+                        header("Content-Disposition",attachmentHeader).build();
+                }
+
+            } catch (Exception e) {
+                return status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+        } catch (Exception e) {
+            return status(Response.Status.UNAUTHORIZED).build();
+        }
+    }
 }

@@ -140,6 +140,11 @@ export interface CompoundComparison extends CompoundComparisonSlice {
   results: { [key: number]: ComparisonResult };
 }
 
+export interface DownloadCompoundComparisonOptions {
+  asJson: boolean;
+  allowZeroes: boolean;
+}
+
 export interface OperationParams {
   [param: string]: string;
 }

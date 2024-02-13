@@ -846,10 +846,21 @@ public class CalcService {
     public boolean deleteCompoundComparison(Principal user, int id) {
         var cmp = em.find(CompoundComparison.class, id);
 
-        if (cmp == null || !cmp.getCmpOwner().equals(user.getName()))
+        if (cmp == null || !cmp.getOwner().equals(user.getName()))
             return false;
 
         delete(user, cmp);
         return true;
     }
+
+    public CompoundComparison getCompoundComparison(int id, Principal user) {
+        CompoundComparison cmp = em.find(CompoundComparison.class, id);
+        if (cmp == null)
+            throw new NotFoundException();
+        if (!cmp.getOwner().equals(user.getName()))
+            throw new NotAuthorizedException(user.getName());
+        em.detach(cmp);
+        return cmp;
+    }
 }
+
