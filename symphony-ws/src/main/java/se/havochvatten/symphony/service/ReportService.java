@@ -495,7 +495,9 @@ public class ReportService {
 
         newSheet.getCellRangeByPosition(2, 1, 5, 1).merge();
         OdfTableCell titleCell = newSheet.getCellByPosition(2, 1);
+
         titleCell.setStringValue(title);
+
         titleCell.getOdfElement().setStyleName("cmpName");
 
         newSheet.getColumnByIndex(0).setWidth(5);
@@ -544,17 +546,29 @@ public class ReportService {
         totalSheet.setTableName(comparison.getName() + " - Total");
         totalSheet.getColumnByIndex(1).setWidth(ODF_TITLE_COLWIDTH);
 
+        // guard against duplicate calculation names
+        Map<String, Integer> cmpNameCounts = new HashMap<>();
+
+        for(ComparisonResult cmp : cmpResults) {
+            cmpNameCounts.put(cmp.calculationName, 0);
+        }
+
         // Semantically consistent index variables.
         int e, p, j, cmpIndex = 0;
 
         for (ComparisonResult cmp : cmpResults) {
+
             OdfTable nextSheet = createSheet(
                 templateDocument,
                 cmp.includedEcosystems.length + ODF_TITLE_ROWS, cmp.includedPressures.length + 1,
                 title);
             OdfTableCell nextCell;
 
-            nextSheet.setTableName(cmp.calculationName);
+            cmpNameCounts.put(cmp.calculationName, cmpNameCounts.get(cmp.calculationName) + 1);
+
+            nextSheet.setTableName(cmp.calculationName +
+                (cmpNameCounts.get(cmp.calculationName) > 1 ?
+                " (" + cmpNameCounts.get(cmp.calculationName) + ")" : ""));
 
             nextCell = nextSheet.getCellByPosition(1, ODF_TITLE_ROWS - 3);
             nextCell.setStringValue(cmp.calculationName);
