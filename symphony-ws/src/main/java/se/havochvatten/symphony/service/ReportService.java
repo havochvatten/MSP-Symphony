@@ -655,7 +655,7 @@ public class ReportService {
             nextCell.setStringValue("TOTAL");
             nextCell.getOdfElement().setStyleName("totalHP");
 
-            // Left aligned table with horizontal title column in second column:
+            // Left aligned table with horizontal title column in third column:
             // values start in fourth column, hence index + 3
             for(p = 0; p < layersToList.pressures.length; p++) {
                 nextCell = totalSheet.getCellByPosition(3 + p,
