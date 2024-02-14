@@ -16,5 +16,5 @@ export default [
   ['Commons Lang', 'https://commons.apache.org/proper/commons-lang/', '3.9'],
   ['Jackson', 'https://github.com/FasterXML/jackson', '2.12.6'],
   ['RESTEasy', 'https://resteasy.dev/', '4.7.7.Final'],
-  ['The ODF Toolkit', 'https://odftoolkit.org/', '0.12.0']
+  ['SODS', 'https://github.com/miachm/SODS', '1.6.7']
 ];
