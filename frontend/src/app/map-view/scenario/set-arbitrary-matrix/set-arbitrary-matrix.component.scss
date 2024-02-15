@@ -36,14 +36,8 @@
     margin: 0;
   }
 
-  .button-pane {
-    display: flex;
-    justify-content: center;
-    margin-top: 2rem;
-
-    button {
+  .button-pane button {
       margin-left: 1rem;
-    }
   }
 }
 

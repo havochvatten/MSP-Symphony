@@ -34,19 +34,4 @@
       margin: 0 0 2rem;
     }
   }
-
-  div.button-pane {
-      display: flex;
-      justify-content: center;
-
-    &.left {
-      -webkit-box-pack: start;
-      justify-content: flex-start;
-    }
-
-    &.right {
-      -webkit-box-pack: end;
-      justify-content: flex-end;
-    }
-  }
 }

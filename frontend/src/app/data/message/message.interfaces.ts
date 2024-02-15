@@ -3,7 +3,7 @@ export type MessageType = 'INFO' | 'SUCCESS' | 'ERROR' | 'WARNING';
 export interface Message {
   uuid: string;
   type: MessageType;
-  title?: string,
+  title?: string;
   message: string;
 }
 

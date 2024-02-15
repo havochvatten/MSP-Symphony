@@ -101,7 +101,7 @@ export interface AreaGroupState {
   statePath: StatePath;
   areas: {
     [key: string]: Area;
-  }
+  };
 }
 
 export interface NationalAreaState {
@@ -110,7 +110,7 @@ export interface NationalAreaState {
   displayName: string;
   groups: {
     [key: string]: AreaGroupState;
-  }
+  };
 }
 
 export interface UserAreasState {
@@ -118,8 +118,8 @@ export interface UserAreasState {
 }
 
 export interface UploadedUserDefinedArea {
-  srid: number,
-  featureIdentifiers: string[],
+  srid: number;
+  featureIdentifiers: string[];
   key: string;
 }
 
@@ -132,7 +132,7 @@ export interface State {
   areaTypes: string[];
   area: {
     [key: string]: NationalAreaState;
-  }
+  };
   userArea: UserAreasState;
   boundaries: Boundary[];
   currentSelection?: StatePath[]; // currentFeature?

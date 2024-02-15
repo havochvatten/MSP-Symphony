@@ -24,6 +24,7 @@
         "reset-preselected": "Réinitialiser",
         "reset-preselected-description": "Réinitialiser les composants et les pressions sélectionnés à la sélection par défaut, supprimez tous les changements d'intensité pour le scénario actif",
         "selection-overlap": "Impossible de sélectionner des zones superposées",
+        "open-compound-data-list": "Comparaisons composées ({{ count }})",
         "intensity" : {
             "ecosystems": "Composante écosystèmes",
             "pressures": "Pressions",
@@ -395,10 +396,17 @@
                 "cancel": "Annuler",
                 "confirm": "Supprimer"
             },
+            "generate-comparison-modal": {
+                "header": "Générer une comparaison composée",
+                "message": "Entrez un titre pour la comparaison composée.",
+                "placeholder": "Entrez un titre",
+                "calculate": "Calculer"
+            },
             "multi-mode": {
-                "enter": "Entrer en mode de sélection multiple pour supprimer plusieurs calculs",
+                "enter": "Entrer en mode de sélection multiple",
                 "exit": "Quitter le mode de sélection multiple",
                 "delete-selected": "Supprimer les calculs sélectionnés",
+                "generate-comparison": "Générer des données de comparaison",
                 "none-selected": "Aucun calcul sélectionné"
             }
         },
@@ -489,6 +497,26 @@
         "merge-areas-hint" : {
             "emphasis": "Fusionner les zones",
             "detail": "{{ altButton }} + Shift + clic pour fusionner la sélection."
+        },
+        "compound-data-list": {
+            "title": "Comparaisons composées",
+            "compound-comparison-data": "Données de comparaison composée",
+            "calculation-basis-info": "La comparaison des valeurs est basée sur les calculs suivants",
+            "more": "de plus",
+            "delete": "Supprimer ca comparaison composée",
+            "download": "Télécharger la comparaison composée",
+            "download-select-format": "Choisissez le format de téléchargement",
+            "download-format": {
+                "json": "En tant que données (JSON)",
+                "ods": "En tant que feuille de calcul (ODS)"
+            },
+            "download-allow-zero": "Inclure les valeurs nulles",
+            "confirm-download": "Télécharger",
+            "filter-hint": "Filtrer la liste par nom",
+            "delete-modal": {
+                "header": "Supprimer la comparaison composée",
+                "message": "Confirmer la suppression de la comparaison composée: <em>“{{ comparisonName }}”</em>",
+            }
         }
     },
     "controls": {

@@ -1,26 +1,24 @@
 package se.havochvatten.symphony.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.github.miachm.sods.*;
 import it.geosolutions.jaiext.stats.HistogramMode;
 import it.geosolutions.jaiext.stats.Statistics;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
-import se.havochvatten.symphony.calculation.CalcService;
+import se.havochvatten.symphony.calculation.ComparisonResult;
 import se.havochvatten.symphony.calculation.Operations;
 import se.havochvatten.symphony.calculation.SankeyChart;
 import se.havochvatten.symphony.dto.*;
-import se.havochvatten.symphony.entity.CalculationResult;
+import se.havochvatten.symphony.dto.CompoundComparisonExport.ComparisonResultExport;
+import se.havochvatten.symphony.entity.*;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
-import se.havochvatten.symphony.scenario.ScenarioService;
-import se.havochvatten.symphony.scenario.ScenarioSnapshot;
+import se.havochvatten.symphony.util.ODSStyles;
 import si.uom.SI;
 import tech.units.indriya.quantity.Quantities;
 
@@ -31,9 +29,9 @@ import javax.measure.Quantity;
 import javax.measure.UnconvertibleException;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -45,15 +43,19 @@ import static java.util.stream.Collectors.toMap;
 public class ReportService {
     private static final Logger logger = Logger.getLogger(ReportService.class.getName());
 
-    private static final ObjectMapper mapper = new JsonMapper();
-
-    private static final GeometryJSON geoJson = new GeometryJSON();
-
     // The CSV standard (RFC 4180) actually says to use comma, but tab is MS Excel default. Or use TSV?
     private static final char CSV_FIELD_SEPARATOR = '\t';
 
+    private static final int ODF_TITLE_ROWS = 6;
+    private static final int ODF_TITLE_ROWS_TOTAL = 3;
+    private static final int ODF_CALC_TOTALS_SECTION = 7;
+    private static final double ODF_TITLE_COLWIDTH = 55.0;
+
     @EJB
     private Operations operations;
+
+    @PersistenceContext(unitName = "symphonyPU")
+    public EntityManager em;
 
     @Inject
     MetaDataService metaDataService;
@@ -62,18 +64,14 @@ public class ReportService {
     SensMatrixService matrixService;
 
     @Inject
-    ScenarioService scenarioService;
-
-    @Inject
     CalcService calcService;
-
-    @Inject
-    CalculationAreaService calcAreaService;
 
     @Inject
     PropertiesService props;
 
     record StatisticsResult(double min, double max, double average, double stddev, double[] histogram, long pixels){}
+
+    public record MultiComparisonAuxiliary(int[] ecosystems, int[] pressures, double[][] result) {}
 
     private StatisticsResult getStatistics(GridCoverage2D coverage) {
         Statistics[] simpleStats = operations.stats(coverage, new int[]{0}, new Statistics.StatsType[]{
@@ -116,7 +114,7 @@ public class ReportService {
      * @param pTotal  output param containing pressure row total
      * @param esTotal output param containing ecosystem column total
      */
-    static double getComponentTotals(double[][] matrix, double[] pTotal, double[] esTotal) {
+    public static double getComponentTotals(double[][] matrix, double[] pTotal, double[] esTotal) {
         double totalTotal = 0;
         for (int b = 0; b < matrix.length; b++) {
             for (int e = 0; e < matrix[b].length; e++) {
@@ -128,7 +126,7 @@ public class ReportService {
         return totalTotal;
     }
 
-    private static Map<Integer, Double> impactPerComponent(int[] components, double[] totals) {
+    public static Map<Integer, Double> impactPerComponent(int[] components, double[] totals) {
         return IntStream
                 .range(0, components.length).boxed()
                 .collect(toMap(i -> components[i], i -> totals[i]));
@@ -174,7 +172,7 @@ public class ReportService {
 
         double resolution = getResolutionInMetres(coverage);
         report.gridResolution = Double.isNaN(resolution) ? Double.NaN :
-                                Math.round(resolution * 100) / 100;
+                                (double) Math.round(resolution * 100) / 100;
                                 // Round to two decimal places and guard for NaN
                                 // since Math.round(Double.NaN) returns 0
 
@@ -269,14 +267,6 @@ public class ReportService {
                 .getChartData();
 
         return report;
-    }
-
-    private String getMatrixName(int id) {
-        try {
-            return matrixService.getSensMatrixbyId(id, null).getName();
-        } catch (SymphonyStandardAppException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private SymphonyBandDto[] flattenAndSort(MetadataComponentDto component) {
@@ -421,5 +411,275 @@ public class ReportService {
                     totalA[i] == 0 ? 0 : 100 * ((totalB[i] - totalA[i]) / totalA[i]));
                 writer.println();
         });
+    }
+
+    public MultiComparisonAuxiliary getLayerIndicesToListForResult(ComparisonResult result, boolean excludeZeroes) {
+        int[] ecosystemsToList = excludeZeroes ? IntStream.range(0, result.includedEcosystems.length)
+            .filter(i -> result.totalPerEcosystem.get(result.includedEcosystems[i]) != 0)
+            .toArray() : IntStream.range(0, result.includedEcosystems.length).toArray();
+
+        int[] pressuresToList = excludeZeroes ? IntStream.range(0, result.includedPressures.length)
+            .filter(i -> result.totalPerPressure.get(result.includedPressures[i]) != 0)
+            .toArray() : IntStream.range(0, result.includedPressures.length).toArray();
+
+        double[][] resultMatrix = new double[pressuresToList.length][ecosystemsToList.length];
+
+        for (int p = 0; p < pressuresToList.length; p++) {
+            for (int e = 0; e < ecosystemsToList.length; e++) {
+                resultMatrix[p][e] = result.result[pressuresToList[p]]
+                    [ecosystemsToList[e]];
+            }
+        }
+
+        return new MultiComparisonAuxiliary(ecosystemsToList, pressuresToList, resultMatrix);
+    }
+
+    public CompoundComparisonExport generateMultiComparisonAsJSON(
+        CompoundComparison comparison, String preferredLanguage, boolean excludeZeroes)
+            throws SymphonyStandardAppException {
+
+        CompoundComparisonExport result = new CompoundComparisonExport();
+
+        BaselineVersion baseline = em.createNamedQuery("BaselineVersion.getById", BaselineVersion.class)
+            .setParameter("id", comparison.getBaseline().getId())
+            .getSingleResult();
+
+        Map<Integer, String>
+            ecoTitles = metaDataService.getComponentTitles(
+                comparison.getBaseline().getId(),
+                LayerType.ECOSYSTEM, preferredLanguage),
+            pressureTitles = metaDataService.getComponentTitles(
+                comparison.getBaseline().getId(),
+                LayerType.PRESSURE, preferredLanguage);
+
+        ComparisonResult[] cmpResults = excludeZeroes ?
+            comparison.getResult().values().stream()
+                .filter(c -> c.cumulativeTotal != 0)
+                .toArray(ComparisonResult[]::new) :
+            comparison.getResult().values().toArray(new ComparisonResult[0]);
+
+        MultiComparisonAuxiliary[] layersToList = new MultiComparisonAuxiliary[cmpResults.length];
+
+        for (int i = 0; i < cmpResults.length; ++i) {
+            layersToList[i] = getLayerIndicesToListForResult(cmpResults[i], excludeZeroes);
+        }
+
+        result.id = comparison.getId();
+        result.baselineName = baseline.getName();
+        result.name = comparison.getName();
+        result.result = IntStream.range(0, cmpResults.length)
+            .mapToObj(i -> {
+                ComparisonResultExport cmpResult = new ComparisonResultExport();
+                cmpResult.calculationName = cmpResults[i].calculationName;
+                cmpResult.ecosystemTitles = Arrays.stream(layersToList[i].ecosystems)
+                    .mapToObj(e -> ecoTitles.get(cmpResults[i].includedEcosystems[e]))
+                    .toArray(String[]::new);
+                cmpResult.pressureTitles = Arrays.stream(layersToList[i].pressures)
+                    .mapToObj(p -> pressureTitles.get(cmpResults[i].includedPressures[p]))
+                    .toArray(String[]::new);
+                cmpResult.comparisonMatrix = layersToList[i].result;
+                cmpResult.cumulativeTotal = cmpResults[i].cumulativeTotal;
+                return cmpResult;
+
+            }).toArray(ComparisonResultExport[]::new);
+
+        return result;
+    }
+
+    private Sheet createSheet(int rows, int cols, String title) {
+        Sheet newSheet = new Sheet(title, rows, Math.max(cols, 5));
+
+        Range titleCell = newSheet.getRange(1, 2, 1, 1);
+
+        titleCell.setValue(title);
+        titleCell.setStyle(ODSStyles.cmpName);
+
+        newSheet.setRowHeight(1, 14.0);
+        newSheet.setColumnWidth(0, 5.0);
+
+        return newSheet;
+    }
+
+    // TODO: Probable opportunity to refactor for less repetitive code.
+    public byte[] generateMultiComparisonAsODS(
+        CompoundComparison comparison, String preferredLanguage, String localisedHeading, boolean excludeZeroes) throws Exception {
+
+        String title = localisedHeading + " \"" + comparison.getName() + "\"";
+
+        Map<Integer, String>
+            ecoTitles = metaDataService.getComponentTitles(
+                comparison.getBaseline().getId(),
+                LayerType.ECOSYSTEM, preferredLanguage),
+            pressureTitles = metaDataService.getComponentTitles(
+                comparison.getBaseline().getId(),
+                LayerType.PRESSURE, preferredLanguage);
+
+        SpreadSheet templateDocument = new SpreadSheet();
+
+        ComparisonResult[] cmpResults =
+            excludeZeroes ?
+                comparison.getResult().values().stream()
+                    .filter(cmp -> cmp.cumulativeTotal != 0)
+                    .toArray(ComparisonResult[]::new) :
+            comparison.getResult().values().toArray(new ComparisonResult[comparison.getResult().size()]);
+
+        Sheet totalSheet = createSheet(
+            cmpResults.length * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL, 5,
+            title);
+
+        totalSheet.setName(comparison.getName() + " - Total");
+        totalSheet.setColumnWidth(1, ODF_TITLE_COLWIDTH);
+
+        // guard against duplicate calculation names
+        Map<String, Integer> cmpNameCounts = new HashMap<>();
+
+        for(ComparisonResult cmp : cmpResults) {
+            cmpNameCounts.put(cmp.calculationName, 0);
+        }
+
+        // Semantically consistent index variables.
+        int e, p, j, cmpIndex = 0;
+
+        for (ComparisonResult cmp : cmpResults) {
+
+            Range nextCell;
+
+            Sheet nextSheet = createSheet(
+                cmp.includedEcosystems.length + ODF_TITLE_ROWS + 1,     // + 1 totals row
+                cmp.includedPressures.length + 3, // + 2 left padding columns + 1 totals column
+                title);
+
+            cmpNameCounts.put(cmp.calculationName, cmpNameCounts.get(cmp.calculationName) + 1);
+
+            nextSheet.setName(cmp.calculationName +
+                (cmpNameCounts.get(cmp.calculationName) > 1 ?
+                " (" + cmpNameCounts.get(cmp.calculationName) + ")" : ""));
+
+            nextCell = nextSheet.getRange(3, 1);
+            nextCell.setValue(cmp.calculationName);
+            nextCell.setStyle(ODSStyles.calcName);
+            nextSheet.setRowHeight(ODF_TITLE_ROWS - 2, 2.0);
+
+            MultiComparisonAuxiliary layersToList = getLayerIndicesToListForResult(cmp, excludeZeroes);
+
+            for (e = 0; e < layersToList.ecosystems.length; e++) {
+                nextCell = nextSheet.getRange(ODF_TITLE_ROWS + e, 1);
+                nextCell.setValue(ecoTitles.get(cmp.includedEcosystems[layersToList.ecosystems[e]]));
+                nextCell.setStyle(ODSStyles.ecoHeader);
+            }
+
+            nextSheet.setColumnWidth(1, ODF_TITLE_COLWIDTH);
+
+            for (p = 0; p < layersToList.pressures.length; p++) {
+                nextCell = nextSheet.getRange(ODF_TITLE_ROWS - 1, 2 + p);
+                nextCell.setValue(pressureTitles.get(cmp.includedPressures[layersToList.pressures[p]]));
+                nextCell.setStyle(ODSStyles.pressureHeader);
+                nextSheet.setColumnWidth(2 + p, ODF_TITLE_COLWIDTH);
+            }
+
+            for (e = 0; e < layersToList.result[0].length; e++) {
+                for (p = 0; p < layersToList.result.length; p++) {
+                    nextCell = nextSheet.getRange(ODF_TITLE_ROWS + e, 2 + p);
+                    nextCell.setValue(layersToList.result[p][e]);
+                    nextCell.setStyle(ODSStyles.valueStyle);
+                }
+            }
+
+            nextCell = nextSheet.getRange(ODF_TITLE_ROWS - 1, 2 + layersToList.pressures.length);
+            nextCell.setValue("TOTAL");
+            nextCell.setStyle(ODSStyles.totalHE);
+            nextSheet.setColumnWidth(2 + layersToList.pressures.length, ODF_TITLE_COLWIDTH);
+
+            nextCell = nextSheet.getRange(ODF_TITLE_ROWS + layersToList.ecosystems.length, 1);
+            nextCell.setValue("TOTAL");
+            nextCell.setStyle(ODSStyles.totalHP);
+
+            for (e = 0; e < layersToList.ecosystems.length; e++) {
+                nextCell = nextSheet.getRange(ODF_TITLE_ROWS + e, 2 + layersToList.pressures.length);
+                nextCell.setValue(cmp.totalPerEcosystem.get(cmp.includedEcosystems[layersToList.ecosystems[e]]));
+                nextCell.setStyle(ODSStyles.totalE);
+            }
+
+            for (p = 0; p < layersToList.pressures.length; p++) {
+                nextCell = nextSheet.getRange(ODF_TITLE_ROWS + layersToList.ecosystems.length, 2 + p);
+                nextCell.setValue(cmp.totalPerPressure.get(cmp.includedPressures[layersToList.pressures[p]]));
+                nextCell.setStyle(ODSStyles.totalP);
+            }
+
+            nextCell = nextSheet.getRange(
+                ODF_TITLE_ROWS + layersToList.ecosystems.length,
+                2 + layersToList.pressures.length);
+            nextCell.setValue(cmp.cumulativeTotal);
+            nextCell.setStyle(ODSStyles.totalC);
+
+            // ----- Totals sheet -----
+
+            int calcSectionOffset = cmpIndex * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL,
+                sectionLength = Math.max(layersToList.pressures.length, layersToList.ecosystems.length);
+            totalSheet.appendColumns(sectionLength);
+
+            nextCell = totalSheet.getRange(calcSectionOffset, 1);
+            nextCell.setValue(cmp.calculationName);
+            nextCell.setStyle(ODSStyles.calcName);
+            totalSheet.setRowHeight(calcSectionOffset + 2, 2.0);
+            totalSheet.setRowHeight(calcSectionOffset + 5, 2.0);
+
+            // Left aligned table with row titles column in third column (index 2)
+            nextCell = totalSheet.getRange(calcSectionOffset, 2);
+            nextCell.setValue("Pressure");
+            nextCell.setStyle(ODSStyles.pressureHeader);
+            nextCell = totalSheet.getRange(calcSectionOffset + 1, 2);
+            nextCell.setValue("TOTAL");
+            nextCell.setStyle(ODSStyles.totalHP);
+
+
+            nextCell = totalSheet.getRange(calcSectionOffset + 3, 2);
+            nextCell.setValue("Ecosystem");
+            nextCell.setStyle(ODSStyles.pressureHeader);
+            nextCell = totalSheet.getRange(calcSectionOffset + 4, 2);
+            nextCell.setValue("TOTAL");
+            nextCell.setStyle(ODSStyles.totalHP);
+
+            // Left aligned table with horizontal title column in third column:
+            // values start in fourth column, hence index + 3
+            for (p = 0; p < layersToList.pressures.length; p++) {
+                nextCell = totalSheet.getRange(calcSectionOffset, 3 + p);
+                nextCell.setValue(pressureTitles.get(cmp.includedPressures[layersToList.pressures[p]]));
+                nextCell.setStyle(ODSStyles.pressureHeader);
+                nextCell = totalSheet.getRange(calcSectionOffset + 1, 3 + p);
+                nextCell.setValue(cmp.totalPerPressure.get(cmp.includedPressures[layersToList.pressures[p]]));
+                nextCell.setStyle(ODSStyles.totalP);
+                nextSheet.setColumnWidth(3 + p, ODF_TITLE_COLWIDTH);
+            }
+
+            for (e = 0; e < layersToList.ecosystems.length; e++) {
+                nextCell = totalSheet.getRange(calcSectionOffset + 3, 3 + e);
+                nextCell.setValue(ecoTitles.get(cmp.includedEcosystems[layersToList.ecosystems[e]]));
+                nextCell.setStyle(ODSStyles.pressureHeader);
+                nextCell = totalSheet.getRange(calcSectionOffset + 4, 3 + e);
+                nextCell.setValue(cmp.totalPerEcosystem.get(cmp.includedEcosystems[layersToList.ecosystems[e]]));
+                nextCell.setStyle(ODSStyles.totalP);
+            }
+
+            if (cmpIndex < cmpResults.length - 1) {
+                j = 0;
+                while (j < sectionLength + 2) {
+                    nextCell = totalSheet.getRange(calcSectionOffset + ODF_CALC_TOTALS_SECTION - 1, 1 + j);
+                    nextCell.setStyle(ODSStyles.resultSep);
+                    if (j != 1) totalSheet.setColumnWidth(1 + j, ODF_TITLE_COLWIDTH);
+                    ++j;
+                }
+            }
+
+            templateDocument.appendSheet(nextSheet);
+            ++cmpIndex;
+        }
+
+        templateDocument.addSheet(totalSheet, 0);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        templateDocument.save(out);
+
+        return out.toByteArray();
     }
 }

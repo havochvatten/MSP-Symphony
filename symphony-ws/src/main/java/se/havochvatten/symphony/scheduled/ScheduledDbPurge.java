@@ -1,6 +1,6 @@
 package se.havochvatten.symphony.scheduled;
 
-import se.havochvatten.symphony.calculation.CalcService;
+import se.havochvatten.symphony.service.CalcService;
 import se.havochvatten.symphony.service.PropertiesService;
 import se.havochvatten.symphony.service.ReportService;
 

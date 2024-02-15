@@ -6,14 +6,5 @@
           (isMultiMode() ? exitLabel :
                            enterLabel) | translate"
   (iconClick)="toggleMultiMode()"></app-icon-button>
-<app-icon-button
-  [icon]="multiActionIcon"
-  class="multi-action"
-  [disabled]="disabledPredicate()"
-  [ngClass]="{ 'active': isMultiMode() }"
-  [label]="
-          isMultiMode() ?
-            ((disabledPredicate() ? multiActionLabelDisabled :
-                                    multiActionLabel) | translate
-            ): ''"
-  (iconClick)="multiActionDelegate()"></app-icon-button>
+<ng-content select="app-multi-action-button"></ng-content>
+

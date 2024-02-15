@@ -1,4 +1,4 @@
-package se.havochvatten.symphony.scenario;
+package se.havochvatten.symphony.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,12 +9,13 @@ import org.hibernate.annotations.CascadeType;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 
-import se.havochvatten.symphony.calculation.CalcService;
+import se.havochvatten.symphony.scenario.BandChangeEntity;
+import se.havochvatten.symphony.scenario.ScenarioCopyOptions;
+import se.havochvatten.symphony.service.ScenarioService;
+import se.havochvatten.symphony.service.CalcService;
 import se.havochvatten.symphony.dto.NormalizationOptions;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
-import se.havochvatten.symphony.entity.CalculationArea;
-import se.havochvatten.symphony.entity.CalculationResult;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -255,7 +256,7 @@ public class Scenario implements Serializable, BandChangeEntity {
         return areas;
     }
 
-    protected void setScenarioAreas(List<ScenarioArea> scenarioareas) {
+    public void setScenarioAreas(List<ScenarioArea> scenarioareas) {
         this.areas.clear();
         this.areas.addAll(scenarioareas);
     }

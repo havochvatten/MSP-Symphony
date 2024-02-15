@@ -7,11 +7,14 @@
         [enterLabel]="'map.editor.list.batch-tools.enter-batch-mode'"
         [exitLabel]="'map.editor.list.batch-tools.exit-batch-mode'"
         [disabledPredicate]="isDisabled"
-        [multiActionDelegate]="triggerBatchRun"
-        [multiActionIcon]="'play-arrow'"
-        [multiActionLabel]="'map.editor.list.batch-tools.run-batch'"
-        [multiActionLabelDisabled]="'map.editor.list.batch-tools.batch-too-small'"
-      ></app-multi-tools>
+      >
+        <app-multi-action-button slot="button-1"
+          [multiActionDelegate]="triggerBatchRun"
+          [multiActionIcon]="'play-arrow'"
+          [multiActionLabel]="'map.editor.list.batch-tools.run-batch'"
+          [multiActionLabelDisabled]="'map.editor.list.batch-tools.batch-too-small'"
+          ></app-multi-action-button>
+      </app-multi-tools>
     </div>
     <ng-container *ngIf="!((selectionOverlap | async) ?? false)">
       <p *ngFor="let selectedArea of selectedAreas" class="area-name">{{ selectedArea.displayName }}</p>
@@ -45,7 +48,7 @@
     <div *ngFor="let scenario of scenario$ | async; index as scenarioIndex"
          class="scenario-wrap"
          [ngClass]="{'filtered': filter(scenario.name) }">
-      <div class="scenario list-item"
+      <div class="scenario list-item interactive"
            (click)="isBatchMode() ? selectForBatch(scenario.id) : open(scenarioIndex)"
            [title]="scenario.name"
            tabindex="0">
@@ -53,7 +56,7 @@
           <div class="name">
             <h4>{{ scenario.name }}</h4>
           </div>
-          <span>{{ scenario.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
+          <span class="timestamp">{{ scenario.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
         </div>
         <ul [ngClass]="{'scenario-areas' : true, 'abundant' : scenario.areas.length > ABUNDANT_AREA_COUNT}">
           <li *ngFor="let area of scenario.areas.slice(0, MAX_AREAS); index as aix"

@@ -1,6 +1,7 @@
 package se.havochvatten.symphony.scenario;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import se.havochvatten.symphony.entity.ScenarioArea;
 
 public class ScenarioCopyOptions {
     @JsonProperty

@@ -7,9 +7,8 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.referencing.FactoryException;
-import se.havochvatten.symphony.dto.AreaMatrixResponse;
 import se.havochvatten.symphony.dto.MatrixResponse;
-import se.havochvatten.symphony.scenario.ScenarioArea;
+import se.havochvatten.symphony.entity.ScenarioArea;
 
 import javax.imageio.ImageIO;
 import javax.media.jai.ImageLayout;
@@ -21,10 +20,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /* Immutable */
 public class MatrixMask { // TODO: Make serializable for distributed session management

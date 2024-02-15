@@ -11,11 +11,9 @@ import org.geotools.gce.geotiff.GeoTiffReader;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
-import se.havochvatten.symphony.calculation.CalcService;
+import se.havochvatten.symphony.service.CalcService;
 import se.havochvatten.symphony.calculation.Overflow;
 import se.havochvatten.symphony.dto.CalculationResultSlice;
-import se.havochvatten.symphony.dto.MatrixResponse;
-import se.havochvatten.symphony.scenario.ScenarioSnapshot;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -50,7 +48,10 @@ import java.util.Map;
                 query = "SELECT c FROM CalculationResult c WHERE c.owner = :username ORDER BY c.timestamp " +
                         "DESC"),
         @NamedQuery(name = "CalculationResult.removeOldCalculationTiff",
-                query = "UPDATE CalculationResult c SET c.rasterData = null WHERE c.timestamp < :timestamp")
+                query = "UPDATE CalculationResult c SET c.rasterData = null WHERE c.timestamp < :timestamp"),
+        @NamedQuery(name = "CalculationResult.findByIds_Owner_Baseline",
+                query = "SELECT c FROM CalculationResult c WHERE c.id IN :ids AND c.owner = :username AND " +
+                        "c.baselineVersion.id = :baselineId"),
 })
 
 @SqlResultSetMapping(
@@ -151,7 +152,7 @@ public class CalculationResult implements Serializable {
     private byte[] imagePNG;
 
     @Column(name = "cares_overflow")
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType")
+    @Type(type = "json")
     private JsonNode overflow;
 
     public CalculationResult() {}
@@ -281,6 +282,12 @@ public class CalculationResult implements Serializable {
     }
 
     public Map<String, String> getOperationOptions() { return operationOptions; }
+
+    public int getOperation() {
+        return operationName.equals("CumulativeImpact") ?
+            CalcService.OPERATION_CUMULATIVE :
+            CalcService.OPERATION_RARITYADJUSTED;
+    }
 
     @Override
     public int hashCode() {

@@ -24,6 +24,7 @@
         "reset-preselected": "Reset",
         "reset-preselected-description": "Reset selected components/pressures and intensity values",
         "selection-overlap": "Unable to select overlapping areas",
+        "open-compound-data-list": "Compound comparisons ({{ count }})",
         "intensity": {
             "ecosystems": "Ecosystem Components",
             "pressures": "Pressures",
@@ -395,11 +396,18 @@
                 "cancel": "Cancel",
                 "confirm": "Delete"
             },
+            "generate-comparison-modal": {
+                "header": "Generate compound comparison",
+                "message": "Set a title for the compound comparison result.",
+                "placeholder": "Set a title",
+                "calculate": "Calculate"
+            },
             "multi-mode": {
-                "enter": "Enter multi-selection mode to delete multiple calculations",
+                "enter": "Enter multi-selection mode",
                 "exit": "Exit multi-selection mode",
                 "delete-selected": "Delete selected calculations",
-                "none-selected": "No calculations selected for deletion"
+                "generate-comparison": "Generate comparison data",
+                "none-selected": "No calculations selected"
             }
         },
         "compare": {
@@ -489,6 +497,26 @@
         "merge-areas-hint" : {
             "emphasis": "Merge areas",
             "detail": "{{ altButton }} + Shift + click on final area to merge selected."
+        },
+        "compound-data-list": {
+            "title": "Compound comparisons",
+            "compound-comparison-data": "Compound comparison data",
+            "calculation-basis-info": "The comparative values are based on the following calculations",
+            "more": "more",
+            "delete": "Delete compound comparison",
+            "download": "Download compound comparison",
+            "download-select-format": "Select format to download",
+            "download-format": {
+                "json": "As data (JSON)",
+                "ods": "As spreadsheet (ODS)"
+            },
+            "download-allow-zero": "Allow zero values",
+            "confirm-download": "Download",
+            "filter-hint": "Filter list item by name",
+            "delete-modal": {
+                "header": "Delete compound comparison",
+                "message": "Confirm deletion of compound comparison: <em>“{{ comparisonName }}”</em>"
+            }
         }
     },
     "controls": {
@@ -510,6 +538,7 @@
         "about": "About",
         "support": "Support",
         "profile": "My profile",
+        "change-language": "Change language",
         "logout": "Log out"
     },
     "about-dialog": {

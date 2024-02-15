@@ -1,24 +1,27 @@
-package se.havochvatten.symphony.scenario;
+package se.havochvatten.symphony.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.havochvatten.symphony.calculation.CalcService;
+import se.havochvatten.symphony.entity.Scenario;
+import se.havochvatten.symphony.entity.ScenarioArea;
+import se.havochvatten.symphony.scenario.ChangesSelection;
+import se.havochvatten.symphony.scenario.ScenarioCopyOptions;
+import se.havochvatten.symphony.scenario.ScenarioSplitOptions;
+import se.havochvatten.symphony.service.CalcService;
 import se.havochvatten.symphony.calculation.CalcUtil;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
-import se.havochvatten.symphony.entity.CalculationArea;
 import se.havochvatten.symphony.entity.CalculationResult;
-import se.havochvatten.symphony.service.CalculationAreaService;
+import se.havochvatten.symphony.service.ScenarioService;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.util.Arrays;
 import java.util.List;
 
 /**

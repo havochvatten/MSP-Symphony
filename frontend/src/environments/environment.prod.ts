@@ -29,7 +29,7 @@ export const environment = {
       }
     },
     openSeaMap: {
-      url: 'https://t1.openseamap.org/seamark/{z}/{x}/{y}.png'
+      url: 'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png'
       // marineProfile: {
       //   url: 'http://osm.franken.de:8080/geoserver/gwc/service/wms',
       //   params: {

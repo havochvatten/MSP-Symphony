@@ -1,4 +1,4 @@
-package se.havochvatten.symphony.calculation;
+package se.havochvatten.symphony.web;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,17 +20,20 @@ import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+import se.havochvatten.symphony.calculation.CalcUtil;
 import se.havochvatten.symphony.dto.BatchCalculationDto;
 import se.havochvatten.symphony.dto.CalculationResultSlice;
-import se.havochvatten.symphony.entity.BatchCalculation;
-import se.havochvatten.symphony.entity.CalculationResult;
+import se.havochvatten.symphony.dto.CompoundComparisonDto;
+import se.havochvatten.symphony.dto.CompoundComparisonSlice;
+import se.havochvatten.symphony.entity.*;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.exception.SymphonyStandardSystemException;
 import se.havochvatten.symphony.scenario.*;
-import se.havochvatten.symphony.service.DataLayerService;
-import se.havochvatten.symphony.service.PropertiesService;
-import se.havochvatten.symphony.web.WebUtil;
+import se.havochvatten.symphony.service.*;
+import se.havochvatten.symphony.service.normalizer.NormalizerService;
+import se.havochvatten.symphony.service.normalizer.RasterNormalizer;
+import se.havochvatten.symphony.service.normalizer.StatsNormalizer;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
@@ -42,6 +45,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.io.ByteArrayOutputStream;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
@@ -51,8 +55,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static javax.ws.rs.core.Response.ok;
-import static javax.ws.rs.core.Response.status;
+import static javax.ws.rs.core.Response.*;
 
 /**
  * Calculation REST API
@@ -78,6 +81,9 @@ public class CalculationREST {
 
     @Inject
     private ScenarioService scenarioService;
+
+    @Inject
+    BaselineVersionService baselineVersionService;
 
     private CalculationResult calculationResult;
 
@@ -203,7 +209,7 @@ public class CalculationREST {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
         else
-            return calcService.findAllByUser(req.getUserPrincipal().getName());
+            return calcService.findAllByUser(req.getUserPrincipal());
     }
 
     @GET
@@ -320,6 +326,8 @@ public class CalculationREST {
                         this.coverageEnvelope, this.coveragePixelDimension,
                         sld, normalizationValue);
     }
+
+    private record CompoundComparisonRequest(int[] ids, String name) {}
 
     @GET
     @Path("/average")
@@ -489,6 +497,76 @@ public class CalculationREST {
             return status(Response.Status.NO_CONTENT).build();
         return ok(session.getAttribute("mask"), "image/png").build();
     }
+
+    @POST
+    @Path("/multi-comparison/{baselineName}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Computes compound difference matrix (relative to an implicit baseline) for multiple calculations.\n" +
+                          "Returns entity PK id (if successful)", response = Integer.class)
+    public Response multiComparison(@Context HttpServletRequest req, @PathParam("baselineName") String baselineName,
+                                    @Context UriInfo uriInfo, CompoundComparisonRequest request)
+            throws SymphonyStandardAppException, SymphonyStandardSystemException {
+        if (req.getUserPrincipal() == null)
+            throw new NotAuthorizedException("Null principal");
+
+        var principal = req.getUserPrincipal();
+
+        try {
+            BaselineVersion baseline = baselineVersionService.getVersionByName(baselineName);
+            Integer createdCompoundCmpId = calcService.createCompoundComparison(request.ids, request.name, principal, baseline);
+            URI uri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(createdCompoundCmpId)).build();
+
+            return created(uri).build();
+        } catch (SymphonyStandardAppException | SymphonyStandardSystemException sx) {
+            return status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (NotAuthorizedException ax) {
+            return status(Response.Status.UNAUTHORIZED).build();
+        }
+    }
+
+    @GET
+    @Path("/multi-comparison/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Returns all compound comparisons for the given baseline", response = CompoundComparisonSlice.class, responseContainer = "List")
+    public Response getCompoundComparisons(@Context HttpServletRequest req) {
+
+        Principal principal = req.getUserPrincipal();
+
+        if(principal == null)
+            return status(Response.Status.UNAUTHORIZED).build();
+
+        try {
+            List<CompoundComparisonSlice> comparisons = calcService.getCompoundComparisons(principal);
+            return ok(comparisons).build();
+        } catch (SymphonyStandardSystemException sx) {
+            return status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @DELETE
+    @Path("/multi-comparison/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Deletes compound comparison with the given id")
+    public Response deleteCompoundComparison(@Context HttpServletRequest req, @PathParam("id") int id) {
+        var principal = req.getUserPrincipal();
+        if (principal == null)
+            return status(Response.Status.UNAUTHORIZED).build();
+
+        try {
+            if (calcService.deleteCompoundComparison(principal, id)) {
+                return ok().build();
+            } else {
+                return status(Response.Status.NOT_FOUND).build();
+            }
+        } catch (SymphonyStandardSystemException sx) {
+            return status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 
     public static GridCoverage2D getDiffCoverageFromCalcIds(CalcService calcService, HttpServletRequest req, int baseId, int relativeId) throws SymphonyStandardAppException {
         logger.info("Diffing base line calculations " + baseId + " against calculation " + relativeId);

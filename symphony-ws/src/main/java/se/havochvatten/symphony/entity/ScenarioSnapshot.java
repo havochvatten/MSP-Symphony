@@ -1,18 +1,23 @@
-package se.havochvatten.symphony.scenario;
+package se.havochvatten.symphony.entity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vladmihalcea.hibernate.type.array.DoubleArrayType;
+import com.vladmihalcea.hibernate.type.array.IntArrayType;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.data.geojson.GeoJSONWriter;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.locationtech.jts.geom.Geometry;
 import se.havochvatten.symphony.dto.MatrixResponse;
 import se.havochvatten.symphony.dto.NormalizationOptions;
 import se.havochvatten.symphony.dto.LayerType;
-import se.havochvatten.symphony.entity.CalculationResult;
+import se.havochvatten.symphony.scenario.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -21,6 +26,12 @@ import javax.validation.constraints.Size;
 import java.util.*;
 
 @Entity
+@Table(name = "scenariosnapshot")
+@TypeDefs({
+        @TypeDef(name = "json", typeClass = JsonBinaryType.class),
+        @TypeDef(name = "int-array", typeClass = IntArrayType.class),
+        @TypeDef(name = "double-array", typeClass = DoubleArrayType.class)
+})
 public class ScenarioSnapshot implements BandChangeEntity {
 
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -94,12 +105,12 @@ public class ScenarioSnapshot implements BandChangeEntity {
     protected JsonNode polygon;
 
     @Column(name = "normalization_value")
-    @Type(type = "com.vladmihalcea.hibernate.type.array.DoubleArrayType")
+    @Type(type = "double-array")
     private double[] normalizationValue;
 
     @NotNull
     @Column(name = "area_matrix_map", nullable = false)
-    @Type(type = "com.vladmihalcea.hibernate.type.array.IntArrayType")
+    @Type(type = "int-array")
     private int[][] areaMatrixMap;
 
     @OneToOne(mappedBy = "scenarioSnapshot")

@@ -21,7 +21,11 @@ export const initialState: CalculationInterfaces.State = {
   batchProcesses: [],
   visibleResults: [],
   loadingResults: [],
-  loadingReports: []
+  loadingReports: [],
+  generatingComparisonsFor: [],
+  loadingCompoundComparisons: false,
+  compoundComparisons: [],
+  sortCompoundComparisons: ListItemsSort.None
 };
 
 export const calculationReducer = createReducer(
@@ -114,6 +118,28 @@ export const calculationReducer = createReducer(
     ...state,
     calculations: state.calculations.map(c => c.id === calculationId ? {...c, isPurged: c.isPurged && loadingState } : c),
     loadingReports: loadingState ? [...state.loadingReports, calculationId] : state.loadingReports.filter(id => id !== calculationId)
+  })),
+  on(CalculationActions.generateCompoundComparison, (state, { comparisonName, calculationIds }) => ({
+    ...state,
+    generatingComparisonsFor: calculationIds,
+  })),
+  on(CalculationActions.generateCompoundComparisonSuccess,
+     CalculationActions.generateCompoundComparisonFailure, (state, any) => ({
+    ...state,
+    generatingComparisonsFor: []
+  })),
+  on(CalculationActions.fetchCompoundComparisons, (state) => ({
+    ...state,
+    loadingCompoundComparisons: true
+  })),
+  on(CalculationActions.fetchCompoundComparisonsSuccess, (state, { compoundComparisons }) => ({
+    ...state,
+    compoundComparisons,
+    loadingCompoundComparisons: false
+  })),
+  on(CalculationActions.setCompoundComparisonSortType, (state, { sortType }) => ({
+    ...state,
+    sortCompoundComparisons: sortType
   }))
 );
 

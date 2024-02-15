@@ -1,8 +1,9 @@
-package se.havochvatten.symphony.calculation;
+package se.havochvatten.symphony.service.normalizer;
 
 import it.geosolutions.jaiext.stats.HistogramMode;
 import it.geosolutions.jaiext.stats.Statistics;
 import org.geotools.coverage.grid.GridCoverage2D;
+import se.havochvatten.symphony.service.normalizer.RasterNormalizer;
 
 import java.util.Arrays;
 
@@ -12,7 +13,7 @@ public class PercentileNormalizer extends RasterNormalizer {
     private final int percentile;
     private final se.havochvatten.symphony.calculation.Operations operations;
 
-    PercentileNormalizer(int nth, se.havochvatten.symphony.calculation.Operations ops) {
+    public PercentileNormalizer(int nth, se.havochvatten.symphony.calculation.Operations ops) {
         this.percentile = nth;
         this.operations = ops;
     }

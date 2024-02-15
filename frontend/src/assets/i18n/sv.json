@@ -24,6 +24,7 @@
         "reset-preselected": "Återställ",
         "reset-preselected-description": "Återställ valda naturvärden och belastningar till standardurvalet och nollställ ändringar",
         "selection-overlap": "Kan inte välja överlappande områden",
+        "open-compound-data-list": "Sammanslagen jämförelse ({{ count }})",
         "intensity": {
             "ecosystems": "Naturvärden",
             "pressures": "Belastningar",
@@ -395,10 +396,17 @@
                 "cancel": "Avbryt",
                 "confirm": "Radera"
             },
+            "generate-comparison-modal": {
+                "header": "Generera sammanslagen jämförelseberäkning",
+                "message": "Ange en titel för den sammanslagna jämförelseberäkningen.",
+                "placeholder": "Ange titel",
+                "calculate": "Beräkna"
+            },
             "multi-mode": {
-                "enter": "Markera flera beräkningar att radera samtidigt",
+                "enter": "Markera flera beräkningar",
                 "exit": "Avsluta markering av flera beräkningar",
                 "delete-selected": "Radera markerade beräkningar",
+                "generate-comparison": "Generera jämförelsedata",
                 "none-selected": "Inga beräkningar har markerats"
             }
         },
@@ -489,6 +497,26 @@
         "merge-areas-hint" : {
             "emphasis": "Sammanfoga områden",
             "detail": "{{ altButton }} + Shift + klick på 'sista' området för att sammanfoga."
+        },
+        "compound-data-list": {
+            "title": "Sammanslagen jämförelsedata",
+            "compound-comparison-data": "Sammanslagen jämförelsedata",
+            "calculation-basis-info": "Jämförelsevärdena baserar sig på följande beräkningar",
+            "more": "till",
+            "delete": "Radera sammanslagen jämförelse",
+            "download": "Spara ned sammanslagen jämförelse",
+            "download-select-format": "Välj format att ladda ned",
+            "download-format": {
+                "json": "Som data (JSON)",
+                "ods": "Som kalkylblad (ODS)"
+            },
+            "download-allow-zero": "Tillåt nollvärden",
+            "confirm-download": "Ladda ned",
+            "filter-hint": "Filtrera listan per namn",
+            "delete-modal": {
+                "header": "Radera sammanslagen jämförelse",
+                "message": "Bekräfta borttagning av sammanslagen jämförelse: <em>“{{ comparisonName }}”</em>"
+            }
         }
     },
     "controls": {

@@ -1,6 +1,5 @@
-package se.havochvatten.symphony.calculation;
+package se.havochvatten.symphony.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.geosolutions.jaiext.utilities.ImageLayout2;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -28,6 +27,7 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.havochvatten.symphony.calculation.*;
 import se.havochvatten.symphony.calculation.jai.CIA.CumulativeImpactOp;
 import se.havochvatten.symphony.dto.*;
 import se.havochvatten.symphony.dto.SensitivityMatrix;
@@ -36,10 +36,6 @@ import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.exception.SymphonyStandardSystemException;
 import se.havochvatten.symphony.scenario.*;
-import se.havochvatten.symphony.service.BaselineVersionService;
-import se.havochvatten.symphony.service.CalculationAreaService;
-import se.havochvatten.symphony.service.DataLayerService;
-import se.havochvatten.symphony.service.PropertiesService;
 
 import javax.annotation.PostConstruct;
 import javax.batch.operations.JobOperator;
@@ -56,6 +52,7 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.*;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
+import java.awt.image.Raster;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -120,6 +117,9 @@ public class CalcService {
     @Inject
     private CalibrationService calibrationService;
 
+    @Inject
+    ReportService reportService;
+
     @PostConstruct
     void setup() {
         JAI jai = JAI.getDefaultInstance();
@@ -142,21 +142,25 @@ public class CalcService {
                 getResultList();
     }
 
-    public List<CalculationResultSlice> findAllByUser(String username) {
+    public List<CalculationResultSlice> findAllByUser(Principal user) {
+        return findAllByUsername(user.getName());
+    }
+
+    private List<CalculationResultSlice> findAllByUsername(String username) {
         return em.createNamedQuery("CalculationResult.findByOwner", CalculationResultSlice.class).
                 setParameter("username", username).
                 getResultList();
     }
 
-    public List<CalculationResultSlice> findAllCmpByUser(Principal principal, int operation) {
+    public List<CalculationResultSlice> findAllCmpByUser(Principal user, int operation) {
         return em.createNamedQuery("CalculationResult.findCmpByOwner", CalculationResultSlice.class).
-                setParameter("username", principal.getName()).
+                setParameter("username", user.getName()).
                 setParameter("operation", operationName(operation)).
                 getResultList();
     }
 
     public List<CalculationResultSlice> findAllMatchingCalculationsByUser (
-            Principal principal, CalculationResult base) {
+            Principal user, CalculationResult base) {
         // Ideally we would do a spatial query to the database, but since areas are not stored as proper
         // PostGIS geometries this is not possible at it stands.
 
@@ -165,7 +169,7 @@ public class CalcService {
         int operation = base.getOperationName().equals("CumulativeImpact") ?
                 OPERATION_CUMULATIVE : OPERATION_RARITYADJUSTED;
 
-        var candidates = findAllCmpByUser(principal, operation);
+        var candidates = findAllCmpByUser(user, operation);
         List<Integer> ecoList       = Arrays.stream(base.getScenarioSnapshot().getEcosystemsToInclude()).boxed().toList(),
                       pressureList  = Arrays.stream(base.getScenarioSnapshot().getPressuresToInclude()).boxed().toList();
 
@@ -204,14 +208,14 @@ public class CalcService {
         return em.find(BatchCalculation.class, id);
     }
 
-    public BatchCalculation getBatchCalculationStatusAuthorized(Principal userPrincipal, Integer id)
+    public BatchCalculation getBatchCalculationStatusAuthorized(Principal user, Integer id)
         throws NotFoundException, NotAuthorizedException {
         BatchCalculation batchCalculation = getBatchCalculationStatus(id);
 
         if (batchCalculation == null)
             throw new NotFoundException();
-        if (!batchCalculation.getOwner().equals(userPrincipal.getName()))
-            throw new NotAuthorizedException(userPrincipal.getName());
+        if (!batchCalculation.getOwner().equals(user.getName()))
+            throw new NotAuthorizedException(user.getName());
 
         return batchCalculation;
     }
@@ -233,7 +237,7 @@ public class CalcService {
         }
     }
 
-    public synchronized void delete(Principal principal, Object entity) {
+    public synchronized void delete(Principal user, Object entity) {
         try {
             transaction.begin();
             em.remove(em.merge(entity));
@@ -250,15 +254,15 @@ public class CalcService {
 
     }
 
-    public synchronized void delete(Principal principal, int id) {
+    public synchronized void delete(Principal user, int id) {
         var calc = getCalculation(id);
 
         if (calc == null)
             throw new NotFoundException();
-        if (!calc.getOwner().equals(principal.getName()))
-            throw new NotAuthorizedException(principal.getName());
+        if (!calc.getOwner().equals(user.getName()))
+            throw new NotAuthorizedException(user.getName());
         else {
-            delete(principal, calc);
+            delete(user, calc);
         }
     }
 
@@ -359,7 +363,7 @@ public class CalcService {
     /**
      * Calculate an area
      *
-     * @return coverage in input coordinate system (EPSG 3035 in the Swedish case)
+     * @return CalculationResult entity containing resulting coverage
      */
     public CalculationResult calculateScenarioImpact(Scenario scenario, boolean isAreaCalculation)
             throws FactoryException, TransformException, IOException, SymphonyStandardAppException {
@@ -376,7 +380,21 @@ public class CalcService {
 
         Overflow overflow = new Overflow();
 
-        GridCoverage2D coverage = calculateCoverage(scenario.getOperation(), roi, scenario.getBaselineId(), ecosystemsToInclude,
+        // To ensure consistency between results when recreating 'purged' calculations
+        // and "implicit baseline calculations" for comparative calculations from the
+        // resulting ScenarioSnapshots, we need to do this conspicuous "back-and-forth"
+        // reprojection once before the calculation step.
+        // Should we forgo this, we get tiny marginal geometric discrepancies, owing to
+        // inexactness of the inverse transform operation. In turn these may (or may not)
+        // produce minute numerical differences in the calculation result because of occasional
+        // pixel outliers.
+
+        MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
+            getSrcCRS());
+        MathTransform targetToWGS84 = CRS.findMathTransform(getSrcCRS(), DefaultGeographicCRS.WGS84);
+        Geometry targetGeometry = JTS.transform(roi, WGS84toTarget);
+
+        GridCoverage2D coverage = calculateCoverage(scenario.getOperation(), JTS.transform(targetGeometry, targetToWGS84), scenario.getBaselineId(), ecosystemsToInclude,
             scenario.getPressuresToInclude(), areas, matrixResponse, scenario.getOperationOptions(), null, overflow);
 
         // Trigger actual calculation since GeoTiffWriter requests tiles in the same thread otherwise
@@ -397,14 +415,11 @@ public class CalcService {
             ++a_ix;
         }
 
-        MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
-            coverage.getCoordinateReferenceSystem());
-
         return scenario.getNormalization().type == PERCENTILE ?
             new CalculationResult(coverage) :
             persistCalculation( coverage, normalizationValues, areaMatrices, scenario,
-                                mapper.valueToTree(sc), ecosystemsToInclude, baseline,
-                                JTS.transform(roi, WGS84toTarget), overflow, isAreaCalculation);
+                                sc, ecosystemsToInclude, baseline,
+                                targetGeometry, overflow, isAreaCalculation);
     }
 
     private GridGeometry2D getTargetGridGeometry(Envelope targetGridEnvelope, ReferencedEnvelope targetEnv) {
@@ -419,25 +434,97 @@ public class CalcService {
         );
     }
 
+    public Integer createCompoundComparison(int[] calcResultIds, String name, Principal owner, BaselineVersion baseline) throws SymphonyStandardSystemException {
+
+        List<CalculationResult> calcResults = em.createNamedQuery("CalculationResult.findByIds_Owner_Baseline", CalculationResult.class).
+                setParameter("ids", Arrays.stream(calcResultIds).boxed().toList()).
+                setParameter("username", owner.getName()).
+                setParameter("baselineId", baseline.getId()).
+                getResultList();
+
+        if (calcResults.size() != calcResultIds.length)
+            throw new NotFoundException();
+
+        try {
+
+            Raster[] tmp;
+            CompoundComparison cmp = new CompoundComparison(baseline, name, owner.getName(), calcResultIds, new Date());
+
+            for (CalculationResult calc : calcResults) {
+                GridCoverage2D implicitBaseline = getImplicitBaselineCoverage(calc);
+                tmp = ((PlanarImage) implicitBaseline.getRenderedImage()).getTiles(); // trigger calculation
+
+                double[][] differentiaImpact = reportService.calculateDifferentialImpactMatrix(
+                    (double[][]) implicitBaseline.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME),
+                    calc.getImpactMatrix());
+
+                cmp.setCmpResultForCalculation(
+                    calc.getId(),
+                    calc.getScenarioSnapshot().getEcosystemsToInclude(),
+                    calc.getScenarioSnapshot().getPressuresToInclude(),
+                    differentiaImpact,
+                    calc.getCalculationName());
+            }
+
+            transaction.begin();
+            em.persist(cmp);
+            em.flush();
+            transaction.commit();
+
+            return cmp.getId();
+
+        } catch (Exception e) {
+            throw new SymphonyStandardSystemException(SymphonyModelErrorCode.OTHER_ERROR, e, "CompoundComparison " +
+                "persistence error");
+        } finally {
+            try {
+                if (transaction.getStatus() == Status.STATUS_ACTIVE)
+                    transaction.rollback();
+            } catch (Throwable e) {/* ignore */}
+        }
+    }
+
     public GridCoverage2D calculateCoverage(
+        int operation, Geometry roi, Integer baselineId, int[] ecosystemsToInclude, int[] pressuresToInclude,
+        List<ScenarioArea> areas, MatrixResponse matrixResponse, Map<String, String> operationOptions, BandChangeEntity altScenario,
+        Overflow overflow)
+        throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
+        return calculateCoverage(operation, roi, baselineId, ecosystemsToInclude, pressuresToInclude, areas, matrixResponse,
+            operationOptions, altScenario, overflow, false);
+    }
+
+    public GridCoverage2D getImplicitBaselineCoverage(CalculationResult calc)
+        throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
+        Geometry roi = JTS.transform(calc.getScenarioSnapshot().getGeometry(),
+            CRS.findMathTransform(getSrcCRS(), DefaultGeographicCRS.WGS84));
+
+        return calculateCoverage(
+            calc.getOperation(), roi, calc.getBaselineVersion().getId(),
+            calc.getScenarioSnapshot().getEcosystemsToInclude(), calc.getScenarioSnapshot().getPressuresToInclude(),
+            calc.getScenarioSnapshot().getTmpAreas(), calc.getScenarioSnapshot().getMatrixResponse(), calc.getOperationOptions(), calc.getScenarioSnapshot(), null, true);
+    }
+
+    private GridCoverage2D calculateCoverage(
             int operation, Geometry roi, Integer baselineId, int[] ecosystemsToInclude, int[] pressuresToInclude,
             List<ScenarioArea> areas, MatrixResponse matrixResponse, Map<String, String> operationOptions, BandChangeEntity altScenario,
-            Overflow overflow)
+            Overflow overflow, boolean implicitBaseline)
                 throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
 
         GridCoverage2D ecoComponents = data.getCoverage(LayerType.ECOSYSTEM, baselineId);
         GridCoverage2D pressures = data.getCoverage(LayerType.PRESSURE, baselineId);
 
-        var scenarioComponents = scenarioService.applyScenario(
-            ecoComponents,
-            pressures,
-            areas,
-            altScenario,
-            overflow
-        );
+        if(!implicitBaseline) {
+            var scenarioComponents = scenarioService.applyScenario(
+                ecoComponents,
+                pressures,
+                areas,
+                altScenario,
+                overflow
+            );
 
-        ecoComponents = scenarioComponents.getLeft();
-        pressures = scenarioComponents.getRight();
+            ecoComponents = scenarioComponents.getLeft();
+            pressures = scenarioComponents.getRight();
+        }
 
         MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
             ecoComponents.getCoordinateReferenceSystem());
@@ -510,17 +597,20 @@ public class CalcService {
         return coverage;
     }
 
+    CoordinateReferenceSystem getSrcCRS() throws FactoryException {
+        return CRS.getAuthorityFactory(true).
+            createCoordinateReferenceSystem(props.getProperty("data.source.crs", ""));
+    }
+
     public GridCoverage2D recreateCoverageFromResult(ScenarioSnapshot scenario, CalculationResult calc)
         throws IOException, FactoryException, TransformException, SymphonyStandardAppException {
         List<ScenarioArea> areas = scenario.getTmpAreas();
-        String srcCRSCode = props.getProperty("data.source.crs", "");
 
-        CoordinateReferenceSystem srcCRS = CRS.getAuthorityFactory(true).createCoordinateReferenceSystem(srcCRSCode);
         Geometry roi = JTS.transform(scenario.getGeometry(),
-            CRS.findMathTransform(srcCRS, DefaultGeographicCRS.WGS84));
+            CRS.findMathTransform(getSrcCRS(), DefaultGeographicCRS.WGS84));
 
         GridCoverage2D coverage = calculateCoverage(
-            calc.getOperationName().equals("CumulativeImpact") ? CalcService.OPERATION_CUMULATIVE : CalcService.OPERATION_RARITYADJUSTED,
+            calc.getOperation(),
             roi, calc.getBaselineVersion().getId(), scenario.getEcosystemsToInclude(), scenario.getPressuresToInclude(),
             areas, scenario.getMatrixResponse(), calc.getOperationOptions(), scenario, null);
 
@@ -600,7 +690,7 @@ public class CalcService {
                 (int) envelope.getHeight());
     }
 
-    static double[][][] preprocessMatrices(List<SensitivityMatrix> sensitivityMatrices) {
+    public static double[][][] preprocessMatrices(List<SensitivityMatrix> sensitivityMatrices) {
         return sensitivityMatrices.stream().
                 map(m -> m == null ? null : m.getMatrixValues()).
                 toArray(double[][][]::new);
@@ -610,7 +700,7 @@ public class CalcService {
                                                 double[] normalizationValue,
                                                 Map<Integer, Integer> areaMatrixMap,
                                                 Scenario scenario,
-                                                JsonNode changesSnapshot,
+                                                ScenarioChanges changes,
                                                 int[] includedEcosystems,
                                                 BaselineVersion baselineVersion,
                                                 Geometry projectedRoi,
@@ -628,7 +718,7 @@ public class CalcService {
 
                 var snapshot = ScenarioSnapshot.makeSnapshot(scenario, projectedRoi, areaMatrixMap, normalizationValue);
                 snapshot.setEcosystemsToInclude(includedEcosystems); // Override actually used only in snapshot
-                snapshot.setChanges(changesSnapshot);
+                snapshot.setChanges(mapper.valueToTree(changes));
                 em.persist(snapshot);
                 calculation.setScenarioSnapshot(snapshot);
 
@@ -646,7 +736,7 @@ public class CalcService {
                 em.persist(calculation);
                 em.flush(); // to have id generated
 
-                if(!isAreaCalculation) {
+                if (!isAreaCalculation) {
                     scenario.setLatestCalculation(calculation);
                     em.merge(scenario);
                 }
@@ -654,7 +744,7 @@ public class CalcService {
                 transaction.commit();
             } catch (Exception e) {
                 throw new SymphonyStandardSystemException(SymphonyModelErrorCode.OTHER_ERROR, e,
-                    "Error persisting calculation "+calculation);
+                    "Error persisting calculation " + calculation);
             } finally {
                 try {
                     if (transaction.getStatus() == Status.STATUS_ACTIVE)
@@ -717,14 +807,14 @@ public class CalcService {
         else {
             var matcher = Pattern.compile(".*(\\d+)").matcher(previousCalc.getCalculationName());
             var lastSequenceNumber = matcher.find() ? Integer.parseInt(matcher.group(1)) : 1;
-            var previousCalculations = findAllByUser(scenario.getOwner());
+            var previousCalculations = findAllByUsername(scenario.getOwner());
             return findSequentialUniqueName(scenario.getName(),
                     previousCalculations.stream().map(CalculationResultSlice::getName).collect(Collectors.toList()),
                     lastSequenceNumber);
         }
     }
 
-    String findSequentialUniqueName(String scenarioName, List<String> previousNames, int counter) {
+    public String findSequentialUniqueName(String scenarioName, List<String> previousNames, int counter) {
         var tentativeName = makeNumberedCalculationName(scenarioName, counter);
         if (!previousNames.contains(tentativeName))
             return tentativeName;
@@ -745,6 +835,32 @@ public class CalcService {
         // TODO: Add promote operation?
         var floatbase = operations.add(base, new double[]{0.0});
         return (GridCoverage2D) operations.divide(difference, floatbase);
+    }
+
+    public List<CompoundComparisonSlice> getCompoundComparisons(Principal user) {
+        return em.createNamedQuery("CompoundComparison.findByOwner", CompoundComparisonSlice.class).
+                setParameter("username", user.getName()).
+                getResultList();
+    }
+
+    public boolean deleteCompoundComparison(Principal user, int id) {
+        var cmp = em.find(CompoundComparison.class, id);
+
+        if (cmp == null || !cmp.getOwner().equals(user.getName()))
+            return false;
+
+        delete(user, cmp);
+        return true;
+    }
+
+    public CompoundComparison getCompoundComparison(int id, Principal user) {
+        CompoundComparison cmp = em.find(CompoundComparison.class, id);
+        if (cmp == null)
+            throw new NotFoundException();
+        if (!cmp.getOwner().equals(user.getName()))
+            throw new NotAuthorizedException(user.getName());
+        em.detach(cmp);
+        return cmp;
     }
 }
 

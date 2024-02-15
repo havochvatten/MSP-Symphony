@@ -1,6 +1,6 @@
 import { Component, ElementRef, NgModuleRef, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
-import { tap } from "rxjs/operators";
+import { shareReplay, tap } from "rxjs/operators";
 import { select, Store } from '@ngrx/store';
 import { environment } from "@src/environments/environment";
 import { State } from '@src/app/app-reducer';
@@ -15,6 +15,9 @@ import { CalculationReportModalComponent } from "@shared/report-modal/calculatio
 import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 import { TranslateService } from "@ngx-translate/core";
 import { Listable } from "@shared/list-filter/listable.directive";
+import {
+  ConfirmGenerateComparisonComponent
+} from "@src/app/map-view/calculation-history/confirm-generate-comparison/confirm-generate-comparison.component";
 
 @Component({
   selector: 'app-history',
@@ -23,6 +26,8 @@ import { Listable } from "@shared/list-filter/listable.directive";
 })
 export class CalculationHistoryComponent extends Listable implements OnInit, OnDestroy {
   calculations$ = this.store.select(CalculationSelectors.selectCalculations);
+  comparedCalculations$ = this.store.select(CalculationSelectors.selectComparedCalculations);
+  comparedCalculationsRepeat$ = this.comparedCalculations$.pipe(shareReplay(1));
   baselineCalculations$?: Observable<CalculationSlice[]>;
   loading$?: Observable<boolean>;
   baseline?: Baseline;
@@ -122,7 +127,7 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
                 message: this.translateService.instant('map.history.delete-modal.message', { calculationName: calculation.name }),
                 confirmText: this.translateService.instant('map.history.delete-modal.confirm'),
                 confirmColor: 'warn',
-                buttonsClass: 'right'
+                buttonsClass: 'right no-margin'
               }
             });
 
@@ -208,7 +213,7 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
                     'map.history.delete-modal.message-single', { count: this.selectedIds.length }),
           confirmText: this.translateService.instant('map.history.delete-modal.confirm'),
           confirmColor: 'warn',
-          buttonsClass: 'right'
+          buttonsClass: 'right no-margin'
         }
       });
     if(deletionConfirmed) {
@@ -217,4 +222,20 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
       this.isMultiMode.set(false);
     }
   }
+
+  generateComparisonDataSet = async () => {
+    if(this.selectedIds.length > 0) {
+      const cmpName = await this.dialogService.open(ConfirmGenerateComparisonComponent, this.moduleRef);
+
+      if(typeof cmpName === 'string' && cmpName.length > 0) {
+        this.store.dispatch(CalculationActions.generateCompoundComparison(
+          {
+            comparisonName: cmpName,
+            calculationIds: [...this.selectedIds]
+          }))
+        this.selectedIds = [];
+        this.isMultiMode.set(false);
+      }
+    }
+  };
 }

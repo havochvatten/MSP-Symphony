@@ -1,0 +1,48 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 4px;
+  padding: 2rem;
+  width: 50rem;
+
+  h3 {
+    margin: 0;
+  }
+
+  em {
+    display: block;
+    text-align: center;
+  }
+
+  .format-options {
+    .format-label {
+      display: inline-block;
+      font-size: 1.25rem;
+      font-weight: 500;
+      margin-bottom: 0.8rem;
+    }
+
+    mat-radio-group {
+      display: flex;
+      margin-bottom: 1.5rem;
+
+      ::ng-deep .mdc-form-field {
+        margin-right: 2rem;
+
+        .mdc-label {
+          font-size: 1.4rem;
+        }
+      }
+    }
+
+    .allow-zeroes {
+      padding-left: 1rem;
+
+      label {
+        font-size: 1.3rem;
+        line-height: 2rem;
+      }
+    }
+  }
+}

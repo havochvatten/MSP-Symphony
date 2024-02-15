@@ -16,7 +16,7 @@ export const fetchUserFailure = createAction(
 
 export const loginUser = createAction(
   '[User] Login user',
-  props<{ username: string; password: string }>()
+  props<{ username: string, password: string }>()
 );
 
 export const loginUserSuccess = createAction('[User] Login user success', props<{ user: User }>());

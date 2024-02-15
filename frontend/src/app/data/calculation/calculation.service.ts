@@ -12,7 +12,8 @@ import {
   LegendType,
   PercentileResponse,
   BatchCalculationProcessEntry,
-  StaticImageOptions
+  StaticImageOptions,
+  CompoundComparison
 } from './calculation.interfaces';
 import { CalculationActions } from '.';
 import { AppSettings } from '@src/app/app.settings';
@@ -20,6 +21,7 @@ import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 import { Scenario, ScenarioSplitOptions } from '@data/scenario/scenario.interfaces';
 import { UserSelectors } from "@data/user";
+import { Baseline } from "@data/user/user.interfaces";
 
 export enum NormalizationType {
   Area = 'AREA',
@@ -234,6 +236,20 @@ export class CalculationService implements OnDestroy {
     return this.http.get<PercentileResponse>(`${env.apiBaseUrl}/calibration/percentile-value`);
   }
 
+  public generateCompoundComparison(comparisonName: string, calculationIds: number[], baseline?: Baseline) {
+    if(baseline) {
+      return this.http.post<number>(`${env.apiBaseUrl}/calculation/multi-comparison/${baseline.name}`, {
+        ids: calculationIds,
+        name: comparisonName
+      });
+    }
+    throw new Error('No baseline selected');
+  }
+
+  public deleteCompoundComparison(id: number) {
+    return this.http.delete(`${env.apiBaseUrl}/calculation/multi-comparison/${id}`);
+  }
+
   private queueBatchScenarioCalculation(scenarioIds: number[]) {
     return this.http.post<BatchCalculationProcessEntry>(`${env.apiBaseUrl}/calculation/batch`, scenarioIds.join(), {
       headers: new HttpHeaders({ 'Content-Type': 'text/plain' })});
@@ -262,5 +278,9 @@ export class CalculationService implements OnDestroy {
 
   cancelBatchProcess(id: number) {
     return this.http.post(`${env.apiBaseUrl}/calculation/batch/${id}/cancel`, null);
+  }
+
+  getAllCompoundComparisons() {
+    return this.http.get<CompoundComparison[]>(`${env.apiBaseUrl}/calculation/multi-comparison/all`);
   }
 }
