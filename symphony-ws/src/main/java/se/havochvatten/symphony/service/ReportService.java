@@ -545,7 +545,8 @@ public class ReportService {
             Range nextCell;
 
             Sheet nextSheet = createSheet(
-                cmp.includedEcosystems.length + ODF_TITLE_ROWS, cmp.includedPressures.length + 1,
+                cmp.includedEcosystems.length + ODF_TITLE_ROWS + 1,     // + 1 totals row
+                cmp.includedPressures.length + 3, // + 2 left padding columns + 1 totals column
                 title);
 
             cmpNameCounts.put(cmp.calculationName, cmpNameCounts.get(cmp.calculationName) + 1);
@@ -648,6 +649,7 @@ public class ReportService {
                 nextCell = totalSheet.getRange(calcSectionOffset + 1, 3 + p);
                 nextCell.setValue(cmp.totalPerPressure.get(cmp.includedPressures[layersToList.pressures[p]]));
                 nextCell.setStyle(ODSStyles.totalP);
+                nextSheet.setColumnWidth(3 + p, ODF_TITLE_COLWIDTH);
             }
 
             for (e = 0; e < layersToList.ecosystems.length; e++) {
