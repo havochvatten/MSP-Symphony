@@ -515,7 +515,7 @@
             "filter-hint": "Filtrer la liste par nom",
             "delete-modal": {
                 "header": "Supprimer la comparaison composée",
-                "message": "Confirmer la suppression de la comparaison composée: <em>“{{ comparisonName }}”</em>",
+                "message": "Confirmer la suppression de la comparaison composée: <em>“{{ comparisonName }}”</em>"
             }
         }
     },
