@@ -30,17 +30,18 @@ export class ComparisonReportComponent extends AbstractReport {
   allOverflow: { [bandType: string]: number[] } = {};
 
   maxValue: number;
+  reverse: boolean;
 
   chartWeightThresholdPercentage = '1%';
 
   legend:Observable<Legend>;
 
   constructor(
-    private translate: TranslateService,
+    translate: TranslateService,
     private store: Store<State>,
-    private route: ActivatedRoute,
-    private reportService: ReportService,
-    private calcService: CalculationService
+    route: ActivatedRoute,
+    reportService: ReportService,
+    calcService: CalculationService
   ) {
     super(
       translate,
@@ -49,15 +50,19 @@ export class ComparisonReportComponent extends AbstractReport {
 
     const that = this,
           paramMap = route.snapshot.paramMap,
-          aId = paramMap.get('aId')!, bId = paramMap.get('bId')!;
+          aId = paramMap.get('aId')!, bId = paramMap.get('bId');
 
     this.maxValue = +(paramMap.get('maxValue') || 0);
 
+    this.reverse = !!route.snapshot.queryParams.reverse
+
     this.legend = calcService.getComparisonLegend(this.maxValue / 100)
 
-    this.imageUrl = `${env.apiBaseUrl}/calculation/diff/${aId}/${bId}?max=${this.maxValue}`;
+    this.imageUrl =
+      bId ? `${env.apiBaseUrl}/calculation/diff/${aId}/${bId}?max=${this.maxValue}` :
+            `${env.apiBaseUrl}/calculation/diff/${aId}?max=${this.maxValue}${this.reverse ? '&reverse=true' : ''}`;
 
-    reportService.getComparisonReport(aId, bId).subscribe({
+    reportService.getComparisonReport(aId, bId, this.reverse).subscribe({
       next(report) {
         that.report = report;
         that.report.a = setOverflowProperty(report.a);

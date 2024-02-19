@@ -88,12 +88,4 @@ export class CalculationReportComponent extends AbstractReport {
 
     return matrixMap;
   }
-
-  setAreaDict(): void {
-    const index_ids = Object.keys(this.report!.scenarioChanges.areaChanges);
-
-    index_ids.map((areaId, ix) => {
-      this.areaDict.set(+areaId, this.report!.areaMatrices[ix].areaName);
-    });
-  }
 }

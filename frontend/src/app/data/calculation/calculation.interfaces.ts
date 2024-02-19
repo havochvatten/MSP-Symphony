@@ -43,7 +43,7 @@ export interface Report {
   normalization: NormalizationOptions;
   impactPerPressure: Record<string, number>;
   impactPerEcoComponent: Record<string, number>;
-  scenarioChanges: ReportChanges;
+  scenarioChanges: ReportChanges | null;
   chartData: ChartData;
   chartWeightThreshold: number;
   timestamp: number;
@@ -79,6 +79,7 @@ export interface StaticImageOptions {
 export interface CalculationSlice extends SortableListItem {
   id: number;
   isPurged: boolean;
+  hasChanges: boolean;
 }
 
 export type LegendType = 'result' | 'comparison' | 'ecosystem' | 'pressure';

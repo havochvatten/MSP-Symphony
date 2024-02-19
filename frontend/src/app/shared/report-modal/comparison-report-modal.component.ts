@@ -16,11 +16,12 @@ export class ComparisonReportModalComponent extends ReportModalComponent {
     config: DialogConfig,
     dom: DomSanitizer
   ) {
-    const location = window.location.origin + '/report/compare/' +
-      config.data.a + '/' + config.data.b + '/' + config.data.max;
+    const locationPS =
+      (config.data.a === null ?
+        `${config.data.b}` : `${config.data.a}/${config.data.b}`)
 
-    super(dialog, dom, location,
-      `/report/comparison/${config.data.a}/${config.data.b}`,
+    super(dialog, dom, window.location.origin + `/report/compare/${locationPS}/${config.data.max}`,
+      `/report/comparison/${locationPS}`, config.data.reverse ? new URLSearchParams([['reverse', 'true']]) : null,
       'report.comparison.title');
   }
 }

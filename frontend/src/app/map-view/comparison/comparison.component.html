@@ -5,34 +5,70 @@
     <form [formGroup]="compareForm" (ngSubmit)="submit()">
       <article>
         <h3>{{'map.compare.base-scenario' | translate }}</h3>
-        <span class="suggestion">{{'map.compare.base-scenario-suggestion' | translate }}</span>
-        <mat-select #base [placeholder]="'map.compare.choose-scenario' | translate" formControlName="a"
-                    (valueChange)="changeBase($event)" required="true" [panelClass]="{ 'ddPanel cmp': true }">
-          <mat-option *ngFor="let c of calculations$ | async" [value]="c.id"
-                      [ngClass]="{ 'purged' : c.isPurged }">{{ c.name }}</mat-option>
-        </mat-select>
+        <mat-radio-group class="set-implicit-wrapper" (change)="setImplicit($event)">
+          <mat-radio-button class="small"
+                            [value]="true"
+                            [checked]="useImplicit">{{
+            'map.compare.implicit-baseline' | translate
+          }}</mat-radio-button>
+          <mat-radio-button class="small"
+                            [value]="false"
+                            [checked]="!useImplicit">{{
+            'map.compare.explicit-baseline' | translate
+          }}</mat-radio-button>
+        </mat-radio-group>
+        <div class="select-base-wrapper" [ngClass]="{'hidden' : useImplicit }">
+          <mat-select #base [placeholder]="'map.compare.select-calculation' | translate"
+                      (valueChange)="changeBase($event)" [panelClass]="{ 'ddPanel cmp': true }">
+            <mat-option *ngFor="let c of calculations$ | async" [value]="c.id"
+                        [ngClass]="{ 'purged' : c.isPurged }">{{ c.name }}</mat-option>
+          </mat-select>
+        </div>
+        <mat-checkbox name="reverseProjected"
+                      (change)="setReverseProjected($event)"
+                      *ngIf="useImplicit"
+        >{{
+            'map.compare.reverse-projected' | translate
+          }}</mat-checkbox>
       </article>
 
       <article>
         <h3>
           {{'map.compare.what-if-scenario' | translate }}
-          <mat-spinner *ngIf="loadingCandidates" spinnerSize="small"></mat-spinner>
+          <mat-spinner *ngIf="loadingCandidates" [diameter]="14"></mat-spinner>
         </h3>
-        <span class="suggestion">{{'map.compare.what-if-scenario-suggestion' | translate }}</span>
-        <mat-select #candidates formControlName="b" selectSize="large" required
-                    [placeholder]="'map.compare.choose-base-scenario-first' | translate" [panelClass]="'ddPanel cmp'">
+        <!-- Disable target selector if no base calculation is selected in explicit mode -->
+        <!-- Convoluted logic in dynamic placeholder attribute seemingly achieves better
+                performance than when implemented as a method (to some detriment of readability)
+             In "implicit" mode: tell the user to select a calculation
+             In "explicit" mode (specify base calculation):
+                If no base calculation is selected: tell the user to select a base calculation
+                If base calculation set but no matching calculations are found: use appropriate message
+                Base calculation set + matches available for selection:
+                  tell the user to select a calculation
+             -->
+        <mat-select #candidates formControlName="b" class="target-calculation" required
+                    [placeholder]="(
+                      (useImplicit ? 'map.compare.select-calculation' :
+                       (!aSelect.value ?
+                            'map.compare.select-base-calculation-first'  :
+                        ((candidates$ | async)?.length > 0 ?
+                            'map.compare.select-calculation' :
+                            'map.compare.no-matching-calculations'))) | translate)"
+                    [panelClass]="'ddPanel cmp'">
           <mat-option *ngFor="let c of candidates$ | async" [value]="c.id"
                       [ngClass]="{ 'purged' : c.isPurged }">{{ c.name }}
           </mat-option>
         </mat-select>
+        <mat-checkbox name="includeUnchanged"
+                      [disabled]="useImplicit"
+                      [checked]="includeUnchanged"
+                      (change)="setIncludeUnchanged($event.checked)"
+        >{{
+            'map.compare.include-unchanged' | translate
+          }}</mat-checkbox>
       </article>
     </form>
-<!--
-   <div *ngIf="compareForm.errors?.identicalCalculations && (compareForm.touched || compareForm.dirty)"
-         class="cross-validation-error-message alert alert-danger">
-      A calculation cannot be compared with the same calculation.
-    </div>
--->
   </div>
   <div class="container select-scale">
     <h4>{{ 'map.compare.select-scale' | translate }}</h4>

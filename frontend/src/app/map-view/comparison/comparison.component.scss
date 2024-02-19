@@ -23,6 +23,22 @@
     .container {
       flex: 0;
 
+      .set-implicit-wrapper {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.2rem;
+      }
+
+      .select-base-wrapper {
+        &.hidden {
+          display: none;
+        }
+      }
+
+      .target-calculation {
+        margin-bottom: 1.6rem;
+      }
+
       .scale-constant {
         display: flex;
         margin-bottom: 0.6rem;
@@ -59,7 +75,7 @@
 
   article {
     h3 {
-      margin-bottom: 0;
+      margin-bottom: 0.5rem;
 
       mat-spinner {
         float: right;
@@ -71,14 +87,6 @@
           height: 42px !important;
         }
       }
-    }
-
-    span.suggestion {
-      display: inline-block;
-      margin: 0.5rem 0 1rem;
-      font-size: 13px;
-      font-style: oblique;
-      color: $darker-gray;
     }
   }
 

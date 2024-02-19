@@ -9,14 +9,17 @@ export abstract class ReportModalComponent implements OnDestroy {
   safeUrl: SafeResourceUrl;
   apiUrl: string;
   titleKey: string;
+  param_annex: string;
   @ViewChild('frame') iframe?: ElementRef<HTMLIFrameElement>;
 
   protected constructor(private dialog: DialogRef,
                         private dom: DomSanitizer,
                         private url: string,
                         pfx: string,
+                        param: URLSearchParams | null,
                         titleKey: string) {
-    this.safeUrl = this.dom.bypassSecurityTrustResourceUrl(this.url);
+    this.param_annex =  param ? [...param].length > 0 ? '?' + param.toString() : '' : '';
+    this.safeUrl = this.dom.bypassSecurityTrustResourceUrl(this.url + this.param_annex);
     this.apiUrl = env.apiBaseUrl + pfx;
     this.titleKey = titleKey;
   }
@@ -39,14 +42,14 @@ export abstract class ReportModalComponent implements OnDestroy {
   }
 
   open() {
-    window.open(this.url, '_blank');
+    window.open(this.url + this.param_annex, '_blank');
   }
 
   downloadGeotiff() {
-    document.location.href = this.apiUrl + '/geotiff';
+    document.location.href = `${this.apiUrl}/geotiff${this.param_annex}`;
   }
 
   downloadCSV() {
-    document.location.href = this.apiUrl + '/csv';
+    document.location.href = `${this.apiUrl}/csv${this.param_annex}`;
   }
 }
