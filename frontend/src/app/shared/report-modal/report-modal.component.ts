@@ -18,7 +18,7 @@ export abstract class ReportModalComponent implements OnDestroy {
                         pfx: string,
                         param: URLSearchParams | null,
                         titleKey: string) {
-    this.param_annex =  param ? [...param].length > 0 ? '?' + param.toString() : '' : '';
+    this.param_annex = param && [...param].length > 0 ? '?' + param.toString() : '';
     this.safeUrl = this.dom.bypassSecurityTrustResourceUrl(this.url + this.param_annex);
     this.apiUrl = env.apiBaseUrl + pfx;
     this.titleKey = titleKey;
