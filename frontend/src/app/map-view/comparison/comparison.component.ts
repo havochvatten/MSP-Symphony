@@ -107,6 +107,22 @@ export class ComparisonComponent implements AfterViewInit {
     }
   }
 
+  targetScenarioPlaceHolderKey(hasCandidates : boolean): string {
+    if (this.useImplicit) {
+      return 'map.compare.select-calculation';
+    }
+
+    if (!this.aSelect.value) {
+      return 'map.compare.select-base-calculation-first';
+    }
+
+    if (hasCandidates) {
+      return 'map.compare.select-calculation';
+    } else {
+      return 'map.compare.no-matching-calculations';
+    }
+  }
+
   async setImplicit($event: MatRadioChange) {
     this.useImplicit = $event.source.value;
     this.bSelect.disabled = !this.useImplicit;
