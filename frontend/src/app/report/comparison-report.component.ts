@@ -54,7 +54,8 @@ export class ComparisonReportComponent extends AbstractReport {
 
     this.maxValue = +(paramMap.get('maxValue') || 0);
 
-    this.reverse = !!route.snapshot.queryParams.reverse
+    this.reverse = route.snapshot.queryParams.has('reverse') &&
+                   route.snapshot.queryParams.reverse !== "false";
 
     this.legend = calcService.getComparisonLegend(this.maxValue / 100)
 
