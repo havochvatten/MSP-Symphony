@@ -44,7 +44,6 @@ export class ComparisonComponent implements AfterViewInit {
     private calcService: CalculationService,
     private translate: TranslateService,
     private builder: FormBuilder,
-    private cdr: ChangeDetectorRef,
     private moduleRef: NgModuleRef<never>
   ) {
     this.calculations$ = this.store.select(CalculationSelectors.selectCalculations);
@@ -87,17 +86,8 @@ export class ComparisonComponent implements AfterViewInit {
     this.loadingCandidates = true;
 
     this.candidates$ = this.calcService.getMatchingCalculations(id.toString()).pipe(
-      tap((res) => {
-        const emptyList = res.filter(c => this.includeUnchanged || c.hasChanges).length === 0
-        this.loadingCandidates = false;
-        this.bSelect.placeholder =
-          this.translate.instant(
-            emptyList ? 'map.compare.no-matching-calculations' :
-                             'map.compare.select-calculation');
-        this.bSelect.disabled = emptyList;
-        this.cdr.detectChanges();
-      }),
-      map((res) => res.filter(c => this.includeUnchanged || c.hasChanges))
+      map((res) => res.filter(c => this.includeUnchanged || c.hasChanges)),
+      tap((candidates) => this.loadingCandidates = false)
     );
   }
 

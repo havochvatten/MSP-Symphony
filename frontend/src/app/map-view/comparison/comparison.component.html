@@ -39,6 +39,7 @@
         </h3>
         <mat-select #candidates formControlName="b" class="target-calculation" required
           [placeholder]="targetScenarioPlaceHolderKey(this.useImplicit || (candidates$ | async)?.length) | translate"
+          [disabled]="!this.useImplicit && !(candidates$ | async)?.length"
           [panelClass]="'ddPanel cmp'">
           <mat-option *ngFor="let c of candidates$ | async" [value]="c.id"
                       [ngClass]="{ 'purged' : c.isPurged }">{{ c.name }}
