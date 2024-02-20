@@ -14,7 +14,7 @@ import java.util.List;
 
 // TODO: Do away with this one? Or at least include parameters
 // (when ROI has been replaced with an ID instead of the full polygon data)
-public class CalculationResultSlice {
+public class CalculationResultSliceDto {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     private String polygon;
@@ -38,7 +38,9 @@ public class CalculationResultSlice {
 
     public boolean isPurged = false;
 
-    public CalculationResultSlice(CalculationResult res) {
+    public boolean hasChanges = false;
+
+    public CalculationResultSliceDto(CalculationResult res) {
         id = res.getId();
         name = res.getCalculationName();
         timestamp = res.getTimestamp().getTime();
@@ -46,20 +48,20 @@ public class CalculationResultSlice {
     }
 
     @JsonCreator
-    public CalculationResultSlice(@JsonProperty("id") int id, @JsonProperty("name") String name,
-                                  @JsonProperty("timestamp") Date timestamp, @JsonProperty("isPurged") boolean isPurged) {
+    public CalculationResultSliceDto(@JsonProperty("id") int id, @JsonProperty("name") String name,
+                                     @JsonProperty("timestamp") Date timestamp, @JsonProperty("isPurged") boolean isPurged) {
         this.id = id;
         this.name = name;
         this.timestamp = timestamp.getTime();
         this.isPurged = isPurged;
     }
 
-
-    public CalculationResultSlice(int id, String name, Date timestamp, String polygon,
-                                    int[] ecosystemsToInclude, int[] pressuresToInclude) {
+    public CalculationResultSliceDto(int id, String name, Date timestamp, boolean hasChanges, String polygon,
+                                     int[] ecosystemsToInclude, int[] pressuresToInclude) {
         this.id = id;
         this.name = name;
         this.timestamp = timestamp.getTime();
+        this.hasChanges = hasChanges;
         this.polygon = polygon;
         this.ecosystemsToInclude = Arrays.stream(ecosystemsToInclude).boxed().toList();
         this.pressuresToInclude = Arrays.stream(pressuresToInclude).boxed().toList();

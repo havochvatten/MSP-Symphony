@@ -59,6 +59,7 @@ export function bandTitlesWithOverflow(report: Report, bandDictionary: { [bandTy
 
 export function setOverflowProperty(report: Report) {
   let allChanges: { [key: number]: { [key: string]: ChangesProperty } } = {};
+  if (report.scenarioChanges === null) return report;
   allChanges[0] = report.scenarioChanges.baseChanges;
   allChanges = { ...allChanges, ...report.scenarioChanges.areaChanges };
 

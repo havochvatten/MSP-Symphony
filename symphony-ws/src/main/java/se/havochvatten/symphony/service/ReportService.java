@@ -1,5 +1,6 @@
 package se.havochvatten.symphony.service;
 
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.github.miachm.sods.*;
 import it.geosolutions.jaiext.stats.HistogramMode;
 import it.geosolutions.jaiext.stats.Statistics;
@@ -226,13 +227,25 @@ public class ReportService {
         return diffs;
     }
 
-    public ComparisonReportResponseDto generateComparisonReportData(CalculationResult calcA,
-                                                                    CalculationResult calcB,
-                                                                    String preferredLanguage)
-        throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
+    public ComparisonReportResponseDto
+        generateComparisonReportData(
+            CalculationResult calcA,
+            CalculationResult calcB,
+            boolean implicit,
+            boolean reverse,
+            String preferredLanguage)
+                throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
         var report = new ComparisonReportResponseDto();
         report.a = generateReportData(calcA, false, preferredLanguage);
         report.b = generateReportData(calcB, false, preferredLanguage);
+
+        if(implicit) {
+            if(reverse) {
+                report.b.scenarioChanges = NullNode.getInstance();
+            } else {
+                report.a.scenarioChanges = NullNode.getInstance();
+            }
+        }
 
         double chartWeightThreshold =
             props.getPropertyAsDouble("calc.sankey_chart.link_weight_threshold", 0.001);

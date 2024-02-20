@@ -238,6 +238,10 @@ mat-radio-button {
   margin: 0.25rem 0;
   font-size: 1.6rem;
 
+  &.small {
+    font-size: 1.4rem;
+  }
+
   &.mat-mdc-radio-checked {
     .mdc-form-field {
       .mdc-radio {

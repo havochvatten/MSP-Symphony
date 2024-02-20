@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 
 import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.status;
+import static se.havochvatten.symphony.web.CalculationREST.getImplicitDiffCoverageFromCalcId;
 import static se.havochvatten.symphony.web.CalculationREST.hasAccess;
 
 
@@ -108,6 +109,27 @@ public class ReportREST {
     }
 
     @GET
+    @Path("/comparison/{a}/geotiff")
+    @Produces({"image/geotiff"})
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Returns comparison result image for comparison by implicit baseline")
+    public Response getResultGeoTIFFImage(@Context HttpServletRequest req, @PathParam("a") int scenarioId,
+                                          @DefaultValue("false") @QueryParam("reverse") boolean reverse) throws IOException {
+        try {
+            var diff = getImplicitDiffCoverageFromCalcId(calcService, req, scenarioId, reverse);
+
+            return ok(calcService.writeGeoTiff(diff)).
+                header("Content-Disposition",
+                    "attachment; filename=\"" + comparisonFilename(scenarioId, reverse) + ".tiff\"").
+                build();
+        } catch (NotAuthorizedException ax) {
+            return status(Response.Status.UNAUTHORIZED).build();
+        } catch (SymphonyStandardAppException sx) {
+            return status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GET
     @Path("/{id}/csv")
     @Produces(MediaType.TEXT_PLAIN)
     @RolesAllowed("GRP_SYMPHONY")
@@ -131,7 +153,8 @@ public class ReportREST {
     @Path("/comparison/{a}/{b}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Return data for scenario report associated with two calculations",
+    @ApiOperation(value = "Return data for a differential scenario report based on two disparate calculations "
+                        + "covering the same area",
             response = ComparisonReportResponseDto.class)
     public Response getComparisonReport(@Context HttpServletRequest req,
                                         @PathParam("a") int baseId,
@@ -148,7 +171,7 @@ public class ReportREST {
                     .orElseThrow(javax.ws.rs.BadRequestException::new);
 
             if (hasAccess(baseRes, req.getUserPrincipal()) && hasAccess(scenarioRes, req.getUserPrincipal()) )
-                return ok(reportService.generateComparisonReportData(baseRes, scenarioRes, preferredLanguage)).build();
+                return ok(reportService.generateComparisonReportData(baseRes, scenarioRes, false, false, preferredLanguage)).build();
             else
                 return status(Response.Status.UNAUTHORIZED).build();
         } catch (Exception e) {
@@ -156,6 +179,40 @@ public class ReportREST {
         }
 
         // Image is available at /calculation/comparison/{a}/{b}. (computed on the fly, and cached client-side)
+    }
+
+    @GET
+    @Path("/comparison/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Return data for differential scenario report using an implicit baseline calculation",
+            response = ComparisonReportResponseDto.class)
+    public Response getComparisonReport(@Context HttpServletRequest req,
+                                        @PathParam("id") int scenarioId,
+                                        @DefaultValue("") @QueryParam("lang") String preferredLanguage,
+                                        @DefaultValue("false") @QueryParam("reverse") boolean reverse,
+                                        @Context UriInfo uriInfo) {
+        logger.info("Comparing report "+scenarioId+" with baseline");
+        try {
+            var scenarioRes =
+                CalcUtil.getCalculationResultFromSessionOrDb(scenarioId, req.getSession(), calcService)
+                    .orElseThrow(javax.ws.rs.BadRequestException::new);
+
+            if (hasAccess(scenarioRes, req.getUserPrincipal())) {
+
+                var implicitResult = calcService.getImplicitBaselineCalculation(scenarioRes);
+
+                if (reverse) {
+                    return ok(reportService.generateComparisonReportData(scenarioRes, implicitResult, true, true, preferredLanguage)).build();
+                } else {
+                    return ok(reportService.generateComparisonReportData(implicitResult, scenarioRes, true, false, preferredLanguage)).build();
+                }
+            }
+            else
+                return status(Response.Status.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GET
@@ -176,9 +233,40 @@ public class ReportREST {
         if (hasAccess(calcA, req.getUserPrincipal()) && hasAccess(calcB, req.getUserPrincipal()))
             return ok(reportService.generateCSVComparisonReport(calcA, calcB, req.getLocale())).
                 header("Content-Disposition",
-                    "attachment; filename=\"Comparison_report-calculationIDs_-_" + baseId + "-" + scenarioId +
-                        "_-utf8.csv\"").
+                    "attachment; filename=\"" + comparisonFilename(baseId, scenarioId) + "_-utf8.csv\"").
                 build();
+        else
+            return status(Response.Status.UNAUTHORIZED).build();
+    }
+
+    @GET
+    @Path("/comparison/{id}/csv")
+    @Produces(MediaType.TEXT_PLAIN)
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Return comparison report as CSV file using an implicit baseline calculation")
+    public Response getComparisonReport(@Context HttpServletRequest req,
+                                        @PathParam("id") int scenarioId,
+                                        @DefaultValue("false") @QueryParam("reverse") boolean reverse)
+        throws SymphonyStandardAppException, FactoryException, TransformException, IOException {
+        CalculationResult
+            scenarioRes = CalcUtil.getCalculationResultFromSessionOrDb(scenarioId, req.getSession(),
+            calcService).orElseThrow(BadRequestException::new);
+
+        if (hasAccess(scenarioRes, req.getUserPrincipal())) {
+
+            var implicitResult = calcService.getImplicitBaselineCalculation(scenarioRes);
+
+            String fileName = comparisonFilename(scenarioId, reverse);
+            String csv = reverse ?
+                reportService.generateCSVComparisonReport(scenarioRes, implicitResult, req.getLocale()) :
+                reportService.generateCSVComparisonReport(implicitResult, scenarioRes, req.getLocale());
+
+
+            return ok(csv).
+                header("Content-Disposition",
+                    "attachment; filename=\"" + fileName + "_-utf8.csv\"").
+                build();
+        }
         else
             return status(Response.Status.UNAUTHORIZED).build();
     }
@@ -218,5 +306,20 @@ public class ReportREST {
         } catch (Exception e) {
             return status(Response.Status.UNAUTHORIZED).build();
         }
+    }
+
+    private static String comparisonFilename(int a, boolean reversed) {
+        return comparisonFilename(a, null, reversed);
+    }
+
+    private static String comparisonFilename(int a, int b) {
+        return comparisonFilename(a, b, false);
+    }
+
+    private static String comparisonFilename(int a, Integer b, boolean reversed) {
+        if(b == null)
+            return "Comparison_report-implicit" + (reversed ? "-reversed" : "") + "-ID_-_" + a;
+        else
+            return "Comparison_report-calculationIDs_-_" + a + "-" + b;
     }
 }

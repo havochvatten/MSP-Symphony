@@ -22,8 +22,7 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import se.havochvatten.symphony.calculation.CalcUtil;
 import se.havochvatten.symphony.dto.BatchCalculationDto;
-import se.havochvatten.symphony.dto.CalculationResultSlice;
-import se.havochvatten.symphony.dto.CompoundComparisonDto;
+import se.havochvatten.symphony.dto.CalculationResultSliceDto;
 import se.havochvatten.symphony.dto.CompoundComparisonSlice;
 import se.havochvatten.symphony.entity.*;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
@@ -125,19 +124,19 @@ public class CalculationREST {
         watch.stop();
         logger.log(Level.INFO, "DONE ({0} ms)", watch.getTime());
 
-        return new CalculationResultSlice(result);
+        return calcService.getCalculationSlice(result.getId());
     }
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Get a specified calculation", response = CalculationResultSlice.class)
+    @ApiOperation(value = "Get a specified calculation", response = CalculationResultSliceDto.class)
     public Response getCalculation(@Context HttpServletRequest req, @PathParam("id") int id) {
         try {
             var calculation = CalcUtil.getCalculationResultFromSessionOrDb(id,
                     req.getSession(), calcService).orElseThrow(NotFoundException::new);
             if (calculation.getOwner().equals(req.getUserPrincipal().getName()))
-                return ok(new CalculationResultSlice(calculation)).build();
+                return ok(new CalculationResultSliceDto(calculation)).build();
             else
                 return status(Response.Status.UNAUTHORIZED).build();
         } catch (NoResultException | NoSuchElementException e) {
@@ -151,7 +150,7 @@ public class CalculationREST {
     @Consumes(MediaType.TEXT_PLAIN) // APPLICATION_JSON_PATCH_JSON_TYPE
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Update name of an existing calculation", response = CalculationResultSlice.class)
+    @ApiOperation(value = "Update name of an existing calculation", response = CalculationResultSliceDto.class)
     public Response updateName(@Context HttpServletRequest req, @PathParam("id") int id,
                                @QueryParam("action") String action,
                                String newName) {
@@ -162,7 +161,7 @@ public class CalculationREST {
                     && !calculation.isBaselineCalculation()) {
                 calculation.setCalculationName(newName);
                 var updated = calcService.updateCalculation(calculation);
-                return ok(new CalculationResultSlice(updated)).build();
+                return ok(new CalculationResultSliceDto(updated)).build();
             } else
                 return status(Response.Status.UNAUTHORIZED).build();
         } else
@@ -216,7 +215,7 @@ public class CalculationREST {
     @Path("/baseline/{baselineName}")
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Get baseline BaseCalculations for baselineName",
-            response = CalculationResultSlice.class, responseContainer = "List")
+            response = CalculationResultSliceDto.class, responseContainer = "List")
     @RolesAllowed("GRP_SYMPHONY")
     public Response getBaselineCalculations(@PathParam("baselineName") String baselineName)
             throws SymphonyStandardAppException {
@@ -363,6 +362,32 @@ public class CalculationREST {
         }
     }
 
+    @GET
+    @Path("/diff/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces({"image/png"})
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Computes the difference between a calculation and an implicit baseline", response = byte[].class)
+    public Response getDifferenceImage(@Context HttpServletRequest req,
+                                       @PathParam("id") int scenarioId,
+                                       @QueryParam("max") Integer maxValue,
+                                       @DefaultValue("false") @QueryParam("reverse") boolean reverse,
+                                       @QueryParam("dynamic") boolean dynamic, @QueryParam("crs") String crs)
+            throws Exception {
+        crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8.toString()) :
+                props.getProperty("data.source.crs", "EPSG:3035");
+        maxValue = maxValue != null ? maxValue : 45;
+
+        try {
+            var diff = getImplicitDiffCoverageFromCalcId(calcService, req, scenarioId, reverse);
+            return projectedPNGImageResponse(diff, crs, null, dynamic, maxValue);
+        } catch (AccessDeniedException ax) {
+            return status(Response.Status.UNAUTHORIZED).build();
+        } catch (SymphonyStandardAppException sx) {
+            return status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @POST
     @Path("/batch")
     @Consumes(MediaType.TEXT_PLAIN)
@@ -477,8 +502,8 @@ public class CalculationREST {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
     @ApiOperation(value = "Returns a list of calculation matching the ROI of specified calculation")
-    public List<CalculationResultSlice> getCalculationsWithMatchingGeometry(@Context HttpServletRequest req,
-                                                                            @PathParam("id") int id) {
+    public List<CalculationResultSliceDto> getCalculationsWithMatchingGeometry(@Context HttpServletRequest req,
+                                                                               @PathParam("id") int id) {
         var base = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
             calcService).orElseThrow(NotFoundException::new);
         verifyAccessToCalculation(base, req.getUserPrincipal());
@@ -597,6 +622,31 @@ public class CalculationREST {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.OTHER_ERROR);
         }
         // TODO Store coverage in user session? (and recalc if necessary?)
+    }
+
+    public static GridCoverage2D getImplicitDiffCoverageFromCalcId(
+        CalcService calcService, HttpServletRequest req, int relativeId, boolean reverse)
+        throws SymphonyStandardAppException {
+        var scenario = CalcUtil.getCalculationResultFromSessionOrDb(relativeId, req.getSession(),
+            calcService).orElseThrow(BadRequestException::new);
+
+        if (!hasAccess(scenario, req.getUserPrincipal()))
+            throw new NotAuthorizedException("Unauthorized");
+
+        try {
+            GridCoverage2D relativeCoverage = scenario.getCoverage();
+
+            if (relativeCoverage == null) {
+                relativeCoverage = calcService.recreateCoverageFromResult(scenario.getScenarioSnapshot(), scenario);
+            }
+            if(!reverse) {
+                return calcService.relativeDifference(calcService.getImplicitBaselineCoverage(scenario), relativeCoverage);
+            } else {
+                return calcService.relativeDifference(relativeCoverage, calcService.getImplicitBaselineCoverage(scenario));
+            }
+        } catch (Exception e) {
+            throw new SymphonyStandardAppException(SymphonyModelErrorCode.OTHER_ERROR);
+        }
     }
 
     public GridCoverage2D cropToScenarioArea(SimpleFeature areaFeature, MathTransform transform)

@@ -134,10 +134,10 @@ public class CalcService {
         cache.setMemoryCapacity(megabytesOfCache * 1024 * 1024L);
     }
 
-    public List<CalculationResultSlice> getBaseLineCalculations(String baselineName) throws SymphonyStandardAppException {
+    public List<CalculationResultSliceDto> getBaseLineCalculations(String baselineName) throws SymphonyStandardAppException {
         BaselineVersion baseline = baselineVersionService.getVersionByName(baselineName);
 
-        return em.createNamedQuery("CalculationResult.findBaselineCalculationsByBaselineId", CalculationResultSlice.class).
+        return em.createNamedQuery("CalculationResult.findBaselineCalculationsByBaselineId", CalculationResultSliceDto.class).
                 setParameter("id", baseline.getId()).
                 getResultList();
     }
@@ -147,19 +147,19 @@ public class CalcService {
     }
 
     private List<CalculationResultSlice> findAllByUsername(String username) {
-        return em.createNamedQuery("CalculationResult.findByOwner", CalculationResultSlice.class).
-                setParameter("username", username).
+        return em.createNamedQuery("CalculationResultSlice.findAllByOwner", CalculationResultSlice.class).
+                setParameter("owner", username).
                 getResultList();
     }
 
-    public List<CalculationResultSlice> findAllCmpByUser(Principal user, int operation) {
-        return em.createNamedQuery("CalculationResult.findCmpByOwner", CalculationResultSlice.class).
+    public List<CalculationResultSliceDto> findAllCmpByUser(Principal user, int operation) {
+        return em.createNamedQuery("CalculationResult.findCmpByOwner", CalculationResultSliceDto.class).
                 setParameter("username", user.getName()).
                 setParameter("operation", operationName(operation)).
                 getResultList();
     }
 
-    public List<CalculationResultSlice> findAllMatchingCalculationsByUser (
+    public List<CalculationResultSliceDto> findAllMatchingCalculationsByUser (
             Principal user, CalculationResult base) {
         // Ideally we would do a spatial query to the database, but since areas are not stored as proper
         // PostGIS geometries this is not possible at it stands.
@@ -204,6 +204,9 @@ public class CalcService {
         return em.find(CalculationResult.class, id);
     }
 
+    public CalculationResultSlice getCalculationSlice(Integer id) {
+        return em.find(CalculationResultSlice.class, id);
+    }
     private BatchCalculation getBatchCalculationStatus(Integer id) {
         return em.find(BatchCalculation.class, id);
     }
@@ -422,6 +425,30 @@ public class CalcService {
                                 targetGeometry, overflow, isAreaCalculation);
     }
 
+    public CalculationResult getImplicitBaselineCalculation(CalculationResult calc)
+        throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
+
+        Geometry roi = JTS.transform(calc.getScenarioSnapshot().getGeometry(),
+            CRS.findMathTransform(getSrcCRS(), DefaultGeographicCRS.WGS84));
+
+        GridCoverage2D coverage = getImplicitBaselineCoverage(calc, roi);
+        Raster[] tmp = ((PlanarImage) coverage.getRenderedImage()).getTiles(); // trigger calculation
+
+        CalculationResult implicitCalc = new CalculationResult(coverage);
+
+        double[][] impactMx = (double[][]) coverage.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME);
+
+        implicitCalc.setBaselineVersion(calc.getBaselineVersion());
+        implicitCalc.setCalculationName("Baseline");
+        implicitCalc.setImpactMatrix(impactMx);
+        implicitCalc.setOperationName(calc.getOperation());
+        implicitCalc.setOperationOptions(calc.getOperationOptions());
+        implicitCalc.setScenarioSnapshot(calc.getScenarioSnapshot());
+        implicitCalc.setTimestamp(new Date());
+
+        return implicitCalc;
+    }
+
     private GridGeometry2D getTargetGridGeometry(Envelope targetGridEnvelope, ReferencedEnvelope targetEnv) {
         return new GridGeometry2D( // FIXME reuse roiGridEnvelope?
                 new GridEnvelope2D(/*roiGridEnvelope, PixelInCell.CELL_CENTER */
@@ -494,9 +521,15 @@ public class CalcService {
     }
 
     public GridCoverage2D getImplicitBaselineCoverage(CalculationResult calc)
-        throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
+        throws FactoryException, SymphonyStandardAppException, TransformException, IOException {
         Geometry roi = JTS.transform(calc.getScenarioSnapshot().getGeometry(),
             CRS.findMathTransform(getSrcCRS(), DefaultGeographicCRS.WGS84));
+
+        return getImplicitBaselineCoverage(calc, roi);
+    }
+
+    private GridCoverage2D getImplicitBaselineCoverage(CalculationResult calc, Geometry roi)
+        throws TransformException, SymphonyStandardAppException, IOException, FactoryException {
 
         return calculateCoverage(
             calc.getOperation(), roi, calc.getBaselineVersion().getId(),

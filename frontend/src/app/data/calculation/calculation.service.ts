@@ -112,16 +112,30 @@ export class CalculationService implements OnDestroy {
     });
   }
 
-  public addComparisonResult(idA: string, idB: string, dynamic: boolean, max: number){
+  public addComparisonResult(idA: string | null, idB: string, dynamic: boolean, max: number, reverse = false){
+    const endpoint = idA === null ? `diff/${idB}` : `diff/${idA}/${idB}`,
+          params = new URLSearchParams();
+
+    if (dynamic) {
+      params.append('dynamic', 'true');
+    } else {
+      params.append('max', max.toString());
+    }
+
+    if (reverse) {
+      params.append('reverse', 'true');
+    }
+
     //  Bit "hacky" but workable "faux" id constructed as a negative number
     //  to guarantee uniqueness without demanding a separate interface.
     //  Note that this artficially imposes a virtual maximum for calculation
     //  result ids to 2^26 - 1 (around 67 million).
     //  The limit is chosen specifically in relation to Number.MIN_SAFE_INTEGER
     //  which is -2^53
-
-    return this.addResultImage(this.cmpId(+idA, +idB), `diff/${idA}/${idB}`
-                                                  + (dynamic ? '?dynamic=true' : '?max=' + max));
+    return this.addResultImage(
+      this.cmpId(idA === null ? 0 : +idA, +idB),
+      `${endpoint}?${params.toString()}`
+    );
   }
 
   cmpId(a:number, b:number): number {

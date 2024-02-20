@@ -7,7 +7,7 @@ import io.restassured.response.Response;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.locationtech.jts.io.ParseException;
-import se.havochvatten.symphony.dto.CalculationResultSlice;
+import se.havochvatten.symphony.dto.CalculationResultSliceDto;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
 import se.havochvatten.symphony.web.RESTTest;
@@ -92,7 +92,7 @@ public class ScenarioRESTTest extends RESTTest {
         delete(testScenario.id);
     }
 
-    private CalculationResultSlice calculate(ScenarioDto s) {
+    private CalculationResultSliceDto calculate(ScenarioDto s) {
         Response response =
                 given().
                         header("Content-Type", "application/json").
@@ -103,7 +103,7 @@ public class ScenarioRESTTest extends RESTTest {
                         body(s.id).
                         post(endpoint("/calculation/sum"));
         assertEquals(200, response.statusCode());
-        return response.as(CalculationResultSlice.class);
+        return response.as(CalculationResultSliceDto.class);
     }
 
     public static ExtractableResponse<Response> update(ScenarioDto s) {

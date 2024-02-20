@@ -18,8 +18,13 @@ ReportService {
     return this.http.get<Report>(`${env.apiBaseUrl}/report/${id}${this.langParam}`);
   }
 
-  public getComparisonReport(aId: string, bId: string) {
-    return this.http.get<ComparisonReport>(`${env.apiBaseUrl}/report/comparison/${aId}/${bId}${this.langParam}`);
+  public getComparisonReport(aId: string, bId: string | null, reverse: boolean) {
+    if(bId) {
+      return this.http.get<ComparisonReport>(`${env.apiBaseUrl}/report/comparison/${aId}/${bId}${this.langParam}`);
+    } else {
+      return this.http.get<ComparisonReport>(`${env.apiBaseUrl}/report/comparison/${aId}${this.langParam}` +
+                                                  (reverse ? '&reverse=true' : ''));
+    }
   }
 
   public calculateArea(report: Report) {
@@ -32,11 +37,13 @@ ReportService {
   public setAreaDict(report: Report): Map<number, string> {
 
     const areaDict = new Map<number, string>();
-    const index_ids = Object.keys(report.scenarioChanges.areaChanges);
+    if(report.scenarioChanges !== null) {
+      const index_ids = Object.keys(report.scenarioChanges.areaChanges);
 
-    index_ids.map((areaId, ix) => {
-      areaDict.set(+areaId, report.areaMatrices[ix].areaName);
-    });
+      index_ids.map((areaId, ix) => {
+        areaDict.set(+areaId, report.areaMatrices[ix].areaName);
+      });
+    }
 
     return areaDict;
   }
