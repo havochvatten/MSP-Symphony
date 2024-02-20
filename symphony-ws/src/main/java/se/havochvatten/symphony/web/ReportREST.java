@@ -198,14 +198,16 @@ public class ReportREST {
                 CalcUtil.getCalculationResultFromSessionOrDb(scenarioId, req.getSession(), calcService)
                     .orElseThrow(javax.ws.rs.BadRequestException::new);
 
-            var implicitResult = calcService.getImplicitBaselineCalculation(scenarioRes);
+            if (hasAccess(scenarioRes, req.getUserPrincipal())) {
 
-            if (hasAccess(scenarioRes, req.getUserPrincipal()))
-                if(reverse) {
+                var implicitResult = calcService.getImplicitBaselineCalculation(scenarioRes);
+
+                if (reverse) {
                     return ok(reportService.generateComparisonReportData(scenarioRes, implicitResult, true, true, preferredLanguage)).build();
                 } else {
                     return ok(reportService.generateComparisonReportData(implicitResult, scenarioRes, true, false, preferredLanguage)).build();
                 }
+            }
             else
                 return status(Response.Status.UNAUTHORIZED).build();
         } catch (Exception e) {
@@ -250,18 +252,21 @@ public class ReportREST {
             scenarioRes = CalcUtil.getCalculationResultFromSessionOrDb(scenarioId, req.getSession(),
             calcService).orElseThrow(BadRequestException::new);
 
-        var implicitResult = calcService.getImplicitBaselineCalculation(scenarioRes);
+        if (hasAccess(scenarioRes, req.getUserPrincipal())) {
 
-        String fileName = comparisonFilename(scenarioId, reverse);
-        String csv = reverse ?
-            reportService.generateCSVComparisonReport(scenarioRes, implicitResult, req.getLocale()) :
-            reportService.generateCSVComparisonReport(implicitResult, scenarioRes, req.getLocale());
+            var implicitResult = calcService.getImplicitBaselineCalculation(scenarioRes);
 
-        if (hasAccess(scenarioRes, req.getUserPrincipal()))
+            String fileName = comparisonFilename(scenarioId, reverse);
+            String csv = reverse ?
+                reportService.generateCSVComparisonReport(scenarioRes, implicitResult, req.getLocale()) :
+                reportService.generateCSVComparisonReport(implicitResult, scenarioRes, req.getLocale());
+
+
             return ok(csv).
                 header("Content-Disposition",
                     "attachment; filename=\"" + fileName + "_-utf8.csv\"").
                 build();
+        }
         else
             return status(Response.Status.UNAUTHORIZED).build();
     }
