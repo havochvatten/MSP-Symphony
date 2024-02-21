@@ -11,6 +11,7 @@ export interface SelectableLayer {
   symphonyCategory: BandType;
   selected: boolean;
   visible?: boolean;
+  loaded?: boolean;
 }
 
 export interface Band extends SelectableLayer {

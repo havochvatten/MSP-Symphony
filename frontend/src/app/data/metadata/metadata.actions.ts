@@ -37,6 +37,11 @@ export const setVisibility  = createAction(
   props<{ band: Band, value: boolean }>()
 );
 
+export const setLoadedState = createAction(
+  '[Metadata] Set loaded state (visualisation)',
+  props<{ band: Band, value: boolean }>()
+);
+
 export const updateLayerOpacity = createAction(
   '[Metadata] Update Layer Opacity',
   props<{ band: Band, value: number }>()
