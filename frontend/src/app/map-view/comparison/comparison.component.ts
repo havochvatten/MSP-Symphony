@@ -87,7 +87,10 @@ export class ComparisonComponent implements AfterViewInit {
 
     this.candidates$ = this.calcService.getMatchingCalculations(id.toString()).pipe(
       map((res) => res.filter(c => this.includeUnchanged || c.hasChanges)),
-      tap((candidates) => this.loadingCandidates = false)
+      tap((candidates) => {
+        this.bSelect.disabled = candidates.length === 0;
+        this.loadingCandidates = false;
+      })
     );
   }
 
