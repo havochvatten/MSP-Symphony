@@ -70,7 +70,7 @@ export const calculationReducer = createReducer(
     ...state,
     legends: setIn(state.legends, ['comparison'], {})
   })),
-  on(CalculationActions.updateNameSuccess, (state, { calculationId, newName }) => ({
+  on(CalculationActions.renameCalculationSuccess, (state, { calculationId, newName }) => ({
     ...state,
     calculations: state.calculations.map(c => c.id === calculationId ? {...c, name: newName} : c)
   })),

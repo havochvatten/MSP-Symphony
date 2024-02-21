@@ -206,7 +206,7 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
     });
     if (typeof newCalculationName === 'string' && newCalculationName !== calculationName) {
       this.store.dispatch(
-        CalculationActions.updateName(
+        CalculationActions.renameCalculation(
           { calculationId: id,
             newName: newCalculationName
         }));
