@@ -4,22 +4,24 @@ import { DialogConfig } from '@shared/dialog/dialog-config';
 
 @Component({
   selector: 'app-rename-user-area-modal',
-  templateUrl: './rename-user-area-modal.component.html',
-  styleUrls: ['./rename-user-area-modal.component.scss']
+  templateUrl: './rename-item-modal.component.html',
+  styleUrls: ['./rename-item-modal.component.scss']
 })
-export class RenameUserAreaModalComponent {
-  areaName = '';
+export class RenameItemModalComponent {
+  headerText: string;
+  itemName = '';
 
   constructor(private dialog: DialogRef, private config: DialogConfig) {
-    this.areaName = this.config.data.areaName;
+    this.headerText = this.config.data.headerText
+    this.itemName = this.config.data.itemName;
   }
 
   onChange(value: string) {
-    this.areaName = value;
+    this.itemName = value;
   }
 
   save() {
-    this.dialog.close(this.areaName);
+    this.dialog.close(this.itemName);
   }
 
   close = () => {
@@ -27,6 +29,6 @@ export class RenameUserAreaModalComponent {
   };
 
   get hasChanged() {
-    return this.areaName !== this.config.data.areaName;
+    return this.itemName !== this.config.data.itemName;
   }
 }

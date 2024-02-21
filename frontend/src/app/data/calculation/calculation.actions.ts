@@ -109,7 +109,17 @@ export const deleteMultipleCalculations = createAction(
 
 export const updateName = createAction(
   '[Calculation] Update calculation name',
-  props<{ index: number, newName: string }>()
+  props<{ calculationId: number, newName: string }>()
+);
+
+export const updateNameSuccess = createAction(
+  '[Calculation] Update calculation name success',
+  props<{ calculationId: number, newName: string }>()
+);
+
+export const renameCalculationFailure = createAction(
+  '[Calculation] Patch calculation failure',
+  props<{ error: ErrorMessage }>()
 );
 
 export const setCalculationSortType = createAction(

@@ -1,9 +1,9 @@
-<section [ngClass]="{ 'multi-mode' : isMultiMode() }">
+<section class="tab-section" [ngClass]="{ 'multi-mode' : isMultiMode() }">
 
   <div *ngIf="environment.showBaseCalculations">
     <h3>{{ 'map.history.baseline-calculations' | translate }}</h3>
     <div class="baseline-name" [title]="baseline?.description">{{baseline?.name}}</div>
-    <main class="baseline">
+    <section class="list-section baseline">
       <button *ngFor="let calculation of baselineCalculations$ | async" class="calculation">
 <!--              (click)="load(calculation)"-->
         <div class="calculation-info">
@@ -16,7 +16,7 @@
       </button>
       <ng-container *ngIf="!$any(baselineCalculations$ | async)?.length" [ngTemplateOutlet]="noCalculations">
       </ng-container>
-    </main>
+    </section>
   </div>
 
   <div class="title-container">
@@ -50,7 +50,7 @@
     ></app-list-filter>
   </div>
 
-  <main *ngIf="(loading$ | async) === false else loading">
+  <section class="list-section" *ngIf="(loading$ | async) === false else loading">
     <div class="calculation-wrap"
          [ngClass]="{ 'filtered': filter(calculation.name) }"
          *ngFor="let calculation of calculations$ | async; index as i">
@@ -63,16 +63,11 @@
               >
         <div class="calculation-info">
           <div class="name">
-            <h4 *ngIf="editingName !== calculation.id" [title]="calculation.name">{{ calculation.name }}</h4>
-  <!--
-            <input #name *ngIf="editingName === calculation.id" [value]="calculation.name"
-                   (keydown.enter)="saveName($event, calculation, i)" (blur)="cancelEdit($event)"
-                   (click)="$event.stopPropagation()"/>
-  -->
+            <h4 *ngIf="editingId !== calculation.id" [title]="calculation.name">{{ calculation.name }}</h4>
           </div>
           <span class="timestamp">{{ calculation.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
         </div>
-        <div class="list-actions" *ngIf="!(isMultiMode() || (comparedCalculationsRepeat$ | async).includes(calculation.id))">
+        <div class="list-actions" *ngIf="!(isMultiMode() || (comparedCalculationsRepeat$ | async)?.includes(calculation.id))">
           <app-icon *ngIf="!resultIsVisible(calculation.id)" iconType="eye" (click)="loadResult(calculation.id); $event.stopPropagation()"
                     title="{{ 'map.history.show-result' | translate }}"></app-icon>
           <app-icon *ngIf="resultIsVisible(calculation.id)" iconType="eye-slash" (click)="removeResult(calculation.id); $event.stopPropagation()"
@@ -80,19 +75,22 @@
           <app-icon iconType="report" (click)="showReport(calculation.id); $event.stopPropagation()"
                     title="{{ 'map.history.show-report' | translate: { calculationName: calculation.name } }}">
           </app-icon>
+          <app-icon iconType="edit" (click)="$event.stopPropagation(); editCalculationName(calculation.id, calculation.name);"
+                    title="{{ 'map.history.edit-name.label' | translate }}">
+          </app-icon>
           <app-icon iconType="delete" (click)="confirmDelete(calculation, $event)"
             title="{{ 'map.history.delete' | translate: { calculationName: calculation.name } }}"
           >
           </app-icon>
         </div>
-        <mat-spinner *ngIf="(comparedCalculationsRepeat$ | async).includes(calculation.id)" diameter="20" ></mat-spinner>
+        <mat-spinner *ngIf="(comparedCalculationsRepeat$ | async)?.includes(calculation.id)" diameter="20" ></mat-spinner>
         <app-icon iconType="eye" class="visible" *ngIf="resultIsVisible(calculation.id)"
                   title="{{ 'map.history.visible-result' | translate }}"></app-icon>
         <app-icon iconType="cross" class="purged" *ngIf="!loadingCalculations.has(calculation.id) && calculation.isPurged"></app-icon>
       </button>
       <div class="multi-selected-wrap" *ngIf="isMultiMode()">
         <mat-checkbox [checked]="selectedIds.includes(calculation.id)"
-                      [disabled]="(comparedCalculationsRepeat$ | async).includes(calculation.id)"
+                      [disabled]="(comparedCalculationsRepeat$ | async)?.includes(calculation.id)"
                       (change)="multiSelect(calculation.id)"
                       (click)="$event.stopPropagation()">
         </mat-checkbox>
@@ -100,7 +98,7 @@
     </div>
     <ng-container *ngIf="!$any(calculations$ | async).length" [ngTemplateOutlet]="noCalculations">
     </ng-container>
-  </main>
+  </section>
   <!--TODO Add useful hover info such as normalization, band selection etc?-->
 </section>
 

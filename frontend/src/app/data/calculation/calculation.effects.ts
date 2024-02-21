@@ -187,4 +187,20 @@ export class CalculationEffects {
       )
     )
   ));
+
+  updateName$ = createEffect(() => this.actions$.pipe(
+    ofType(CalculationActions.updateName),
+    mergeMap(({ calculationId, newName }) =>
+      this.calcService.updateName(calculationId, newName).pipe(
+        map(() => CalculationActions.updateNameSuccess({ calculationId, newName })),
+        catchError(({ status, message }) =>
+          of(
+            CalculationActions.renameCalculationFailure({
+              error: { status, message }
+            })
+          )
+        )
+      )
+    )
+  ));
 }

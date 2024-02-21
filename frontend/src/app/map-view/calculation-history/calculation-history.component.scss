@@ -6,7 +6,7 @@ $iconbar-h: 1.2rem;
 $button-height: 6rem;
 $buttons-row-gap: 1rem;
 
-section {
+section.tab-section {
   width: 100%;
   height: calc(100vh - #{$header-height} - #{$iconbar-h} - 0.8rem);
   box-sizing: border-box;
@@ -48,7 +48,7 @@ section {
     cursor: help;
   }
 
-  main.baseline {
+  section.list-section.baseline {
     flex: 0 0 auto;
   }
 
@@ -56,7 +56,7 @@ section {
     padding: 1.8rem 0 1rem;
   }
 
-  main {
+  section.list-section {
     flex: 1 1;
     margin: 2rem 0 2rem 0;
     box-sizing: border-box;

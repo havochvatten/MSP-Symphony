@@ -3,15 +3,15 @@ import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { DialogRef } from '@shared/dialog/dialog-ref';
 import { DialogConfig } from '@shared/dialog/dialog-config';
 
-import { RenameUserAreaModalComponent } from './rename-user-area-modal.component';
+import { RenameItemModalComponent } from './rename-item-modal.component';
 
 describe('RenameUserAreaModalComponent', () => {
-  let fixture: ComponentFixture<RenameUserAreaModalComponent>,
-      component: RenameUserAreaModalComponent;
+  let fixture: ComponentFixture<RenameItemModalComponent>,
+      component: RenameItemModalComponent;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [RenameUserAreaModalComponent],
+      declarations: [RenameItemModalComponent],
       imports: [TranslationSetupModule],
       providers: [
         {
@@ -28,7 +28,7 @@ describe('RenameUserAreaModalComponent', () => {
         }
       ]
     }).compileComponents();
-    fixture = TestBed.createComponent(RenameUserAreaModalComponent);
+    fixture = TestBed.createComponent(RenameItemModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));
