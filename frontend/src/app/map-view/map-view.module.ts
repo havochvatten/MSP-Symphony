@@ -22,9 +22,6 @@ import { AreaGroupComponent, EditAreaComponent } from './area-selection/area-gro
 import { CalculationHistoryComponent } from './calculation-history/calculation-history.component';
 import { ComparisonComponent } from './comparison/comparison.component';
 import { CreateUserAreaModalComponent } from './map/create-user-area-modal/create-user-area-modal.component';
-import {
-  RenameUserAreaModalComponent
-} from './area-selection/rename-user-area-modal/rename-user-area-modal.component';
 import { CheckboxAccordionComponent } from './band-selection/checkbox-accordion/checkbox-accordion.component';
 import {
   MatrixTableComponent
@@ -63,7 +60,6 @@ import { DownloadCompoundComparisonDialogComponent } from './compound-comparison
     ComparisonComponent,
     CreateUserAreaModalComponent,
     UploadUserAreaModalComponent,
-    RenameUserAreaModalComponent,
     CheckboxAccordionComponent,
     MatrixTableComponent,
     ConfirmResetComponent,

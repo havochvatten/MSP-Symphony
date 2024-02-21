@@ -1,0 +1,15 @@
+<h3>{{ headerText }}</h3>
+<input
+  [value]="itemName"
+  (input)="onChange($event.target.value)"
+  [placeholder]="'rename.placeholder' | translate"
+/>
+<div>
+  <button mat-flat-button color="warn" (click)="close()">{{
+    'controls.close' | translate
+  }}</button>
+  <button mat-flat-button
+    (click)="save()"
+    [disabled]="itemName.length === 0 || !hasChanged"
+    >{{ 'controls.save' | translate }}</button>
+</div>

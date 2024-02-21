@@ -23,7 +23,7 @@ export class ConfirmationModalComponent  {
 
   constructor(private dialog: DialogRef,
               private element: ElementRef,
-              private conf: DialogConfig ) {
+              conf: DialogConfig ) {
     this.header = conf.data.header;
     this.message = conf.data.message || null;
     this.confirmText = conf.data.confirmText || null;

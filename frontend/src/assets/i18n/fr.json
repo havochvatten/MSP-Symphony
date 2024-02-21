@@ -387,6 +387,10 @@
             "hide-result": "Masquer ce résultat en mode carte",
             "visible-result": "Ce résultat est visible en mode carte",
             "purged-result": "Les données de ce résultat ont été supprimées\nLe chargement peut prendre un peu plus de temps car le résultat doit être recalculé.",
+            "edit-name": {
+                "label": "Renommer",
+                "header": "Modifier le nom de la calcul"
+            },
             "delete-modal" : {
                 "header": "Supprimer résultat",
                 "message": "Confirmer la suppression du résultat: <em>“{{ calculationName }}”</em>",
@@ -462,12 +466,7 @@
             },
             "rename": {
                 "label": "Renommer la zone",
-                "modal": {
-                    "title": "Modifier le nom de la zone",
-                    "placeholder": "Ma zone 1",
-                    "save": "Sauvegarder",
-                    "close": "Fermer"
-                }
+                "header": "Modifier le nom de la zone"
             },
             "edit": {
                 "label": "Modifier la zone"
@@ -527,11 +526,15 @@
     "controls": {
         "open": "Ouvrir",
         "close": "Fermer",
+        "save": "Sauvegarder",
         "delete": "Supprimer",
         "accordion": {
             "expand": "Afficher",
             "contract": "Masquer"
         }
+    },
+    "rename": {
+        "placeholder": "Entrez un nouveau nom"
     },
     "main-menu": {
         "projects": "Projets",
