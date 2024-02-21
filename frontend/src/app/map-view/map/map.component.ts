@@ -88,7 +88,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       .select(UserSelectors.selectBaseline).pipe(isNotNullOrUndefined())
       .subscribe((baseline) => {
         this.baselineName = baseline.name;
-        this.bandLayer = new BandLayer(baseline.name, dataLayerService, this.aliasing);
+        this.bandLayer = new BandLayer(baseline.name, dataLayerService, this.store, this.aliasing);
         this.map!.getLayers().insertAt(1, this.bandLayer); // on top of background layer
       });
 
