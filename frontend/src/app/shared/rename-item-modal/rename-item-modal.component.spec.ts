@@ -5,7 +5,7 @@ import { DialogConfig } from '@shared/dialog/dialog-config';
 
 import { RenameItemModalComponent } from './rename-item-modal.component';
 
-describe('RenameUserAreaModalComponent', () => {
+describe('RenameItemModalComponent', () => {
   let fixture: ComponentFixture<RenameItemModalComponent>,
       component: RenameItemModalComponent;
 
@@ -22,7 +22,8 @@ describe('RenameUserAreaModalComponent', () => {
           provide: DialogConfig,
           useValue: {
             data: {
-              areaName: ''
+              headerText: '',
+              itemName: ''
             }
           }
         }
