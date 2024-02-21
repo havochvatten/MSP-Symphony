@@ -25,7 +25,7 @@ export class SetArbitraryMatrixComponent {
                private store: Store<State>,
                conf: DialogConfig ) {
     this.matrices = conf.data.matrices || [];
-    this.areaName = conf.data.itemName;
+    this.areaName = conf.data.areaName;
     this.percentileValue = conf.data.percentileValue;
     this.calibratedAreas$ = this.store.select(AreaSelectors.selectCalibratedCalculationAreas);
     this.calibratedAreas$.subscribe((areas) => {
