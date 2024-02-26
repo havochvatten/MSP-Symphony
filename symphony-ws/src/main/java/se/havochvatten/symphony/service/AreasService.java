@@ -22,6 +22,7 @@ import se.havochvatten.symphony.entity.NationalArea;
 import se.havochvatten.symphony.entity.UserDefinedArea;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
+import se.havochvatten.symphony.web.WebUtil;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -140,7 +141,8 @@ public class AreasService {
 
         try {
             Path shapeFilePath = Files.createTempFile("shp_download", ".shp");
-            String targetFileName = featureCollection.features().next().getAttribute("name").toString();
+            String targetFileName =
+                WebUtil.escapeFilename(featureCollection.features().next().getAttribute("name").toString());
             Map<String, Object> params = new HashMap<>();
 
             params.put("url", shapeFilePath.toUri().toURL());
