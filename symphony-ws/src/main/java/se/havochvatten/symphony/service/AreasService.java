@@ -211,6 +211,9 @@ public class AreasService {
             }
         }
 
+        zos.finish();
+        zos.flush();
+
         return zipFile.toString();
     }
 }
