@@ -198,7 +198,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     this.areaLayer = new AreaLayer(
         this.map, this.dispatchSelectionUpdate, this.zoomToExtent,
-        this.onDrawEnd, this.onDrawInvalid, this.onSplitClick, this.onMergeClick,
+        this.onDrawEnd, this.onDrawInvalid, this.onDownloadClick, this.onSplitClick, this.onMergeClick,
         this.scenarioLayer, this.translateService, this.geoJson); // Will add itself to the map
     this.map.addLayer(this.areaLayer);
 
@@ -354,6 +354,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         }
       }
     }
+  }
+
+  onDownloadClick = async (path: string) => {
+    document.location.href = env.apiBaseUrl + '/areas/download?path=' + path;
   }
 
   // The virtual transform methods on OpenLayers Geometry subclasses

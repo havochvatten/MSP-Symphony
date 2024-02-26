@@ -89,4 +89,28 @@ public class AreasREST {
         cc.setMaxAge(WebUtil.ONE_YEAR_IN_SECONDS);
         return Response.ok(areas.getAreasJson()).cacheControl(cc).build();
     }
+
+    @GET
+    @Path("/download")
+    @ApiOperation(value = "Download areas as a .shp file bundle (.zip archive)")
+    @Produces("application/octet-stream")
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response downloadAreas(@QueryParam("path") String path) throws SymphonyStandardAppException {
+        String countryCode = props.getProperty("areas.countrycode");
+        String[] statePaths = path.split(",");
+
+        if (statePaths.length == 0) {
+            throw new BadRequestException("No state path provided");
+        }
+
+        Optional<AreasService.fileStruct> file = areasService.getAreasAsShapeFile(statePaths, countryCode);
+
+        if (file.isEmpty()) {
+            throw new NotFoundException("No areas found");
+        }
+
+        return Response.ok(file.get().content())
+            .header("Content-Disposition", "attachment; filename=" + file.get().fileName())
+            .build();
+    }
 }

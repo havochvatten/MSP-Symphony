@@ -521,6 +521,9 @@
                 "header": "Delete compound comparison",
                 "message": "Confirm deletion of compound comparison: <em>“{{ comparisonName }}”</em>"
             }
+        },
+        "area-options": {
+            "get-shapefile": "Download shapefile bundle (.zip)"
         }
     },
     "controls": {
