@@ -45,7 +45,7 @@ public class AreasService {
 
     private static final String[] shpComponents = new String[]{"shp", "dbf", "shx", "prj"};
 
-    public record fileStruct(String fileName, byte[] content) {}
+    public record FileStruct(String fileName, byte[] content) {}
 
     private static SimpleFeatureType polygonType() {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
@@ -125,7 +125,7 @@ public class AreasService {
         }
     }
 
-    public Optional<fileStruct> getAreasAsShapeFile(String[] statePath, String countryCode)
+    public Optional<FileStruct> getAreasAsShapeFile(String[] statePath, String countryCode)
         throws SymphonyStandardAppException {
         FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection;
 
@@ -177,7 +177,7 @@ public class AreasService {
                 Paths.get(archiveShapeForDownload(shapeFilePath, targetFileName)));
             Files.deleteIfExists(shapeFilePath);
 
-            return Optional.of(new fileStruct(targetFileName + ".zip", zipFile));
+            return Optional.of(new FileStruct(targetFileName + ".zip", zipFile));
 
         } catch (IOException e) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.SHAPEFILE_GENERATION_ERROR, e);
