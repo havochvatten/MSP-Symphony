@@ -18,6 +18,11 @@ export const selectCalculations = createSelector(
   }
 );
 
+export const selectChangedCalculations = createSelector(
+  selectCalculationState,
+  state => state.calculations.filter(c => c.hasChanges)
+);
+
 export const selectComparedCalculations = createSelector(
   selectCalculationState,
   state => state.generatingComparisonsFor

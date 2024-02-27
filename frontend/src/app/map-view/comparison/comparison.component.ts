@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, NgModuleRef, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, NgModuleRef, ViewChild } from '@angular/core';
 import { Store } from "@ngrx/store";
 import { State } from '@src/app/app-reducer';
 import { Observable } from 'rxjs';
@@ -13,7 +13,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { MatSelect } from "@angular/material/select";
 import { MatOption } from "@angular/material/core";
 import { MatRadioChange } from "@angular/material/radio";
-import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component';
+import { MatCheckboxChange } from "@angular/material/checkbox";
 
 enum ComparisonScaleOptions { CONSTANT, DYNAMIC }
 
@@ -26,7 +26,6 @@ export class ComparisonComponent implements AfterViewInit {
   calculations$?: Observable<CalculationSlice[]>;
   candidates$?: Observable<CalculationSlice[]>;
   compareForm = this.builder.group({
-    a: ['', Validators.required],
     b: ['', Validators.required]
   });
   @ViewChild('base') aSelect!: MatSelect;
@@ -35,6 +34,9 @@ export class ComparisonComponent implements AfterViewInit {
   ScaleOptions = ComparisonScaleOptions;
   public selectedScale = ComparisonScaleOptions.CONSTANT;
   constant = 45;
+  useImplicit = true;
+  includeUnchanged = false;
+  reverseComparison = false;
 
   constructor(
     private store: Store<State>,
@@ -45,24 +47,29 @@ export class ComparisonComponent implements AfterViewInit {
     private moduleRef: NgModuleRef<never>
   ) {
     this.calculations$ = this.store.select(CalculationSelectors.selectCalculations);
+    this.candidates$ = this.store.select(CalculationSelectors.selectChangedCalculations);
   }
 
   ngAfterViewInit(): void {
-    this.bSelect.disabled = true;
+    this.bSelect.disabled = !this.useImplicit;
   }
 
   submit() {
+    const a = this.useImplicit ? null : this.aSelect.value;
     const that = this,
-          a =  this.compareForm.value.a as string, b = this.compareForm.value.b as string,
-          comparisonTitle = (this.aSelect.selected as MatOption).viewValue + ' ~ ' +
-                                   (this.bSelect.selected as MatOption).viewValue,
+          b = this.compareForm.value.b as string,
+          aTitle = this.useImplicit ?
+            this.translate.instant('map.compare.implicit-baseline') :
+            (this.aSelect.selected as MatOption).viewValue,
+          comparisonTitle = aTitle + ' ~ ' + (this.bSelect.selected as MatOption).viewValue,
           dynamic = this.selectedScale === ComparisonScaleOptions.DYNAMIC,
-          constantVal = this.constant;
-    this.calcService.addComparisonResult(a, b, dynamic, constantVal).then(
+          constantVal = this.constant,
+          reverse = this.reverseComparison
+    this.calcService.addComparisonResult(a, b, dynamic, constantVal, reverse).then(
       (dynamicMax: number | null) => {
         const max = dynamicMax !== null ? Math.ceil(dynamicMax * 100) : this.constant;
         this.dialogService.open(ComparisonReportModalComponent, this.moduleRef, {
-          data: { a, b, max }
+          data: { a, b, max, reverse }
         });
         if(dynamic) {
             that.store.dispatch(CalculationActions.fetchComparisonLegend({ maxValue: dynamicMax || 0, comparisonTitle }));
@@ -79,13 +86,11 @@ export class ComparisonComponent implements AfterViewInit {
     this.loadingCandidates = true;
 
     this.candidates$ = this.calcService.getMatchingCalculations(id.toString()).pipe(
-      withLatestFrom(this.translate.get('map.compare.choose-scenario')),
-      tap(([res, trans]) => {
+      map((res) => res.filter(c => this.includeUnchanged || c.hasChanges)),
+      tap((candidates) => {
+        this.bSelect.disabled = candidates.length === 0;
         this.loadingCandidates = false;
-        this.bSelect.placeholder = trans;
-        this.bSelect.disabled = res.length === 0;
-      }),
-      map(([res]) => res)
+      })
     );
   }
 
@@ -95,7 +100,53 @@ export class ComparisonComponent implements AfterViewInit {
     }
   }
 
-  openCCList() {
-    this.dialogService.open(CompoundComparisonListDialogComponent, this.moduleRef);
+  targetScenarioPlaceHolderKey(hasCandidates : boolean): string {
+    if (this.useImplicit) {
+      return 'map.compare.select-calculation';
+    }
+
+    if (!this.aSelect.value) {
+      return 'map.compare.select-base-calculation-first';
+    }
+
+    if (hasCandidates) {
+      return 'map.compare.select-calculation';
+    } else {
+      return 'map.compare.no-matching-calculations';
+    }
+  }
+
+  async setImplicit($event: MatRadioChange) {
+    this.useImplicit = $event.source.value;
+    this.bSelect.disabled = !this.useImplicit;
+
+    if (this.useImplicit) {
+      this.aSelect.value = null;
+      await this.setIncludeUnchanged(false);
+    } else {
+      this.bSelect.value = null;
+    }
+  }
+
+  async setIncludeUnchanged(includeUnchanged: boolean) {
+    this.includeUnchanged = includeUnchanged;
+
+    if(!this.includeUnchanged) {
+      this.bSelect.value = null;
+    }
+
+    if(this.useImplicit) {
+      this.candidates$ = this.includeUnchanged ?
+        this.store.select(CalculationSelectors.selectCalculations) :
+        this.store.select(CalculationSelectors.selectChangedCalculations);
+    } else {
+      if(this.aSelect.value) {
+        await this.changeBase(this.aSelect.value as number);
+      }
+    }
+  }
+
+  setReverseProjected($event: MatCheckboxChange) {
+    this.reverseComparison = $event.checked;
   }
 }

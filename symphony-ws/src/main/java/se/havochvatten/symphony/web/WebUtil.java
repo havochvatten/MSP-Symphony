@@ -1,5 +1,6 @@
 package se.havochvatten.symphony.web;
 
+import org.apache.commons.lang3.StringUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
@@ -40,7 +41,7 @@ public interface WebUtil {
     static final String fileNameRx = "[^\\p{L}\\p{N}._-]+";
 
     public static String escapeFilename(String s) {
-        return s.replaceAll(fileNameRx, "-");
+        return StringUtils.stripAccents(s).replaceAll(fileNameRx, "-");
     }
 
     static JsonArray createExtent(Envelope targetEnvelope) {

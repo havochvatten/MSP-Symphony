@@ -23,6 +23,9 @@ export const metadataReducer = createReducer(
   on(MetadataActions.setVisibility, (state, { band, value }) => {
     return setLayerAttribute(state, band, 'visible', value);
   }),
+  on(MetadataActions.setLoadedState, (state, { band, value }) => {
+    return setLayerAttribute(state, band, 'loaded', value);
+  }),
   on(MetadataActions.updateLayerOpacity, (state, { band, value }) => {
     return setIn(state, [band.symphonyCategory, 'layerOpacity'], value);
   }),

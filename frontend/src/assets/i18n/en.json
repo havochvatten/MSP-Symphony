@@ -387,6 +387,10 @@
             "hide-result": "Hide result in map view",
             "visible-result": "Result is currently visible in map view",
             "purged-result": "Data for this result has been purged\nThis will take a little longer to load because the result is being recalculated.",
+            "edit-name": {
+                "label": "Rename",
+                "header": "Enter a new name for the calculation"
+            },
             "delete-modal" : {
                 "header": "Delete calculation",
                 "message": "Confirm deletion of previously saved calculation result: <em>“{{ calculationName }}”</em>",
@@ -414,9 +418,14 @@
             "title": "Compare calculations",
             "compare": "Compare Calculations",
             "base-scenario": "Calculation A",
+            "implicit-baseline": "Implied baseline",
+            "explicit-baseline": "Select a calculation",
+            "include-unchanged": "Include unchanged scenarios",
+            "reverse-projected": "Reverse comparison order",
             "what-if-scenario": "Calculation B",
-            "choose-scenario": "Choose a calculation",
-            "choose-base-scenario-first": "Choose calculation A first",
+            "select-calculation": "Select a calculation",
+            "select-base-calculation-first": "Select calculation A first",
+            "no-matching-calculations": "No matching calculations",
             "base-scenario-suggestion": "(typically your baseline analysis)",
             "what-if-scenario-suggestion": "(typically your new scenario analysis)",
             "select-scale": "Customize color scale",
@@ -457,12 +466,7 @@
             },
             "rename": {
                 "label": "Rename area",
-                "modal": {
-                    "title": "Edit area name",
-                    "placeholder": "My area 1",
-                    "save": "Save",
-                    "close": "Close"
-                }
+                "header": "Edit area name"
             },
             "edit": {
                 "label": "Edit area"
@@ -517,16 +521,23 @@
                 "header": "Delete compound comparison",
                 "message": "Confirm deletion of compound comparison: <em>“{{ comparisonName }}”</em>"
             }
+        },
+        "area-options": {
+            "get-shapefile": "Download shapefile bundle (.zip)"
         }
     },
     "controls": {
         "open": "Open",
         "close": "Close",
+        "save": "Save",
         "delete": "Delete",
         "accordion": {
             "expand": "Expand",
             "contract": "Contract"
         }
+    },
+    "rename": {
+        "placeholder": "Enter a new name"
     },
     "main-menu": {
         "projects": "Project",

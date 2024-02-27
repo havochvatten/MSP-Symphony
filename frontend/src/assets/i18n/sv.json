@@ -387,6 +387,10 @@
             "hide-result" :  "Tag bort detta resultat från kartbilden",
             "visible-result" : "Resultatet är synligt i kartbilden",
             "purged-result": "Data för detta resultat har rensats bort.\nDå resultatet måste beräknas om tar det lite längre tid att ladda.",
+            "edit-name": {
+                "label": "Ändra namn",
+                "header": "Ange ett nytt namn för beräkningen"
+            },
             "delete-modal" : {
                 "header": "Radera sparad beräkning",
                 "message": "Bekräfta borttagning av tidigare sparad beräkning: <em>“{{ calculationName }}”</em>",
@@ -413,10 +417,15 @@
         "compare": {
             "title": "Jämför scenario",
             "compare": "Jämför beräkningar",
-            "base-scenario": "Grundscenario",
+            "base-scenario": "Grundberäkning",
+            "implicit-baseline": "Implicit basvärde",
+            "explicit-baseline": "Välj beräkning",
+            "include-unchanged": "Inkludera oförändrade scenarion",
+            "reverse-projected": "Omvänd jämförelseordning",
             "what-if-scenario": "What-if scenario",
-            "choose-scenario": "Välj scenario",
-            "choose-base-scenario-first": "Välj grundscenario först",
+            "select-calculation": "Välj en beräkning",
+            "select-base-calculation-first": "Välj grundberäkning först",
+            "no-matching-calculations": "Överensstämmande beräkning saknas",
             "base-scenario-suggestion": "(vanligtvis basvärdeanalysen)",
             "what-if-scenario-suggestion": "(vanligtvis den prognostiserade analysen)",
             "select-scale": "Anpassa färgskala",
@@ -457,12 +466,7 @@
             },
             "rename": {
                 "label": "Ändra namn",
-                "modal": {
-                    "title": "Ändra namn på ditt område",
-                    "placeholder": "Mitt område 1",
-                    "save": "Spara",
-                    "close": "Avbryt"
-                }
+                "header": "Ändra namn på ditt område"
             },
             "edit": {
                 "label": "Redigera område"
@@ -517,16 +521,23 @@
                 "header": "Radera sammanslagen jämförelse",
                 "message": "Bekräfta borttagning av sammanslagen jämförelse: <em>“{{ comparisonName }}”</em>"
             }
+        },
+        "area-options": {
+            "get-shapefile": "Ladda ned shapefile-paket (.zip)"
         }
     },
     "controls": {
         "open": "Öppna",
         "close": "Stäng",
+        "save": "Spara",
         "delete": "Radera",
         "accordion": {
             "expand": "Fäll ut",
             "contract": "Fäll ihop"
         }
+    },
+    "rename": {
+        "placeholder": "Ange ett nytt namn"
     },
     "main-menu": {
         "projects": "Projekt",

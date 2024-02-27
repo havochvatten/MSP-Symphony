@@ -70,9 +70,9 @@ export const calculationReducer = createReducer(
     ...state,
     legends: setIn(state.legends, ['comparison'], {})
   })),
-  on(CalculationActions.updateName, (state, { index, newName }) => ({
+  on(CalculationActions.renameCalculationSuccess, (state, { calculationId, newName }) => ({
     ...state,
-    calculations: setIn(state.calculations, [index, 'name'], newName)
+    calculations: state.calculations.map(c => c.id === calculationId ? {...c, name: newName} : c)
   })),
   on(CalculationActions.fetchPercentileSuccess, (state, { percentileValue }) => ({
     ...state,

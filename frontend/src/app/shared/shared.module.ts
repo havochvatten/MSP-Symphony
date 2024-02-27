@@ -44,6 +44,7 @@ import { MatInputModule } from "@angular/material/input";
 import { ListFilterComponent } from './list-filter/list-filter.component';
 import { MultiToolsComponent } from './multi-tools/multi-tools.component';
 import { MultiActionButtonComponent } from '@shared/multi-action-button/multi-action-button.component';
+import { RenameItemModalComponent} from "@shared/rename-item-modal/rename-item-modal.component";
 
 @NgModule({
   declarations: [
@@ -85,7 +86,8 @@ import { MultiActionButtonComponent } from '@shared/multi-action-button/multi-ac
     ComparisonColorScaleComponent,
     ListFilterComponent,
     MultiToolsComponent,
-    MultiActionButtonComponent
+    MultiActionButtonComponent,
+    RenameItemModalComponent
   ],
   imports: [
     CommonModule,
@@ -136,7 +138,8 @@ import { MultiActionButtonComponent } from '@shared/multi-action-button/multi-ac
     ComparisonColorScaleComponent,
     ListFilterComponent,
     MultiToolsComponent,
-    MultiActionButtonComponent
+    MultiActionButtonComponent,
+    RenameItemModalComponent
   ]
 })
 export class SharedModule {}

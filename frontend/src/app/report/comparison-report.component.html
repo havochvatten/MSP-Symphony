@@ -33,22 +33,27 @@
       [data]="formatChartData(report.chartDataNegative, metadata.bandDictionary)"
       [locale]="locale"
     ></app-pressure-chart>
-    <app-scenario-changes
-      [name]="report.a.name"
-      [scenarioChanges]="report.a.scenarioChanges"
-      [bandDict]="metadata.bandDictionary"
-      [areaDict]="areaDictA"
-      [comparisonReport]="true"
-      [overflow]="report.a.overflow"
-    ></app-scenario-changes>
-    <app-scenario-changes class="right"
-      [name]="report.b.name"
-      [scenarioChanges]="report.b.scenarioChanges"
-      [bandDict]="metadata.bandDictionary"
-      [areaDict]="areaDictB"
-      [comparisonReport]="true"
-      [overflow]="report.b.overflow"
-    ></app-scenario-changes>
+    <ng-container *ngIf="report.a.scenarioChanges !== null"> <!-- indicates baseline calculation -->
+      <app-scenario-changes
+        [name]="report.a.name"
+        [scenarioChanges]="report.a.scenarioChanges"
+        [bandDict]="metadata.bandDictionary"
+        [areaDict]="areaDictA"
+        [comparisonReport]="true"
+        [overflow]="report.a.overflow"
+      ></app-scenario-changes>
+    </ng-container>
+    <ng-container *ngIf="report.b.scenarioChanges !== null"> <!-- indicates baseline calculation
+                                                                  for reverse comparison-->
+      <app-scenario-changes class="right"
+        [name]="report.b.name"
+        [scenarioChanges]="report.b.scenarioChanges"
+        [bandDict]="metadata.bandDictionary"
+        [areaDict]="areaDictB"
+        [comparisonReport]="true"
+        [overflow]="report.b.overflow"
+      ></app-scenario-changes>
+    </ng-container>
     <app-impact-table
       class="pressure-impacts"
       [title]="'report.impact-table.pressure' | translate"

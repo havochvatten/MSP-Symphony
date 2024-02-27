@@ -86,19 +86,21 @@ class DrawAreaInteraction extends Draw {
 }
 
 class AreaLayer extends VectorLayer<VectorSource> {
-  private onClickInteraction: Select;
-  private drawAreaInteraction: DrawAreaInteraction;
+  private readonly onClickInteraction: Select;
+  private readonly drawAreaInteraction: DrawAreaInteraction;
+  private readonly boundaryLayer: VectorLayer<VectorSource>;
   private drawInteractionActive = false;
-  private boundaryLayer: VectorLayer<VectorSource>;
   private boundaries?: FeatureLike[];
   private selectedFeatures: Feature[] = [];
+  private optionsMenuActive = false;
 
   constructor(
     private map: OLMap,
-    private setSelection: (features: Feature[] | undefined, overlap: boolean) => void,
-    private zoomToExtent: (extent: Extent, duration: number) => void,
+    private readonly setSelection: (features: Feature[] | undefined, overlap: boolean) => void,
+    private readonly zoomToExtent: (extent: Extent, duration: number) => void,
     private onDrawEnd: (polygon: Polygon)=> void,
     private onDrawInvalid: () => void,
+    private onDownloadClick: (path: string) => void,
     onSplitClick: (feature: Feature, prevFeature: Feature) => void,
     onMergeClick: (features: Feature[]) => void,
     private scenarioLayer: ScenarioLayer,
@@ -114,6 +116,7 @@ class AreaLayer extends VectorLayer<VectorSource> {
     this.setSelection = setSelection;
     this.zoomToExtent = zoomToExtent;
     this.addHoverInteraction(map, this);
+    this.addRightClickInteraction(map);
     this.boundaryLayer = new BoundaryLayer();
     this.drawAreaInteraction = new DrawAreaInteraction(
       map,
@@ -207,6 +210,7 @@ class AreaLayer extends VectorLayer<VectorSource> {
     const content = document.getElementById('popup-title') as HTMLElement;
     const body = document.getElementById('popup-body') as HTMLElement;
     const overlay = new Overlay({
+      id: 'hoverInfo',
       element: container,
       stopEvent: false,
       autoPan: false
@@ -220,6 +224,8 @@ class AreaLayer extends VectorLayer<VectorSource> {
       .get(['map.click-area', 'map.location-within-scenario'])
       .toPromise();
     map.on('pointermove', event => {
+      if(this.optionsMenuActive) return;
+
       const detectedFeatures = map.getFeaturesAtPixel(event.pixel);
       const hit = detectedFeatures.length > 0;
 
@@ -265,6 +271,49 @@ class AreaLayer extends VectorLayer<VectorSource> {
       })
     });
     map.addInteraction(areaHover);
+  }
+
+  private addRightClickInteraction(map: OLMap) {
+    let path = '';
+    const
+      optionsMenuElement = document.getElementById('area-options-menu')!,
+      removeOptionsMenu = () => {
+        this.optionsMenuActive = false;
+        map.getOverlayById('areaOptionsMenu')?.setPosition(undefined);
+        path = '';
+      },
+      options_overlay = new Overlay({
+        id: 'areaOptionsMenu',
+        element: optionsMenuElement,
+        stopEvent: false,
+        autoPan: false,
+        insertFirst: false
+      });
+
+    map.addOverlay(options_overlay);
+
+    map.getViewport().addEventListener('contextmenu', (event) => {
+      const features = map.getFeaturesAtPixel(map.getEventPixel(event));
+
+      if (features.length > 0) {
+        path = features[0].get('statePath').join(',');
+        if (path) {
+          map.getOverlayById('hoverInfo')?.setPosition(undefined);
+          options_overlay.setPosition(map.getEventCoordinate(event));
+          this.optionsMenuActive = true;
+          event.preventDefault();
+        }
+      }
+    });
+
+    optionsMenuElement.addEventListener('mouseleave', removeOptionsMenu);
+
+    optionsMenuElement.addEventListener('click', (event) => {
+      if(path !== '') {
+        this.onDownloadClick(path);
+      }
+      removeOptionsMenu();
+    });
   }
 
   private appendCoordinates = (event: MapBrowserEvent<UIEvent>) => {

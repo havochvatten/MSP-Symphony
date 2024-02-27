@@ -14,9 +14,7 @@ public interface BandChangeEntity {
     void setChanges(JsonNode changes);
 
     default Map<LayerType, Map<Integer, BandChange>> getChangeMap() {
-        Map<LayerType, Map<Integer, BandChange>> changeMap =
-            getChanges() == null || getChanges().isNull() ? new HashMap<>() :
-                getMapper().convertValue(getChanges(), new TypeReference<>() {});
-        return changeMap;
+        return  getChanges() == null || getChanges().isNull() ? new HashMap<>() :
+                    getMapper().convertValue(getChanges(), new TypeReference<>() {});
     }
 }

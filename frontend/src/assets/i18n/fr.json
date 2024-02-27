@@ -387,6 +387,10 @@
             "hide-result": "Masquer ce résultat en mode carte",
             "visible-result": "Ce résultat est visible en mode carte",
             "purged-result": "Les données de ce résultat ont été supprimées\nLe chargement peut prendre un peu plus de temps car le résultat doit être recalculé.",
+            "edit-name": {
+                "label": "Renommer",
+                "header": "Modifier le nom de la calcul"
+            },
             "delete-modal" : {
                 "header": "Supprimer résultat",
                 "message": "Confirmer la suppression du résultat: <em>“{{ calculationName }}”</em>",
@@ -414,9 +418,14 @@
             "title": "Comparez les scénarios",
             "compare": "Comparez les résultats",
             "base-scenario": "Résultat du scénario de référence",
+            "implicit-baseline": "Référence implicite",
+            "explicit-baseline": "Référence explicite",
+            "include-unchanged": "Inclure les scénarios inchangés",
+            "reverse-projected": "Inverser l'ordre de comparaison",
             "what-if-scenario": "Résultat du scénario anticipé",
-            "choose-scenario": "Choisissez un scénario",
-            "choose-base-scenario-first": "Choisissez un scénario de référence avant",
+            "select-calculation": "Choisissez un resultat de calcul",
+            "select-base-calculation-first": "Choisissez un scénario de référence avant",
+            "no-matching-calculations": "Aucun résultat correspondant",
             "base-scenario-suggestion": "",
             "what-if-scenario-suggestion": "",
             "select-scale": "Sélectionnez l'échelle de couleur",
@@ -457,12 +466,7 @@
             },
             "rename": {
                 "label": "Renommer la zone",
-                "modal": {
-                    "title": "Modifier le nom de la zone",
-                    "placeholder": "Ma zone 1",
-                    "save": "Sauvegarder",
-                    "close": "Fermer"
-                }
+                "header": "Modifier le nom de la zone"
             },
             "edit": {
                 "label": "Modifier la zone"
@@ -515,18 +519,25 @@
             "filter-hint": "Filtrer la liste par nom",
             "delete-modal": {
                 "header": "Supprimer la comparaison composée",
-                "message": "Confirmer la suppression de la comparaison composée: <em>“{{ comparisonName }}”</em>",
+                "message": "Confirmer la suppression de la comparaison composée: <em>“{{ comparisonName }}”</em>"
             }
+        },
+        "area-options": {
+            "get-shapefile": "Télécharger des fichiers de forme (.zip)"
         }
     },
     "controls": {
         "open": "Ouvrir",
         "close": "Fermer",
+        "save": "Sauvegarder",
         "delete": "Supprimer",
         "accordion": {
             "expand": "Afficher",
             "contract": "Masquer"
         }
+    },
+    "rename": {
+        "placeholder": "Entrez un nouveau nom"
     },
     "main-menu": {
         "projects": "Projets",

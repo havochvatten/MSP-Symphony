@@ -47,8 +47,14 @@
         width: 1.75rem;
       }
 
+      &[icontype='edit'] ::ng-deep svg {
+        height: 1.6rem;
+        width: 1.6rem;
+      }
+
       &[icontype='copy'], &[icontype='report'],
-      &[icontype='eye'], &[icontype='eye-slash'] {
+      &[icontype='eye'], &[icontype='eye-slash'],
+      &[icontype='edit'] {
         color: $hav-turquoise;
       }
 
