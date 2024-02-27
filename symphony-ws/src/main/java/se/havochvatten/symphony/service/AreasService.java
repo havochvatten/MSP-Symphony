@@ -14,6 +14,7 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -47,13 +48,33 @@ public class AreasService {
 
     public record FileStruct(String fileName, byte[] content) {}
 
-    private static SimpleFeatureType polygonType() {
+    private static SimpleFeatureType polygonType(JsonNode polygonJson) throws IllegalArgumentException {
+        JsonNode typeField = polygonJson.get("type");
+
+        if(typeField == null)
+            throw new IllegalArgumentException("Missing 'type' field in polygon JSON");
+
+        return typeField.asText().equals("MultiPolygon") ? _multiPolygonType : _polygonType;
+    }
+
+    private final static SimpleFeatureType _polygonType;
+    private final static SimpleFeatureType _multiPolygonType;
+
+    static {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+
         builder.setName("Polygon");
         builder.setCRS(DefaultGeographicCRS.WGS84);
         builder.add("the_geom", Polygon.class);
         builder.add("name", String.class);
-        return builder.buildFeatureType();
+        _polygonType = builder.buildFeatureType();
+
+        builder = new SimpleFeatureTypeBuilder();
+        builder.setName("MultiPolygon");
+        builder.setCRS(DefaultGeographicCRS.WGS84);
+        builder.add("the_geom", MultiPolygon.class);
+        builder.add("name", String.class);
+        _multiPolygonType = builder.buildFeatureType();
     }
 
     /**
@@ -86,21 +107,27 @@ public class AreasService {
     private FeatureCollection<SimpleFeatureType, SimpleFeature> featuresFromStatePath(String[] statePath, String countryCode)
         throws SymphonyStandardAppException, FactoryException {
 
-        if (statePath.length < 2) {
+        if (statePath.length < 2) { // assert minimum path length
             return null;
         }
 
-        SimpleFeatureType featureType = polygonType();
-        DefaultFeatureCollection featureCollection = new DefaultFeatureCollection("internal", featureType);
-
         if (statePath[0].equals("userArea")) {
             UserDefinedArea userArea = em.find(UserDefinedArea.class, Integer.parseInt(statePath[1]));
-            if (userArea != null) {
-                Geometry geometry = GeoJSONReader.parseGeometry(userArea.getPolygon());
-                SimpleFeature feature = SimpleFeatureBuilder.build(featureType, new Object[]{geometry, userArea.getName()}, null);
-                featureCollection.add(feature);
 
-                return featureCollection;
+            if (userArea != null) {
+                try {
+                    JsonNode areaPolygonJson = mapper.readTree(userArea.getPolygon());
+                    SimpleFeatureType featureType = polygonType(areaPolygonJson);
+                    DefaultFeatureCollection featureCollection = new DefaultFeatureCollection("internal", featureType);
+
+                    Geometry geometry = GeoJSONReader.parseGeometry(userArea.getPolygon());
+                    SimpleFeature feature = SimpleFeatureBuilder.build(featureType, new Object[]{geometry, userArea.getName()}, null);
+                    featureCollection.add(feature);
+
+                    return featureCollection;
+                } catch (IllegalArgumentException | JsonProcessingException jx) {
+                    throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_POLYGON_MAPPING_ERROR, jx);
+                }
             } else {
                 throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_NOT_FOUND);
             }
@@ -114,18 +141,21 @@ public class AreasService {
                     cPath = getNodeByKeyValue(areasJson.get(statePath[2]), "en", statePath[3]),
                     area  = getNodeByKeyValue(cPath.get(statePath[4]), "name", statePath[5]);
 
+                SimpleFeatureType featureType = polygonType(area.get("polygon"));
+                DefaultFeatureCollection featureCollection = new DefaultFeatureCollection("internal", featureType);
+
                 Geometry geometry = GeoJSONReader.parseGeometry(area.get("polygon").toString());
                 SimpleFeature feature = SimpleFeatureBuilder.build(featureType, new Object[]{geometry, area.get("name").asText()}, null);
                 featureCollection.add(feature);
 
                 return featureCollection;
-            } catch (JsonProcessingException jx) {
+            } catch (IllegalArgumentException | JsonProcessingException jx) {
                 throw new SymphonyStandardAppException(SymphonyModelErrorCode.SHAPEFILE_GENERATION_ERROR, jx);
             }
         }
     }
 
-    public Optional<FileStruct> getAreasAsShapeFile(String[] statePath, String countryCode)
+    public Optional<FileStruct> getAreaAsShapeFile(String[] statePath, String countryCode)
         throws SymphonyStandardAppException {
         FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection;
 
@@ -153,7 +183,7 @@ public class AreasService {
                 DataStore dataStore = factory.createNewDataStore(params);
 
                 try {
-                    dataStore.createSchema(polygonType());
+                    dataStore.createSchema(featureCollection.getSchema());
                     SimpleFeatureSource featureSource = dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
 
                     if (featureSource instanceof SimpleFeatureStore featureStore) {

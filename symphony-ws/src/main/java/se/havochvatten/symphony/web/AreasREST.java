@@ -103,7 +103,7 @@ public class AreasREST {
             throw new BadRequestException("No state path provided");
         }
 
-        Optional<AreasService.FileStruct> file = areasService.getAreasAsShapeFile(statePaths, countryCode);
+        Optional<AreasService.FileStruct> file = areasService.getAreaAsShapeFile(statePaths, countryCode);
 
         if (file.isEmpty()) {
             throw new NotFoundException("No areas found");
