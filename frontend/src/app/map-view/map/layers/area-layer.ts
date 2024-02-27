@@ -277,7 +277,7 @@ class AreaLayer extends VectorLayer<VectorSource> {
     let path = '';
     const
       optionsMenuElement = document.getElementById('area-options-menu')!,
-      remover = () => {
+      removeOptionsMenu = () => {
         this.optionsMenuActive = false;
         map.getOverlayById('areaOptionsMenu')?.setPosition(undefined);
         path = '';
@@ -306,13 +306,13 @@ class AreaLayer extends VectorLayer<VectorSource> {
       }
     });
 
-    optionsMenuElement.addEventListener('mouseleave', remover);
+    optionsMenuElement.addEventListener('mouseleave', removeOptionsMenu);
 
     optionsMenuElement.addEventListener('click', (event) => {
       if(path !== '') {
         this.onDownloadClick(path);
       }
-      remover();
+      removeOptionsMenu();
     });
   }
 

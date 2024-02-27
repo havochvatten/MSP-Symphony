@@ -86,12 +86,12 @@ public class AreasService {
     private FeatureCollection<SimpleFeatureType, SimpleFeature> featuresFromStatePath(String[] statePath, String countryCode)
         throws SymphonyStandardAppException, FactoryException {
 
-        SimpleFeatureType featureType = polygonType();
-        DefaultFeatureCollection featureCollection = new DefaultFeatureCollection("internal", featureType);
-
-        if (statePath.length == 0) {
+        if (statePath.length < 2) {
             return null;
         }
+
+        SimpleFeatureType featureType = polygonType();
+        DefaultFeatureCollection featureCollection = new DefaultFeatureCollection("internal", featureType);
 
         if (statePath[0].equals("userArea")) {
             UserDefinedArea userArea = em.find(UserDefinedArea.class, Integer.parseInt(statePath[1]));
