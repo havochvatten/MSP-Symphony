@@ -521,6 +521,9 @@
                 "header": "Supprimer la comparaison composée",
                 "message": "Confirmer la suppression de la comparaison composée: <em>“{{ comparisonName }}”</em>"
             }
+        },
+        "area-options": {
+            "get-shapefile": "Télécharger des fichiers de forme (.zip)"
         }
     },
     "controls": {

@@ -521,6 +521,9 @@
                 "header": "Radera sammanslagen jämförelse",
                 "message": "Bekräfta borttagning av sammanslagen jämförelse: <em>“{{ comparisonName }}”</em>"
             }
+        },
+        "area-options": {
+            "get-shapefile": "Ladda ned shapefile-paket (.zip)"
         }
     },
     "controls": {
