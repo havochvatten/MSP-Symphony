@@ -64,12 +64,21 @@
       }
     }
 
-    ::ng-deep mat-checkbox .mat-checkbox-layout {
-      .mat-checkbox-label {
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        max-width: 216px;
-        line-height: 16px;
+    ::ng-deep mat-checkbox {
+
+      &.mdc-checkbox--disabled {
+        .mdc-form-field .mdc-checkbox {
+          display: none;
+        }
+      }
+
+      .mat-checkbox-layout {
+        .mat-checkbox-label {
+          white-space: pre-wrap;
+          word-wrap: break-word;
+          max-width: 216px;
+          line-height: 16px;
+        }
       }
     }
   }
