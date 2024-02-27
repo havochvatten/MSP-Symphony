@@ -7,6 +7,8 @@
         "request-password": "Begär nytt",
         "no-account": "Är du en extern användare och saknar loginuppgifter?",
         "request-account": "Ansök om konto",
+        "peek-password": "Visa lösenordet",
+        "hide-password": "Dölj lösenordet",
         "error": {
             "invalid-credentials": "Fel användarnamn eller lösenord.",
             "system-unavailable": "Systemet ligger nere för stunden. Försök igen senare."

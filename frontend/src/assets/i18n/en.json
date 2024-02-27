@@ -7,6 +7,8 @@
         "request-password": "Request new password",
         "no-account": "Are you an external user and lacking login credentials?",
         "request-account": "Request an account",
+        "peek-password": "Reveal the password",
+        "hide-password": "Hide the password",
         "error": {
             "invalid-credentials": "Wrong username or password.",
             "system-unavailable": "System is not available, try again later."

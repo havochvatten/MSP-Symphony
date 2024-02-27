@@ -7,6 +7,8 @@
         "request-password": "Demander un nouveau mot de passe",
         "no-account": "Êtes-vous un utilisateur externe et souhaitez vous demander un compte?",
         "request-account": "Demander un compte",
+        "peek-password": "Afficher le mot de passe",
+        "hide-password": "Masquer le mot de passe",
         "error": {
             "invalid-credentials": "Nom d'utilisateur ou mot de passe invalide.",
             "system-unavailable": "Le système n'est pas disponible, veuillez réessayer plus tard."

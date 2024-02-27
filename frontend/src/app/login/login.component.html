@@ -11,12 +11,18 @@
       autocomplete="on" />
     <mat-label>{{ 'login.username' | translate }}</mat-label>
   </mat-form-field>
-  <mat-form-field>
+  <mat-form-field class="password-field">
     <input matInput
-      type="password"
+      [type]="peekPassword ? 'text' : 'password'"
       formControlName="password"
       autocomplete="current-password"/>
     <mat-label>{{ 'login.password' | translate }}</mat-label>
+    <app-icon *ngIf="passwordPeekEnabled"
+      [iconType]="peekPassword ? 'eye' : 'eye-slash'" class="peek-icon"
+      [ngClass]="{ 'peek' : peekPassword }"
+      title="{{ (peekPassword ? 'login.hide-password' : 'login.peek-password') | translate }}"
+      (click)="peekPassword = !peekPassword"
+    ></app-icon>
   </mat-form-field>
   <p *ngIf="errorMessage" class="error">{{ errorMessage | translate }}</p>
   <button type="submit" mat-flat-button (click)="login()" [disabled]="!loginForm.valid">{{
