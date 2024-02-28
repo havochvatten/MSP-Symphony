@@ -8,6 +8,7 @@ export const ICONS = [
   'chevron-up',
   'circle',
   'choice',
+  'copy',
   'copy-setting',
   'cross',
   'delete',
