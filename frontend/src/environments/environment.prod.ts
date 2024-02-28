@@ -6,7 +6,7 @@ export const environment = {
   socketBaseUrl: "/socket",
   baseline: false, // Set to some false value to get "latest" baseline
   externManual: null,
-  peekPassword: true,
+  peekPassword: false,
   map: {
     center: [0, 0],
     initialZoom: 6,
