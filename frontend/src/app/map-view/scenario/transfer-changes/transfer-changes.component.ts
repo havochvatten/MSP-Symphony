@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
-import { isEmpty, some } from "lodash";
+import { isEmpty } from "@shared/common.util";
 import { MatRadioChange, MatRadioGroup } from "@angular/material/radio";
 import { MAT_SELECT_CONFIG, MatSelectChange } from "@angular/material/select";
 import { State } from "@src/app/app-reducer";
@@ -45,7 +45,7 @@ export class TransferChangesComponent {
     this.scenarios$ = this.store.select(ScenarioSelectors.selectScenarios).pipe(
       map(scenarios => scenarios.map(scenario => {
         const hasGlobalChanges = !isEmpty(scenario.changes) && scenario !== this.targetChanges;
-        const hasAreaChanges = some(scenario.areas, area => !isEmpty(area.changes));
+        const hasAreaChanges = scenario.areas.some(area => !isEmpty(area.changes));
         return {
           scenario,
           hasGlobalChanges,

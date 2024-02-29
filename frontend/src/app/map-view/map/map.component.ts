@@ -32,7 +32,7 @@ import { ScenarioLayer } from '@src/app/map-view/map/layers/scenario-layer';
 import AreaLayer from '@src/app/map-view/map/layers/area-layer';
 import { Extent } from 'ol/extent';
 import { DataLayerService } from '@src/app/map-view/map/layers/data-layer.service';
-import { isEqual } from "lodash";
+import { isEqual } from "@shared/common.util";
 import { dieCutPolygons, turfMergeAll } from "@shared/turf-helper/turf-helper";
 import { SelectIntersectionComponent } from "@shared/select-intersection/select-intersection.component";
 import { MultiPolygon, Polygon as OLPolygon } from "ol/geom";

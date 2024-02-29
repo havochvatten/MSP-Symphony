@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { formatPercent } from "@angular/common";
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { map } from "lodash";
 import { State } from '../app-reducer';
 import { MetadataActions } from '@data/metadata';
 import { ComparisonReport, Legend } from '@data/calculation/calculation.interfaces';
@@ -12,7 +12,6 @@ import { ReportService } from "@src/app/report/report.service";
 import { CalculationService } from "@data/calculation/calculation.service";
 import { relativeDifference, setOverflowProperty } from "@src/app/report/report.util";
 import { AbstractReport } from "@src/app/report/abstract-report.directive";
-import { formatPercent } from "@angular/common";
 
 @Component({
   selector: 'app-calculation-report',
@@ -102,7 +101,7 @@ export class ComparisonReportComponent extends AbstractReport {
     const diffs: Record<string, number> = {};
     const unionOfBandKeys = new Set([...Object.keys(components[0]), ...Object.keys(components[1])]);
     unionOfBandKeys.forEach(band => {
-      const [a, b] = map(components, band);
+      const [a, b] = components.map((item) => item[band])
       diffs[band] = relativeDifference(a, b);
       }
     );

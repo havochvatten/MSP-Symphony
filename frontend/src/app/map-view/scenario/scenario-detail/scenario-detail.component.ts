@@ -4,9 +4,9 @@ import { firstValueFrom, Observable, OperatorFunction, Subscription } from 'rxjs
 import { debounceTime, filter, take, tap } from 'rxjs/operators';
 import { TranslateService } from "@ngx-translate/core";
 import { Store } from '@ngrx/store';
-import { isEmpty, some } from "lodash";
 import { State } from '@src/app/app-reducer';
 import { environment } from '@src/environments/environment';
+import { isEmpty } from '@src/app/shared/common.util';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { turfIntersects } from "@shared/turf-helper/turf-helper";
 import { CalculationReportModalComponent } from '@shared/report-modal/calculation-report-modal.component';
@@ -128,7 +128,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
     this.matrixDataSubscription$ = this.store.select(ScenarioSelectors.selectAreaMatrixData).subscribe(
       async data => {
-        if (data !== null && !some(data, d => d === null)) {
+        if (data !== null && !Object.values(data).some(d => d === null)) {
           for (const area_id of Object.keys(data).map(id => +id)) {
             const matrixData = data[area_id];
             if (!matrixData.defaultArea) {
@@ -271,7 +271,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   }
 
   addScenarioArea(selectedAreas: Area[], that: AddScenarioAreasComponent) {
-    const areas = selectedAreas.filter(a => !some(that.scenario!.areas,
+    const areas = selectedAreas.filter(a => !that.scenario!.areas.some(
         s => turfIntersects(that.format.readFeature(a.feature), that.format.readFeature(s.feature))));
     this.unsaved = true;
     this.store.dispatch(ScenarioActions.addAreasToActiveScenario({ areas: that.scenarioService.convertAreas(areas) }));

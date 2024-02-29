@@ -13,10 +13,11 @@ import * as condition from 'ol/events/condition';
 import { getFeaturesByStatePaths } from '@src/util/ol';
 import { ScenarioLayer } from '@src/app/map-view/map/layers/scenario-layer';
 import { TranslateService } from '@ngx-translate/core';
-import { isEqual, some } from "lodash";
 import { turfIntersects as intersects } from "@shared/turf-helper/turf-helper";
 import { Geometry } from "ol/geom";
 import { DrawEvent } from "ol/interaction/Draw";
+import { isEqual } from "@shared/common.util";
+
 
 function unique<T>(value: T, index: number, self: T[]) {
   return self.indexOf(value) === index;
@@ -327,7 +328,7 @@ class AreaLayer extends VectorLayer<VectorSource> {
       featureProjection: this.map.getView().getProjection()
     }).readFeature(polygon);
 
-    if(some(boundaries, boundary => {
+    if(boundaries.some(boundary => {
         return intersects(testFeature, boundary as Feature<Geometry>)
     })) {
       this.onDrawEnd(polygon);
