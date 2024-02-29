@@ -257,6 +257,8 @@
                 "select-all-for-batch": "Markera samtliga",
                 "select-all-for-batch-filtered": "Markera synliga",
                 "deselect-all-for-batch": "Avmarkera samtliga",
+                "none-selected": "Inga scenarion har markerats",
+                "delete-selected": "Radera markerade scenarion",
                 "batch-tools": {
                     "enter-batch-mode": "Gå till \"batch\"-läge",
                     "exit-batch-mode": "Gå ur \"batch\"-läge",
@@ -270,7 +272,10 @@
                 "label": "Radera",
                 "tooltip": "Radera scenario",
                 "modal": {
-                    "title": "Är du säker på att du vill radera &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
+                    "title": "Radera scenario",
+                    "message": "Är du säker på att du vill radera &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
+                    "title-many": "Radera markerade scenarion",
+                    "message-many": "Bekräfta borttagning av <strong>{{ count }}</strong> markerade scenarion?",
                     "delete": "Radera",
                     "cancel": "Avbryt"
                 }

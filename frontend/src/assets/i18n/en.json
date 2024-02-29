@@ -257,6 +257,8 @@
                 "select-all-for-batch": "Select all",
                 "select-all-for-batch-filtered": "Select visible",
                 "deselect-all-for-batch": "Deselect all",
+                "none-selected": "No scenarios selected",
+                "delete-selected": "Delete selected scenarios",
                 "batch-tools": {
                     "enter-batch-mode": "Enter batch selection mode",
                     "exit-batch-mode": "Exit batch selection mode",
@@ -270,7 +272,10 @@
                 "label": "Delete",
                 "tooltip": "Delete scenario",
                 "modal": {
-                    "title": "Are you sure you want to delete &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
+                    "title": "Delete scenario",
+                    "message": "Are you sure you want to delete &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
+                    "title-many": "Delete selected scenarios",
+                    "message-many": "Confirm deletion of <strong>{{ count }}</strong> scenarios?",
                     "delete": "Delete",
                     "cancel": "Cancel"
                 }

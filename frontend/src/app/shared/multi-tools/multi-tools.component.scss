@@ -23,8 +23,16 @@
       &.active {
         color: $hav-blue;
 
-        button.disabled {
-          cursor: not-allowed;
+        button{
+          &.disabled {
+            cursor: not-allowed;
+          }
+
+          &:not(.disabled) app-icon {
+            &[icontype='delete'] {
+              color: $red;
+            }
+          }
         }
       }
     }

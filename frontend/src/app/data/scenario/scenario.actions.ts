@@ -63,6 +63,11 @@ export const deleteScenarioFailure = createAction(
   props<{ error: ErrorMessage }>()
 );
 
+export const deleteMultipleScenarios = createAction(
+  '[Scenario] Delete multiple scenarios by id',
+  props<{ scenarioIds: number[] }>()
+)
+
 export const saveActiveScenario = createAction(
   '[Scenario] Save active scenario',
   props<{ scenarioToBeSaved: Scenario }>()

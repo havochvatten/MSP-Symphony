@@ -24,17 +24,11 @@ section.tab-section {
     }
 
     app-multi-tools {
-      ::ng-deep {
-        .action-delete .multi-action.active button:not(.disabled) {
-          color: $red;
-        }
+      app-multi-action-button {
+        margin-left: 0.3rem;
 
-        .action-compare .multi-action button {
-          justify-content: flex-end;
-
-          app-icon svg {
-            height: 0.9em;
-          }
+        &:last-child {
+          margin-right: 1.3rem;
         }
       }
     }

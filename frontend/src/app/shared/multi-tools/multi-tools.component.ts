@@ -18,7 +18,9 @@ export class MultiToolsComponent implements AfterContentInit {
 
   ngAfterContentInit() {
     this.actionButtons!.forEach((actionButton) => {
-      actionButton.disabledPredicate = this.disabledPredicate;
+      if(actionButton.disabledPredicate === undefined) {
+        actionButton.disabledPredicate = this.disabledPredicate;
+      }
       actionButton.isMultiMode = this.isMultiMode;
     });
   }

@@ -1,6 +1,6 @@
 <app-icon-button
   [icon]="multiActionIcon"
-  class="multi-action"
+  class="{{ 'multi-action' + ' icon--' + multiActionIcon  }}"
   [disabled]="disabledPredicate()"
   [ngClass]="{ 'active': isMultiMode() }"
   [label]="
