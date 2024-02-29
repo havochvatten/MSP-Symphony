@@ -1,6 +1,6 @@
 import { Component, ElementRef, Input, NgModuleRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms'
-import { lastValueFrom, Observable, OperatorFunction, Subscription } from 'rxjs';
+import { firstValueFrom, Observable, OperatorFunction, Subscription } from 'rxjs';
 import { debounceTime, filter, take, tap } from 'rxjs/operators';
 import { TranslateService } from "@ngx-translate/core";
 import { Store } from '@ngrx/store';
@@ -216,7 +216,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   }
 
   async setChangesText():Promise<void> {
-    const bandDict = await lastValueFrom(this.bandDictionary$);
+    const bandDict = await firstValueFrom(this.bandDictionary$);
     this.changesText = this.scenario.areas.some((a) => !isEmpty(a.changes)) ?
         this.scenario.areas.map((a) => {
           return Object.entries(a.changes || {}).map(([bandType, c]) => {
