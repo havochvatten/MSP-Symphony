@@ -42,6 +42,7 @@ import javax.media.jai.ROIShape;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import java.security.Principal;
@@ -124,8 +125,8 @@ public class ScenarioService {
 
         if (s == null)
             throw new NotFoundException();
-        if (s == null || !s.getOwner().equals(principal.getName()))
-            throw new NotAuthorizedException(principal.getName());
+        if (!s.getOwner().equals(principal.getName()))
+            throw new ForbiddenException(principal.getName());
         else
             em.remove(s);
     }

@@ -2,11 +2,11 @@ import { Component, NgModuleRef, OnDestroy, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
-import { Observable, of, Subscription } from 'rxjs';
+import { lastValueFrom, Observable, of, Subscription } from 'rxjs';
 import { Scenario, ScenarioCopyOptions } from '@data/scenario/scenario.interfaces';
 import { Area } from '@data/area/area.interfaces';
 import { AreaSelectors } from '@data/area';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { CalculationReportModalComponent } from '@shared/report-modal/calculation-report-modal.component';
 import { DialogService } from '@shared/dialog/dialog.service';
 import * as Normalization from '@src/app/map-view/scenario/scenario-detail/normalization-selection/normalization-selection.component';
@@ -17,7 +17,7 @@ import { CopyScenarioComponent } from "@src/app/map-view/scenario/copy-scenario/
 import { Listable } from "@shared/list-filter/listable.directive";
 import { ListItemsSort } from "@data/common/sorting.interfaces";
 import { CalculationService } from "@data/calculation/calculation.service";
-import { CalculationActions } from "@data/calculation";
+import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 
 @Component({
     selector: 'app-scenario-list',
@@ -141,7 +141,37 @@ export class ScenarioListComponent extends Listable implements OnDestroy {
     }
   }
 
-  isDisabled = () => { return !(this.isBatchMode() && this.selectedBatchIds.length > 1) };
+  disableBatch = () => { return !(this.isBatchMode() && this.selectedBatchIds.length > 1) };
+  noneSelected = () => { return !(this.isBatchMode() && this.selectedBatchIds.length > 0) };
+  deleteSelectedScenarios = async () => {
+    if (this.selectedBatchIds.length === 1) {
+      const selectedScenario = await
+        lastValueFrom(this.scenario$.pipe(
+          map(scenarios => scenarios.find(s => s.id === this.selectedBatchIds[0]))
+        ));
+      if (selectedScenario) {
+        await this.deleteScenario(selectedScenario)
+      }
+    }
+    if (this.selectedBatchIds.length > 1) {
+      const confirmDeleteMany = await this.dialogService.open<boolean>(
+        ConfirmationModalComponent, this.moduleRef,
+        {
+          data: {
+            header: this.translateService.instant('map.editor.delete.modal.title-many'),
+            message: this.translateService.instant('map.editor.delete.modal.message-many', { count: this.selectedBatchIds.length }),
+            confirmText: this.translateService.instant('map.editor.delete.modal.delete'),
+            confirmColor: 'warn',
+            dialogClass: 'center'
+          }
+        });
+      if (confirmDeleteMany) {
+        this.store.dispatch(ScenarioActions.deleteMultipleScenarios({ scenarioIds: this.selectedBatchIds }));
+        this.selectedBatchIds = [];
+        this.isBatchMode.set(false);
+      }
+    }
+  }
 
   async selectForBatch(id: number) {
     if(!this.selectedBatchIds.includes(id)) {

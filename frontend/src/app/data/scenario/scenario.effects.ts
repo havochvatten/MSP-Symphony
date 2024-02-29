@@ -85,15 +85,21 @@ export class ScenarioEffects {
   ));
 
   deleteScenario$ = createEffect(() => this.actions$.pipe(
-    ofType(ScenarioActions.deleteScenario),
-    mergeMap(({ scenarioToBeDeleted }) => {
-      return this.scenarioService.delete(scenarioToBeDeleted.id).pipe(
-        map(() => ScenarioActions.fetchScenarios()),
+    ofType(ScenarioActions.deleteScenario, ScenarioActions.deleteMultipleScenarios),
+    mergeMap((action) =>
+      from(this.scenarioService.delete(
+        action.type === ScenarioActions.deleteScenario.type ?
+          [action.scenarioToBeDeleted.id] :
+          action.scenarioIds)).pipe(
+        mergeMap(() =>
+          of(ScenarioActions.deleteScenarioSuccess(), // does nothing atm
+            ScenarioActions.fetchScenarios())
+        ),
         catchError(({ status, error: message }) =>
           of(ScenarioActions.deleteScenarioFailure({ error: { status, message } }))
         )
-      );
-    })
+      )
+    )
   ));
 
   deleteScenarioArea$ = createEffect(() => this.actions$.pipe(

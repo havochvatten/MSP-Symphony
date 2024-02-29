@@ -177,7 +177,7 @@ public class CalculationREST {
         if (principal == null)
             throw new NotAuthorizedException("Null principal");
 
-        int[] idArray = intArrayParam(ids);
+        int[] idArray = WebUtil.intArrayParam(ids);
 
         try {
             for (int calcId : idArray) {
@@ -192,8 +192,8 @@ public class CalculationREST {
             return ok().build();
         } catch (NotFoundException nx) {
             return status(Response.Status.NOT_FOUND).build();
-        } catch (NotAuthorizedException ax) {
-            return status(Response.Status.UNAUTHORIZED).build();
+        } catch (ForbiddenException ax) {
+            return status(Response.Status.FORBIDDEN).build();
         } catch (SymphonyStandardSystemException px) {
             return status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
@@ -398,7 +398,7 @@ public class CalculationREST {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
 
-        int[] idArray = intArrayParam(ids);
+        int[] idArray = WebUtil.intArrayParam(ids);
         Map<Integer, String> scenarioNames = new HashMap<>();
 
         for(int id : idArray) {
@@ -760,9 +760,5 @@ public class CalculationREST {
                     ? new ForbiddenException("User " + user.getName() + " is not owner of calculation " + calc.getId())
                     : new NotAuthorizedException("User not authorized");
         }
-    }
-
-    public static int[] intArrayParam(String param) {
-        return Arrays.stream(param.split(",")).mapToInt(Integer::parseInt).toArray();
     }
 }

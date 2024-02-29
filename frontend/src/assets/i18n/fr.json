@@ -257,6 +257,8 @@
                 "select-all-for-batch": "Tout sélectionner",
                 "select-all-for-batch-filtered": "Sélectionner les visibles",
                 "deselect-all-for-batch": "Tout désélectionner",
+                "none-selected": "Aucun scénario sélectionné",
+                "delete-selected": "Supprimer les scénarios sélectionnés",
                 "batch-tools": {
                     "enter-batch-mode": "Entrer en mode de sélection par lots",
                     "exit-batch-mode": "Quitter le mode de sélection par lots",
@@ -270,7 +272,10 @@
                 "label": "Supprimer",
                 "tooltip": "Supprimer le scénario",
                 "modal": {
-                    "title": "Êtes-vous sûr de vouloir supprimer &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
+                    "title": "Supprimer scénario",
+                    "message": "Confirmer la suppression du scénario &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;&nbsp;.",
+                    "title-many": "Supprimer les scénarios sélectionnés",
+                    "message-many": "Confirmer la suppression des <strong>{{ count }}</strong> scénarios sélectionnés?",
                     "delete": "Supprimer",
                     "cancel": "Annuler"
                 }

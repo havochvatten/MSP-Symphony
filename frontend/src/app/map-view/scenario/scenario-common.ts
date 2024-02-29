@@ -14,8 +14,9 @@ export async function deleteScenario(
     ConfirmationModalComponent, moduleRef,
     {
       data: {
-        header: `${translateService.instant('map.editor.delete.modal.title', { scenario: scenario.name })}`,
-        confirmText: translateService.instant('map.editor.delete.modal.delete'),
+        header:       translateService.instant('map.editor.delete.modal.title'),
+        message:      translateService.instant('map.editor.delete.modal.message', { scenario: scenario.name }),
+        confirmText:  translateService.instant('map.editor.delete.modal.delete'),
         confirmColor: 'warn',
         dialogClass: 'center'
       }
