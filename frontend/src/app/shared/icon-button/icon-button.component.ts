@@ -40,8 +40,4 @@ export class IconButtonComponent implements OnInit {
     event.stopPropagation();
     event.preventDefault();
   };
-
-  getIcon(): IconType {
-    return this.icon!;
-  }
 }
