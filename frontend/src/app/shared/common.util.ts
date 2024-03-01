@@ -9,7 +9,7 @@ export function textFilter(input: string, filter: string) {
   return input.toLowerCase().indexOf(filter.toLowerCase()) === -1;
 }
 
-export function size(collection: object) {
+export function size(collection: object | null) {
   return collection ? Object.keys(collection).length : 0;
 }
 
