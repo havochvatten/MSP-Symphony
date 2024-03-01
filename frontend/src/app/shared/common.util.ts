@@ -8,3 +8,15 @@ export function formatPercentage(value: number, decimals: number, locale: string
 export function textFilter(input: string, filter: string) {
   return input.toLowerCase().indexOf(filter.toLowerCase()) === -1;
 }
+
+export function size(collection: object | null) {
+  return collection ? Object.keys(collection).length : 0;
+}
+
+export function isEmpty(o: object | never[] | null) {
+  return !Object.entries(o || {}).length;
+}
+
+export function isEqual(a?: object, b?: object) {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
