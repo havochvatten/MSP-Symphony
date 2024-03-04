@@ -25,7 +25,8 @@ describe('SliderControlsComponent', () => {
       providers: [provideMockStore({
         initialState: {
           metadata: metadata,
-          scenario: scenario
+          scenario: scenario,
+          user: {}
         }
       })]
     }).compileComponents();

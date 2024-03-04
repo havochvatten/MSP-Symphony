@@ -14,7 +14,8 @@ describe('OverviewInlineBandChangeComponent', () => {
       imports: [TranslationSetupModule],
       declarations: [ OverviewInlineBandChangeComponent ],
       providers: [provideMockStore({ initialState: {
-          metadata: initialState
+          metadata: initialState,
+          user: {}
         }})]
     })
     .compileComponents();
