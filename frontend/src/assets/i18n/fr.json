@@ -556,6 +556,7 @@
         "about": "À propos",
         "support": "Mode d'emploi",
         "profile": "Mon profil",
+        "change-language": "Changer de langue",
         "logout": "Se déconnecter"
     },
     "about-dialog": {
@@ -573,6 +574,15 @@
     "confirmation-modal": {
         "cancel": "Annuler",
         "confirm": "Confirmer"
+    },
+    "change-language-modal": {
+        "header": "Changer de langue",
+        "apply": "Appliquer",
+        "languages": {
+            "en": "Anglais",
+            "sv": "Suédois",
+            "fr": "Français"
+        }
     },
     "report": {
         "calculation": {

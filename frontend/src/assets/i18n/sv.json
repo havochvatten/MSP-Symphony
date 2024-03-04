@@ -556,6 +556,7 @@
         "about": "Om",
         "support": "Support",
         "profile": "Min profil",
+        "change-language": "Ändra språk",
         "logout": "Logga ut"
     },
     "about-dialog": {
@@ -573,6 +574,15 @@
     "confirmation-modal": {
         "cancel": "Avbryt",
         "confirm": "OK"
+    },
+    "change-language-modal": {
+        "header": "Välj språk",
+        "apply": "Tillämpa",
+        "languages": {
+            "en": "Engelska",
+            "sv": "Svenska",
+            "fr": "Franska"
+        }
     },
     "report": {
         "calculation": {
