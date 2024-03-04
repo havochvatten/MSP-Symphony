@@ -4,6 +4,8 @@ import { ErrorMessage } from '@data/message/message.interfaces';
 
 export const fetchUser = createAction('[User] Fetch user');
 
+export const fetchUserSettings = createAction('[User] Fetch user settings');
+
 export const fetchUserSuccess = createAction(
   '[User] Fetch metadata success',
   props<{ user: User }>()
@@ -12,6 +14,11 @@ export const fetchUserSuccess = createAction(
 export const fetchUserFailure = createAction(
   '[User] Fetch metadata failure',
   props<{ error: ErrorMessage }>()
+);
+
+export const fetchUserSettingsSuccess = createAction(
+  '[User] Fetch user settings success',
+  props<{ user: User }>()
 );
 
 export const loginUser = createAction(
@@ -52,9 +59,9 @@ export const updateRedirectUrl = createAction(
   props<{ url: string }>()
 );
 
-export const setAliasing = createAction(
-  '[User] Set aliasing',
-  props<{ aliasing: boolean }>()
+export const updateUserSettings = createAction(
+  '[User] Update user settings',
+  props<{ aliasing?: boolean, locale?: string }>()
 );
 
 export const navigateTo = createAction('[User] Navigate to', props<{ url: string }>());

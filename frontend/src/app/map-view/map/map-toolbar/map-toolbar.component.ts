@@ -44,7 +44,7 @@ export class MapToolbarComponent implements OnDestroy {
   onToggleDraw = () => this.toggleDraw.emit();
 
   onToggleSmooth() {
-    this.store.dispatch(UserActions.setAliasing({ aliasing: !this.hasImageSmoothing }));
+    this.store.dispatch(UserActions.updateUserSettings({ aliasing: !this.hasImageSmoothing }));
   }
 
   onClickSetMapOpacity = (opacity: number) => this.setMapOpacity.emit(opacity);

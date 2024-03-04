@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UserInterfaces } from './';
 import { environment as env } from '@src/environments/environment';
+import { UserSettings } from "@data/user/user.interfaces";
 
 const BASE_URL = env.apiBaseUrl;
 
@@ -27,5 +28,9 @@ export default class UserService {
     return this.http.get<UserInterfaces.Baseline>(env.baseline
       ? `${BASE_URL}/baselineversion/name/${env.baseline}`
       : `${BASE_URL}/baselineversion/current`);
+  }
+
+  updateSettings(param: UserSettings) {
+    return this.http.put<UserSettings>(`${BASE_URL}/user/settings`, param);
   }
 }

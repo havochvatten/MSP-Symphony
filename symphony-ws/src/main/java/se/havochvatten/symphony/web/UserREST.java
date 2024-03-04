@@ -11,7 +11,7 @@ import se.havochvatten.symphony.dto.UploadedUserDefinedAreaDto;
 import se.havochvatten.symphony.dto.UserDefinedAreaDto;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
-import se.havochvatten.symphony.service.UserDefinedAreaService;
+import se.havochvatten.symphony.service.UserService;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -26,21 +26,23 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @Stateless
 @Api(value = "/userdefinedarea",
         produces = MediaType.APPLICATION_JSON,
         consumes = MediaType.APPLICATION_JSON)
-@Path("userdefinedarea")
-public class UserDefinedAreaREST {
+@Path("user")
+public class UserREST {
     private static final Logger LOG = Logger.getLogger(LegendREST.class.getName());
     private static final java.nio.file.Path TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
 
     @EJB
-    UserDefinedAreaService userDefinedAreaService;
+    UserService userService;
 
     @GET
+    @Path("/area/all")
     @ApiOperation(value = "List all user defined areas belonging to logged in user",
             response = UserDefinedAreaDto.class, responseContainer = "List")
     @Produces({MediaType.APPLICATION_JSON}) // GeoJSON polygons
@@ -50,7 +52,7 @@ public class UserDefinedAreaREST {
             throw new NotAuthorizedException("Null principal");
 
         List<UserDefinedAreaDto> userDefinedAreas =
-                userDefinedAreaService.findAllByOwner(req.getUserPrincipal());
+                userService.findAllUserDefinedAreasByOwner(req.getUserPrincipal());
         return Response.ok(userDefinedAreas).build();
     }
 
@@ -70,6 +72,7 @@ public class UserDefinedAreaREST {
 //    }
 
     @POST
+    @Path("/area")
     @ApiOperation(value = "Create new user defined area - GeoJSON polygons", response =
             UserDefinedAreaDto.class)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -80,14 +83,14 @@ public class UserDefinedAreaREST {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
 
-        userDefinedAreaDto = userDefinedAreaService.createUserDefinedArea(req.getUserPrincipal(),
+        userDefinedAreaDto = userService.createUserDefinedArea(req.getUserPrincipal(),
                 userDefinedAreaDto);
         URI uri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(userDefinedAreaDto.getId())).build();
         return Response.created(uri).entity(userDefinedAreaDto).build();
     }
 
     @POST
-    @Path("/import")
+    @Path("/area/import")
     @ApiOperation(value = "Submit a GeoPackage for inspection with intent to have it imported",
         response = UploadedUserDefinedAreaDto.class)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -122,7 +125,7 @@ public class UserDefinedAreaREST {
         }
 
         try {
-            var dto = userDefinedAreaService.inspectGeoPackage(packageFile);
+            var dto = userService.inspectGeoPackage(packageFile);
             req.getSession().setAttribute(dto.key, packagePath.toFile());
             return Response.ok(dto).build();
         } catch (SymphonyStandardAppException|java.lang.reflect.UndeclaredThrowableException e) {
@@ -132,7 +135,7 @@ public class UserDefinedAreaREST {
     }
 
     @PUT
-    @Path("/import/{key}")
+    @Path("/area/import/{key}")
     @ApiOperation(value = "Confirm import of previously uploaded GeoPackage",
         response = UserDefinedAreaDto.class)
     @Produces(MediaType.APPLICATION_JSON)
@@ -146,7 +149,7 @@ public class UserDefinedAreaREST {
         AreaImportResponse response;
         try (var pkg = new GeoPackage(pkgFile)) {
             LOG.info("Importing uploaded GeoPackage "+pkgFile+" for user "+req.getUserPrincipal().getName());
-            response = userDefinedAreaService.importUserDefinedAreaFromPackage(req.getUserPrincipal(), pkg);
+            response = userService.importUserDefinedAreaFromPackage(req.getUserPrincipal(), pkg);
         } catch (IOException e) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.GEOPACKAGE_READ_FEATURE_FAILURE);
         }
@@ -178,7 +181,7 @@ public class UserDefinedAreaREST {
     }
 
     @PUT
-    @Path("{id}")
+    @Path("/area/{id}")
     @ApiOperation(value = "Update user defined area - GeoJSON polygons", response = UserDefinedAreaDto.class)
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -188,22 +191,53 @@ public class UserDefinedAreaREST {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
 
-        userDefinedAreaDto = userDefinedAreaService.updateUserDefinedArea(req.getUserPrincipal(),
+        userDefinedAreaDto = userService.updateUserDefinedArea(req.getUserPrincipal(),
                 userDefinedAreaDto);
         return Response.ok(userDefinedAreaDto).build();
     }
 
     @DELETE
     @ApiOperation(value = "Delete user defined area", response = Response.class)
-    @Path("{id}")
+    @Path("/area/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
     public Response deleteUserDefinedArea(@Context HttpServletRequest req, @PathParam("id") Integer id) throws SymphonyStandardAppException {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
 
-        userDefinedAreaService.delete(req.getUserPrincipal(), id);
+        userService.delete(req.getUserPrincipal(), id);
         return Response.ok().build();
+    }
+
+//    @GET
+//    @Path("/settings")
+//    @ApiOperation(value = "Get user settings")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @RolesAllowed("GRP_SYMPHONY")
+//    public Response getUserSettings(@Context HttpServletRequest req) {
+//        if (req.getUserPrincipal() == null)
+//            throw new NotAuthorizedException("Null principal");
+//
+//        JsonNode settings = userService.getUserSettings(req.getUserPrincipal());
+//        return Response.ok(settings).build();
+//    }
+
+    @PUT
+    @Path("/settings")
+    @ApiOperation(value = "Update user settings")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response updateUserSettings(@Context HttpServletRequest req, Map<String, Object> settings) {
+        if (req.getUserPrincipal() == null)
+            throw new NotAuthorizedException("Null principal");
+
+        try {
+            userService.updateUserSettings(req.getUserPrincipal(), settings);
+            return Response.ok().build();
+        } catch (SymphonyStandardAppException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
     }
 
 }
