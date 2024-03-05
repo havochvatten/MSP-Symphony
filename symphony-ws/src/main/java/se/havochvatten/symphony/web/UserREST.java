@@ -209,19 +209,6 @@ public class UserREST {
         return Response.ok().build();
     }
 
-//    @GET
-//    @Path("/settings")
-//    @ApiOperation(value = "Get user settings")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @RolesAllowed("GRP_SYMPHONY")
-//    public Response getUserSettings(@Context HttpServletRequest req) {
-//        if (req.getUserPrincipal() == null)
-//            throw new NotAuthorizedException("Null principal");
-//
-//        JsonNode settings = userService.getUserSettings(req.getUserPrincipal());
-//        return Response.ok(settings).build();
-//    }
-
     @PUT
     @Path("/settings")
     @ApiOperation(value = "Update user settings")
