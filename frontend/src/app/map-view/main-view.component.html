@@ -40,6 +40,7 @@
   <div id="map-overlay">
     <app-active-scenario-display *ngIf="activeScenario$ | async"
                                  [scenario]="activeScenario$ | async"
+                                 [calculating]="calculating$ | async"
                                  [area]="activeScenarioArea$ | async"
                                  (exit)="exitScenario()">
     </app-active-scenario-display>

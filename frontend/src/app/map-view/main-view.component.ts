@@ -45,6 +45,7 @@ export class MainViewComponent implements OnInit, AfterViewInit {
 
   protected activeScenario$: Observable<Scenario | undefined>;
   protected activeScenarioArea$: Observable<number | undefined>;
+  protected calculating$: Observable<boolean>;
   protected scenarioAreaSelection = false
   private selectedAreas$?: Subscription;
 
@@ -57,6 +58,7 @@ export class MainViewComponent implements OnInit, AfterViewInit {
     this.activeScenario$ = this.store.select(ScenarioSelectors.selectActiveScenario);
     this.activeScenarioArea$ = this.store.select(ScenarioSelectors.selectActiveScenarioArea);
     this.compoundComparisonCount$ = this.store.select(CalculationSelectors.selectCompoundComparisonCount);
+    this.calculating$ = this.store.select(CalculationSelectors.selectCalculating);
   }
 
   ngOnInit() {
