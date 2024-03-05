@@ -20,14 +20,14 @@ import {
   NormalizationType
 } from '@data/calculation/calculation.service';
 import { MetadataActions, MetadataSelectors } from "@data/metadata";
-import { Band, BandType } from "@data/metadata/metadata.interfaces";
+import { Band, BandChange, BandType } from "@data/metadata/metadata.interfaces";
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
 import {
   ChangesProperty,
   Scenario, ScenarioArea, ScenarioSplitDialogResult
 } from '@data/scenario/scenario.interfaces';
-import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
+import { changeText } from "@src/app/shared/common.util";
 import { ScenarioService } from "@data/scenario/scenario.service";
 import { Area } from "@data/area/area.interfaces";
 import { deleteScenario, transferChanges } from "@src/app/map-view/scenario/scenario-common";
@@ -42,6 +42,7 @@ import { MatrixRef } from "@src/app/map-view/scenario/scenario-area-detail/matri
 import {
   SetArbitraryMatrixComponent
 } from "@src/app/map-view/scenario/set-arbitrary-matrix/set-arbitrary-matrix.component";
+import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 
@@ -64,6 +65,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   @Input() scenario!: Scenario;
   @Input() deleteAreaDelegate!: ((a:number, e:MouseEvent, s:Scenario) => void);
   @Input() deleteAreaAction! : (a:number, s:Scenario) => void;
+  @Input() confirmDeleteChange!: (bandName: string, change: BandChange) => Promise<boolean>;
   @ViewChild('name') nameElement!: ElementRef;
   editName = false;
 
@@ -221,10 +223,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
         this.scenario.areas.map((a) => {
           return Object.entries(a.changes || {}).map(([bandType, c]) => {
             return Object.entries(c).map(([bandNumber, change]) => {
-              return `${bandDict[bandType][bandNumber]}: ${change.multiplier ? (change.multiplier > 1 ? '+' : '') +
-                  Number(convertMultiplierToPercent(change.multiplier) * 100).toFixed(2) + '%' :
-                  change.offset! > 0 ? '+' + change.offset : change.offset
-              }`;
+              return this.changeText(bandDict[bandType][bandNumber], change);
             }).join('\n');
           }).join('\n');
         }) : {};
@@ -304,10 +303,15 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(ScenarioActions.saveActiveScenario({ scenarioToBeSaved: this.scenario }));
   }
 
-  deleteChange = (bandTypeString: string, bandNumber: number) => {
-    this.unsaved = true;
-    const componentType = bandTypeString as BandType;
-    this.store.dispatch(ScenarioActions.deleteBandChange({ componentType, bandNumber }));
+  deleteChange = async (bandTypeString: string, bandNumber: number, bandName: string) => {
+    const confirmClearChange =
+      await this.confirmDeleteChange(bandName, this.scenario.changes![bandTypeString][bandNumber.toString()]);
+
+    if(confirmClearChange) {
+      this.unsaved = true;
+      const componentType = bandTypeString as BandType;
+      this.store.dispatch(ScenarioActions.deleteBandChange({componentType, bandNumber}));
+    }
   }
 
   close() {
@@ -397,4 +401,6 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   }
 
   protected readonly isEmpty = isEmpty;
+
+  changeText = changeText;
 }

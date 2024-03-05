@@ -20,7 +20,7 @@ import { OperationParams } from "@data/calculation/calculation.interfaces";
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
 import { transferChanges } from "@src/app/map-view/scenario/scenario-common";
 import { MetadataSelectors } from "@data/metadata";
-import { BandType } from "@data/metadata/metadata.interfaces";
+import { BandChange, BandType } from "@data/metadata/metadata.interfaces";
 
 const availableOperationsByValue: Map<CalcOperation, string> = new Map<CalcOperation, string>(
   [ [CalcOperation.Cumulative, 'CumulativeImpact' ] ,
@@ -38,6 +38,7 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
   @Input() scenario!: Scenario;
   @Input() areaIndex!: number;
   @Input() deleteDelegate!: ((a:number, e:MouseEvent, s:Scenario) => void);
+  @Input() confirmDeleteChange!: (bandName: string, change: BandChange) => Promise<boolean>;
 
   jsMath = Math;
   availableOperations = availableOperationsByValue;
@@ -105,9 +106,13 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
     return this.scenario.operationOptions ?? { 'domain' : 'GLOBAL' };
   }
 
-  deleteChange = (bandTypeString: string, bandNumber: number) => {
-    const componentType = bandTypeString as BandType;
-    this.store.dispatch(ScenarioActions.deleteAreaBandChange({ componentType, bandNumber }));
+  deleteChange = async (bandTypeString: string, bandNumber: number, bandName: string) => {
+    const componentType = bandTypeString as BandType,
+      confirmDeleteChange = await this.confirmDeleteChange(bandName, this.area().changes![componentType][bandNumber])
+
+    if (confirmDeleteChange) {
+      this.store.dispatch(ScenarioActions.deleteAreaBandChange({componentType, bandNumber}));
+    }
   }
 
   close() {

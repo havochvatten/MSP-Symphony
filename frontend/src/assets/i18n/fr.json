@@ -199,7 +199,12 @@
                 "clear-change": "Effacer les modifications",
                 "units": "unités",
                 "collapse": "Cacher les modifications",
-                "collapsed-count": "Afficher {{ count }} modifications"
+                "collapsed-count": "Afficher {{ count }} modifications",
+                "clear-change-modal": {
+                    "header": "Effacer les modifications",
+                    "message": "Confirmer l'effacement de la modification: <em>{{ changeDescription }}</em>",
+                    "confirm": "Effacer"
+                }
             },
             "changes-overview" : {
                 "title": "Vue d'ensemble des modifications de scénario",
