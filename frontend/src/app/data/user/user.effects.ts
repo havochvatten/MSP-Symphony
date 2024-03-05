@@ -140,7 +140,7 @@ export class UserEffects {
     ofType(UserActions.updateUserSettings),
     mergeMap(({ aliasing, locale }) =>
       this.userService.updateSettings({ aliasing, locale } as UserSettings).pipe(
-        map(() => UserActions.fetchUserSettings())
+        map(() => locale ? UserActions.fetchUser() : UserActions.fetchUserSettings())
       )
     )
   ));
