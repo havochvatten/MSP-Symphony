@@ -117,10 +117,14 @@
       right: -3rem;
       top: 4rem;
       cursor: pointer;
-      color: $hav-grey;
+      color: $hav-darkergrey;
 
       &.peek {
         color: $hav-turquoise;
+      }
+
+      &:hover {
+        opacity: 0.8;
       }
     }
   }
