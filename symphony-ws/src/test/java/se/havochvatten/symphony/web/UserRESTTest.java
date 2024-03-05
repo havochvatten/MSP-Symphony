@@ -19,8 +19,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
-public class UserDefinedAreaRESTTest extends RESTTest {
-    private static String areaName = "UserDefinedAreaRESTTest";
+public class UserRESTTest extends RESTTest {
+    private static String areaName = "UserRESTTest";
     private static String updDecription = "Rest Test Desc Upd";
 
     @Before
@@ -43,7 +43,7 @@ public class UserDefinedAreaRESTTest extends RESTTest {
             preemptive().
             basic(getUsername(), getPassword()).
             when().
-            get(endpoint("/userdefinedarea"));
+            get(endpoint("/user/area/all"));
 
         JsonPath jsonPathEvaluator = response.jsonPath();
         List<UserDefinedAreaDto> areaList = jsonPathEvaluator.getList("", UserDefinedAreaDto.class);
@@ -72,7 +72,7 @@ public class UserDefinedAreaRESTTest extends RESTTest {
             when().
             header("Content-Type", "application/json").
             body(createUserDefinedAreaDto()).
-            post(endpoint("/userdefinedarea"));
+            post(endpoint("/user/area"));
 
         assertThat(response.getStatusCode(), is(201));
 
@@ -93,7 +93,7 @@ public class UserDefinedAreaRESTTest extends RESTTest {
             when().
             header("Content-Type", "application/json").
             body(userDefinedAreaDto).
-            put(endpoint("/userdefinedarea/{id}"));
+            put(endpoint("/user/area/{id}"));
 
         assertThat(response.getStatusCode(), is(200));
         return response.getBody().jsonPath().getObject("", UserDefinedAreaDto.class);
@@ -158,7 +158,7 @@ public class UserDefinedAreaRESTTest extends RESTTest {
             when().
             header("Content-Type", "application/json").
             body(dto).
-            post(endpoint("/userdefinedarea"));
+            post(endpoint("/user/area"));
         assertThat(response.getStatusCode(), is(400));
     }
 
@@ -173,7 +173,7 @@ public class UserDefinedAreaRESTTest extends RESTTest {
             when().
             header("Content-Type", "application/json").
             body(dto).
-            post(endpoint("/userdefinedarea"));
+            post(endpoint("/user/area"));
 
 		assertThat(response.getStatusCode(), is(201));
 	}
@@ -188,7 +188,7 @@ public class UserDefinedAreaRESTTest extends RESTTest {
             basic(getUsername(), getPassword()).
             multiPart("package", pkg).
             when().
-            post(endpoint("/userdefinedarea/import")).
+            post(endpoint("/user/area/import")).
             then().
             statusCode(400).
             extract();
@@ -206,7 +206,7 @@ public class UserDefinedAreaRESTTest extends RESTTest {
             basic(getUsername(), getPassword()).
             multiPart("package", pkg).
             when().
-            post(endpoint("/userdefinedarea/import")).
+            post(endpoint("/user/area/import")).
             then().
             statusCode(400).
             extract();
@@ -224,7 +224,7 @@ public class UserDefinedAreaRESTTest extends RESTTest {
             basic(getUsername(), getPassword()).
             multiPart("package", pkg).
             when().
-            post(endpoint("/userdefinedarea/import")).
+            post(endpoint("/user/area/import")).
             then().
             statusCode(200).
             extract();
@@ -239,7 +239,7 @@ public class UserDefinedAreaRESTTest extends RESTTest {
             preemptive().
             basic(getUsername(), getPassword()).
             when().
-            put(endpoint("/userdefinedarea/import/"+dto.key)).
+            put(endpoint("/user/area/import/"+dto.key)).
             then().
             statusCode(201).
             extract();

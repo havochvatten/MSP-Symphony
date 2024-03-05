@@ -1,0 +1,29 @@
+<h4>{{ 'change-language-modal.header' | translate }}</h4>
+<div class="language-options">
+  <div
+    *ngFor="let language of languages"
+    class="language-option"
+    [ngClass]="{ active: language === selectedLanguage }"
+    tabindex="0"
+  >
+    <div class="language-flag">
+      <img [src]="'assets/locale-flag/' + language + '.svg'"
+           alt="{{ 'change-language-modal.languages.' + language | translate }}" />
+    </div>
+    <span class="language-name">{{ 'change-language-modal.languages.' + language | translate }}</span>
+    <mat-radio-button
+      [value]="language"
+      [checked]="language === selectedLanguage"
+      (change)="selectedLanguage = language"
+    >
+    </mat-radio-button>
+  </div>
+</div>
+<div class="button-pane right">
+  <button mat-flat-button [ngClass]="'secondary'" (click)="close()">{{
+      'confirmation-modal.cancel' | translate
+    }}</button>
+  <button mat-flat-button (click)="apply()">{{
+      'change-language-modal.apply' | translate
+    }}</button>
+</div>

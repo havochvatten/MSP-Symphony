@@ -4,6 +4,7 @@ import { NormalizationSelectionComponent } from './normalization-selection.compo
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { OrdinalPipe } from "@shared/ordinal.pipe";
 import { MatRadioModule } from "@angular/material/radio";
+import { provideMockStore } from "@ngrx/store/testing";
 
 describe('NormalizationSelectionComponent', () => {
   let component: NormalizationSelectionComponent;
@@ -15,7 +16,7 @@ describe('NormalizationSelectionComponent', () => {
         TranslationSetupModule,
         MatRadioModule
       ],
-      providers: [OrdinalPipe],
+      providers: [OrdinalPipe, provideMockStore({ initialState : { user: {} } })],
       declarations: [NormalizationSelectionComponent, OrdinalPipe]
     }).compileComponents();
     fixture = TestBed.createComponent(NormalizationSelectionComponent);

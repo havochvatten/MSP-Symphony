@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ListFilterComponent } from './list-filter.component';
 import { TranslationSetupModule } from "@src/app/app-translation-setup.module";
+import { provideMockStore } from "@ngrx/store/testing";
 
 describe('ListFilterComponent', () => {
   let component: ListFilterComponent;
@@ -10,7 +11,8 @@ describe('ListFilterComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports:[TranslationSetupModule],
-      declarations: [ ListFilterComponent ]
+      declarations: [ ListFilterComponent ],
+      providers: [provideMockStore({ initialState : { user: {} } })]
     })
     .compileComponents();
 

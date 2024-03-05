@@ -575,6 +575,15 @@
         "cancel": "Cancel",
         "confirm": "OK"
     },
+    "change-language-modal": {
+        "header": "Change language",
+        "apply": "Apply",
+        "languages": {
+            "en": "English",
+            "sv": "Swedish",
+            "fr": "French"
+        }
+    },
     "report": {
         "calculation": {
             "title": "Calculation Report"

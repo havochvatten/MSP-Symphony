@@ -11,6 +11,7 @@ import { AreaActions } from '@data/area';
 import { MetadataActions } from '@data/metadata';
 import { CalculationActions } from '@data/calculation';
 import { LegendType } from '@data/calculation/calculation.interfaces';
+import { UserSettings } from "@data/user/user.interfaces";
 
 const legendTypes: LegendType[] = ['result', 'ecosystem', 'pressure'];
 
@@ -72,10 +73,14 @@ export class UserEffects {
   ));
 
   fetchUser$ = createEffect(() => this.actions$.pipe(
-    ofType(UserActions.fetchUser),
-    mergeMap(() =>
+    ofType(UserActions.fetchUser, UserActions.fetchUserSettings),
+    mergeMap((action) =>
       this.userService.fetchUser().pipe(
-        map(user => UserActions.fetchUserSuccess({ user })),
+        map(user => {
+          return action.type === UserActions.fetchUserSettings.type ?
+            UserActions.fetchUserSettingsSuccess({ user }) :
+            UserActions.fetchUserSuccess({ user })
+        }),
         catchError(error =>
           of(
             UserActions.fetchUserFailure({
@@ -127,6 +132,15 @@ export class UserEffects {
             })
           )
         )
+      )
+    )
+  ));
+
+  updateUserSettings$ = createEffect(() => this.actions$.pipe(
+    ofType(UserActions.updateUserSettings),
+    mergeMap(({ aliasing, locale }) =>
+      this.userService.updateSettings({ aliasing, locale } as UserSettings).pipe(
+        map(() => locale ? UserActions.fetchUser() : UserActions.fetchUserSettings())
       )
     )
   ));

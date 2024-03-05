@@ -7,8 +7,10 @@ import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.dto.FrontendErrorDto;
 import se.havochvatten.symphony.dto.UserDto;
 import se.havochvatten.symphony.dto.UserLoginDto;
+import se.havochvatten.symphony.entity.UserSettings;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.service.PropertiesService;
+import se.havochvatten.symphony.service.UserService;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -18,6 +20,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.security.Principal;
 
 @Stateless
@@ -28,6 +31,9 @@ public class LoginREST {
 
     @EJB
     PropertiesService propertiesService;
+
+    @EJB
+    UserService userService;
 
     @SuppressWarnings("rawtypes")
     @ApiOperation(value = "Login to application", response = UserDto.class)
@@ -49,6 +55,8 @@ public class LoginREST {
                 LOG.info("User {} failed to login with error: {}", user.getUsername(), e.getMessage());
                 LOG.debug("Login failure", e);
                 return Response.status(Response.Status.UNAUTHORIZED).entity(new FrontendErrorDto(SymphonyModelErrorCode.LOGIN_FAILED_ERROR.getErrorKey(), SymphonyModelErrorCode.LOGIN_FAILED_ERROR.getErrorMessage())).build();
+            } catch (IOException e) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new FrontendErrorDto(SymphonyModelErrorCode.OTHER_ERROR.getErrorKey(), SymphonyModelErrorCode.OTHER_ERROR.getErrorMessage())).build();
             }
         } else {
             LOG.debug("User {} was already logged in. Creating new session.", user.getUsername());
@@ -59,18 +67,21 @@ public class LoginREST {
                 LOG.info("User {} failed to logout with error: {}", user.getUsername(), e.getMessage());
                 LOG.debug("Logout failure", e);
                 return Response.status(Response.Status.UNAUTHORIZED).entity(new FrontendErrorDto(SymphonyModelErrorCode.OTHER_ERROR.getErrorKey(), SymphonyModelErrorCode.OTHER_ERROR.getErrorMessage())).build();
+            } catch (IOException e) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new FrontendErrorDto(SymphonyModelErrorCode.OTHER_ERROR.getErrorKey(), SymphonyModelErrorCode.OTHER_ERROR.getErrorMessage())).build();
             }
         }
     }
 
     @SuppressWarnings("rawtypes")
-    private Response loginUser(HttpServletRequest req, UserLoginDto user) throws ServletException {
+    private Response loginUser(HttpServletRequest req, UserLoginDto user) throws ServletException, IOException {
         LOG.debug("User {} is being logged in", user.getUsername());
         req.getSession();
         req.login(user.getUsername(), user.getPassword());
         if (req.isUserInRole(propertiesService.getProperty("symphony.user")) || req.isUserInRole(propertiesService.getProperty("symphony.admin"))) {
             LOG.info("User {} logged in", user.getUsername());
-            return Response.ok(new UserDto(user.getUsername())).build();
+            UserDto userDto = userService.getUser(req.getUserPrincipal());
+            return Response.ok(userDto).build();
         } else {
             LOG.warn("Authorization failed. User {} is not member of any allowed group.",
                     user.getUsername());
@@ -91,7 +102,13 @@ public class LoginREST {
         } else {
             // there is an existing session, return it
             LOG.info("Getting user {} from session", principal.getName());
-            return Response.ok(new UserDto(principal.getName())).build();
+            try {
+                UserDto user = userService.getUser(principal);
+                return Response.ok(user).build();
+            } catch (Exception e) {
+                LOG.error("Error getting user from session", e);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new FrontendErrorDto(SymphonyModelErrorCode.OTHER_ERROR.getErrorKey(), SymphonyModelErrorCode.OTHER_ERROR.getErrorMessage())).build();
+            }
         }
     }
 

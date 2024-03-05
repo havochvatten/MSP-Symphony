@@ -3,6 +3,7 @@ import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 
 import { MultiToolsComponent } from './multi-tools.component';
 import { signal } from "@angular/core";
+import { provideMockStore } from "@ngrx/store/testing";
 
 describe('MultiToolsComponent', () => {
   let component: MultiToolsComponent;
@@ -11,7 +12,8 @@ describe('MultiToolsComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [TranslationSetupModule],
-      declarations: [MultiToolsComponent]
+      declarations: [MultiToolsComponent],
+      providers: [provideMockStore({ initialState : { user: {} } })]
     });
     fixture = TestBed.createComponent(MultiToolsComponent);
     component = fixture.componentInstance;
