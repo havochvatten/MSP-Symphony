@@ -2,7 +2,7 @@ import { Component, NgModuleRef, OnDestroy, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
-import { lastValueFrom, Observable, of, Subscription } from 'rxjs';
+import { firstValueFrom, Observable, of, Subscription } from 'rxjs';
 import { Scenario, ScenarioCopyOptions } from '@data/scenario/scenario.interfaces';
 import { Area } from '@data/area/area.interfaces';
 import { AreaSelectors } from '@data/area';
@@ -146,7 +146,7 @@ export class ScenarioListComponent extends Listable implements OnDestroy {
   deleteSelectedScenarios = async () => {
     if (this.selectedBatchIds.length === 1) {
       const selectedScenario = await
-        lastValueFrom(this.scenario$.pipe(
+        firstValueFrom(this.scenario$.pipe(
           map(scenarios => scenarios.find(s => s.id === this.selectedBatchIds[0]))
         ));
       if (selectedScenario) {
