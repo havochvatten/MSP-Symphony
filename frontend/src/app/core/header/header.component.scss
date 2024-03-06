@@ -5,7 +5,6 @@
 :host {
   display: flex;
   flex-direction: column;
-  z-index: 10001;
 
   .header-top {
     align-items: center;
@@ -55,6 +54,11 @@
   .header-menu-container {
     overflow-y: hidden;
     display: flex;
+    position: absolute;
+    width: 200px;
+    top: 60px;
+    right: 0;
+    z-index: 2;
 
     &.is-open {
       border-top: 1px solid white;
