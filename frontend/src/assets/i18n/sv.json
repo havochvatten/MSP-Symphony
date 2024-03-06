@@ -199,7 +199,12 @@
                 "clear-change": "Rensa ändring",
                 "units": "enheter",
                 "collapse": "Dölj ändringar",
-                "collapsed-count": "Visa {{ count }} ändringar"
+                "collapsed-count": "Visa {{ count }} ändringar",
+                "clear-change-modal": {
+                    "header": "Rensa ändring",
+                    "message": "Bekräfta borttagning av ändring: <em>{{ changeDescription }}</em>",
+                    "confirm": "Rensa"
+                }
             },
             "changes-overview" : {
                 "title": "Översikt förekomständringar",

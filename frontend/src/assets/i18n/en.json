@@ -199,7 +199,12 @@
                 "clear-change": "Clear change",
                 "units": "u.",
                 "collapse": "Hide changes",
-                "collapsed-count": "Show {{ count }} changes"
+                "collapsed-count": "Show {{ count }} changes",
+                "clear-change-modal" : {
+                    "header": "Clear change",
+                    "message": "Confirm removal of change: <em>{{ changeDescription }}</em>",
+                    "confirm": "Clear"
+                }
             },
             "changes-overview" : {
                 "title": "Scenario changes overview",
