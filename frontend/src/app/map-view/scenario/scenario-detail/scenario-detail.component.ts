@@ -178,22 +178,23 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
                   confirmTextKey: 'map.editor.select-intersection.confirm-selection',
                   metaDescriptionTextKey: 'map.editor.select-intersection.default-matrix'
                 }
-              }) as boolean[]).filter(a => a);
+              }) as boolean[]);
 
-              if (selectedAreas.length > 0) {
-                const replacementAreas: ScenarioArea[] = selectedAreas.map((selectedArea, ix) => {
-                  const area = this.scenario.areas[this.scenario.areas.findIndex(a => a.id === area_id)];
-                  return {
-                    ...area,
-                    id: -1,
-                    feature: {
-                      ...area.feature,
-                      geometry: matrixData.overlap[ix].polygon,
-                      properties: {...area.feature.properties, statePath: []}
-                    },
-                    matrix: {matrixType: 'STANDARD', matrixId: matrixData.overlap[ix].defaultMatrix.id}
-                  }
-                });
+              if (selectedAreas.filter(a => a).length > 0) {
+                const replacementAreas = selectedAreas.map((selectedArea, ix) => {
+                    if (!selectedArea) return undefined;
+                    const area = this.scenario.areas[this.scenario.areas.findIndex(a => a.id === area_id)];
+                    return {
+                      ...area,
+                      id: -1,
+                      feature: {
+                        ...area.feature,
+                        geometry: matrixData.overlap[ix].polygon,
+                        properties: {...area.feature.properties, statePath: []}
+                      },
+                      matrix: {matrixType: 'STANDARD', matrixId: matrixData.overlap[ix].defaultMatrix.id}
+                    }
+                }).filter(a => a !== undefined) as ScenarioArea[];
 
                 this.store.dispatch(ScenarioActions.splitAndReplaceScenarioArea(
                   {scenarioId: this.scenario.id, replacedAreaId: area_id, replacementAreas: replacementAreas}));
