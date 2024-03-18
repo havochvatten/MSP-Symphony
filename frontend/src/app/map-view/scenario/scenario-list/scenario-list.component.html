@@ -6,13 +6,20 @@
         [isMultiMode]="isBatchMode"
         [enterLabel]="'map.editor.list.batch-tools.enter-batch-mode'"
         [exitLabel]="'map.editor.list.batch-tools.exit-batch-mode'"
-        [disabledPredicate]="isDisabled"
+        [disabledPredicate]="noneSelected"
       >
-        <app-multi-action-button slot="button-1"
+        <app-multi-action-button
           [multiActionDelegate]="triggerBatchRun"
           [multiActionIcon]="'play-arrow'"
           [multiActionLabel]="'map.editor.list.batch-tools.run-batch'"
           [multiActionLabelDisabled]="'map.editor.list.batch-tools.batch-too-small'"
+          [disabledPredicate]="disableBatch"
+          ></app-multi-action-button>
+        <app-multi-action-button
+          [multiActionDelegate]="deleteSelectedScenarios"
+          [multiActionIcon]="'delete'"
+          [multiActionLabel]="'map.editor.list.delete-selected'"
+          [multiActionLabelDisabled]="'map.editor.list.none-selected'"
           ></app-multi-action-button>
       </app-multi-tools>
     </div>
@@ -44,7 +51,7 @@
 
   <div class="divider"></div>
 
-  <main *ngIf="(scenario$ | async)?.length">
+  <section class="list-section" *ngIf="(scenario$ | async)?.length">
     <div *ngFor="let scenario of scenario$ | async; index as scenarioIndex"
          class="scenario-wrap"
          [ngClass]="{'filtered': filter(scenario.name) }">
@@ -59,7 +66,7 @@
           <span class="timestamp">{{ scenario.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
         </div>
         <ul [ngClass]="{'scenario-areas' : true, 'abundant' : scenario.areas.length > ABUNDANT_AREA_COUNT}">
-          <li *ngFor="let area of scenario.areas.slice(0, MAX_AREAS); index as aix"
+          <li *ngFor="let area of scenario.areas.slice(0, MAX_AREAS)"
               [title]="'map.editor.list.scenario-area' | translate: { scenario: scenario.name, 'area-feature': area.feature.properties['name'] }">
             <span class="feature-name">{{ area.feature.properties['name'] }}</span>
           </li>
@@ -89,7 +96,7 @@
         </mat-checkbox>
       </div>
     </div>
-  </main>
+  </section>
 
   <div *ngIf="!(scenario$ | async)?.length" id="no-scenarios">
     <span style="font-style: italic">

@@ -1,6 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
 import Immutable, { removeIn, setIn, updateIn } from 'immutable';
-import { size } from "lodash";
 
 import { CalculationActions } from '@data/calculation';
 import { calculationSucceeded } from "@data/calculation/calculation.actions";
@@ -14,6 +13,7 @@ import { ScenarioActions, ScenarioInterfaces } from '@data/scenario/index';
 import { ChangesProperty, ScenarioArea } from "@data/scenario/scenario.interfaces";
 import { AreaMatrixData } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
 import { ListItemsSort } from "@data/common/sorting.interfaces";
+import { size } from "@shared/common.util";
 
 
 export const initialState: ScenarioInterfaces.State = {

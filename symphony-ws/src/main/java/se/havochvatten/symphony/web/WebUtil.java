@@ -147,6 +147,10 @@ public interface WebUtil {
         fop.close();
     }
 
+    public static int[] intArrayParam(String param) {
+        return Arrays.stream(param.split(",")).mapToInt(Integer::parseInt).toArray();
+    }
+
     static Map<String, String> multiValuedToSingleValuedMap(MultivaluedMap<String, String> multiValued) {
         return multiValued.keySet()
             .stream()

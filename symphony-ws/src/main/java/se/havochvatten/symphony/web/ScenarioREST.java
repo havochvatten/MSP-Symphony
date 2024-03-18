@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -174,15 +175,26 @@ public class ScenarioREST {
 
     @DELETE
     @ApiOperation(value = "Delete scenario")
-    @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    public Response deleteScenario(@Context HttpServletRequest req, @PathParam("id") int id) {
-        if (req.getUserPrincipal() == null)
+    public Response deleteScenario(@Context HttpServletRequest req, @QueryParam("ids") String ids){
+        Principal principal = req.getUserPrincipal();
+
+        if (principal == null)
             throw new NotAuthorizedException("Null principal");
 
-        service.delete(req.getUserPrincipal(), id);
-        return Response.noContent().build();
+        int[] idArray = WebUtil.intArrayParam(ids);
+
+        try {
+            for (int scenarioId : idArray) {
+                service.delete(principal, scenarioId);
+            }
+            return Response.noContent().build();
+        } catch (NotFoundException nx) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (ForbiddenException ax) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
     }
 
     @DELETE

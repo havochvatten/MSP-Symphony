@@ -4,6 +4,7 @@ import { DialogRef } from '@shared/dialog/dialog-ref';
 import { DialogConfig } from '@shared/dialog/dialog-config';
 
 import { RenameItemModalComponent } from './rename-item-modal.component';
+import { provideMockStore } from "@ngrx/store/testing";
 
 describe('RenameItemModalComponent', () => {
   let fixture: ComponentFixture<RenameItemModalComponent>,
@@ -26,7 +27,8 @@ describe('RenameItemModalComponent', () => {
               itemName: ''
             }
           }
-        }
+        },
+        provideMockStore({ initialState : { user: {} } })
       ]
     }).compileComponents();
     fixture = TestBed.createComponent(RenameItemModalComponent);

@@ -16,7 +16,7 @@ describe('AppComponent', () => {
         TranslationSetupModule
       ],
       declarations: [AppComponent],
-      providers: [provideMockStore()]
+      providers: [provideMockStore({ initialState: { user: {} } })]
     }).compileComponents();
   }));
 

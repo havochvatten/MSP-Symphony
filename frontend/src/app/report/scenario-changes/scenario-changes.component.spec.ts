@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ScenarioChangesComponent } from './scenario-changes.component';
 import { TranslationSetupModule } from "@src/app/app-translation-setup.module";
+import { provideMockStore } from "@ngrx/store/testing";
 
 describe('ScenarioChangesComponent', () => {
   let fixture: ComponentFixture<ScenarioChangesComponent>,
@@ -10,7 +11,8 @@ describe('ScenarioChangesComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ScenarioChangesComponent ],
-      imports: [TranslationSetupModule]
+      imports: [TranslationSetupModule],
+      providers: [provideMockStore({ initialState : { user: {} } })]
     })
     .compileComponents();
     fixture = TestBed.createComponent(ScenarioChangesComponent);

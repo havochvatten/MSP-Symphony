@@ -25,7 +25,7 @@
             <div class="icons">
               <app-icon class="delete-change-icon" iconType="times"
                         [title]="'map.editor.changes.clear-change' | translate"
-                        (click)="deleteChange(change[0].type, +change[1])">
+                        (click)="deleteChange(change[0].type, +change[1], bandDictionary![change[0].type][change[1]] )">
               </app-icon>
             </div>
         </div>

@@ -4,6 +4,7 @@ import { DialogRef } from '@shared/dialog/dialog-ref';
 import { DialogConfig } from '@shared/dialog/dialog-config';
 
 import { CreateUserAreaModalComponent } from './create-user-area-modal.component';
+import { provideMockStore } from "@ngrx/store/testing";
 
 describe('CreateUserAreaModalComponent', () => {
   let fixture: ComponentFixture<CreateUserAreaModalComponent>,
@@ -25,7 +26,8 @@ describe('CreateUserAreaModalComponent', () => {
               areaName: ''
             }
           }
-        }
+        },
+        provideMockStore({ initialState : { user: {} } })
       ]
     }).compileComponents();
     fixture = TestBed.createComponent(CreateUserAreaModalComponent);

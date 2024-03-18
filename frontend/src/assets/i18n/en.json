@@ -7,6 +7,8 @@
         "request-password": "Request new password",
         "no-account": "Are you an external user and lacking login credentials?",
         "request-account": "Request an account",
+        "peek-password": "Reveal the password",
+        "hide-password": "Hide the password",
         "error": {
             "invalid-credentials": "Wrong username or password.",
             "system-unavailable": "System is not available, try again later."
@@ -197,7 +199,12 @@
                 "clear-change": "Clear change",
                 "units": "u.",
                 "collapse": "Hide changes",
-                "collapsed-count": "Show {{ count }} changes"
+                "collapsed-count": "Show {{ count }} changes",
+                "clear-change-modal" : {
+                    "header": "Clear change",
+                    "message": "Confirm removal of change: <em>{{ changeDescription }}</em>",
+                    "confirm": "Clear"
+                }
             },
             "changes-overview" : {
                 "title": "Scenario changes overview",
@@ -255,6 +262,8 @@
                 "select-all-for-batch": "Select all",
                 "select-all-for-batch-filtered": "Select visible",
                 "deselect-all-for-batch": "Deselect all",
+                "none-selected": "No scenarios selected",
+                "delete-selected": "Delete selected scenarios",
                 "batch-tools": {
                     "enter-batch-mode": "Enter batch selection mode",
                     "exit-batch-mode": "Exit batch selection mode",
@@ -268,7 +277,10 @@
                 "label": "Delete",
                 "tooltip": "Delete scenario",
                 "modal": {
-                    "title": "Are you sure you want to delete &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
+                    "title": "Delete scenario",
+                    "message": "Are you sure you want to delete &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
+                    "title-many": "Delete selected scenarios",
+                    "message-many": "Confirm deletion of <strong>{{ count }}</strong> scenarios?",
                     "delete": "Delete",
                     "cancel": "Cancel"
                 }
@@ -567,6 +579,15 @@
     "confirmation-modal": {
         "cancel": "Cancel",
         "confirm": "OK"
+    },
+    "change-language-modal": {
+        "header": "Change language",
+        "apply": "Apply",
+        "languages": {
+            "en": "English",
+            "sv": "Swedish",
+            "fr": "French"
+        }
     },
     "report": {
         "calculation": {

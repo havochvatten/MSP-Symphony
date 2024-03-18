@@ -1,4 +1,12 @@
 :host {
+  app-accordion-box-header {
+    ::ng-deep mat-checkbox.mdc-checkbox--disabled {
+      .mdc-form-field .mdc-checkbox {
+        display: none;
+      }
+    }
+  }
+
   app-accordion-box-content {
     ul {
       margin: 0;

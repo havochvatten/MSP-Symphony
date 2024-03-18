@@ -33,7 +33,6 @@
             ],
             "scripts": [],
             "allowedCommonJsDependencies": [
-              "lodash",
               "uuid/v4",
               "pbf",
               "xml-utils/find-tags-by-name.js",

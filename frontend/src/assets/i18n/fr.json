@@ -7,6 +7,8 @@
         "request-password": "Demander un nouveau mot de passe",
         "no-account": "Êtes-vous un utilisateur externe et souhaitez vous demander un compte?",
         "request-account": "Demander un compte",
+        "peek-password": "Afficher le mot de passe",
+        "hide-password": "Masquer le mot de passe",
         "error": {
             "invalid-credentials": "Nom d'utilisateur ou mot de passe invalide.",
             "system-unavailable": "Le système n'est pas disponible, veuillez réessayer plus tard."
@@ -197,7 +199,12 @@
                 "clear-change": "Effacer les modifications",
                 "units": "unités",
                 "collapse": "Cacher les modifications",
-                "collapsed-count": "Afficher {{ count }} modifications"
+                "collapsed-count": "Afficher {{ count }} modifications",
+                "clear-change-modal": {
+                    "header": "Effacer les modifications",
+                    "message": "Confirmer l'effacement de la modification: <em>{{ changeDescription }}</em>",
+                    "confirm": "Effacer"
+                }
             },
             "changes-overview" : {
                 "title": "Vue d'ensemble des modifications de scénario",
@@ -255,6 +262,8 @@
                 "select-all-for-batch": "Tout sélectionner",
                 "select-all-for-batch-filtered": "Sélectionner les visibles",
                 "deselect-all-for-batch": "Tout désélectionner",
+                "none-selected": "Aucun scénario sélectionné",
+                "delete-selected": "Supprimer les scénarios sélectionnés",
                 "batch-tools": {
                     "enter-batch-mode": "Entrer en mode de sélection par lots",
                     "exit-batch-mode": "Quitter le mode de sélection par lots",
@@ -268,7 +277,10 @@
                 "label": "Supprimer",
                 "tooltip": "Supprimer le scénario",
                 "modal": {
-                    "title": "Êtes-vous sûr de vouloir supprimer &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
+                    "title": "Supprimer scénario",
+                    "message": "Confirmer la suppression du scénario &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;&nbsp;.",
+                    "title-many": "Supprimer les scénarios sélectionnés",
+                    "message-many": "Confirmer la suppression des <strong>{{ count }}</strong> scénarios sélectionnés?",
                     "delete": "Supprimer",
                     "cancel": "Annuler"
                 }
@@ -549,6 +561,7 @@
         "about": "À propos",
         "support": "Mode d'emploi",
         "profile": "Mon profil",
+        "change-language": "Changer de langue",
         "logout": "Se déconnecter"
     },
     "about-dialog": {
@@ -566,6 +579,15 @@
     "confirmation-modal": {
         "cancel": "Annuler",
         "confirm": "Confirmer"
+    },
+    "change-language-modal": {
+        "header": "Changer de langue",
+        "apply": "Appliquer",
+        "languages": {
+            "en": "Anglais",
+            "sv": "Suédois",
+            "fr": "Français"
+        }
     },
     "report": {
         "calculation": {

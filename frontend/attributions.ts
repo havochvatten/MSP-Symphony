@@ -4,7 +4,6 @@ export default [
   ['OpenLayers', "https://openlayers.org", "7.1.0"],
   ['D3.js', "https://d3js.org/", "7.6.1"],
   ['Immutable.js', 'https://immutable-js.com/', '^4.0.0'],
-  ['Lodash', 'https://lodash.com/', '4.17.15'],
   ['Proj4js', 'https://github.com/proj4js/proj4js#readme', '2.6.1'],
   ['core-js', 'https://github.com/zloirock/core-js#readme', '2.5.4'],
   ['tslib', 'https://www.typescriptlang.org/', '2.0.0'],

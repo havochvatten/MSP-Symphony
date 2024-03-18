@@ -1,5 +1,10 @@
 package se.havochvatten.symphony.service;
 
+import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeCreator;
 import org.geotools.data.geojson.GeoJSONWriter;
 import org.geotools.data.simple.SimpleFeatureReader;
 import org.geotools.geometry.jts.JTS;
@@ -16,7 +21,9 @@ import org.sqlite.SQLiteException;
 import se.havochvatten.symphony.dto.AreaImportResponse;
 import se.havochvatten.symphony.dto.UploadedUserDefinedAreaDto;
 import se.havochvatten.symphony.dto.UserDefinedAreaDto;
+import se.havochvatten.symphony.dto.UserDto;
 import se.havochvatten.symphony.entity.UserDefinedArea;
+import se.havochvatten.symphony.entity.UserSettings;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.mapper.UserDefinedAreaDtoMapper;
@@ -29,18 +36,20 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList; 
 import java.util.List;
+import java.util.Map;
 
 @Stateless
-public class UserDefinedAreaService {
-    private static final Logger LOG = LoggerFactory.getLogger(UserDefinedAreaService.class);
+public class UserService {
+    private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 
     @PersistenceContext(unitName = "symphonyPU")
     private EntityManager em;
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     /**
      * Find all user defined areas
      */
-    public List<UserDefinedAreaDto> findAllByOwner(Principal principal) throws SymphonyStandardAppException {
+    public List<UserDefinedAreaDto> findAllUserDefinedAreasByOwner(Principal principal) throws SymphonyStandardAppException {
         List<UserDefinedArea> userDefinedAreas = em.createNamedQuery("UserDefinedArea.findAllByOwner")
                 .setParameter("owner", principal.getName())
                 .getResultList();
@@ -246,5 +255,28 @@ public class UserDefinedAreaService {
             return false;
         }
         return true;
+    }
+
+    public UserDto getUser(Principal user) throws IOException {
+        UserSettings settings = em.find(UserSettings.class, user.getName());
+        return new UserDto(
+            user.getName(),
+            settings == null ? Map.of() : mapper.readerFor(Map.class).readValue(settings.getSettings())
+        );
+    }
+
+    public void updateUserSettings(Principal userPrincipal, Map<String, Object> settings) throws SymphonyStandardAppException {
+        UserSettings userSettings = em.find(UserSettings.class, userPrincipal.getName());
+        if (userSettings == null) {
+            userSettings = new UserSettings();
+            userSettings.setUser(userPrincipal.getName());
+        }
+        try {
+            userSettings.updateSettings(settings);
+        } catch (JsonMappingException e) {
+            throw new SymphonyStandardAppException(SymphonyModelErrorCode.OTHER_ERROR, e);
+        }
+
+        em.persist(userSettings);
     }
 }

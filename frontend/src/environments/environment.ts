@@ -10,6 +10,7 @@ export const environment = {
   socketBaseUrl: "/socket",
   baseline: false,
   externManual: null,
+  peekPassword: false,
   map: {
     center: [10, -10],
     initialZoom: 4,

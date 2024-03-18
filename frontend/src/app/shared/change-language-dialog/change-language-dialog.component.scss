@@ -1,0 +1,57 @@
+@import 'src/styles/hav-colors';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  width: 38rem;
+  padding: 0 2.4rem 2rem;
+  border-radius: 1rem;
+
+  h4 {
+    margin: 3rem 0 1rem;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: $hav-black;
+  }
+
+  .language-options {
+    display: flex;
+    flex-direction: column;
+    margin-top: 2rem;
+
+    .language-option {
+      display: flex;
+      align-items: center;
+      gap: 1.6rem;
+      padding: 1rem;
+      cursor: pointer;
+
+      .language-flag {
+        position: relative;
+        height: 1.6rem;
+        width: 2.6rem;
+        object-fit: cover;
+
+        img {
+          height: 100%;
+        }
+      }
+
+      .language-name {
+        flex: 1;
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: $hav-black;
+      }
+
+      mat-radio-button {
+        align-self: flex-end;
+      }
+
+      &:first-child {
+        border-bottom: 1px solid $hav-map-grey;
+      }
+    }
+  }
+}

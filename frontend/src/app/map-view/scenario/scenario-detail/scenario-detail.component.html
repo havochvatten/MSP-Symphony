@@ -111,27 +111,29 @@
 
 </section>
 
-<div class="toolbar">
+<div class="toolbar" *ngIf="{ mxLoading: areaMatricesLoading$ | async, calculating: calculating$ | async } as state">
 
-  <button mat-flat-button id="exit" (click)="close()" [ngClass]="'basic'">
+  <button mat-flat-button id="exit" (click)="close()" [ngClass]="'basic'"
+          [disabled]="state.calculating">
     {{ 'map.editor.close' | translate }}
   </button>
 
-  <button mat-flat-button id="delete" color="warn" [ngClass]="'secondary'" (click)="delete()">
+  <button mat-flat-button id="delete" color="warn" [ngClass]="'secondary'"
+          [disabled]="state.calculating" (click)="delete()">
     {{ 'map.editor.delete.label' | translate }}
   </button>
 
   <button mat-flat-button id="calculate"
-          [disabled]="(calculating$ | async) || (areaMatricesLoading$ | async)"
+          [disabled]="state.calculating || state.mxLoading"
           (click)="calculate()"
   >
     {{ 'map.editor.calculate' | translate }}
   </button>
 
-  <button mat-flat-button id="report-button" [ngClass]="{'green' : (calculating$ | async) === false, 'mat-button-disabled' : calculating$ | async }"
+  <button mat-flat-button id="report-button" [ngClass]="{'green' : !state.calculating, 'mat-button-disabled' : state.calculating }"
           (click)="showReport(scenario.latestCalculationId+'')"
-          [disabled]="!scenario.latestCalculationId">
-    <mat-spinner *ngIf="calculating$ | async" diameter="20" color="#22bb00"></mat-spinner>
-    <app-icon *ngIf="(calculating$ | async) === false" iconType="report"></app-icon>
+          [disabled]="!scenario.latestCalculationId || state.calculating">
+    <mat-spinner *ngIf="state.calculating" diameter="20"></mat-spinner>
+    <app-icon *ngIf="!state.calculating" iconType="report"></app-icon>
   </button>
 </div>

@@ -6,7 +6,7 @@ import { MatrixService } from '../matrix.service';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { isEqual } from "lodash";
+import { isEqual } from "@shared/common.util";
 import { DialogService } from "@shared/dialog/dialog.service";
 import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 

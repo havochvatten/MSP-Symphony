@@ -14,7 +14,8 @@ describe('AbstractReport', () => {
       providers: [
         provideMockStore({
           initialState: {
-            metadata
+            metadata,
+            user: {}
           }
         })
       ]

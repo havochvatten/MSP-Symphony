@@ -21,29 +21,29 @@ export default class AreaService {
   }
 
   getUserAreas() {
-    return this.http.get<AreaInterfaces.UserArea[]>(`${BASE_URL}/userdefinedarea`);
+    return this.http.get<AreaInterfaces.UserArea[]>(`${BASE_URL}/user/area/all`);
   }
 
   createUserArea(userArea: Partial<UserArea>) {
-    return this.http.post<AreaInterfaces.UserArea>(`${BASE_URL}/userdefinedarea`, userArea);
+    return this.http.post<AreaInterfaces.UserArea>(`${BASE_URL}/user/area`, userArea);
   }
 
   uploadUserArea(formData: FormData) {
-    return this.http.post<AreaInterfaces.UploadedUserDefinedArea>(`${BASE_URL}/userdefinedarea/import`,
+    return this.http.post<AreaInterfaces.UploadedUserDefinedArea>(`${BASE_URL}/user/area/import`,
       formData);
   }
 
   confirmUserAreaImport(key: string) {
-    return this.http.put<AreaInterfaces.AreaImport>(`${BASE_URL}/userdefinedarea/import/${key}`, null);
+    return this.http.put<AreaInterfaces.AreaImport>(`${BASE_URL}/user/area/import/${key}`, null);
   }
 
   updateUserArea(userArea: Partial<UserArea>) {
-    return this.http.put<AreaInterfaces.UserArea>(`${BASE_URL}/userdefinedarea/${userArea.id}`, userArea
+    return this.http.put<AreaInterfaces.UserArea>(`${BASE_URL}/user/area/${userArea.id}`, userArea
     );
   }
 
   deleteUserArea(userAreaId: number) {
-    return this.http.delete(`${BASE_URL}/userdefinedarea/${userAreaId}`);
+    return this.http.delete(`${BASE_URL}/user/area/${userAreaId}`);
   }
 
   getBoundaries() {

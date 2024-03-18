@@ -20,7 +20,8 @@ describe('EcoSliderComponent', () => {
       ],
       declarations: [EcoSliderComponent],
       providers: [provideMockStore({ initialState: {
-        metadata: initialState
+        metadata: initialState,
+        user: {}
       }})]
     }).compileComponents();
     fixture = TestBed.createComponent(EcoSliderComponent);

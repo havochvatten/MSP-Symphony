@@ -9,8 +9,10 @@ import {
 import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 import { TranslateService } from "@ngx-translate/core";
 import { DialogService } from "@shared/dialog/dialog.service";
+import { changeText } from "@src/app/shared/common.util";
 import { Observable } from "rxjs";
 import { MetadataActions } from "@data/metadata";
+import { BandChange } from "@data/metadata/metadata.interfaces";
 
 @Component({
   selector: 'app-scenario-editor',
@@ -75,6 +77,22 @@ export class ScenarioEditorComponent {
     }
   }
 
+  confirmDeleteChange = async (bandName: string, change: BandChange) : Promise<boolean> => {
+    const changeDescription =
+      this.changeText(bandName, change);
+
+    return await this.dialogService.open(ConfirmationModalComponent, this.moduleRef,
+      { data: {
+          header: this.translateService.instant('map.editor.changes.clear-change-modal.header'),
+          message: this.translateService.instant('map.editor.changes.clear-change-modal.message', { changeDescription }),
+          confirmText: this.translateService.instant('map.editor.changes.clear-change-modal.confirm'),
+          dialogClass: 'center block-identifier',
+          confirmColor: 'warn',
+          buttonsClass: 'center'
+        }
+      });
+  }
+
   deleteAreaAction = (areaId: number, scenario: Scenario) => {
     this.store.dispatch(ScenarioActions.closeActiveScenarioArea());
     if (scenario.areas.length > 1) {
@@ -83,4 +101,6 @@ export class ScenarioEditorComponent {
       this.store.dispatch(ScenarioActions.deleteScenario({ scenarioToBeDeleted: scenario }));
     }
   }
+
+  changeText = changeText;
 }

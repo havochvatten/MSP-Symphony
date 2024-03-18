@@ -42,8 +42,11 @@ import javax.media.jai.ROIShape;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -124,8 +127,8 @@ public class ScenarioService {
 
         if (s == null)
             throw new NotFoundException();
-        if (s == null || !s.getOwner().equals(principal.getName()))
-            throw new NotAuthorizedException(principal.getName());
+        if (!s.getOwner().equals(principal.getName()))
+            throw new ForbiddenException(principal.getName());
         else
             em.remove(s);
     }
@@ -259,7 +262,7 @@ public class ScenarioService {
                 feature.setAttribute("name", serialName);
                 feature.setAttribute("displayName", serialName);
                 feature.setAttribute("id", serialName);
-                area.setFeature(mapper.readTree(GeoJSONWriter.toGeoJSON(feature)));
+                area.setFeature(mapper.readTree(toGeoJSON(feature)));
                 em.merge(area);
             }
         }
@@ -366,5 +369,20 @@ public class ScenarioService {
         return em.createNamedQuery("Scenario.getAreaIdsForScenario", int[].class)
             .setParameter("scenarioId", id)
             .getSingleResult();
+    }
+
+    public static String toGeoJSON(SimpleFeature f) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        try(GeoJSONWriter gjWriter = new GeoJSONWriter(out)) {
+            gjWriter.setSingleFeature(
+                !((Geometry) f.getDefaultGeometry())
+                    .getGeometryType().equals("MultiPolygon"));
+            gjWriter.setMaxDecimals(7);
+            gjWriter.write(f);
+            return out.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

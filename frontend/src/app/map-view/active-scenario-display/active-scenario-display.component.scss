@@ -45,5 +45,12 @@
       color: $hav-turquoise;
       cursor: pointer;
     }
+
+    &[disabled] {
+      span {
+        color: $hav-darkcoldgrey;
+        cursor: default;
+      }
+    }
   }
 }

@@ -24,7 +24,8 @@ describe('BandSelectionComponent', () => {
       providers: [provideMockStore({
         initialState: {
           area: area,
-          scenario: scenario
+          scenario: scenario,
+          user: {}
         }
       })]
     }).compileComponents();

@@ -7,6 +7,8 @@
         "request-password": "Begär nytt",
         "no-account": "Är du en extern användare och saknar loginuppgifter?",
         "request-account": "Ansök om konto",
+        "peek-password": "Visa lösenordet",
+        "hide-password": "Dölj lösenordet",
         "error": {
             "invalid-credentials": "Fel användarnamn eller lösenord.",
             "system-unavailable": "Systemet ligger nere för stunden. Försök igen senare."
@@ -197,7 +199,12 @@
                 "clear-change": "Rensa ändring",
                 "units": "enheter",
                 "collapse": "Dölj ändringar",
-                "collapsed-count": "Visa {{ count }} ändringar"
+                "collapsed-count": "Visa {{ count }} ändringar",
+                "clear-change-modal": {
+                    "header": "Rensa ändring",
+                    "message": "Bekräfta borttagning av ändring: <em>{{ changeDescription }}</em>",
+                    "confirm": "Rensa"
+                }
             },
             "changes-overview" : {
                 "title": "Översikt förekomständringar",
@@ -255,6 +262,8 @@
                 "select-all-for-batch": "Markera samtliga",
                 "select-all-for-batch-filtered": "Markera synliga",
                 "deselect-all-for-batch": "Avmarkera samtliga",
+                "none-selected": "Inga scenarion har markerats",
+                "delete-selected": "Radera markerade scenarion",
                 "batch-tools": {
                     "enter-batch-mode": "Gå till \"batch\"-läge",
                     "exit-batch-mode": "Gå ur \"batch\"-läge",
@@ -268,7 +277,10 @@
                 "label": "Radera",
                 "tooltip": "Radera scenario",
                 "modal": {
-                    "title": "Är du säker på att du vill radera &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
+                    "title": "Radera scenario",
+                    "message": "Är du säker på att du vill radera &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
+                    "title-many": "Radera markerade scenarion",
+                    "message-many": "Bekräfta borttagning av <strong>{{ count }}</strong> markerade scenarion?",
                     "delete": "Radera",
                     "cancel": "Avbryt"
                 }
@@ -549,6 +561,7 @@
         "about": "Om",
         "support": "Support",
         "profile": "Min profil",
+        "change-language": "Ändra språk",
         "logout": "Logga ut"
     },
     "about-dialog": {
@@ -566,6 +579,15 @@
     "confirmation-modal": {
         "cancel": "Avbryt",
         "confirm": "OK"
+    },
+    "change-language-modal": {
+        "header": "Välj språk",
+        "apply": "Tillämpa",
+        "languages": {
+            "en": "Engelska",
+            "sv": "Svenska",
+            "fr": "Franska"
+        }
     },
     "report": {
         "calculation": {
