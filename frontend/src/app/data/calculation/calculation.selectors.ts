@@ -91,3 +91,8 @@ export const selectCompoundComparisonCount = createSelector(
   selectCompoundComparisons,
   compoundComparisons => compoundComparisons.length
 );
+
+export const selectCompoundComparisonSuccessCount = createSelector(
+  selectCalculationState,
+  state => state.compoundComparisonSuccessCount
+);

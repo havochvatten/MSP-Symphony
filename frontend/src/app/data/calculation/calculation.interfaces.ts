@@ -22,6 +22,7 @@ export interface State {
   generatingComparisonsFor: number[];
   loadingCompoundComparisons: boolean;
   compoundComparisons: CompoundComparisonSlice[];
+  compoundComparisonSuccessCount: number;
   sortCompoundComparisons: ListItemsSort;
 }
 
