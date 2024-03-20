@@ -560,7 +560,7 @@ public class ReportService {
             cmpResults.length * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL, 5,
             title);
 
-        totalSheet.setName(String.format("%s - %s", comparison.getName(), sum_s));
+        totalSheet.setName(String.format("%s - %s", comparison.getName(), metaDict.get("total")));
         totalSheet.setColumnWidth(1, ODF_TITLE_COLWIDTH);
 
         // guard against duplicate calculation names
@@ -661,8 +661,6 @@ public class ReportService {
             nextCell = totalSheet.getRange(calcSectionOffset, 1);
             nextCell.setValue(cmp.calculationName);
             nextCell.setStyle(ODSStyles.calcName);
-            //totalSheet.setRowHeight(calcSectionOffset + 2, 2.0);
-            //totalSheet.setRowHeight(calcSectionOffset + 5, 2.0);
 
             totalSheet.getRange(calcSectionOffset + 1, 1)
                 .setValue(areaText);
