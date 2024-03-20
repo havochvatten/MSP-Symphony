@@ -532,6 +532,13 @@
             "delete-modal": {
                 "header": "Delete compound comparison",
                 "message": "Confirm deletion of compound comparison: <em>“{{ comparisonName }}”</em>"
+            },
+            "terms": {
+                "total": "Total",
+                "sum": "Sum",
+                "difference": "Difference",
+                "pixels": "Number of pixels",
+                "non-planar": "Non-planar projection"
             }
         },
         "area-options": {

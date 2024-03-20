@@ -2,7 +2,6 @@ package se.havochvatten.symphony.service;
 
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.github.miachm.sods.*;
-import it.geosolutions.jaiext.stats.HistogramMode;
 import it.geosolutions.jaiext.stats.Statistics;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
@@ -47,10 +46,25 @@ public class ReportService {
     // The CSV standard (RFC 4180) actually says to use comma, but tab is MS Excel default. Or use TSV?
     private static final char CSV_FIELD_SEPARATOR = '\t';
 
-    private static final int ODF_TITLE_ROWS = 6;
+    private static final int ODF_TITLE_ROWS = 8;
     private static final int ODF_TITLE_ROWS_TOTAL = 3;
-    private static final int ODF_CALC_TOTALS_SECTION = 7;
+    private static final int ODF_CALC_TOTALS_SECTION = 10;
     private static final double ODF_TITLE_COLWIDTH = 55.0;
+
+    private static final Map<String, String> defaultMeta = Map.ofEntries(
+        Map.entry("compoundHeading", "Compound comparison data"),
+        Map.entry("area", "Calculated area"),
+        Map.entry("total", "Total"),
+        Map.entry("sum", "Sum"),
+        Map.entry("difference", "Difference"),
+        Map.entry("average", "Average"),
+        Map.entry("stddev", "Standard deviation"),
+        Map.entry("max", "Max"),
+        Map.entry("pixels", "Pixels"),
+        Map.entry("nonPlanar", "Non-planar projection"),
+        Map.entry("ecosystem", "Ecosystem"),
+        Map.entry("pressure", "Pressure")
+    );
 
     @EJB
     private Operations operations;
@@ -70,11 +84,13 @@ public class ReportService {
     @Inject
     PropertiesService props;
 
-    record StatisticsResult(double min, double max, double average, double stddev, double[] histogram, long pixels){}
-
     public record MultiComparisonAuxiliary(int[] ecosystems, int[] pressures, double[][] result) {}
 
-    private StatisticsResult getStatistics(GridCoverage2D coverage) {
+    public StatisticsResult getStatistics(GridCoverage2D coverage) {
+        return getStatistics(coverage, true);
+    }
+
+    public StatisticsResult getStatistics(GridCoverage2D coverage, boolean includeHistogram) {
         Statistics[] simpleStats = operations.stats(coverage, new int[]{0}, new Statistics.StatsType[]{
                 Statistics.StatsType.EXTREMA,
                 Statistics.StatsType.MEAN,
@@ -83,17 +99,16 @@ public class ReportService {
         double[] extrema = (double[]) simpleStats[0].getResult();
         double max = extrema[1] + (Math.ulp(extrema[1]) * 100);
 
-        HistogramMode histogram =
-            operations.histogram(coverage, 0.0, max, 100);
-
         return new StatisticsResult(extrema[0], extrema[1],
                         (double) simpleStats[1].getResult(),
                         (double) simpleStats[2].getResult(),
-                        (double[]) histogram.getResult(),
+                        includeHistogram ?
+                            (double[]) operations.histogram(coverage, 0.0, max, 100).getResult() :
+                            new double[0],
                         simpleStats[0].getNumSamples());
     }
 
-    private static double getResolutionInMetres(GridCoverage2D coverage) {
+    public static double getResolutionInMetres(GridCoverage2D coverage) {
         double result;
         GridGeometry2D geometry = coverage.getGridGeometry();
         Double scale = ((AffineTransform2D) geometry.getGridToCRS()).getScaleX();
@@ -163,13 +178,13 @@ public class ReportService {
         // Does not sum to exactly 100% for some reason? I.e. assert(getComponentTotals(...) == stats
         // .getSum()) not always true. Tolerance?
         report.total = total; //stats.getSum();
-        report.min       = stats.min;
-        report.max       = stats.max;
-        report.average   = stats.average;
-        report.stddev    = stats.stddev;
-        report.histogram = stats.histogram;
+        report.min       = stats.min();
+        report.max       = stats.max();
+        report.average   = stats.average();
+        report.stddev    = stats.stddev();
+        report.histogram = stats.histogram();
 
-        report.calculatedPixels = stats.pixels;
+        report.calculatedPixels = stats.pixels();
 
         double resolution = getResolutionInMetres(coverage);
         report.gridResolution = Double.isNaN(resolution) ? Double.NaN :
@@ -515,9 +530,14 @@ public class ReportService {
 
     // TODO: Probable opportunity to refactor for less repetitive code.
     public byte[] generateMultiComparisonAsODS(
-        CompoundComparison comparison, String preferredLanguage, String localisedHeading, boolean excludeZeroes) throws Exception {
+        CompoundComparison comparison, String preferredLanguage, boolean excludeZeroes, Map<String, String> localizedMeta) throws Exception {
 
-        String title = localisedHeading + " \"" + comparison.getName() + "\"";
+        HashMap<String, String> metaDict = new HashMap<>(defaultMeta);
+
+        metaDict.putAll(localizedMeta);
+
+        String title = metaDict.get("compoundHeading") + " \"" + comparison.getName() + "\"",
+            sum_s = metaDict.get("sum");
 
         Map<Integer, String>
             ecoTitles = metaDataService.getComponentTitles(
@@ -540,7 +560,7 @@ public class ReportService {
             cmpResults.length * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL, 5,
             title);
 
-        totalSheet.setName(comparison.getName() + " - Total");
+        totalSheet.setName(String.format("%s - %s", comparison.getName(), metaDict.get("total")));
         totalSheet.setColumnWidth(1, ODF_TITLE_COLWIDTH);
 
         // guard against duplicate calculation names
@@ -556,6 +576,9 @@ public class ReportService {
         for (ComparisonResult cmp : cmpResults) {
 
             Range nextCell;
+            String areaText = cmp.planar ? String.format("%s: %.2f km²", metaDict.get("area"), cmp.area_m2 / 1e6) :
+                              String.format("%s: - (%s)", metaDict.get("area"), metaDict.get("nonPlanar")),
+                   pixelsText = String.format("%s: %d", metaDict.get("pixels"), cmp.pixels);
 
             Sheet nextSheet = createSheet(
                 cmp.includedEcosystems.length + ODF_TITLE_ROWS + 1,     // + 1 totals row
@@ -571,6 +594,10 @@ public class ReportService {
             nextCell = nextSheet.getRange(3, 1);
             nextCell.setValue(cmp.calculationName);
             nextCell.setStyle(ODSStyles.calcName);
+
+            nextSheet.getRange(4, 1).setValue(areaText);
+            nextSheet.getRange(5, 1).setValue(pixelsText);
+
             nextSheet.setRowHeight(ODF_TITLE_ROWS - 2, 2.0);
 
             MultiComparisonAuxiliary layersToList = getLayerIndicesToListForResult(cmp, excludeZeroes);
@@ -599,12 +626,12 @@ public class ReportService {
             }
 
             nextCell = nextSheet.getRange(ODF_TITLE_ROWS - 1, 2 + layersToList.pressures.length);
-            nextCell.setValue("TOTAL");
+            nextCell.setValue(sum_s.toUpperCase());
             nextCell.setStyle(ODSStyles.totalHE);
             nextSheet.setColumnWidth(2 + layersToList.pressures.length, ODF_TITLE_COLWIDTH);
 
             nextCell = nextSheet.getRange(ODF_TITLE_ROWS + layersToList.ecosystems.length, 1);
-            nextCell.setValue("TOTAL");
+            nextCell.setValue(sum_s.toUpperCase());
             nextCell.setStyle(ODSStyles.totalHP);
 
             for (e = 0; e < layersToList.ecosystems.length; e++) {
@@ -634,23 +661,25 @@ public class ReportService {
             nextCell = totalSheet.getRange(calcSectionOffset, 1);
             nextCell.setValue(cmp.calculationName);
             nextCell.setStyle(ODSStyles.calcName);
-            totalSheet.setRowHeight(calcSectionOffset + 2, 2.0);
-            totalSheet.setRowHeight(calcSectionOffset + 5, 2.0);
+
+            totalSheet.getRange(calcSectionOffset + 1, 1)
+                .setValue(areaText);
+            totalSheet.getRange(calcSectionOffset + 2, 1)
+                .setValue(pixelsText);
 
             // Left aligned table with row titles column in third column (index 2)
             nextCell = totalSheet.getRange(calcSectionOffset, 2);
-            nextCell.setValue("Pressure");
-            nextCell.setStyle(ODSStyles.pressureHeader);
+            nextCell.setValue(metaDict.get("pressure"));
+            nextCell.setStyle(ODSStyles.epHeaderLeft);
             nextCell = totalSheet.getRange(calcSectionOffset + 1, 2);
-            nextCell.setValue("TOTAL");
+            nextCell.setValue(sum_s.toUpperCase());
             nextCell.setStyle(ODSStyles.totalHP);
 
-
             nextCell = totalSheet.getRange(calcSectionOffset + 3, 2);
-            nextCell.setValue("Ecosystem");
-            nextCell.setStyle(ODSStyles.pressureHeader);
+            nextCell.setValue(metaDict.get("ecosystem"));
+            nextCell.setStyle(ODSStyles.epHeaderLeft);
             nextCell = totalSheet.getRange(calcSectionOffset + 4, 2);
-            nextCell.setValue("TOTAL");
+            nextCell.setValue(sum_s.toUpperCase());
             nextCell.setStyle(ODSStyles.totalHP);
 
             // Left aligned table with horizontal title column in third column:
@@ -662,7 +691,6 @@ public class ReportService {
                 nextCell = totalSheet.getRange(calcSectionOffset + 1, 3 + p);
                 nextCell.setValue(cmp.totalPerPressure.get(cmp.includedPressures[layersToList.pressures[p]]));
                 nextCell.setStyle(ODSStyles.totalP);
-                nextSheet.setColumnWidth(3 + p, ODF_TITLE_COLWIDTH);
             }
 
             for (e = 0; e < layersToList.ecosystems.length; e++) {
@@ -674,12 +702,49 @@ public class ReportService {
                 nextCell.setStyle(ODSStyles.totalP);
             }
 
-            if (cmpIndex < cmpResults.length - 1) {
+            nextCell = totalSheet.getRange(calcSectionOffset + 6, 2);
+            nextCell.setValue(metaDict.get("total"));
+            nextCell.setStyle(ODSStyles.epHeaderLeft);
+            nextCell = totalSheet.getRange(calcSectionOffset + 7, 2);
+            nextCell.setValue(metaDict.get("difference"));
+            nextCell.setStyle(ODSStyles.totalHP);
+
+            nextCell = totalSheet.getRange(calcSectionOffset + 6, 3);
+            nextCell.setValue(sum_s);
+            nextCell.setStyle(ODSStyles.pressureHeader);
+            nextCell = totalSheet.getRange(calcSectionOffset + 7, 3);
+            nextCell.setValue(cmp.cumulativeTotal);
+            nextCell.setStyle(ODSStyles.totalP);
+
+            nextCell = totalSheet.getRange(calcSectionOffset + 6, 4);
+            nextCell.setValue(metaDict.get("average"));
+            nextCell.setStyle(ODSStyles.pressureHeader);
+            nextCell = totalSheet.getRange(calcSectionOffset + 7, 4);
+            nextCell.setValue(cmp.average);
+            nextCell.setStyle(ODSStyles.totalP);
+
+            nextCell = totalSheet.getRange(calcSectionOffset + 6, 5);
+            nextCell.setValue(metaDict.get("max"));
+            nextCell.setStyle(ODSStyles.pressureHeader);
+            nextCell = totalSheet.getRange(calcSectionOffset + 7, 5);
+            nextCell.setValue(cmp.max);
+            nextCell.setStyle(ODSStyles.totalP);
+
+            nextCell = totalSheet.getRange(calcSectionOffset + 6, 6);
+            nextCell.setValue(metaDict.get("stddev"));
+            nextCell.setStyle(ODSStyles.pressureHeader);
+            nextCell = totalSheet.getRange(calcSectionOffset + 7, 6);
+            nextCell.setValue(cmp.standardDeviation);
+            nextCell.setStyle(ODSStyles.totalP);
+
+            if (cmpIndex < cmpResults.length) {
                 j = 0;
                 while (j < sectionLength + 2) {
-                    nextCell = totalSheet.getRange(calcSectionOffset + ODF_CALC_TOTALS_SECTION - 1, 1 + j);
-                    nextCell.setStyle(ODSStyles.resultSep);
                     if (j != 1) totalSheet.setColumnWidth(1 + j, ODF_TITLE_COLWIDTH);
+                    if(cmpIndex > 0) {
+                        nextCell = totalSheet.getRange(calcSectionOffset - 1, 1 + j);
+                        nextCell.setStyle(ODSStyles.resultSep);
+                    }
                     ++j;
                 }
             }

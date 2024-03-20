@@ -485,12 +485,29 @@ public class CalcService {
                     (double[][]) implicitBaseline.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME),
                     calc.getImpactMatrix());
 
+                StatisticsResult statsA = reportService.getStatistics(implicitBaseline, false),
+                                 statsB = reportService.getStatistics(calc.getCoverage(), false),
+                                    stats = new StatisticsResult(
+                                        statsA.min(),
+                                        statsB.max() - statsA.max(),
+                                        statsB.average() - statsA.average(),
+                                        statsB.stddev() - statsA.stddev(), new double[0],
+                                        statsA.pixels());
+
+                double resolution = ReportService.getResolutionInMetres(implicitBaseline);
+                double area = Double.isNaN(resolution) ?
+                    calc.getScenarioSnapshot().getGeometry().getArea() :
+                    resolution * resolution * stats.pixels();
+
                 cmp.setCmpResultForCalculation(
                     calc.getId(),
                     calc.getScenarioSnapshot().getEcosystemsToInclude(),
                     calc.getScenarioSnapshot().getPressuresToInclude(),
                     differentiaImpact,
-                    calc.getCalculationName());
+                    calc.getCalculationName(),
+                    area,
+                    !Double.isNaN(resolution),
+                    stats);
             }
 
             transaction.begin();

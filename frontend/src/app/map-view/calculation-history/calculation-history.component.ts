@@ -1,4 +1,4 @@
-import { Component, ElementRef, NgModuleRef, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, NgModuleRef, OnDestroy, OnInit, signal } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { shareReplay, tap } from "rxjs/operators";
 import { select, Store } from '@ngrx/store';
