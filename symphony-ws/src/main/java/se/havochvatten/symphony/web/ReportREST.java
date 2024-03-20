@@ -1,5 +1,6 @@
 package se.havochvatten.symphony.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.opengis.referencing.FactoryException;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.io.IOException;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import static javax.ws.rs.core.Response.ok;
@@ -33,6 +35,8 @@ import static se.havochvatten.symphony.web.CalculationREST.hasAccess;
 @Api(value = "/report")
 public class ReportREST {
     private static final Logger logger = Logger.getLogger(ReportREST.class.getName());
+
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     @Inject
     private ReportService reportService;
@@ -281,7 +285,7 @@ public class ReportREST {
                                              @PathParam("id") Integer id,
                                              @PathParam("format") String format,
                                              @DefaultValue("false") @QueryParam("nonzero") boolean excludeZeroes,
-                                             @DefaultValue("") @QueryParam("heading") String localisedHeading,
+                                             @DefaultValue("") @QueryParam("meta-terms") String metatermsParam,
                                              @DefaultValue("en") @QueryParam("lang") String preferredLanguage) {
 
         try {
@@ -290,12 +294,15 @@ public class ReportREST {
                 "attachment; filename=\"Compound_comparison_-_" + WebUtil.escapeFilename(cmp.getName()) +
                     (format.equals("json") ? ".json" : ".ods");
 
+            Map<String, String> metaTerms = metatermsParam.isEmpty() ?
+                Map.of() : mapper.readValue(metatermsParam, Map.class);
+
             try {
                 if(format.equals("json"))
                     return ok(reportService.generateMultiComparisonAsJSON(cmp, preferredLanguage, excludeZeroes)).
                         header("Content-Disposition", attachmentHeader).build();
                 else {
-                    byte[] ods = reportService.generateMultiComparisonAsODS(cmp, preferredLanguage, localisedHeading, excludeZeroes);
+                    byte[] ods = reportService.generateMultiComparisonAsODS(cmp, preferredLanguage, excludeZeroes, metaTerms);
                     return ok(ods).
                         header("Content-Disposition",attachmentHeader).build();
                 }

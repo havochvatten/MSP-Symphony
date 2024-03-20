@@ -532,6 +532,13 @@
             "delete-modal": {
                 "header": "Supprimer la comparaison composée",
                 "message": "Confirmer la suppression de la comparaison composée: <em>“{{ comparisonName }}”</em>"
+            },
+            "terms": {
+                "total": "Total",
+                "sum": "Somme",
+                "difference": "Différence",
+                "pixels": "Nombre de pixels",
+                "non-planar": "Projection non planaire"
             }
         },
         "area-options": {
