@@ -10,6 +10,7 @@ import org.locationtech.jts.io.ParseException;
 import se.havochvatten.symphony.dto.CalculationResultSliceDto;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
+import se.havochvatten.symphony.entity.CalculationResultSlice;
 import se.havochvatten.symphony.web.RESTTest;
 
 import java.io.File;
@@ -92,7 +93,7 @@ public class ScenarioRESTTest extends RESTTest {
         delete(testScenario.id);
     }
 
-    private CalculationResultSliceDto calculate(ScenarioDto s) {
+    private CalculationResultSlice calculate(ScenarioDto s) {
         Response response =
                 given().
                         header("Content-Type", "application/json").
@@ -103,7 +104,7 @@ public class ScenarioRESTTest extends RESTTest {
                         body(s.id).
                         post(endpoint("/calculation/sum"));
         assertEquals(200, response.statusCode());
-        return response.as(CalculationResultSliceDto.class);
+        return response.as(CalculationResultSlice.class);
     }
 
     public static ExtractableResponse<Response> update(ScenarioDto s) {
@@ -149,7 +150,7 @@ public class ScenarioRESTTest extends RESTTest {
                 auth().
                 preemptive().
                 basic(getUsername(), getPassword()).
-                delete(endpoint("/scenario/") + id);
+                delete(endpoint("/scenario/?ids=") + id);
     }
     public static ScenarioAreaDto getTestArea(String areaCode) throws IOException {
         return mapper.readValue(
