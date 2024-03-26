@@ -87,7 +87,7 @@ public class RESTTest { // N.B: Must end with Test to be included in "only-apite
 
     public static BaselineVersion makeBaseline() {
         var baselineVersion = new BaselineVersion();
-        baselineVersion.setId(1);
+        baselineVersion.setId(3);
         baselineVersion.setName("test");
         baselineVersion.setDescription("test desc");
         baselineVersion.setValidFrom(new Date());
