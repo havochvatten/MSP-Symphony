@@ -106,7 +106,7 @@ public class UserRESTTest extends RESTTest {
             basic(getUsername(), getPassword()).
             pathParam("id", id).
             when().
-            delete(endpoint("/userdefinedarea/{id}"));
+            delete(endpoint("/user/area/{id}"));
 
         return response.getStatusCode() == 200;
     }
