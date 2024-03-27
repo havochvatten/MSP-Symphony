@@ -155,14 +155,10 @@ the default native platform encoding. Notably, on Windows that is not UTF and so
 
 ### Frontend
 
-In the interest of efficiency the frontend is can be served by a separate frontend server. In the case of Apache 
+In the interest of efficiency the frontend may be served by a separate frontend server. In the case of Apache 
 an example virtual host file is included [here](example-config/apache/vhosts.d/example-vhost.conf). To maintain the 
 same-origin policy and avoid CORS issues the frontend server needs to proxy REST API calls. The above sample Apache 
-configuration file illustrates how to accommodate this. 
-
-Another option is to have the application server itself serve the frontend, eliminating the need for a 
-separate frontend server. In the case of Wildfly, see
-[this guide](http://www.mastertheboss.com/web/jboss-web-server/how-to-serve-static-content-in-wildfly-applications/). 
+configuration file illustrates how to accommodate this.
 
 
 ## Testing
