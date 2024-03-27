@@ -48,8 +48,9 @@ has been used and is thus the recommended choice. At SwAM the frontend is served
 although any web server capable of serving static content should do (see [Frontend](#frontend-1) below). The backend 
 has been tested using Wildfly 26.1, PostgreSQL 10 and PostGIS v2.4, but more recent versions should be fine.
 
-The frontend has been built with NodeJS v.16.14.2. More recent versions may cause problems with the specific version of 
-Angular currently employed. The frontend has only been tested on Google Chrome during development, and is thus the recommended choice of user browser client.
+The frontend is realized as an Angular application (v 17), built with Node 20.11.1.
+Since we routinely test the UI only on Google Chrome under development, it is recommended specifically as the preferred 
+browser client.
 
 ## Getting the source
 
