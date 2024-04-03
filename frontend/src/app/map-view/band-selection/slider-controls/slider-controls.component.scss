@@ -67,6 +67,10 @@
     ::ng-deep mat-checkbox {
 
       &.mdc-checkbox--disabled {
+        label.mdc-label {
+          color: $hav-black;
+        }
+
         .mdc-form-field .mdc-checkbox {
           display: none;
         }
