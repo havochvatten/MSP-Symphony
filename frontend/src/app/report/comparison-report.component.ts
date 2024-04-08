@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { formatPercent } from "@angular/common";
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { map } from "lodash";
 import { State } from '../app-reducer';
 import { MetadataActions } from '@data/metadata';
 import { ComparisonReport, Legend } from '@data/calculation/calculation.interfaces';
@@ -12,7 +12,6 @@ import { ReportService } from "@src/app/report/report.service";
 import { CalculationService } from "@data/calculation/calculation.service";
 import { relativeDifference, setOverflowProperty } from "@src/app/report/report.util";
 import { AbstractReport } from "@src/app/report/abstract-report.directive";
-import { formatPercent } from "@angular/common";
 
 @Component({
   selector: 'app-calculation-report',
@@ -30,17 +29,18 @@ export class ComparisonReportComponent extends AbstractReport {
   allOverflow: { [bandType: string]: number[] } = {};
 
   maxValue: number;
+  reverse: boolean;
 
   chartWeightThresholdPercentage = '1%';
 
   legend:Observable<Legend>;
 
   constructor(
-    private translate: TranslateService,
+    translate: TranslateService,
     private store: Store<State>,
-    private route: ActivatedRoute,
-    private reportService: ReportService,
-    private calcService: CalculationService
+    route: ActivatedRoute,
+    reportService: ReportService,
+    calcService: CalculationService
   ) {
     super(
       translate,
@@ -49,15 +49,20 @@ export class ComparisonReportComponent extends AbstractReport {
 
     const that = this,
           paramMap = route.snapshot.paramMap,
-          aId = paramMap.get('aId')!, bId = paramMap.get('bId')!;
+          aId = paramMap.get('aId')!, bId = paramMap.get('bId');
 
     this.maxValue = +(paramMap.get('maxValue') || 0);
 
+    this.reverse = Object.keys(route.snapshot.queryParams).includes('reverse') &&
+                   route.snapshot.queryParams.reverse !== "false";
+
     this.legend = calcService.getComparisonLegend(this.maxValue / 100)
 
-    this.imageUrl = `${env.apiBaseUrl}/calculation/diff/${aId}/${bId}?max=${this.maxValue}`;
+    this.imageUrl =
+      bId ? `${env.apiBaseUrl}/calculation/diff/${aId}/${bId}?max=${this.maxValue}` :
+            `${env.apiBaseUrl}/calculation/diff/${aId}?max=${this.maxValue}${this.reverse ? '&reverse=true' : ''}`;
 
-    reportService.getComparisonReport(aId, bId).subscribe({
+    reportService.getComparisonReport(aId, bId, this.reverse).subscribe({
       next(report) {
         that.report = report;
         that.report.a = setOverflowProperty(report.a);
@@ -96,7 +101,7 @@ export class ComparisonReportComponent extends AbstractReport {
     const diffs: Record<string, number> = {};
     const unionOfBandKeys = new Set([...Object.keys(components[0]), ...Object.keys(components[1])]);
     unionOfBandKeys.forEach(band => {
-      const [a, b] = map(components, band);
+      const [a, b] = components.map((item) => item[band])
       diffs[band] = relativeDifference(a, b);
       }
     );

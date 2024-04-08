@@ -2,9 +2,9 @@ package se.havochvatten.symphony.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import se.havochvatten.symphony.calculation.CalcService;
+import se.havochvatten.symphony.service.CalcService;
 import se.havochvatten.symphony.entity.BaselineVersion;
-import se.havochvatten.symphony.scenario.Scenario;
+import se.havochvatten.symphony.entity.Scenario;
 
 import java.io.IOException;
 import java.util.Date;

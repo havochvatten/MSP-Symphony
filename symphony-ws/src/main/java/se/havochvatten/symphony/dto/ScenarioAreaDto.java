@@ -1,7 +1,7 @@
 package se.havochvatten.symphony.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import se.havochvatten.symphony.scenario.ScenarioArea;
+import se.havochvatten.symphony.entity.ScenarioArea;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;

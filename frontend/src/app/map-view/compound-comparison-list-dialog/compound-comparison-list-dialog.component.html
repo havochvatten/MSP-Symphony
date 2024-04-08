@@ -1,0 +1,37 @@
+<h3>{{ 'map.compound-data-list.title' | translate }}</h3>
+<div class="list-filter-container">
+  <app-list-filter
+    [filterPlaceholder]="'map.compound-data-list.filter-hint' | translate"
+    (filterChange)="setFilter($event)"
+    (sortChange)="setSort($event)"
+  ></app-list-filter>
+</div>
+<ul>
+  <li *ngFor="let cmp of compoundComparison$ | async"
+      class="list-item"
+      [ngClass]="{ 'filtered': filter(cmp.name) }">
+    <h5>{{ 'map.compound-data-list.compound-comparison-data' | translate }}:
+      <span class="cmp-name">{{ cmp.name }}</span>
+    </h5>
+    <div>
+      <span class="timestamp">{{ cmp.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
+      <span class="calculation-basis-info-header">{{
+          'map.compound-data-list.calculation-basis-info' | translate
+        }}:</span>
+      <span class="calculation-basis-names"
+            [innerHTML]="cmp.calcNamesList('map.compound-data-list.more' | translate)"
+      ></span>
+    </div>
+    <div class="list-actions">
+      <app-icon iconType="save" [title]="'map.compound-data-list.download' | translate"
+                (click)="downloadCC(cmp); $event.stopPropagation()">
+      </app-icon>
+      <app-icon iconType="delete" [title]="'map.compound-data-list.delete' | translate"
+                (click)="deleteCC(cmp); $event.stopPropagation()">
+      </app-icon>
+    </div>
+  </li>
+</ul>
+<div class="button-pane">
+  <button mat-flat-button (click)="close()">{{ 'controls.close' | translate }}</button>
+</div>

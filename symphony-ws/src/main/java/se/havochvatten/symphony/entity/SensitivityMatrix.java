@@ -2,7 +2,6 @@ package se.havochvatten.symphony.entity;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import se.havochvatten.symphony.dto.CalculationResultSlice;
 import se.havochvatten.symphony.dto.MatrixSelection;
 
 import javax.persistence.*;
@@ -11,7 +10,6 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 @Entity

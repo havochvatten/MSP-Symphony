@@ -17,9 +17,13 @@ import { Subject } from 'rxjs';
   styleUrls: ['./dialog.component.scss']
 })
 export class DialogComponent implements OnDestroy, AfterViewInit {
+
+  @HostBinding('class.app-dialog') dialogClass = true;
+
   constructor(
     private changeDetectorRef: ChangeDetectorRef
   ) {}
+
   componentRef: ComponentRef<unknown> | undefined;
   childComponentType: Type<unknown> | undefined;
 
@@ -53,6 +57,6 @@ export class DialogComponent implements OnDestroy, AfterViewInit {
   };
 
   close = () => {
-    this._onClose.next();
+    this._onClose.next(true);
   };
 }

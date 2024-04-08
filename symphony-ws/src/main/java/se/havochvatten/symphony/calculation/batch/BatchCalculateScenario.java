@@ -2,12 +2,15 @@ package se.havochvatten.symphony.calculation.batch;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import se.havochvatten.symphony.calculation.CalcService;
+import se.havochvatten.symphony.entity.Scenario;
+import se.havochvatten.symphony.entity.ScenarioArea;
+import se.havochvatten.symphony.service.CalcService;
 import se.havochvatten.symphony.dto.BatchCalculationDto;
 import se.havochvatten.symphony.entity.BatchCalculation;
 import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.scenario.*;
 import se.havochvatten.symphony.service.PropertiesService;
+import se.havochvatten.symphony.service.ScenarioService;
 
 import javax.annotation.Resource;
 import javax.batch.api.AbstractBatchlet;

@@ -21,7 +21,12 @@ export const initialState: CalculationInterfaces.State = {
   batchProcesses: [],
   visibleResults: [],
   loadingResults: [],
-  loadingReports: []
+  loadingReports: [],
+  generatingComparisonsFor: [],
+  loadingCompoundComparisons: false,
+  compoundComparisons: [],
+  compoundComparisonSuccessCount: 0,
+  sortCompoundComparisons: ListItemsSort.None
 };
 
 export const calculationReducer = createReducer(
@@ -66,9 +71,9 @@ export const calculationReducer = createReducer(
     ...state,
     legends: setIn(state.legends, ['comparison'], {})
   })),
-  on(CalculationActions.updateName, (state, { index, newName }) => ({
+  on(CalculationActions.renameCalculationSuccess, (state, { calculationId, newName }) => ({
     ...state,
-    calculations: setIn(state.calculations, [index, 'name'], newName)
+    calculations: state.calculations.map(c => c.id === calculationId ? {...c, name: newName} : c)
   })),
   on(CalculationActions.fetchPercentileSuccess, (state, { percentileValue }) => ({
     ...state,
@@ -114,6 +119,32 @@ export const calculationReducer = createReducer(
     ...state,
     calculations: state.calculations.map(c => c.id === calculationId ? {...c, isPurged: c.isPurged && loadingState } : c),
     loadingReports: loadingState ? [...state.loadingReports, calculationId] : state.loadingReports.filter(id => id !== calculationId)
+  })),
+  on(CalculationActions.generateCompoundComparison, (state, { comparisonName, calculationIds }) => ({
+    ...state,
+    generatingComparisonsFor: calculationIds,
+  })),
+  on(CalculationActions.generateCompoundComparisonSuccess,
+     CalculationActions.generateCompoundComparisonFailure, (state, any) => ({
+    ...state,
+    generatingComparisonsFor: []
+  })),
+  on(CalculationActions.generateCompoundComparisonSuccess, (state) => ({
+    ...state,
+    compoundComparisonSuccessCount: state.compoundComparisonSuccessCount + 1
+  })),
+  on(CalculationActions.fetchCompoundComparisons, (state) => ({
+    ...state,
+    loadingCompoundComparisons: true
+  })),
+  on(CalculationActions.fetchCompoundComparisonsSuccess, (state, { compoundComparisons }) => ({
+    ...state,
+    compoundComparisons,
+    loadingCompoundComparisons: false
+  })),
+  on(CalculationActions.setCompoundComparisonSortType, (state, { sortType }) => ({
+    ...state,
+    sortCompoundComparisons: sortType
   }))
 );
 

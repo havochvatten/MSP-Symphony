@@ -7,9 +7,10 @@ import io.restassured.response.Response;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.locationtech.jts.io.ParseException;
-import se.havochvatten.symphony.dto.CalculationResultSlice;
+import se.havochvatten.symphony.dto.CalculationResultSliceDto;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
+import se.havochvatten.symphony.entity.CalculationResultSlice;
 import se.havochvatten.symphony.web.RESTTest;
 
 import java.io.File;
@@ -149,7 +150,7 @@ public class ScenarioRESTTest extends RESTTest {
                 auth().
                 preemptive().
                 basic(getUsername(), getPassword()).
-                delete(endpoint("/scenario/") + id);
+                delete(endpoint("/scenario/?ids=") + id);
     }
     public static ScenarioAreaDto getTestArea(String areaCode) throws IOException {
         return mapper.readValue(

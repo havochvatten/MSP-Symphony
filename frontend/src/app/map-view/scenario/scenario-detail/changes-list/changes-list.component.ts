@@ -12,7 +12,7 @@ import { BandChange, BandType } from "@data/metadata/metadata.interfaces";
 export class ChangesListComponent {
 
   @Input() changes!: { [ bandType: string ] : ChangesProperty } | null;
-  @Input() deleteChange!: (componentType: string, bandNumber: number) => void;
+  @Input() deleteChange!: (componentType: string, bandNumber: number, bandName: string) => void;
   @Input() bandDictionary!: { [ bandType: string ] : { [p: string]: string }} | null;
 
   @ViewChild('changesAccordion') changesAccordion: AccordionBoxComponent | undefined;

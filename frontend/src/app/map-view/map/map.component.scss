@@ -78,4 +78,19 @@
       margin: 0;
     }
   }
+
+  #area-options-menu {
+    background-color: white;
+    font-size: 1.3rem;
+
+    button {
+      padding: 0.7rem 0.6rem;
+      margin: 0.3rem;
+
+      &:hover {
+        background-color: $hav-lightturquoise;
+        color: white;
+      }
+    }
+  }
 }

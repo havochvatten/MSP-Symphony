@@ -1,10 +1,9 @@
 import { EventEmitter, Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Store } from '@ngrx/store';
-import { Subscription } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { environment as env } from '@src/environments/environment';
 import { State } from '@src/app/app-reducer';
-import { MessageActions } from '@data/message';
 import { MetadataSelectors } from '@data/metadata';
 import {
   CalculationSlice,
@@ -12,7 +11,8 @@ import {
   LegendType,
   PercentileResponse,
   BatchCalculationProcessEntry,
-  StaticImageOptions
+  StaticImageOptions,
+  CompoundComparison
 } from './calculation.interfaces';
 import { CalculationActions } from '.';
 import { AppSettings } from '@src/app/app.settings';
@@ -20,13 +20,14 @@ import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 import { Scenario, ScenarioSplitOptions } from '@data/scenario/scenario.interfaces';
 import { UserSelectors } from "@data/user";
+import { Baseline } from "@data/user/user.interfaces";
 
 export enum NormalizationType {
-  Area = 'AREA',
-  Domain = 'DOMAIN',
-  UserDefined = 'USER_DEFINED',
-  StandardDeviation = 'STANDARD_DEVIATION',
-  Percentile = 'PERCENTILE' // Only used on backend for calibration
+  AREA = 'AREA',
+  DOMAIN = 'DOMAIN',
+  USER_DEFINED = 'USER_DEFINED',
+  STANDARD_DEVIATION = 'STANDARD_DEVIATION',
+  PERCENTILE = 'PERCENTILE' // Only used on backend for calibration
 }
 
 export enum CalcOperation {
@@ -70,33 +71,7 @@ export class CalculationService implements OnDestroy {
   }
 
   public calculate(scenario: Scenario) {
-    const that = this;
-    // TODO Consider making it a simple request (not subject to CORS)
-    // TODO make NgRx effect?
-
-    this.http.post<CalculationSlice>(env.apiBaseUrl+'/calculation/sum', scenario.id).
-    subscribe({
-      next(response) {
-        that.addResult(response.id).then(() => {
-          that.store.dispatch(CalculationActions.calculationSucceeded({
-            calculation: response
-          }));
-        });
-      },
-      error() {
-        that.store.dispatch(CalculationActions.calculationFailed());
-        that.store.dispatch(
-          MessageActions.addPopupMessage({
-            message: {
-              type: 'ERROR',
-              message: `${scenario.name} could not be calculated!`,
-              uuid: scenario.id + '_' + scenario.name
-            }
-          })
-        );
-      }
-      // stop spinner in complete-callback?
-    });
+    return this.http.post<CalculationSlice>(env.apiBaseUrl+'/calculation/sum', scenario.id);
   }
 
   public getStaticImage(url:string) {
@@ -110,16 +85,30 @@ export class CalculationService implements OnDestroy {
     });
   }
 
-  public addComparisonResult(idA: string, idB: string, dynamic: boolean, max: number){
+  public addComparisonResult(idA: string | null, idB: string, dynamic: boolean, max: number, reverse = false){
+    const endpoint = idA === null ? `diff/${idB}` : `diff/${idA}/${idB}`,
+          params = new URLSearchParams();
+
+    if (dynamic) {
+      params.append('dynamic', 'true');
+    } else {
+      params.append('max', max.toString());
+    }
+
+    if (reverse) {
+      params.append('reverse', 'true');
+    }
+
     //  Bit "hacky" but workable "faux" id constructed as a negative number
     //  to guarantee uniqueness without demanding a separate interface.
     //  Note that this artficially imposes a virtual maximum for calculation
     //  result ids to 2^26 - 1 (around 67 million).
     //  The limit is chosen specifically in relation to Number.MIN_SAFE_INTEGER
     //  which is -2^53
-
-    return this.addResultImage(this.cmpId(+idA, +idB), `diff/${idA}/${idB}`
-                                                  + (dynamic ? '?dynamic=true' : '?max=' + max));
+    return this.addResultImage(
+      this.cmpId(idA === null ? 0 : +idA, +idB),
+      `${endpoint}?${params.toString()}`
+    );
   }
 
   cmpId(a:number, b:number): number {
@@ -131,36 +120,31 @@ export class CalculationService implements OnDestroy {
   }
 
   private addResultImage(id: number, epFragment: string) {
-    const that = this;
-    return new Promise<number | null>((resolve, reject) => {
-      this.getStaticImage(`${env.apiBaseUrl}/calculation/` + epFragment).subscribe({
-        next(response) {
-          const extentHeader = response.headers.get('SYM-Image-Extent'),
-                dynamicMaxHeader = response.headers.get('SYM-Dynamic-Max');
-          if (extentHeader) {
-            that.resultReady$.emit({
-              url: URL.createObjectURL(response.body!),
-              calculationId: id,
-              imageExtent: JSON.parse(extentHeader),
-              projection: AppSettings.CLIENT_SIDE_PROJECTION ?
-                            AppSettings.DATALAYER_RASTER_CRS :
-                            AppSettings.MAP_PROJECTION,
-              interpolate: that.aliasing
-            });
-            resolve(dynamicMaxHeader ? +dynamicMaxHeader : null);
-          } else {
-            console.error(
-              'Result image for calculation ' + id + ' does not have any extent header, ignoring.'
-            );
-            reject();
-          }
-        },
-        error(err: HttpErrorResponse) {
-          that.store.dispatch(CalculationActions.calculationFailed());
-          reject('Error fetching result image at ' +err.url);
+    return firstValueFrom(this.getStaticImage(`${env.apiBaseUrl}/calculation/` + epFragment)).then(response => {
+      const extentHeader = response.headers.get('SYM-Image-Extent'),
+            dynamicMaxHeader = response.headers.get('SYM-Dynamic-Max');
+      if (extentHeader) {
+        this.resultReady$.emit({
+          url: URL.createObjectURL(response.body!),
+          calculationId: id,
+          imageExtent: JSON.parse(extentHeader),
+          projection: AppSettings.CLIENT_SIDE_PROJECTION ?
+                        AppSettings.DATALAYER_RASTER_CRS :
+                        AppSettings.MAP_PROJECTION,
+          interpolate: this.aliasing
+        });
+        return dynamicMaxHeader ? +dynamicMaxHeader : null;
+        } else {
+          console.error(
+            'Result image for calculation ' + id + ' does not have any extent header, ignoring.'
+          );
+          return null;
         }
-      });
-    });
+      }).catch((err: HttpErrorResponse) => {
+        this.store.dispatch(CalculationActions.calculationFailed());
+        throw new Error('Error fetching result image at ' +err.url);
+      }
+    )
   }
 
   public deleteResults(ids: number[]){
@@ -234,6 +218,20 @@ export class CalculationService implements OnDestroy {
     return this.http.get<PercentileResponse>(`${env.apiBaseUrl}/calibration/percentile-value`);
   }
 
+  public generateCompoundComparison(comparisonName: string, calculationIds: number[], baseline?: Baseline) {
+    if(baseline) {
+      return this.http.post<number>(`${env.apiBaseUrl}/calculation/multi-comparison/${baseline.name}`, {
+        ids: calculationIds,
+        name: comparisonName
+      });
+    }
+    throw new Error('No baseline selected');
+  }
+
+  public deleteCompoundComparison(id: number) {
+    return this.http.delete(`${env.apiBaseUrl}/calculation/multi-comparison/${id}`);
+  }
+
   private queueBatchScenarioCalculation(scenarioIds: number[]) {
     return this.http.post<BatchCalculationProcessEntry>(`${env.apiBaseUrl}/calculation/batch`, scenarioIds.join(), {
       headers: new HttpHeaders({ 'Content-Type': 'text/plain' })});
@@ -262,5 +260,9 @@ export class CalculationService implements OnDestroy {
 
   cancelBatchProcess(id: number) {
     return this.http.post(`${env.apiBaseUrl}/calculation/batch/${id}/cancel`, null);
+  }
+
+  getAllCompoundComparisons() {
+    return this.http.get<CompoundComparison[]>(`${env.apiBaseUrl}/calculation/multi-comparison/all`);
   }
 }

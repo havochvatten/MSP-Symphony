@@ -4,6 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MenuComponent } from './menu.component';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
+import { provideMockStore } from "@ngrx/store/testing";
 
 describe('MenuComponent', () => {
   let fixture: ComponentFixture<MenuComponent>,
@@ -16,7 +17,8 @@ describe('MenuComponent', () => {
         FontAwesomeModule,
         TranslationSetupModule
       ],
-      declarations: [MenuComponent]
+      declarations: [MenuComponent],
+      providers: [provideMockStore({ initialState : { user: {} } })]
     }).compileComponents();
     fixture = TestBed.createComponent(MenuComponent);
     component = fixture.componentInstance;

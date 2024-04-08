@@ -70,7 +70,11 @@
     ::ng-deep mat-form-field.mat-mdc-form-field {
       font-size: 16px;
       margin-bottom: 0;
-      min-width: 25.5rem;
+      min-width: 30.5rem;
+
+      .mat-mdc-text-field-wrapper {
+        padding: 0 4rem;
+      }
 
       .mat-mdc-form-field-infix {
         display: flex;
@@ -111,7 +115,25 @@
 
     button.mdc-button.mat-mdc-unelevated-button {
       margin-top: calc(#{$s-margin} + #{$xs-margin});
+      margin-right: 4rem;
       font-weight: 500;
+    }
+
+    app-icon.peek-icon {
+      position: absolute;
+      width: 1.8rem;
+      right: -3rem;
+      top: 4rem;
+      cursor: pointer;
+      color: $hav-darkergrey;
+
+      &.peek {
+        color: $hav-turquoise;
+      }
+
+      &:hover {
+        opacity: 0.8;
+      }
     }
   }
 

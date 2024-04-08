@@ -1,9 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import Immutable, { removeIn, setIn, updateIn } from 'immutable';
-import { size } from "lodash";
 
 import { CalculationActions } from '@data/calculation';
-import { calculationSucceeded } from "@data/calculation/calculation.actions";
 import { BandChange } from "@data/metadata/metadata.interfaces";
 import {
   fetchAreaMatricesFailure,
@@ -14,6 +12,7 @@ import { ScenarioActions, ScenarioInterfaces } from '@data/scenario/index';
 import { ChangesProperty, ScenarioArea } from "@data/scenario/scenario.interfaces";
 import { AreaMatrixData } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
 import { ListItemsSort } from "@data/common/sorting.interfaces";
+import { size } from "@shared/common.util";
 
 
 export const initialState: ScenarioInterfaces.State = {
@@ -37,6 +36,13 @@ export const scenarioReducer = createReducer(
     ...state,
     active: newActiveIndex,
     scenarios }
+  }),
+  on(ScenarioActions.fetchSingleScenarioSuccess, (state, { scenario }) => {
+    const index = state.scenarios.findIndex(s => s.id === scenario.id);
+    return {
+      ...state,
+      scenarios: updateIn(state.scenarios, [index], () => scenario)
+    }
   }),
   on(ScenarioActions.openScenario, (state, { index }) => ({
     ...state,
@@ -76,7 +82,7 @@ export const scenarioReducer = createReducer(
     ...state,
     sortScenarios: sortType
   })),
-  on(ScenarioActions.saveScenarioSuccess, (state, { savedScenario }) => ({
+  on(ScenarioActions.saveScenarioSuccess, CalculationActions.calculationSucceeded, (state, { savedScenario }) => ({
     ...state,
     scenarios: updateIn(state.scenarios, [state.active], () => savedScenario),
   })),
@@ -90,10 +96,6 @@ export const scenarioReducer = createReducer(
     ...state,
     scenarios: updateIn(state.scenarios, [state.active, 'areas'], areas => [...(areas as ScenarioArea[]), ...newAreas]),
     matricesLoading: true
-  })),
-  on(CalculationActions.calculationSucceeded, (state, { calculation }) => ({
-    ...state,
-    scenarios: setIn(state.scenarios, [state.active, 'latestCalculationId'], calculation.id)
   })),
   on(ScenarioActions.changeScenarioName, (state, { name }) => ({
     ...state,
@@ -327,12 +329,6 @@ export const scenarioReducer = createReducer(
       ...state,
       matrixData: setIn(state.matrixData, [areaId], matrixData),
       matricesLoading: loading
-    }
-  }),
-  on(calculationSucceeded, (state, { calculation }) => {
-    return {
-      ...state,
-      scenarios: setIn(state.scenarios, [state.active, 'latestCalculationId'], calculation.id)
     }
   }),
   on(fetchAreaMatricesFailure, state => ({

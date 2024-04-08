@@ -14,9 +14,11 @@ export const userReducer = createReducer(
     ...state,
     loading: true
   })),
-  on(UserActions.loginUserSuccess, (state, { user }) => ({
+  on(UserActions.loginUserSuccess, UserActions.fetchUserSuccess, (state, { user }) => ({
     ...state,
     user,
+    aliasing: user.settings?.aliasing === undefined ?
+        state.aliasing : user.settings.aliasing,
     loading: false,
     isLoggedIn: true,
     error: undefined
@@ -34,12 +36,12 @@ export const userReducer = createReducer(
     ...state,
     loading: true
   })),
-  on(UserActions.fetchUserSuccess, (state, { user }) => ({
+  on(UserActions.fetchUserSettingsSuccess, (state, { user }) => ({
     ...state,
     user,
-    loading: false,
-    isLoggedIn: true,
-    error: undefined
+    aliasing: user.settings?.aliasing === undefined ?
+      state.aliasing : user.settings.aliasing,
+
   })),
   on(UserActions.fetchUserFailure, (state, { error }) => ({
     ...state,
@@ -57,9 +59,5 @@ export const userReducer = createReducer(
   on(UserActions.updateRedirectUrl, (state, { url }) => ({
     ...state,
     redirectUrl: url
-  })),
-  on(UserActions.setAliasing, (state, { aliasing }) => ({
-    ...state,
-    aliasing: aliasing
   }))
 );

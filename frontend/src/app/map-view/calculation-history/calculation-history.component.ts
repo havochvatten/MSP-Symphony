@@ -1,6 +1,6 @@
-import { Component, ElementRef, NgModuleRef, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, NgModuleRef, OnDestroy, OnInit, signal } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
-import { tap } from "rxjs/operators";
+import { shareReplay, tap } from "rxjs/operators";
 import { select, Store } from '@ngrx/store';
 import { environment } from "@src/environments/environment";
 import { State } from '@src/app/app-reducer';
@@ -15,6 +15,10 @@ import { CalculationReportModalComponent } from "@shared/report-modal/calculatio
 import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 import { TranslateService } from "@ngx-translate/core";
 import { Listable } from "@shared/list-filter/listable.directive";
+import {
+  ConfirmGenerateComparisonComponent
+} from "@src/app/map-view/calculation-history/confirm-generate-comparison/confirm-generate-comparison.component";
+import { RenameItemModalComponent } from "@shared/rename-item-modal/rename-item-modal.component";
 
 @Component({
   selector: 'app-history',
@@ -23,14 +27,15 @@ import { Listable } from "@shared/list-filter/listable.directive";
 })
 export class CalculationHistoryComponent extends Listable implements OnInit, OnDestroy {
   calculations$ = this.store.select(CalculationSelectors.selectCalculations);
+  comparedCalculations$ = this.store.select(CalculationSelectors.selectComparedCalculations);
+  comparedCalculationsRepeat$ = this.comparedCalculations$.pipe(shareReplay(1));
   baselineCalculations$?: Observable<CalculationSlice[]>;
   loading$?: Observable<boolean>;
   baseline?: Baseline;
-  editingName: string|false = false;
+  editingId: number | null = null;
   loadingCalculations: Set<number> = new Set<number>();
   environment = environment;
   private visibleResults$: Subscription;
-  private nameInputEl!: ElementRef;
 
   private visibleResults: number[] = [];
   private calcLoadingState$: Subscription;
@@ -84,11 +89,6 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
       this.store.dispatch(CalculationActions.setCalculationSortType({ sortType }));
   }
 
-  @ViewChild('name') set content(content: ElementRef) {
-    if (content)
-      this.nameInputEl = content;
-  }
-
   resultIsVisible(id: number) {
     return this.visibleResults.includes(id);
   }
@@ -101,7 +101,7 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
   }
 
   loadResult(calculationId: number) {
-    if (this.editingName)
+    if (this.editingId !== null)
       return;
     this.store.dispatch(CalculationActions.loadCalculationResult({ calculationId }));
   }
@@ -122,7 +122,7 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
                 message: this.translateService.instant('map.history.delete-modal.message', { calculationName: calculation.name }),
                 confirmText: this.translateService.instant('map.history.delete-modal.confirm'),
                 confirmColor: 'warn',
-                buttonsClass: 'right'
+                buttonsClass: 'right no-margin'
               }
             });
 
@@ -131,43 +131,6 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
         calculationToBeDeleted: calculation
       }));
     }
-  }
-
-  editName($event: MouseEvent, id: string) {
-    this.editingName = id;
-    setTimeout(() => {
-      this.nameInputEl.nativeElement.focus();
-    }, 1);
-    $event.stopPropagation();
-  }
-
-  // saveName($event: any, calc: CalculationSlice, index: number) {
-  //   this.store.dispatch(     // optimistically set new name
-  //     CalculationActions.updateName({ index, newName: $event.target.value }));
-  //
-  //   const that = this,
-  //         oldName = calc.name;
-  //   this.calcService.updateName(calc.id, $event.target.value).pipe(
-  //     retry(2),
-  //   ).subscribe({
-  //     next (updatedCalc) {
-  //        // Already changed name above
-  //     },
-  //     error(err: HttpErrorResponse) {
-  //       // TODO Show popup with error
-  //       that.store.dispatch(CalculationActions.updateName({ index, newName: oldName }));
-  //     }
-  //   });
-  //
-  //   this.editingName = false;
-  // }
-
-  cancelEdit($event: FocusEvent) {
-    setTimeout(() => {
-      this.editingName = false;
-    }, 0);
-    $event.stopPropagation();
-    $event.preventDefault();
   }
 
   checkMessage(msg: MessageEvent){
@@ -208,13 +171,45 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
                     'map.history.delete-modal.message-single', { count: this.selectedIds.length }),
           confirmText: this.translateService.instant('map.history.delete-modal.confirm'),
           confirmColor: 'warn',
-          buttonsClass: 'right'
+          buttonsClass: 'right no-margin'
         }
       });
     if(deletionConfirmed) {
       this.store.dispatch(CalculationActions.deleteMultipleCalculations({calculationIds: this.selectedIds}));
       this.selectedIds = [];
       this.isMultiMode.set(false);
+    }
+  }
+
+  generateComparisonDataSet = async () => {
+    if(this.selectedIds.length > 0) {
+      const cmpName = await this.dialogService.open(ConfirmGenerateComparisonComponent, this.moduleRef);
+
+      if(typeof cmpName === 'string' && cmpName.length > 0) {
+        this.store.dispatch(CalculationActions.generateCompoundComparison(
+          {
+            comparisonName: cmpName,
+            calculationIds: [...this.selectedIds]
+          }))
+        this.selectedIds = [];
+        this.isMultiMode.set(false);
+      }
+    }
+  };
+
+  async editCalculationName(id: number, calculationName: string) {
+    const newCalculationName = await this.dialogService.open(RenameItemModalComponent, this.moduleRef, {
+      data: {
+        headerText: this.translateService.instant('map.history.edit-name.header'),
+        itemName: calculationName
+      }
+    });
+    if (typeof newCalculationName === 'string' && newCalculationName !== calculationName) {
+      this.store.dispatch(
+        CalculationActions.renameCalculation(
+          { calculationId: id,
+            newName: newCalculationName
+        }));
     }
   }
 }

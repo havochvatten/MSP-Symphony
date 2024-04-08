@@ -14,8 +14,9 @@ import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.mapper.AreaSelectionResponseDtoMapper;
 import se.havochvatten.symphony.dto.AreaSelectionResponseDto.AreaOverlapFragment;
 import se.havochvatten.symphony.mapper.CalculationAreaMapper;
-import se.havochvatten.symphony.scenario.Scenario;
-import se.havochvatten.symphony.scenario.ScenarioArea;
+import se.havochvatten.symphony.entity.Scenario;
+import se.havochvatten.symphony.entity.ScenarioArea;
+import se.havochvatten.symphony.util.Util;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -104,7 +105,7 @@ public class CalculationAreaService {
             }
 
             if(defaultAreas.size() > 1) {
-                GeometryJSON geoJson = new GeometryJSON();
+                GeometryJSON geoJson = new GeometryJSON(7);
                 ObjectMapper mapper = new JsonMapper();
                 List<AreaOverlapFragment> fragmentMap = new ArrayList<>();
 

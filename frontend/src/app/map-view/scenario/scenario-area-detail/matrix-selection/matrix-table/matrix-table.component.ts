@@ -6,7 +6,7 @@ import { MatrixService } from '../matrix.service';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { isEqual } from "lodash";
+import { isEqual } from "@shared/common.util";
 import { DialogService } from "@shared/dialog/dialog.service";
 import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 
@@ -129,7 +129,7 @@ export class MatrixTableComponent {
             header: this.translateService.instant('map.editor.matrix.table.changes.header'),
             confirmText: this.translateService.instant('map.editor.matrix.table.changes.save'),
             cancelText: this.translateService.instant('map.editor.matrix.table.changes.abandon'),
-            buttonsClass: 'right',
+            buttonsClass: 'right no-margin',
             cancelColor: 'warn',
             message: null,
           };

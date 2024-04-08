@@ -12,7 +12,7 @@ import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { AreaActions, AreaSelectors } from '@data/area';
 import { DialogService } from '@shared/dialog/dialog.service';
-import { RenameUserAreaModalComponent } from './rename-user-area-modal/rename-user-area-modal.component';
+import { RenameItemModalComponent } from '@shared/rename-item-modal/rename-item-modal.component';
 import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 import { Observable } from 'rxjs';
 import {
@@ -76,8 +76,11 @@ export class AreaSelectionComponent implements OnChanges {
   }
 
   renameUserArea = async (userArea: UserArea) => {
-    const areaName = await this.dialogService.open(RenameUserAreaModalComponent, this.moduleRef, {
-      data: { areaName: userArea.name }
+    const areaName = await this.dialogService.open(RenameItemModalComponent, this.moduleRef, {
+      data: {
+        headerText: this.translateService.instant('map.user-area.rename.header'),
+        itemName: userArea.name
+      }
     });
     if (typeof areaName === 'string' && areaName !== userArea.name) {
       const updatedArea = {

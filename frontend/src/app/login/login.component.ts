@@ -21,9 +21,14 @@ export class LoginComponent implements OnInit, OnDestroy {
   loading?: Observable<boolean>;
   env = environment;
   symphonyVersion = buildInfo.version;
+  passwordPeekEnabled: boolean;
+  peekPassword = false;
+
   private storeSubscription?: Subscription;
 
-  constructor(private fb: FormBuilder, private store: Store<State>) {}
+  constructor(private fb: FormBuilder, private store: Store<State>) {
+    this.passwordPeekEnabled = this.env.peekPassword || false;
+  }
 
   ngOnInit() {
     this.storeSubscription = this.store.select(UserSelectors.selectLoginError).subscribe(value => {

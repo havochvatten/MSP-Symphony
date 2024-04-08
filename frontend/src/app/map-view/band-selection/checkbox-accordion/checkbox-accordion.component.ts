@@ -45,8 +45,11 @@ export class CheckboxAccordionComponent implements AfterViewInit {
 
   onChange = (evt: MatCheckboxChange, band: Band) => this.change(evt.checked, band);
 
-  onChangeVisible = (visible: boolean, band: Band) =>
-    this.changeVisible(visible, band);
+  onChangeVisible = (visible: boolean, band: Band) => {
+    if(!(band.visible && !band.loaded)) {
+      this.changeVisible(visible, band);
+    }
+  }
 
   get allBoxesAreChecked(): boolean {
     return this.bands.filter(({ selected }) => !selected).length === 0;

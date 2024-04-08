@@ -43,6 +43,9 @@ import { MatRadioModule } from "@angular/material/radio";
 import { MatInputModule } from "@angular/material/input";
 import { ListFilterComponent } from './list-filter/list-filter.component';
 import { MultiToolsComponent } from './multi-tools/multi-tools.component';
+import { MultiActionButtonComponent } from '@shared/multi-action-button/multi-action-button.component';
+import { RenameItemModalComponent} from "@shared/rename-item-modal/rename-item-modal.component";
+import { ChangeLanguageDialogComponent } from './change-language-dialog/change-language-dialog.component';
 
 @NgModule({
   declarations: [
@@ -83,20 +86,23 @@ import { MultiToolsComponent } from './multi-tools/multi-tools.component';
     SelectIntersectionComponent,
     ComparisonColorScaleComponent,
     ListFilterComponent,
-    MultiToolsComponent
+    MultiToolsComponent,
+    MultiActionButtonComponent,
+    RenameItemModalComponent,
+    ChangeLanguageDialogComponent
   ],
-  imports: [
-    CommonModule,
-    FontAwesomeModule,
-    ReactiveFormsModule,
-    RouterModule,
-    TranslateModule,
-    MatButtonModule,
-    MatCheckboxModule,
-    MatRadioModule,
-    MatInputModule,
-    FormsModule
-  ],
+    imports: [
+        CommonModule,
+        FontAwesomeModule,
+        ReactiveFormsModule,
+        RouterModule,
+        TranslateModule,
+        MatButtonModule,
+        MatCheckboxModule,
+        MatRadioModule,
+        MatInputModule,
+        FormsModule
+    ],
   exports: [
     CommonModule,
     IconButtonComponent,
@@ -133,7 +139,9 @@ import { MultiToolsComponent } from './multi-tools/multi-tools.component';
     SelectIntersectionComponent,
     ComparisonColorScaleComponent,
     ListFilterComponent,
-    MultiToolsComponent
+    MultiToolsComponent,
+    MultiActionButtonComponent,
+    RenameItemModalComponent
   ]
 })
 export class SharedModule {}

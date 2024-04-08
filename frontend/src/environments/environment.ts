@@ -13,6 +13,7 @@ export const environment = {
   instanceImage: "assets/wio/wiosym-ideogram.svg",
   instanceDescriptor: "Western Indian Ocean",
   externManual: null,
+  peekPassword: false,
   map: {
     center: [39.0, -11.0], // Suitable starting center for WIO region
     initialZoom: 4.5,
@@ -36,7 +37,7 @@ export const environment = {
       }
     },
     openSeaMap: {
-      url: 'https://t1.openseamap.org/seamark/{z}/{x}/{y}.png'
+      url: 'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png'
       // marineProfile: {
       //   url: 'http://osm.franken.de:8080/geoserver/gwc/service/wms',
       //   params: {

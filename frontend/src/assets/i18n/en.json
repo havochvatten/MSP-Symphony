@@ -7,6 +7,8 @@
         "request-password": "Request new password",
         "no-account": "Are you an external user and lacking login credentials?",
         "request-account": "Request an account",
+        "peek-password": "Reveal the password",
+        "hide-password": "Hide the password",
         "error": {
             "invalid-credentials": "Wrong username or password.",
             "system-unavailable": "System is not available, try again later."
@@ -24,6 +26,7 @@
         "reset-preselected": "Reset",
         "reset-preselected-description": "Reset selected components/pressures and intensity values",
         "selection-overlap": "Unable to select overlapping areas",
+        "open-compound-data-list": "Compound comparisons ({{ count }})",
         "intensity": {
             "ecosystems": "Ecosystem Components",
             "pressures": "Pressures",
@@ -185,7 +188,7 @@
                 "description": "Set maximum value based on",
                 "area": "Maximum value in computed area",
                 "domain": "{{ ordinalPercentileValue }} percentile in MSP area",
-                "mean-plus-stddev": "Mean +/- multiple of \nstandard deviation:",
+                "mean-plus-stddev": "Mean + multiple of \nstandard deviation:",
                 "custom": "User-defined value:",
                 "custom-value": "Value"
             },
@@ -196,7 +199,12 @@
                 "clear-change": "Clear change",
                 "units": "u.",
                 "collapse": "Hide changes",
-                "collapsed-count": "Show {{ count }} changes"
+                "collapsed-count": "Show {{ count }} changes",
+                "clear-change-modal" : {
+                    "header": "Clear change",
+                    "message": "Confirm removal of change: <em>{{ changeDescription }}</em>",
+                    "confirm": "Clear"
+                }
             },
             "changes-overview" : {
                 "title": "Scenario changes overview",
@@ -254,6 +262,8 @@
                 "select-all-for-batch": "Select all",
                 "select-all-for-batch-filtered": "Select visible",
                 "deselect-all-for-batch": "Deselect all",
+                "none-selected": "No scenarios selected",
+                "delete-selected": "Delete selected scenarios",
                 "batch-tools": {
                     "enter-batch-mode": "Enter batch selection mode",
                     "exit-batch-mode": "Exit batch selection mode",
@@ -267,7 +277,10 @@
                 "label": "Delete",
                 "tooltip": "Delete scenario",
                 "modal": {
-                    "title": "Are you sure you want to delete &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
+                    "title": "Delete scenario",
+                    "message": "Are you sure you want to delete &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
+                    "title-many": "Delete selected scenarios",
+                    "message-many": "Confirm deletion of <strong>{{ count }}</strong> scenarios?",
                     "delete": "Delete",
                     "cancel": "Cancel"
                 }
@@ -386,6 +399,10 @@
             "hide-result": "Hide result in map view",
             "visible-result": "Result is currently visible in map view",
             "purged-result": "Data for this result has been purged\nThis will take a little longer to load because the result is being recalculated.",
+            "edit-name": {
+                "label": "Rename",
+                "header": "Enter a new name for the calculation"
+            },
             "delete-modal" : {
                 "header": "Delete calculation",
                 "message": "Confirm deletion of previously saved calculation result: <em>“{{ calculationName }}”</em>",
@@ -395,20 +412,32 @@
                 "cancel": "Cancel",
                 "confirm": "Delete"
             },
+            "generate-comparison-modal": {
+                "header": "Generate compound comparison",
+                "message": "Set a title for the compound comparison result.",
+                "placeholder": "Set a title",
+                "calculate": "Calculate"
+            },
             "multi-mode": {
-                "enter": "Enter multi-selection mode to delete multiple calculations",
+                "enter": "Enter multi-selection mode",
                 "exit": "Exit multi-selection mode",
                 "delete-selected": "Delete selected calculations",
-                "none-selected": "No calculations selected for deletion"
+                "generate-comparison": "Generate comparison data",
+                "none-selected": "No calculations selected"
             }
         },
         "compare": {
             "title": "Compare calculations",
             "compare": "Compare Calculations",
             "base-scenario": "Calculation A",
+            "implicit-baseline": "Implied baseline",
+            "explicit-baseline": "Select a calculation",
+            "include-unchanged": "Include unchanged scenarios",
+            "reverse-projected": "Reverse comparison order",
             "what-if-scenario": "Calculation B",
-            "choose-scenario": "Choose a calculation",
-            "choose-base-scenario-first": "Choose calculation A first",
+            "select-calculation": "Select a calculation",
+            "select-base-calculation-first": "Select calculation A first",
+            "no-matching-calculations": "No matching calculations",
             "base-scenario-suggestion": "(typically your baseline analysis)",
             "what-if-scenario-suggestion": "(typically your new scenario analysis)",
             "select-scale": "Customize color scale",
@@ -449,12 +478,7 @@
             },
             "rename": {
                 "label": "Rename area",
-                "modal": {
-                    "title": "Edit area name",
-                    "placeholder": "My area 1",
-                    "save": "Save",
-                    "close": "Close"
-                }
+                "header": "Edit area name"
             },
             "edit": {
                 "label": "Edit area"
@@ -489,16 +513,50 @@
         "merge-areas-hint" : {
             "emphasis": "Merge areas",
             "detail": "{{ altButton }} + Shift + click on final area to merge selected."
+        },
+        "compound-data-list": {
+            "title": "Compound comparisons",
+            "compound-comparison-data": "Compound comparison data",
+            "calculation-basis-info": "The comparative values are based on the following calculations",
+            "more": "more",
+            "delete": "Delete compound comparison",
+            "download": "Download compound comparison",
+            "download-select-format": "Select format to download",
+            "download-format": {
+                "json": "As data (JSON)",
+                "ods": "As spreadsheet (ODS)"
+            },
+            "download-allow-zero": "Allow zero values",
+            "confirm-download": "Download",
+            "filter-hint": "Filter list item by name",
+            "delete-modal": {
+                "header": "Delete compound comparison",
+                "message": "Confirm deletion of compound comparison: <em>“{{ comparisonName }}”</em>"
+            },
+            "terms": {
+                "total": "Total",
+                "sum": "Sum",
+                "difference": "Difference",
+                "pixels": "Number of pixels",
+                "non-planar": "Non-planar projection"
+            }
+        },
+        "area-options": {
+            "get-shapefile": "Download shapefile bundle (.zip)"
         }
     },
     "controls": {
         "open": "Open",
         "close": "Close",
+        "save": "Save",
         "delete": "Delete",
         "accordion": {
             "expand": "Expand",
             "contract": "Contract"
         }
+    },
+    "rename": {
+        "placeholder": "Enter a new name"
     },
     "main-menu": {
         "projects": "Project",
@@ -510,6 +568,7 @@
         "about": "About",
         "support": "Support",
         "profile": "My profile",
+        "change-language": "Change language",
         "logout": "Log out"
     },
     "about-dialog": {
@@ -527,6 +586,15 @@
     "confirmation-modal": {
         "cancel": "Cancel",
         "confirm": "OK"
+    },
+    "change-language-modal": {
+        "header": "Change language",
+        "apply": "Apply",
+        "languages": {
+            "en": "English",
+            "sv": "Swedish",
+            "fr": "French"
+        }
     },
     "report": {
         "calculation": {

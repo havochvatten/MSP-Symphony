@@ -45,6 +45,7 @@ public enum SymphonyModelErrorCode implements SymphonyErrorCode {
     MATRIX_NOT_SET("MATRIX_NOT_SET", "Calculation failed, matrix parameters not correctly set for area"),
     BATCH_CALCULATION_JOB_RUNNING("BATCH_CALCULATION_JOB_RUNNING", "Cannot delete unfinished batch calculation"),
     NO_DEFAULT_MATRIX_FOUND("NO_DEFAULT_MATRIX_FOUND", "No matrix found for area"),
+    SHAPEFILE_GENERATION_ERROR("SHAPEFILE_GENERATION_ERROR", "Error when generating shapefile"),
     OTHER_ERROR("OTHER_ERROR", "Other error");
 
     private final String key;

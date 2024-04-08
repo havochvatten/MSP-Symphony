@@ -22,6 +22,16 @@ export const fetchMetadataSuccess = createAction(
   }>()
 );
 
+export const fetchSparseMetadataSuccess = createAction(
+  '[Metadata] Fetch metadata success (excluding details)',
+  props<{
+    metadata: {
+      ecoComponent: Groups;
+      pressureComponent: Groups;
+    };
+  }>()
+);
+
 export const fetchMetadataFailure = createAction(
   '[Metadata] Fetch metadata failure',
   props<{ error: ErrorMessage }>()
@@ -37,9 +47,14 @@ export const setVisibility  = createAction(
   props<{ band: Band, value: boolean }>()
 );
 
+export const setLoadedState = createAction(
+  '[Metadata] Set loaded state (visualisation)',
+  props<{ band: Band, value: boolean }>()
+);
+
 export const updateLayerOpacity = createAction(
   '[Metadata] Update Layer Opacity',
-  props<{ band: Band; value: number }>()
+  props<{ band: Band, value: number }>()
 );
 
 export const updateMultiplier = createAction(

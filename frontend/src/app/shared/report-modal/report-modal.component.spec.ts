@@ -33,7 +33,8 @@ describe('CalculationReportModalComponent', () => {
         },
         provideMockStore({
           initialState: {
-            metadata
+            metadata,
+            user : {}
           }
         })
       ]

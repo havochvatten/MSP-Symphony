@@ -20,6 +20,10 @@
       justify-content: flex-end;
       align-items: center;
 
+      mat-spinner {
+        margin-right: 1rem;
+      }
+
       button {
         height: 24px;
         width: 24px;
@@ -52,15 +56,33 @@
           color: $hav-turquoise;
         }
         cursor: pointer;
+
+        &.disabled-while-loading {
+          cursor: default;
+          opacity: 0.5;
+        }
       }
     }
 
-    ::ng-deep mat-checkbox .mat-checkbox-layout {
-      .mat-checkbox-label {
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        max-width: 216px;
-        line-height: 16px;
+    ::ng-deep mat-checkbox {
+
+      &.mdc-checkbox--disabled {
+        label.mdc-label {
+          color: $hav-black;
+        }
+
+        .mdc-form-field .mdc-checkbox {
+          display: none;
+        }
+      }
+
+      .mat-checkbox-layout {
+        .mat-checkbox-label {
+          white-space: pre-wrap;
+          word-wrap: break-word;
+          max-width: 216px;
+          line-height: 16px;
+        }
       }
     }
   }

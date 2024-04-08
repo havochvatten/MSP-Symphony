@@ -36,7 +36,7 @@ export interface ScenarioArea {
   feature: GeoJSONFeature;
   changes: { [key: string] : ChangesProperty } | null;
   matrix: MatrixParameters;
-  scenarioId: number
+  scenarioId: number;
   excludedCoastal: number | null;
   customCalcAreaId: number | null;
 }
@@ -59,7 +59,7 @@ export interface ScenarioAreaCoastalExclusion {
 }
 
 export interface ScenarioChangeMap {
-  [ bandType: string ]: { [ bandId: number ]: BandChange }
+  [ bandType: string ]: { [ bandId: number ]: BandChange };
 }
 
 export interface ScenarioCopyOptions {

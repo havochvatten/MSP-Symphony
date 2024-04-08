@@ -2,7 +2,6 @@
 // TODO: try to implement w/o `any` (presumably prohibited by the chart library)
 import { ChartData } from "@src/app/report/pressure-chart/pressure-chart.component";
 import { BandType, BandTypes } from "@data/metadata/metadata.interfaces";
-import { cloneDeep } from "lodash";
 import { Report } from "@data/calculation/calculation.interfaces";
 import { ChangesProperty } from "@data/scenario/scenario.interfaces";
 
@@ -31,7 +30,7 @@ export function formatChartData(
   };
 
   // Needed to make the object extensible
-  const _data = cloneDeep(data);
+  const _data = structuredClone(data);
   return {
     ..._data,
     nodes: _data.nodes.map(changeName)
@@ -59,6 +58,7 @@ export function bandTitlesWithOverflow(report: Report, bandDictionary: { [bandTy
 
 export function setOverflowProperty(report: Report) {
   let allChanges: { [key: number]: { [key: string]: ChangesProperty } } = {};
+  if (report.scenarioChanges === null) return report;
   allChanges[0] = report.scenarioChanges.baseChanges;
   allChanges = { ...allChanges, ...report.scenarioChanges.areaChanges };
 

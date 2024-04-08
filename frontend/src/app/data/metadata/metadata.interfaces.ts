@@ -11,6 +11,7 @@ export interface SelectableLayer {
   symphonyCategory: BandType;
   selected: boolean;
   visible?: boolean;
+  loaded?: boolean;
 }
 
 export interface Band extends SelectableLayer {
@@ -18,7 +19,7 @@ export interface Band extends SelectableLayer {
   constantIntensity?: number; // TODO rename
   layerOpacity?: number;
   meta:
-    { [key: string]: string; };
+    { [key: string]: string };
 }
 
 export interface BandGroup {
@@ -60,13 +61,13 @@ export interface Groups {
 }
 
 export interface BandChange {
-  type: BandType,
-  multiplier?: number,
-  offset?: number
-  hasOverflow?: boolean
+  type: BandType;
+  multiplier?: number;
+  offset?: number;
+  hasOverflow?: boolean;
 }
 
 export interface State {
-  ECOSYSTEM: Groups,
-  PRESSURE: Groups
+  ECOSYSTEM: Groups;
+  PRESSURE: Groups;
 }

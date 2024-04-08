@@ -1,9 +1,6 @@
 package se.havochvatten.symphony.service;
 
-import se.havochvatten.symphony.dto.MetadataComponentDto;
-import se.havochvatten.symphony.dto.MetadataDto;
-import se.havochvatten.symphony.dto.SymphonyBandDto;
-import se.havochvatten.symphony.dto.MetadataSymphonyThemeDto;
+import se.havochvatten.symphony.dto.*;
 import se.havochvatten.symphony.entity.Metadata;
 import se.havochvatten.symphony.entity.SymphonyBand;
 import se.havochvatten.symphony.entity.BaselineVersion;
@@ -14,6 +11,8 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
 import java.util.*;
 
 @Stateless
@@ -24,16 +23,63 @@ public class MetaDataService {
     @EJB
     BaselineVersionService baselineVersionService;
 
-    public MetadataDto findMetadata(String baselineName, String preferredLanguage) throws SymphonyStandardAppException {
+    public final static String fullMetaQuery = "SELECT m FROM Metadata m " +
+            "WHERE m.band IN :bandsList " +
+            "AND (m.language = :language " +
+            "OR (m.language = m.band.baseline.locale " +
+            "AND m.metaField NOT IN " +
+            "(SELECT m2.metaField FROM Metadata m2 " +
+            "WHERE m2.band IN :bandsList " +
+            "AND m2.language = :language)))";
+
+    public final static String sparseMetaQuery = "SELECT m FROM Metadata m " +
+            "WHERE m.band IN :bandsList " +
+            "AND (m.language = :language " +
+            "OR (m.language = m.band.baseline.locale " +
+            "AND m.metaField IN ('title', 'symphonytheme')" +
+            "AND m.metaField NOT IN " +
+            "(SELECT m2.metaField FROM Metadata m2 " +
+            "WHERE m2.band IN :bandsList " +
+            "AND m2.metaField IN ('title', 'symphonytheme')" +
+            "AND m2.language = :language)))";
+
+    public MetadataDto findMetadata(String baselineName, String preferredLanguage, boolean sparse) throws SymphonyStandardAppException {
         BaselineVersion baseline = baselineVersionService.getVersionByName(baselineName);
         MetadataDto metadataDto = new MetadataDto();
-        metadataDto.setEcoComponent(getComponentDto("Ecosystem", baseline.getId(), preferredLanguage));
-        metadataDto.setPressureComponent(getComponentDto("Pressure", baseline.getId(), preferredLanguage));
+        metadataDto.setEcoComponent(getComponentDto("Ecosystem", baseline.getId(), preferredLanguage, sparse));
+        metadataDto.setPressureComponent(getComponentDto("Pressure", baseline.getId(), preferredLanguage, sparse));
         metadataDto.setLanguage(preferredLanguage);
         return metadataDto;
+
     }
 
-    public MetadataComponentDto getComponentDto(String componentName, int baselineVersionId, String language) {
+    public Map<Integer, String>
+        getComponentTitles(int baselineVersionId, LayerType category, String preferredLanguage)
+        throws SymphonyStandardAppException {
+
+        TypedQuery<Tuple> bandTitlesQuery = em.createQuery(
+            "SELECT m.band.bandnumber, m.metaValue FROM Metadata m " +
+                    "WHERE m.band.baseline.id = :baselineVersionId " +
+                    "AND m.metaField = 'title' " +
+                    "AND m.band.category = :category " +
+                    "AND (m.language = :language " +
+                        "OR (m.language = m.band.baseline.locale " +
+                        "AND m.metaField NOT IN " +
+                            "(SELECT m2.metaField FROM Metadata m2 " +
+                            "WHERE m2.band.baseline.id = :baselineVersionId " +
+                            "AND m2.metaField = 'title' " +
+                            "AND m2.language = :language)))" +
+                    "ORDER BY m.band.bandnumber", Tuple.class);
+
+        return bandTitlesQuery
+            .setParameter("baselineVersionId", baselineVersionId)
+            .setParameter("category", category == LayerType.ECOSYSTEM ? "Ecosystem" : "Pressure")
+            .setParameter("language", preferredLanguage)
+            .getResultStream()
+            .collect(HashMap::new, (m, t) -> m.put(t.get(0, Integer.class), t.get(1, String.class)), HashMap::putAll);
+    }
+
+    public MetadataComponentDto getComponentDto(String componentName, int baselineVersionId, String language, boolean sparse) {
         MetadataComponentDto componentDto = new MetadataComponentDto();
 
         List<SymphonyBand> bandsList = getBandsForBaselineComponent(componentName, baselineVersionId);
@@ -41,14 +87,7 @@ public class MetaDataService {
         // Select all Metadata for the given SymphonyBands and the given language.
         // If a translation for a field is not found, fall back to baseline default language.
         List<Metadata> metadataList =
-            em.createQuery("SELECT m FROM Metadata m " +
-                              "WHERE m.band IN :bandsList " +
-                                "AND (m.language = :language " +
-                                    "OR (m.language = m.band.baseline.locale " +
-                                        "AND m.metaField NOT IN " +
-                                            "(SELECT m2.metaField FROM Metadata m2 " +
-                                                "WHERE m2.band IN :bandsList " +
-                                                "AND m2.language = :language)))")
+                em.createQuery(sparse ? sparseMetaQuery : fullMetaQuery, Metadata.class)
                 .setParameter("bandsList", bandsList)
                 .setParameter("language", language)
                 .getResultList();
@@ -84,7 +123,7 @@ public class MetaDataService {
         return em.createQuery(
             "SELECT b FROM SymphonyBand b " +
                 "WHERE b.baseline.id = :baselineVersionId " +
-                "AND b.category = :category")
+                "AND b.category = :category", SymphonyBand.class)
             .setParameter("baselineVersionId", baselineVersionId)
             .setParameter("category", componentName)
             .getResultList();

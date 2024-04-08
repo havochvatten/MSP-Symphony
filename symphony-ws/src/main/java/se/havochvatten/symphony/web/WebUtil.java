@@ -1,5 +1,6 @@
 package se.havochvatten.symphony.web;
 
+import org.apache.commons.lang3.StringUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
@@ -36,6 +37,12 @@ public interface WebUtil {
     double[] COMPARISON_STEPS = { -1, -0.6666, -0.3333, -0.1111, -0.022223, 0, 0.022223, 0.1111, 0.3333, 0.6666, 1 };
 
     FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+
+    static final String fileNameRx = "[^\\p{L}\\p{N}._-]+";
+
+    public static String escapeFilename(String s) {
+        return StringUtils.stripAccents(s).replaceAll(fileNameRx, "-");
+    }
 
     static JsonArray createExtent(Envelope targetEnvelope) {
         return Json.createArrayBuilder(List.of(targetEnvelope.getMinX(), targetEnvelope.getMinY(),
@@ -138,6 +145,10 @@ public interface WebUtil {
         FileOutputStream fop = new FileOutputStream(file);
         fop.write(content);
         fop.close();
+    }
+
+    public static int[] intArrayParam(String param) {
+        return Arrays.stream(param.split(",")).mapToInt(Integer::parseInt).toArray();
     }
 
     static Map<String, String> multiValuedToSingleValuedMap(MultivaluedMap<String, String> multiValued) {

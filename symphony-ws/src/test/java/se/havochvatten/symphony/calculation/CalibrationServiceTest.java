@@ -2,31 +2,22 @@ package se.havochvatten.symphony.calculation;
 
 import it.geosolutions.jaiext.JAIExt;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.factory.Hints;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.geojson.GeoJsonReader;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
-import se.havochvatten.symphony.scenario.ScenarioServiceTest;
+import se.havochvatten.symphony.service.CalibrationService;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;

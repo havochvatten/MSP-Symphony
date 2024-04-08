@@ -7,7 +7,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.*;
 import se.havochvatten.symphony.dto.*;
-import se.havochvatten.symphony.entity.CalculationResult;
+import se.havochvatten.symphony.entity.CalculationResultSlice;
 import se.havochvatten.symphony.scenario.ScenarioRESTTest;
 import se.havochvatten.symphony.web.RESTTest;
 
@@ -297,10 +297,10 @@ CalculationRESTTest extends RESTTest {
                         get(endpoint("/calculation/matching/{id}"));
 
         assertEquals(200, report.statusCode());
-        var res = report.jsonPath().getList("", CalculationResultSlice.class);
+        var res = report.jsonPath().getList("", CalculationResultSliceDto.class);
         assertTrue(res.size() >= 1);
         assertFalse(res.stream().anyMatch(calc -> calc.id == testCalcId));
-        delete(crSlice.id);
+        delete(crSlice.getId());
     }
 
     private static void delete (int calcId){

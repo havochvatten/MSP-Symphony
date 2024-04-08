@@ -11,11 +11,9 @@ import org.geotools.gce.geotiff.GeoTiffReader;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
-import se.havochvatten.symphony.calculation.CalcService;
+import se.havochvatten.symphony.service.CalcService;
 import se.havochvatten.symphony.calculation.Overflow;
-import se.havochvatten.symphony.dto.CalculationResultSlice;
-import se.havochvatten.symphony.dto.MatrixResponse;
-import se.havochvatten.symphony.scenario.ScenarioSnapshot;
+import se.havochvatten.symphony.dto.CalculationResultSliceDto;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -38,29 +36,29 @@ import java.util.Map;
         @NamedQuery(name = "CalculationResult.findAllExceptBaseline",
                 query = "SELECT c FROM CalculationResult c WHERE c.baselineCalculation = FALSE"),
         @NamedQuery(name = "CalculationResult.findBaselineCalculationsByBaselineId",
-                query = "SELECT NEW se.havochvatten.symphony.dto.CalculationResultSlice(c.id, c" +
+                query = "SELECT NEW se.havochvatten.symphony.dto.CalculationResultSliceDto(c.id, c" +
                         ".calculationName, c.timestamp, (c.rasterData = null)) FROM " +
                         "CalculationResult c WHERE c.baselineVersion.id = : id and c.baselineCalculation = " +
                         "TRUE"),
-        @NamedQuery(name = "CalculationResult.findByOwner",
-                query = "SELECT NEW se.havochvatten.symphony.dto.CalculationResultSlice(c.id, c" +
-                        ".calculationName, c.timestamp, (c.rasterData = null)) FROM " +
-                        "CalculationResult c WHERE c.owner = :username ORDER BY c.timestamp DESC"),
         @NamedQuery(name = "CalculationResult.findFullByOwner",
                 query = "SELECT c FROM CalculationResult c WHERE c.owner = :username ORDER BY c.timestamp " +
                         "DESC"),
         @NamedQuery(name = "CalculationResult.removeOldCalculationTiff",
-                query = "UPDATE CalculationResult c SET c.rasterData = null WHERE c.timestamp < :timestamp")
+                query = "UPDATE CalculationResult c SET c.rasterData = null WHERE c.timestamp < :timestamp"),
+        @NamedQuery(name = "CalculationResult.findByIds_Owner_Baseline",
+                query = "SELECT c FROM CalculationResult c WHERE c.id IN :ids AND c.owner = :username AND " +
+                        "c.baselineVersion.id = :baselineId"),
 })
 
 @SqlResultSetMapping(
     name = "CalculationCmpMapping",
     classes = @ConstructorResult(
-        targetClass = CalculationResultSlice.class,
+        targetClass = CalculationResultSliceDto.class,
         columns = {
             @ColumnResult(name="cares_id", type=Integer.class),
             @ColumnResult(name="cares_calculationname", type=String.class),
             @ColumnResult(name="cares_timestamp", type=Date.class),
+            @ColumnResult(name="haschanges", type=Boolean.class),
             @ColumnResult(name="polygon", type=String.class),
             @ColumnResult(name="ecosystems", type=int[].class),
             @ColumnResult(name="pressures", type=int[].class)
@@ -69,8 +67,12 @@ import java.util.Map;
 )
 
 @NamedNativeQuery(name = "CalculationResult.findCmpByOwner",
-    query = "SELECT c.cares_id, c.cares_calculationname, c.cares_timestamp, s.polygon, s.ecosystems, s.pressures FROM " +
-            "calculationresult c JOIN scenariosnapshot s ON c.scenariosnapshot_id = s.id "+
+    query = "SELECT c.cares_id, c.cares_calculationname, c.cares_timestamp, " +
+                    "cs.haschanges, " +
+                    "s.polygon, s.ecosystems, s.pressures FROM " +
+            "calculationresult c " +
+            "JOIN calculationresultslice cs ON c.cares_id = cs.id " +
+            "JOIN scenariosnapshot s ON c.scenariosnapshot_id = s.id "+
             "AND s.owner = :username AND c.cares_op = :operation ORDER BY c.cares_timestamp DESC",
     resultSetMapping = "CalculationCmpMapping" )
 
@@ -151,7 +153,7 @@ public class CalculationResult implements Serializable {
     private byte[] imagePNG;
 
     @Column(name = "cares_overflow")
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType")
+    @Type(type = "json")
     private JsonNode overflow;
 
     public CalculationResult() {}
@@ -281,6 +283,12 @@ public class CalculationResult implements Serializable {
     }
 
     public Map<String, String> getOperationOptions() { return operationOptions; }
+
+    public int getOperation() {
+        return operationName.equals("CumulativeImpact") ?
+            CalcService.OPERATION_CUMULATIVE :
+            CalcService.OPERATION_RARITYADJUSTED;
+    }
 
     @Override
     public int hashCode() {
