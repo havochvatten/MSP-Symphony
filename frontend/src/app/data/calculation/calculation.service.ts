@@ -1,10 +1,9 @@
 import { EventEmitter, Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Store } from '@ngrx/store';
-import { Subscription } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { environment as env } from '@src/environments/environment';
 import { State } from '@src/app/app-reducer';
-import { MessageActions } from '@data/message';
 import { MetadataSelectors } from '@data/metadata';
 import {
   CalculationSlice,
@@ -72,33 +71,7 @@ export class CalculationService implements OnDestroy {
   }
 
   public calculate(scenario: Scenario) {
-    const that = this;
-    // TODO Consider making it a simple request (not subject to CORS)
-    // TODO make NgRx effect?
-
-    this.http.post<CalculationSlice>(env.apiBaseUrl+'/calculation/sum', scenario.id).
-    subscribe({
-      next(response) {
-        that.addResult(response.id).then(() => {
-          that.store.dispatch(CalculationActions.calculationSucceeded({
-            calculation: response
-          }));
-        });
-      },
-      error() {
-        that.store.dispatch(CalculationActions.calculationFailed());
-        that.store.dispatch(
-          MessageActions.addPopupMessage({
-            message: {
-              type: 'ERROR',
-              message: `${scenario.name} could not be calculated!`,
-              uuid: scenario.id + '_' + scenario.name
-            }
-          })
-        );
-      }
-      // stop spinner in complete-callback?
-    });
+    return this.http.post<CalculationSlice>(env.apiBaseUrl+'/calculation/sum', scenario.id);
   }
 
   public getStaticImage(url:string) {
@@ -147,36 +120,31 @@ export class CalculationService implements OnDestroy {
   }
 
   private addResultImage(id: number, epFragment: string) {
-    const that = this;
-    return new Promise<number | null>((resolve, reject) => {
-      this.getStaticImage(`${env.apiBaseUrl}/calculation/` + epFragment).subscribe({
-        next(response) {
-          const extentHeader = response.headers.get('SYM-Image-Extent'),
-                dynamicMaxHeader = response.headers.get('SYM-Dynamic-Max');
-          if (extentHeader) {
-            that.resultReady$.emit({
-              url: URL.createObjectURL(response.body!),
-              calculationId: id,
-              imageExtent: JSON.parse(extentHeader),
-              projection: AppSettings.CLIENT_SIDE_PROJECTION ?
-                            AppSettings.DATALAYER_RASTER_CRS :
-                            AppSettings.MAP_PROJECTION,
-              interpolate: that.aliasing
-            });
-            resolve(dynamicMaxHeader ? +dynamicMaxHeader : null);
-          } else {
-            console.error(
-              'Result image for calculation ' + id + ' does not have any extent header, ignoring.'
-            );
-            reject();
-          }
-        },
-        error(err: HttpErrorResponse) {
-          that.store.dispatch(CalculationActions.calculationFailed());
-          reject('Error fetching result image at ' +err.url);
+    return firstValueFrom(this.getStaticImage(`${env.apiBaseUrl}/calculation/` + epFragment)).then(response => {
+      const extentHeader = response.headers.get('SYM-Image-Extent'),
+            dynamicMaxHeader = response.headers.get('SYM-Dynamic-Max');
+      if (extentHeader) {
+        this.resultReady$.emit({
+          url: URL.createObjectURL(response.body!),
+          calculationId: id,
+          imageExtent: JSON.parse(extentHeader),
+          projection: AppSettings.CLIENT_SIDE_PROJECTION ?
+                        AppSettings.DATALAYER_RASTER_CRS :
+                        AppSettings.MAP_PROJECTION,
+          interpolate: this.aliasing
+        });
+        return dynamicMaxHeader ? +dynamicMaxHeader : null;
+        } else {
+          console.error(
+            'Result image for calculation ' + id + ' does not have any extent header, ignoring.'
+          );
+          return null;
         }
-      });
-    });
+      }).catch((err: HttpErrorResponse) => {
+        this.store.dispatch(CalculationActions.calculationFailed());
+        throw new Error('Error fetching result image at ' +err.url);
+      }
+    )
   }
 
   public deleteResults(ids: number[]){

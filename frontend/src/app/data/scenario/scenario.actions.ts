@@ -36,6 +36,16 @@ export const openScenario = createAction(
   props<{ index: number }>()
 );
 
+export const fetchSingleScenario = createAction(
+    '[Scenario] Fetch single scenario',
+    props<{ scenarioId: number }>()
+  );
+
+export const fetchSingleScenarioSuccess = createAction(
+    '[Scenario] Fetch single scenario success',
+    props<{ scenario: Scenario }>()
+  );
+
 export const openScenarioArea = createAction(
   '[Scenario] Open scenario area',
   props<{ index: number, scenarioIndex: number | null }>()
@@ -69,8 +79,7 @@ export const deleteMultipleScenarios = createAction(
 )
 
 export const saveActiveScenario = createAction(
-  '[Scenario] Save active scenario',
-  props<{ scenarioToBeSaved: Scenario }>()
+  '[Scenario] Save active scenario'
 );
 
 export const saveScenarioSuccess = createAction(
@@ -81,6 +90,10 @@ export const saveScenarioSuccess = createAction(
 export const saveScenarioFailure = createAction(
   '[Scenario] Save scenario failure',
   props<{ error: ErrorMessage }>()
+);
+
+export const saveAndCalculateActiveScenario = createAction(
+  '[Scenario] Save and calculate active scenario',
 );
 
 export const deleteScenarioArea = createAction(

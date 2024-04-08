@@ -24,6 +24,7 @@ import se.havochvatten.symphony.calculation.CalcUtil;
 import se.havochvatten.symphony.dto.BatchCalculationDto;
 import se.havochvatten.symphony.dto.CalculationResultSliceDto;
 import se.havochvatten.symphony.dto.CompoundComparisonSlice;
+import se.havochvatten.symphony.dto.NormalizationType;
 import se.havochvatten.symphony.entity.*;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
@@ -271,7 +272,8 @@ public class CalculationREST {
         MathTransform clientTransform =
             CRS.findMathTransform(coverage.getGridGeometry().getCoordinateReferenceSystem(), clientCRS);
 
-        RasterNormalizer normalizer = normalizationFactory.getNormalizer(scenario.getNormalization().type);
+        NormalizationType  = this.scenario.getNormalization().type;
+        RasterNormalizer normalizer = normalizationFactory.getNormalizer(normalizationType);
 
         int[] areas = scenario.getAreaMatrixMap().keySet().stream().sorted().mapToInt(i -> i).toArray();
         int areaIndex = 0;
@@ -279,7 +281,15 @@ public class CalculationREST {
         RenderedImage[] renderedImages = new RenderedImage[areas.length];
 
         for(int areaId : areas) {
-            Double normalizationValue = normalizer.apply(coverage, scenario.getNormalizationValue()[areaIndex]);
+            double normalizationValue = switch (normalizationType) {
+                case USER_DEFINED ->
+                    scenario.getNormalization().userDefinedValue;
+                case STANDARD_DEVIATION ->
+                    normalizer.apply(coverage, scenario.getNormalization().stdDevMultiplier);
+                case AREA, DOMAIN, PERCENTILE ->    // PERCENTILE doesn't happen
+                    normalizer.apply(coverage, scenario.getNormalizationValue()[areaIndex]);
+            };
+
             renderedImages[areaIndex] = renderAreaImage(scenario.getAreas().get(areaId).getFeature(), normalizationValue);
             ++areaIndex;
         }

@@ -5,7 +5,6 @@ import {
   filter,
   map,
   mergeMap,
-  retry,
   withLatestFrom
 } from 'rxjs/operators';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -24,6 +23,7 @@ import { MetadataSelectors } from "@data/metadata";
 import { Band } from "@data/metadata/metadata.interfaces";
 import { AreaMatrixData } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
 import { ScenarioMatrixDataMap } from "@data/scenario/scenario.interfaces";
+import { CalculationActions } from '@data/calculation';
 
 @Injectable()
 export class ScenarioEffects {
@@ -45,22 +45,40 @@ export class ScenarioEffects {
     )
   ));
 
+  fetchSingleScenario$ = createEffect(() => this.actions$.pipe(
+    ofType(ScenarioActions.fetchSingleScenario),
+    mergeMap(({ scenarioId }) =>
+      this.scenarioService.getSingle(scenarioId).pipe(
+        map(scenario => ScenarioActions.fetchSingleScenarioSuccess({ scenario })),
+        catchError(({ status, error: message }) =>
+          of(ScenarioActions.fetchScenariosFailure({ error: { status, message } }))
+        )
+      )
+    )
+  ));
+
   saveScenario$ = createEffect(() => this.actions$.pipe(
-    ofType(ScenarioActions.saveActiveScenario),
+    ofType(ScenarioActions.saveActiveScenario, ScenarioActions.saveAndCalculateActiveScenario),
     concatMap(action =>
-      of(action).pipe(withLatestFrom(this.store.select(MetadataSelectors.selectSelectedComponents)))
+      of(action).pipe(withLatestFrom(this.store.select(MetadataSelectors.selectSelectedComponents),
+                                     this.store.select(ScenarioSelectors.selectActiveScenario)))
     ),
-    mergeMap(([{ scenarioToBeSaved }, { ecoComponent, pressureComponent }] ) => {
+    mergeMap((
+      [action, { ecoComponent, pressureComponent }, scenarioToBeSaved]) => {
       const sortedBandNumbers = (bands: Band[]) => bands
         .map(band => band.bandNumber)
         .sort((a, b) => a - b);
       return this.scenarioService.save({
-          ...scenarioToBeSaved,
+          ...scenarioToBeSaved!,
           ecosystemsToInclude: sortedBandNumbers(ecoComponent),
           pressuresToInclude: sortedBandNumbers(pressureComponent)
       }).pipe(
-        retry(2),
-        map(savedScenario => ScenarioActions.saveScenarioSuccess({ savedScenario })),
+        map(
+          (savedScenario) =>
+            action.type === ScenarioActions.saveAndCalculateActiveScenario.type ?
+              CalculationActions.calculateActiveScenario() :
+              ScenarioActions.saveScenarioSuccess({ savedScenario })
+        ),
         catchError(({ status, error: message }) =>
           of(ScenarioActions.saveScenarioFailure({ error: { status, message } }))
         )
