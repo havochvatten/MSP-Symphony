@@ -272,7 +272,7 @@ public class CalculationREST {
         MathTransform clientTransform =
             CRS.findMathTransform(coverage.getGridGeometry().getCoordinateReferenceSystem(), clientCRS);
 
-        NormalizationType  = this.scenario.getNormalization().type;
+        NormalizationType normalizationType = this.scenario.getNormalization().type;
         RasterNormalizer normalizer = normalizationFactory.getNormalizer(normalizationType);
 
         int[] areas = scenario.getAreaMatrixMap().keySet().stream().sorted().mapToInt(i -> i).toArray();
