@@ -24,11 +24,11 @@ import { UserSelectors } from "@data/user";
 import { Baseline } from "@data/user/user.interfaces";
 
 export enum NormalizationType {
-  Area = 'AREA',
-  Domain = 'DOMAIN',
-  UserDefined = 'USER_DEFINED',
-  StandardDeviation = 'STANDARD_DEVIATION',
-  Percentile = 'PERCENTILE' // Only used on backend for calibration
+  AREA = 'AREA',
+  DOMAIN = 'DOMAIN',
+  USER_DEFINED = 'USER_DEFINED',
+  STANDARD_DEVIATION = 'STANDARD_DEVIATION',
+  PERCENTILE = 'PERCENTILE' // Only used on backend for calibration
 }
 
 export enum CalcOperation {

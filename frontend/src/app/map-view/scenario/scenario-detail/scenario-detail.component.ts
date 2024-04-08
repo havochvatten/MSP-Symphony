@@ -352,9 +352,9 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     if(operation === CalcOperation.RarityAdjusted) {
       const normalizationOptions = this.getNormalizationOptions();
       this.store.dispatch(ScenarioActions.changeScenarioOperationParams({operationParams: this.getParams() ? this.getParams() : {'domain': 'GLOBAL'}}));
-      if(normalizationOptions.type === NormalizationType.Domain) {
+      if(normalizationOptions.type === NormalizationType.DOMAIN) {
         this.store.dispatch(ScenarioActions.changeScenarioNormalization(
-          { normalizationOptions: {...normalizationOptions, type: NormalizationType.Area } }
+          { normalizationOptions: {...normalizationOptions, type: NormalizationType.AREA } }
         ));
       }
     }
