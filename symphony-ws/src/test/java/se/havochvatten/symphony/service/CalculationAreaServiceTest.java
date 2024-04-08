@@ -1,7 +1,6 @@
 package se.havochvatten.symphony.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.internal.RestAssuredResponseOptionsImpl;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +15,6 @@ import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.entity.Scenario;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.io.IOException;
 import java.math.BigDecimal;
