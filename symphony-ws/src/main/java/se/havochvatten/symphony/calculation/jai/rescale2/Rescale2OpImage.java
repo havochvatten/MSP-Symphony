@@ -106,6 +106,7 @@ public class Rescale2OpImage extends PointOpImage {
     private RenderedOp srcROIImgExt;
 
     private void accumulateOverflow(int band, int value) {
+        if (value < 0) return;
         if (uncappedRescaleTable[band][value] > byteRescaleTable[band][value]) {
             overflow.register(symphonyCategory, band);
         }

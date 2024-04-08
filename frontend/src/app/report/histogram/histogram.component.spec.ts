@@ -40,7 +40,7 @@ describe('HistogramComponent', () => {
       max: 100,
       min: 0,
       name: "",
-      normalization: {type: NormalizationType.Domain},
+      normalization: {type: NormalizationType.DOMAIN},
       operationName: "",
       operationOptions: {},
       scenarioChanges: {baseChanges: {}, areaChanges: {}},

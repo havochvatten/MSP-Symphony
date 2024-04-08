@@ -188,7 +188,7 @@
                 "description": "Sätt maximalt värde baserat på",
                 "area": "Maximalt värde i valt område",
                 "domain": "{{ ordinalPercentileValue }} percentil i havsplaneområde",
-                "mean-plus-stddev": "Medelvärde +/- multipel av \nstandardavvikelsen:",
+                "mean-plus-stddev": "Medelvärde + multipel av \nstandardavvikelsen:",
                 "custom": "Egendefinierat värde",
                 "custom-value": "Värde"
             },
@@ -532,6 +532,13 @@
             "delete-modal": {
                 "header": "Radera sammanslagen jämförelse",
                 "message": "Bekräfta borttagning av sammanslagen jämförelse: <em>“{{ comparisonName }}”</em>"
+            },
+            "terms": {
+                "total": "Totalt",
+                "sum": "Summa",
+                "difference": "Differens",
+                "pixels": "Antal pixlar",
+                "non-planar": "Icke-plan projektion"
             }
         },
         "area-options": {

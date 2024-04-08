@@ -16,18 +16,18 @@
     <tr *ngIf="normalization">
       <th>{{ 'report.cumulative-effect-etc.normalization.title' | translate }}:</th>
       <td [ngSwitch]="normalization.type">
-        <ng-container *ngSwitchCase="type.Domain">
+        <ng-container *ngSwitchCase="type.DOMAIN">
           {{ 'report.cumulative-effect-etc.normalization.domain' | translate:{ ordinalPercentileValue: this.percentileValue | ordinal:locale } }}<sup>*</sup>
         </ng-container>
-        <ng-container *ngSwitchCase="type.Area">
+        <ng-container *ngSwitchCase="type.AREA">
           {{ 'report.cumulative-effect-etc.normalization.area' | translate }}
         </ng-container>
-        <ng-container *ngSwitchCase="type.StandardDeviation">
+        <ng-container *ngSwitchCase="type.STANDARD_DEVIATION">
           {{ 'report.cumulative-effect-etc.normalization.mean-plus-stddev' | translate:
           { stddevMultiplier: jsMath.abs(normalization.stdDevMultiplier),
             positiveOrNegative: normalization.stdDevMultiplier > 0 ? '+' : '-' } }}
         </ng-container>
-        <ng-container *ngSwitchCase="type.UserDefined">
+        <ng-container *ngSwitchCase="type.USER_DEFINED">
           {{ 'report.cumulative-effect-etc.normalization.custom' | translate }} = {{
           normalization.userDefinedValue | number: '1.0-4':locale }}
         </ng-container>

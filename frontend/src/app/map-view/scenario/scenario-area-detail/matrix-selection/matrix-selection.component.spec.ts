@@ -47,7 +47,7 @@ describe('MatrixSelectionComponent', () => {
       changes: {},
       ecosystemsToInclude: [],
       name: "",
-      normalization: { type:NormalizationType.Domain },
+      normalization: { type:NormalizationType.DOMAIN },
       pressuresToInclude: [],
       areas: [{
         id: 1,

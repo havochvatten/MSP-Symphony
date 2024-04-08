@@ -188,7 +188,7 @@
                 "description": "Set maximum value based on",
                 "area": "Maximum value in computed area",
                 "domain": "{{ ordinalPercentileValue }} percentile in MSP area",
-                "mean-plus-stddev": "Mean +/- multiple of \nstandard deviation:",
+                "mean-plus-stddev": "Mean + multiple of \nstandard deviation:",
                 "custom": "User-defined value:",
                 "custom-value": "Value"
             },
@@ -532,6 +532,13 @@
             "delete-modal": {
                 "header": "Delete compound comparison",
                 "message": "Confirm deletion of compound comparison: <em>“{{ comparisonName }}”</em>"
+            },
+            "terms": {
+                "total": "Total",
+                "sum": "Sum",
+                "difference": "Difference",
+                "pixels": "Number of pixels",
+                "non-planar": "Non-planar projection"
             }
         },
         "area-options": {

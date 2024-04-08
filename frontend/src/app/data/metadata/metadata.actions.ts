@@ -22,6 +22,16 @@ export const fetchMetadataSuccess = createAction(
   }>()
 );
 
+export const fetchSparseMetadataSuccess = createAction(
+  '[Metadata] Fetch metadata success (excluding details)',
+  props<{
+    metadata: {
+      ecoComponent: Groups;
+      pressureComponent: Groups;
+    };
+  }>()
+);
+
 export const fetchMetadataFailure = createAction(
   '[Metadata] Fetch metadata failure',
   props<{ error: ErrorMessage }>()

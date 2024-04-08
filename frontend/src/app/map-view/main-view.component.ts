@@ -4,7 +4,7 @@ import {
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
-import { take } from "rxjs/operators";
+import { distinctUntilChanged, skip, take } from "rxjs/operators";
 
 import { State } from '@src/app/app-reducer';
 import { MetadataSelectors } from '@data/metadata';
@@ -35,7 +35,10 @@ export class MainViewComponent implements OnInit, AfterViewInit {
   areas?: Observable<AllAreas>;
   legends$?: Observable<LegendState>;
   cmpLegends$?: Observable<ComparisonLegendState[]>;
-  compoundComparisonCount$: Observable<number>;
+  compoundComparisonCount$: Observable<number>
+    = this.store.select(CalculationSelectors.selectCompoundComparisonCount);
+  compoundComparisonSuccess$: Observable<number>
+    = this.store.select(CalculationSelectors.selectCompoundComparisonSuccessCount);
   center = environment.map.center;
   visibleImpact = false;
   visibleComparison = false;
@@ -43,22 +46,23 @@ export class MainViewComponent implements OnInit, AfterViewInit {
   multiSelection = false
   isMacOS = isMacOS();
 
-  protected activeScenario$: Observable<Scenario | undefined>;
-  protected activeScenarioArea$: Observable<number | undefined>;
-  protected calculating$: Observable<boolean>;
+  protected activeScenario$: Observable<Scenario | undefined>
+    = this.store.select(ScenarioSelectors.selectActiveScenario);
+  protected activeScenarioArea$: Observable<number | undefined>
+    = this.store.select(ScenarioSelectors.selectActiveScenarioArea);
+  protected calculating$: Observable<boolean>
+    = this.store.select(CalculationSelectors.selectCalculating);
   protected scenarioAreaSelection = false
   private selectedAreas$?: Subscription;
-
 
   constructor(
     private store: Store<State>,
     private cd: ChangeDetectorRef,
     private moduleRef: NgModuleRef<never>,
     private dialogService: DialogService) {
-    this.activeScenario$ = this.store.select(ScenarioSelectors.selectActiveScenario);
-    this.activeScenarioArea$ = this.store.select(ScenarioSelectors.selectActiveScenarioArea);
-    this.compoundComparisonCount$ = this.store.select(CalculationSelectors.selectCompoundComparisonCount);
-    this.calculating$ = this.store.select(CalculationSelectors.selectCalculating);
+
+    this.compoundComparisonSuccess$.pipe(
+      distinctUntilChanged(), skip(1)).subscribe(() => this.onOpenCCList());
   }
 
   ngOnInit() {

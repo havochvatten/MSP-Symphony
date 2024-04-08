@@ -72,7 +72,7 @@ export class CompoundComparisonListDialogComponent extends Listable {
       });
 
       if (!ccDownloadOptions.asJson) {
-        params.set('heading', this.translateService.instant('map.compound-data-list.compound-comparison-data'));
+        params.set('meta-terms', this.metaTitlesParam());
       }
 
       document.location.href =
@@ -82,5 +82,33 @@ export class CompoundComparisonListDialogComponent extends Listable {
 
   setSort(sortType: ListItemsSort): void {
     this.store.dispatch(CalculationActions.setCompoundComparisonSortType({ sortType }));
+  }
+
+  metaTitlesParam(): string {
+    const titleCase = (str: string) => str[0].toUpperCase() + str.slice(1),
+      titles: {[key:string]: string} = this.translateService.instant([
+      'report.cumulative-effect-etc.calculated-area',
+      'report.cumulative-effect-etc.average','report.cumulative-effect-etc.std-dev',
+      'report.cumulative-effect-etc.max',
+      'map.compound-data-list.terms.total', 'map.compound-data-list.terms.sum',
+      'map.compound-data-list.terms.difference', 'map.compound-data-list.compound-comparison-data',
+      'map.compound-data-list.terms.pixels', 'map.compound-data-list.terms.non-planar',
+      'map.metadata.ecosystem', 'map.metadata.pressure']
+      );
+
+    return JSON.stringify({
+      compoundHeading: titles['map.compound-data-list.compound-comparison-data'],
+      area: titles['report.cumulative-effect-etc.calculated-area'],
+      total: titles['map.compound-data-list.terms.total'],
+      sum: titles['map.compound-data-list.terms.sum'],
+      difference: titles['map.compound-data-list.terms.difference'],
+      average: titles['report.cumulative-effect-etc.average'],
+      stddev: titles['report.cumulative-effect-etc.std-dev'],
+      max: titles['report.cumulative-effect-etc.max'],
+      pixels: titles['map.compound-data-list.terms.pixels'],
+      nonPlanar: titles['map.compound-data-list.terms.non-planar'],
+      ecosystem: titleCase(titles['map.metadata.ecosystem']),
+      pressure: titleCase(titles['map.metadata.pressure'])
+    });
   }
 }

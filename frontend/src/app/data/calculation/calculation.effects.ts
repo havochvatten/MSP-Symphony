@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { from, of } from 'rxjs';
-import { catchError, concatMap, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
+import { EMPTY, from, of } from 'rxjs';
+import { catchError, concatMap, map, mergeMap, switchMap, take, withLatestFrom } from 'rxjs/operators';
 import { CalculationActions } from './';
 import { CalculationService } from './calculation.service';
-import { ScenarioActions } from "@data/scenario";
+import { ScenarioActions, ScenarioSelectors } from "@data/scenario";
 import { UserSelectors } from "@data/user";
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
+import { MessageActions } from "@data/message";
 
 @Injectable()
 export class CalculationEffects {
@@ -203,4 +204,46 @@ export class CalculationEffects {
       )
     )
   ));
+
+  $calculateActiveScenario = createEffect(() => this.actions$.pipe(
+    ofType(CalculationActions.calculateActiveScenario),
+    concatMap((action) =>
+      this.store.select(ScenarioSelectors.selectActiveScenario).pipe(
+        take(1),
+        switchMap(
+          (scenario) => {
+            if (scenario) {
+              return this.calcService.calculate(scenario).pipe(
+                map(
+                  (calculation) =>
+                    CalculationActions.calculationSucceeded({calculation, savedScenario: scenario})),
+                catchError(() =>
+                  of(
+                    CalculationActions.calculationFailed(),
+                    MessageActions.addPopupMessage({
+                      message: {
+                        type: 'ERROR',
+                        message: `${scenario.name} could not be calculated!`,
+                        uuid: scenario.id + '_' + scenario.name
+                      }
+                    }))
+                  )
+              )
+            } else {
+              return EMPTY;
+            }
+          }
+        )
+      )
+    )));
+
+  $calculationSuccess = createEffect(() => this.actions$.pipe(
+    ofType(CalculationActions.calculationSucceeded),
+    map((action) => {
+        const scenarioId = action.savedScenario.id;
+        this.calcService.addResult(action.calculation.id);
+        return ScenarioActions.fetchSingleScenario({ scenarioId })
+      }
+    ))
+  );
 }

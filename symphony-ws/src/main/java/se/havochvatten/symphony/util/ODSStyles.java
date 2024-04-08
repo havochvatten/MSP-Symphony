@@ -9,6 +9,7 @@ public class ODSStyles {
         calcName        = new Style(),
         ecoHeader       = new Style(),
         pressureHeader  = new Style(),
+        epHeaderLeft    = new Style(),
         valueStyle      = new Style(),
         totalE          = new Style(),
         totalP          = new Style(),
@@ -27,7 +28,7 @@ public class ODSStyles {
 
         for (Style s : new Style[]
             { ecoHeader, pressureHeader, valueStyle, totalE,
-                totalP, totalHE, totalHP, totalC, }) {
+                totalP, totalHE, totalHP, totalC, epHeaderLeft }) {
             s.setFontSize(10);
         }
 
@@ -36,6 +37,8 @@ public class ODSStyles {
             s.setBold(true);
             s.setItalic(true);
         }
+
+        epHeaderLeft.setBold(true);
 
         ecoHeader.setTextAligment(Style.TEXT_ALIGMENT.Right);
         ecoHeader.setBorders(
