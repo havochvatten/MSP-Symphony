@@ -188,7 +188,7 @@
                 "description": "Sätt maximalt värde baserat på",
                 "area": "Maximalt värde i valt område",
                 "domain": "{{ ordinalPercentileValue }} percentil i havsplaneområde",
-                "mean-plus-stddev": "Medelvärde +/- multipel av \nstandardavvikelsen:",
+                "mean-plus-stddev": "Medelvärde + multipel av \nstandardavvikelsen:",
                 "custom": "Egendefinierat värde",
                 "custom-value": "Värde"
             },

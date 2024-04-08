@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
-import { catchError, concatMap, debounceTime, map, mergeMap, switchMap } from 'rxjs/operators';
+import { catchError, concatMap, debounceTime, map, mergeMap, skipWhile, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import MetadataService from './metadata.service';
 import { MetadataActions, MetadataSelectors } from './';
@@ -35,31 +35,34 @@ export class MetadataEffects {
         )
       ),
     ),
-    mergeMap(([action, activeBaseline, scenario]) => {
+    skipWhile(([, activeBaseline,]) => !activeBaseline),
+    mergeMap(
+      ([action, activeBaseline, scenario]) => {
       const baselineName =
         action.type === MetadataActions.fetchMetadata.type ?
           activeBaseline!.name : action.baselineName;
       return (!scenario ?
         this.metadataService.getMetaData(baselineName) :
         this.metadataService.getMetaData(baselineName, scenario!.id)).pipe(
-        map(layerData => {
-          const newLayerData = {
-            ...layerData,
-            ecoComponent: this.formatComponentData(layerData, 'ecoComponent'),
-            pressureComponent: this.formatComponentData(layerData,'pressureComponent')
-          };
-          return MetadataActions.fetchMetadataSuccess({metadata: newLayerData});
-        }),
-        catchError(error =>
-          of(
-            MetadataActions.fetchMetadataFailure({
-              error: {
-                status: error.status,
-                message: error.error
-              }
-            })
-          )
-        ))
+          map(layerData => {
+            const newLayerData = {
+              ...layerData,
+              ecoComponent: this.formatComponentData(layerData, 'ecoComponent'),
+              pressureComponent: this.formatComponentData(layerData,'pressureComponent')
+            };
+            return !scenario ? MetadataActions.fetchMetadataSuccess({metadata: newLayerData}) :
+                               MetadataActions.fetchSparseMetadataSuccess({metadata: newLayerData});
+          }),
+          catchError(error =>
+            of(
+              MetadataActions.fetchMetadataFailure({
+                error: {
+                  status: error.status,
+                  message: error.error
+                }
+              })
+            )
+          ))
     })
   ));
 

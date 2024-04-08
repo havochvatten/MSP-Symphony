@@ -32,10 +32,10 @@ export class ScenarioEditorComponent {
     this.store.dispatch(ScenarioActions.fetchScenarios());
     this.store.select(ScenarioSelectors.selectActiveScenario)
       .subscribe(scenario => {
-        this.activeScenario = scenario;
-        if(scenario) {
+        if(scenario && scenario.id !== this.activeScenario?.id) {
           this.store.dispatch(MetadataActions.fetchMetadata());
         }
+        this.activeScenario = scenario;
       });
     this.store.select(ScenarioSelectors.selectActiveScenarioArea)
       .subscribe(areaIndex => this.activeAreaIndex = areaIndex);

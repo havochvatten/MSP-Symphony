@@ -188,7 +188,7 @@
                 "description": "Définir la valeur maximale en tant que:",
                 "area": "Valeur maximale dans la zone de calcul",
                 "domain": "Normalisé au {{ ordinalPercentileValue }} centile dans la zone MSP",
-                "mean-plus-stddev": "Moyenne +/- \nmultiple de l'écart type:",
+                "mean-plus-stddev": "Moyenne + \nmultiple de l'écart type:",
                 "custom": "Valeur définie par l'utilisateur:",
                 "custom-value": "Valeur"
             },

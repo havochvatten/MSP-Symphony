@@ -71,6 +71,10 @@ export class ScenarioService {
     return this.http.post<Scenario>(this.scenarioApiBaseUrl+'/'+scenarioId+'/copy', options);
   }
 
+  getSingle(scenarioId: number) {
+    return this.http.get<Scenario>(this.scenarioApiBaseUrl+'/'+scenarioId);
+  }
+
   setScenarioChangeVisibility(feature: GeoJSONFeature) {
     return this.scenarioLayer!.toggleChangeAreaVisibility(feature);
   }

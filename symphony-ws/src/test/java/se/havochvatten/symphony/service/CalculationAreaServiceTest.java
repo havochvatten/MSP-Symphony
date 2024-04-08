@@ -15,7 +15,7 @@ import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.entity.Scenario;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
@@ -163,13 +163,13 @@ public class CalculationAreaServiceTest {
 
         List<SymphonyBand> ecoBands = getMockedEcoBands(pressureBands, sensitivityMatrix);
 
-        Query mockedPressuresQuery = mock(Query.class),
-              mockedEcoQuery = mock(Query.class);
+        TypedQuery mockedPressuresQuery = mock(TypedQuery.class),
+              mockedEcoQuery = mock(TypedQuery.class);
 
         when(calculationAreaService.metadataService.em.createQuery(
             "SELECT b FROM SymphonyBand b " +
             "WHERE b.baseline.id = :baselineVersionId " +
-            "AND b.category = :category")).thenReturn(mockedPressuresQuery, mockedEcoQuery);
+            "AND b.category = :category", SymphonyBand.class)).thenReturn(mockedPressuresQuery, mockedEcoQuery);
 
         when(mockedPressuresQuery.setParameter(anyString(), anyObject())).thenReturn(mockedPressuresQuery);
         when(mockedPressuresQuery.setParameter("baselineVersionId", 1)).thenReturn(mockedPressuresQuery);

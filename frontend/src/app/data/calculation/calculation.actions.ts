@@ -8,12 +8,17 @@ import {
 } from './calculation.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
 import { SortActionProps } from "@data/common/sorting.interfaces";
+import { Scenario } from "@data/scenario/scenario.interfaces";
 
 export const startCalculation = createAction('[Calculation] Add calculation');
 
+export const calculateActiveScenario = createAction(
+  '[Calculation] Calculate and update active scenario',
+);
+
 export const calculationSucceeded = createAction(
   '[Calculation] Calculation succeeded',
-  props<{calculation: CalculationSlice }>()
+  props<{ calculation: CalculationSlice, savedScenario: Scenario }>()
 );
 
 export const calculationFailed = createAction('[Calculation] Calculation failed',);

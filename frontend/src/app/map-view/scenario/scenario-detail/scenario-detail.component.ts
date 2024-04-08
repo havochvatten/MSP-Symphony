@@ -231,24 +231,9 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   }
 
   calculate() {
+    this.unsaved = false;
     this.store.dispatch(CalculationActions.startCalculation());
-
-    // TODO: call service through rxjs effect and avoid code repetition (ScenarioEffects)
-    this.store.select(MetadataSelectors.selectSelectedComponents).pipe(
-      take(1))
-      .subscribe((selectedComponents: { ecoComponent: Band[], pressureComponent: Band[] }) => {
-        const sortedBandNumbers = (bands: Band[]) => bands
-          .map(band => band.bandNumber)
-          .sort((a, b) => a - b);
-        this.scenarioService.save({...this.scenario,
-          ecosystemsToInclude: sortedBandNumbers(selectedComponents.ecoComponent),
-          pressuresToInclude: sortedBandNumbers(selectedComponents.pressureComponent)}).pipe(
-          take(1))
-          .subscribe(() => {
-              this.calcService.calculate(this.scenario);
-            }
-          );
-      });
+    this.store.dispatch(ScenarioActions.saveAndCalculateActiveScenario());
   }
 
   onCheckRarityIndicesDomain(domain: string) {
@@ -301,7 +286,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   save() {
     this.unsaved = false;
-    this.store.dispatch(ScenarioActions.saveActiveScenario({ scenarioToBeSaved: this.scenario }));
+    this.store.dispatch(ScenarioActions.saveActiveScenario());
   }
 
   deleteChange = async (bandTypeString: string, bandNumber: number, bandName: string) => {
@@ -352,9 +337,9 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     if(operation === CalcOperation.RarityAdjusted) {
       const normalizationOptions = this.getNormalizationOptions();
       this.store.dispatch(ScenarioActions.changeScenarioOperationParams({operationParams: this.getParams() ? this.getParams() : {'domain': 'GLOBAL'}}));
-      if(normalizationOptions.type === NormalizationType.Domain) {
+      if(normalizationOptions.type === NormalizationType.DOMAIN) {
         this.store.dispatch(ScenarioActions.changeScenarioNormalization(
-          { normalizationOptions: {...normalizationOptions, type: NormalizationType.Area } }
+          { normalizationOptions: {...normalizationOptions, type: NormalizationType.AREA } }
         ));
       }
     }

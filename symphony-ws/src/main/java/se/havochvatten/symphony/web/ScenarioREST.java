@@ -102,6 +102,17 @@ public class ScenarioREST {
         } else throw new NotAuthorizedException("Not owner of scenario");
     }
 
+    @GET
+    @ApiOperation(value = "Get scenario by id", response = ScenarioDto.class)
+    @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public ScenarioDto findById(@Context HttpServletRequest req, @PathParam("id") int id) {
+        Scenario scenario = service.findById(id);
+        checkAndAuthorizeScenarioOwner(req, scenario);
+        return new ScenarioDto(scenario);
+    }
+
     // Unused endpoint at the moment.
     // Might be useful for future functionality.
     @PUT

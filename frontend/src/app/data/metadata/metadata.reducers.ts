@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { setIn, updateIn } from 'immutable';
-import { State, Band } from './metadata.interfaces';
+import { State, Band, Groups } from './metadata.interfaces';
 import { MetadataActions, MetadataInterfaces } from './';
 import { ScenarioActions } from "@data/scenario";
 import { getBandPath } from "@data/metadata/metadata.selectors";
@@ -17,6 +17,12 @@ export const metadataReducer = createReducer(
     ECOSYSTEM: metadata.ecoComponent,
     PRESSURE: metadata.pressureComponent
   })),
+  on(MetadataActions.fetchSparseMetadataSuccess, (state, { metadata }) => {
+    return {
+      ECOSYSTEM: mapSelectedToState(state, metadata.ecoComponent).ECOSYSTEM,
+      PRESSURE: mapSelectedToState(state, metadata.pressureComponent).PRESSURE
+    }
+  }),
   on(MetadataActions.selectBand, (state, { band, value }) => {
     return setLayerAttribute(state, band, 'selected', value);
   }),
@@ -39,4 +45,13 @@ function setLayerAttribute(state: State, band: Band, attribute: string, value: u
   // artificial "path" / hierarchy modeled on the previous implementation
   // TODO: Reimplement
   return setIn(state, [ ...getBandPath(band), attribute], value);
+}
+
+function mapSelectedToState(state: State, groups: Groups): State {
+  for(const group of Object.values(groups)) {
+    for(const band of Object.values(group.bands)) {
+      state = setLayerAttribute(state, band, 'selected', band.selected);
+    }
+  }
+  return state;
 }

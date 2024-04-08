@@ -4,30 +4,30 @@
   <div class="normalization-form">
     <mat-radio-group [value]="this.options.type">
       <mat-radio-button
-        [value]="NormalizationType.Area"
+        [value]="'AREA'"
         (change)="check($event.value)">
         <span class="normalization-label-text">{{ 'map.editor.normalization.area' | translate }}</span>
       </mat-radio-button>
       <mat-radio-button
-        [value]="NormalizationType.Domain"
+        [value]="'DOMAIN'"
         [disabled]="algorithm === 'RarityAdjustedCumulativeImpact'"
         (change)="check($event.value)"
       ><span class="normalization-label-text">{{ 'map.editor.normalization.domain' | translate : { ordinalPercentileValue: this.percentileValue | ordinal:locale } }}</span>
       </mat-radio-button>
       <mat-radio-button
-        [value]="NormalizationType.StandardDeviation"
+        [value]="'STANDARD_DEVIATION'"
         (change)="check($event.value)">
         <span class="normalization-label-text">{{ 'map.editor.normalization.mean-plus-stddev' | translate }}</span>
         <input type="number" id="stddev-multiplier" [step]="0.01" max="9999.99" min="0"
-               [value]="options.stdDevMultiplier" (input)="onChangeValue(NormalizationType.StandardDeviation, $event)" [disabled]="!showValueField(NormalizationType.StandardDeviation)"
+               [value]="options.stdDevMultiplier" (input)="onChangeValue('STANDARD_DEVIATION', $event)" [disabled]="!showValueField(NormalizationType.STANDARD_DEVIATION)"
         />
       </mat-radio-button>
       <mat-radio-button
-        [value]="NormalizationType.UserDefined"
+        [value]="'USER_DEFINED'"
         (change)="check($event.value)">
         <span class="normalization-label-text">{{ 'map.editor.normalization.custom' | translate }}</span>
-        <input #userDefinedValue type="number" id="user-defined-value" [step]="1" max="9999999" min="1"
-               [value]="options.userDefinedValue" (input)="onChangeValue(NormalizationType.UserDefined, $event)" [disabled]="!showValueField(NormalizationType.UserDefined)"
+        <input type="number" id="user-defined-value" [step]="1" max="9999999" min="1"
+               [value]="options.userDefinedValue" (input)="onChangeValue('USER_DEFINED', $event)" [disabled]="!showValueField(NormalizationType.USER_DEFINED)"
         />
       </mat-radio-button>
     </mat-radio-group>

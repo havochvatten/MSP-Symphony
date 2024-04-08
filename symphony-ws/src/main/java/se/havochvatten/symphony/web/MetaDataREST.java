@@ -42,7 +42,7 @@ public class MetaDataREST {
         MetadataDto metaData = metaDataService.findMetadata(baselineName,
                 preferredLanguage.isEmpty() ?
                     props.getProperty("meta.default_language") :
-                    preferredLanguage );
+                    preferredLanguage, activeScenarioId > 0);
 
         if(activeScenarioId > 0) {
             int[] ecosystemIds, pressureIds;
