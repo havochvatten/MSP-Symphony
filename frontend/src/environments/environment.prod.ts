@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  showBaseCalculations: true,
+  showBaseCalculations: false,
   showIncludeCoastCheckbox: true,
   apiBaseUrl: "/symphony-ws/service",
   socketBaseUrl: "/socket",
@@ -9,7 +9,7 @@ export const environment = {
   instanceImage: "assets/wio/wiosym-ideogram.svg",
   instanceDescriptor: "Western Indian Ocean",
   externManual: null,
-  peekPassword: false,
+  peekPassword: true,
   map: {
     center: [39.0, -11.0], // Suitable starting center for WIO region
     initialZoom: 4.5,
