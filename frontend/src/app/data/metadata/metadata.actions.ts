@@ -3,6 +3,11 @@ import { Band, Groups } from './metadata.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
 import { Scenario } from "@data/scenario/scenario.interfaces";
 
+export const setAlternativeBand = createAction(
+  '[Metadata] Set alternative band',
+  props<{ band: Band, altId: string | null }>()
+);
+
 export const fetchMetadata = createAction(
   '[Metadata] Fetch Metadata'
 );

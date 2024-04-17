@@ -6,8 +6,10 @@ import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.coverage.processing.Operations;
 import org.geotools.util.factory.Hints;
 import org.w3c.dom.NodeList;
+import se.havochvatten.symphony.dto.AlternativeLayerMapping;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.entity.BaselineVersion;
+import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 
 import javax.ejb.EJB;
@@ -36,20 +38,72 @@ public class DataLayerService {
     @EJB
     PropertiesService props;
 
-    // TODO cache instances of layer type and baselineVersionId?
-    public GridCoverage2D getCoverage(LayerType type, int baselineVersionId) throws IOException,
-			SymphonyStandardAppException {
-        String filename = getComponentFilePath(type, baselineVersionId);
-        File file = new File(filename);
+    private GridCoverage2D coverageFromFileName(String fileName) {
+        File file = new File(fileName);
         // See https://docs.geotools.org/latest/userguide/library/referencing/order.html
         Hints hints = new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
         AbstractGridFormat format = GridFormatFinder.findFormat(file);
-        return format.getReader(file, hints).read(null);
+        try {
+            return format.getReader(file, hints).read(null);
+        } catch (IOException e) {
+            logger.severe("Error reading file: " + fileName);
+            return null;
+        }
     }
+
+    public GridCoverage2D getCoverage(LayerType type, int baselineVersionId) throws SymphonyStandardAppException {
+        String filename = getComponentFilePath(type, baselineVersionId);
+        if (filename == null) {
+            throw new SymphonyStandardAppException(SymphonyModelErrorCode.COMPONENT_FILE_PATH_NOT_FOUND);
+        }
+        return coverageFromFileName(filename);
+    }
+
+    public GridCoverage2D getAltCoverage(int baselineVersionId) throws SymphonyStandardAppException {
+        String filename = getAltLayerFilePath(baselineVersionId);
+        if (filename == null) {
+            throw new SymphonyStandardAppException(SymphonyModelErrorCode.ALT_FILE_PATH_NOT_FOUND);
+        }
+        return coverageFromFileName(filename);
+    }
+
 
     public GridCoverage2D getDataLayer(LayerType type, int baselineVersionId, int bandNo) throws IOException, SymphonyStandardAppException {
         var coverage = getCoverage(type, baselineVersionId);
         return (GridCoverage2D) Operations.DEFAULT.selectSampleDimension(coverage, new int[]{bandNo});
+    }
+
+    public GridCoverage2D getAltDataLayer(LayerType type, int baselineVersionId, int bandNo, String altId) throws SymphonyStandardAppException {
+        BaselineVersion baselineVersion = baselineVersionService.getBaselineVersionById(baselineVersionId);
+
+        if(baselineVersion == null) {
+            throw new SymphonyStandardAppException(SymphonyModelErrorCode.BASELINE_VERSION_NOT_FOUND);
+        }
+
+        String filename = getAltLayerFilePath(baselineVersionId);
+
+        if (filename == null) {
+            throw new SymphonyStandardAppException(SymphonyModelErrorCode.ALT_FILE_PATH_NOT_FOUND);
+        }
+
+        AlternativeLayerMapping mapping = baselineVersion.getAlternativeLayerMap().get(altId);
+
+        if (mapping == null) {
+            throw new SymphonyStandardAppException(SymphonyModelErrorCode.ALT_LAYER_MAP_NOT_FOUND);
+        }
+
+        if(!(mapping.srcBandNumber == bandNo && mapping.layerType.equals(type))) {
+            throw new SymphonyStandardAppException(SymphonyModelErrorCode.INVALID_LAYER_MAPPING);
+        }
+
+        GridCoverage2D coverage = coverageFromFileName(filename);
+
+        return (GridCoverage2D) Operations.DEFAULT.selectSampleDimension(coverage, new int[]{ mapping.altBandNumber });
+    }
+
+    String getAltLayerFilePath(int baselineVersionId) throws SymphonyStandardAppException {
+        BaselineVersion baselineVersion = baselineVersionService.getBaselineVersionById(baselineVersionId);
+        return baselineVersion.getAlternativeFilePath();
     }
 
     String getComponentFilePath(LayerType type, int baselineVersionId) throws SymphonyStandardAppException {
@@ -61,6 +115,7 @@ public class DataLayerService {
         // component file path registered in baselineVersion
         BaselineVersion baselineVersion = baselineVersionService.getBaselineVersionById(baselineVersionId);
         String fileNameAndPath = null;
+
         if (LayerType.ECOSYSTEM.equals(type)) {
             fileNameAndPath = baselineVersion.getEcosystemsFilePath();
         } else if (LayerType.PRESSURE.equals(type)) {

@@ -70,8 +70,8 @@ export class CalculationService implements OnDestroy {
     });
   }
 
-  public calculate(scenario: Scenario) {
-    return this.http.post<CalculationSlice>(env.apiBaseUrl+'/calculation/sum', scenario.id);
+  public calculate(scenario: Scenario, alternativeBands: string[] = []) {
+    return this.http.post<CalculationSlice>(env.apiBaseUrl+'/calculation/sum', { scenarioId: scenario.id, alternativeBands });
   }
 
   public getStaticImage(url:string) {

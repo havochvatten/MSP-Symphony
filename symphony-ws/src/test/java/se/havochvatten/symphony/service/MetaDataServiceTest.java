@@ -180,10 +180,10 @@ public class MetaDataServiceTest {
 
         MetaDataService metaDataServiceSpy = Mockito.spy(metaDataService);
         MetadataComponentDto metadataComponentDtoEN = metaDataServiceSpy.getComponentDto("Ecosystem",
-            baselineVersionId, "en", true);
+            exmBaselineVersion, "en", true, new String[0]);
 
         MetadataComponentDto metadataComponentDtoSV = metaDataServiceSpy.getComponentDto("Ecosystem",
-            baselineVersionId, "sv", true);
+            exmBaselineVersion, "sv", true, new String[0]);
 
         assertThat(metadataComponentDtoEN.getSymphonyThemes().size(), is(2));
         assertThat(metadataComponentDtoEN.getSymphonyThemes().get(0).getSymphonyThemeName(), is("Bird"));

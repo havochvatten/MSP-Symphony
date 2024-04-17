@@ -24,13 +24,16 @@ class DataLayer extends ImageLayer<ImageSource> {
 class BandLayer extends SymphonyLayerGroup {
   private loadedBands = {
     ecoComponents: new Map<number, Layer>(),
-    pressures: new Map<number, Layer>()
+    pressures: new Map<number, Layer>(),
+    alternative: new Map<string, Layer>()
   };
 
   private visibleBandNumbers = {
     ecoComponents: new Set<number>(),
     pressures: new Set<number>()
   };
+
+  private visibleAltBands = new Set<string>;
 
   constructor(private baseline: string,
               private dataLayerService: DataLayerService,
@@ -42,6 +45,29 @@ class BandLayer extends SymphonyLayerGroup {
 
   protected renderHandler = (evt: RenderEvent) => (evt.context! as CanvasRenderingContext2D).imageSmoothingEnabled = this.antialias;
 
+  public setVisibleAltBands(bands: Band[]) {
+    for(const [altId, layer] of this.loadedBands.alternative) {
+      if (!bands.find(band => band.altId === altId)) {
+        this.getLayers().remove(layer);
+        this.visibleAltBands.delete(altId);
+      }
+    }
+
+    for(const band of bands) {
+      if (!this.visibleAltBands.has(band.altId!)) {
+        if (this.loadedBands.alternative.has(band.altId!)) {
+          const layer = this.loadedBands.alternative.get(band.altId!)!;
+          if (!this.getLayers().getArray().includes(layer)) {
+            this.getLayers().push(layer);
+          }
+        } else {
+          this.loadLayer(band, false);
+        }
+      }
+    }
+
+  }
+
   public setVisibleBands(bandType: BandType, bands: Band[]) {
     const ecoType = bandType === 'ECOSYSTEM',
           layerBands =
@@ -50,17 +76,18 @@ class BandLayer extends SymphonyLayerGroup {
             ecoType ? this.visibleBandNumbers.ecoComponents : this.visibleBandNumbers.pressures;
 
     // remove layers
-    const bandNumbers = bands.map(band => band.bandNumber);
+    const bandNumbers = bands.filter(band => band.altId === null)
+                                      .map(band => band.bandNumber);
 
-    layerBands.forEach((layer: Layer, bandNumber: number) => {
+    for(const [bandNumber, layer] of layerBands) {
       if (!bandNumbers.includes(bandNumber)) {
         this.getLayers().remove(layer);
         visibleBandNumbers.delete(bandNumber);
       }
-    });
+    }
 
     // add layers
-    bands.forEach((band: Band) => {
+    for(const band of bands) {
       if (!visibleBandNumbers.has(band.bandNumber)) {
         // already loaded layers don't require fetching
         if (layerBands.has(band.bandNumber)) {
@@ -72,34 +99,50 @@ class BandLayer extends SymphonyLayerGroup {
             this.getLayers().push(layer);
           }
         } else {
-          const type = layerBands === this.loadedBands.ecoComponents ? 'ECOSYSTEM' : 'PRESSURE';
-          this.dataLayerService.getDataLayer(this.baseline, type, band.bandNumber).subscribe(response => {
-            const extentHeader = response.headers.get('SYM-Image-Extent');
-            if (extentHeader) {
-              if (!response.body) {
-                return;
-              }
-              const imageOpts = {
-                url: URL.createObjectURL(response.body),
-                imageExtent: JSON.parse(extentHeader),
-                calculationId: NaN,
-                projection: AppSettings.MAP_PROJECTION,
-                attributions: band.meta.mapAcknowledgement ?? band.meta.authorOrganisation ?? '',
-                interpolate: this.antialias
-              };
-
-              const layer = new DataLayer(imageOpts);
-              this.getLayers().push(layer);
-              layerBands.set(band.bandNumber, layer);
-              layer.on('prerender', this.renderHandler);
-              this.setBandLayerOpacity(bandType, band.bandNumber, (band.layerOpacity ?? 100) / 100);
-              this.store.dispatch(MetadataActions.setLoadedState({ band, value: true }));
-              visibleBandNumbers.add(band.bandNumber);
-            } else {
-              console.error("Image for band " + band.bandNumber + " does not have any extent header ignoring.");
-            }
-          });
+          this.loadLayer(band, ecoType);
         }
+      }
+    }
+  }
+
+  public loadLayer(band: Band, ecoType: boolean) {
+    const type = ecoType ? 'ECOSYSTEM' : 'PRESSURE';
+    this.dataLayerService.getDataLayer(this.baseline, type, band.bandNumber, band.altId).subscribe(response => {
+      const extentHeader = response.headers.get('SYM-Image-Extent');
+      if (extentHeader) {
+        if (!response.body) {
+          return;
+        }
+        const imageOpts = {
+          url: URL.createObjectURL(response.body),
+          imageExtent: JSON.parse(extentHeader),
+          calculationId: NaN,
+          projection: AppSettings.MAP_PROJECTION,
+          attributions: band.meta.mapAcknowledgement ?? band.meta.authorOrganisation ?? '',
+          interpolate: this.antialias
+        };
+
+        const layer = new DataLayer(imageOpts);
+        this.getLayers().push(layer);
+
+        if(band.altId) {
+          this.loadedBands.alternative.set(band.altId, layer);
+          this.visibleAltBands.add(band.altId);
+          this.setAltBandLayerOpacity(band.altId, (band.layerOpacity ?? 100) / 100);
+        } else {
+          (ecoType ?
+            this.loadedBands.ecoComponents :
+            this.loadedBands.pressures).set(band.bandNumber, layer);
+          (ecoType ?
+            this.visibleBandNumbers.ecoComponents :
+            this.visibleBandNumbers.pressures).add(band.bandNumber);
+          this.setBandLayerOpacity(type, band.bandNumber, (band.layerOpacity ?? 100) / 100);
+        }
+
+        layer.on('prerender', this.renderHandler);
+        this.store.dispatch(MetadataActions.setLoadedState({ band, value: true }));
+      } else {
+        console.error("Image for band " + band.bandNumber + " does not have any extent header ignoring.");
       }
     });
   }
@@ -110,6 +153,10 @@ class BandLayer extends SymphonyLayerGroup {
     } else {
       this.loadedBands.pressures.get(layerNumber)!.setOpacity(opacity);
     }
+  }
+
+  private setAltBandLayerOpacity(altId: string, opacity: number) {
+    this.loadedBands.alternative.get(altId)!.setOpacity(opacity);
   }
 }
 

@@ -62,6 +62,10 @@ public class BatchCalculation {
     @Type(type = "json")
     private JsonNode areasOptions;
 
+    @Column(name = "alternative_bands")
+    @Type(type = "com.vladmihalcea.hibernate.type.array.StringArrayType")
+    private String[] alternativeBands;
+
     public Integer getId() {
         return id;
     }
@@ -123,5 +127,13 @@ public class BatchCalculation {
 
     public void setAreasOptions(ScenarioSplitOptions areasOptions) {
         this.areasOptions = mapper.valueToTree(areasOptions);
+    }
+
+    public String[] getAlternativeBands() {
+        return alternativeBands;
+    }
+
+    public void setAlternativeBands(String[] alternativeBands) {
+        this.alternativeBands = alternativeBands;
     }
 }

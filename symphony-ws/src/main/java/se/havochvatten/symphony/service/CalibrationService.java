@@ -132,7 +132,7 @@ public class CalibrationService {
 
     public double calcPercentileNormalizationValue(HttpServletRequest req, Scenario scenario)
         throws FactoryException, SymphonyStandardAppException, TransformException, IOException {
-        CalculationResult result = calcService.calculateScenarioImpact(scenario, false);
+        CalculationResult result = calcService.calculateScenarioImpact(scenario, false, new String[0]);
         var coverage = result.getCoverage();
 
         PercentileNormalizer normalizer = (PercentileNormalizer) normalizationFactory.getNormalizer(NormalizationType.PERCENTILE);

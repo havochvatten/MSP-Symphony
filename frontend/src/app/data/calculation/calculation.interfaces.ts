@@ -124,6 +124,11 @@ export interface LegendState {
   comparison: { [value: string] : ComparisonLegendState };
 }
 
+export interface CalculationRequest {
+  id: number;
+  alternativeBands: string[];
+}
+
 export interface ComparisonResult {
   includedEcosystems: number[];
   includedPressures: number[];

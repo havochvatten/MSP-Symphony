@@ -5,13 +5,21 @@ export type BandType_Alt = 'ecoComponents' | 'pressures';
 
 export const BandTypes = ['ECOSYSTEM', 'PRESSURE'] as const;
 
+export interface AlternativeBand {
+  title: string;
+  altId: string | null;
+  loaded?: boolean;
+}
+
 export interface SelectableLayer {
   title: string;
+  altId: string | null;
+  loaded?: boolean;
+  visible?: boolean;
   bandNumber: number;
   symphonyCategory: BandType;
   selected: boolean;
-  visible?: boolean;
-  loaded?: boolean;
+  alternativeBands: AlternativeBand[];
 }
 
 export interface Band extends SelectableLayer {

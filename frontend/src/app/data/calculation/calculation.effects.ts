@@ -9,6 +9,8 @@ import { UserSelectors } from "@data/user";
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
 import { MessageActions } from "@data/message";
+import { selectCurrentAlternativeBandIds } from "@data/metadata/metadata.selectors";
+import { MetadataSelectors } from "@data/metadata";
 
 @Injectable()
 export class CalculationEffects {
@@ -210,10 +212,11 @@ export class CalculationEffects {
     concatMap((action) =>
       this.store.select(ScenarioSelectors.selectActiveScenario).pipe(
         take(1),
+        withLatestFrom(this.store.select(MetadataSelectors.selectCurrentAlternativeBandIds)),
         switchMap(
-          (scenario) => {
+          ([scenario, altIds]) => {
             if (scenario) {
-              return this.calcService.calculate(scenario).pipe(
+              return this.calcService.calculate(scenario, altIds as string[]).pipe(
                 map(
                   (calculation) =>
                     CalculationActions.calculationSucceeded({calculation, savedScenario: scenario})),

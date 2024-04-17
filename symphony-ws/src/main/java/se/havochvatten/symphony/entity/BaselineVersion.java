@@ -1,5 +1,8 @@
 package se.havochvatten.symphony.entity;
 
+import org.hibernate.annotations.Type;
+import se.havochvatten.symphony.dto.AlternativeLayerMapping;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -8,6 +11,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "baselineversion")
@@ -63,6 +67,21 @@ public class BaselineVersion implements Serializable {
     @Column(name = "bver_presfilepath")
     String pressuresFilePath;
 
+    @Column(name = "bver_altfilepath")
+    private String alternativeFilePath;
+
+    @Column(name = "bver_altmapping")
+    @Type(type = "json")
+    private Map<String, AlternativeLayerMapping> alternativeLayerMap;
+
+    public String getAlternativeFilePath() {
+        return alternativeFilePath;
+    }
+
+    public void setAlternativeFilePath(String alternativeFilePath) {
+        this.alternativeFilePath = alternativeFilePath;
+    }
+
     public BaselineVersion() {}
 
     public Integer getId() {
@@ -95,6 +114,10 @@ public class BaselineVersion implements Serializable {
 
     public void setValidFrom(Date validFrom) {
         this.validFrom = validFrom;
+    }
+
+    public Map<String, AlternativeLayerMapping> getAlternativeLayerMap() {
+        return alternativeLayerMap;
     }
 
     @Override

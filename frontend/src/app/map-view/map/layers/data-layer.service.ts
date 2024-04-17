@@ -10,12 +10,12 @@ import { AppSettings } from "@src/app/app.settings";
 export class DataLayerService {
   constructor(private http: HttpClient) {}
 
-  public getDataLayer(baseline: string, type: BandType, bandNumber: number) {
-    const url = `${env.apiBaseUrl}/datalayer/${type.toLowerCase()}/${bandNumber}/${baseline}`;
-    // const params = AppSettings.CLIENT_SIDE_PROJECTION ?
-    //       undefined :
-    //       new HttpParams().set('crs', encodeURIComponent(AppSettings.MAP_PROJECTION));
-    const params = new HttpParams().set('crs', encodeURIComponent(AppSettings.MAP_PROJECTION));
+  public getDataLayer(baseline: string, type: BandType, bandNumber: number, altId: string | null) {
+    const url = `${env.apiBaseUrl}/datalayer/${type.toLowerCase()}/${bandNumber}/${baseline}`,
+          params = new HttpParams({ fromObject: {
+            crs: encodeURIComponent(AppSettings.MAP_PROJECTION),
+            ...(altId !== null ? { altId } : {})
+            }});
 
     return this.http.get(url, {
       responseType: 'blob',

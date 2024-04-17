@@ -59,6 +59,8 @@ public class BatchCalculateScenario extends AbstractBatchlet {
     private BatchCalculation batchCalculation;
     private BatchCalculationDto batchCalculationDto;
 
+    private String[] alternativeBands;
+
     private static volatile boolean cancelled = false;
 
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -104,6 +106,7 @@ public class BatchCalculateScenario extends AbstractBatchlet {
         batchCalculation = em.find(BatchCalculation.class, batchCalculationId);
         batchCalculationDto = new BatchCalculationDto(batchCalculation, null);
         areasOptions = batchCalculation.getAreasOptions();
+        alternativeBands = batchCalculation.getAlternativeBands();
 
         int[] ids = batchCalculation.getEntities();
 
@@ -139,7 +142,8 @@ public class BatchCalculateScenario extends AbstractBatchlet {
 
             try {
                 CalculationResult calculationResult =
-                    calcService.calculateScenarioImpact(currentScenario, batchCalculation.isAreasCalculation());
+                    calcService.calculateScenarioImpact(currentScenario,
+                        batchCalculation.isAreasCalculation(), alternativeBands);
                 batchCalculationDto.getReports()[ix] = calculationResult.getId();
             } catch (Exception e) {
                 batchCalculationDto.getFailed().add(ids[ix]);

@@ -314,7 +314,7 @@ public class ReportService {
     static final String rptRowFormat = "%s" + CSV_FIELD_SEPARATOR + "%.2f%%";
 
     public String generateCSVReport(CalculationResult calc, Locale locale) throws SymphonyStandardAppException {
-        var metadata = metaDataService.findMetadata(calc.getBaselineVersion().getName(), locale.getLanguage(), true);
+        var metadata = metaDataService.findMetadata(calc.getBaselineVersion().getName(), locale.getLanguage(), true, new String[0]);
         var ecocomponentMetadata = flattenAndSort(metadata.getEcoComponent());
         var pressureMetadata = flattenAndSort(metadata.getPressureComponent());
 
@@ -371,7 +371,7 @@ public class ReportService {
     static final String cmpRowFormat = "%s" + CSV_FIELD_SEPARATOR + "%.2f" + CSV_FIELD_SEPARATOR + "%.2f" + CSV_FIELD_SEPARATOR + "%.2f%%";
 
     public String generateCSVComparisonReport(CalculationResult calcA, CalculationResult calcB, Locale locale) throws SymphonyStandardAppException {
-        MetadataDto metadata = metaDataService.findMetadata(calcA.getBaselineVersion().getName(), locale.getLanguage(), true);
+        MetadataDto metadata = metaDataService.findMetadata(calcA.getBaselineVersion().getName(), locale.getLanguage(), true, new String[0]);
         SymphonyBandDto[]   ecocomponentMetadata = flattenAndSort(metadata.getEcoComponent()),
                                 pressureMetadata = flattenAndSort(metadata.getPressureComponent());
 

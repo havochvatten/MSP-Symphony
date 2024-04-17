@@ -116,6 +116,10 @@ public class ScenarioSnapshot implements BandChangeEntity {
     @OneToOne(mappedBy = "scenarioSnapshot")
     private CalculationResult calculationresults;
 
+    @Column(name = "alternative_bands")
+    @Type(type = "com.vladmihalcea.hibernate.type.array.StringArrayType")
+    private String[] alternativeBands;
+
     public CalculationResult getCalculationresults() {
         return calculationresults;
     }
@@ -245,6 +249,14 @@ public class ScenarioSnapshot implements BandChangeEntity {
             areas.add(tmpArea);
         }
         return areas;
+    }
+
+    public String[] getAlternativeBands() {
+        return alternativeBands;
+    }
+
+    public void setAlternativeBands(String[] alternativeBands) {
+        this.alternativeBands = alternativeBands;
     }
 
     public ScenarioSnapshot() {}

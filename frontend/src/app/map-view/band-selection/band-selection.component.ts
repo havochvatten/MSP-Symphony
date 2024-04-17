@@ -6,6 +6,7 @@ import { MetadataActions } from '@data/metadata';
 import { Observable } from 'rxjs';
 import { ScenarioSelectors } from "@data/scenario";
 import { ScenarioDisplayMeta } from "@data/scenario/scenario.interfaces";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
 
 //=== SEARCH UTILITIES ===
 
@@ -99,4 +100,6 @@ export class BandSelectionComponent implements OnInit, OnChanges {
   displayName(index: number, group: BandGroup) {
     return group.symphonyThemeName;
   }
+
+  protected readonly faCheck = faCheck;
 }

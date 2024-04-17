@@ -18,6 +18,10 @@ public class SymphonyBandDto {
     @JsonIgnore
     boolean defaultSelected;
 
+    public String altId;
+
+    public AlternativeBand[] alternativeBands;
+
     public SymphonyBandDto() {}
 
     public SymphonyBandDto(SymphonyBand b) {
@@ -69,4 +73,11 @@ public class SymphonyBandDto {
 
     public void setSelected(boolean selected) { this.selected = selected; }
 
+    public void setAlternativeBands(AlternativeBand[] alternativeBands) {
+        this.alternativeBands = alternativeBands;
+    }
+
+    public void setTitle(String title) {
+        meta.put("title", title);
+    }
 }

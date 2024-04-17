@@ -77,10 +77,18 @@ export const selectSelectedComponents = createSelector(
 export const selectVisibleBands = createSelector(
   selectEcoComponents,
   selectPressureComponents,
-  (ecoComponents, pressureComponents) => ({
-    ecoComponent: filterVisibleBand(flattenBands(selectGroups(ecoComponents))),
-    pressureComponent: filterVisibleBand(flattenBands(selectGroups(pressureComponents)))
-  })
+  (ecoComponents, pressureComponents) => {
+    const visibleBands = {
+      ecoComponent: filterVisibleBand(flattenBands(selectGroups(ecoComponents))).filter(b => b.altId === null),
+      pressureComponent: filterVisibleBand(flattenBands(selectGroups(pressureComponents))).filter(b => b.altId === null),
+      alternativeBands: [] as Band[]
+    };
+    visibleBands.alternativeBands = [
+      ...filterVisibleBand(flattenBands(selectGroups(ecoComponents))),
+      ...filterVisibleBand(flattenBands(selectGroups(pressureComponents)))
+    ].filter(b => b.altId !== null);
+    return visibleBands;
+  }
 );
 
 export const selectBandNumbers = createSelector(
@@ -89,6 +97,14 @@ export const selectBandNumbers = createSelector(
     ecoComponent: flattenBands(ecoComponent).map(band => band.bandNumber),
     pressureComponent: flattenBands(pressureComponent).map(band => band.bandNumber)
   })
+);
+
+export const selectCurrentAlternativeBandIds = createSelector(
+  selectSelectedComponents,
+  ({ ecoComponent, pressureComponent }) => [
+    ...ecoComponent.map(band => band.altId),
+    ...pressureComponent.map(band => band.altId)
+  ].filter(altId => altId !== null)
 );
 
 function includeAreaSpecificProperties(groups: BandGroup[]): BandGroup[] {

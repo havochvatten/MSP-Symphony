@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { setIn, updateIn } from 'immutable';
-import { State, Band, Groups } from './metadata.interfaces';
+import { State, Band, Groups, AlternativeBand } from './metadata.interfaces';
 import { MetadataActions, MetadataInterfaces } from './';
 import { ScenarioActions } from "@data/scenario";
 import { getBandPath } from "@data/metadata/metadata.selectors";
@@ -32,8 +32,32 @@ export const metadataReducer = createReducer(
   on(MetadataActions.setLoadedState, (state, { band, value }) => {
     return setLayerAttribute(state, band, 'loaded', value);
   }),
+  on(MetadataActions.setLoadedState, (state, { band,  value }) => {
+    const index = band.alternativeBands.findIndex((b: AlternativeBand) => b.altId === band.altId);
+    if (index === -1) {
+      return state;
+    }
+    return setIn (state, [ ...getBandPath(band), 'alternativeBands', index, 'loaded'], value);
+  }),
   on(MetadataActions.updateLayerOpacity, (state, { band, value }) => {
     return setIn(state, [band.symphonyCategory, 'layerOpacity'], value);
+  }),
+  on(MetadataActions.setAlternativeBand, (state, {band, altId}) => {
+    return setLayerAttribute(state, band, 'altId', altId);
+  }),
+  on(MetadataActions.setAlternativeBand, (state, { band, altId }) => {
+    const alternativeBand = band.alternativeBands.find(b => b.altId === altId);
+    if (!alternativeBand) {
+      return state;
+    }
+    return setLayerAttribute(state, band, 'title', alternativeBand.title);
+  }),
+  on(MetadataActions.setAlternativeBand, (state, { band, altId }) => {
+    const alternativeBand = band.alternativeBands.find(b => b.altId === altId);
+    if (!alternativeBand) {
+      return state;
+    }
+    return setLayerAttribute(state, band, 'loaded', alternativeBand.loaded);
   }),
   on(ScenarioActions.closeActiveScenario, (state) => ({
     ...state,

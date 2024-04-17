@@ -99,6 +99,12 @@ public class CalculationREST {
 
     private CoordinateReferenceSystem targetCRS;
 
+    public record CalculationRequest(int scenarioId, String[] alternativeBands){};
+
+    public record BatchCalculationRequest(int[] scenarioIds, String[] alternativeBands){};
+    
+    public record BatchAreaCalculationRequest(int scenarioId, String[] alternativeBands, ScenarioSplitOptions options){};
+
     @POST
     @Path("/sum")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -107,21 +113,19 @@ public class CalculationREST {
     @ApiOperation(value = "Computes cumulative impact sum")
     public CalculationResultSlice sum(@Context HttpServletRequest req,
                                       @Context UriInfo uriInfo,
-                                      Integer scenarioId)
+                                      CalculationRequest calculationRequest)
         throws Exception {
-        if (scenarioId == null)
-            throw new BadRequestException();
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
 
-        var persistedScenario = scenarioService.findById(scenarioId);
+        var persistedScenario = scenarioService.findById(calculationRequest.scenarioId);
         if (!persistedScenario.getOwner().equals(req.getUserPrincipal().getName()))
             throw new ForbiddenException("User not owner of scenario");
 
         var watch = new StopWatch();
         watch.start();
         logger.info("Performing "+CalcService.operationName(persistedScenario.getOperation())+" calculation for " + persistedScenario.getName() + "...");
-        CalculationResult result = calcService.calculateScenarioImpact(persistedScenario, false);
+        CalculationResult result = calcService.calculateScenarioImpact(persistedScenario, false, calculationRequest.alternativeBands);
         watch.stop();
         logger.log(Level.INFO, "DONE ({0} ms)", watch.getTime());
 
@@ -404,14 +408,14 @@ public class CalculationREST {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
     @ApiOperation(value = "Queues batch run of scenario calculations", response = BatchCalculationDto.class)
-    public BatchCalculationDto queueBatchCalculation(@Context HttpServletRequest req, String ids) {
+    public BatchCalculationDto queueBatchCalculation(@Context HttpServletRequest req,
+                                                     BatchCalculationRequest batchCalculationRequest) {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
 
-        int[] idArray = WebUtil.intArrayParam(ids);
         Map<Integer, String> scenarioNames = new HashMap<>();
 
-        for(int id : idArray) {
+        for(int id : batchCalculationRequest.scenarioIds) {
             var persistedScenario = scenarioService.findById(id);
             if (!persistedScenario.getOwner().equals(req.getUserPrincipal().getName()))
                 throw new ForbiddenException("User not owner of scenario");
@@ -419,8 +423,13 @@ public class CalculationREST {
         }
 
         BatchCalculation queuedBatchCalculation =
-            calcService.queueBatchCalculation(idArray, req.getUserPrincipal().getName(), null);
-        logger.log(Level.INFO, "Queuing batch calculation for ids: {0}", Arrays.toString(idArray));
+            calcService.queueBatchCalculation(
+                batchCalculationRequest.scenarioIds,
+                req.getUserPrincipal().getName(),
+                null,
+                batchCalculationRequest.alternativeBands);
+
+        logger.log(Level.INFO, "Queuing batch calculation for ids: {0}", Arrays.toString(batchCalculationRequest.scenarioIds));
 
         return new BatchCalculationDto(queuedBatchCalculation, scenarioNames);
     }
@@ -432,7 +441,7 @@ public class CalculationREST {
     @RolesAllowed("GRP_SYMPHONY")
     @ApiOperation(value = "Queues batch run of scenario area calculations for the given scenario", response = BatchCalculationDto.class)
     public BatchCalculationDto queueAreaBatchCalculation(@Context HttpServletRequest req, @PathParam("scenarioId") Integer id,
-                                                         ScenarioSplitOptions options) {
+                                                         BatchAreaCalculationRequest batchAreaCalculationRequest) {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
 
@@ -456,7 +465,8 @@ public class CalculationREST {
         int[] idArray = areaNames.keySet().stream().mapToInt(i -> i).toArray();
 
         BatchCalculation queuedBatchCalculation =
-            calcService.queueBatchCalculation(idArray, req.getUserPrincipal().getName(), options);
+            calcService.queueBatchCalculation(idArray, req.getUserPrincipal().getName(), 
+                batchAreaCalculationRequest.options, batchAreaCalculationRequest.alternativeBands);
         logger.log(Level.INFO, "Queuing batch area calculation for ids: {0}", Arrays.toString(idArray));
 
         return new BatchCalculationDto(queuedBatchCalculation, areaNames);

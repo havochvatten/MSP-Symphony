@@ -1,5 +1,5 @@
-import { Component, Input, NgModuleRef, OnDestroy, OnInit } from '@angular/core';
-import { Band, BandChange, BandType } from '@data/metadata/metadata.interfaces';
+import { Component, Input, NgModuleRef, OnDestroy, OnInit, signal } from '@angular/core';
+import { AlternativeBand, Band, BandChange, BandType } from '@data/metadata/metadata.interfaces';
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
 import { ScenarioSelectors } from "@data/scenario";
@@ -11,6 +11,8 @@ import { MetaInfoComponent } from "@src/app/map-view/meta-info/meta-info.compone
 import { isEmpty } from "@shared/common.util";
 import { MatCheckboxChange } from "@angular/material/checkbox";
 import { environment as env } from "@src/environments/environment";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { MetadataActions } from "@data/metadata";
 
 @Component({
   selector: 'app-slider-controls',
@@ -23,6 +25,7 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
   scenario?: Scenario;
   multiplier?: number;
   offset?: number;
+  alternativesVisible = false;
 
   public hasPublicMeta = false;
 
@@ -38,12 +41,14 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
 
   @Input() band!: Band;
   @Input() category!: BandType; // unfortunate "property drilling"
+  @Input() groupVisible = false;
 
   @Input() disabled = false;
   @Input() onSelect!: (event: MatCheckboxChange, band: Band)=> void;
   @Input() onChangeVisible!: (value: boolean, band: Band) => void;
 
   isEmpty = isEmpty;
+  showAlternatives = signal(false);
 
   constructor(
     private store: Store<State>,
@@ -122,5 +127,23 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
         overriddenOffset = this.overriddenChange?.offset ?? 0;
 
     return this.groupSetting || !this.overriddenChange ? groupOffset : overriddenOffset;
+  }
+
+  setAlternativeBand(band: Band, altBand: AlternativeBand) : void {
+    if(band.altId !== altBand.altId) {
+      this.store.dispatch(MetadataActions.setAlternativeBand({ band, altId: altBand.altId }));
+      this.alternativesVisible = false;
+    }
+  }
+
+  protected readonly faCheck = faCheck;
+
+  currentBandTitle(band: Band) {
+    if(band.alternativeBands.length === 0) {
+      return band.title;
+    }
+
+    return band.alternativeBands
+      .find(b => b.altId === band.altId)?.title ?? band.title;
   }
 }

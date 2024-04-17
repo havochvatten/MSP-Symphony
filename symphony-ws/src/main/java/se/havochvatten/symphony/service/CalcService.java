@@ -2,8 +2,10 @@ package se.havochvatten.symphony.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.geosolutions.jaiext.utilities.ImageLayout2;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -15,9 +17,11 @@ import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.util.factory.Hints;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.opengis.coverage.SampleDimensionType;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
@@ -52,7 +56,8 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.*;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
-import java.awt.image.Raster;
+import java.awt.*;
+import java.awt.image.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -65,6 +70,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.geotools.util.factory.Hints.SAMPLE_DIMENSION_TYPE;
 import static se.havochvatten.symphony.dto.NormalizationType.PERCENTILE;
 
 /**
@@ -78,6 +84,9 @@ import static se.havochvatten.symphony.dto.NormalizationType.PERCENTILE;
 public class CalcService {
     public static final int OPERATION_CUMULATIVE = 0;
     public static final int OPERATION_RARITYADJUSTED = 1;
+
+    private Raster alternativeBandsData;
+
     private static final Logger LOG = LoggerFactory.getLogger(CalcService.class);
 
     public static String operationName(int operation) {
@@ -368,7 +377,7 @@ public class CalcService {
      *
      * @return CalculationResult entity containing resulting coverage
      */
-    public CalculationResult calculateScenarioImpact(Scenario scenario, boolean isAreaCalculation)
+    public CalculationResult calculateScenarioImpact(Scenario scenario, boolean isAreaCalculation, String[] alternativeBands)
             throws FactoryException, TransformException, IOException, SymphonyStandardAppException {
 
         Geometry roi = coastalComplement(scenario);
@@ -398,7 +407,7 @@ public class CalcService {
         Geometry targetGeometry = JTS.transform(roi, WGS84toTarget);
 
         GridCoverage2D coverage = calculateCoverage(scenario.getOperation(), JTS.transform(targetGeometry, targetToWGS84), scenario.getBaselineId(), ecosystemsToInclude,
-            scenario.getPressuresToInclude(), areas, matrixResponse, scenario.getOperationOptions(), null, overflow);
+            scenario.getPressuresToInclude(), areas, matrixResponse, scenario.getOperationOptions(), null, overflow, alternativeBands);
 
         // Trigger actual calculation since GeoTiffWriter requests tiles in the same thread otherwise
         var ignored = ((PlanarImage) coverage.getRenderedImage()).getTiles();
@@ -422,7 +431,7 @@ public class CalcService {
             new CalculationResult(coverage) :
             persistCalculation( coverage, normalizationValues, areaMatrices, scenario,
                                 sc, ecosystemsToInclude, baseline,
-                                targetGeometry, overflow, isAreaCalculation);
+                                targetGeometry, overflow, isAreaCalculation, alternativeBands);
     }
 
     public CalculationResult getImplicitBaselineCalculation(CalculationResult calc)
@@ -531,10 +540,10 @@ public class CalcService {
     public GridCoverage2D calculateCoverage(
         int operation, Geometry roi, Integer baselineId, int[] ecosystemsToInclude, int[] pressuresToInclude,
         List<ScenarioArea> areas, MatrixResponse matrixResponse, Map<String, String> operationOptions, BandChangeEntity altScenario,
-        Overflow overflow)
+        Overflow overflow, String[] alternativeBands)
         throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
         return calculateCoverage(operation, roi, baselineId, ecosystemsToInclude, pressuresToInclude, areas, matrixResponse,
-            operationOptions, altScenario, overflow, false);
+            operationOptions, altScenario, overflow, alternativeBands, false);
     }
 
     public GridCoverage2D getImplicitBaselineCoverage(CalculationResult calc)
@@ -551,19 +560,52 @@ public class CalcService {
         return calculateCoverage(
             calc.getOperation(), roi, calc.getBaselineVersion().getId(),
             calc.getScenarioSnapshot().getEcosystemsToInclude(), calc.getScenarioSnapshot().getPressuresToInclude(),
-            calc.getScenarioSnapshot().getTmpAreas(), calc.getScenarioSnapshot().getMatrixResponse(), calc.getOperationOptions(), calc.getScenarioSnapshot(), null, true);
+            calc.getScenarioSnapshot().getTmpAreas(), calc.getScenarioSnapshot().getMatrixResponse(), calc.getOperationOptions(), calc.getScenarioSnapshot(), null, calc.getScenarioSnapshot().getAlternativeBands(), true);
     }
 
     private GridCoverage2D calculateCoverage(
             int operation, Geometry roi, Integer baselineId, int[] ecosystemsToInclude, int[] pressuresToInclude,
             List<ScenarioArea> areas, MatrixResponse matrixResponse, Map<String, String> operationOptions, BandChangeEntity altScenario,
-            Overflow overflow, boolean implicitBaseline)
+            Overflow overflow, String[] alternativeBandsToUse, boolean implicitBaseline)
                 throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
 
         GridCoverage2D ecoComponents = data.getCoverage(LayerType.ECOSYSTEM, baselineId);
         GridCoverage2D pressures = data.getCoverage(LayerType.PRESSURE, baselineId);
 
-        if(!implicitBaseline) {
+        var inclusiveMap = Map.of(LayerType.ECOSYSTEM, ecosystemsToInclude, LayerType.PRESSURE, pressuresToInclude);
+
+        if (alternativeBandsToUse.length > 0) {
+            GridCoverageFactory factory = new GridCoverageFactory(new Hints(SAMPLE_DIMENSION_TYPE, SampleDimensionType.UNSIGNED_8BITS));
+            alternativeBandsData = data.getAltCoverage(baselineId).getRenderedImage().getData();
+
+            BaselineVersion baseline = baselineVersionService.getBaselineVersionById(baselineId);
+
+            for (LayerType layerType : LayerType.values()) {
+
+                AlternativeLayerMapping[] currentMapping = baseline.getAlternativeLayerMap().values()
+                    .stream()
+                    .filter(mapping ->
+                        mapping.layerType == layerType &&
+                            ArrayUtils.contains(alternativeBandsToUse, mapping.altId) &&
+                            ArrayUtils.contains(inclusiveMap.get(layerType), mapping.srcBandNumber)
+                        )
+                    .toArray(AlternativeLayerMapping[]::new);
+
+                if (currentMapping.length > 0) {
+                    GridCoverage2D newCoverage =
+                        writeAlternativeBands(layerType, factory, currentMapping,
+                            (layerType == LayerType.ECOSYSTEM ? ecoComponents : pressures));
+
+                    if (layerType == LayerType.ECOSYSTEM) {
+                        ecoComponents = newCoverage;
+                    } else {
+                        pressures = newCoverage;
+                    }
+                }
+            }
+        }
+
+        if (!implicitBaseline) {
             var scenarioComponents = scenarioService.applyScenario(
                 ecoComponents,
                 pressures,
@@ -647,6 +689,35 @@ public class CalcService {
         return coverage;
     }
 
+    private GridCoverage2D writeAlternativeBands(LayerType layerType, GridCoverageFactory factory,
+                                                 AlternativeLayerMapping[] mappings,
+                                                 GridCoverage2D source) {
+
+        RenderedImage sourceImage = source.getRenderedImage();
+        int w = sourceImage.getWidth(), h = sourceImage.getHeight();
+
+        WritableRaster altRasterRW = WritableRaster.createBandedRaster(DataBuffer.TYPE_BYTE, w, h,
+                                            source.getNumSampleDimensions(), new Point(0, 0));
+
+        sourceImage.copyData(altRasterRW);
+
+        for (AlternativeLayerMapping mapping : mappings) {
+            if (mapping.layerType == layerType) {
+                for (int y = 0; y < h; ++y) {
+                    for (int x = 0; x < w; ++x) {
+                        altRasterRW.setSample(x, y, mapping.srcBandNumber,
+                            alternativeBandsData.getSample(x, y, mapping.altBandNumber));
+                    }
+                }
+            }
+        }
+
+        BufferedImage tmpRaster = new BufferedImage(sourceImage.getColorModel(), altRasterRW,
+            sourceImage.getColorModel().isAlphaPremultiplied(), null);
+
+        return factory.create("", tmpRaster, source.getEnvelope());
+    }
+
     CoordinateReferenceSystem getSrcCRS() throws FactoryException {
         return CRS.getAuthorityFactory(true).
             createCoordinateReferenceSystem(props.getProperty("data.source.crs", ""));
@@ -662,7 +733,7 @@ public class CalcService {
         GridCoverage2D coverage = calculateCoverage(
             calc.getOperation(),
             roi, calc.getBaselineVersion().getId(), scenario.getEcosystemsToInclude(), scenario.getPressuresToInclude(),
-            areas, scenario.getMatrixResponse(), calc.getOperationOptions(), scenario, null);
+            areas, scenario.getMatrixResponse(), calc.getOperationOptions(), scenario, null, scenario.getAlternativeBands());
 
         // Trigger calculation to populate impact matrix
         var ignore = ((PlanarImage) coverage.getRenderedImage()).getTiles();
@@ -673,12 +744,13 @@ public class CalcService {
     }
 
     @Transactional
-    public BatchCalculation queueBatchCalculation(int[] idArray, String owner, ScenarioSplitOptions options) {
+    public BatchCalculation queueBatchCalculation(int[] idArray, String owner, ScenarioSplitOptions options, String[] altIds) {
         BatchCalculation batchCalculation = new BatchCalculation();
         batchCalculation.setEntities(idArray);
         batchCalculation.setOwner(owner);
         batchCalculation.setAreasCalculation(options != null);
         batchCalculation.setAreasOptions(options);
+
 
         em.persist(batchCalculation);
         em.flush();
@@ -755,7 +827,8 @@ public class CalcService {
                                                 BaselineVersion baselineVersion,
                                                 Geometry projectedRoi,
                                                 Overflow overflow,
-                                                boolean isAreaCalculation)
+                                                boolean isAreaCalculation,
+                                                String[] alternativeBands)
         throws IOException {
         var calculation = new CalculationResult(result);
 
@@ -769,6 +842,7 @@ public class CalcService {
                 var snapshot = ScenarioSnapshot.makeSnapshot(scenario, projectedRoi, areaMatrixMap, normalizationValue);
                 snapshot.setEcosystemsToInclude(includedEcosystems); // Override actually used only in snapshot
                 snapshot.setChanges(mapper.valueToTree(changes));
+                snapshot.setAlternativeBands(alternativeBands.length > 0 ? alternativeBands : null);
                 em.persist(snapshot);
                 calculation.setScenarioSnapshot(snapshot);
 

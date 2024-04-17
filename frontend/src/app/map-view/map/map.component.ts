@@ -97,6 +97,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       .subscribe(components => { // FIXME
         this.bandLayer?.setVisibleBands('ECOSYSTEM', components.ecoComponent);
         this.bandLayer?.setVisibleBands('PRESSURE', components.pressureComponent);
+        this.bandLayer?.setVisibleAltBands(components.alternativeBands);
       });
 
     this.areaSubscription = this.store

@@ -34,6 +34,8 @@ describe('SliderControlsComponent', () => {
     component = fixture.componentInstance;
     component.band = {
       title: "",
+      altId: null,
+      alternativeBands: [],
       bandNumber: 0,
       selected: false,
       symphonyCategory: "ECOSYSTEM",

@@ -38,11 +38,12 @@ public class MetaDataREST {
     @Path("{baselineName}")
     public MetadataDto findAll(@PathParam("baselineName") String baselineName,
                                @DefaultValue("0") @QueryParam("scenarioId") int activeScenarioId,
-                               @DefaultValue("") @QueryParam("lang") String preferredLanguage ) throws SymphonyStandardAppException {
+                               @DefaultValue("") @QueryParam("lang") String preferredLanguage,
+                               @DefaultValue("") @QueryParam("altIds") String altIds) throws SymphonyStandardAppException {
         MetadataDto metaData = metaDataService.findMetadata(baselineName,
                 preferredLanguage.isEmpty() ?
                     props.getProperty("meta.default_language") :
-                    preferredLanguage, activeScenarioId > 0);
+                    preferredLanguage, activeScenarioId > 0, altIds.split(","));
 
         if(activeScenarioId > 0) {
             int[] ecosystemIds, pressureIds;

@@ -62,15 +62,22 @@ public class DataLayerREST {
     public Response getLayerData(@PathParam("type") String type,
                                  @PathParam("id") int bandNo,
                                  @PathParam("baselineName") String baselineName,
-                                 @QueryParam("crs") String crs)
+                                 @QueryParam("crs") String crs,
+                                 @QueryParam("altId") String altId)
             throws Exception {
         logger.info("Getting layer data of type " + type + " for bandNo=" + bandNo);
+
+        boolean altLayer = altId != null && !altId.isEmpty();
 
         BaselineVersion baselineVersion = baselineVersionService.getVersionByName(baselineName);
 
         var layerType = LayerType.valueOf(type.toUpperCase());
 
-        java.nio.file.Path cacheKey = java.nio.file.Path.of(baselineName, type).resolve(bandNo + ".png");
+        java.nio.file.Path path = java.nio.file.Path.of(baselineName, type);
+
+        java.nio.file.Path cacheKey =
+            altLayer ? path.resolve(bandNo + "_" + altId + ".png") :
+            path.resolve(bandNo + ".png");
         if (cache != null && cache.containsKey(cacheKey)) { // TODO: check CRS
             byte[] bytes = cache.get(cacheKey);
             String extent = DataLayerService.readMetaData(bytes, "extent");
@@ -78,7 +85,9 @@ public class DataLayerREST {
                     .header("SYM-Image-Extent", (extent == null ? "" : extent))
                     .build();
         } else {
-            GridCoverage2D coverage = data.getDataLayer(layerType, baselineVersion.getId(), bandNo);
+            GridCoverage2D coverage =
+                altLayer ? data.getAltDataLayer(layerType, baselineVersion.getId(), bandNo, altId) :
+                data.getDataLayer(layerType, baselineVersion.getId(), bandNo);
 
             Envelope dataEnvelope = new ReferencedEnvelope(coverage.getEnvelope());
             CoordinateReferenceSystem targetCRS;

@@ -30,6 +30,8 @@ public enum SymphonyModelErrorCode implements SymphonyErrorCode {
     BASELINE_VERSION_MULT_MATCHES("BASELINE_VERSION_MULT_MATCHES","Multiple BaselineVersion matches found"),
     BASELINE_VERSION_NOT_FOUND("BASELINE_VERSION_NOT_FOUND","BaselineVersion not found"),
     BASELINE_VERSION_VALID_MINDATE_NOT_FOUND("BASELINE_VERSION_VALID_MINDATE_NOT_FOUND","No valid mindate for BaselineVersion found for the requested date"),
+    ALT_FILE_PATH_NOT_FOUND("ALT_FILE_PATH_NOT_FOUND", "No alternative layer stack found for baseline"),
+    ALT_LAYER_MAP_NOT_FOUND("ALT_LAYER_MAP_NOT_FOUND", "No alternative layer mapping found for baseline"),
     COMPONENT_FILE_PATH_MULT_MATCHES("COMPONENT_FILE_PATH_MULT_MATCHES","Multiple ComponentFilePath matches found"),
     COMPONENT_FILE_PATH_NOT_FOUND("COMPONENT_FILE_PATH_NOT_FOUND","ComponentFilePath not found"),
     METADATA_NOT_FOUND_FOR_ID("METADATA_NOT_FOUND_FOR_ID", "Metadata not found for requested id."),
@@ -46,7 +48,8 @@ public enum SymphonyModelErrorCode implements SymphonyErrorCode {
     BATCH_CALCULATION_JOB_RUNNING("BATCH_CALCULATION_JOB_RUNNING", "Cannot delete unfinished batch calculation"),
     NO_DEFAULT_MATRIX_FOUND("NO_DEFAULT_MATRIX_FOUND", "No matrix found for area"),
     SHAPEFILE_GENERATION_ERROR("SHAPEFILE_GENERATION_ERROR", "Error when generating shapefile"),
-    OTHER_ERROR("OTHER_ERROR", "Other error");
+    OTHER_ERROR("OTHER_ERROR", "Other error"),
+    INVALID_LAYER_MAPPING("INVALID_LAYER_MAPPING", "Invalid alternative layer mapping");
 
     private final String key;
     private final String message;

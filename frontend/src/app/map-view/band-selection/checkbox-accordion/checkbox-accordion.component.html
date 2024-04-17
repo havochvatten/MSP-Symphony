@@ -1,4 +1,3 @@
-<!-- FIXME open if child bands has changes -->
 <app-accordion-box [open]="open || (searching && bands.length > 0)" [toggle]="toggle">
   <app-accordion-box-header>
     <mat-checkbox
@@ -19,6 +18,7 @@
         [disabled]="!scenarioActive"
         [onSelect]="onChange"
         [onChangeVisible]="onChangeVisible"
+        [groupVisible]="open"
       ></app-slider-controls>
     </ul>
   </app-accordion-box-content>

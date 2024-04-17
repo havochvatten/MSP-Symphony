@@ -6,24 +6,37 @@
       [disabled]="disabled"
       (change)="onSelect($event, band)"
       checkboxSize="small"
-    >{{ band.title }}</mat-checkbox>
+    >{{ currentBandTitle(band) }}</mat-checkbox>
     <div class="editing">
+      <app-icon-button *ngIf="!scenario && groupVisible && band.alternativeBands.length > 0"
+                       [icon]="'switch'"
+                       [label]="'Alternativ banddata tillgänglig'"
+                       class="switch-indicator"
+                       (iconClick)="alternativesVisible = true"
+      ></app-icon-button>
+      <ul *ngIf="alternativesVisible" class="alt-bands-list" (mouseleave)="alternativesVisible = false">
+        <li *ngFor="let altBand of band.alternativeBands">
+          <button (click)="setAlternativeBand(band, altBand)">
+            <span>{{ altBand.title }}</span>
+            <fa-icon [icon]="faCheck" *ngIf="band.altId === altBand.altId"></fa-icon>
+          </button>
+        </li>
+      </ul>
       <button
         *ngIf="hasPublicMeta"
         (click)="showMetaDialog()"
         [title]="'map.metadata.label' | translate"
         data-active="true"
       >
-        <app-icon iconType="info-circle"></app-icon>
+      <app-icon iconType="info-circle"></app-icon>
       </button>
       <mat-spinner *ngIf="band.visible && !band.loaded" [diameter]="18" [strokeWidth]="2">
       </mat-spinner>
       <button
         (click)="toggleOpen()"
-        [disabled]="disabled || !scenario"
+        *ngIf="!(disabled || !scenario)"
         [attr.data-active]="open"
         [attr.aria-label]="'map.editor.band-pressures.intensity-label' | translate"
-        [title]="!scenario ?( 'map.editor.band-pressures.no-scenario-selected' | translate) : ''"
       >
         <app-icon iconType="sliders"></app-icon>
       </button>

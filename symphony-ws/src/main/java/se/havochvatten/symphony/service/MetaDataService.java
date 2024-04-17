@@ -1,5 +1,6 @@
 package se.havochvatten.symphony.service;
 
+import org.apache.commons.lang3.ArrayUtils;
 import se.havochvatten.symphony.dto.*;
 import se.havochvatten.symphony.entity.Metadata;
 import se.havochvatten.symphony.entity.SymphonyBand;
@@ -43,14 +44,16 @@ public class MetaDataService {
             "AND m2.metaField IN ('title', 'symphonytheme')" +
             "AND m2.language = :language)))";
 
-    public MetadataDto findMetadata(String baselineName, String preferredLanguage, boolean sparse) throws SymphonyStandardAppException {
+    public MetadataDto findMetadata(String baselineName, String preferredLanguage, boolean sparse,
+                                    String[] alternativeBandIds) throws SymphonyStandardAppException {
         BaselineVersion baseline = baselineVersionService.getVersionByName(baselineName);
         MetadataDto metadataDto = new MetadataDto();
-        metadataDto.setEcoComponent(getComponentDto("Ecosystem", baseline.getId(), preferredLanguage, sparse));
-        metadataDto.setPressureComponent(getComponentDto("Pressure", baseline.getId(), preferredLanguage, sparse));
+        metadataDto.setEcoComponent(
+            getComponentDto("Ecosystem", baseline, preferredLanguage, sparse, alternativeBandIds));
+        metadataDto.setPressureComponent(
+            getComponentDto("Pressure", baseline, preferredLanguage, sparse, alternativeBandIds));
         metadataDto.setLanguage(preferredLanguage);
         return metadataDto;
-
     }
 
     public Map<Integer, String>
@@ -79,10 +82,15 @@ public class MetaDataService {
             .collect(HashMap::new, (m, t) -> m.put(t.get(0, Integer.class), t.get(1, String.class)), HashMap::putAll);
     }
 
-    public MetadataComponentDto getComponentDto(String componentName, int baselineVersionId, String language, boolean sparse) {
+    public MetadataComponentDto getComponentDto(String componentName, BaselineVersion baselineVersion, String language, boolean sparse,
+                                                String[] alternativeBandIds) {
         MetadataComponentDto componentDto = new MetadataComponentDto();
+        LayerType category = LayerType.valueOf(componentName.toUpperCase());
 
-        List<SymphonyBand> bandsList = getBandsForBaselineComponent(componentName, baselineVersionId);
+        List<SymphonyBand> bandsList = getBandsForBaselineComponent(componentName, baselineVersion.getId());
+        AlternativeLayerMapping[] alternativeBands = baselineVersion.getAlternativeLayerMap().values().stream()
+            .filter(alt -> alt.layerType.equals(category))
+            .toArray(AlternativeLayerMapping[]::new);
 
         // Select all Metadata for the given SymphonyBands and the given language.
         // If a translation for a field is not found, fall back to baseline default language.
@@ -111,6 +119,18 @@ public class MetaDataService {
                         m2.getBand().getMetaValues().stream()
                             .filter(metadataList::contains)
                             .forEach(m -> propertyDto.getMeta().put(m.getMetaField(), m.getMetaValue()));
+
+                        propertyDto.alternativeBands = Arrays.stream(alternativeBands)
+                            .filter(alt -> alt.srcBandNumber == propertyDto.getBandNumber())
+                            .map(alt -> new AlternativeBand(alt.altId, alt.getTitle()))
+                            .toArray(AlternativeBand[]::new);
+
+                        if(propertyDto.alternativeBands.length > 0) {
+                            propertyDto.alternativeBands =
+                                ArrayUtils.insert(0, propertyDto.alternativeBands,
+                                    new AlternativeBand(propertyDto.altId, propertyDto.getTitle()));
+                        }
+
                         return propertyDto;
                     }).forEachOrdered(symphonyThemeDto.getBands()::add);
                 componentDto.getSymphonyThemes().add(symphonyThemeDto);
