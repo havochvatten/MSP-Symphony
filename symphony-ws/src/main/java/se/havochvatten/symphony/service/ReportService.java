@@ -48,7 +48,7 @@ public class ReportService {
 
     private static final int ODF_TITLE_ROWS = 8;
     private static final int ODF_TITLE_ROWS_TOTAL = 3;
-    private static final int ODF_CALC_TOTALS_SECTION = 10;
+    private static final int ODF_CALC_TOTALS_SECTION = 13;
     private static final double ODF_TITLE_COLWIDTH = 55.0;
 
     private static final Map<String, String> defaultMeta = Map.ofEntries(
@@ -57,6 +57,7 @@ public class ReportService {
         Map.entry("total", "Total"),
         Map.entry("sum", "Sum"),
         Map.entry("difference", "Difference"),
+        Map.entry("baseline", "Baseline"),
         Map.entry("average", "Average"),
         Map.entry("stddev", "Standard deviation"),
         Map.entry("max", "Max"),
@@ -84,7 +85,7 @@ public class ReportService {
     @Inject
     PropertiesService props;
 
-    public record MultiComparisonAuxiliary(int[] ecosystems, int[] pressures, double[][] result) {}
+    public record MultiComparisonAuxiliary(int[] ecosystems, int[] pressures, double[][] baseline, double[][] result) {}
 
     public StatisticsResult getStatistics(GridCoverage2D coverage) {
         return getStatistics(coverage, true);
@@ -443,23 +444,26 @@ public class ReportService {
 
     public MultiComparisonAuxiliary getLayerIndicesToListForResult(ComparisonResult result, boolean excludeZeroes) {
         int[] ecosystemsToList = excludeZeroes ? IntStream.range(0, result.includedEcosystems.length)
-            .filter(i -> result.totalPerEcosystem.get(result.includedEcosystems[i]) != 0)
+            .filter(i -> result.totalPerEcosystem.get(result.includedEcosystems[i]).totalDifference() != 0)
             .toArray() : IntStream.range(0, result.includedEcosystems.length).toArray();
 
         int[] pressuresToList = excludeZeroes ? IntStream.range(0, result.includedPressures.length)
-            .filter(i -> result.totalPerPressure.get(result.includedPressures[i]) != 0)
+            .filter(i -> result.totalPerPressure.get(result.includedPressures[i]).totalDifference() != 0)
             .toArray() : IntStream.range(0, result.includedPressures.length).toArray();
 
-        double[][] resultMatrix = new double[pressuresToList.length][ecosystemsToList.length];
+        double[][] baselineMatrix = new double[pressuresToList.length][ecosystemsToList.length],
+                   resultMatrix = new double[pressuresToList.length][ecosystemsToList.length];
 
         for (int p = 0; p < pressuresToList.length; p++) {
             for (int e = 0; e < ecosystemsToList.length; e++) {
                 resultMatrix[p][e] = result.result[pressuresToList[p]]
                     [ecosystemsToList[e]];
+                baselineMatrix[p][e] = result.baseline[pressuresToList[p]]
+                    [ecosystemsToList[e]];
             }
         }
 
-        return new MultiComparisonAuxiliary(ecosystemsToList, pressuresToList, resultMatrix);
+        return new MultiComparisonAuxiliary(ecosystemsToList, pressuresToList, baselineMatrix, resultMatrix);
     }
 
     public CompoundComparisonExport generateMultiComparisonAsJSON(
@@ -506,7 +510,9 @@ public class ReportService {
                     .mapToObj(p -> pressureTitles.get(cmpResults[i].includedPressures[p]))
                     .toArray(String[]::new);
                 cmpResult.comparisonMatrix = layersToList[i].result;
-                cmpResult.cumulativeTotal = cmpResults[i].cumulativeTotal;
+                cmpResult.baselineMatrix = layersToList[i].baseline;
+                cmpResult.cumulativeTotalBaseline = cmpResults[i].cumulativeTotal;
+                cmpResult.cumulativeTotalDifference = cmpResults[i].cumulativeTotalDiff;
                 return cmpResult;
 
             }).toArray(ComparisonResultExport[]::new);
@@ -515,7 +521,7 @@ public class ReportService {
     }
 
     private Sheet createSheet(int rows, int cols, String title) {
-        Sheet newSheet = new Sheet(title, rows, Math.max(cols, 5));
+        Sheet newSheet = new Sheet(sanitizeSheetName(title), rows, Math.max(cols * 2 + 4, 6));
 
         Range titleCell = newSheet.getRange(1, 2, 1, 1);
 
@@ -528,7 +534,6 @@ public class ReportService {
         return newSheet;
     }
 
-    // TODO: Probable opportunity to refactor for less repetitive code.
     public byte[] generateMultiComparisonAsODS(
         CompoundComparison comparison, String preferredLanguage, boolean excludeZeroes, Map<String, String> localizedMeta) throws Exception {
 
@@ -537,7 +542,8 @@ public class ReportService {
         metaDict.putAll(localizedMeta);
 
         String title = metaDict.get("compoundHeading") + " \"" + comparison.getName() + "\"",
-            sum_s = metaDict.get("sum");
+            sum_s = metaDict.get("sum"), diff_s = metaDict.get("difference"),
+            baseline_s = metaDict.get("baseline");
 
         Map<Integer, String>
             ecoTitles = metaDataService.getComponentTitles(
@@ -557,7 +563,7 @@ public class ReportService {
             comparison.getResult().values().toArray(new ComparisonResult[comparison.getResult().size()]);
 
         Sheet totalSheet = createSheet(
-            cmpResults.length * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL, 5,
+            cmpResults.length * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL, 1,
             title);
 
         totalSheet.setName(String.format("%s - %s", comparison.getName(), metaDict.get("total")));
@@ -572,17 +578,17 @@ public class ReportService {
 
         // Semantically consistent index variables.
         int e, p, j, cmpIndex = 0;
+        int prevSectionLength = 0;
 
         for (ComparisonResult cmp : cmpResults) {
 
-            Range nextCell;
             String areaText = cmp.planar ? String.format("%s: %.2f km²", metaDict.get("area"), cmp.area_m2 / 1e6) :
                               String.format("%s: - (%s)", metaDict.get("area"), metaDict.get("nonPlanar")),
-                   pixelsText = String.format("%s: %d", metaDict.get("pixels"), cmp.pixels);
+                   pixelsText = String.format("%s: %d", metaDict.get("pixels"), cmp.statisticsBaseline.pixels());
 
             Sheet nextSheet = createSheet(
-                cmp.includedEcosystems.length + ODF_TITLE_ROWS + 1,     // + 1 totals row
-                cmp.includedPressures.length + 3, // + 2 left padding columns + 1 totals column
+                cmp.includedEcosystems.length + ODF_TITLE_ROWS + 2, // + totals row & baseline/diff subheader
+                cmp.includedPressures.length,
                 title);
 
             cmpNameCounts.put(cmp.calculationName, cmpNameCounts.get(cmp.calculationName) + 1);
@@ -591,9 +597,8 @@ public class ReportService {
                 (cmpNameCounts.get(cmp.calculationName) > 1 ?
                 " (" + cmpNameCounts.get(cmp.calculationName) + ")" : ""));
 
-            nextCell = nextSheet.getRange(3, 1);
-            nextCell.setValue(cmp.calculationName);
-            nextCell.setStyle(ODSStyles.calcName);
+            setCellValueAndStyle(nextSheet.getRange(3, 1), cmp.calculationName, ODSStyles.calcName);
+
 
             nextSheet.getRange(4, 1).setValue(areaText);
             nextSheet.getRange(5, 1).setValue(pixelsText);
@@ -602,65 +607,106 @@ public class ReportService {
 
             MultiComparisonAuxiliary layersToList = getLayerIndicesToListForResult(cmp, excludeZeroes);
 
+            setCellValueAndStyle(nextSheet.getRange(ODF_TITLE_ROWS, 1),
+                null, ODSStyles.thickRightBorder);
+
             for (e = 0; e < layersToList.ecosystems.length; e++) {
-                nextCell = nextSheet.getRange(ODF_TITLE_ROWS + e, 1);
-                nextCell.setValue(ecoTitles.get(cmp.includedEcosystems[layersToList.ecosystems[e]]));
-                nextCell.setStyle(ODSStyles.ecoHeader);
+                setCellValueAndStyle(nextSheet.getRange(ODF_TITLE_ROWS + e + 1, 1),
+                    ecoTitles.get(cmp.includedEcosystems[layersToList.ecosystems[e]]), ODSStyles.ecoHeader);
             }
 
             nextSheet.setColumnWidth(1, ODF_TITLE_COLWIDTH);
 
+            if (layersToList.result.length == 0) {
+                continue;
+            }
+
             for (p = 0; p < layersToList.pressures.length; p++) {
-                nextCell = nextSheet.getRange(ODF_TITLE_ROWS - 1, 2 + p);
-                nextCell.setValue(pressureTitles.get(cmp.includedPressures[layersToList.pressures[p]]));
-                nextCell.setStyle(ODSStyles.pressureHeader);
-                nextSheet.setColumnWidth(2 + p, ODF_TITLE_COLWIDTH);
+                setCellValueAndStyle(
+                    nextSheet.getRange(ODF_TITLE_ROWS - 1, 2 + p * 2),
+                    pressureTitles.get(cmp.includedPressures[layersToList.pressures[p]]), ODSStyles.pressureHeaderLeft);
+                setCellValueAndStyle(
+                    nextSheet.getRange(ODF_TITLE_ROWS - 1, 2 + p * 2 + 1),
+                    null, ODSStyles.pressureHeaderRight);
+                setCellValueAndStyle(
+                    nextSheet.getRange(ODF_TITLE_ROWS, 2 + p * 2),
+                    baseline_s, ODSStyles.singleSubHeader);
+                setCellValueAndStyle(
+                    nextSheet.getRange(ODF_TITLE_ROWS, 2 + p * 2 + 1),
+                    diff_s, ODSStyles.singleSubHeader);
+                nextSheet.setColumnWidth(2 + p * 2, ODF_TITLE_COLWIDTH);
+                nextSheet.setColumnWidth(2 + p * 2 + 1, ODF_TITLE_COLWIDTH);
             }
 
             for (e = 0; e < layersToList.result[0].length; e++) {
                 for (p = 0; p < layersToList.result.length; p++) {
-                    nextCell = nextSheet.getRange(ODF_TITLE_ROWS + e, 2 + p);
-                    nextCell.setValue(layersToList.result[p][e]);
-                    nextCell.setStyle(ODSStyles.valueStyle);
+                    setCellValueAndStyle(
+                        nextSheet.getRange(ODF_TITLE_ROWS + e + 1, 2 + p * 2),
+                        layersToList.baseline[p][e], ODSStyles.valueStyle);
+                    setCellValueAndStyle(
+                        nextSheet.getRange(ODF_TITLE_ROWS + e + 1, 2 + p * 2 + 1),
+                        layersToList.result[p][e], ODSStyles.valueStyle);
                 }
             }
 
-            nextCell = nextSheet.getRange(ODF_TITLE_ROWS - 1, 2 + layersToList.pressures.length);
-            nextCell.setValue(sum_s.toUpperCase());
-            nextCell.setStyle(ODSStyles.totalHE);
-            nextSheet.setColumnWidth(2 + layersToList.pressures.length, ODF_TITLE_COLWIDTH);
+            setCellValueAndStyle(
+                nextSheet.getRange(ODF_TITLE_ROWS - 1, 2 + layersToList.pressures.length * 2),
+                metaDict.get("total").toUpperCase(), ODSStyles.totalHE);
+            setCellValueAndStyle(
+                nextSheet.getRange(ODF_TITLE_ROWS - 1, 2 + layersToList.pressures.length * 2 + 1),
+                null, ODSStyles.pressureHeaderRight);
+            setCellValueAndStyle(
+                nextSheet.getRange(ODF_TITLE_ROWS, 2 + layersToList.pressures.length * 2),
+                baseline_s, ODSStyles.singleSumSubHeader);
+            setCellValueAndStyle(
+                nextSheet.getRange(ODF_TITLE_ROWS, 2 + layersToList.pressures.length * 2 + 1),
+                diff_s, ODSStyles.singleSubHeader);
 
-            nextCell = nextSheet.getRange(ODF_TITLE_ROWS + layersToList.ecosystems.length, 1);
-            nextCell.setValue(sum_s.toUpperCase());
-            nextCell.setStyle(ODSStyles.totalHP);
+            nextSheet.setColumnWidth(2 + layersToList.pressures.length * 2, ODF_TITLE_COLWIDTH);
+            nextSheet.setColumnWidth(2 + layersToList.pressures.length * 2 + 1, ODF_TITLE_COLWIDTH);
+
+            setCellValueAndStyle(
+                nextSheet.getRange(ODF_TITLE_ROWS + 1 + layersToList.ecosystems.length, 1),
+                metaDict.get("total").toUpperCase(), ODSStyles.totalHP);
 
             for (e = 0; e < layersToList.ecosystems.length; e++) {
-                nextCell = nextSheet.getRange(ODF_TITLE_ROWS + e, 2 + layersToList.pressures.length);
-                nextCell.setValue(cmp.totalPerEcosystem.get(cmp.includedEcosystems[layersToList.ecosystems[e]]));
-                nextCell.setStyle(ODSStyles.totalE);
+                setCellValueAndStyle(
+                    nextSheet.getRange(ODF_TITLE_ROWS + e + 1, 2 + layersToList.pressures.length * 2),
+                    cmp.totalPerEcosystem.get(cmp.includedEcosystems[layersToList.ecosystems[e]]).totalBaseline(), ODSStyles.totalE);
+                setCellValueAndStyle(
+                    nextSheet.getRange(ODF_TITLE_ROWS + e + 1, 2 + layersToList.pressures.length * 2 + 1),
+                    cmp.totalPerEcosystem.get(cmp.includedEcosystems[layersToList.ecosystems[e]]).totalDifference(), ODSStyles.totalE2);
             }
 
             for (p = 0; p < layersToList.pressures.length; p++) {
-                nextCell = nextSheet.getRange(ODF_TITLE_ROWS + layersToList.ecosystems.length, 2 + p);
-                nextCell.setValue(cmp.totalPerPressure.get(cmp.includedPressures[layersToList.pressures[p]]));
-                nextCell.setStyle(ODSStyles.totalP);
+                setCellValueAndStyle(
+                    nextSheet.getRange(ODF_TITLE_ROWS + layersToList.ecosystems.length + 1, 2 + p * 2),
+                    cmp.totalPerPressure.get(cmp.includedPressures[layersToList.pressures[p]]).totalBaseline(), ODSStyles.totalP);
+                setCellValueAndStyle(
+                    nextSheet.getRange(ODF_TITLE_ROWS + layersToList.ecosystems.length + 1, 2 + p * 2 + 1),
+                    cmp.totalPerPressure.get(cmp.includedPressures[layersToList.pressures[p]]).totalDifference(), ODSStyles.totalP);
             }
 
-            nextCell = nextSheet.getRange(
-                ODF_TITLE_ROWS + layersToList.ecosystems.length,
-                2 + layersToList.pressures.length);
-            nextCell.setValue(cmp.cumulativeTotal);
-            nextCell.setStyle(ODSStyles.totalC);
+            setCellValueAndStyle(
+                nextSheet.getRange(
+                    ODF_TITLE_ROWS + layersToList.ecosystems.length + 1,
+                    2 + layersToList.pressures.length * 2),
+                cmp.cumulativeTotal, ODSStyles.totalC);
+
+            setCellValueAndStyle(
+                nextSheet.getRange(
+                    ODF_TITLE_ROWS + layersToList.ecosystems.length + 1,
+                    2 + layersToList.pressures.length * 2 + 1),
+                cmp.cumulativeTotalDiff, ODSStyles.totalC2);
 
             // ----- Totals sheet -----
 
             int calcSectionOffset = cmpIndex * ODF_CALC_TOTALS_SECTION + ODF_TITLE_ROWS_TOTAL,
                 sectionLength = Math.max(layersToList.pressures.length, layersToList.ecosystems.length);
-            totalSheet.appendColumns(sectionLength);
+            totalSheet.appendColumns(sectionLength * 2 + 1);
 
-            nextCell = totalSheet.getRange(calcSectionOffset, 1);
-            nextCell.setValue(cmp.calculationName);
-            nextCell.setStyle(ODSStyles.calcName);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset, 1),
+                cmp.calculationName, ODSStyles.calcName);
 
             totalSheet.getRange(calcSectionOffset + 1, 1)
                 .setValue(areaText);
@@ -668,85 +714,104 @@ public class ReportService {
                 .setValue(pixelsText);
 
             // Left aligned table with row titles column in third column (index 2)
-            nextCell = totalSheet.getRange(calcSectionOffset, 2);
-            nextCell.setValue(metaDict.get("pressure"));
-            nextCell.setStyle(ODSStyles.epHeaderLeft);
-            nextCell = totalSheet.getRange(calcSectionOffset + 1, 2);
-            nextCell.setValue(sum_s.toUpperCase());
-            nextCell.setStyle(ODSStyles.totalHP);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset, 2),
+                metaDict.get("pressure"), ODSStyles.onlyBold);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 1, 2),
+                null, ODSStyles.thickRightBorder);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 2, 2),
+                sum_s.toUpperCase(), ODSStyles.totalHP);
 
-            nextCell = totalSheet.getRange(calcSectionOffset + 3, 2);
-            nextCell.setValue(metaDict.get("ecosystem"));
-            nextCell.setStyle(ODSStyles.epHeaderLeft);
-            nextCell = totalSheet.getRange(calcSectionOffset + 4, 2);
-            nextCell.setValue(sum_s.toUpperCase());
-            nextCell.setStyle(ODSStyles.totalHP);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 4, 2),
+                metaDict.get("ecosystem"), ODSStyles.onlyBold);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 5, 2),
+                null, ODSStyles.thickRightBorder);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 6, 2),
+                sum_s.toUpperCase(), ODSStyles.totalHP);
 
             // Left aligned table with horizontal title column in third column:
             // values start in fourth column, hence index + 3
             for (p = 0; p < layersToList.pressures.length; p++) {
-                nextCell = totalSheet.getRange(calcSectionOffset, 3 + p);
-                nextCell.setValue(pressureTitles.get(cmp.includedPressures[layersToList.pressures[p]]));
-                nextCell.setStyle(ODSStyles.pressureHeader);
-                nextCell = totalSheet.getRange(calcSectionOffset + 1, 3 + p);
-                nextCell.setValue(cmp.totalPerPressure.get(cmp.includedPressures[layersToList.pressures[p]]));
-                nextCell.setStyle(ODSStyles.totalP);
+                setCellValueAndStyle(totalSheet.getRange(calcSectionOffset, 3 + p * 2),
+                    pressureTitles.get(cmp.includedPressures[layersToList.pressures[p]]), ODSStyles.totalHeaderLeft);
+                setCellValueAndStyle(totalSheet.getRange(calcSectionOffset, 3 + p * 2 + 1),
+                    null, ODSStyles.totalHeaderRight);
+                setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 1, 3 + p * 2),
+                    baseline_s, ODSStyles.totalSubHeader);
+                setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 1, 3 + p * 2 + 1),
+                    diff_s, ODSStyles.totalSubHeader);
+                setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 2, 3 + p * 2),
+                    cmp.totalPerPressure.get(cmp.includedPressures[layersToList.pressures[p]]).totalBaseline(),
+                    ODSStyles.totalP);
+                setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 2, 3 + p * 2 + 1),
+                    cmp.totalPerPressure.get(cmp.includedPressures[layersToList.pressures[p]]).totalDifference(),
+                    ODSStyles.totalP);
             }
 
             for (e = 0; e < layersToList.ecosystems.length; e++) {
-                nextCell = totalSheet.getRange(calcSectionOffset + 3, 3 + e);
-                nextCell.setValue(ecoTitles.get(cmp.includedEcosystems[layersToList.ecosystems[e]]));
-                nextCell.setStyle(ODSStyles.pressureHeader);
-                nextCell = totalSheet.getRange(calcSectionOffset + 4, 3 + e);
-                nextCell.setValue(cmp.totalPerEcosystem.get(cmp.includedEcosystems[layersToList.ecosystems[e]]));
-                nextCell.setStyle(ODSStyles.totalP);
+                setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 4, 3 + e * 2),
+                    ecoTitles.get(cmp.includedEcosystems[layersToList.ecosystems[e]]), ODSStyles.totalHeaderLeft);
+                setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 4, 3 + e * 2 + 1),
+                    null, ODSStyles.totalHeaderRight);
+                setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 5, 3 + e * 2),
+                    baseline_s, ODSStyles.totalSubHeader);
+                setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 5, 3 + e * 2 + 1),
+                    diff_s, ODSStyles.totalSubHeader);
+                setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 6, 3 + e * 2),
+                    cmp.totalPerEcosystem.get(cmp.includedEcosystems[layersToList.ecosystems[e]]).totalBaseline(),
+                    ODSStyles.totalP);
+                setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 6, 3 + e * 2 + 1),
+                    cmp.totalPerEcosystem.get(cmp.includedEcosystems[layersToList.ecosystems[e]]).totalDifference(),
+                    ODSStyles.totalP);
             }
 
-            nextCell = totalSheet.getRange(calcSectionOffset + 6, 2);
-            nextCell.setValue(metaDict.get("total"));
-            nextCell.setStyle(ODSStyles.epHeaderLeft);
-            nextCell = totalSheet.getRange(calcSectionOffset + 7, 2);
-            nextCell.setValue(metaDict.get("difference"));
-            nextCell.setStyle(ODSStyles.totalHP);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 8, 2),
+                metaDict.get("total"), ODSStyles.onlyBold);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 9, 2),
+                baseline_s, ODSStyles.totalHP);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 10, 2),
+                diff_s, ODSStyles.totalHP);
 
-            nextCell = totalSheet.getRange(calcSectionOffset + 6, 3);
-            nextCell.setValue(sum_s);
-            nextCell.setStyle(ODSStyles.pressureHeader);
-            nextCell = totalSheet.getRange(calcSectionOffset + 7, 3);
-            nextCell.setValue(cmp.cumulativeTotal);
-            nextCell.setStyle(ODSStyles.totalP);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 8, 3),
+                sum_s, ODSStyles.pressureHeaderRight);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 9, 3),
+                cmp.cumulativeTotal, ODSStyles.totalP);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 10, 3),
+                cmp.cumulativeTotalDiff, ODSStyles.totalP2);
 
-            nextCell = totalSheet.getRange(calcSectionOffset + 6, 4);
-            nextCell.setValue(metaDict.get("average"));
-            nextCell.setStyle(ODSStyles.pressureHeader);
-            nextCell = totalSheet.getRange(calcSectionOffset + 7, 4);
-            nextCell.setValue(cmp.average);
-            nextCell.setStyle(ODSStyles.totalP);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 8, 4),
+                metaDict.get("average"), ODSStyles.pressureHeaderRight);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 9, 4),
+                cmp.statisticsBaseline.average(), ODSStyles.totalP);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 10, 4),
+                cmp.statisticsDiff.average(), ODSStyles.totalP2);
 
-            nextCell = totalSheet.getRange(calcSectionOffset + 6, 5);
-            nextCell.setValue(metaDict.get("max"));
-            nextCell.setStyle(ODSStyles.pressureHeader);
-            nextCell = totalSheet.getRange(calcSectionOffset + 7, 5);
-            nextCell.setValue(cmp.max);
-            nextCell.setStyle(ODSStyles.totalP);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 8, 5),
+                metaDict.get("max"), ODSStyles.pressureHeaderRight);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 9, 5),
+                cmp.statisticsBaseline.max(), ODSStyles.totalP);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 10, 5),
+                cmp.statisticsDiff.max(), ODSStyles.totalP2);
 
-            nextCell = totalSheet.getRange(calcSectionOffset + 6, 6);
-            nextCell.setValue(metaDict.get("stddev"));
-            nextCell.setStyle(ODSStyles.pressureHeader);
-            nextCell = totalSheet.getRange(calcSectionOffset + 7, 6);
-            nextCell.setValue(cmp.standardDeviation);
-            nextCell.setStyle(ODSStyles.totalP);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 8, 6),
+                metaDict.get("stddev"), ODSStyles.pressureHeaderRight);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 9, 6),
+                cmp.statisticsBaseline.stddev(), ODSStyles.totalP);
+            setCellValueAndStyle(totalSheet.getRange(calcSectionOffset + 10, 6),
+                cmp.statisticsDiff.stddev(), ODSStyles.totalP2);
 
             if (cmpIndex < cmpResults.length) {
                 j = 0;
-                while (j < sectionLength + 2) {
-                    if (j != 1) totalSheet.setColumnWidth(1 + j, ODF_TITLE_COLWIDTH);
-                    if(cmpIndex > 0) {
-                        nextCell = totalSheet.getRange(calcSectionOffset - 1, 1 + j);
-                        nextCell.setStyle(ODSStyles.resultSep);
-                    }
+                while (j < sectionLength) {
+                    totalSheet.setColumnWidth(1 + (1 + j) * 2, ODF_TITLE_COLWIDTH);
+                    totalSheet.setColumnWidth(1 + (1 + j) * 2 + 1, ODF_TITLE_COLWIDTH);
                     ++j;
                 }
+                if (cmpIndex > 0) {
+                    setCellValueAndStyle(
+                        totalSheet.getRange(calcSectionOffset - 1, 1, 1, 2 + prevSectionLength * 2),
+                        null, ODSStyles.resultSep);
+                }
+                prevSectionLength = sectionLength;
             }
 
             templateDocument.appendSheet(nextSheet);
@@ -759,5 +824,14 @@ public class ReportService {
         templateDocument.save(out);
 
         return out.toByteArray();
+    }
+
+    void setCellValueAndStyle(Range cell, Object value, Style style) {
+        cell.setStyle(style);
+        if (value != null) cell.setValue(value);
+    }
+
+    String sanitizeSheetName(String name) {
+        return name.replaceAll("[\\[\\]*/\\\\?:]", "_").trim();
     }
 }

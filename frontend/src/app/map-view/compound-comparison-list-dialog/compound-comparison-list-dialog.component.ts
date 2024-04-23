@@ -68,7 +68,7 @@ export class CompoundComparisonListDialogComponent extends Listable {
     if(ccDownloadOptions) {
       const params = new URLSearchParams({
         lang: this.translateService.currentLang,
-        nonzero: !ccDownloadOptions.allowZeroes + ''
+        nonzero: !ccDownloadOptions.includeUnchanged + ''
       });
 
       if (!ccDownloadOptions.asJson) {
@@ -90,7 +90,7 @@ export class CompoundComparisonListDialogComponent extends Listable {
       'report.cumulative-effect-etc.calculated-area',
       'report.cumulative-effect-etc.average','report.cumulative-effect-etc.std-dev',
       'report.cumulative-effect-etc.max',
-      'map.compound-data-list.terms.total', 'map.compound-data-list.terms.sum',
+      'map.compound-data-list.terms.total', 'map.compound-data-list.terms.sum', 'map.compound-data-list.terms.baseline',
       'map.compound-data-list.terms.difference', 'map.compound-data-list.compound-comparison-data',
       'map.compound-data-list.terms.pixels', 'map.compound-data-list.terms.non-planar',
       'map.metadata.ecosystem', 'map.metadata.pressure']
@@ -101,6 +101,7 @@ export class CompoundComparisonListDialogComponent extends Listable {
       area: titles['report.cumulative-effect-etc.calculated-area'],
       total: titles['map.compound-data-list.terms.total'],
       sum: titles['map.compound-data-list.terms.sum'],
+      baseline: titles['map.compound-data-list.terms.baseline'],
       difference: titles['map.compound-data-list.terms.difference'],
       average: titles['report.cumulative-effect-etc.average'],
       stddev: titles['report.cumulative-effect-etc.std-dev'],
