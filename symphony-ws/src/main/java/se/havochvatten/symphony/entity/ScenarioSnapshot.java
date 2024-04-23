@@ -252,7 +252,7 @@ public class ScenarioSnapshot implements BandChangeEntity {
     }
 
     public String[] getAlternativeBands() {
-        return alternativeBands;
+        return alternativeBands == null ? new String[0] : alternativeBands;
     }
 
     public void setAlternativeBands(String[] alternativeBands) {
