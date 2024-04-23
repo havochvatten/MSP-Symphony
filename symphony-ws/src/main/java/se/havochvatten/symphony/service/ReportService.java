@@ -3,6 +3,7 @@ package se.havochvatten.symphony.service;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.github.miachm.sods.*;
 import it.geosolutions.jaiext.stats.Statistics;
+import org.apache.commons.lang3.StringUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.geometry.jts.JTS;
@@ -832,6 +833,6 @@ public class ReportService {
     }
 
     String sanitizeSheetName(String name) {
-        return name.replaceAll("[\\[\\]*/\\\\?:]", "_").trim();
+        return StringUtils.stripAccents(name).replaceAll("[/\\\\?*:\\[\\]]", "_");
     }
 }
