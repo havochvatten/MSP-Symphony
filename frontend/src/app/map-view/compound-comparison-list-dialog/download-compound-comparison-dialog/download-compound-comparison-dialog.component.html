@@ -12,10 +12,10 @@
         'map.compound-data-list.download-format.ods' | translate
       }}</mat-radio-button>
   </mat-radio-group>
-  <div class="allow-zeroes">
+  <div class="include-unchanged">
     <label>
-      <mat-checkbox [(ngModel)]="downloadOptions.allowZeroes">{{
-          'map.compound-data-list.download-allow-zero' | translate
+      <mat-checkbox [(ngModel)]="downloadOptions.includeUnchanged">{{
+          'map.compound-data-list.download-include-unchanged' | translate
       }}</mat-checkbox>
     </label>
   </div>

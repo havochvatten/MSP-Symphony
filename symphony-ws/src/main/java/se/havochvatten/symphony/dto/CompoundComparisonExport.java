@@ -7,8 +7,10 @@ public class CompoundComparisonExport {
         public String calculationName;
         public String[] ecosystemTitles;
         public String[] pressureTitles;
+        public double[][] baselineMatrix;
         public double[][] comparisonMatrix;
-        public double cumulativeTotal;
+        public double cumulativeTotalBaseline;
+        public double cumulativeTotalDifference;
     }
 
     public int id;

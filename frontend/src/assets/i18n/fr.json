@@ -526,7 +526,7 @@
                 "json": "En tant que données (JSON)",
                 "ods": "En tant que feuille de calcul (ODS)"
             },
-            "download-allow-zero": "Inclure les valeurs nulles",
+            "download-include-unchanged": "Inclure les valeurs inchangées",
             "confirm-download": "Télécharger",
             "filter-hint": "Filtrer la liste par nom",
             "delete-modal": {
@@ -536,6 +536,7 @@
             "terms": {
                 "total": "Total",
                 "sum": "Somme",
+                "baseline": "Reférence",
                 "difference": "Différence",
                 "pixels": "Nombre de pixels",
                 "non-planar": "Projection non planaire"

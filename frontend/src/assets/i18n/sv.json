@@ -526,7 +526,7 @@
                 "json": "Som data (JSON)",
                 "ods": "Som kalkylblad (ODS)"
             },
-            "download-allow-zero": "Tillåt nollvärden",
+            "download-include-unchanged": "Inkludera oförändrade förekomster",
             "confirm-download": "Ladda ned",
             "filter-hint": "Filtrera listan per namn",
             "delete-modal": {
@@ -536,6 +536,7 @@
             "terms": {
                 "total": "Totalt",
                 "sum": "Summa",
+                "baseline": "Baseline",
                 "difference": "Differens",
                 "pixels": "Antal pixlar",
                 "non-planar": "Icke-plan projektion"

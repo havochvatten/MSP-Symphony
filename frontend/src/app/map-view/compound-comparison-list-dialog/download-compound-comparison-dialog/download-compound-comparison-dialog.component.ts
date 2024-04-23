@@ -14,7 +14,7 @@ export class DownloadCompoundComparisonDialogComponent {
   comparisonName = '';
   downloadOptions: DownloadCompoundComparisonOptions = {
     asJson: true,
-    allowZeroes: false
+    includeUnchanged: true
   };
 
   constructor(private dialog: DialogRef,
