@@ -86,14 +86,19 @@ public class ComparisonResult {
         cumulativeTotalDiff = getComponentTotals(result, pressureTotalDiff, ecosystemTotalDiff);
         cumulativeTotal = getComponentTotals(baseline, pressureTotals, ecosystemTotals);
 
-        for (Integer pressure : impactPerComponent(includedPressures, pressureTotalDiff).keySet()) {
+        Map<Integer, Double> totalDiffPerPressure       = impactPerComponent(includedPressures, pressureTotalDiff),
+                             totalBaselinePerPressure   = impactPerComponent(includedPressures, pressureTotals),
+                             totalDiffPerEcosystem      = impactPerComponent(includedEcosystems, ecosystemTotalDiff),
+                             totalBaselinePerEcosystem  = impactPerComponent(includedEcosystems, ecosystemTotals);
+
+        for (int pressure : includedPressures) {
             totalPerPressure.put(pressure,
-                new ComparisonTotal(pressureTotalDiff[pressure], pressureTotals[pressure]));
+                new ComparisonTotal(totalDiffPerPressure.get(pressure), totalBaselinePerPressure.get(pressure)));
         }
 
-        for (Integer ecosystem : impactPerComponent(includedEcosystems, ecosystemTotalDiff).keySet()) {
+        for (int ecosystem : includedEcosystems) {
             totalPerEcosystem.put(ecosystem,
-                new ComparisonTotal(ecosystemTotalDiff[ecosystem], ecosystemTotals[ecosystem]));
+                new ComparisonTotal(totalDiffPerEcosystem.get(ecosystem), totalBaselinePerEcosystem.get(ecosystem)));
         }
     }
 }
