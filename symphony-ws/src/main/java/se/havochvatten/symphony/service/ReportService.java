@@ -50,8 +50,8 @@ public class ReportService {
     private static final int ODF_COLUMN_HEADING_ROW = 7;
     private static final int ODF_COLUMN_SUBHEADING_ROW = ODF_COLUMN_HEADING_ROW + 1;
     private static final int ODF_TABLE_VERTICAL_OFFSET = ODF_COLUMN_HEADING_ROW + 2;
-    private static final int ODF_ROW_HEADING = 1;
-    private static final int ODF_TABLE_HORIZONTAL_OFFSET = ODF_ROW_HEADING + 1;
+    private static final int ODF_ROW_HEADING_COLUMN = 1;
+    private static final int ODF_TABLE_HORIZONTAL_OFFSET = ODF_ROW_HEADING_COLUMN + 1;
     private static final int ODF_TITLE_ROWS_TOTAL = 3;
     private static final int ODF_CALC_TOTALS_SECTION = 13;
     private static final double ODF_TITLE_COLWIDTH = 55.0;
@@ -612,11 +612,11 @@ public class ReportService {
 
             MultiComparisonAuxiliary layersToList = getLayerIndicesToListForResult(cmp, excludeZeroes);
 
-            setCellValueAndStyle(nextSheet.getRange(ODF_COLUMN_SUBHEADING_ROW, ODF_ROW_HEADING),
+            setCellValueAndStyle(nextSheet.getRange(ODF_COLUMN_SUBHEADING_ROW, ODF_ROW_HEADING_COLUMN),
                 null, ODSStyles.thickRightBorder);
 
             for (e = 0; e < layersToList.ecosystems.length; e++) {
-                setCellValueAndStyle(nextSheet.getRange(ODF_TABLE_VERTICAL_OFFSET + e, ODF_ROW_HEADING),
+                setCellValueAndStyle(nextSheet.getRange(ODF_TABLE_VERTICAL_OFFSET + e, ODF_ROW_HEADING_COLUMN),
                     ecoTitles.get(cmp.includedEcosystems[layersToList.ecosystems[e]]), ODSStyles.ecoHeader);
             }
 
@@ -677,7 +677,7 @@ public class ReportService {
             nextSheet.setColumnWidth(ODF_TABLE_HORIZONTAL_OFFSET + layersToList.pressures.length * 2 + 1, ODF_TITLE_COLWIDTH);
 
             setCellValueAndStyle(
-                nextSheet.getRange(ODF_TABLE_VERTICAL_OFFSET + layersToList.ecosystems.length, ODF_ROW_HEADING),
+                nextSheet.getRange(ODF_TABLE_VERTICAL_OFFSET + layersToList.ecosystems.length, ODF_ROW_HEADING_COLUMN),
                 metaDict.get("total").toUpperCase(), ODSStyles.totalHP);
 
             for (e = 0; e < layersToList.ecosystems.length; e++) {
