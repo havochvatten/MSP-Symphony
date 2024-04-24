@@ -526,7 +526,7 @@
                 "json": "As data (JSON)",
                 "ods": "As spreadsheet (ODS)"
             },
-            "download-allow-zero": "Allow zero values",
+            "download-include-unchanged": "Include unchanged results",
             "confirm-download": "Download",
             "filter-hint": "Filter list item by name",
             "delete-modal": {
@@ -536,6 +536,7 @@
             "terms": {
                 "total": "Total",
                 "sum": "Sum",
+                "baseline": "Baseline",
                 "difference": "Difference",
                 "pixels": "Number of pixels",
                 "non-planar": "Non-planar projection"

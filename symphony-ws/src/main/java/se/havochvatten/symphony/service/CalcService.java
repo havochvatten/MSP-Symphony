@@ -481,9 +481,8 @@ public class CalcService {
                 GridCoverage2D implicitBaseline = getImplicitBaselineCoverage(calc);
                 tmp = ((PlanarImage) implicitBaseline.getRenderedImage()).getTiles(); // trigger calculation
 
-                double[][] differentiaImpact = reportService.calculateDifferentialImpactMatrix(
-                    (double[][]) implicitBaseline.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME),
-                    calc.getImpactMatrix());
+                double[][] baselineImpact = (double[][]) implicitBaseline.getProperty(CumulativeImpactOp.IMPACT_MATRIX_PROPERTY_NAME),
+                    differentiaImpact = reportService.calculateDifferentialImpactMatrix(baselineImpact, calc.getImpactMatrix());
 
                 StatisticsResult statsA = reportService.getStatistics(implicitBaseline, false),
                                  statsB = reportService.getStatistics(calc.getCoverage(), false),
@@ -494,20 +493,24 @@ public class CalcService {
                                         statsB.stddev() - statsA.stddev(), new double[0],
                                         statsA.pixels());
 
+                ScenarioSnapshot scenario = calc.getScenarioSnapshot();
+
                 double resolution = ReportService.getResolutionInMetres(implicitBaseline);
                 double area = Double.isNaN(resolution) ?
-                    calc.getScenarioSnapshot().getGeometry().getArea() :
+                    scenario.getGeometry().getArea() :
                     resolution * resolution * stats.pixels();
 
                 cmp.setCmpResultForCalculation(
                     calc.getId(),
-                    calc.getScenarioSnapshot().getEcosystemsToInclude(),
-                    calc.getScenarioSnapshot().getPressuresToInclude(),
-                    differentiaImpact,
-                    calc.getCalculationName(),
-                    area,
-                    !Double.isNaN(resolution),
-                    stats);
+                    new ComparisonResult(
+                        scenario.getEcosystemsToInclude(),
+                        scenario.getPressuresToInclude(),
+                        baselineImpact,
+                        differentiaImpact,
+                        calc.getCalculationName(),
+                        area,
+                        !Double.isNaN(resolution),
+                        stats, statsA));
             }
 
             transaction.begin();

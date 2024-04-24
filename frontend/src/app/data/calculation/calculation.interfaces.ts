@@ -144,7 +144,7 @@ export interface CompoundComparison extends CompoundComparisonSlice {
 
 export interface DownloadCompoundComparisonOptions {
   asJson: boolean;
-  allowZeroes: boolean;
+  includeUnchanged: boolean;
 }
 
 export interface OperationParams {
