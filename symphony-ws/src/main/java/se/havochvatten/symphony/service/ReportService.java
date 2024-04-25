@@ -47,7 +47,11 @@ public class ReportService {
     // The CSV standard (RFC 4180) actually says to use comma, but tab is MS Excel default. Or use TSV?
     private static final char CSV_FIELD_SEPARATOR = '\t';
 
-    private static final int ODF_TITLE_ROWS = 8;
+    private static final int ODF_COLUMN_HEADING_ROW = 7;
+    private static final int ODF_COLUMN_SUBHEADING_ROW = ODF_COLUMN_HEADING_ROW + 1;
+    private static final int ODF_TABLE_VERTICAL_OFFSET = ODF_COLUMN_HEADING_ROW + 2;
+    private static final int ODF_ROW_HEADING_COLUMN = 1;
+    private static final int ODF_TABLE_HORIZONTAL_OFFSET = ODF_ROW_HEADING_COLUMN + 1;
     private static final int ODF_TITLE_ROWS_TOTAL = 3;
     private static final int ODF_CALC_TOTALS_SECTION = 13;
     private static final double ODF_TITLE_COLWIDTH = 55.0;
@@ -588,7 +592,7 @@ public class ReportService {
                    pixelsText = String.format("%s: %d", metaDict.get("pixels"), cmp.statisticsBaseline.pixels());
 
             Sheet nextSheet = createSheet(
-                cmp.includedEcosystems.length + ODF_TITLE_ROWS + 2, // + totals row & baseline/diff subheader
+                ODF_TABLE_VERTICAL_OFFSET + cmp.includedEcosystems.length + 1, // +1 : including totals row
                 cmp.includedPressures.length,
                 title);
 
@@ -604,15 +608,15 @@ public class ReportService {
             nextSheet.getRange(4, 1).setValue(areaText);
             nextSheet.getRange(5, 1).setValue(pixelsText);
 
-            nextSheet.setRowHeight(ODF_TITLE_ROWS - 2, 2.0);
+            nextSheet.setRowHeight(ODF_COLUMN_HEADING_ROW - 1, 2.0); // single contracted row above table
 
             MultiComparisonAuxiliary layersToList = getLayerIndicesToListForResult(cmp, excludeZeroes);
 
-            setCellValueAndStyle(nextSheet.getRange(ODF_TITLE_ROWS, 1),
+            setCellValueAndStyle(nextSheet.getRange(ODF_COLUMN_SUBHEADING_ROW, ODF_ROW_HEADING_COLUMN),
                 null, ODSStyles.thickRightBorder);
 
             for (e = 0; e < layersToList.ecosystems.length; e++) {
-                setCellValueAndStyle(nextSheet.getRange(ODF_TITLE_ROWS + e + 1, 1),
+                setCellValueAndStyle(nextSheet.getRange(ODF_TABLE_VERTICAL_OFFSET + e, ODF_ROW_HEADING_COLUMN),
                     ecoTitles.get(cmp.includedEcosystems[layersToList.ecosystems[e]]), ODSStyles.ecoHeader);
             }
 
@@ -624,80 +628,90 @@ public class ReportService {
 
             for (p = 0; p < layersToList.pressures.length; p++) {
                 setCellValueAndStyle(
-                    nextSheet.getRange(ODF_TITLE_ROWS - 1, 2 + p * 2),
+                    nextSheet.getRange(ODF_COLUMN_HEADING_ROW, ODF_TABLE_HORIZONTAL_OFFSET + p * 2),
                     pressureTitles.get(cmp.includedPressures[layersToList.pressures[p]]), ODSStyles.pressureHeaderLeft);
                 setCellValueAndStyle(
-                    nextSheet.getRange(ODF_TITLE_ROWS - 1, 2 + p * 2 + 1),
+                    nextSheet.getRange(ODF_COLUMN_HEADING_ROW, ODF_TABLE_HORIZONTAL_OFFSET + p * 2 + 1),
                     null, ODSStyles.pressureHeaderRight);
                 setCellValueAndStyle(
-                    nextSheet.getRange(ODF_TITLE_ROWS, 2 + p * 2),
+                    nextSheet.getRange(ODF_COLUMN_SUBHEADING_ROW, ODF_TABLE_HORIZONTAL_OFFSET + p * 2),
                     baseline_s, ODSStyles.singleSubHeader);
                 setCellValueAndStyle(
-                    nextSheet.getRange(ODF_TITLE_ROWS, 2 + p * 2 + 1),
+                    nextSheet.getRange(ODF_COLUMN_SUBHEADING_ROW, ODF_TABLE_HORIZONTAL_OFFSET + p * 2 + 1),
                     diff_s, ODSStyles.singleSubHeader);
-                nextSheet.setColumnWidth(2 + p * 2, ODF_TITLE_COLWIDTH);
-                nextSheet.setColumnWidth(2 + p * 2 + 1, ODF_TITLE_COLWIDTH);
+                nextSheet.setColumnWidth(ODF_TABLE_HORIZONTAL_OFFSET + p * 2, ODF_TITLE_COLWIDTH);
+                nextSheet.setColumnWidth(ODF_TABLE_HORIZONTAL_OFFSET + p * 2 + 1, ODF_TITLE_COLWIDTH);
             }
 
             for (e = 0; e < layersToList.result[0].length; e++) {
                 for (p = 0; p < layersToList.result.length; p++) {
                     setCellValueAndStyle(
-                        nextSheet.getRange(ODF_TITLE_ROWS + e + 1, 2 + p * 2),
+                        nextSheet.getRange(ODF_TABLE_VERTICAL_OFFSET + e,
+                            ODF_TABLE_HORIZONTAL_OFFSET + p * 2),
                         layersToList.baseline[p][e], ODSStyles.valueStyle);
                     setCellValueAndStyle(
-                        nextSheet.getRange(ODF_TITLE_ROWS + e + 1, 2 + p * 2 + 1),
+                        nextSheet.getRange(ODF_TABLE_VERTICAL_OFFSET + e,
+                            ODF_TABLE_HORIZONTAL_OFFSET + p * 2 + 1),
                         layersToList.result[p][e], ODSStyles.valueStyle);
                 }
             }
 
             setCellValueAndStyle(
-                nextSheet.getRange(ODF_TITLE_ROWS - 1, 2 + layersToList.pressures.length * 2),
+                nextSheet.getRange(ODF_COLUMN_HEADING_ROW,
+                    ODF_TABLE_HORIZONTAL_OFFSET + layersToList.pressures.length * 2),
                 metaDict.get("total").toUpperCase(), ODSStyles.totalHE);
             setCellValueAndStyle(
-                nextSheet.getRange(ODF_TITLE_ROWS - 1, 2 + layersToList.pressures.length * 2 + 1),
+                nextSheet.getRange(ODF_COLUMN_HEADING_ROW,
+                    ODF_TABLE_HORIZONTAL_OFFSET+ layersToList.pressures.length * 2 + 1),
                 null, ODSStyles.pressureHeaderRight);
             setCellValueAndStyle(
-                nextSheet.getRange(ODF_TITLE_ROWS, 2 + layersToList.pressures.length * 2),
+                nextSheet.getRange(ODF_COLUMN_SUBHEADING_ROW,
+                    ODF_TABLE_HORIZONTAL_OFFSET + layersToList.pressures.length * 2),
                 baseline_s, ODSStyles.singleSumSubHeader);
             setCellValueAndStyle(
-                nextSheet.getRange(ODF_TITLE_ROWS, 2 + layersToList.pressures.length * 2 + 1),
+                nextSheet.getRange(ODF_COLUMN_SUBHEADING_ROW,
+                    ODF_TABLE_HORIZONTAL_OFFSET + layersToList.pressures.length * 2 + 1),
                 diff_s, ODSStyles.singleSubHeader);
 
-            nextSheet.setColumnWidth(2 + layersToList.pressures.length * 2, ODF_TITLE_COLWIDTH);
-            nextSheet.setColumnWidth(2 + layersToList.pressures.length * 2 + 1, ODF_TITLE_COLWIDTH);
+            nextSheet.setColumnWidth(ODF_TABLE_HORIZONTAL_OFFSET + layersToList.pressures.length * 2, ODF_TITLE_COLWIDTH);
+            nextSheet.setColumnWidth(ODF_TABLE_HORIZONTAL_OFFSET + layersToList.pressures.length * 2 + 1, ODF_TITLE_COLWIDTH);
 
             setCellValueAndStyle(
-                nextSheet.getRange(ODF_TITLE_ROWS + 1 + layersToList.ecosystems.length, 1),
+                nextSheet.getRange(ODF_TABLE_VERTICAL_OFFSET + layersToList.ecosystems.length, ODF_ROW_HEADING_COLUMN),
                 metaDict.get("total").toUpperCase(), ODSStyles.totalHP);
 
             for (e = 0; e < layersToList.ecosystems.length; e++) {
                 setCellValueAndStyle(
-                    nextSheet.getRange(ODF_TITLE_ROWS + e + 1, 2 + layersToList.pressures.length * 2),
+                    nextSheet.getRange(ODF_TABLE_VERTICAL_OFFSET + e,
+                        ODF_TABLE_HORIZONTAL_OFFSET + layersToList.pressures.length * 2),
                     cmp.totalPerEcosystem.get(cmp.includedEcosystems[layersToList.ecosystems[e]]).totalBaseline(), ODSStyles.totalE);
                 setCellValueAndStyle(
-                    nextSheet.getRange(ODF_TITLE_ROWS + e + 1, 2 + layersToList.pressures.length * 2 + 1),
+                    nextSheet.getRange(ODF_TABLE_VERTICAL_OFFSET + e,
+                        ODF_TABLE_HORIZONTAL_OFFSET + layersToList.pressures.length * 2 + 1),
                     cmp.totalPerEcosystem.get(cmp.includedEcosystems[layersToList.ecosystems[e]]).totalDifference(), ODSStyles.totalE2);
             }
 
             for (p = 0; p < layersToList.pressures.length; p++) {
                 setCellValueAndStyle(
-                    nextSheet.getRange(ODF_TITLE_ROWS + layersToList.ecosystems.length + 1, 2 + p * 2),
+                    nextSheet.getRange(ODF_TABLE_VERTICAL_OFFSET + layersToList.ecosystems.length,
+                        ODF_TABLE_HORIZONTAL_OFFSET + p * 2),
                     cmp.totalPerPressure.get(cmp.includedPressures[layersToList.pressures[p]]).totalBaseline(), ODSStyles.totalP);
                 setCellValueAndStyle(
-                    nextSheet.getRange(ODF_TITLE_ROWS + layersToList.ecosystems.length + 1, 2 + p * 2 + 1),
+                    nextSheet.getRange(ODF_TABLE_VERTICAL_OFFSET + layersToList.ecosystems.length,
+                        ODF_TABLE_HORIZONTAL_OFFSET + p * 2 + 1),
                     cmp.totalPerPressure.get(cmp.includedPressures[layersToList.pressures[p]]).totalDifference(), ODSStyles.totalP);
             }
 
             setCellValueAndStyle(
                 nextSheet.getRange(
-                    ODF_TITLE_ROWS + layersToList.ecosystems.length + 1,
-                    2 + layersToList.pressures.length * 2),
+                    ODF_TABLE_VERTICAL_OFFSET + layersToList.ecosystems.length,
+                    ODF_TABLE_HORIZONTAL_OFFSET + layersToList.pressures.length * 2),
                 cmp.cumulativeTotal, ODSStyles.totalC);
 
             setCellValueAndStyle(
                 nextSheet.getRange(
-                    ODF_TITLE_ROWS + layersToList.ecosystems.length + 1,
-                    2 + layersToList.pressures.length * 2 + 1),
+                    ODF_TABLE_VERTICAL_OFFSET + layersToList.ecosystems.length,
+                    ODF_TABLE_HORIZONTAL_OFFSET + layersToList.pressures.length * 2 + 1),
                 cmp.cumulativeTotalDiff, ODSStyles.totalC2);
 
             // ----- Totals sheet -----
