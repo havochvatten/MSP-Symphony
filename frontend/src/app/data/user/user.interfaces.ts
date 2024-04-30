@@ -1,7 +1,13 @@
 import { ErrorMessage } from "@data/message/message.interfaces";
 
+export interface UserSettings {
+  locale?: string | undefined;
+  aliasing?: boolean | undefined;
+}
+
 export interface User {
   username: string;
+  settings?: UserSettings | undefined | never;
 }
 
 export interface State {

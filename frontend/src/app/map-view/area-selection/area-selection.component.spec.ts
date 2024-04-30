@@ -21,7 +21,8 @@ describe('AreaSelectionComponent', () => {
       imports: [SharedModule, TranslationSetupModule],
       providers: [provideMockStore({
         initialState: {
-          area : area
+          area : area,
+          user : {}
         }
       })]
     }).compileComponents();

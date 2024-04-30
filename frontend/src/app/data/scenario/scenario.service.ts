@@ -63,12 +63,16 @@ export class ScenarioService {
     return this.http.put<Scenario>(this.scenarioApiBaseUrl, scenarioToBeSaved);
   }
 
-  delete(id: number) {
-    return this.http.delete(this.scenarioApiBaseUrl+'/'+id);
+  delete(ids: number[]) {
+    return this.http.delete(`${this.scenarioApiBaseUrl}?ids=${ids.join()}`);
   }
 
   copy(scenarioId: number, options: ScenarioCopyOptions) {
     return this.http.post<Scenario>(this.scenarioApiBaseUrl+'/'+scenarioId+'/copy', options);
+  }
+
+  getSingle(scenarioId: number) {
+    return this.http.get<Scenario>(this.scenarioApiBaseUrl+'/'+scenarioId);
   }
 
   setScenarioChangeVisibility(feature: GeoJSONFeature) {

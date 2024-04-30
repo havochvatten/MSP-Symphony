@@ -30,7 +30,8 @@ describe('CalculationReportComponent', () => {
       providers: [
         provideMockStore({
           initialState: {
-            metadata
+            metadata,
+            user: {}
           }
         })
       ]

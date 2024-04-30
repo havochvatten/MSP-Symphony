@@ -9,6 +9,7 @@ import se.havochvatten.symphony.entity.SymphonyBand;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,27 +31,20 @@ public class MetaDataServiceTest {
         List<Metadata> metadataENList = new ArrayList<>();
         List<Metadata> metadataSVList = new ArrayList<>();
 
-        Query mockedBandQuery = mock(Query.class),
-                mockedMetadataQuery = mock(Query.class);
+        TypedQuery<SymphonyBand> mockedBandQuery = mock(TypedQuery.class);
+        TypedQuery<Metadata> mockedMetadataQuery = mock(TypedQuery.class);
         when(metaDataService.em.createQuery(
             "SELECT b FROM SymphonyBand b " +
             "WHERE b.baseline.id = :baselineVersionId " +
-            "AND b.category = :category")).thenReturn(mockedBandQuery);
+            "AND b.category = :category", SymphonyBand.class))
+            .thenReturn(mockedBandQuery);
 
         when(mockedBandQuery.setParameter(anyString(), anyObject())).thenReturn(mockedBandQuery);
         when(mockedBandQuery.setParameter("baselineVersionId", 1)).thenReturn(mockedBandQuery);
         when(mockedBandQuery.setParameter("category", "Ecosystem")).thenReturn(mockedBandQuery);
         when(mockedBandQuery.getResultList()).thenReturn(symphonyThemes);
 
-        when(metaDataService.em.createQuery(
-            "SELECT m FROM Metadata m " +
-            "WHERE m.band IN :bandsList " +
-            "AND (m.language = :language " +
-            "OR (m.language = m.band.baseline.locale " +
-            "AND m.metaField NOT IN " +
-            "(SELECT m2.metaField FROM Metadata m2 " +
-            "WHERE m2.band IN :bandsList " +
-            "AND m2.language = :language)))")).thenReturn(mockedMetadataQuery);
+        when(metaDataService.em.createQuery(MetaDataService.sparseMetaQuery, Metadata.class)).thenReturn(mockedMetadataQuery);
         when(mockedMetadataQuery.setParameter(anyString(), anyObject())).thenReturn(mockedMetadataQuery);
         when(mockedMetadataQuery.setParameter("bandsList", symphonyThemes)).thenReturn(mockedMetadataQuery);
         when(mockedMetadataQuery.setParameter("language", "en")).thenReturn(mockedMetadataQuery);
@@ -186,10 +180,10 @@ public class MetaDataServiceTest {
 
         MetaDataService metaDataServiceSpy = Mockito.spy(metaDataService);
         MetadataComponentDto metadataComponentDtoEN = metaDataServiceSpy.getComponentDto("Ecosystem",
-            baselineVersionId, "en");
+            baselineVersionId, "en", true);
 
         MetadataComponentDto metadataComponentDtoSV = metaDataServiceSpy.getComponentDto("Ecosystem",
-            baselineVersionId, "sv");
+            baselineVersionId, "sv", true);
 
         assertThat(metadataComponentDtoEN.getSymphonyThemes().size(), is(2));
         assertThat(metadataComponentDtoEN.getSymphonyThemes().get(0).getSymphonyThemeName(), is("Bird"));

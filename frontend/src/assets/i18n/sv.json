@@ -7,6 +7,8 @@
         "request-password": "Begär nytt",
         "no-account": "Är du en extern användare och saknar loginuppgifter?",
         "request-account": "Ansök om konto",
+        "peek-password": "Visa lösenordet",
+        "hide-password": "Dölj lösenordet",
         "error": {
             "invalid-credentials": "Fel användarnamn eller lösenord.",
             "system-unavailable": "Systemet ligger nere för stunden. Försök igen senare."
@@ -24,6 +26,7 @@
         "reset-preselected": "Återställ",
         "reset-preselected-description": "Återställ valda naturvärden och belastningar till standardurvalet och nollställ ändringar",
         "selection-overlap": "Kan inte välja överlappande områden",
+        "open-compound-data-list": "Sammanslagen jämförelse ({{ count }})",
         "intensity": {
             "ecosystems": "Naturvärden",
             "pressures": "Belastningar",
@@ -185,7 +188,7 @@
                 "description": "Sätt maximalt värde baserat på",
                 "area": "Maximalt värde i valt område",
                 "domain": "{{ ordinalPercentileValue }} percentil i havsplaneområde",
-                "mean-plus-stddev": "Medelvärde +/- multipel av \nstandardavvikelsen:",
+                "mean-plus-stddev": "Medelvärde + multipel av \nstandardavvikelsen:",
                 "custom": "Egendefinierat värde",
                 "custom-value": "Värde"
             },
@@ -196,7 +199,12 @@
                 "clear-change": "Rensa ändring",
                 "units": "enheter",
                 "collapse": "Dölj ändringar",
-                "collapsed-count": "Visa {{ count }} ändringar"
+                "collapsed-count": "Visa {{ count }} ändringar",
+                "clear-change-modal": {
+                    "header": "Rensa ändring",
+                    "message": "Bekräfta borttagning av ändring: <em>{{ changeDescription }}</em>",
+                    "confirm": "Rensa"
+                }
             },
             "changes-overview" : {
                 "title": "Översikt förekomständringar",
@@ -254,6 +262,8 @@
                 "select-all-for-batch": "Markera samtliga",
                 "select-all-for-batch-filtered": "Markera synliga",
                 "deselect-all-for-batch": "Avmarkera samtliga",
+                "none-selected": "Inga scenarion har markerats",
+                "delete-selected": "Radera markerade scenarion",
                 "batch-tools": {
                     "enter-batch-mode": "Gå till \"batch\"-läge",
                     "exit-batch-mode": "Gå ur \"batch\"-läge",
@@ -267,7 +277,10 @@
                 "label": "Radera",
                 "tooltip": "Radera scenario",
                 "modal": {
-                    "title": "Är du säker på att du vill radera &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
+                    "title": "Radera scenario",
+                    "message": "Är du säker på att du vill radera &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
+                    "title-many": "Radera markerade scenarion",
+                    "message-many": "Bekräfta borttagning av <strong>{{ count }}</strong> markerade scenarion?",
                     "delete": "Radera",
                     "cancel": "Avbryt"
                 }
@@ -386,6 +399,10 @@
             "hide-result" :  "Tag bort detta resultat från kartbilden",
             "visible-result" : "Resultatet är synligt i kartbilden",
             "purged-result": "Data för detta resultat har rensats bort.\nDå resultatet måste beräknas om tar det lite längre tid att ladda.",
+            "edit-name": {
+                "label": "Ändra namn",
+                "header": "Ange ett nytt namn för beräkningen"
+            },
             "delete-modal" : {
                 "header": "Radera sparad beräkning",
                 "message": "Bekräfta borttagning av tidigare sparad beräkning: <em>“{{ calculationName }}”</em>",
@@ -395,20 +412,32 @@
                 "cancel": "Avbryt",
                 "confirm": "Radera"
             },
+            "generate-comparison-modal": {
+                "header": "Generera sammanslagen jämförelseberäkning",
+                "message": "Ange en titel för den sammanslagna jämförelseberäkningen.",
+                "placeholder": "Ange titel",
+                "calculate": "Beräkna"
+            },
             "multi-mode": {
-                "enter": "Markera flera beräkningar att radera samtidigt",
+                "enter": "Markera flera beräkningar",
                 "exit": "Avsluta markering av flera beräkningar",
                 "delete-selected": "Radera markerade beräkningar",
+                "generate-comparison": "Generera jämförelsedata",
                 "none-selected": "Inga beräkningar har markerats"
             }
         },
         "compare": {
             "title": "Jämför scenario",
             "compare": "Jämför beräkningar",
-            "base-scenario": "Grundscenario",
+            "base-scenario": "Grundberäkning",
+            "implicit-baseline": "Implicit basvärde",
+            "explicit-baseline": "Välj beräkning",
+            "include-unchanged": "Inkludera oförändrade scenarion",
+            "reverse-projected": "Omvänd jämförelseordning",
             "what-if-scenario": "What-if scenario",
-            "choose-scenario": "Välj scenario",
-            "choose-base-scenario-first": "Välj grundscenario först",
+            "select-calculation": "Välj en beräkning",
+            "select-base-calculation-first": "Välj grundberäkning först",
+            "no-matching-calculations": "Överensstämmande beräkning saknas",
             "base-scenario-suggestion": "(vanligtvis basvärdeanalysen)",
             "what-if-scenario-suggestion": "(vanligtvis den prognostiserade analysen)",
             "select-scale": "Anpassa färgskala",
@@ -449,12 +478,7 @@
             },
             "rename": {
                 "label": "Ändra namn",
-                "modal": {
-                    "title": "Ändra namn på ditt område",
-                    "placeholder": "Mitt område 1",
-                    "save": "Spara",
-                    "close": "Avbryt"
-                }
+                "header": "Ändra namn på ditt område"
             },
             "edit": {
                 "label": "Redigera område"
@@ -489,16 +513,50 @@
         "merge-areas-hint" : {
             "emphasis": "Sammanfoga områden",
             "detail": "{{ altButton }} + Shift + klick på 'sista' området för att sammanfoga."
+        },
+        "compound-data-list": {
+            "title": "Sammanslagen jämförelsedata",
+            "compound-comparison-data": "Sammanslagen jämförelsedata",
+            "calculation-basis-info": "Jämförelsevärdena baserar sig på följande beräkningar",
+            "more": "till",
+            "delete": "Radera sammanslagen jämförelse",
+            "download": "Spara ned sammanslagen jämförelse",
+            "download-select-format": "Välj format att ladda ned",
+            "download-format": {
+                "json": "Som data (JSON)",
+                "ods": "Som kalkylblad (ODS)"
+            },
+            "download-allow-zero": "Tillåt nollvärden",
+            "confirm-download": "Ladda ned",
+            "filter-hint": "Filtrera listan per namn",
+            "delete-modal": {
+                "header": "Radera sammanslagen jämförelse",
+                "message": "Bekräfta borttagning av sammanslagen jämförelse: <em>“{{ comparisonName }}”</em>"
+            },
+            "terms": {
+                "total": "Totalt",
+                "sum": "Summa",
+                "difference": "Differens",
+                "pixels": "Antal pixlar",
+                "non-planar": "Icke-plan projektion"
+            }
+        },
+        "area-options": {
+            "get-shapefile": "Ladda ned shapefile-paket (.zip)"
         }
     },
     "controls": {
         "open": "Öppna",
         "close": "Stäng",
+        "save": "Spara",
         "delete": "Radera",
         "accordion": {
             "expand": "Fäll ut",
             "contract": "Fäll ihop"
         }
+    },
+    "rename": {
+        "placeholder": "Ange ett nytt namn"
     },
     "main-menu": {
         "projects": "Projekt",
@@ -510,6 +568,7 @@
         "about": "Om",
         "support": "Support",
         "profile": "Min profil",
+        "change-language": "Ändra språk",
         "logout": "Logga ut"
     },
     "about-dialog": {
@@ -527,6 +586,15 @@
     "confirmation-modal": {
         "cancel": "Avbryt",
         "confirm": "OK"
+    },
+    "change-language-modal": {
+        "header": "Välj språk",
+        "apply": "Tillämpa",
+        "languages": {
+            "en": "Engelska",
+            "sv": "Svenska",
+            "fr": "Franska"
+        }
     },
     "report": {
         "calculation": {

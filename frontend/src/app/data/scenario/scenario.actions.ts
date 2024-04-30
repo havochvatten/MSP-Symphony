@@ -36,6 +36,16 @@ export const openScenario = createAction(
   props<{ index: number }>()
 );
 
+export const fetchSingleScenario = createAction(
+    '[Scenario] Fetch single scenario',
+    props<{ scenarioId: number }>()
+  );
+
+export const fetchSingleScenarioSuccess = createAction(
+    '[Scenario] Fetch single scenario success',
+    props<{ scenario: Scenario }>()
+  );
+
 export const openScenarioArea = createAction(
   '[Scenario] Open scenario area',
   props<{ index: number, scenarioIndex: number | null }>()
@@ -63,9 +73,13 @@ export const deleteScenarioFailure = createAction(
   props<{ error: ErrorMessage }>()
 );
 
+export const deleteMultipleScenarios = createAction(
+  '[Scenario] Delete multiple scenarios by id',
+  props<{ scenarioIds: number[] }>()
+)
+
 export const saveActiveScenario = createAction(
-  '[Scenario] Save active scenario',
-  props<{ scenarioToBeSaved: Scenario }>()
+  '[Scenario] Save active scenario'
 );
 
 export const saveScenarioSuccess = createAction(
@@ -76,6 +90,10 @@ export const saveScenarioSuccess = createAction(
 export const saveScenarioFailure = createAction(
   '[Scenario] Save scenario failure',
   props<{ error: ErrorMessage }>()
+);
+
+export const saveAndCalculateActiveScenario = createAction(
+  '[Scenario] Save and calculate active scenario',
 );
 
 export const deleteScenarioArea = createAction(
@@ -165,8 +183,8 @@ export const excludeActiveAreaCoastal = createAction(
 
 export const updateBandAttributeForAreaIndex = createAction(
   '[Scenario] Update general intensity attribute or a specific area contained in the active scenario',
-  props<{ areaIndex: number|undefined, componentType: BandType,
-          band: number, attribute: string, value: number }>()
+  props<{ areaIndex: number|undefined; componentType: BandType;
+          band: number; attribute: string; value: number; }>()
 );
 
 export const deleteBandChangeForAreaIndex = createAction(

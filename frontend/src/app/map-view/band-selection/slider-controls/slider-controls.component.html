@@ -16,6 +16,8 @@
       >
         <app-icon iconType="info-circle"></app-icon>
       </button>
+      <mat-spinner *ngIf="band.visible && !band.loaded" [diameter]="18" [strokeWidth]="2">
+      </mat-spinner>
       <button
         (click)="toggleOpen()"
         [disabled]="disabled || !scenario"
@@ -27,7 +29,8 @@
       </button>
       <app-icon
         class="toggle-visibility-icon"
-        [attr.data-visible]="band.visible"
+        [ngClass]="{'disabled-while-loading' : band.visible && !band.loaded }"
+        [attr.data-visible]="band.visible && band.loaded"
         [iconType]="band.visible ? 'eye' : 'eye-slash'"
         (click)="onChangeVisible(!band.visible, band)"
       ></app-icon>

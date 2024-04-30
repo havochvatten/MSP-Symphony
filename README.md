@@ -48,8 +48,9 @@ has been used and is thus the recommended choice. At SwAM the frontend is served
 although any web server capable of serving static content should do (see [Frontend](#frontend-1) below). The backend 
 has been tested using Wildfly 26.1, PostgreSQL 10 and PostGIS v2.4, but more recent versions should be fine.
 
-The frontend has been built with NodeJS v.16.14.2. More recent versions may cause problems with the specific version of 
-Angular currently employed. The frontend has only been tested on Google Chrome during development, and is thus the recommended choice of user browser client.
+The frontend is realized as an Angular application (v 17), built with Node 20.11.1.
+Since we routinely test the UI only on Google Chrome under development, it is recommended specifically as the preferred 
+browser client.
 
 ## Getting the source
 
@@ -154,14 +155,10 @@ the default native platform encoding. Notably, on Windows that is not UTF and so
 
 ### Frontend
 
-In the interest of efficiency the frontend is can be served by a separate frontend server. In the case of Apache 
+In the interest of efficiency the frontend may be served by a separate frontend server. In the case of Apache 
 an example virtual host file is included [here](example-config/apache/vhosts.d/example-vhost.conf). To maintain the 
 same-origin policy and avoid CORS issues the frontend server needs to proxy REST API calls. The above sample Apache 
-configuration file illustrates how to accommodate this. 
-
-Another option is to have the application server itself serve the frontend, eliminating the need for a 
-separate frontend server. In the case of Wildfly, see
-[this guide](http://www.mastertheboss.com/web/jboss-web-server/how-to-serve-static-content-in-wildfly-applications/). 
+configuration file illustrates how to accommodate this.
 
 
 ## Testing

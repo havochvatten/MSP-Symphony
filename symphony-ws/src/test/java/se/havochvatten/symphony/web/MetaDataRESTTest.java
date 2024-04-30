@@ -38,7 +38,7 @@ public class MetaDataRESTTest extends RESTTest {
     @Test
     public void metadata_GET() throws IOException {
         String endpoint = endpoint("/metadata/{baselineName}");
-        String baselineName = "BASELINE2019";
+        String baselineName = "BASELINE2019_CM";
 
         JsonNode res = given().
             auth().

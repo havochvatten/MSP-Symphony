@@ -12,19 +12,19 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.14.2]
+        node-version: [20.11.1]
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
 
     - name: Build
       run: |
         cd frontend
-        npm install
+        npm install --include=optional
         npm run build
         npm run test-headless

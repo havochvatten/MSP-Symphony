@@ -15,10 +15,15 @@ export interface State {
   legends: LegendState;
   percentileValue: number;
   sortCalculations: ListItemsSort;
-  batchProcesses: { [key: number]: BatchCalculationProcessEntry },
+  batchProcesses: { [key: number]: BatchCalculationProcessEntry };
   visibleResults: number[];
   loadingResults: number[];
   loadingReports: number[];
+  generatingComparisonsFor: number[];
+  loadingCompoundComparisons: boolean;
+  compoundComparisons: CompoundComparisonSlice[];
+  compoundComparisonSuccessCount: number;
+  sortCompoundComparisons: ListItemsSort;
 }
 
 export interface Report {
@@ -39,7 +44,7 @@ export interface Report {
   normalization: NormalizationOptions;
   impactPerPressure: Record<string, number>;
   impactPerEcoComponent: Record<string, number>;
-  scenarioChanges: ReportChanges;
+  scenarioChanges: ReportChanges | null;
   chartData: ChartData;
   chartWeightThreshold: number;
   timestamp: number;
@@ -48,18 +53,18 @@ export interface Report {
 
 export interface ReportChanges {
   baseChanges: {
-    [key: string] : ChangesProperty
-  },
+    [key: string] : ChangesProperty;
+  };
   areaChanges: {
     [key: number]: {
-      [key: string] : ChangesProperty
-    }
+      [key: string] : ChangesProperty;
+    };
   };
 }
 
 export interface ComparisonReport {
-  a: Report,
-  b: Report
+  a: Report;
+  b: Report;
   chartDataPositive: ChartData;
   chartDataNegative: ChartData;
 }
@@ -75,6 +80,7 @@ export interface StaticImageOptions {
 export interface CalculationSlice extends SortableListItem {
   id: number;
   isPurged: boolean;
+  hasChanges: boolean;
 }
 
 export type LegendType = 'result' | 'comparison' | 'ecosystem' | 'pressure';
@@ -107,15 +113,38 @@ export interface BatchCalculationProcessEntry {
 }
 
 export interface ComparisonLegendState {
-  title: string[]
-  legend: Legend,
+  title: string[];
+  legend: Legend;
 }
 
 export interface LegendState {
-  result: Legend | undefined,
-  ecosystem: Legend | undefined,
-  pressure: Legend | undefined,
-  comparison: { [value: string] : ComparisonLegendState }
+  result: Legend | undefined;
+  ecosystem: Legend | undefined;
+  pressure: Legend | undefined;
+  comparison: { [value: string] : ComparisonLegendState };
+}
+
+export interface ComparisonResult {
+  includedEcosystems: number[];
+  includedPressures: number[];
+  result: number[][];
+  cumulativeTotal: number;
+  totalPerEcosystem: Record<string, number>;
+  totalPerPressure: Record<string, number>;
+}
+
+export interface CompoundComparisonSlice extends SortableListItem {
+  id: number;
+  calculationNames: string[];
+}
+
+export interface CompoundComparison extends CompoundComparisonSlice {
+  results: { [key: number]: ComparisonResult };
+}
+
+export interface DownloadCompoundComparisonOptions {
+  asJson: boolean;
+  allowZeroes: boolean;
 }
 
 export interface OperationParams {
@@ -125,4 +154,27 @@ export interface OperationParams {
 export interface AreaMatrix {
   areaName: string;
   matrix: string;
+}
+
+export class CompoundComparisonItem implements CompoundComparisonSlice {
+  private static maxCalcNames = 10;
+
+  id: number;
+  calculationNames: string[];
+  name: string;
+  timestamp: number;
+
+  constructor(item: CompoundComparisonSlice) {
+    this.id = item.id;
+    this.calculationNames = item.calculationNames;
+    this.name = item.name;
+    this.timestamp = item.timestamp;
+  }
+
+  public calcNamesList(moreLabel: string): string {
+    const more = `(${this.calculationNames.length - CompoundComparisonItem.maxCalcNames} ${moreLabel}) ...`;
+
+    return  `${this.calculationNames.slice(0, CompoundComparisonItem.maxCalcNames).join(', ')} `+
+            `${this.calculationNames.length > CompoundComparisonItem.maxCalcNames ? more : ''}`;
+  }
 }

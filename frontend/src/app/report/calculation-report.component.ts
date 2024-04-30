@@ -52,7 +52,7 @@ export class CalculationReportComponent extends AbstractReport {
               that.store.dispatch(MetadataActions.fetchMetadataForBaseline({baselineName: report.baselineName}));
               window.parent.postMessage({type: 'calcReportLoaded', calcId: +calcId!}, window.origin);
               that.areaDict = reportService.setAreaDict(report);
-              that.isDomainNormalization = report.normalization.type === NormalizationType.Domain;
+              that.isDomainNormalization = report.normalization.type === NormalizationType.DOMAIN;
             },
             error() {
               that.loadingReport = false;
@@ -87,13 +87,5 @@ export class CalculationReportComponent extends AbstractReport {
     }
 
     return matrixMap;
-  }
-
-  setAreaDict(): void {
-    const index_ids = Object.keys(this.report!.scenarioChanges.areaChanges);
-
-    index_ids.map((areaId, ix) => {
-      this.areaDict.set(+areaId, this.report!.areaMatrices[ix].areaName);
-    });
   }
 }

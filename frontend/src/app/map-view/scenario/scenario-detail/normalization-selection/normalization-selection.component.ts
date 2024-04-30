@@ -29,19 +29,19 @@ export class NormalizationSelectionComponent implements OnChanges {
   radioButtons = [
     {
       label: 'map.editor.normalization.domain',
-      value: NormalizationType.Domain
+      value: NormalizationType.DOMAIN
     },
     {
       label: 'map.editor.normalization.area',
-      value: NormalizationType.Area
+      value: NormalizationType.AREA
     },
     {
       label: 'map.editor.normalization.mean-plus-stddev',
-      value: NormalizationType.StandardDeviation
+      value: NormalizationType.STANDARD_DEVIATION
     },
     {
       label: 'map.editor.normalization.custom',
-      value: NormalizationType.UserDefined
+      value: NormalizationType.USER_DEFINED
     }
   ];
 
@@ -49,32 +49,33 @@ export class NormalizationSelectionComponent implements OnChanges {
     return ntype === this.options.type;
   }
 
-  check(target: NormalizationType) {
+  check(ntype: string) {
+    if(!ntype) return;
     this.modeSelectionEvent.emit({
-      type: target,
+      type: NormalizationType[ntype as keyof typeof NormalizationType],
       userDefinedValue: this.options.userDefinedValue,
       stdDevMultiplier: this.options.stdDevMultiplier
     });
   }
 
-  onChangeValue(ntype: NormalizationType, event: Event) {
+  onChangeValue(ntype: string, event: Event) {
     const opts = this.options,
           val = parseFloat((event.target! as HTMLInputElement).value);
 
     this.modeSelectionEvent.emit({
-      type: ntype,
-      userDefinedValue: ntype === NormalizationType.UserDefined ?
+      type: NormalizationType[ntype as keyof typeof NormalizationType],
+      userDefinedValue: ntype === NormalizationType.USER_DEFINED ?
                         val : opts.userDefinedValue,
-      stdDevMultiplier: ntype === NormalizationType.StandardDeviation ?
+      stdDevMultiplier: ntype === NormalizationType.STANDARD_DEVIATION ?
                         val : opts.stdDevMultiplier,
     });
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.algorithm?.currentValue === 'RarityAdjustedCumulativeImpact' &&
-      this.options.type === NormalizationType.Domain) {
+      this.options.type === NormalizationType.DOMAIN) {
       this.modeSelectionEvent.emit({
-        type: NormalizationType.Area,
+        type: NormalizationType.AREA,
         userDefinedValue: this.options.userDefinedValue,
         stdDevMultiplier: this.options.stdDevMultiplier
       });

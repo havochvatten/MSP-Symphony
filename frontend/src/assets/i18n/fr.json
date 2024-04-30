@@ -7,6 +7,8 @@
         "request-password": "Demander un nouveau mot de passe",
         "no-account": "Êtes-vous un utilisateur externe et souhaitez vous demander un compte?",
         "request-account": "Demander un compte",
+        "peek-password": "Afficher le mot de passe",
+        "hide-password": "Masquer le mot de passe",
         "error": {
             "invalid-credentials": "Nom d'utilisateur ou mot de passe invalide.",
             "system-unavailable": "Le système n'est pas disponible, veuillez réessayer plus tard."
@@ -24,6 +26,7 @@
         "reset-preselected": "Réinitialiser",
         "reset-preselected-description": "Réinitialiser les composants et les pressions sélectionnés à la sélection par défaut, supprimez tous les changements d'intensité pour le scénario actif",
         "selection-overlap": "Impossible de sélectionner des zones superposées",
+        "open-compound-data-list": "Comparaisons composées ({{ count }})",
         "intensity" : {
             "ecosystems": "Composante écosystèmes",
             "pressures": "Pressions",
@@ -185,7 +188,7 @@
                 "description": "Définir la valeur maximale en tant que:",
                 "area": "Valeur maximale dans la zone de calcul",
                 "domain": "Normalisé au {{ ordinalPercentileValue }} centile dans la zone MSP",
-                "mean-plus-stddev": "Moyenne +/- \nmultiple de l'écart type:",
+                "mean-plus-stddev": "Moyenne + \nmultiple de l'écart type:",
                 "custom": "Valeur définie par l'utilisateur:",
                 "custom-value": "Valeur"
             },
@@ -196,7 +199,12 @@
                 "clear-change": "Effacer les modifications",
                 "units": "unités",
                 "collapse": "Cacher les modifications",
-                "collapsed-count": "Afficher {{ count }} modifications"
+                "collapsed-count": "Afficher {{ count }} modifications",
+                "clear-change-modal": {
+                    "header": "Effacer les modifications",
+                    "message": "Confirmer l'effacement de la modification: <em>{{ changeDescription }}</em>",
+                    "confirm": "Effacer"
+                }
             },
             "changes-overview" : {
                 "title": "Vue d'ensemble des modifications de scénario",
@@ -254,6 +262,8 @@
                 "select-all-for-batch": "Tout sélectionner",
                 "select-all-for-batch-filtered": "Sélectionner les visibles",
                 "deselect-all-for-batch": "Tout désélectionner",
+                "none-selected": "Aucun scénario sélectionné",
+                "delete-selected": "Supprimer les scénarios sélectionnés",
                 "batch-tools": {
                     "enter-batch-mode": "Entrer en mode de sélection par lots",
                     "exit-batch-mode": "Quitter le mode de sélection par lots",
@@ -267,7 +277,10 @@
                 "label": "Supprimer",
                 "tooltip": "Supprimer le scénario",
                 "modal": {
-                    "title": "Êtes-vous sûr de vouloir supprimer &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;",
+                    "title": "Supprimer scénario",
+                    "message": "Confirmer la suppression du scénario &laquo;&nbsp;{{ scenario }}&nbsp;&raquo;&nbsp;.",
+                    "title-many": "Supprimer les scénarios sélectionnés",
+                    "message-many": "Confirmer la suppression des <strong>{{ count }}</strong> scénarios sélectionnés?",
                     "delete": "Supprimer",
                     "cancel": "Annuler"
                 }
@@ -386,6 +399,10 @@
             "hide-result": "Masquer ce résultat en mode carte",
             "visible-result": "Ce résultat est visible en mode carte",
             "purged-result": "Les données de ce résultat ont été supprimées\nLe chargement peut prendre un peu plus de temps car le résultat doit être recalculé.",
+            "edit-name": {
+                "label": "Renommer",
+                "header": "Modifier le nom de la calcul"
+            },
             "delete-modal" : {
                 "header": "Supprimer résultat",
                 "message": "Confirmer la suppression du résultat: <em>“{{ calculationName }}”</em>",
@@ -395,10 +412,17 @@
                 "cancel": "Annuler",
                 "confirm": "Supprimer"
             },
+            "generate-comparison-modal": {
+                "header": "Générer une comparaison composée",
+                "message": "Entrez un titre pour la comparaison composée.",
+                "placeholder": "Entrez un titre",
+                "calculate": "Calculer"
+            },
             "multi-mode": {
-                "enter": "Entrer en mode de sélection multiple pour supprimer plusieurs calculs",
+                "enter": "Entrer en mode de sélection multiple",
                 "exit": "Quitter le mode de sélection multiple",
                 "delete-selected": "Supprimer les calculs sélectionnés",
+                "generate-comparison": "Générer des données de comparaison",
                 "none-selected": "Aucun calcul sélectionné"
             }
         },
@@ -406,9 +430,14 @@
             "title": "Comparez les scénarios",
             "compare": "Comparez les résultats",
             "base-scenario": "Résultat du scénario de référence",
+            "implicit-baseline": "Référence implicite",
+            "explicit-baseline": "Référence explicite",
+            "include-unchanged": "Inclure les scénarios inchangés",
+            "reverse-projected": "Inverser l'ordre de comparaison",
             "what-if-scenario": "Résultat du scénario anticipé",
-            "choose-scenario": "Choisissez un scénario",
-            "choose-base-scenario-first": "Choisissez un scénario de référence avant",
+            "select-calculation": "Choisissez un resultat de calcul",
+            "select-base-calculation-first": "Choisissez un scénario de référence avant",
+            "no-matching-calculations": "Aucun résultat correspondant",
             "base-scenario-suggestion": "",
             "what-if-scenario-suggestion": "",
             "select-scale": "Sélectionnez l'échelle de couleur",
@@ -449,12 +478,7 @@
             },
             "rename": {
                 "label": "Renommer la zone",
-                "modal": {
-                    "title": "Modifier le nom de la zone",
-                    "placeholder": "Ma zone 1",
-                    "save": "Sauvegarder",
-                    "close": "Fermer"
-                }
+                "header": "Modifier le nom de la zone"
             },
             "edit": {
                 "label": "Modifier la zone"
@@ -489,16 +513,50 @@
         "merge-areas-hint" : {
             "emphasis": "Fusionner les zones",
             "detail": "{{ altButton }} + Shift + clic pour fusionner la sélection."
+        },
+        "compound-data-list": {
+            "title": "Comparaisons composées",
+            "compound-comparison-data": "Données de comparaison composée",
+            "calculation-basis-info": "La comparaison des valeurs est basée sur les calculs suivants",
+            "more": "de plus",
+            "delete": "Supprimer ca comparaison composée",
+            "download": "Télécharger la comparaison composée",
+            "download-select-format": "Choisissez le format de téléchargement",
+            "download-format": {
+                "json": "En tant que données (JSON)",
+                "ods": "En tant que feuille de calcul (ODS)"
+            },
+            "download-allow-zero": "Inclure les valeurs nulles",
+            "confirm-download": "Télécharger",
+            "filter-hint": "Filtrer la liste par nom",
+            "delete-modal": {
+                "header": "Supprimer la comparaison composée",
+                "message": "Confirmer la suppression de la comparaison composée: <em>“{{ comparisonName }}”</em>"
+            },
+            "terms": {
+                "total": "Total",
+                "sum": "Somme",
+                "difference": "Différence",
+                "pixels": "Nombre de pixels",
+                "non-planar": "Projection non planaire"
+            }
+        },
+        "area-options": {
+            "get-shapefile": "Télécharger des fichiers de forme (.zip)"
         }
     },
     "controls": {
         "open": "Ouvrir",
         "close": "Fermer",
+        "save": "Sauvegarder",
         "delete": "Supprimer",
         "accordion": {
             "expand": "Afficher",
             "contract": "Masquer"
         }
+    },
+    "rename": {
+        "placeholder": "Entrez un nouveau nom"
     },
     "main-menu": {
         "projects": "Projets",
@@ -510,6 +568,7 @@
         "about": "À propos",
         "support": "Mode d'emploi",
         "profile": "Mon profil",
+        "change-language": "Changer de langue",
         "logout": "Se déconnecter"
     },
     "about-dialog": {
@@ -527,6 +586,15 @@
     "confirmation-modal": {
         "cancel": "Annuler",
         "confirm": "Confirmer"
+    },
+    "change-language-modal": {
+        "header": "Changer de langue",
+        "apply": "Appliquer",
+        "languages": {
+            "en": "Anglais",
+            "sv": "Suédois",
+            "fr": "Français"
+        }
     },
     "report": {
         "calculation": {

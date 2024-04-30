@@ -1,0 +1,82 @@
+@import 'src/styles/hav-colors';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 4px;
+  padding: 2rem;
+  width: 76rem;
+  max-width: 90vw;
+
+  h3 {
+    color: $hav-black;
+    font-size: 2.2rem;
+    font-weight: 500;
+    margin: 0 0 1rem;
+  }
+
+  ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    padding: 0 3rem 0 1rem;
+    max-height: calc(100vh - 32rem);
+    overflow-y: auto;
+
+    li {
+      display: block;
+      padding: 0.8rem 1rem 1.2rem;
+      border: 1px solid $hav-grey;
+      margin-bottom: 1rem;
+
+      &.filtered {
+        display: none;
+      }
+
+      h5 {
+        font-size: 1.4rem;
+        margin: 0;
+
+        .cmp-name {
+          font-weight: 600;
+        }
+      }
+
+      .timestamp {
+        display: block;
+        margin-bottom: 0.8rem;
+      }
+
+      .calculation-basis-info-header,
+      .calculation-basis-names {
+        font-size: 1.15rem;
+        letter-spacing: 0.06rem;
+      }
+
+      .calculation-basis-info-header {
+        display: block;
+        font-weight: 500;
+        text-decoration: underline;
+        margin-bottom: 0.5rem;
+      }
+
+      .calculation-basis-names {
+        line-height: 1.8rem;
+      }
+
+      .list-actions app-icon {
+        cursor: pointer;
+
+        &[icontype='delete'] {
+          margin-right: 0.4rem;
+        }
+      }
+    }
+  }
+
+  app-list-filter {
+    width: calc(100% - 5rem);
+    margin: 1rem 0 1rem 1rem;
+  }
+}

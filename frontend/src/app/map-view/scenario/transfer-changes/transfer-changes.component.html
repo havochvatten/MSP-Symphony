@@ -22,11 +22,11 @@
   </mat-radio-button>
 </mat-radio-group>
 <mat-checkbox [(ngModel)]="selectedChanges.overwrite">{{ 'map.editor.transfer-changes.overwrite' | translate }}</mat-checkbox>
-<section class="buttons">
+<div class="button-pane">
   <button mat-flat-button (click)="confirmTransferChanges()" [ngClass]="'primary'" [disabled]="noSelection()" >
     {{ 'confirmation-modal.confirm' | translate }}
   </button>
   <button mat-flat-button (click)="dialog.close()" [ngClass]="'secondary'">
     {{ 'confirmation-modal.cancel' | translate }}
   </button>
-</section>
+</div>

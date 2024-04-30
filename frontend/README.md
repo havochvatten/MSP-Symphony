@@ -26,11 +26,13 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Storybook
+## ~~Storybook~~
 
-Run `npm run storybook` for a dev server. Navigate to [https://localhost:6006/](https://localhost:6006/) (it usually opens a Chrome tab automatically). Storybook will automatically update if you change any of the source files.
+~~Run `npm run storybook` for a dev server. Navigate to [https://localhost:6006/](https://localhost:6006/) (it usually opens a Chrome tab automatically). Storybook will automatically update if you change any of the source files.~~
 
-A tutorial for working with [Storybook](https://storybook.js.org/) in Angular can be found at [learnstorybook.com](https://www.learnstorybook.com/angular/en/get-started/).
+~~A tutorial for working with [Storybook](https://storybook.js.org/) in Angular can be found at [learnstorybook.com](https://www.learnstorybook.com/angular/en/get-started/).~~
+
+A legacy Storybook integration is present but currently disused. It's being considered for either re-integration or removal in the near future. 
 
 ## Further help
 

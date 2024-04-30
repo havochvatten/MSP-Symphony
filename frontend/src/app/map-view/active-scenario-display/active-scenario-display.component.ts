@@ -9,8 +9,13 @@ import { Scenario } from "@data/scenario/scenario.interfaces";
 export class ActiveScenarioDisplayComponent {
 
   @Input() scenario!: Scenario;
+  @Input() set calculating(calculating: boolean) {
+    this._calculating = calculating;
+  }
   @Input() area: number | undefined;
   @Output() exit: EventEmitter<void> = new EventEmitter<void>();
+
+  _calculating = false;
 
   getScenarioName() {
     return this.scenario.name;

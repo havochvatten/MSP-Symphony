@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { ReportChanges } from "@data/calculation/calculation.interfaces";
-import { isEmpty } from "lodash";
 import { ChangesProperty } from "@data/scenario/scenario.interfaces";
 import { BandType, BandTypes } from "@data/metadata/metadata.interfaces";
+import { isEmpty } from "@shared/common.util";
 
 // TODO Show addition or removal of non-default layer selection (i.e. climate)?
 @Component({
@@ -60,6 +60,5 @@ export class ScenarioChangesComponent {
     }
     return false;
   }
-
   protected readonly isEmpty = isEmpty;
 }

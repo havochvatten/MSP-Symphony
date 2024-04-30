@@ -6,7 +6,7 @@ $iconbar-h: 1.2rem;
 $button-height: 6rem;
 $buttons-row-gap: 1rem;
 
-section {
+section.tab-section {
   width: 100%;
   height: calc(100vh - #{$header-height} - #{$iconbar-h} - 0.8rem);
   box-sizing: border-box;
@@ -24,8 +24,12 @@ section {
     }
 
     app-multi-tools {
-      ::ng-deep .multi-action.active button:not(.disabled) {
-        color: $red;
+      app-multi-action-button {
+        margin-left: 0.3rem;
+
+        &:last-child {
+          margin-right: 1.3rem;
+        }
       }
     }
   }
@@ -38,7 +42,7 @@ section {
     cursor: help;
   }
 
-  main.baseline {
+  section.list-section.baseline {
     flex: 0 0 auto;
   }
 
@@ -46,7 +50,7 @@ section {
     padding: 1.8rem 0 1rem;
   }
 
-  main {
+  section.list-section {
     flex: 1 1;
     margin: 2rem 0 2rem 0;
     box-sizing: border-box;
@@ -78,7 +82,6 @@ section {
 
       .calculation {
         box-sizing: border-box;
-        background: none;
         border: 1px solid #707070;
         padding: 0.4rem;
         display: flex;
@@ -114,12 +117,8 @@ section {
           }
         }
 
-        &:hover {
-          cursor: pointer;
-
-          &.visible {
-            background: linear-gradient(0deg, #e8d18680 0%, $hav-coldgrey 33%);
-          }
+        &.visible:hover {
+          background: linear-gradient(0deg, #e8d18680 0%, $hav-coldgrey 33%);
         }
 
         .calculation-info {
@@ -153,12 +152,6 @@ section {
               font-size: 1.6rem;
               flex: 1;
             }
-          }
-
-          span.timestamp {
-            text-align: left;
-            letter-spacing: 0;
-            color: #919191;
           }
         }
 
@@ -213,7 +206,7 @@ section {
   }
 
   &.multi-mode {
-    main .calculation-wrap {
+    section.list-section .calculation-wrap {
       width: calc(100% - 1.5rem);
       margin: 0 0 0 auto;
       padding-left: 1.2rem;

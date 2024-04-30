@@ -32,7 +32,7 @@ import { ScenarioLayer } from '@src/app/map-view/map/layers/scenario-layer';
 import AreaLayer from '@src/app/map-view/map/layers/area-layer';
 import { Extent } from 'ol/extent';
 import { DataLayerService } from '@src/app/map-view/map/layers/data-layer.service';
-import { isEqual } from "lodash";
+import { isEqual } from "@shared/common.util";
 import { dieCutPolygons, turfMergeAll } from "@shared/turf-helper/turf-helper";
 import { SelectIntersectionComponent } from "@shared/select-intersection/select-intersection.component";
 import { MultiPolygon, Polygon as OLPolygon } from "ol/geom";
@@ -88,7 +88,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       .select(UserSelectors.selectBaseline).pipe(isNotNullOrUndefined())
       .subscribe((baseline) => {
         this.baselineName = baseline.name;
-        this.bandLayer = new BandLayer(baseline.name, dataLayerService, this.aliasing);
+        this.bandLayer = new BandLayer(baseline.name, dataLayerService, this.store, this.aliasing);
         this.map!.getLayers().insertAt(1, this.bandLayer); // on top of background layer
       });
 
@@ -198,7 +198,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     this.areaLayer = new AreaLayer(
         this.map, this.dispatchSelectionUpdate, this.zoomToExtent,
-        this.onDrawEnd, this.onDrawInvalid, this.onSplitClick, this.onMergeClick,
+        this.onDrawEnd, this.onDrawInvalid, this.onDownloadClick, this.onSplitClick, this.onMergeClick,
         this.scenarioLayer, this.translateService, this.geoJson); // Will add itself to the map
     this.map.addLayer(this.areaLayer);
 
@@ -354,6 +354,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         }
       }
     }
+  }
+
+  onDownloadClick = async (path: string) => {
+    document.location.href = env.apiBaseUrl + '/areas/download?path=' + path;
   }
 
   // The virtual transform methods on OpenLayers Geometry subclasses

@@ -20,13 +20,19 @@
     }
 
     &.multi-action {
-      margin-right: 1.3rem;
-
       &.active {
         color: $hav-blue;
 
-        button.disabled {
-          cursor: not-allowed;
+        button{
+          &.disabled {
+            cursor: not-allowed;
+          }
+
+          &:not(.disabled) app-icon {
+            &[icontype='delete'] {
+              color: $red;
+            }
+          }
         }
       }
     }

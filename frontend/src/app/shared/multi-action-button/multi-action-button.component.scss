@@ -1,0 +1,7 @@
+:host {
+  ::ng-deep app-icon-button {
+    &.icon--delete button {  // delete icon aligns slightly better
+      min-width: 1.6rem      // without horizontal padding
+    }
+  }
+}

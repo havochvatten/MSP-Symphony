@@ -1,13 +1,25 @@
 @import 'src/styles/hav-colors';
 
-section main .list-item {
+.list-item {
   position: relative;
 
-  &:hover {
-    background-color: $hav-coldgrey;
+  &.scenario, &.calculation {
+    background-color: white;
+  }
+
+  &:hover, &.scenario:hover, &.calculation:hover {
+
+    &.interactive {
+      background-color: $hav-coldgrey;
+      cursor: pointer;
+    }
 
     .list-actions {
       opacity: 0.6;
+
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 
@@ -35,8 +47,14 @@ section main .list-item {
         width: 1.75rem;
       }
 
+      &[icontype='edit'] ::ng-deep svg {
+        height: 1.6rem;
+        width: 1.6rem;
+      }
+
       &[icontype='copy'], &[icontype='report'],
-      &[icontype='eye'], &[icontype='eye-slash'] {
+      &[icontype='eye'], &[icontype='eye-slash'],
+      &[icontype='edit'] {
         color: $hav-turquoise;
       }
 
@@ -47,10 +65,6 @@ section main .list-item {
       &:hover {
         opacity: 1;
       }
-    }
-
-    &:hover {
-      opacity: 1;
     }
   }
 }

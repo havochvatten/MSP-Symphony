@@ -1,12 +1,12 @@
 import { Component, ElementRef, Input, NgModuleRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms'
-import { Observable, OperatorFunction, Subscription } from 'rxjs';
+import { firstValueFrom, Observable, OperatorFunction, Subscription } from 'rxjs';
 import { debounceTime, filter, take, tap } from 'rxjs/operators';
 import { TranslateService } from "@ngx-translate/core";
 import { Store } from '@ngrx/store';
-import { isEmpty, some } from "lodash";
 import { State } from '@src/app/app-reducer';
 import { environment } from '@src/environments/environment';
+import { isEmpty } from '@src/app/shared/common.util';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { turfIntersects } from "@shared/turf-helper/turf-helper";
 import { CalculationReportModalComponent } from '@shared/report-modal/calculation-report-modal.component';
@@ -20,14 +20,14 @@ import {
   NormalizationType
 } from '@data/calculation/calculation.service';
 import { MetadataActions, MetadataSelectors } from "@data/metadata";
-import { Band, BandType } from "@data/metadata/metadata.interfaces";
+import { Band, BandChange, BandType } from "@data/metadata/metadata.interfaces";
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
 import {
   ChangesProperty,
   Scenario, ScenarioArea, ScenarioSplitDialogResult
 } from '@data/scenario/scenario.interfaces';
-import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
+import { changeText } from "@src/app/shared/common.util";
 import { ScenarioService } from "@data/scenario/scenario.service";
 import { Area } from "@data/area/area.interfaces";
 import { deleteScenario, transferChanges } from "@src/app/map-view/scenario/scenario-common";
@@ -42,6 +42,7 @@ import { MatrixRef } from "@src/app/map-view/scenario/scenario-area-detail/matri
 import {
   SetArbitraryMatrixComponent
 } from "@src/app/map-view/scenario/set-arbitrary-matrix/set-arbitrary-matrix.component";
+import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 
@@ -57,13 +58,14 @@ const availableOperations: Map<string, CalcOperation> = new Map<string, CalcOper
 export class ScenarioDetailComponent implements OnInit, OnDestroy {
   env = environment;
   autoSaveSubscription$?: Subscription;
-  changesText: { [key: number]: string; } = {};
+  changesText: { [key: number]: string } = {};
 
   replacedAreaIds: number[] = [];
 
   @Input() scenario!: Scenario;
   @Input() deleteAreaDelegate!: ((a:number, e:MouseEvent, s:Scenario) => void);
   @Input() deleteAreaAction! : (a:number, s:Scenario) => void;
+  @Input() confirmDeleteChange!: (bandName: string, change: BandChange) => Promise<boolean>;
   @ViewChild('name') nameElement!: ElementRef;
   editName = false;
 
@@ -128,7 +130,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
     this.matrixDataSubscription$ = this.store.select(ScenarioSelectors.selectAreaMatrixData).subscribe(
       async data => {
-        if (data !== null && !some(data, d => d === null)) {
+        if (data !== null && !Object.values(data).some(d => d === null)) {
           for (const area_id of Object.keys(data).map(id => +id)) {
             const matrixData = data[area_id];
             if (!matrixData.defaultArea) {
@@ -176,22 +178,23 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
                   confirmTextKey: 'map.editor.select-intersection.confirm-selection',
                   metaDescriptionTextKey: 'map.editor.select-intersection.default-matrix'
                 }
-              }) as boolean[]).filter(a => a);
+              }) as boolean[]);
 
-              if (selectedAreas.length > 0) {
-                const replacementAreas: ScenarioArea[] = selectedAreas.map((selectedArea, ix) => {
-                  const area = this.scenario.areas[this.scenario.areas.findIndex(a => a.id === area_id)];
-                  return {
-                    ...area,
-                    id: -1,
-                    feature: {
-                      ...area.feature,
-                      geometry: matrixData.overlap[ix].polygon,
-                      properties: {...area.feature.properties, statePath: []}
-                    },
-                    matrix: {matrixType: 'STANDARD', matrixId: matrixData.overlap[ix].defaultMatrix.id}
-                  }
-                });
+              if (selectedAreas.filter(a => a).length > 0) {
+                const replacementAreas = selectedAreas.map((selectedArea, ix) => {
+                    if (!selectedArea) return undefined;
+                    const area = this.scenario.areas[this.scenario.areas.findIndex(a => a.id === area_id)];
+                    return {
+                      ...area,
+                      id: -1,
+                      feature: {
+                        ...area.feature,
+                        geometry: matrixData.overlap[ix].polygon,
+                        properties: {...area.feature.properties, statePath: []}
+                      },
+                      matrix: {matrixType: 'STANDARD', matrixId: matrixData.overlap[ix].defaultMatrix.id}
+                    }
+                }).filter(a => a !== undefined) as ScenarioArea[];
 
                 this.store.dispatch(ScenarioActions.splitAndReplaceScenarioArea(
                   {scenarioId: this.scenario.id, replacedAreaId: area_id, replacementAreas: replacementAreas}));
@@ -216,39 +219,21 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   }
 
   async setChangesText():Promise<void> {
-    const bandDict = await this.bandDictionary$.pipe(take(1)).toPromise();
+    const bandDict = await firstValueFrom(this.bandDictionary$);
     this.changesText = this.scenario.areas.some((a) => !isEmpty(a.changes)) ?
         this.scenario.areas.map((a) => {
           return Object.entries(a.changes || {}).map(([bandType, c]) => {
             return Object.entries(c).map(([bandNumber, change]) => {
-              return `${bandDict[bandType][bandNumber]}: ${change.multiplier ? (change.multiplier > 1 ? '+' : '') +
-                  Number(convertMultiplierToPercent(change.multiplier) * 100).toFixed(2) + '%' :
-                  change.offset! > 0 ? '+' + change.offset : change.offset
-              }`;
+              return this.changeText(bandDict[bandType][bandNumber], change);
             }).join('\n');
           }).join('\n');
         }) : {};
   }
 
   calculate() {
+    this.unsaved = false;
     this.store.dispatch(CalculationActions.startCalculation());
-
-    // TODO: call service through rxjs effect and avoid code repetition (ScenarioEffects)
-    this.store.select(MetadataSelectors.selectSelectedComponents).pipe(
-      take(1))
-      .subscribe((selectedComponents: { ecoComponent: Band[]; pressureComponent: Band[]; }) => {
-        const sortedBandNumbers = (bands: Band[]) => bands
-          .map(band => band.bandNumber)
-          .sort((a, b) => a - b);
-        this.scenarioService.save({...this.scenario,
-          ecosystemsToInclude: sortedBandNumbers(selectedComponents.ecoComponent),
-          pressuresToInclude: sortedBandNumbers(selectedComponents.pressureComponent)}).pipe(
-          take(1))
-          .subscribe(() => {
-              this.calcService.calculate(this.scenario);
-            }
-          );
-      });
+    this.store.dispatch(ScenarioActions.saveAndCalculateActiveScenario());
   }
 
   onCheckRarityIndicesDomain(domain: string) {
@@ -271,7 +256,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   }
 
   addScenarioArea(selectedAreas: Area[], that: AddScenarioAreasComponent) {
-    const areas = selectedAreas.filter(a => !some(that.scenario!.areas,
+    const areas = selectedAreas.filter(a => !that.scenario!.areas.some(
         s => turfIntersects(that.format.readFeature(a.feature), that.format.readFeature(s.feature))));
     this.unsaved = true;
     this.store.dispatch(ScenarioActions.addAreasToActiveScenario({ areas: that.scenarioService.convertAreas(areas) }));
@@ -301,13 +286,18 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   save() {
     this.unsaved = false;
-    this.store.dispatch(ScenarioActions.saveActiveScenario({ scenarioToBeSaved: this.scenario }));
+    this.store.dispatch(ScenarioActions.saveActiveScenario());
   }
 
-  deleteChange = (bandTypeString: string, bandNumber: number) => {
-    this.unsaved = true;
-    const componentType = bandTypeString as BandType;
-    this.store.dispatch(ScenarioActions.deleteBandChange({ componentType, bandNumber }));
+  deleteChange = async (bandTypeString: string, bandNumber: number, bandName: string) => {
+    const confirmClearChange =
+      await this.confirmDeleteChange(bandName, this.scenario.changes![bandTypeString][bandNumber.toString()]);
+
+    if(confirmClearChange) {
+      this.unsaved = true;
+      const componentType = bandTypeString as BandType;
+      this.store.dispatch(ScenarioActions.deleteBandChange({componentType, bandNumber}));
+    }
   }
 
   close() {
@@ -347,9 +337,9 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     if(operation === CalcOperation.RarityAdjusted) {
       const normalizationOptions = this.getNormalizationOptions();
       this.store.dispatch(ScenarioActions.changeScenarioOperationParams({operationParams: this.getParams() ? this.getParams() : {'domain': 'GLOBAL'}}));
-      if(normalizationOptions.type === NormalizationType.Domain) {
+      if(normalizationOptions.type === NormalizationType.DOMAIN) {
         this.store.dispatch(ScenarioActions.changeScenarioNormalization(
-          { normalizationOptions: {...normalizationOptions, type: NormalizationType.Area } }
+          { normalizationOptions: {...normalizationOptions, type: NormalizationType.AREA } }
         ));
       }
     }
@@ -397,4 +387,6 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   }
 
   protected readonly isEmpty = isEmpty;
+
+  changeText = changeText;
 }

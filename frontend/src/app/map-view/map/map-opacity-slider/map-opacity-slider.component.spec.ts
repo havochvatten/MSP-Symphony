@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MapOpacitySliderComponent } from './map-opacity-slider.component';
 import { SharedModule } from '@shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
+import { provideMockStore } from "@ngrx/store/testing";
 
 describe('MapOpacitySliderComponent', () => {
   let fixture: ComponentFixture<MapOpacitySliderComponent>,
@@ -14,7 +15,8 @@ describe('MapOpacitySliderComponent', () => {
         SharedModule,
         TranslationSetupModule
       ],
-      declarations: [MapOpacitySliderComponent]
+      declarations: [MapOpacitySliderComponent],
+      providers: [provideMockStore({ initialState : { user: {} } })]
     })
     .compileComponents();
     fixture = TestBed.createComponent(MapOpacitySliderComponent);

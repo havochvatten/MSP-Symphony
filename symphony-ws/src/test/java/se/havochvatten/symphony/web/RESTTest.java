@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.dto.NormalizationOptions;
 import se.havochvatten.symphony.dto.NormalizationType;
 import se.havochvatten.symphony.entity.BaselineVersion;
-import se.havochvatten.symphony.scenario.ScenarioService;
+import se.havochvatten.symphony.service.ScenarioService;
 import se.havochvatten.symphony.service.PropertiesService;
 
 import java.util.Date;
@@ -87,7 +87,7 @@ public class RESTTest { // N.B: Must end with Test to be included in "only-apite
 
     public static BaselineVersion makeBaseline() {
         var baselineVersion = new BaselineVersion();
-        baselineVersion.setId(1);
+        baselineVersion.setId(3);
         baselineVersion.setName("test");
         baselineVersion.setDescription("test desc");
         baselineVersion.setValidFrom(new Date());

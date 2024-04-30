@@ -18,7 +18,7 @@ export class CalculationReportModalComponent extends ReportModalComponent {
   ) {
     super(dialog, dom,
       window.location.origin+'/report/'+ config.data.id,
-      `/report/${config.data.id}`,
+      `/report/${config.data.id}`, null,
       'report.calculation.title');
   }
 }

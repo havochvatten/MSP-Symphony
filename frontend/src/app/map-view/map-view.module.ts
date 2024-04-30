@@ -22,9 +22,6 @@ import { AreaGroupComponent, EditAreaComponent } from './area-selection/area-gro
 import { CalculationHistoryComponent } from './calculation-history/calculation-history.component';
 import { ComparisonComponent } from './comparison/comparison.component';
 import { CreateUserAreaModalComponent } from './map/create-user-area-modal/create-user-area-modal.component';
-import {
-  RenameUserAreaModalComponent
-} from './area-selection/rename-user-area-modal/rename-user-area-modal.component';
 import { CheckboxAccordionComponent } from './band-selection/checkbox-accordion/checkbox-accordion.component';
 import {
   MatrixTableComponent
@@ -40,6 +37,9 @@ import { MergeAreasModalComponent } from './map/merge-areas-modal/merge-areas-mo
 import { MatRadioModule } from "@angular/material/radio";
 import { ActiveScenarioDisplayComponent } from './active-scenario-display/active-scenario-display.component';
 import { BatchProgressComponent } from './batch-progress-display/batch-progress.component';
+import { ConfirmGenerateComparisonComponent } from './calculation-history/confirm-generate-comparison/confirm-generate-comparison.component';
+import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component';
+import { DownloadCompoundComparisonDialogComponent } from './compound-comparison-list-dialog/download-compound-comparison-dialog/download-compound-comparison-dialog.component';
 
 @NgModule({
   declarations: [
@@ -60,7 +60,6 @@ import { BatchProgressComponent } from './batch-progress-display/batch-progress.
     ComparisonComponent,
     CreateUserAreaModalComponent,
     UploadUserAreaModalComponent,
-    RenameUserAreaModalComponent,
     CheckboxAccordionComponent,
     MatrixTableComponent,
     ConfirmResetComponent,
@@ -68,6 +67,9 @@ import { BatchProgressComponent } from './batch-progress-display/batch-progress.
     MergeAreasModalComponent,
     ActiveScenarioDisplayComponent,
     BatchProgressComponent,
+    ConfirmGenerateComparisonComponent,
+    CompoundComparisonListDialogComponent,
+    DownloadCompoundComparisonDialogComponent,
   ],
     imports: [
         SharedModule,

@@ -59,7 +59,7 @@ export const fetchUserDefinedAreasFailure = createAction(
 
 export const createUserDefinedArea = createAction(
   '[Area] Create user defined area',
-  props<{ name: string; description: string; polygon: Polygon }>()
+  props<{ name: string, description: string, polygon: Polygon }>()
 );
 
 export const createUserDefinedAreaSuccess = createAction(
@@ -74,7 +74,7 @@ export const createUserDefinedAreaFailure = createAction(
 
 export const updateUserDefinedArea = createAction(
   '[Area] Update user defined area',
-  props<{ id: number; name: string; description: string; polygon: Polygon }>()
+  props<{ id: number, name: string, description: string, polygon: Polygon }>()
 );
 
 export const updateUserDefinedAreaSuccess = createAction(

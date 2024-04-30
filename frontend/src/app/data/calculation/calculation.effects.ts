@@ -1,14 +1,19 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { from, of } from 'rxjs';
-import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
+import { EMPTY, from, of } from 'rxjs';
+import { catchError, concatMap, map, mergeMap, switchMap, take, withLatestFrom } from 'rxjs/operators';
 import { CalculationActions } from './';
 import { CalculationService } from './calculation.service';
-import { ScenarioActions } from "@data/scenario";
+import { ScenarioActions, ScenarioSelectors } from "@data/scenario";
+import { UserSelectors } from "@data/user";
+import { Store } from "@ngrx/store";
+import { State } from "@src/app/app-reducer";
+import { MessageActions } from "@data/message";
 
 @Injectable()
 export class CalculationEffects {
   constructor(private actions$: Actions,
+              private store: Store<State>,
               private calcService: CalculationService) {
 
   }
@@ -43,10 +48,11 @@ export class CalculationEffects {
           action.type === CalculationActions.deleteCalculation.type ?
               [action.calculationToBeDeleted.id] :
               action.calculationIds)).pipe(
-        mergeMap(() => {
-          CalculationActions.deleteCalculationSuccess();
-          return of(CalculationActions.fetchCalculations(), ScenarioActions.fetchScenarios());
-        }),
+        mergeMap(() =>
+                 of(CalculationActions.deleteCalculationSuccess(), // does nothing atm
+                    CalculationActions.fetchCalculations(),
+                    ScenarioActions.fetchScenarios())
+        ),
         catchError(({status, error: message}) =>
           of(CalculationActions.deleteCalculationFailure({error: {status, message}}))
         )
@@ -128,4 +134,116 @@ export class CalculationEffects {
       )
     )
   ));
+
+  generateCompoundComparison$ = createEffect(() => this.actions$.pipe(
+    ofType(CalculationActions.generateCompoundComparison),
+    concatMap(action =>
+      of(action).pipe(withLatestFrom(this.store.select(UserSelectors.selectBaseline)))
+    ),
+    mergeMap(([ { comparisonName, calculationIds }, baseline ]) =>
+      this.calcService.generateCompoundComparison(comparisonName, calculationIds, baseline).pipe(
+        mergeMap(comparisonId =>
+            of(CalculationActions.generateCompoundComparisonSuccess({ comparisonId }),
+               CalculationActions.fetchCompoundComparisons())),
+        catchError(({ status, message }) =>
+          of(
+            CalculationActions.generateCompoundComparisonFailure({
+              error: { status, message }
+            })
+          )
+        )
+      )
+    )
+  ));
+
+  deleteCompoundComparison$ = createEffect(() => this.actions$.pipe(
+    ofType(CalculationActions.deleteCompoundComparison),
+    mergeMap(({ id }) =>
+      this.calcService.deleteCompoundComparison(id).pipe(
+        mergeMap(() =>
+            of(CalculationActions.fetchCompoundComparisons())),
+        catchError(({ status, message }) =>
+          of(
+            CalculationActions.deleteCompoundComparisonFailure({
+              error: { status, message }
+            })
+          )
+        )
+      )
+    )
+  ));
+
+  fetchCompoundComparisons$ = createEffect(() => this.actions$.pipe(
+    ofType(CalculationActions.fetchCompoundComparisons),
+    mergeMap(() =>
+      this.calcService.getAllCompoundComparisons().pipe(
+        map(compoundComparisons => CalculationActions.fetchCompoundComparisonsSuccess({ compoundComparisons })),
+        catchError(({ status, message }) =>
+          of(
+            CalculationActions.fetchCompoundComparisonsFailure({
+              error: { status, message }
+            })
+          )
+        )
+      )
+    )
+  ));
+
+  updateName$ = createEffect(() => this.actions$.pipe(
+    ofType(CalculationActions.renameCalculation),
+    mergeMap(({ calculationId, newName }) =>
+      this.calcService.updateName(calculationId, newName).pipe(
+        map(() => CalculationActions.renameCalculationSuccess({ calculationId, newName })),
+        catchError(({ status, message }) =>
+          of(
+            CalculationActions.renameCalculationFailure({
+              error: { status, message }
+            })
+          )
+        )
+      )
+    )
+  ));
+
+  $calculateActiveScenario = createEffect(() => this.actions$.pipe(
+    ofType(CalculationActions.calculateActiveScenario),
+    concatMap((action) =>
+      this.store.select(ScenarioSelectors.selectActiveScenario).pipe(
+        take(1),
+        switchMap(
+          (scenario) => {
+            if (scenario) {
+              return this.calcService.calculate(scenario).pipe(
+                map(
+                  (calculation) =>
+                    CalculationActions.calculationSucceeded({calculation, savedScenario: scenario})),
+                catchError(() =>
+                  of(
+                    CalculationActions.calculationFailed(),
+                    MessageActions.addPopupMessage({
+                      message: {
+                        type: 'ERROR',
+                        message: `${scenario.name} could not be calculated!`,
+                        uuid: scenario.id + '_' + scenario.name
+                      }
+                    }))
+                  )
+              )
+            } else {
+              return EMPTY;
+            }
+          }
+        )
+      )
+    )));
+
+  $calculationSuccess = createEffect(() => this.actions$.pipe(
+    ofType(CalculationActions.calculationSucceeded),
+    map((action) => {
+        const scenarioId = action.savedScenario.id;
+        this.calcService.addResult(action.calculation.id);
+        return ScenarioActions.fetchSingleScenario({ scenarioId })
+      }
+    ))
+  );
 }

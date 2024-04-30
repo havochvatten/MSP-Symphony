@@ -42,6 +42,10 @@ nav {
       &:not(:last-child) {
         border-bottom: 1px solid $hav-coldgrey;
       }
+
+      &:hover {
+        background-color: $primary-hover-bg-blue;
+      }
     }
   }
 }

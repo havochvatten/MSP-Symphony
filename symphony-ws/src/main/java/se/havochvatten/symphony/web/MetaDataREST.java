@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.MetadataDto;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
-import se.havochvatten.symphony.scenario.ScenarioService;
+import se.havochvatten.symphony.service.ScenarioService;
 import se.havochvatten.symphony.service.MetaDataService;
 import se.havochvatten.symphony.service.PropertiesService;
 
@@ -42,7 +42,7 @@ public class MetaDataREST {
         MetadataDto metaData = metaDataService.findMetadata(baselineName,
                 preferredLanguage.isEmpty() ?
                     props.getProperty("meta.default_language") :
-                    preferredLanguage );
+                    preferredLanguage, activeScenarioId > 0);
 
         if(activeScenarioId > 0) {
             int[] ecosystemIds, pressureIds;

@@ -43,27 +43,48 @@ $shadow: rgba(0, 0, 0, 0.5);
       position: absolute;
       top: 2rem;
       width: 4rem;
-      a {
+
+      a.tab {
         //z-index: -1;
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 4rem;
-        height: 4.4rem;
         font-size: 2.3rem;
-        color: white;
-        background-color: $hav-turquoise;
-        transition: width ease-in-out 200ms;
-        &.active, &:hover {
-          width: 4.4rem;
+        height: 4.4rem;
+        width: 4rem;
+
+        &.for-panel {
+          color: white;
+          background-color: $hav-turquoise;
+          transition: width ease-in-out 200ms;
+
+          &.active, &:hover {
+            width: 4.4rem;
+            background-color: white;
+            color: $hav-turquoise;
+          }
+
+          &:not(:last-child) {
+            margin-bottom: 0.8rem;
+          }
+
+          &:not(.active) {
+            cursor: pointer;
+          }
+        }
+
+        &.for-dialog {
           background-color: white;
-          color: $hav-turquoise;
-        }
-        &:not(:last-child) {
-          margin-bottom: 0.8rem;
-        }
-        &:not(.active) {
+          color: $hav-lightturquoise;
+          border-radius: 4px;
+          margin-left: 0.4rem;
           cursor: pointer;
+          opacity: 0.8;
+
+          &:hover {
+            color: $hav-turquoise;
+            opacity: 1;
+          }
         }
       }
     }

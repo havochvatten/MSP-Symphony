@@ -22,7 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.dto.MatrixResponse;
 import se.havochvatten.symphony.dto.SensitivityMatrix;
-import se.havochvatten.symphony.scenario.ScenarioArea;
+import se.havochvatten.symphony.entity.ScenarioArea;
+import se.havochvatten.symphony.service.CalcService;
 
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
