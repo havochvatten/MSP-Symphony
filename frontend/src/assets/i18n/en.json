@@ -483,6 +483,9 @@
             "edit": {
                 "label": "Edit area"
             },
+            "expand": {
+                "label": "Expand area group"
+            },
             "delete": {
                 "label": "Delete",
                 "modal": {

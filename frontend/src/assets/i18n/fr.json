@@ -483,6 +483,9 @@
             "edit": {
                 "label": "Modifier la zone"
             },
+            "expand": {
+                "label": "Agrandir le groupe de zones"
+            },
             "delete": {
                 "label": "Supprimer",
                 "modal": {

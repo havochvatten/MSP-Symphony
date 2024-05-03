@@ -19,19 +19,23 @@
     [title]="nationalArea.displayName"
     [searching]="search.length > 0"
     [selectedAreas]="selectedAreas$ | async"
-    [updateVisible]="toggleVisibleArea"
+    [toggleVisible]="toggleVisibleAreaGroup"
+    [toggleExpanded]="toggleExpandedAreaGroup"
     [selectArea]="selectArea"
+    (highlight)="highlight($event)"
   ></app-area-group>
   <app-area-group
     [areas]="filteredUserAreas"
     [title]="'map.area.user-created' | translate"
     [searching]="search.length > 0"
     [selectedAreas]="selectedAreas$ | async"
-    [updateVisible]="toggleVisibleArea"
+    [toggleVisible]="toggleVisibleAreaGroup"
     [selectArea]="selectArea"
+    [userArea]="true"
     [drawUserArea]="drawUserArea"
     [renameUserArea]="renameUserArea"
     [deleteUserArea]="deleteUserArea"
     [importArea]="importUserArea"
+    (highlight)="highlight($event)"
   ></app-area-group>
 </app-selection-layout>

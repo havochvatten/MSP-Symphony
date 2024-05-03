@@ -483,6 +483,9 @@
             "edit": {
                 "label": "Redigera område"
             },
+            "expand": {
+                "label": "Expandera områdesgrupp"
+            },
             "delete": {
                 "label": "Radera",
                 "modal": {

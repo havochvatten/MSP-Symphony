@@ -80,6 +80,10 @@ export class MainViewComponent implements OnInit, AfterViewInit {
     this.map?.clearResult();
   };
 
+  highlight = ([statePath, highlight] : [StatePath, boolean]) => {
+    this.map?.highlightArea(statePath, highlight);
+  }
+
   toggleLeftSidebar() {
     this.leftSidebarIsOpen = !this.leftSidebarIsOpen;
   }

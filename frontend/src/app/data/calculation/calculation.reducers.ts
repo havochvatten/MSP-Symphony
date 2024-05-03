@@ -53,11 +53,6 @@ export const calculationReducer = createReducer(
     calculations,
     loadingCalculations: false
   })),
-  on(AreaActions.updateSelectedArea, (state) => ({
-    ...state,
-    calculating: false,
-    latestCalculationId: undefined
-  })),
   on(CalculationActions.fetchLegendSuccess, (state, { legend, legendType }) => ({
     ...state,
     legends: setIn(state.legends, [legendType], legend)
