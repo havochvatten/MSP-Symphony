@@ -43,37 +43,37 @@ public class MetaDataService {
             "AND m2.metaField IN ('title', 'symphonytheme')" +
             "AND m2.language = :language)))";
 
-    public MetadataDto findMetadata(String baselineName, String preferredLanguage, boolean sparse) throws SymphonyStandardAppException {
+    public MetadataDto findMetadata
+        (String baselineName, String preferredLanguage, boolean sparse) throws SymphonyStandardAppException {
         BaselineVersion baseline = baselineVersionService.getVersionByName(baselineName);
         MetadataDto metadataDto = new MetadataDto();
         metadataDto.setEcoComponent(getComponentDto("Ecosystem", baseline.getId(), preferredLanguage, sparse));
         metadataDto.setPressureComponent(getComponentDto("Pressure", baseline.getId(), preferredLanguage, sparse));
         metadataDto.setLanguage(preferredLanguage);
         return metadataDto;
-
     }
 
-    public Map<Integer, String>
-        getComponentTitles(int baselineVersionId, LayerType category, String preferredLanguage)
-        throws SymphonyStandardAppException {
+    public Map<Integer, String> getSingleMetaFieldForComponent
+        (int baselineVersionId, LayerType category, String field, String preferredLanguage) {
 
         TypedQuery<Tuple> bandTitlesQuery = em.createQuery(
             "SELECT m.band.bandnumber, m.metaValue FROM Metadata m " +
                     "WHERE m.band.baseline.id = :baselineVersionId " +
-                    "AND m.metaField = 'title' " +
+                    "AND m.metaField = :field " +
                     "AND m.band.category = :category " +
                     "AND (m.language = :language " +
                         "OR (m.language = m.band.baseline.locale " +
                         "AND m.metaField NOT IN " +
                             "(SELECT m2.metaField FROM Metadata m2 " +
                             "WHERE m2.band.baseline.id = :baselineVersionId " +
-                            "AND m2.metaField = 'title' " +
+                            "AND m2.metaField = :field " +
                             "AND m2.language = :language)))" +
                     "ORDER BY m.band.bandnumber", Tuple.class);
 
         return bandTitlesQuery
             .setParameter("baselineVersionId", baselineVersionId)
             .setParameter("category", category == LayerType.ECOSYSTEM ? "Ecosystem" : "Pressure")
+            .setParameter("field", field)
             .setParameter("language", preferredLanguage)
             .getResultStream()
             .collect(HashMap::new, (m, t) -> m.put(t.get(0, Integer.class), t.get(1, String.class)), HashMap::putAll);

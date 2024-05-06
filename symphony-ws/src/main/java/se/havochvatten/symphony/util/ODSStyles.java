@@ -11,7 +11,8 @@ public class ODSStyles {
         ecoHeader = new Style(), pressureHeaderLeft  = new Style(), pressureHeaderRight  = new Style(),
         onlyBold = new Style(), valueStyle = new Style(), thickRightBorder = new Style(), resultSep = new Style(),
         totalE = new Style(), totalE2 = new Style(), totalP = new Style(), totalP2 = new Style(),
-        totalHE = new Style(), totalHP = new Style(), totalC = new Style(), totalC2 = new Style();
+        totalHE = new Style(), totalHP = new Style(), totalC = new Style(), totalC2 = new Style(),
+        comboHeader = new Style(), comboValue = new Style(), comboTheme = new Style();
 
     static {
         cmpName.setFontSize(14);
@@ -23,12 +24,15 @@ public class ODSStyles {
         for (Style s : new Style[]
             { ecoHeader, pressureHeaderLeft, pressureHeaderRight, valueStyle,
                 totalHeaderLeft, totalHeaderRight, totalSubHeader,
-                totalE, totalP, totalHE, totalHP, totalC, totalC2, onlyBold }) {
+                totalE, totalP, totalHE, totalHP, totalC, totalC2, onlyBold,
+                comboHeader, comboValue }) {
             s.setFontSize(10);
         }
 
+        comboTheme.setFontSize(9);
+
         for(Style s: new Style[]
-            { onlyBold, totalSubHeader, totalHE, totalHP, totalC, totalC2, calcName }) {
+            { onlyBold, totalSubHeader, totalHE, totalHP, totalC, totalC2, calcName, comboHeader }) {
             s.setBold(true);
         }
 
@@ -171,5 +175,26 @@ public class ODSStyles {
                 false, null,
                 false, null,
                 false, null));
+
+        comboValue.setBorders(
+            new Borders(
+                true, "thin solid #000000",
+                true, "thin solid #000000",
+                true, "thin solid #000000",
+                true, "thin solid #000000"));
+
+        comboTheme.setBorders(
+            new Borders(
+                true, "thin solid #000000",
+                true, "thin solid #000000",
+                true, "thin solid #000000",
+                true, "thin solid #000000"));
+
+        comboHeader.setBorders(
+            new Borders(
+                false, null,
+                true, "thin solid #000000",
+                true, "thin solid #000000",
+                true, "thin solid #000000"));
     }
 }

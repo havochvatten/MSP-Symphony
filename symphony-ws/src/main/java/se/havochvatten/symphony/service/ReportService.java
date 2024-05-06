@@ -54,10 +54,14 @@ public class ReportService {
     private static final int ODF_TABLE_HORIZONTAL_OFFSET = ODF_ROW_HEADING_COLUMN + 1;
     private static final int ODF_TITLE_ROWS_TOTAL = 3;
     private static final int ODF_CALC_TOTALS_SECTION = 13;
+    private static final double ODF_COMBO_VALUES = 20.0;
+    private static final double ODF_COMBO_TITLES = 65.0;
     private static final double ODF_TITLE_COLWIDTH = 55.0;
 
     private static final Map<String, String> defaultMeta = Map.ofEntries(
         Map.entry("compoundHeading", "Compound comparison data"),
+        Map.entry("scenario", "Scenario"),
+        Map.entry("scenarioTitle", "Scenario title"),
         Map.entry("area", "Calculated area"),
         Map.entry("total", "Total"),
         Map.entry("sum", "Sum"),
@@ -69,7 +73,9 @@ public class ReportService {
         Map.entry("pixels", "Pixels"),
         Map.entry("nonPlanar", "Non-planar projection"),
         Map.entry("ecosystem", "Ecosystem"),
-        Map.entry("pressure", "Pressure")
+        Map.entry("pressure", "Pressure"),
+        Map.entry("theme", "theme"),
+        Map.entry("combined", "Combined dataset")
     );
 
     @EJB
@@ -482,12 +488,12 @@ public class ReportService {
             .getSingleResult();
 
         Map<Integer, String>
-            ecoTitles = metaDataService.getComponentTitles(
+            ecoTitles = metaDataService.getSingleMetaFieldForComponent(
                 comparison.getBaseline().getId(),
-                LayerType.ECOSYSTEM, preferredLanguage),
-            pressureTitles = metaDataService.getComponentTitles(
+                LayerType.ECOSYSTEM,"title" , preferredLanguage),
+            pressureTitles = metaDataService.getSingleMetaFieldForComponent(
                 comparison.getBaseline().getId(),
-                LayerType.PRESSURE, preferredLanguage);
+                LayerType.PRESSURE,"title" , preferredLanguage);
 
         ComparisonResult[] cmpResults = excludeZeroes ?
             comparison.getResult().values().stream()
@@ -540,7 +546,9 @@ public class ReportService {
     }
 
     public byte[] generateMultiComparisonAsODS(
-        CompoundComparison comparison, String preferredLanguage, boolean excludeZeroes, Map<String, String> localizedMeta) throws Exception {
+        CompoundComparison comparison, String preferredLanguage,
+        boolean excludeZeroes, boolean includeCombinedSheet,
+        Map<String, String> localizedMeta) throws Exception {
 
         HashMap<String, String> metaDict = new HashMap<>(defaultMeta);
 
@@ -551,12 +559,12 @@ public class ReportService {
             baseline_s = metaDict.get("baseline");
 
         Map<Integer, String>
-            ecoTitles = metaDataService.getComponentTitles(
+            ecoTitles = metaDataService.getSingleMetaFieldForComponent(
                 comparison.getBaseline().getId(),
-                LayerType.ECOSYSTEM, preferredLanguage),
-            pressureTitles = metaDataService.getComponentTitles(
+                LayerType.ECOSYSTEM, "title", preferredLanguage),
+            pressureTitles = metaDataService.getSingleMetaFieldForComponent(
                 comparison.getBaseline().getId(),
-                LayerType.PRESSURE, preferredLanguage);
+                LayerType.PRESSURE,"title", preferredLanguage);
 
         SpreadSheet templateDocument = new SpreadSheet();
 
@@ -835,10 +843,97 @@ public class ReportService {
 
         templateDocument.addSheet(totalSheet, 0);
 
+        if (includeCombinedSheet) {
+            Map<Integer, String>
+                ecoThemes = metaDataService.getSingleMetaFieldForComponent(
+                comparison.getBaseline().getId(),
+                LayerType.ECOSYSTEM, "symphonytheme", preferredLanguage),
+                pressureThemes = metaDataService.getSingleMetaFieldForComponent(
+                comparison.getBaseline().getId(),
+                LayerType.PRESSURE, "symphonytheme", preferredLanguage);
+
+            templateDocument.addSheet(
+                generateCombinedTable(comparison.getName(), cmpResults,
+                    ecoTitles, pressureTitles, ecoThemes, pressureThemes,
+                    metaDict, excludeZeroes), 1);
+        }
+
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         templateDocument.save(out);
 
         return out.toByteArray();
+    }
+
+    private Sheet generateCombinedTable(
+        String comparisonTitle, ComparisonResult[] cmpResults,
+        Map<Integer, String> ecoTitles, Map<Integer, String> pressureTitles,
+        Map<Integer, String> ecoThemes, Map<Integer, String> pressureThemes,
+        HashMap<String, String> metaDict, boolean excludeZeroes) {
+
+        Sheet combinedSheet = new Sheet(comparisonTitle + " - " + metaDict.get("combined"),
+            1, 9);
+        int startRow = 1, px, ex;
+        double baselineValue, resultValue;
+
+        combinedSheet.setColumnWidths(0, 8, ODF_COMBO_VALUES);
+        combinedSheet.setColumnWidth(0, ODF_COMBO_TITLES);
+        combinedSheet.setColumnWidths(2, 4, ODF_COMBO_TITLES);
+
+        setCellValueAndStyle(combinedSheet.getRange(0, 0),
+            metaDict.get("scenarioTitle"), ODSStyles.comboHeader);
+        setCellValueAndStyle(combinedSheet.getRange(0, 1),
+            metaDict.get("area"), ODSStyles.comboHeader);
+        setCellValueAndStyle(combinedSheet.getRange(0, 2),
+            metaDict.get("pressure") + ", " + metaDict.get("theme"), ODSStyles.comboHeader);
+        setCellValueAndStyle(combinedSheet.getRange(0, 3),
+            metaDict.get("pressure"), ODSStyles.comboHeader);
+        setCellValueAndStyle(combinedSheet.getRange(0, 4),
+            metaDict.get("ecosystem")  + ", " + metaDict.get("theme"), ODSStyles.comboHeader);
+        setCellValueAndStyle(combinedSheet.getRange(0, 5),
+            metaDict.get("ecosystem"), ODSStyles.comboHeader);
+        setCellValueAndStyle(combinedSheet.getRange(0, 6),
+            metaDict.get("baseline"), ODSStyles.comboHeader);
+        setCellValueAndStyle(combinedSheet.getRange(0, 7),
+            metaDict.get("scenario"), ODSStyles.comboHeader);
+        setCellValueAndStyle(combinedSheet.getRange(0, 8),
+            metaDict.get("difference"), ODSStyles.comboHeader);
+
+        for (ComparisonResult result : cmpResults) {
+            MultiComparisonAuxiliary layersToList = getLayerIndicesToListForResult(result, excludeZeroes);
+            combinedSheet.appendRows(layersToList.ecosystems.length * layersToList.pressures.length);
+
+            for (int p = 0; p < layersToList.pressures.length; ++p) {
+                px = result.includedPressures[layersToList.pressures[p]];
+                for (int e = 0; e < layersToList.ecosystems.length; ++e) {
+                    int row = startRow + layersToList.ecosystems.length * p + e;
+                    ex = result.includedEcosystems[layersToList.ecosystems[e]];
+                    baselineValue = layersToList.baseline[p][e];
+                    resultValue = result.result[p][e];
+                    setCellValueAndStyle(combinedSheet.getRange(row, 0),
+                        result.calculationName, ODSStyles.comboTheme);
+                    setCellValueAndStyle(combinedSheet.getRange(row, 1),
+                        result.planar ? (int) Math.round(result.area_m2 / 1e6) :
+                                        "N/A", ODSStyles.comboValue);
+                    setCellValueAndStyle(combinedSheet.getRange(row, 2),
+                        pressureThemes.get(px), ODSStyles.comboTheme);
+                    setCellValueAndStyle(combinedSheet.getRange(row, 3),
+                        pressureTitles.get(px), ODSStyles.comboValue);
+                    setCellValueAndStyle(combinedSheet.getRange(row, 4),
+                        ecoThemes.get(ex), ODSStyles.comboTheme);
+                    setCellValueAndStyle(combinedSheet.getRange(row, 5),
+                        ecoTitles.get(ex), ODSStyles.comboValue);
+                    setCellValueAndStyle(combinedSheet.getRange(row, 6),
+                        baselineValue, ODSStyles.comboValue);
+                    setCellValueAndStyle(combinedSheet.getRange(row, 7),
+                        baselineValue + resultValue, ODSStyles.comboValue);
+                    setCellValueAndStyle(combinedSheet.getRange(row, 8),
+                        resultValue, ODSStyles.comboValue);
+                }
+            }
+            startRow += layersToList.ecosystems.length * layersToList.pressures.length;
+        }
+
+        return combinedSheet;
     }
 
     void setCellValueAndStyle(Range cell, Object value, Style style) {
