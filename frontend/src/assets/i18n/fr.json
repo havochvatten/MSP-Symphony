@@ -305,6 +305,7 @@
             "label": "Voir les métadonnées",
             "header": "Métadonnées concernant {{ layerType }}: {{ layerName }}",
             "close": "Fermer",
+            "theme": "groupe",
             "ecosystem": "écosystème",
             "pressure": "pression",
             "no-info": "Métadonnée manquante.",
@@ -523,14 +524,17 @@
             "calculation-basis-info": "La comparaison des valeurs est basée sur les calculs suivants",
             "more": "de plus",
             "delete": "Supprimer ca comparaison composée",
-            "download": "Télécharger la comparaison composée",
-            "download-select-format": "Choisissez le format de téléchargement",
-            "download-format": {
-                "json": "En tant que données (JSON)",
-                "ods": "En tant que feuille de calcul (ODS)"
+            "download": {
+                "header": "Télécharger la comparaison composée",
+                "select-format": "Choisissez le format de téléchargement",
+                "format": {
+                    "json": "En tant que données (JSON)",
+                    "ods": "En tant que feuille de calcul (ODS)"
+                },
+                "include-unchanged": "Inclure les valeurs inchangées",
+                "include-combined-dataset": "Inclure des données combinées",
+                "confirm": "Télécharger"
             },
-            "download-include-unchanged": "Inclure les valeurs inchangées",
-            "confirm-download": "Télécharger",
             "filter-hint": "Filtrer la liste par nom",
             "delete-modal": {
                 "header": "Supprimer la comparaison composée",
@@ -542,7 +546,10 @@
                 "baseline": "Reférence",
                 "difference": "Différence",
                 "pixels": "Nombre de pixels",
-                "non-planar": "Projection non planaire"
+                "non-planar": "Projection non planaire",
+                "scenarioTitle": "Nom du scénario",
+                "scenario": "Scénario",
+                "combined": "Données combinées"
             }
         },
         "area-options": {

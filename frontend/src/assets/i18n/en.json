@@ -305,6 +305,7 @@
             "label": "Show metadata",
             "header": "Metadata regarding {{ layerType }}: {{ layerName }}",
             "close": "Close",
+            "theme": "theme",
             "ecosystem": "ecosystem",
             "pressure": "pressure",
             "no-info": "Metadatum missing.",
@@ -523,14 +524,17 @@
             "calculation-basis-info": "The comparative values are based on the following calculations",
             "more": "more",
             "delete": "Delete compound comparison",
-            "download": "Download compound comparison",
-            "download-select-format": "Select format to download",
-            "download-format": {
-                "json": "As data (JSON)",
-                "ods": "As spreadsheet (ODS)"
+            "download": {
+                "header": "Download compound comparison",
+                "select-format": "Select format to download",
+                "format": {
+                    "json": "As data (JSON)",
+                    "ods": "As spreadsheet (ODS)"
+                },
+                "include-unchanged": "Include unchanged results",
+                "include-combined-dataset": "Include combined dataset",
+                "confirm": "Download"
             },
-            "download-include-unchanged": "Include unchanged results",
-            "confirm-download": "Download",
             "filter-hint": "Filter list item by name",
             "delete-modal": {
                 "header": "Delete compound comparison",
@@ -542,7 +546,10 @@
                 "baseline": "Baseline",
                 "difference": "Difference",
                 "pixels": "Number of pixels",
-                "non-planar": "Non-planar projection"
+                "non-planar": "Non-planar projection",
+                "scenarioTitle": "Scenario title",
+                "scenario": "Scenario",
+                "combined": "Combined dataset"
             }
         },
         "area-options": {
