@@ -305,6 +305,7 @@
             "label": "Visa metadata",
             "header": "Metadata avseende {{ layerType }}: {{ layerName }}",
             "close": "Stäng",
+            "theme": "grupp",
             "ecosystem": "naturvärde",
             "pressure": "belastning",
             "no-info": "Uppgift saknas.",
@@ -523,14 +524,17 @@
             "calculation-basis-info": "Jämförelsevärdena baserar sig på följande beräkningar",
             "more": "till",
             "delete": "Radera sammanslagen jämförelse",
-            "download": "Spara ned sammanslagen jämförelse",
-            "download-select-format": "Välj format att ladda ned",
-            "download-format": {
-                "json": "Som data (JSON)",
-                "ods": "Som kalkylblad (ODS)"
+            "download": {
+                "header": "Spara ned sammanslagen jämförelse",
+                "select-format": "Välj format att ladda ned",
+                "format": {
+                    "json": "Som data (JSON)",
+                    "ods": "Som kalkylblad (ODS)"
+                },
+                "include-unchanged": "Inkludera oförändrade förekomster",
+                "include-combined-dataset": "Inkludera kombinerad data",
+                "confirm": "Ladda ned"
             },
-            "download-include-unchanged": "Inkludera oförändrade förekomster",
-            "confirm-download": "Ladda ned",
             "filter-hint": "Filtrera listan per namn",
             "delete-modal": {
                 "header": "Radera sammanslagen jämförelse",
@@ -542,7 +546,10 @@
                 "baseline": "Baseline",
                 "difference": "Differens",
                 "pixels": "Antal pixlar",
-                "non-planar": "Icke-plan projektion"
+                "non-planar": "Icke-plan projektion",
+                "scenarioTitle": "Scenarionamn",
+                "scenario": "Scenario",
+                "combined": "Kombinerad data"
             }
         },
         "area-options": {

@@ -285,6 +285,7 @@ public class ReportREST {
                                              @PathParam("id") Integer id,
                                              @PathParam("format") String format,
                                              @DefaultValue("false") @QueryParam("nonzero") boolean excludeZeroes,
+                                             @DefaultValue("false") @QueryParam("combined") boolean includeCombinedSheet,
                                              @DefaultValue("") @QueryParam("meta-terms") String metatermsParam,
                                              @DefaultValue("en") @QueryParam("lang") String preferredLanguage) {
 
@@ -302,7 +303,9 @@ public class ReportREST {
                     return ok(reportService.generateMultiComparisonAsJSON(cmp, preferredLanguage, excludeZeroes)).
                         header("Content-Disposition", attachmentHeader).build();
                 else {
-                    byte[] ods = reportService.generateMultiComparisonAsODS(cmp, preferredLanguage, excludeZeroes, metaTerms);
+                    byte[] ods =
+                        reportService.generateMultiComparisonAsODS(cmp, preferredLanguage,
+                                                                   excludeZeroes, includeCombinedSheet, metaTerms);
                     return ok(ods).
                         header("Content-Disposition",attachmentHeader).build();
                 }

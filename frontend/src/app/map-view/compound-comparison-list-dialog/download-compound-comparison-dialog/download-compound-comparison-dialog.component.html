@@ -1,29 +1,34 @@
-<h3>{{ 'map.compound-data-list.download' | translate }}</h3>
+<h3>{{ 'map.compound-data-list.download.header' | translate }}</h3>
 <p>
   <em>“{{ comparisonName }}”</em>
 </p>
 <div class="format-options">
-  <label for="format" class="format-label">{{ 'map.compound-data-list.download-select-format' | translate }}</label>
-  <mat-radio-group (change)="setFormat($event)" name="format">
+  <label for="format" class="format-label">{{ 'map.compound-data-list.download.select-format' | translate }}</label>
+  <mat-radio-group (change)="setFormat($event)" name="format" id="format">
     <mat-radio-button value="json" checked>{{
-        'map.compound-data-list.download-format.json' | translate
+        'map.compound-data-list.download.format.json' | translate
       }}</mat-radio-button>
     <mat-radio-button value="ods">{{
-        'map.compound-data-list.download-format.ods' | translate
+        'map.compound-data-list.download.format.ods' | translate
       }}</mat-radio-button>
   </mat-radio-group>
-  <div class="include-unchanged">
-    <label>
-      <mat-checkbox [(ngModel)]="downloadOptions.includeUnchanged">{{
-          'map.compound-data-list.download-include-unchanged' | translate
+  <div class="include-options">
+    <label for="inc-unchanged">
+      <mat-checkbox id="inc-unchanged" [(ngModel)]="downloadOptions.includeUnchanged">{{
+          'map.compound-data-list.download.include-unchanged' | translate
       }}</mat-checkbox>
+    </label>
+    <label for="inc-combined">
+      <mat-checkbox id="inc-combined" [(ngModel)]="downloadOptions.includeCombined" [disabled]="downloadOptions.asJson">{{
+          'map.compound-data-list.download.include-combined-dataset' | translate
+        }}</mat-checkbox>
     </label>
   </div>
 </div>
 <div class="button-pane">
   <button mat-flat-button
           (click)="download()">{{
-      'map.compound-data-list.confirm-download' | translate
+      'map.compound-data-list.download.confirm' | translate
     }}</button>
   <button mat-flat-button [ngClass]="'secondary'"
           (click)="close()">{{

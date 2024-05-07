@@ -68,7 +68,8 @@ export class CompoundComparisonListDialogComponent extends Listable {
     if(ccDownloadOptions) {
       const params = new URLSearchParams({
         lang: this.translateService.currentLang,
-        nonzero: !ccDownloadOptions.includeUnchanged + ''
+        nonzero: !ccDownloadOptions.includeUnchanged + '',
+        combined: ccDownloadOptions.includeCombined + ''
       });
 
       if (!ccDownloadOptions.asJson) {
@@ -92,8 +93,9 @@ export class CompoundComparisonListDialogComponent extends Listable {
       'report.cumulative-effect-etc.max',
       'map.compound-data-list.terms.total', 'map.compound-data-list.terms.sum', 'map.compound-data-list.terms.baseline',
       'map.compound-data-list.terms.difference', 'map.compound-data-list.compound-comparison-data',
-      'map.compound-data-list.terms.pixels', 'map.compound-data-list.terms.non-planar',
-      'map.metadata.ecosystem', 'map.metadata.pressure']
+      'map.compound-data-list.terms.pixels', 'map.compound-data-list.terms.non-planar', 'map.compound-data-list.terms.combined',
+      'map.compound-data-list.terms.scenarioTitle', 'map.compound-data-list.terms.scenario',
+      'map.metadata.theme', 'map.metadata.ecosystem', 'map.metadata.pressure']
       );
 
     return JSON.stringify({
@@ -108,6 +110,10 @@ export class CompoundComparisonListDialogComponent extends Listable {
       max: titles['report.cumulative-effect-etc.max'],
       pixels: titles['map.compound-data-list.terms.pixels'],
       nonPlanar: titles['map.compound-data-list.terms.non-planar'],
+      combined: titles['map.compound-data-list.terms.combined'],
+      scenarioTitle: titles['map.compound-data-list.terms.scenarioTitle'],
+      scenario: titles['map.compound-data-list.terms.scenario'],
+      theme: titles['map.metadata.theme'],
       ecosystem: titleCase(titles['map.metadata.ecosystem']),
       pressure: titleCase(titles['map.metadata.pressure'])
     });
