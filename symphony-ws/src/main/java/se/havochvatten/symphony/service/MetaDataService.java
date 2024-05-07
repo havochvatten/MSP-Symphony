@@ -56,7 +56,7 @@ public class MetaDataService {
     public Map<Integer, String> getSingleMetaFieldForComponent
         (int baselineVersionId, LayerType category, String field, String preferredLanguage) {
 
-        TypedQuery<Tuple> bandTitlesQuery = em.createQuery(
+        TypedQuery<Tuple> singleMetaFieldQuery = em.createQuery(
             "SELECT m.band.bandnumber, m.metaValue FROM Metadata m " +
                     "WHERE m.band.baseline.id = :baselineVersionId " +
                     "AND m.metaField = :field " +
@@ -70,7 +70,7 @@ public class MetaDataService {
                             "AND m2.language = :language)))" +
                     "ORDER BY m.band.bandnumber", Tuple.class);
 
-        return bandTitlesQuery
+        return singleMetaFieldQuery
             .setParameter("baselineVersionId", baselineVersionId)
             .setParameter("category", category == LayerType.ECOSYSTEM ? "Ecosystem" : "Pressure")
             .setParameter("field", field)
