@@ -70,7 +70,11 @@
         }
       }
 
-      &[data-visible='true'] .group-title {
+      &[data-visible='true'] .group-title .visible {
+        color: $hav-turquoise;
+      }
+
+      .group-title .title-text.selected {
         color: $hav-turquoise;
       }
 

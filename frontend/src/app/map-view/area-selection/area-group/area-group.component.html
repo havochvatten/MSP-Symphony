@@ -21,10 +21,13 @@
       (focus)="this.userArea && highlightArea(group.statePath)"
       (blur)="this.userArea && clearHighlight(group.statePath)"
     >
-      <span>
+      <span
+        class="title-text"
+        [class]="{ 'selected': userArea && isSelected(group.statePath) }"
+        (click)="this.userArea && onSelectArea(group, group, $event); $event.stopPropagation()">
         <app-icon
           [iconType]="group.visible ? 'eye' : 'eye-slash'"
-          (click)="toggleVisible(group.statePath)"
+          (click)="toggleVisible(group.statePath); $event.stopPropagation()"
           class="visible"></app-icon>
         {{ group.name }}
       </span>
