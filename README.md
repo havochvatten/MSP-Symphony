@@ -49,8 +49,6 @@ although any web server capable of serving static content should do (see [Fronte
 has been tested using Wildfly 26.1, PostgreSQL 10 and PostGIS v2.4, but more recent versions should be fine.
 
 The frontend is realized as an Angular application (v 17), built with Node 20.11.1.
-Since we routinely test the UI only on Google Chrome under development, it is recommended specifically as the preferred 
-browser client.
 
 ## Getting the source
 
