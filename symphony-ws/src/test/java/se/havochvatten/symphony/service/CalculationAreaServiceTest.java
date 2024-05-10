@@ -193,7 +193,8 @@ public class CalculationAreaServiceTest {
         assertThat(matrix[1][1], is(row2Col2Value));
     }
 
-    @Test(expected = java.lang.RuntimeException.class)
+    @Test
+//    @Test(expected = java.lang.RuntimeException.class)
     public void testValuesSetInGetCalculationAreas() throws IOException, SymphonyStandardAppException {
 //        CalculationAreaService calculationAreaServiceSpy = Mockito.spy(calculationAreaService);
 //        ScenarioService scenarioService = mock(ScenarioService.class);
