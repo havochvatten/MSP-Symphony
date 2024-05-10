@@ -5,6 +5,9 @@
  */
 package se.havochvatten.symphony.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.locationtech.jts.geom.MultiPolygon;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -18,11 +21,23 @@ import java.io.Serializable;
 @NamedQueries({
 		@NamedQuery(name = "CaPolygon.findAll", query = "SELECT c FROM CaPolygon c"),
 		@NamedQuery(name = "CaPolygon.findForBaselineVersionId",
-				query = "SELECT c FROM CaPolygon c WHERE c" + ".calculationArea.defaultSensitivityMatrix" +
+				query = "SELECT c FROM CaPolygon c WHERE " +
+                        "c.calculationArea.defaultSensitivityMatrix" +
 						".baselineVersion.id = :versionId"),
         @NamedQuery(name = "CaPolygon.findDefaultForBaselineVersionId",
                     query = "SELECT c FROM CaPolygon c WHERE c.calculationArea.defaultSensitivityMatrix" +
                         ".baselineVersion.id = :versionId AND c.calculationArea.careaDefault = true")})
+
+@NamedNativeQueries({
+        @NamedNativeQuery(name = "CaPolygon.findIntersectingScenarioArea",
+                query = "SELECT c.* FROM capolygon c WHERE " +
+                        "cap_carea_id IN " +
+                        "(SELECT carea_id FROM calculationarea " +
+                        "JOIN sensitivitymatrix smx ON smx.sensm_id = calculationarea.carea_default_sensm_id " +
+                        "AND smx.sensm_bver_id = :versionId) AND " +
+                        "ST_Intersects((SELECT polygon FROM scenarioarea WHERE id = :scenarioAreaId), c.pg_polygon)",
+                resultClass = CaPolygon.class)
+})
 public class CaPolygon implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -42,6 +57,10 @@ public class CaPolygon implements Serializable {
     @ManyToOne(optional = false)
     private CalculationArea calculationArea;
 
+    @JsonIgnore()
+    @Column(name = "pg_polygon", columnDefinition = "geometry(MultiPolygon,4326)")
+    private transient MultiPolygon pgPolygon;
+
     public CaPolygon() {}
 
     public Integer getId() {
@@ -59,6 +78,9 @@ public class CaPolygon implements Serializable {
     public void setPolygon(String polygon) {
         this.polygon = polygon;
     }
+
+    @JsonIgnore
+    public MultiPolygon getPgPolygon() { return pgPolygon; }
 
     @XmlTransient
     public CalculationArea getCalculationArea() {

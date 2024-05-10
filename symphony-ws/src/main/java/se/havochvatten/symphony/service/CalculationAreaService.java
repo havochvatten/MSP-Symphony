@@ -16,7 +16,6 @@ import se.havochvatten.symphony.dto.AreaSelectionResponseDto.AreaOverlapFragment
 import se.havochvatten.symphony.mapper.CalculationAreaMapper;
 import se.havochvatten.symphony.entity.Scenario;
 import se.havochvatten.symphony.entity.ScenarioArea;
-import se.havochvatten.symphony.util.Util;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -90,8 +89,7 @@ public class CalculationAreaService {
             ScenarioArea scenarioArea = em.find(ScenarioArea.class, areaId);
             Geometry geoRoi = scenarioArea.getGeometry();
             BaselineVersion baselineVersion = baselineVersionService.getVersionByName(baselineName);
-            List<CalculationArea> calcAreasWithinRoi = getAreasWithinPolygon(geoRoi,
-                    baselineVersion.getId()); // expensive?
+            List<CalculationArea> calcAreasWithinRoi = getCalcAreaForScenarioArea(areaId, baselineVersion.getId());
 
             List<CalculationArea> defaultAreas = calcAreasWithinRoi
                 .stream()
@@ -296,18 +294,13 @@ public class CalculationAreaService {
     }
 
     /**
-     * @return calculation areas within the selected polygon
+     * @return calculation areas matching the scenario area
      */
-    List<CalculationArea> getAreasWithinPolygon(Geometry selectedPolygon, int baseDataVersionId) throws SymphonyStandardAppException {
-        Set<CalculationArea> matchingCalcAreaSet = new HashSet<>();
-        List<CaPolygon> allCaPolygons = em.createNamedQuery("CaPolygon.findForBaselineVersionId",
-                CaPolygon.class).setParameter("versionId", baseDataVersionId).getResultList();
-        for (CaPolygon cap : allCaPolygons) {
-            if (jsonToGeometry(cap.getPolygon()).intersects(selectedPolygon)) {
-                matchingCalcAreaSet.add(cap.getCalculationArea());
-            }
-        }
-        return new ArrayList<>(matchingCalcAreaSet);
+    List<CalculationArea> getCalcAreaForScenarioArea(int scenarioAreaId, int baselineVersionId) {
+        return em.createNamedQuery("CaPolygon.findIntersectingScenarioArea", CaPolygon.class)
+                .setParameter("scenarioAreaId", scenarioAreaId)
+                .setParameter("versionId", baselineVersionId)
+                .getResultList().stream().map(CaPolygon::getCalculationArea).collect(Collectors.toList());
     }
 
     /**
