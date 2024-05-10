@@ -1,24 +1,9 @@
 package se.havochvatten.symphony.entity;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.geotools.data.geojson.GeoJSONReader;
-import org.hibernate.annotations.*;
-import org.hibernate.annotations.CascadeType;
-import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.simple.SimpleFeature;
-import se.havochvatten.symphony.dto.LayerType;
-import se.havochvatten.symphony.dto.MatrixParameters;
-import se.havochvatten.symphony.dto.ScenarioAreaDto;
-import se.havochvatten.symphony.entity.CalculationArea;
-import se.havochvatten.symphony.entity.Scenario;
-import se.havochvatten.symphony.scenario.BandChange;
-import se.havochvatten.symphony.scenario.BandChangeEntity;
-
 import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -28,11 +13,39 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.geotools.data.geojson.GeoJSONReader;
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.opengis.feature.simple.SimpleFeature;
+
+import se.havochvatten.symphony.dto.LayerType;
+import se.havochvatten.symphony.dto.MatrixParameters;
+import se.havochvatten.symphony.dto.ScenarioAreaDto;
+import se.havochvatten.symphony.scenario.BandChange;
+import se.havochvatten.symphony.scenario.BandChangeEntity;
+
 @Entity
 @Table(name = "scenarioarea")
 @NamedQueries({
     @NamedQuery(name = "ScenarioArea.findMany",
-        query = "SELECT s FROM ScenarioArea s WHERE id IN :ids"),
+        query = "SELECT s FROM ScenarioArea s WHERE id IN :ids")
+})
+@NamedNativeQueries({
+    @NamedNativeQuery(name = "ScenarioArea.setSinglePolygon",
+        query = "UPDATE scenarioarea SET polygon = " +
+                    "ST_Multi(ST_GeomFromGeoJSON(cast(cast(feature as json)->>'geometry' as json))) " +
+                    "WHERE id = :id"),
+    @NamedNativeQuery(name = "ScenarioAreas.setPolygon",
+        query = "UPDATE scenarioarea SET polygon = " +
+                    "ST_Multi(ST_GeomFromGeoJSON(cast(cast(feature as json)->>'geometry' as json))) " +
+                    "WHERE scenario = :scenarioId")
 })
 public class ScenarioArea implements BandChangeEntity {
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -81,6 +94,10 @@ public class ScenarioArea implements BandChangeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "custom_calcarea")
     private CalculationArea customCalcArea = null;
+
+    @JsonIgnore()
+    @Column(name = "polygon", columnDefinition = "geometry(MultiPolygon,4326)")
+    public transient MultiPolygon polygon;
 
     public ScenarioArea() {
 
@@ -206,5 +223,10 @@ public class ScenarioArea implements BandChangeEntity {
     public String getName() {
         Object nameValue = getFeature().getProperty("name").getValue();
         return nameValue == null ? this.scenario.getName() + ": (area)" : nameValue.toString();
+    }
+
+    @JsonIgnore
+    public MultiPolygon getPolygon() {
+        return polygon;
     }
 }
