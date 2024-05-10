@@ -6,7 +6,7 @@
                 (toggle)="toggleLeftSidebar()"
                 (navigate)="onNavigate($event)"
                 (openCCList)="onOpenCCList()">
-  <app-slide-view-tab [title]="'map.areas' | translate" icon="globe">
+  <app-slide-view-tab [id]="'areas'" [title]="'map.areas' | translate" icon="globe">
     <app-area-selection
       [areas]="areas | async"
       [drawUserArea]="toggleDrawArea"

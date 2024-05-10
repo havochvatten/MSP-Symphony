@@ -512,11 +512,11 @@
         },
         "special-actions-hint": {
             "emphasis": "Dela eller sammanfoga område",
-            "detail": "{{ altButton }} + klick delar överlappande, {{ altButton }} + Shift + klick sammanfogar"
+            "detail": "{{ altButton }} + klick i kartbilden delar överlappande, {{ altButton }} + Shift + klick sammanfogar"
         },
         "merge-areas-hint" : {
             "emphasis": "Sammanfoga områden",
-            "detail": "{{ altButton }} + Shift + klick på 'sista' området för att sammanfoga."
+            "detail": "{{ altButton }} + Shift + klick i kartbilden på 'sista' området för att sammanfoga."
         },
         "compound-data-list": {
             "title": "Sammanslagen jämförelsedata",

@@ -512,11 +512,11 @@
         },
         "special-actions-hint": {
             "emphasis": "Cut or merge area",
-            "detail": "{{ altButton }} + click splits by intersection, {{ altButton }} + Shift + click merges."
+            "detail": "{{ altButton }} + click in the map view splits by intersection, {{ altButton }} + Shift + click merges."
         },
         "merge-areas-hint" : {
             "emphasis": "Merge areas",
-            "detail": "{{ altButton }} + Shift + click on final area to merge selected."
+            "detail": "{{ altButton }} + Shift + click on final area in the map to merge selected."
         },
         "compound-data-list": {
             "title": "Compound comparisons",

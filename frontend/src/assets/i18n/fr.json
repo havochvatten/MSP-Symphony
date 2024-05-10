@@ -512,11 +512,11 @@
         },
         "special-actions-hint": {
             "emphasis": "Partager ou fusionner zone",
-            "detail": "{{ altButton }} + clic pour séparer par section, {{ altButton }} + Shift + clic pour fusionner"
+            "detail": "{{ altButton }} + clic dans la vue de la carte pour séparer par section, {{ altButton }} + Shift + clic pour fusionner"
         },
         "merge-areas-hint" : {
             "emphasis": "Fusionner les zones",
-            "detail": "{{ altButton }} + Shift + clic pour fusionner la sélection."
+            "detail": "{{ altButton }} + Shift + clic dans la vue de la carte pour fusionner la sélection."
         },
         "compound-data-list": {
             "title": "Comparaisons composées",
