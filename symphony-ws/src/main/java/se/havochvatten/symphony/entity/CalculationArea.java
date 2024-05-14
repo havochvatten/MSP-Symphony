@@ -23,6 +23,15 @@ import java.util.List;
         @NamedQuery(name = "CalculationArea.findByIds", query = "SELECT c FROM CalculationArea c " +
                 "WHERE c.id IN :ids")
 })
+@NamedNativeQueries({
+        @NamedNativeQuery(name = "CalculationArea.findByScenarioArea",
+                query = "SELECT c.* FROM calculationarea c " +
+                        "JOIN sensitivitymatrix smx ON smx.sensm_id = c.carea_default_sensm_id " +
+                        "AND smx.sensm_bver_id = :versionId " +
+                        "JOIN capolygon cap ON cap.cap_carea_id = c.carea_id AND " +
+                        "ST_Intersects((SELECT polygon FROM scenarioarea WHERE id = :scenarioAreaId), cap.pg_polygon)",
+                resultClass = CalculationArea.class)
+})
 public class CalculationArea implements Serializable {
 	private static final long serialVersionUID = 1L;
 
