@@ -147,9 +147,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
                   data: {
                     areaName: area.feature.properties && area.feature.properties['name'] ?
                       area.feature.properties['name'] : '??',
-                    matrices: matrixData.alternativeMatrices,
-                    // TODO: more pragmatic percentile value access applicationwide, this seems convoluted
-                    percentileValue: await this.percentileValue$.pipe(take(1)).toPromise()
+                    matrices: matrixData.alternativeMatrices
                   }
                 }) as [MatrixRef, number] | null);
                 if (response) {

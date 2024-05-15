@@ -110,9 +110,8 @@
             },
             "set-arbitrary-matrix": {
                 "title": "Set sensitivity matrix and calculation area",
-                "detail": "No default matrix coupling could be determined for the area \"{{ areaName }}\".\nTo allow the inclusion of this area in a calculation, an arbitrary sensitivity matrix and a area for value normalization* must first be set, manually.",
+                "detail": "No default matrix coupling could be determined for the area \"{{ areaName }}\".\nTo allow the inclusion of this area in a calculation, an arbitrary sensitivity matrix and corresponding MSP area must first be set",
                 "caution": "Note that cancelling this action will exclude the area from the scenario.",
-                "normalization-description": "*Value normalization means that the result is normalized with respect to the value that {{ percentileValue }}% of data points in the selected area belong to (including coastal areas).",
                 "calculation-area": "Calculation area",
                 "select-matrix-placeholder": "Select sensitivity matrix",
                 "select-area-placeholder": "Select area for normalizing values",
