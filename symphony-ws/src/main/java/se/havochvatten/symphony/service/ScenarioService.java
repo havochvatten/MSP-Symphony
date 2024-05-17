@@ -97,12 +97,20 @@ public class ScenarioService {
         scenario.setOwner(principal.getName());
 
         em.persist(scenario);
+        em.createNamedQuery("ScenarioAreas.setPolygon")
+            .setParameter("scenarioId", scenario.getId())
+            .executeUpdate();
+
         em.flush();
 
         return scenario;
     }
 
     public Scenario update(Scenario updated) {
+        em.createNamedQuery("ScenarioAreas.setPolygon")
+            .setParameter("scenarioId", updated.getId())
+            .executeUpdate();
+
         return em.merge(updated);
     }
 
@@ -119,6 +127,11 @@ public class ScenarioService {
             CalculationArea calculationArea = calculationAreaService.findCalculationArea(calculationAreaId);
             updated.setCustomCalcArea(calculationArea);
         }
+
+        em.createNamedQuery("ScenarioArea.setSinglePolygon")
+            .setParameter("id", updated.getId())
+            .executeUpdate();
+
         return updateArea(updated);
     }
 
@@ -268,6 +281,11 @@ public class ScenarioService {
         }
 
         Scenario finalScenario = em.merge(scenario);
+
+        em.createNamedQuery("ScenarioAreas.setPolygon")
+            .setParameter("scenarioId", scenario.getId())
+            .executeUpdate();
+
         return Arrays.stream(newAreas).map(
             scenarioArea -> new ScenarioAreaDto(scenarioArea, finalScenario.getId()))
             .toArray(ScenarioAreaDto[]::new);

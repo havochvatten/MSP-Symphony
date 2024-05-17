@@ -231,7 +231,7 @@ public class CalculationAreaServiceTest {
         careasMatching.add(ca3);
 
         doReturn(careasMatching)
-                .when(calculationAreaServiceSpy).getAreasWithinPolygon(selectedPolygon, baselineVersionId);
+                .when(calculationAreaServiceSpy).getCalcAreaForScenarioArea(1, baselineVersionId);
 
         List<AreaMatrixMapping> relAreaMatrixMappings = new ArrayList<>();
         AreaMatrixMapping adto = new AreaMatrixMapping(2, 3);

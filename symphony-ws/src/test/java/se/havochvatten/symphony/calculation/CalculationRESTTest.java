@@ -304,16 +304,16 @@ CalculationRESTTest extends RESTTest {
     }
 
     private static void delete (int calcId){
-        System.out.print("Deleting test calculation "+ testCalcId +"... ");
-        given().
-                auth().
-                preemptive().
-                basic(getUsername(), getPassword()).
-                pathParam("id", calcId).
-        when().
-                delete(endpoint("/calculation/{id}")).
-        then().
-                statusCode(200);
+        System.out.print("Deleting test calculation "+ calcId +"... ");
+        given()
+                .auth()
+                .preemptive()
+                .basic(getUsername(), getPassword())
+                .queryParam("ids",  calcId).
+        when()
+                .delete(endpoint("/calculation")).
+        then()
+                .statusCode(200);
     }
 
     @AfterClass

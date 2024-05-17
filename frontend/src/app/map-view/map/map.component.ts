@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, EventEmitter, HostListener, Input, NgModuleRef, OnDestroy, Output
 } from '@angular/core';
 import { Coordinate } from 'ol/coordinate';
-import { Observable, Subscription } from 'rxjs';
+import { firstValueFrom, Observable, skipWhile, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import uuid from "uuid/v4";
 import { State } from '@src/app/app-reducer';
@@ -17,7 +17,7 @@ import { StaticImageOptions } from '@data/calculation/calculation.interfaces';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { CreateUserAreaModalComponent } from './create-user-area-modal/create-user-area-modal.component';
 import { Scenario } from '@data/scenario/scenario.interfaces';
-import { distinctUntilChanged, filter, skip } from 'rxjs/operators';
+import { distinctUntilChanged, filter, mergeMap, skip } from 'rxjs/operators';
 import { Feature, Map as OLMap, View } from 'ol';
 import { isNotNullOrUndefined } from '@src/util/rxjs';
 import { TranslateService } from '@ngx-translate/core';
@@ -40,6 +40,7 @@ import GeoJSON from "ol/format/GeoJSON";
 import { Geometry } from "geojson";
 import { MergeAreasModalComponent } from "@src/app/map-view/map/merge-areas-modal/merge-areas-modal.component";
 import { AreaSelectionConfig } from "@shared/select-intersection/select-intersection.interfaces";
+import { AreaHighlightLayer } from "@src/app/map-view/map/layers/area-highlight-layer";
 
 @Component({
   selector: 'app-map',
@@ -54,11 +55,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   private map?: OLMap;
   private readonly storeSubscription?: Subscription;
-  private readonly areaSubscription?: Subscription;
   private readonly resultSubscription?: Subscription;
   private readonly resultDeletedSubscription?: Subscription;
   private readonly userSubscription?: Subscription;
   private readonly aliasingSubscription: Subscription;
+  private areaSubscription?: Subscription;
   protected activeScenario$: Observable<Scenario | undefined>;
   private scenarioSubscription: Subscription;
   private scenarioCloseSubscription: Subscription;
@@ -66,6 +67,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   // layers
   private background?: BackgroundLayer;
   private areaLayer!: AreaLayer;
+  private areaHighlightLayer!: AreaHighlightLayer;
   private bandLayer?: BandLayer;
   private resultLayerGroup!: ResultLayerGroup;
   private scenarioLayer!: ScenarioLayer;
@@ -99,15 +101,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         this.bandLayer?.setVisibleBands('PRESSURE', components.pressureComponent);
       });
 
-    this.areaSubscription = this.store
-      .select(AreaSelectors.selectSelectedFeatureCollections)
-      .subscribe(value => {
-        if (value && this.map) {
-          this.areaLayer.setAreaLayers(value.collections, value.selected);
-          this.areaLayer.setBoundaries(value.boundary);
-        }
-      });
-
     this.activeScenario$ = this.store.select(ScenarioSelectors.selectActiveScenario);
 
     this.scenarioSubscription = this.activeScenario$.pipe(
@@ -121,10 +114,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.scenarioLayer.clearLayers();
 
       this.scenarioLayer.setScenarioBoundary(scenario);
-
-      // TODO: Should probably be removed as obsolete
-      // if (scenario.changes)
-      //   this.scenarioLayer.addScenarioChangeAreas(scenario.changes);
 
       this.zoomToExtent(this.scenarioLayer.getBoundaryFeature()!.getGeometry()!.getExtent(),
         500);
@@ -156,7 +145,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  ngAfterViewInit() {
+  async ngAfterViewInit() {
     if (!env.map.disableBackgroundMap)
       this.background = new BackgroundLayer('OpenSeaMap');
 
@@ -188,6 +177,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       }),
       pixelRatio: 1 // to fix tile size to 256x256
     });
+
+    const areaObservable = this.store.select(AreaSelectors.selectAreaFeatures),
+      boundaries = await firstValueFrom(this.store.select(AreaSelectors.selectBoundaryFeatures).pipe(
+      skipWhile(value => !value || value.features.length === 0)
+    ));
+
     this.resultLayerGroup = new ResultLayerGroup(this);
     this.map.addLayer(this.resultLayerGroup);
     this.geoJson = new GeoJSON({
@@ -200,14 +195,41 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         this.map, this.dispatchSelectionUpdate, this.zoomToExtent,
         this.onDrawEnd, this.onDrawInvalid, this.onDownloadClick, this.onSplitClick, this.onMergeClick,
         this.scenarioLayer, this.translateService, this.geoJson); // Will add itself to the map
-    this.map.addLayer(this.areaLayer);
 
+    this.areaHighlightLayer = new AreaHighlightLayer(this.map, this.geoJson);
+
+    this.areaLayer.setBoundaries(boundaries);
+
+    this.areaSubscription = this.store.select(AreaSelectors.selectAreaFeatures)
+      .pipe(skipWhile(value => !value || value.length === 0))
+      .subscribe((features) =>
+        {
+          this.areaLayer.mapAreaFeatures(features);
+          this.areaHighlightLayer.mapAreaLayers(features);
+        }
+      );
+
+    this.store.select(
+      AreaSelectors.selectVisibleAreas).subscribe((paths) => {
+      this.areaLayer.setVisibleAreas(paths.visible, paths.selected);
+    });
+
+    this.map.addLayer(this.areaLayer);
     this.map.addLayer(this.scenarioLayer);
+    this.map.addLayer(this.areaHighlightLayer);
   }
 
   public clearResult() {
     this.resultLayerGroup.clearResult();
     this.store.dispatch(CalculationActions.resetComparisonLegend())
+  }
+
+  public highlightArea = (statePath: StatePath, highlight: boolean) => {
+    if (highlight) {
+      this.areaHighlightLayer.highlightArea(statePath);
+    } else {
+      this.areaHighlightLayer.clearHighlight(statePath);
+    }
   }
 
   public emitLayerChange(resultIds: number[], cmpCount: number):void {
@@ -223,8 +245,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  private dispatchSelectionUpdate = (features: Feature[] | undefined, overlap: boolean) => {
-    this.store.dispatch(AreaActions.updateSelectedArea({ statePaths: features?.map(f => f.get('statePath')), overlap }));
+  private dispatchSelectionUpdate = (statePath: StatePath | undefined, expand: boolean) => {
+    this.store.dispatch(AreaActions.updateSelectedArea({ statePath, expand }));
   };
 
   ngOnDestroy() {

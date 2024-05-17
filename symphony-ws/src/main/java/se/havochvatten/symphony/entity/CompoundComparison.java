@@ -133,10 +133,7 @@ public class CompoundComparison {
         return result;
     }
 
-    public void setCmpResultForCalculation(
-        int calculationId, int[] ecosystems, int[] pressures, double[][] result, String calculationName,
-        double area_m2, boolean planar, StatisticsResult statistics) {
-        ComparisonResult comparisonResult = new ComparisonResult(ecosystems, pressures, result, calculationName, area_m2, planar, statistics);
+    public void setCmpResultForCalculation(int calculationId, ComparisonResult comparisonResult) {
         this.result.put(calculationId, comparisonResult);
     }
 

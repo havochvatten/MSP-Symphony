@@ -110,9 +110,8 @@
             },
             "set-arbitrary-matrix": {
                 "title": "Set sensitivity matrix and calculation area",
-                "detail": "No default matrix coupling could be determined for the area \"{{ areaName }}\".\nTo allow the inclusion of this area in a calculation, an arbitrary sensitivity matrix and a area for value normalization* must first be set, manually.",
+                "detail": "No default matrix coupling could be determined for the area \"{{ areaName }}\".\nTo allow the inclusion of this area in a calculation, an arbitrary sensitivity matrix and corresponding MSP area must first be set",
                 "caution": "Note that cancelling this action will exclude the area from the scenario.",
-                "normalization-description": "*Value normalization means that the result is normalized with respect to the value that {{ percentileValue }}% of data points in the selected area belong to (including coastal areas).",
                 "calculation-area": "Calculation area",
                 "select-matrix-placeholder": "Select sensitivity matrix",
                 "select-area-placeholder": "Select area for normalizing values",
@@ -305,6 +304,7 @@
             "label": "Show metadata",
             "header": "Metadata regarding {{ layerType }}: {{ layerName }}",
             "close": "Close",
+            "theme": "theme",
             "ecosystem": "ecosystem",
             "pressure": "pressure",
             "no-info": "Metadatum missing.",
@@ -483,6 +483,9 @@
             "edit": {
                 "label": "Edit area"
             },
+            "expand": {
+                "label": "Expand area group"
+            },
             "delete": {
                 "label": "Delete",
                 "modal": {
@@ -508,11 +511,11 @@
         },
         "special-actions-hint": {
             "emphasis": "Cut or merge area",
-            "detail": "{{ altButton }} + click splits by intersection, {{ altButton }} + Shift + click merges."
+            "detail": "{{ altButton }} + click in the map view splits by intersection, {{ altButton }} + Shift + click merges."
         },
         "merge-areas-hint" : {
             "emphasis": "Merge areas",
-            "detail": "{{ altButton }} + Shift + click on final area to merge selected."
+            "detail": "{{ altButton }} + Shift + click on final area in the map to merge selected."
         },
         "compound-data-list": {
             "title": "Compound comparisons",
@@ -520,14 +523,17 @@
             "calculation-basis-info": "The comparative values are based on the following calculations",
             "more": "more",
             "delete": "Delete compound comparison",
-            "download": "Download compound comparison",
-            "download-select-format": "Select format to download",
-            "download-format": {
-                "json": "As data (JSON)",
-                "ods": "As spreadsheet (ODS)"
+            "download": {
+                "header": "Download compound comparison",
+                "select-format": "Select format to download",
+                "format": {
+                    "json": "As data (JSON)",
+                    "ods": "As spreadsheet (ODS)"
+                },
+                "include-unchanged": "Include unchanged results",
+                "include-combined-dataset": "Include combined dataset",
+                "confirm": "Download"
             },
-            "download-allow-zero": "Allow zero values",
-            "confirm-download": "Download",
             "filter-hint": "Filter list item by name",
             "delete-modal": {
                 "header": "Delete compound comparison",
@@ -536,9 +542,13 @@
             "terms": {
                 "total": "Total",
                 "sum": "Sum",
+                "baseline": "Baseline",
                 "difference": "Difference",
                 "pixels": "Number of pixels",
-                "non-planar": "Non-planar projection"
+                "non-planar": "Non-planar projection",
+                "scenarioTitle": "Scenario title",
+                "scenario": "Scenario",
+                "combined": "Combined dataset"
             }
         },
         "area-options": {

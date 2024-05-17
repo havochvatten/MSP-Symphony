@@ -6,12 +6,16 @@
                 (toggle)="toggleLeftSidebar()"
                 (navigate)="onNavigate($event)"
                 (openCCList)="onOpenCCList()">
-  <app-slide-view-tab [title]="'map.areas' | translate" icon="globe">
+  <app-slide-view-tab [id]="'areas'" [title]="'map.areas' | translate" icon="globe">
     <app-area-selection
       [areas]="areas | async"
       [drawUserArea]="toggleDrawArea"
       [zoomToArea]="zoomToArea"
+      [highlight]="highlight"
     ></app-area-selection>
+  </app-slide-view-tab>
+  <app-slide-view-tab [id]="'scenario'" [title]="'map.editor.title' | translate" icon="calculate">
+    <app-scenario-editor></app-scenario-editor>
   </app-slide-view-tab>
   <app-slide-view-tab [title]="'map.intensity.ecosystems' | translate" icon="fish">
     <app-band-selection
@@ -27,15 +31,11 @@
       [bandGroups]="$any(metadata | async).pressureComponent"
     ></app-band-selection>
   </app-slide-view-tab>
-  <app-slide-view-tab [id]="'scenario'" [title]="'map.editor.title' | translate" icon="calculate">
-<!--    <router-outlet></router-outlet>-->
-    <app-scenario-editor></app-scenario-editor> <!-- Add [named?] router-outlet?-->
+  <app-slide-view-tab [title]="'map.compare.title' | translate" icon="compare">
+    <app-comparison></app-comparison>
   </app-slide-view-tab>
   <app-slide-view-tab [title]="'map.history.title' | translate" icon="report">
     <app-history></app-history>
-  </app-slide-view-tab>
-  <app-slide-view-tab [title]="'map.compare.title' | translate" icon="compare">
-    <app-comparison></app-comparison>
   </app-slide-view-tab>
   <div id="map-overlay">
     <app-active-scenario-display *ngIf="activeScenario$ | async"

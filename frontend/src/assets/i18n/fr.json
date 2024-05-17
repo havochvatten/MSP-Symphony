@@ -110,9 +110,8 @@
             },
             "set-arbitrary-matrix": {
                 "title": "Déterminer une matrice de sensibilité et la zone de calcul",
-                "detail": "Aucun couplage matriciel par défaut n'a pu être déterminé pour la zone \"{{ areaName }}\".\nPour que cette zone soit incluse dans un calcul, une matrice de sensibilité arbitraire et une zone pour normalisation des valeurs* doivent d'abord être déterminées.",
+                "detail": "Aucun couplage matriciel par défaut n'a pu être déterminé pour la zone \"{{ areaName }}\".\nAfin d'analyser la zone, une matrice de sensibilité arbitraire et une zone d'aménagement maritime doivent d'abord être sélectionnées.",
                 "caution": "Veuillez noter que si vous annulez cette action, la zone sera exclue du scénario.",
-                "normalization-description": "*La normalisation des valeurs signifie que le résultat est normalisé par rapport à la valeur à laquelle {{ percentileValue }}% des points de données de la zone sélectionnée appartiennent (y compris les zones côtières).",
                 "calculation-area": "Zone de calcul",
                 "select-matrix-placeholder": "Sélectionnez une matrice de sensibilité",
                 "select-area-placeholder": "Sélectionnez une zone pour normaliser les valeurs",
@@ -305,6 +304,7 @@
             "label": "Voir les métadonnées",
             "header": "Métadonnées concernant {{ layerType }}: {{ layerName }}",
             "close": "Fermer",
+            "theme": "groupe",
             "ecosystem": "écosystème",
             "pressure": "pression",
             "no-info": "Métadonnée manquante.",
@@ -483,6 +483,9 @@
             "edit": {
                 "label": "Modifier la zone"
             },
+            "expand": {
+                "label": "Agrandir le groupe de zones"
+            },
             "delete": {
                 "label": "Supprimer",
                 "modal": {
@@ -508,11 +511,11 @@
         },
         "special-actions-hint": {
             "emphasis": "Partager ou fusionner zone",
-            "detail": "{{ altButton }} + clic pour séparer par section, {{ altButton }} + Shift + clic pour fusionner"
+            "detail": "{{ altButton }} + clic dans la vue de la carte pour séparer par section, {{ altButton }} + Shift + clic pour fusionner"
         },
         "merge-areas-hint" : {
             "emphasis": "Fusionner les zones",
-            "detail": "{{ altButton }} + Shift + clic pour fusionner la sélection."
+            "detail": "{{ altButton }} + Shift + clic dans la vue de la carte pour fusionner la sélection."
         },
         "compound-data-list": {
             "title": "Comparaisons composées",
@@ -520,14 +523,17 @@
             "calculation-basis-info": "La comparaison des valeurs est basée sur les calculs suivants",
             "more": "de plus",
             "delete": "Supprimer ca comparaison composée",
-            "download": "Télécharger la comparaison composée",
-            "download-select-format": "Choisissez le format de téléchargement",
-            "download-format": {
-                "json": "En tant que données (JSON)",
-                "ods": "En tant que feuille de calcul (ODS)"
+            "download": {
+                "header": "Télécharger la comparaison composée",
+                "select-format": "Choisissez le format de téléchargement",
+                "format": {
+                    "json": "En tant que données (JSON)",
+                    "ods": "En tant que feuille de calcul (ODS)"
+                },
+                "include-unchanged": "Inclure les valeurs inchangées",
+                "include-combined-dataset": "Inclure des données combinées",
+                "confirm": "Télécharger"
             },
-            "download-allow-zero": "Inclure les valeurs nulles",
-            "confirm-download": "Télécharger",
             "filter-hint": "Filtrer la liste par nom",
             "delete-modal": {
                 "header": "Supprimer la comparaison composée",
@@ -536,9 +542,13 @@
             "terms": {
                 "total": "Total",
                 "sum": "Somme",
+                "baseline": "Reférence",
                 "difference": "Différence",
                 "pixels": "Nombre de pixels",
-                "non-planar": "Projection non planaire"
+                "non-planar": "Projection non planaire",
+                "scenarioTitle": "Nom du scénario",
+                "scenario": "Scénario",
+                "combined": "Données combinées"
             }
         },
         "area-options": {
