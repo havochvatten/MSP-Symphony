@@ -6,8 +6,8 @@ import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as area } from '@data/area/area.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { MatrixSelectionComponent } from './matrix-selection.component';
-import { MatRadioButton, MatRadioModule } from "@angular/material/radio";
-import { MatSelect, MatSelectModule } from "@angular/material/select";
+import { MatRadioModule } from "@angular/material/radio";
+import { MatSelectModule } from "@angular/material/select";
 import { NormalizationType } from "@data/calculation/calculation.service";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 
@@ -24,7 +24,7 @@ describe('MatrixSelectionComponent', () => {
         MatSelectModule,
         TranslateModule.forRoot()
       ],
-      declarations: [MatrixSelectionComponent, MatRadioButton, MatSelect],
+      declarations: [ MatrixSelectionComponent ],
       providers: [
         TranslateService,
         provideMockStore(

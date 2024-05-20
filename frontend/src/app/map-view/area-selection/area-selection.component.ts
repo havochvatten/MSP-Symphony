@@ -19,7 +19,7 @@ import {
   UploadUserAreaModalComponent
 } from "@src/app/map-view/map/upload-user-area-modal/upload-user-area-modal.component";
 import { MessageActions } from "@data/message";
-import * as uuid from "uuid/v4";
+import  { v4 as uuid } from "uuid";
 import { TranslateService } from "@ngx-translate/core";
 
 @Component({

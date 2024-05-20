@@ -2,16 +2,16 @@ import VectorSource from "ol/source/Vector";
 import { Map as OLMap } from "ol";
 import GeoJSON from "ol/format/GeoJSON";
 import { FeatureCollection, StatePath } from "@data/area/area.interfaces";
-import { Geometry } from "ol/geom";
 import Style from "ol/style/Style";
 import { Fill, Stroke } from "ol/style";
 import LayerGroup from "ol/layer/Group";
 import VectorImageLayer from "ol/layer/VectorImage";
 import { simpleHash } from "@shared/common.util";
+import Feature from "ol/Feature";
 
 export class AreaHighlightLayer extends LayerGroup {
 
-  private featureMap = new Map<string, VectorImageLayer<VectorSource<Geometry>>>();
+  private featureMap = new Map<string, VectorImageLayer<Feature>>();
   private highlightStyle = new Style({
     stroke: new Stroke({
       color: 'red',
