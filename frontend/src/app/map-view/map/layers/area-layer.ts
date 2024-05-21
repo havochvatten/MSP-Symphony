@@ -86,9 +86,9 @@ class DrawAreaInteraction extends Draw {
   }
 }
 
-class AreaLayer extends VectorLayer<VectorSource> {
+class AreaLayer extends VectorLayer<Feature> {
   private readonly drawAreaInteraction: DrawAreaInteraction;
-  private readonly boundaryLayer: VectorLayer<VectorSource>;
+  private readonly boundaryLayer: VectorLayer<Feature>;
   private readonly areaSelect: AreaSelect;
   private drawInteractionActive = false;
   private boundaries?: FeatureLike[];
@@ -156,7 +156,7 @@ class AreaLayer extends VectorLayer<VectorSource> {
     });
   }
 
-  private async addHoverInteraction(map: OLMap, areaLayer: VectorLayer<VectorSource>) {
+  private async addHoverInteraction(map: OLMap, areaLayer: VectorLayer<Feature>) {
     const container = document.getElementById('popup') as HTMLElement;
     const content = document.getElementById('popup-title') as HTMLElement;
     const body = document.getElementById('popup-body') as HTMLElement;
@@ -364,7 +364,7 @@ class AreaLayer extends VectorLayer<VectorSource> {
   }
 }
 
-class BoundaryLayer extends VectorLayer<VectorSource> {
+class BoundaryLayer extends VectorLayer<Feature> {
   constructor() {
     super({
       source: new VectorSource({ format: new GeoJSON() }),

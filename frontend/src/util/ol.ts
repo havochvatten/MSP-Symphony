@@ -5,7 +5,7 @@ import { Geometry } from 'ol/geom';
 
 /** @returns The features whose statePath property is contained in `paths`, or null if not found */
 export function getFeaturesByStatePaths(
-  source: VectorSource,
+  source: VectorSource<Feature>,
   paths: StatePath[]
 ): Feature<Geometry>[] | null {
   const matchingFeatures: Feature<Geometry>[] = [];

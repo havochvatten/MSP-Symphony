@@ -3,7 +3,7 @@ import { AfterViewInit, Component, EventEmitter, HostListener, Input, NgModuleRe
 import { Coordinate } from 'ol/coordinate';
 import { firstValueFrom, Observable, skipWhile, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
-import uuid from "uuid/v4";
+import { v4 as uuid } from 'uuid';
 import { State } from '@src/app/app-reducer';
 import { MetadataSelectors } from '@data/metadata';
 import { AreaActions, AreaSelectors } from '@data/area';

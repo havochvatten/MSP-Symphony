@@ -8,12 +8,9 @@ import {
   OnChanges,
   AfterViewInit
 } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { IconType } from '@shared/icon/icon.component';
-import * as uuid from 'uuid/v4';
-import { State } from "@src/app/app-reducer";
-import { CalculationSelectors } from "@data/calculation";
+import { v4 as uuid } from 'uuid';
 import { Observable } from 'rxjs/internal/Observable';
 import {
   CompoundComparisonListDialogComponent
