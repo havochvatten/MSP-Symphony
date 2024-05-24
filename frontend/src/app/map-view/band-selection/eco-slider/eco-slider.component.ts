@@ -11,7 +11,6 @@ import { Store } from '@ngrx/store';
 import { fromEvent } from 'rxjs';
 import { State } from '@src/app/app-reducer';
 import { Band } from '@data/metadata/metadata.interfaces';
-import { MetadataActions } from '@data/metadata';
 import { ScenarioActions } from "@data/scenario";
 import { debounceTime, map } from "rxjs/operators";
 
@@ -86,7 +85,4 @@ export class EcoSliderComponent implements  OnChanges, AfterViewInit {
     return !(this.overridden || this.groupSetting);
   }
 
-  updateLayerOpacity(value: number) {
-    this.store.dispatch(MetadataActions.updateLayerOpacity({ value, band: this.band }));
-  }
 }

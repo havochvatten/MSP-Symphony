@@ -84,6 +84,14 @@ export class BandSelectionComponent implements OnInit, OnChanges {
     this.store.dispatch(MetadataActions.setVisibility({ band, value }));
   };
 
+  onChangeVisibleUncertainty = (visible: boolean, band: Band) => {
+    if (visible) {
+      this.store.dispatch(MetadataActions.showUncertainty({ band }));
+    } else {
+      this.store.dispatch(MetadataActions.hideUncertainty());
+    }
+  };
+
   get placeholder() {
     return this.bandType === 'ecoComponents'
       ? 'map.eco-component.search.placeholder'

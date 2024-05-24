@@ -40,6 +40,7 @@ import { BatchProgressComponent } from './batch-progress-display/batch-progress.
 import { ConfirmGenerateComparisonComponent } from './calculation-history/confirm-generate-comparison/confirm-generate-comparison.component';
 import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component';
 import { DownloadCompoundComparisonDialogComponent } from './compound-comparison-list-dialog/download-compound-comparison-dialog/download-compound-comparison-dialog.component';
+import { UncertaintyLegendComponent } from "@src/app/map-view/uncertainty-legend/uncertainty-legend.component";
 
 @NgModule({
   declarations: [
@@ -71,17 +72,18 @@ import { DownloadCompoundComparisonDialogComponent } from './compound-comparison
     CompoundComparisonListDialogComponent,
     DownloadCompoundComparisonDialogComponent,
   ],
-    imports: [
-        SharedModule,
-        CoreModule,
-        FormsModule,
-        ScenarioEditorModule,
-        MatSelectModule,
-        MatProgressSpinnerModule,
-        MatCheckboxModule,
-        MatButtonModule,
-        MatRadioModule
-    ],
+  imports: [
+    SharedModule,
+    CoreModule,
+    FormsModule,
+    ScenarioEditorModule,
+    MatSelectModule,
+    MatProgressSpinnerModule,
+    MatCheckboxModule,
+    MatButtonModule,
+    MatRadioModule,
+    UncertaintyLegendComponent
+  ],
   providers: [AnchorPipe, DialogService],
   exports: [MainViewComponent, ComparisonComponent]
 })

@@ -17,7 +17,7 @@ import {
 @Component({
   selector: 'app-compound-comparison-list-dialog',
   templateUrl: './compound-comparison-list-dialog.component.html',
-  styleUrls: ['./compound-comparison-list-dialog.component.scss', '../list-actions.scss']
+  styleUrls: ['./compound-comparison-list-dialog.component.scss']
 })
 export class CompoundComparisonListDialogComponent extends Listable {
 

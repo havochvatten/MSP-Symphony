@@ -137,11 +137,12 @@
             },
             "band-pressures": {
                 "intensity": "Edit intensity",
-                "opacity": "Layer opacity",
                 "percentage": "Percentage",
                 "constant-increase": "Constant",
-                "intensity-label": "Show/hide intensity",
-                "opacity-label": "Show/hide opacity",
+                "show-intensity": "Show intensity controls",
+                "hide-intensity": "Hide intensity controls",
+                "show-uncertainty": "Show uncertainty",
+                "hide-uncertainty": "Hide uncertainty",
                 "note": "If you have modified any values in the data layers, you can save these modifications as new layers, and reuse them in other calculations.",
                 "no-scenario-selected": "Select a scenario to adjust intensity values"
             },
@@ -503,7 +504,10 @@
             "result": "Cumulative impact",
             "comparison": "Relative pressure difference",
             "ecosystem": "Ecosystem value",
-            "pressure": "Pressure intensity"
+            "pressure": "Pressure intensity",
+            "uncertainty": {
+                "knowledge-level": "Knowledge level"
+            }
         },
         "area-selection-hint": {
             "emphasis": "Select / deselect multiple areas",

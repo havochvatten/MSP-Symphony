@@ -17,7 +17,7 @@ import { StaticImageOptions } from '@data/calculation/calculation.interfaces';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { CreateUserAreaModalComponent } from './create-user-area-modal/create-user-area-modal.component';
 import { Scenario } from '@data/scenario/scenario.interfaces';
-import { distinctUntilChanged, filter, mergeMap, skip } from 'rxjs/operators';
+import { distinctUntilChanged, filter, skip, take } from 'rxjs/operators';
 import { Feature, Map as OLMap, View } from 'ol';
 import { isNotNullOrUndefined } from '@src/util/rxjs';
 import { TranslateService } from '@ngx-translate/core';
@@ -41,6 +41,11 @@ import { Geometry } from "geojson";
 import { MergeAreasModalComponent } from "@src/app/map-view/map/merge-areas-modal/merge-areas-modal.component";
 import { AreaSelectionConfig } from "@shared/select-intersection/select-intersection.interfaces";
 import { AreaHighlightLayer } from "@src/app/map-view/map/layers/area-highlight-layer";
+import { UncertaintyLayer } from "@src/app/map-view/map/layers/uncertainty-layer";
+import {
+  BandType,
+  UncertaintyMap,
+} from "@data/metadata/metadata.interfaces";
 
 @Component({
   selector: 'app-map',
@@ -64,6 +69,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private scenarioSubscription: Subscription;
   private scenarioCloseSubscription: Subscription;
 
+  private uncertaintySubject$?: Observable<UncertaintyMap | null>
+  private uncertaintySubscription$?: Subscription;
+
   // layers
   private background?: BackgroundLayer;
   private areaLayer!: AreaLayer;
@@ -71,6 +79,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private bandLayer?: BandLayer;
   private resultLayerGroup!: ResultLayerGroup;
   private scenarioLayer!: ScenarioLayer;
+  private uncertaintyLayers!: {
+    ECOSYSTEM: UncertaintyLayer;
+    PRESSURE: UncertaintyLayer;
+    ECOSYSTEM_OL: UncertaintyLayer;
+    PRESSURE_OL: UncertaintyLayer;
+  };
 
   public baselineName = '';
   private geoJson?: GeoJSON;
@@ -196,7 +210,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         this.onDrawEnd, this.onDrawInvalid, this.onDownloadClick, this.onSplitClick, this.onMergeClick,
         this.scenarioLayer, this.translateService, this.geoJson); // Will add itself to the map
 
-    this.areaHighlightLayer = new AreaHighlightLayer(this.map, this.geoJson);
+    this.areaHighlightLayer = new AreaHighlightLayer(this.geoJson);
 
     this.areaLayer.setBoundaries(boundaries);
 
@@ -214,9 +228,44 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.areaLayer.setVisibleAreas(paths.visible, paths.selected);
     });
 
-    this.map.addLayer(this.areaLayer);
-    this.map.addLayer(this.scenarioLayer);
-    this.map.addLayer(this.areaHighlightLayer);
+    this.uncertaintySubject$ = this.store.select(MetadataSelectors.selectUncertaintyMap).pipe(
+      skipWhile(uncertaintyMap => uncertaintyMap === null)
+    );
+
+    this.uncertaintySubscription$ = this.uncertaintySubject$.pipe(
+      take(1)
+      ).subscribe((uncertaintyMap ) => {
+
+      this.uncertaintyLayers = {
+        ECOSYSTEM: new UncertaintyLayer(uncertaintyMap!.ECOSYSTEM, true, this.geoJson!),
+        PRESSURE: new UncertaintyLayer(uncertaintyMap!.PRESSURE, true, this.geoJson!),
+        ECOSYSTEM_OL: new UncertaintyLayer(uncertaintyMap!.ECOSYSTEM, false, this.geoJson!),
+        PRESSURE_OL: new UncertaintyLayer(uncertaintyMap!.PRESSURE, false, this.geoJson!)
+      };
+
+      this.map!.getLayers().insertAt(1, this.uncertaintyLayers.ECOSYSTEM);
+      this.map!.getLayers().insertAt(1, this.uncertaintyLayers.PRESSURE);
+      this.map!.addLayer(this.uncertaintyLayers.ECOSYSTEM_OL);
+      this.map!.addLayer(this.uncertaintyLayers.PRESSURE_OL);
+
+      this.store.select(MetadataSelectors.selectVisibleUncertainty).subscribe( (visibleUncertainty) => {
+        this.uncertaintyLayers.ECOSYSTEM.clear();
+        this.uncertaintyLayers.PRESSURE.clear();
+        this.uncertaintyLayers.ECOSYSTEM_OL.clear();
+        this.uncertaintyLayers.PRESSURE_OL.clear();
+
+        if (visibleUncertainty !== null) {
+          this.showUncertainty(
+            visibleUncertainty.band.symphonyCategory,
+            visibleUncertainty.band.bandNumber,
+            visibleUncertainty.opaque);
+        }
+      });
+    });
+
+    this.map!.addLayer(this.areaLayer);
+    this.map!.addLayer(this.scenarioLayer);
+    this.map!.addLayer(this.areaHighlightLayer);
   }
 
   public clearResult() {
@@ -230,6 +279,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     } else {
       this.areaHighlightLayer.clearHighlight(statePath);
     }
+  }
+
+  public showUncertainty = (bandType: BandType, bandNumber: number, opaqueLayer: boolean) => {
+    const layerKey = bandType + (opaqueLayer ? '' : '_OL') as keyof typeof this.uncertaintyLayers;
+    this.uncertaintyLayers[layerKey].highlightUncertainty(bandNumber);
   }
 
   public emitLayerChange(resultIds: number[], cmpCount: number):void {

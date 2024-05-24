@@ -1,0 +1,66 @@
+:host {
+  h5 {
+    font-weight: 600;
+    margin: 0 0 0.8rem;
+
+    span.component {
+      display: block;
+      font-weight: 400;
+      font-style: oblique;
+    }
+  }
+
+  #opaque-gradient {
+
+    .labels-bar {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+
+      span {
+        font-weight: 500;
+        font-size: 1.1rem;
+        letter-spacing: 0.05rem;
+        color: #000;
+      }
+    }
+
+    .color-bar {
+      background: linear-gradient(to right, rgba(255, 255, 255, 0.1) 8%, rgba(255, 0, 0, 1) 92%);
+      height: 32px;
+      width: 100%;
+      border: 1px solid #303030;
+    }
+  }
+
+  #symbolic-legend {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+
+    .symbolic-legend-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-position: 50% 66%;
+      background-repeat: no-repeat;
+      height: 50px;
+      width: 30%;
+
+      span {
+        font-size: 1.1rem;
+        font-weight: 500;
+        letter-spacing: 0.05rem;
+        color: #000;
+      }
+
+      &.low {
+        background-image: url('~src/assets/high-uncertainty-single.svg');
+      }
+
+      &.mid {
+        background-image: url('~src/assets/mid-uncertainty-single.svg');
+      }
+    }
+  }
+}
