@@ -32,10 +32,7 @@ public class MetaDataServiceTest {
 
         TypedQuery<SymphonyBand> mockedBandQuery = mock(TypedQuery.class);
         TypedQuery<Metadata> mockedMetadataQuery = mock(TypedQuery.class);
-        when(metaDataService.em.createQuery(
-            "SELECT b FROM SymphonyBand b " +
-            "WHERE b.baseline.id = :baselineVersionId " +
-            "AND b.category = :category", SymphonyBand.class))
+        when(metaDataService.em.createQuery(MetaDataService.sparseBandQuery, SymphonyBand.class))
             .thenReturn(mockedBandQuery);
 
         when(mockedBandQuery.setParameter(anyString(), anyObject())).thenReturn(mockedBandQuery);
