@@ -71,6 +71,7 @@ import { UncertaintyLegendComponent } from "@src/app/map-view/uncertainty-legend
     ConfirmGenerateComparisonComponent,
     CompoundComparisonListDialogComponent,
     DownloadCompoundComparisonDialogComponent,
+    UncertaintyLegendComponent
   ],
   imports: [
     SharedModule,
@@ -81,8 +82,7 @@ import { UncertaintyLegendComponent } from "@src/app/map-view/uncertainty-legend
     MatProgressSpinnerModule,
     MatCheckboxModule,
     MatButtonModule,
-    MatRadioModule,
-    UncertaintyLegendComponent
+    MatRadioModule
   ],
   providers: [AnchorPipe, DialogService],
   exports: [MainViewComponent, ComparisonComponent]
