@@ -23,6 +23,15 @@ public class MetaDataService {
     @EJB
     BaselineVersionService baselineVersionService;
 
+    // explicit fetch to load lazy-loaded collection
+    public final static String fullBandQuery = "SELECT b FROM SymphonyBand b " +
+            "LEFT JOIN FETCH b.uncertaintyPartitions WHERE b.baseline.id = :baselineVersionId " +
+            "AND b.category = :category";
+    
+    public final static String sparseBandQuery = "SELECT b FROM SymphonyBand b " +
+            "WHERE b.baseline.id = :baselineVersionId " +
+            "AND b.category = :category ";
+
     public final static String fullMetaQuery = "SELECT m FROM Metadata m " +
             "WHERE m.band IN :bandsList " +
             "AND (m.language = :language " +
@@ -82,7 +91,7 @@ public class MetaDataService {
     public MetadataComponentDto getComponentDto(String componentName, int baselineVersionId, String language, boolean sparse) {
         MetadataComponentDto componentDto = new MetadataComponentDto();
 
-        List<SymphonyBand> bandsList = getBandsForBaselineComponent(componentName, baselineVersionId);
+        List<SymphonyBand> bandsList = getBandsForBaselineComponent(componentName, baselineVersionId, sparse);
 
         // Select all Metadata for the given SymphonyBands and the given language.
         // If a translation for a field is not found, fall back to baseline default language.
@@ -107,7 +116,7 @@ public class MetaDataService {
                     .filter(m2 -> m2.getMetaField().equals("symphonytheme")
                                && m2.getMetaValue().equals(t))
                     .map(m2 -> {
-                        SymphonyBandDto propertyDto = new SymphonyBandDto(m2.getBand());
+                        SymphonyBandDto propertyDto = new SymphonyBandDto(m2.getBand(), !sparse);
                         m2.getBand().getMetaValues().stream()
                             .filter(metadataList::contains)
                             .forEach(m -> propertyDto.getMeta().put(m.getMetaField(), m.getMetaValue()));
@@ -119,11 +128,8 @@ public class MetaDataService {
         return componentDto;
     }
 
-    public List<SymphonyBand> getBandsForBaselineComponent(String componentName, int baselineVersionId) {
-        return em.createQuery(
-            "SELECT b FROM SymphonyBand b " +
-                "WHERE b.baseline.id = :baselineVersionId " +
-                "AND b.category = :category", SymphonyBand.class)
+    public List<SymphonyBand> getBandsForBaselineComponent(String componentName, int baselineVersionId, boolean sparse) {
+        return em.createQuery(sparse ? sparseBandQuery : fullBandQuery, SymphonyBand.class)
             .setParameter("baselineVersionId", baselineVersionId)
             .setParameter("category", componentName)
             .getResultList();
