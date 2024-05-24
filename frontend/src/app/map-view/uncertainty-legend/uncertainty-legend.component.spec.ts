@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UncertaintyLegendComponent } from './uncertainty-legend.component';
+import { provideMockStore } from "@ngrx/store/testing";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 
 describe('UncertaintyLegendComponent', () => {
   let component: UncertaintyLegendComponent;
@@ -8,10 +10,16 @@ describe('UncertaintyLegendComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UncertaintyLegendComponent]
+      imports: [TranslateModule.forRoot()],
+      providers: [
+        TranslateService,
+        provideMockStore({
+          initialState : { user: {} }
+        })],
+      declarations: [UncertaintyLegendComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(UncertaintyLegendComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
