@@ -62,8 +62,7 @@ git clone --recurse-submodules https://github.com/havochvatten/MSP-Symphony.git
 
 Alternatively (if you are cloning through an IDE or such which doesn't allow you to specify the `--recurse-submodules` flag), you can do
 ```
-git submodule init
-git submodles update 
+git submodule update --init 
 ```
 after doing a regular (non-recursive) clone.
 
