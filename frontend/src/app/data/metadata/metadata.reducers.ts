@@ -1,13 +1,14 @@
 import { createReducer, on } from '@ngrx/store';
 import { setIn, updateIn } from 'immutable';
-import { State, Band, Groups } from './metadata.interfaces';
+import { State, Band, Groups, bandEquals } from './metadata.interfaces';
 import { MetadataActions, MetadataInterfaces } from './';
 import { ScenarioActions } from "@data/scenario";
 import { getBandPath } from "@data/metadata/metadata.selectors";
 
 export const initialState: MetadataInterfaces.State = {
   ECOSYSTEM: {},
-  PRESSURE: {}
+  PRESSURE: {},
+  visibleUncertainty: null
 };
 
 export const metadataReducer = createReducer(
@@ -19,6 +20,7 @@ export const metadataReducer = createReducer(
   })),
   on(MetadataActions.fetchSparseMetadataSuccess, (state, { metadata }) => {
     return {
+      ...state,
       ECOSYSTEM: mapSelectedToState(state, metadata.ecoComponent).ECOSYSTEM,
       PRESSURE: mapSelectedToState(state, metadata.pressureComponent).PRESSURE
     }
@@ -27,14 +29,39 @@ export const metadataReducer = createReducer(
     return setLayerAttribute(state, band, 'selected', value);
   }),
   on(MetadataActions.setVisibility, (state, { band, value }) => {
+    if (state.visibleUncertainty) {
+      if (bandEquals(state.visibleUncertainty.band, band)) {
+        state = setIn(state, ['visibleUncertainty', 'opaque'], !value);
+      } else if (value) {
+        state = {
+          ...state,
+          visibleUncertainty: null
+        };
+      }
+    }
     return setLayerAttribute(state, band, 'visible', value);
   }),
   on(MetadataActions.setLoadedState, (state, { band, value }) => {
     return setLayerAttribute(state, band, 'loaded', value);
   }),
-  on(MetadataActions.updateLayerOpacity, (state, { band, value }) => {
-    return setIn(state, [band.symphonyCategory, 'layerOpacity'], value);
+  on(MetadataActions.showUncertainty, (state, { band }) => {
+    const opaque: boolean = !getLayerAttribute(state, band, 'visible');
+    for (const groups of [...Object.values(state['ECOSYSTEM']), ...Object.values(state['PRESSURE'])]) {
+      for (const gband of Object.values(groups.bands)) {
+        if (!bandEquals(gband, band)) {
+          state = setLayerAttribute(state, gband, 'visible', false);
+        }
+      }
+    }
+    return {
+      ...state,
+      visibleUncertainty: { band, opaque }
+    }
   }),
+  on(MetadataActions.hideUncertainty, (state) => ({
+    ...state,
+    visibleUncertainty: null
+  })),
   on(ScenarioActions.closeActiveScenario, (state) => ({
     ...state,
     changeMap: {}
@@ -45,6 +72,10 @@ function setLayerAttribute(state: State, band: Band, attribute: string, value: u
   // artificial "path" / hierarchy modeled on the previous implementation
   // TODO: Reimplement
   return setIn(state, [ ...getBandPath(band), attribute], value);
+}
+
+function getLayerAttribute<type>(state: State, band: Band, attribute: string): type {
+  return state[band.symphonyCategory][band.meta.symphonytheme].bands[band.bandNumber][attribute as keyof Band] as type;
 }
 
 function mapSelectedToState(state: State, groups: Groups): State {

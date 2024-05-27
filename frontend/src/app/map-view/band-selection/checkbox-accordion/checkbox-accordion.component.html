@@ -12,14 +12,16 @@
   </app-accordion-box-header>
   <app-accordion-box-content>
     <ul>
-      <app-slider-controls
-        *ngFor="let band of bands; trackBy: bandNumber"
-        [band]="band"
-        [category]="category"
-        [disabled]="!scenarioActive"
-        [onSelect]="onChange"
-        [onChangeVisible]="onChangeVisible"
-      ></app-slider-controls>
+      <li *ngFor="let band of bands; trackBy: bandNumber" class="list-item">
+        <app-slider-controls
+          [band]="band"
+          [category]="category"
+          [disabled]="!scenarioActive"
+          [onSelect]="onChange"
+          [onChangeVisible]="onChangeVisible"
+          [onChangeVisibleUncertainty]="onChangeVisibleUncertainty"
+        ></app-slider-controls>
+      </li>
     </ul>
   </app-accordion-box-content>
 </app-accordion-box>

@@ -137,11 +137,12 @@
             },
             "band-pressures": {
                 "intensity": "Ändring av förekomst",
-                "opacity": "Genomskinlighet av lager",
                 "percentage": "Procentuell",
                 "constant-increase": "Konstant",
-                "intensity-label": "Visa/Dölj förekomst",
-                "opacity-label": "Visa/Dölj lageropacitet",
+                "show-intensity": "Visa förekomständring",
+                "hide-intensity": "Dölj förekomständring",
+                "show-uncertainty": "Visa osäkerhet",
+                "hide-uncertainty": "Dölj osäkerhet",
                 "note": "Om du har ändrat värdena i något kartlager kan du spara den/de justerade lagren, för att sedan använda dem i andra beräkningar.",
                 "no-scenario-selected": "Välj ett scenario för att ändra förekomster"
             },
@@ -503,7 +504,10 @@
             "result": "Kumulativ belastning",
             "comparison": "Relativ skillnad i belastning",
             "ecosystem": "Naturvärden",
-            "pressure": "Belastningsintensitet"
+            "pressure": "Belastningsintensitet",
+            "uncertainty": {
+                "knowledge-level": "Kunskapslägesnivå"
+            }
         },
         "area-selection-hint": {
             "emphasis": "Välj / avmarkera flera områden",

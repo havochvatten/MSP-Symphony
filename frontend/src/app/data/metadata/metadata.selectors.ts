@@ -1,16 +1,28 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { State as AppState } from '@src/app/app-reducer';
-import { Band, BandGroup, BandType, Groups, State } from './metadata.interfaces';
+import { Band, BandGroup, BandType, Groups, State, UncertaintyMap, UncertaintyMapping } from './metadata.interfaces';
 
 export const selectMetadataState = createFeatureSelector<AppState, State>('metadata');
 
 export const getBandPath = (band: Band) =>
   [band.symphonyCategory, band.meta.symphonytheme, 'bands', band.bandNumber];
 
-export const getBandByTypeAndNumber = (state: State, bandType: BandType, bandNumber: number): Band | undefined => {
-  return flattenBands(selectGroups(state[bandType]))
-    .find(band => band.bandNumber === bandNumber);
-}
+export const selectUncertaintyMap = createSelector(
+  selectMetadataState,
+  (state: State) =>  {
+    const uncertainties : UncertaintyMap = { ECOSYSTEM: {}, PRESSURE: {} },
+      allBands = flattenBands([...selectGroups(state.ECOSYSTEM), ...selectGroups(state.PRESSURE)]),
+      bandsWithUncertainty = allBands.filter(band => band.uncertainty !== null);
+
+    if (allBands.length === 0) return null;
+
+    for (const band of bandsWithUncertainty) {
+      uncertainties[band.symphonyCategory][band.bandNumber] = band.uncertainty as UncertaintyMapping;
+    }
+
+    return uncertainties;
+  }
+);
 
 export const selectEcoComponents = createSelector(
   selectMetadataState,
@@ -89,6 +101,11 @@ export const selectBandNumbers = createSelector(
     ecoComponent: flattenBands(ecoComponent).map(band => band.bandNumber),
     pressureComponent: flattenBands(pressureComponent).map(band => band.bandNumber)
   })
+);
+
+export const selectVisibleUncertainty = createSelector(
+  selectMetadataState,
+  (state: State) =>  state.visibleUncertainty
 );
 
 function includeAreaSpecificProperties(groups: BandGroup[]): BandGroup[] {

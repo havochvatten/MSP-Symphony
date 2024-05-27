@@ -15,9 +15,18 @@
 
   app-accordion-box-content {
     ul {
+      display: flex;
+      flex-direction: column;
       margin: 0;
       padding: 0;
       list-style: none;
+      row-gap: 0.4rem;
+
+      li {
+        display: grid;
+        border: 1px solid #707070;
+        padding: 1.35rem 0.4rem;
+      }
     }
   }
 }

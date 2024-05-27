@@ -137,11 +137,12 @@
             },
             "band-pressures": {
                 "intensity": "Changer l'intensité",
-                "opacity": "Changer la transparence",
                 "percentage": "Pourcentage",
                 "constant-increase": "Constante",
-                "intensity-label": "Afficher/masquer l'intensité",
-                "opacity-label": "Afficher/masquer la transparence",
+                "show-intensity": "Afficher les contrôles d'intensité",
+                "hide-intensity": "Masquer les contrôles d'intensité",
+                "show-uncertainty": "Afficher l'incertitude",
+                "hide-uncertainty": "Masquer l'incertitude",
                 "note": "Si vous avez modifié les valeurs pour certaines cartes, vous pouvez enregistrer vos modifications pour les réutiliser dans d'autres calculs.",
                 "no-scenario-selected": "Veuillez sélectionnez un scénario pour ajuster les valeurs d'intensité"
             },
@@ -503,7 +504,10 @@
             "result": "Impact cumulé",
             "comparison": "Différence de pression relative",
             "ecosystem": "Valeur écosystème",
-            "pressure": "Valeur pression"
+            "pressure": "Valeur pression",
+            "uncertainty": {
+                "knowledge-level": "Niveau de connaissance"
+            }
         },
         "area-selection-hint": {
             "emphasis": "Sélectionner / désélectionner plusieurs zones ",

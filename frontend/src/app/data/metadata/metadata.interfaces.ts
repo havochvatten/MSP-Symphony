@@ -1,3 +1,5 @@
+import { MultiPolygon } from "ol/geom";
+
 export type ComponentKey = keyof Pick<APILayerData, 'ecoComponent' | 'pressureComponent'>;
 
 export type BandType = 'ECOSYSTEM' | 'PRESSURE';
@@ -5,11 +7,16 @@ export type BandType_Alt = 'ecoComponents' | 'pressures';
 
 export const BandTypes = ['ECOSYSTEM', 'PRESSURE'] as const;
 
+export interface UncertaintyMapping {
+  partitions: { value: number, polygon: MultiPolygon }[];
+}
+
 export interface SelectableLayer {
   title: string;
   bandNumber: number;
   symphonyCategory: BandType;
   selected: boolean;
+  uncertainty: UncertaintyMapping | null;
   visible?: boolean;
   loaded?: boolean;
 }
@@ -67,7 +74,23 @@ export interface BandChange {
   hasOverflow?: boolean;
 }
 
+export interface UncertaintyMap {
+  ECOSYSTEM:  {[key: number]:  UncertaintyMapping };
+  PRESSURE:   {[key: number]:  UncertaintyMapping };
+}
+
+export interface VisibleUncertainty {
+  band: Band;
+  opaque: boolean;
+}
+
 export interface State {
   ECOSYSTEM: Groups;
   PRESSURE: Groups;
+  visibleUncertainty: VisibleUncertainty | null;
+}
+
+export function bandEquals(a: Band, b: Band): boolean {
+  return a.bandNumber === b.bandNumber
+    && a.symphonyCategory === b.symphonyCategory;
 }

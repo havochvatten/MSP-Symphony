@@ -4,6 +4,8 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import javax.persistence.Index;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlTransient;
@@ -47,6 +49,13 @@ public class SymphonyBand {
 
     @OneToMany(mappedBy = "ecoBand")
     private Set<Sensitivity> ecoSensitivities = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "uceMetaband", fetch = FetchType.LAZY)
+    private Set<UncertaintyPartition> uncertaintyPartitions = new LinkedHashSet<>();
+
+    public Set<UncertaintyPartition> getUncertaintyExtents() {
+        return uncertaintyPartitions;
+    }
 
     @XmlTransient
     public Set<Sensitivity> getPressureSensitivities() {

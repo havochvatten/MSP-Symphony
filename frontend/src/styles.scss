@@ -167,11 +167,16 @@ button { all: unset; }
 
 @import 'styles/mat-hav-component.scss';
 @import "styles/dialog.scss";
+@import "styles/list-actions.scss";
 
 span.timestamp {
   text-align: left;
   letter-spacing: 0;
   color: #919191;
+}
+
+#utility-canvas {
+  display: none;
 }
 
 @keyframes indicator-fade {

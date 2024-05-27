@@ -2,6 +2,7 @@ package se.havochvatten.symphony.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import se.havochvatten.symphony.entity.SymphonyBand;
 
 import java.util.HashMap;
@@ -12,6 +13,9 @@ public class SymphonyBandDto {
     int bandNumber;
     boolean selected;
 
+    @JsonProperty("uncertainty")
+    UncertaintyMapping uncertaintyMapping = null;
+
     @JsonIgnore
     LayerType _symphonyCategory;
 
@@ -20,7 +24,7 @@ public class SymphonyBandDto {
 
     public SymphonyBandDto() {}
 
-    public SymphonyBandDto(SymphonyBand b) {
+    public SymphonyBandDto(SymphonyBand b, boolean withUncertainty) {
         this.id = b.getId();
         this.bandNumber = b.getBandNumber();
         this.defaultSelected = b.isDefaultSelected();
@@ -28,6 +32,10 @@ public class SymphonyBandDto {
             b.getCategory().toUpperCase().equals(LayerType.ECOSYSTEM.toString()) ?
                 LayerType.ECOSYSTEM : LayerType.PRESSURE;
         this.selected = this.defaultSelected;
+        if (withUncertainty && !b.getUncertaintyExtents().isEmpty()) {
+            this.uncertaintyMapping =
+                new UncertaintyMapping(b.getUncertaintyExtents());
+        }
     }
 
     Map<String, String> meta = new HashMap<>();
@@ -65,6 +73,10 @@ public class SymphonyBandDto {
 
     public boolean isSelected() {
         return selected;
+    }
+
+    public UncertaintyMapping getUncertainty() {
+        return uncertaintyMapping;
     }
 
     public void setSelected(boolean selected) { this.selected = selected; }

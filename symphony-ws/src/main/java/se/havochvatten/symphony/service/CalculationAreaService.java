@@ -402,9 +402,9 @@ public class CalculationAreaService {
         }
 
         List<SymphonyBand> pressuresList =
-            metadataService.getBandsForBaselineComponent("Pressure", baseDataVersionId);
+            metadataService.getBandsForBaselineComponent("Pressure", baseDataVersionId, true);
         List<SymphonyBand> ecosystemsList =
-            metadataService.getBandsForBaselineComponent("Ecosystem", baseDataVersionId);
+            metadataService.getBandsForBaselineComponent("Ecosystem", baseDataVersionId, true);
 
         double[][] matrix = new double[pressuresList.size()][ecosystemsList.size()];
 

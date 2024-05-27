@@ -1,0 +1,17 @@
+<h5>{{ 'map.color-scale.uncertainty.knowledge-level' | translate }}, {{ 'map.metadata.pressure' | translate }}:
+  <span class="component">{{ (uncertainty ? uncertainty.band.title : '') }}</span></h5>
+<div id="opaque-gradient" *ngIf="uncertainty && uncertainty.opaque">
+  <div class="labels-bar"><span>Hög kunskap</span><span>Låg kunskap</span></div>
+  <div class="color-bar"></div>
+</div>
+<div id="symbolic-legend" *ngIf="uncertainty && !uncertainty.opaque">
+  <div class="symbolic-legend-item high">
+    <span>&gt; 66%</span>
+  </div>
+  <div class="symbolic-legend-item mid">
+    <span>33% - 65%</span>
+  </div>
+  <div class="symbolic-legend-item low">
+    <span>&lt; 33%</span>
+  </div>
+</div>

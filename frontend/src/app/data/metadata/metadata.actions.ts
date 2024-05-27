@@ -52,9 +52,13 @@ export const setLoadedState = createAction(
   props<{ band: Band, value: boolean }>()
 );
 
-export const updateLayerOpacity = createAction(
-  '[Metadata] Update Layer Opacity',
-  props<{ band: Band, value: number }>()
+export const showUncertainty = createAction(
+  '[Metadata] Set uncertainty visibility for band',
+  props<{ band: Band  }>()
+);
+
+export const hideUncertainty = createAction(
+  '[Metadata] Hide uncertainty'
 );
 
 export const updateMultiplier = createAction(

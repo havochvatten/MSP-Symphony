@@ -1,49 +1,64 @@
-<li *ngIf="band">
-  <div class="controls">
-    <mat-checkbox
-      [name]="band.symphonyCategory + '_' + band.bandNumber"
-      [checked]="band.selected"
-      [disabled]="disabled"
-      (change)="onSelect($event, band)"
-      checkboxSize="small"
-    >{{ band.title }}</mat-checkbox>
-    <div class="editing">
-      <button
-        *ngIf="hasPublicMeta"
-        (click)="showMetaDialog()"
-        [title]="'map.metadata.label' | translate"
-        data-active="true"
-      >
-        <app-icon iconType="info-circle"></app-icon>
-      </button>
-      <mat-spinner *ngIf="band.visible && !band.loaded" [diameter]="18" [strokeWidth]="2">
-      </mat-spinner>
-      <button
-        (click)="toggleOpen()"
-        [disabled]="disabled || !scenario"
-        [attr.data-active]="open"
-        [attr.aria-label]="'map.editor.band-pressures.intensity-label' | translate"
-        [title]="!scenario ?( 'map.editor.band-pressures.no-scenario-selected' | translate) : ''"
-      >
-        <app-icon iconType="sliders"></app-icon>
-      </button>
-      <app-icon
-        class="toggle-visibility-icon"
-        [ngClass]="{'disabled-while-loading' : band.visible && !band.loaded }"
-        [attr.data-visible]="band.visible && band.loaded"
-        [iconType]="band.visible ? 'eye' : 'eye-slash'"
-        (click)="onChangeVisible(!band.visible, band)"
-      ></app-icon>
-    </div>
-  </div>
-  <app-eco-slider
-    *ngIf="open && (!disabled || band.visible)"
-    [band]="band"
-    [multiplier]="getMultiplier()"
-    [offset]="getOffset()"
-    [overridden] = "!isEmpty(overriddenChange)"
+<div class="controls">
+  <mat-checkbox
+    [name]="band.symphonyCategory + '_' + band.bandNumber"
+    [checked]="band.selected"
     [disabled]="disabled"
-    [areaIsVisible]="band.visible"
-    [groupSetting]="getGroupSetting()"
-  ></app-eco-slider>
-</li>
+    (change)="onSelect($event, band)"
+    checkboxSize="small"
+  >{{ band.title }}</mat-checkbox>
+  <div
+    *ngIf="!(band.visible && !band.loaded)"
+    class="editing list-actions">
+    <button
+      *ngIf="hasPublicMeta"
+      (click)="showMetaDialog()"
+      [title]="'map.metadata.label' | translate"
+      data-active="true"
+    >
+      <app-icon iconType="info-circle-large"></app-icon>
+    </button>
+    <button
+      *ngIf="!(disabled || !scenario)"
+      (click)="toggleOpen()"
+      [attr.data-active]="open"
+      [attr.aria-label]="(
+        open ?
+          'map.editor.band-pressures.hide-intensity' :
+          'map.editor.band-pressures.show-intensity') | translate"
+      [title]="!scenario ?( 'map.editor.band-pressures.no-scenario-selected' | translate) : ''"
+    >
+      <app-icon iconType="sliders"></app-icon>
+    </button>
+    <button
+      *ngIf="band.uncertainty !== null"
+      class="uncertainty"
+      [attr.data-active]="checkVisibleUncertainty(band)"
+      [title]="'map.editor.band-pressures.show-uncertainty' | translate"
+      (click)="showUncertainty(band)"
+    >
+      <app-icon iconType="uncertain-data"
+      ></app-icon>
+    </button>
+    <app-icon
+      class="toggle-visibility-icon"
+      [attr.data-visible]="band.visible && band.loaded"
+      [iconType]="band.visible ? 'eye' : 'eye-slash'"
+      (click)="onChangeVisible(!band.visible, band)"
+    ></app-icon>
+  </div>
+  <mat-spinner
+    *ngIf="band.visible && !band.loaded"
+    [diameter]="18"
+    [strokeWidth]="2">
+  </mat-spinner>
+</div>
+<app-eco-slider
+  *ngIf="open && (!disabled || band.visible)"
+  [band]="band"
+  [multiplier]="getMultiplier()"
+  [offset]="getOffset()"
+  [overridden] = "!isEmpty(overriddenChange)"
+  [disabled]="disabled"
+  [areaIsVisible]="band.visible"
+  [groupSetting]="getGroupSetting()"
+></app-eco-slider>

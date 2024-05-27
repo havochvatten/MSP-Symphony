@@ -23,7 +23,7 @@ import { RenameItemModalComponent } from "@shared/rename-item-modal/rename-item-
 @Component({
   selector: 'app-history',
   templateUrl: './calculation-history.component.html',
-  styleUrls: ['./calculation-history.component.scss', '../list-actions.scss']
+  styleUrls: ['./calculation-history.component.scss']
 })
 export class CalculationHistoryComponent extends Listable implements OnInit, OnDestroy {
   calculations$ = this.store.select(CalculationSelectors.selectCalculations);

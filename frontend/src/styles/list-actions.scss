@@ -1,4 +1,4 @@
-@import 'src/styles/hav-colors';
+@import 'hav-colors';
 
 .list-item {
   position: relative;
@@ -42,12 +42,12 @@
       height: 2.8rem;
       width: 2.8rem;
 
-      ::ng-deep svg {
+      svg {
         height: 1.75rem;
         width: 1.75rem;
       }
 
-      &[icontype='edit'] ::ng-deep svg {
+      &[icontype='edit'] svg {
         height: 1.6rem;
         width: 1.6rem;
       }

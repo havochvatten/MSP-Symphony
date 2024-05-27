@@ -383,12 +383,6 @@ public class ScenarioService {
             .getSingleResult();
     }
 
-    public int[] getAreaIdsForScenario(Integer id) {
-        return em.createNamedQuery("Scenario.getAreaIdsForScenario", int[].class)
-            .setParameter("scenarioId", id)
-            .getSingleResult();
-    }
-
     public static String toGeoJSON(SimpleFeature f) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 

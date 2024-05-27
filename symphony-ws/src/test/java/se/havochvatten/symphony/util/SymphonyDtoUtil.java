@@ -2,7 +2,6 @@ package se.havochvatten.symphony.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import se.havochvatten.symphony.dto.SensMatrixDto;
-import se.havochvatten.symphony.dto.SensitivityMatrix;
 import se.havochvatten.symphony.entity.Metadata;
 import se.havochvatten.symphony.entity.Sensitivity;
 import se.havochvatten.symphony.entity.SymphonyBand;
