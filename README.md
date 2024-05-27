@@ -184,7 +184,7 @@ mvn surefire:test ... -Dsymphony.username=XXXX -Dsymphony.password=YYYY ...
 ```
 
 
-### Frondend tests
+### Frontend tests
 
 There are also frontend tests, see [frontend/README](frontend/README.md) for more details.
 
