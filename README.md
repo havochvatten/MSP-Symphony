@@ -188,11 +188,16 @@ mvn surefire:test ... -Dsymphony.username=XXXX -Dsymphony.password=YYYY ...
 
 There are also frontend tests, see [frontend/README](frontend/README.md) for more details.
 
-### Swagger
+### Swagger (partially disabled)
 
-The package comes bundled with [Swagger](https://swagger.io/) which can be used for exploring APIs and debugging, but 
-may want to be disabled in a 
-production environment. By default it is available at the */symphony-ws/swagger* endpoint. 
+A previous Swagger integration has been partially disabled (won't generate documentation) in the build since release  
+version 1.3 due to certain compatibility issues with the internally recommended application server software (WildFly 26).
+However, the dependency remains in the software package, providing OpenAPI annotations.  
+Reintroducing the 'Swagger UI' capability is being considered.
+
+~~The package comes bundled with [Swagger](https://swagger.io/) which can be used for exploring APIs and debugging, but
+may want to be disabled in a
+production environment. By default it is available at the */symphony-ws/swagger* endpoint.~~
 
 ## License
 
