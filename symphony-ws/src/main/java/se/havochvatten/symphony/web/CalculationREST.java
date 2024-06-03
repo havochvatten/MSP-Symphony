@@ -660,10 +660,8 @@ public class CalculationREST {
     }
 
     public GridCoverage2D cropToScenarioArea(SimpleFeature areaFeature, MathTransform transform)
-        throws MismatchedDimensionException, TransformException {
+        throws MismatchedDimensionException {
 
-        GridCoverage2D resultCoverage;
-        Geometry areaPoly = precisionReducer.reduce(JTS.transform((Geometry) areaFeature.getDefaultGeometry(), transform));
         RenderedImage canvas = this.coverage.getRenderedImage();
 
         // Weirdly, we cannot instantiate a BufferedImage directly since it's encapsulated to java.awt,
@@ -673,7 +671,9 @@ public class CalculationREST {
 
         Geometry intersection = null;
         try {
-            intersection = IntersectUtils.intersection(areaPoly, this.scenario.getGeometry().getEnvelope());
+            intersection = IntersectUtils.intersection(
+                JTS.transform((Geometry) areaFeature.getDefaultGeometry(), transform),
+                this.scenario.getGeometry().getEnvelope());
         } catch (Exception e) {
             e = e;
         }
@@ -690,9 +690,7 @@ public class CalculationREST {
         params.parameter("ROI").setValue(intersection);
         params.parameter("ForceMosaic").setValue(true);
 
-        resultCoverage = (GridCoverage2D) processor.doOperation(params);
-
-        return resultCoverage;
+        return (GridCoverage2D) processor.doOperation(params);
     }
 
     private Response projectedPNGImageResponse(GridCoverage2D coverage, String crs, Double normalizationValue,

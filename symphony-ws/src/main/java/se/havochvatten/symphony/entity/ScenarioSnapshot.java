@@ -32,7 +32,7 @@ import java.util.*;
         @TypeDef(name = "int-array", typeClass = IntArrayType.class),
         @TypeDef(name = "double-array", typeClass = DoubleArrayType.class)
 })
-public class ScenarioSnapshot implements BandChangeEntity {
+public class ScenarioSnapshot implements BandChangeEntity, ScenarioCommon {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -221,7 +221,8 @@ public class ScenarioSnapshot implements BandChangeEntity {
         for (var area : areas) {
             areaMap.put(area.getId(),
                 new ScenarioAreaRecord( area.getName(),
-                                        area.getFeatureJson()));
+                                        area.getFeatureJson(),
+                                        area.getExcludedCoastal()));
         }
         this.areas = mapper.valueToTree(areaMap);
     }
@@ -243,6 +244,16 @@ public class ScenarioSnapshot implements BandChangeEntity {
             tmpArea.setFeature(areaEntry.getValue().featureJson());
             tmpArea.setChanges(changes.get("areaChanges").get(areaId.toString()));
             areas.add(tmpArea);
+        }
+        return areas;
+    }
+
+    public Map<Integer, Integer> getAreasExcludingCoastal() {
+        Map<Integer, Integer> areas = new HashMap<>();
+        for (var area : getAreas().entrySet()) {
+            if (area.getValue().getExcludedCoastal() != -1) {
+                areas.put(area.getKey(), area.getValue().excludedCoastal());
+            }
         }
         return areas;
     }

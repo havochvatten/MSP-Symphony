@@ -256,7 +256,7 @@ public class CalcEngineBenchmark {
         mxr.setAreaMatrixId(1, 242);
 
         var mask = new MatrixMask(roiGridGeomtry.toCanonical(), layout, mxr,
-                List.of(areas), CalcUtil.createMapFromMatrixIdToIndex(matrices));
+                List.of(areas), CalcUtil.createMapFromMatrixIdToIndex(matrices), null);
         ParameterBlockJAI pb = new ParameterBlockJAI("se.havochvatten.symphony.CumulativeImpact");
         pb.setSource("source0", /*croppedEcosystems*/ecosystems.getRenderedImage());
         pb.setSource("source1", /*croppedPressures*/pressures.getRenderedImage());

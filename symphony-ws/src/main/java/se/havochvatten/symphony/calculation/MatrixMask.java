@@ -43,27 +43,28 @@ public class MatrixMask { // TODO: Make serializable for distributed session man
      * @param matrixIdToPaletteIndex map from matrix id to palette color index
      */
     public MatrixMask(GridGeometry2D gridGeometry, ImageLayout layout, MatrixResponse matrixResponse,
-                      List<ScenarioArea> areas, Map<Integer, Integer> matrixIdToPaletteIndex) throws FactoryException {
+                      List<ScenarioArea> areas, Map<Integer, Integer> matrixIdToPaletteIndex, Geometry coastalComplement) throws FactoryException {
         this.layout = layout;
 
-        this.palette = IntStream.range(0, matrixIdToPaletteIndex.size() + 1).mapToObj(i -> new Color(i)).toArray(Color[]::new);
+        this.palette = IntStream.range(0, matrixIdToPaletteIndex.size() + 1).mapToObj(Color::new).toArray(Color[]::new);
 
         // Or create writableraster with origin location?
         this.image = new BufferedImage(layout.getWidth(null), layout.getHeight(null),
                 BufferedImage.TYPE_BYTE_INDEXED, CalcUtil.makeIndexedColorModel(palette));
 
-        paint(image.createGraphics(), gridGeometry, /*transform,*/ matrixResponse, areas, matrixIdToPaletteIndex);
+        paint(image.createGraphics(), gridGeometry, matrixResponse, areas, matrixIdToPaletteIndex, coastalComplement);
     }
 
     private void paint(Graphics2D g2, GridGeometry2D gridGeometry,
                     MatrixResponse matrixResponse, List<ScenarioArea> areas,
-                    Map<Integer, Integer> matrixIdToIndex) throws FactoryException {
+                    Map<Integer, Integer> matrixIdToIndex, Geometry coastalComplement) throws FactoryException {
         var targetTransform  = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
             gridGeometry.getCoordinateReferenceSystem2D());
 
         areas.forEach(area -> {
             try {
-                Geometry projectedGeometry = JTS.transform(area.getGeometry(), targetTransform);
+                Geometry areaGeometry = coastalComplement != null ? area.getGeometry().intersection(coastalComplement) : area.getGeometry();
+                Geometry projectedGeometry = JTS.transform(areaGeometry, targetTransform);
                 var shape = new LiteShape2(projectedGeometry, gridGeometry.getCRSToGrid2D(), null, false);
                 g2.setColor(palette[matrixIdToIndex.get(matrixResponse.getAreaMatrixId(area.getId()))]);
                 g2.fill(shape);
