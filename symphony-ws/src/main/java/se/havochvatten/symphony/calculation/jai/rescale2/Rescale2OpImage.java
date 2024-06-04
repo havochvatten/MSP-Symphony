@@ -36,8 +36,7 @@ import java.util.Map;
  *     This class is used for rescaling the source image pixels with the given scale and offset factors. At the instantiation time this class checks if
  * the input parameters are suitable for the Rescale operation. If the image data type is Byte, the rescale operation on every pixel value is
  * pre-calculated and stored inside a byte array and the rescaling is effectively a simple lookup operation. For the other data types the Rescale
- * operation is performed at runtime. The rescale operation is executed for each tile independently. If input ROI or NoData values are founded, then
- * they are not rescaled, but the input destination No Data value is returned.
+ * operation is performed at runtime. The rescale operation is executed for each tile independently. NoData values are excluded.
  * </p>
  * <p>
  *     <i>
