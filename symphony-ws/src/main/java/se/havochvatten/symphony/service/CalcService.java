@@ -11,13 +11,11 @@ import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.geometry.jts.JTS;
-import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
@@ -298,22 +296,6 @@ public class CalcService {
         return baos.toByteArray();
     }
 
-    /**
-     * @return union of polygons referenced by area matrices
-     */
-    private static Geometry getMatricesCombinedROI(List<AreaMatrixResponse> areaMatrices) {
-        GeometryFactory factory = JTSFactoryFinder.getGeometryFactory();
-
-        var collection = areaMatrices.
-                stream().
-                flatMap(areaMatrix -> areaMatrix.getPolygons().stream()).
-                collect(Collectors.toList());
-
-        // Warning: According to https://docs.geotools.org/latest/userguide.old/library/jts/combine.html
-        // the below is very expensive if number of geometries increase beyond 5-10...
-        return factory.buildGeometry(collection).union();
-    }
-
     private List<SensitivityMatrix> getUniqueMatrices(MatrixResponse matrixResponse, Integer baselineId) {
         List<Integer> matrixIds = matrixResponse.areaMatrixMap.values().stream().map(MutablePair::getLeft).distinct().toList();
         List<SensitivityMatrix> smList = matrixIds.stream().map(matrixId ->
@@ -328,20 +310,20 @@ public class CalcService {
         return new ArrayList<>(smList);
     }
 
-    private Geometry coastalComplement(Scenario scenario) throws SymphonyStandardAppException {
+    private Geometry coastalComplement(ScenarioCommon scenario) throws SymphonyStandardAppException {
 
         Geometry scenarioGeometry = scenario.getGeometry();
         Geometry excludedCoastPolygon = null;
         Map<Integer, Integer> areasExcludingCoastal = scenario.getAreasExcludingCoastal();
 
         if(areasExcludingCoastal.isEmpty()) {
-            return scenarioGeometry;
+            return null;
         } else {
             List<Integer> excludedAreaIds = areasExcludingCoastal.values().stream().toList();
             List<CalculationArea> caList = calculationAreaService.findCalculationAreas(excludedAreaIds);
 
             if(caList.isEmpty()){
-                return scenarioGeometry;
+                return null;
             }
 
             Map<Integer, List<CaPolygon>> polygonCache;
@@ -360,6 +342,7 @@ public class CalcService {
                     }
                 }
             }
+
             return scenarioGeometry.difference(excludedCoastPolygon);
         }
     }
@@ -371,7 +354,7 @@ public class CalcService {
     public CalculationResult calculateScenarioImpact(Scenario scenario, boolean isAreaCalculation)
             throws FactoryException, TransformException, IOException, SymphonyStandardAppException {
 
-        Geometry roi = coastalComplement(scenario);
+        Geometry coastalComplement = coastalComplement(scenario);
         MatrixResponse matrixResponse = calculationAreaService.getAreaCalcMatrices(scenario);
         List<ScenarioArea> areas = scenario.getAreas();
         int[] ecosystemsToInclude = scenario.getEcosystemsToInclude(); // necessarily used as output param
@@ -395,10 +378,13 @@ public class CalcService {
         MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
             getSrcCRS());
         MathTransform targetToWGS84 = CRS.findMathTransform(getSrcCRS(), DefaultGeographicCRS.WGS84);
-        Geometry targetGeometry = JTS.transform(roi, WGS84toTarget);
+        Geometry targetGeometry =
+            JTS.transform(coastalComplement != null ?
+                            coastalComplement : scenario.getGeometry(),
+                WGS84toTarget);
 
         GridCoverage2D coverage = calculateCoverage(scenario.getOperation(), JTS.transform(targetGeometry, targetToWGS84), scenario.getBaselineId(), ecosystemsToInclude,
-            scenario.getPressuresToInclude(), areas, matrixResponse, scenario.getOperationOptions(), null, overflow);
+            scenario.getPressuresToInclude(), areas, matrixResponse, scenario.getOperationOptions(), null, overflow, coastalComplement != null);
 
         // Trigger actual calculation since GeoTiffWriter requests tiles in the same thread otherwise
         var ignored = ((PlanarImage) coverage.getRenderedImage()).getTiles();
@@ -428,10 +414,7 @@ public class CalcService {
     public CalculationResult getImplicitBaselineCalculation(CalculationResult calc)
         throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
 
-        Geometry roi = JTS.transform(calc.getScenarioSnapshot().getGeometry(),
-            CRS.findMathTransform(getSrcCRS(), DefaultGeographicCRS.WGS84));
-
-        GridCoverage2D coverage = getImplicitBaselineCoverage(calc, roi);
+        GridCoverage2D coverage = getImplicitBaselineCoverage(calc);
         Raster[] tmp = ((PlanarImage) coverage.getRenderedImage()).getTiles(); // trigger calculation
 
         CalculationResult implicitCalc = new CalculationResult(coverage);
@@ -534,120 +517,123 @@ public class CalcService {
     public GridCoverage2D calculateCoverage(
         int operation, Geometry roi, Integer baselineId, int[] ecosystemsToInclude, int[] pressuresToInclude,
         List<ScenarioArea> areas, MatrixResponse matrixResponse, Map<String, String> operationOptions, BandChangeEntity altScenario,
-        Overflow overflow)
+        Overflow overflow, boolean coastalExclusion)
         throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
         return calculateCoverage(operation, roi, baselineId, ecosystemsToInclude, pressuresToInclude, areas, matrixResponse,
-            operationOptions, altScenario, overflow, false);
+            operationOptions, altScenario, overflow, false, coastalExclusion);
     }
 
     public GridCoverage2D getImplicitBaselineCoverage(CalculationResult calc)
-        throws FactoryException, SymphonyStandardAppException, TransformException, IOException {
-        Geometry roi = JTS.transform(calc.getScenarioSnapshot().getGeometry(),
-            CRS.findMathTransform(getSrcCRS(), DefaultGeographicCRS.WGS84));
+        throws SymphonyStandardAppException {
 
-        return getImplicitBaselineCoverage(calc, roi);
-    }
-
-    private GridCoverage2D getImplicitBaselineCoverage(CalculationResult calc, Geometry roi)
-        throws TransformException, SymphonyStandardAppException, IOException, FactoryException {
+        Geometry coastalComplement = coastalComplement(calc.getScenarioSnapshot());
+        Geometry roi = getROIForCalculation(calc.getScenarioSnapshot(), coastalComplement);
 
         return calculateCoverage(
             calc.getOperation(), roi, calc.getBaselineVersion().getId(),
             calc.getScenarioSnapshot().getEcosystemsToInclude(), calc.getScenarioSnapshot().getPressuresToInclude(),
-            calc.getScenarioSnapshot().getTmpAreas(), calc.getScenarioSnapshot().getMatrixResponse(), calc.getOperationOptions(), calc.getScenarioSnapshot(), null, true);
+            calc.getScenarioSnapshot().getTmpAreas(), calc.getScenarioSnapshot().getMatrixResponse(), calc.getOperationOptions(), calc.getScenarioSnapshot(), null, true, coastalComplement != null);
     }
 
     private GridCoverage2D calculateCoverage(
             int operation, Geometry roi, Integer baselineId, int[] ecosystemsToInclude, int[] pressuresToInclude,
             List<ScenarioArea> areas, MatrixResponse matrixResponse, Map<String, String> operationOptions, BandChangeEntity altScenario,
-            Overflow overflow, boolean implicitBaseline)
-                throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
+            Overflow overflow, boolean implicitBaseline, boolean coastalExclusion)
+                throws SymphonyStandardAppException {
 
-        GridCoverage2D ecoComponents = data.getCoverage(LayerType.ECOSYSTEM, baselineId);
-        GridCoverage2D pressures = data.getCoverage(LayerType.PRESSURE, baselineId);
+        try {
+            GridCoverage2D ecoComponents = data.getCoverage(LayerType.ECOSYSTEM, baselineId);
+            GridCoverage2D pressures = data.getCoverage(LayerType.PRESSURE, baselineId);
 
-        if(!implicitBaseline) {
-            var scenarioComponents = scenarioService.applyScenario(
-                ecoComponents,
-                pressures,
-                areas,
-                altScenario,
-                overflow
-            );
+            if(!implicitBaseline) {
+                var scenarioComponents = scenarioService.applyScenario(
+                    ecoComponents,
+                    pressures,
+                    areas,
+                    altScenario,
+                    overflow
+                );
 
-            ecoComponents = scenarioComponents.getLeft();
-            pressures = scenarioComponents.getRight();
+                ecoComponents = scenarioComponents.getLeft();
+                pressures = scenarioComponents.getRight();
+            }
+
+            MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
+                ecoComponents.getCoordinateReferenceSystem());
+
+            Geometry targetRoi = JTS.transform(roi, WGS84toTarget);
+
+            List<SensitivityMatrix> matrices = getUniqueMatrices(matrixResponse, baselineId);
+            matrices.add(0, null); // do away with this hack and compensate on paint?
+            matrixResponse.areaMatrixMap.put(0, null);
+            GridGeometry2D gridGeometry = ecoComponents.getGridGeometry(); // assumed identical to pressures
+            ReferencedEnvelope targetEnv = JTS.bounds(targetRoi, ecoComponents.getCoordinateReferenceSystem());
+            Envelope targetGridEnvelope = JTS.transform(targetEnv, gridGeometry.getCRSToGrid2D());
+
+            ImageLayout layout = getImageLayout(targetGridEnvelope);
+
+            var targetGridGeometry = getTargetGridGeometry(targetGridEnvelope, targetEnv);
+            
+            MatrixMask mask = new MatrixMask(targetGridGeometry.toCanonical(), layout,
+                matrixResponse, areas, CalcUtil.createMapFromMatrixIdToIndex(matrices), coastalExclusion ? roi : null);
+
+            // ensure band order
+            Arrays.sort(ecosystemsToInclude);
+            Arrays.sort(pressuresToInclude);
+
+            GridCoverage2D coverage;
+            if (operation == CalcService.OPERATION_RARITYADJUSTED) {
+                // Refactor this. Enum is explicitly avoided.
+                final int[] tmpEcoSystems = ecosystemsToInclude;
+                var domain = operationOptions != null ?
+                    operationOptions.get("domain") : "GLOBAL";
+                var indices = switch (domain) {
+                    case "GLOBAL":
+                        yield calibrationService.calculateGlobalCommonnessIndices(ecoComponents,
+                            ecosystemsToInclude, baselineId);
+                    case "LOCAL":
+                        yield calibrationService.calculateLocalCommonnessIndices(ecoComponents,
+                            ecosystemsToInclude, areas.stream().map(a -> a.getFeature()).collect(Collectors.toList()));
+                    default:
+                        throw new RuntimeException("Unknown rarity index calculation domain: "+domain);
+                };
+
+                // Filter out small layers that would cause division by zero, i.e. infinite impact.
+                final var COMMONNESS_THRESHOLD = props.getPropertyAsDouble("calc.rarity_index.threshold", 0);
+                DoublePredicate indexThresholdPredicate = (index) -> index > COMMONNESS_THRESHOLD;
+                int[] ecosystemsToIncludeFiltered = IntStream.range(0, ecosystemsToInclude.length)
+                    .map(i -> {
+                        var keep = indexThresholdPredicate.test(indices[i]);
+                        if (!keep)
+                            LOG.warn("Removing band {} since value is below or equal to commonness threshold {}", i,
+                                COMMONNESS_THRESHOLD);
+                        return keep ? tmpEcoSystems[i] : -1;
+                    }).filter(e -> e >= 0).toArray();
+
+                ecosystemsToInclude = ecosystemsToIncludeFiltered;
+
+                var nonZeroIndices = Arrays.stream(indices).filter(indexThresholdPredicate).toArray();
+                // TODO report this information to the user and show in a dialog on frontend?
+
+                coverage = operations.cumulativeImpact("RarityAdjustedCumulativeImpact",
+                    ecoComponents, pressures,
+                    ecosystemsToInclude, pressuresToInclude,
+                    preprocessMatrices(matrices), layout, mask, nonZeroIndices);
+            } else
+                coverage = operations.cumulativeImpact(
+                    CalcService.operationName(operation),
+                    ecoComponents,
+                    pressures,
+                    ecosystemsToInclude, pressuresToInclude, preprocessMatrices(matrices), layout, mask,
+                    null);
+
+            return coverage;
+
+        } catch (IOException e) {
+            throw new SymphonyStandardAppException(SymphonyModelErrorCode.OTHER_ERROR, e, "Error reading data layers");
+        } catch (FactoryException | TransformException e) {
+            throw new SymphonyStandardAppException(SymphonyModelErrorCode.OTHER_ERROR, e, "Reprojection error");
         }
-
-        MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
-            ecoComponents.getCoordinateReferenceSystem());
-
-        Geometry targetRoi = JTS.transform(roi, WGS84toTarget);
-
-        List<SensitivityMatrix> matrices = getUniqueMatrices(matrixResponse, baselineId);
-        matrices.add(0, null); // do away with this hack and compensate on paint?
-        matrixResponse.areaMatrixMap.put(0, null);
-        GridGeometry2D gridGeometry = ecoComponents.getGridGeometry(); // assumed identical to pressures
-        ReferencedEnvelope targetEnv = JTS.bounds(targetRoi, ecoComponents.getCoordinateReferenceSystem());
-        Envelope targetGridEnvelope = JTS.transform(targetEnv, gridGeometry.getCRSToGrid2D());
-
-        ImageLayout layout = getImageLayout(targetGridEnvelope);
-
-        var targetGridGeometry = getTargetGridGeometry(targetGridEnvelope, targetEnv);
-        MatrixMask mask = new MatrixMask(targetGridGeometry.toCanonical(), layout,
-            matrixResponse, areas, CalcUtil.createMapFromMatrixIdToIndex(matrices));
-
-        // ensure band order
-        Arrays.sort(ecosystemsToInclude);
-        Arrays.sort(pressuresToInclude);
-
-        GridCoverage2D coverage;
-        if (operation == CalcService.OPERATION_RARITYADJUSTED) {
-            // Refactor this. Enum is explicitly avoided.
-            final int[] tmpEcoSystems = ecosystemsToInclude;
-            var domain = operationOptions != null ?
-                operationOptions.get("domain") : "GLOBAL";
-            var indices = switch (domain) {
-                case "GLOBAL":
-                    yield calibrationService.calculateGlobalCommonnessIndices(ecoComponents,
-                        ecosystemsToInclude, baselineId);
-                case "LOCAL":
-                    yield calibrationService.calculateLocalCommonnessIndices(ecoComponents,
-                        ecosystemsToInclude, areas.stream().map(a -> a.getFeature()).collect(Collectors.toList()));
-                default:
-                    throw new RuntimeException("Unknown rarity index calculation domain: "+domain);
-            };
-
-            // Filter out small layers that would cause division by zero, i.e. infinite impact.
-            final var COMMONNESS_THRESHOLD = props.getPropertyAsDouble("calc.rarity_index.threshold", 0);
-            DoublePredicate indexThresholdPredicate = (index) -> index > COMMONNESS_THRESHOLD;
-            int[] ecosystemsToIncludeFiltered = IntStream.range(0, ecosystemsToInclude.length)
-                .map(i -> {
-                    var keep = indexThresholdPredicate.test(indices[i]);
-                    if (!keep)
-                        LOG.warn("Removing band {} since value is below or equal to commonness threshold {}", i,
-                            COMMONNESS_THRESHOLD);
-                    return keep ? tmpEcoSystems[i] : -1;
-                }).filter(e -> e >= 0).toArray();
-
-            ecosystemsToInclude = ecosystemsToIncludeFiltered;
-
-            var nonZeroIndices = Arrays.stream(indices).filter(indexThresholdPredicate).toArray();
-            // TODO report this information to the user and show in a dialog on frontend?
-
-            coverage = operations.cumulativeImpact("RarityAdjustedCumulativeImpact",
-                ecoComponents, pressures,
-                ecosystemsToInclude, pressuresToInclude,
-                preprocessMatrices(matrices), layout, mask, nonZeroIndices);
-        } else
-            coverage = operations.cumulativeImpact(
-                CalcService.operationName(operation),
-                ecoComponents,
-                pressures,
-                ecosystemsToInclude, pressuresToInclude, preprocessMatrices(matrices), layout, mask,
-                null);
-
-        return coverage;
     }
 
     CoordinateReferenceSystem getSrcCRS() throws FactoryException {
@@ -655,17 +641,26 @@ public class CalcService {
             createCoordinateReferenceSystem(props.getProperty("data.source.crs", ""));
     }
 
+    private Geometry getROIForCalculation(ScenarioCommon scenario, Geometry coastalComplement) {
+        try {
+            return JTS.transform(coastalComplement == null ? scenario.getGeometry() : coastalComplement,
+                CRS.findMathTransform(getSrcCRS(), DefaultGeographicCRS.WGS84));
+        } catch (FactoryException | TransformException e) {
+            throw new SymphonyStandardSystemException(SymphonyModelErrorCode.OTHER_ERROR, e, "Reprojection error");
+        }
+    }
+
     public GridCoverage2D recreateCoverageFromResult(ScenarioSnapshot scenario, CalculationResult calc)
         throws IOException, FactoryException, TransformException, SymphonyStandardAppException {
         List<ScenarioArea> areas = scenario.getTmpAreas();
 
-        Geometry roi = JTS.transform(scenario.getGeometry(),
-            CRS.findMathTransform(getSrcCRS(), DefaultGeographicCRS.WGS84));
+        Geometry coastalComplement = coastalComplement(scenario);
+        Geometry roi = getROIForCalculation(scenario, coastalComplement);
 
         GridCoverage2D coverage = calculateCoverage(
             calc.getOperation(),
             roi, calc.getBaselineVersion().getId(), scenario.getEcosystemsToInclude(), scenario.getPressuresToInclude(),
-            areas, scenario.getMatrixResponse(), calc.getOperationOptions(), scenario, null);
+            areas, scenario.getMatrixResponse(), calc.getOperationOptions(), scenario, null, coastalComplement != null);
 
         // Trigger calculation to populate impact matrix
         var ignore = ((PlanarImage) coverage.getRenderedImage()).getTiles();
