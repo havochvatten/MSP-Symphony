@@ -645,11 +645,6 @@
             },
             "comparison": {
                 "legend-desc": "Bilden visar den relativa skillnaden i total kumulativ belastning mellan grund- och what-if-scenario."
-            },
-            "overflow": {
-                "title": "Förekomständring överstiger maxvärdet",
-                "detail": "Observera att den del av det kumulativa resultatet som överstigit maxvärdet per pixel, inte avspeglas i rapporten. Resultatet för de påverkade banden är lägre än värdet skulle vara om förekomständringen räknats in, utan hänsyn till maxvärdet per pixel.",
-                "list-description": "Maxvärdet överstigs inom följande band:"
             }
         },
         "sensitivity-matrices": {
@@ -688,15 +683,13 @@
             "and": "och",
             "base-changes": "Gemensamma förändringar",
             "area-changes": "Områdesspecifika förändringar",
-            "no-changes": "Inga förändringar",
-            "overflow-notice": "Förändringen överstiger maxvärdet"
+            "no-changes": "Inga förändringar"
         },
         "impact-table": {
             "ecoComponent": "Påverkan per naturvärde",
             "pressure": "Påverkan per belastning",
             "cumulative": "Kumulativt",
-            "percentage-of-total": "Av totalsumman",
-            "overflow": "Överstiger maxvärde, förändringen redovisas felaktigt"
+            "percentage-of-total": "Av totalsumman"
         },
         "toolbar": {
             "export-csv": "Ladda ner CSV",

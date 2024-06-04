@@ -18,7 +18,6 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import se.havochvatten.symphony.calculation.Operations;
-import se.havochvatten.symphony.calculation.Overflow;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
@@ -87,7 +86,7 @@ public class ScenarioServiceTest {
     }
 
     private GridCoverage2D applyChanges(Scenario scenario) throws FactoryException, TransformException {
-        return service.apply(coverage, coverage.getGridGeometry(), scenario.getAreas(), LayerType.PRESSURE, transform, null, new Overflow());
+        return service.apply(coverage, coverage.getGridGeometry(), scenario.getAreas(), LayerType.PRESSURE, transform, null);
     }
 
     @Test

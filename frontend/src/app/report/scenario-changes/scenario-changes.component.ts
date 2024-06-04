@@ -16,7 +16,6 @@ export class ScenarioChangesComponent {
   @Input() areaDict!: Map<number, string>;
   @Input() bandDict!: { [k: string]: { [p: string]: string } };
   @Input() comparisonReport = false;
-  @Input() overflow!: Record<BandType, number[]> | null;
 
   get anyChanges() {
     return this.anyScenarioChanges() || this.anyAreaChanges();

@@ -19,7 +19,6 @@ package se.havochvatten.symphony.calculation.jai.rescale2;
 
 import com.sun.media.jai.util.PropertyGeneratorImpl;
 import it.geosolutions.jaiext.range.Range;
-import se.havochvatten.symphony.calculation.Overflow;
 import se.havochvatten.symphony.dto.LayerType;
 
 import javax.media.jai.*;
@@ -219,22 +218,20 @@ public class Rescale2Descriptor extends OperationDescriptorImpl {
             { "arg3Desc", "No Data Range used" },
             { "arg4Desc", "Boolean checking if ROI RasterAccessor is used" },
             { "arg5Desc", "Destination No Data value" },
-            { "arg6Desc", "Max value to clamp to" },
-            { "arg7Desc", "Symphony category (enum)" },
-            { "arg8Desc", "Information about overflow" }};
+            { "arg6Desc", "Max value to clamp to" } };
 
     /** The parameter class list for this operation. */
     private static final Class[] paramClasses = { double[].class, double[].class,
             ROI.class, it.geosolutions.jaiext.range.Range.class, Boolean.class,
-            Double.class, Double.class, LayerType.class, Overflow.class };
+            Double.class, Double.class };
 
     /** The parameter name list for this operation. */
     private static final String[] paramNames = { "constants", "offsets", "ROI", "noData",
-            "useRoiAccessor", "destNoData", "clamp", "category", "overflow" };
+            "useRoiAccessor", "destNoData", "clamp" };
 
     /** The parameter default value list for this operation. */
     private static final Object[] paramDefaults = { new double[] { 1.0 }, new double[] { 0.0 },
-            null, null, false, 0.0d, 100.0d, LayerType.ECOSYSTEM, null };
+            null, null, false, 0.0d, 100.0d  };
 
     /** Constructor. */
     public Rescale2Descriptor() {

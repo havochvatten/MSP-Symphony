@@ -20,8 +20,6 @@ package se.havochvatten.symphony.calculation.jai.rescale2;
 import com.sun.media.jai.util.ImageUtil;
 import it.geosolutions.jaiext.iterators.RandomIterFactory;
 import it.geosolutions.jaiext.range.Range;
-import se.havochvatten.symphony.calculation.Overflow;
-import se.havochvatten.symphony.dto.LayerType;
 
 import javax.media.jai.*;
 import javax.media.jai.iterator.RandomIter;
@@ -82,10 +80,6 @@ public class Rescale2OpImage extends PointOpImage {
 
     /** Precalculated rescale lookup table for fast computations */
     private byte[][] byteRescaleTable = null;
-    private short[][] uncappedRescaleTable = null;
-
-    private final Overflow overflow;
-    private final LayerType symphonyCategory;
 
     /** Destination value for No Data byte */
     private byte destinationNoDataByte;
@@ -105,20 +99,10 @@ public class Rescale2OpImage extends PointOpImage {
     /** Extended ROI image */
     private RenderedOp srcROIImgExt;
 
-    private void accumulateOverflow(int band, int value) {
-        if (value < 0) return;
-        if (uncappedRescaleTable[band][value] > byteRescaleTable[band][value]) {
-            overflow.register(symphonyCategory, band);
-        }
-    }
-
     public Rescale2OpImage(RenderedImage source, ImageLayout layout, Map configuration,
                            double[] valueScale, double[] valueOffsets, double destinationNoData, ROI roi,
-                           Range noData, boolean useROIAccessor, double clamp, LayerType category, Overflow overflow) {
+                           Range noData, boolean useROIAccessor, double clamp) {
         super(source, layout, configuration, true);
-
-        this.symphonyCategory = category;
-        this.overflow = overflow;
         // Selection of the band number
         int numBands = getSampleModel().getNumBands();
 
@@ -220,7 +204,6 @@ public class Rescale2OpImage extends PointOpImage {
 
         if (isByte) {
             byteRescaleTable = new byte[numBands][256];
-            uncappedRescaleTable = new short[numBands][256];
 
             // Initialize table which implements Rescale and clamping
             for (int b = 0; b < numBands; b++) {
@@ -229,7 +212,6 @@ public class Rescale2OpImage extends PointOpImage {
                 double o = offsetArray[b];
                 for (int i = 0; i < 256; i++) {
                     band[i] = clampTo(i * c + o, (byte)clamp);
-                    uncappedRescaleTable[b][i] = (short) (i * c + o);
                 }
             }
         }
@@ -403,7 +385,6 @@ public class Rescale2OpImage extends PointOpImage {
                     // Cycle on the x-axis
                     for (int x = 0; x < dstWidth; x++) {
                         // Rescale operation
-                        accumulateOverflow(b, srcData[b][srcPixelOffset + srcBandOffsets[b]]);
                         dstData[b][dstPixelOffset] = clamp[srcData[b][srcPixelOffset] & 0xFF];
                         // update of the pixel offsets
                         dstPixelOffset += dstPixelStride;
@@ -437,7 +418,6 @@ public class Rescale2OpImage extends PointOpImage {
                             // Cycle on all the bands
                             for (int b = 0; b < dstBands; b++) {
                                 // Rescale operation
-                                accumulateOverflow(b, srcData[b][srcPixelOffset + srcBandOffsets[b]]);
                                 byte[] clamp = byteRescaleTable[b];
                                 dstData[b][dstPixelOffset + dstBandOffsets[b]] = clamp[srcData[b][srcPixelOffset
                                         + srcBandOffsets[b]] & 0xFF];
@@ -479,7 +459,6 @@ public class Rescale2OpImage extends PointOpImage {
                                 // TODO only cycle the band we change? (which is always just one)
                                 for (int b = 0; b < dstBands; b++) {
                                     // Rescale operation
-                                    accumulateOverflow(b, srcData[b][srcPixelOffset + srcBandOffsets[b]]);
                                     byte[] clamp = byteRescaleTable[b];
                                     dstData[b][dstPixelOffset + dstBandOffsets[b]] = clamp[srcData[b][srcPixelOffset
                                             + srcBandOffsets[b]] & 0xFF];
@@ -533,7 +512,6 @@ public class Rescale2OpImage extends PointOpImage {
                         // Check if the value is not a NoData
                         if (booleanLookupTable[value]) {
                             // Rescale operation
-                            accumulateOverflow(b, value);
                             bandDataOut[dstPixelOffset] = clamp[value];
                         } else {
                             // Else, destination No Data is set
@@ -576,7 +554,6 @@ public class Rescale2OpImage extends PointOpImage {
                                 // Check if the value is not a NoData
                                 if (booleanLookupTable[value]) {
                                     // Rescale operation
-                                    accumulateOverflow(b, value);
                                     byte[] clamp = byteRescaleTable[b];
                                     dstData[b][dstPixelOffset + dstBandOffsets[b]] = clamp[value];
                                 } else {
@@ -625,7 +602,6 @@ public class Rescale2OpImage extends PointOpImage {
                                     // Check if the value is not a NoData
                                     if (booleanLookupTable[value]) {
                                         // Rescale operation
-                                        accumulateOverflow(b, value);
                                         byte[] clamp = byteRescaleTable[b];
                                         dstData[b][dstPixelOffset + dstBandOffsets[b]] = clamp[value];
                                     } else {

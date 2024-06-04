@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, NgModuleRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms'
 import { firstValueFrom, Observable, OperatorFunction, Subscription } from 'rxjs';
-import { debounceTime, filter, take, tap } from 'rxjs/operators';
+import { debounceTime, filter, tap } from 'rxjs/operators';
 import { TranslateService } from "@ngx-translate/core";
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
@@ -20,7 +20,7 @@ import {
   NormalizationType
 } from '@data/calculation/calculation.service';
 import { MetadataActions, MetadataSelectors } from "@data/metadata";
-import { Band, BandChange, BandType } from "@data/metadata/metadata.interfaces";
+import { BandChange, BandType } from "@data/metadata/metadata.interfaces";
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
 import {

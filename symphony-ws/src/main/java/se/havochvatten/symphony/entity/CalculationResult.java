@@ -12,7 +12,6 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 import se.havochvatten.symphony.service.CalcService;
-import se.havochvatten.symphony.calculation.Overflow;
 import se.havochvatten.symphony.dto.CalculationResultSliceDto;
 
 import javax.persistence.*;
@@ -152,10 +151,6 @@ public class CalculationResult implements Serializable {
     @Column(name = "cares_image")
     private byte[] imagePNG;
 
-    @Column(name = "cares_overflow")
-    @Type(type = "json")
-    private JsonNode overflow;
-
     public CalculationResult() {}
 
     public CalculationResult(GridCoverage2D coverage) {
@@ -264,23 +259,6 @@ public class CalculationResult implements Serializable {
     public byte[] getImagePNG() { return imagePNG; }
 
     public void setImagePNG(byte[] imagePNG) { this.imagePNG = imagePNG; }
-
-    public Map<String, Integer[]> getOverflowForReport() {
-        var tmpOverflow = (Map<String, ArrayList<Integer>>) mapper.convertValue(this.overflow, Map.class);
-
-        if(tmpOverflow == null)
-            return null;
-
-        Map<String, Integer[]> overflow = new HashMap<>();
-        for (String key : tmpOverflow.keySet()) {
-            overflow.put(key, tmpOverflow.get(key).toArray(new Integer[0]));
-        }
-        return overflow;
-    }
-
-    public void setOverflow(Overflow overflow) {
-        this.overflow = mapper.valueToTree(overflow.bandOverflow);
-    }
 
     public Map<String, String> getOperationOptions() { return operationOptions; }
 

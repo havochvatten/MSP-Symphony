@@ -43,7 +43,5 @@ public class ReportResponseDto {
     public double chartWeightThreshold;
     public JsonNode scenarioChanges;
 
-    public Map<String, Integer[]> overflow;
-
     public long timestamp;
 }
