@@ -32,11 +32,21 @@ import java.awt.image.renderable.ParameterBlock;
 import java.util.Map;
 
 /**
- * This class is used for rescaling the source image pixels with the given scale and offset factors. At the instantiation time this class checks if
+ * <p>
+ *     This class is used for rescaling the source image pixels with the given scale and offset factors. At the instantiation time this class checks if
  * the input parameters are suitable for the Rescale operation. If the image data type is Byte, the rescale operation on every pixel value is
  * pre-calculated and stored inside a byte array and the rescaling is effectively a simple lookup operation. For the other data types the Rescale
  * operation is performed at runtime. The rescale operation is executed for each tile independently. If input ROI or NoData values are founded, then
  * they are not rescaled, but the input destination No Data value is returned.
+ * </p>
+ * <p>
+ *     <i>
+ *     Raster data isn't actually expected in formats other than byte, hence the given implementations for such formats here are redundant in practice.
+ * It should be considered to disallow them by throwing and remove the redundant code. Also note that the "max value" restriction isn't implemented for
+ * these types, for the same reason.
+ *      </i>
+ * </p>
+ *
  */
 
 public class Rescale2OpImage extends PointOpImage {

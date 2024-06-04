@@ -231,7 +231,7 @@ public class Rescale2Descriptor extends OperationDescriptorImpl {
 
     /** The parameter default value list for this operation. */
     private static final Object[] paramDefaults = { new double[] { 1.0 }, new double[] { 0.0 },
-            null, null, false, 0.0d, 100.0d  };
+            null, null, false, 0.0d, 250.0d };
 
     /** Constructor. */
     public Rescale2Descriptor() {

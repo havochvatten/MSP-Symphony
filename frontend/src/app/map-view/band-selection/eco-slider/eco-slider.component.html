@@ -8,7 +8,7 @@
                type="number"
                [value]="(multiplier - 1) * 100 | number:'1.0-0'"
                step="1"
-               max="200"
+               max="150"
                min="-100"
                [disabled]="getDisabled()"
                (input)="updateMultiplier(($event.target.value / 100) + 1)"
@@ -17,7 +17,7 @@
       <app-slider
         [value]="multiplier"
         min="0"
-        max="3"
+        max="2.5"
         step="0.01"
         (input)="updateMultiplier($event.target.value)"
         [disabled]="getDisabled()"
@@ -30,6 +30,7 @@
         type="number"
         value="0"
         step="1"
+        max="150"
         [value]="offset"
         [disabled]="getDisabled()"
       />
