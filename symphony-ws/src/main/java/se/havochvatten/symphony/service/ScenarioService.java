@@ -295,6 +295,12 @@ public class ScenarioService {
 
         Scenario copiedScenario = new Scenario(scenario, options, null);
         em.persist(copiedScenario);
+
+        em.createNamedQuery("ScenarioAreas.setPolygon")
+            .setParameter("scenarioId", copiedScenario.getId())
+            .executeUpdate();
+
+        em.merge(copiedScenario);
         em.flush();
 
         return new ScenarioDto(copiedScenario);
