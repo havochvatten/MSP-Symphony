@@ -54,7 +54,7 @@ import java.util.stream.Stream;
 @Stateless
 public class ScenarioService {
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioService.class);
-    private static final double MAX_IMPACT_VALUE = 100.0;
+    private static final double MAX_IMPACT_VALUE = 250.0;
 
     private static final ObjectMapper mapper = new ObjectMapper();
 

@@ -32,11 +32,21 @@ import java.awt.image.renderable.ParameterBlock;
 import java.util.Map;
 
 /**
+ * <p>
  * This class is used for rescaling the source image pixels with the given scale and offset factors. At the instantiation time this class checks if
- * the input parameters are suitable for the Rescale operation. If the image data type is Byte, the rescale operation on every pixel value is
- * pre-calculated and stored inside a byte array and the rescaling is effectively a simple lookup operation. For the other data types the Rescale
- * operation is performed at runtime. The rescale operation is executed for each tile independently. If input ROI or NoData values are founded, then
- * they are not rescaled, but the input destination No Data value is returned.
+ * the input parameters are suitable for the Rescale operation. If the image data type is Byte, the rescale operation for all bands is pre-calculated and
+ * memoized. The rescale operation is executed for each tile independently. NoData values are excluded.
+ * Note the use of the short data type in the "rescaling" lookup array, allowing unsigned byte values (unsigned byte isn't supported in Java, while notably
+ * it's the other way around in the GeoTIFF format). After rescaling, the result is recast to byte as required.
+ * </p>
+ * <p>
+ *     <i>
+ * Raster data isn't actually expected in formats other than byte, hence the given implementations for such formats here are redundant in practice.
+ * It should be considered to disallow them by throwing and remove the redundant code. Also note that the "max value" restriction isn't implemented for
+ * these types, for the same reason.
+ *     </i>
+ * </p>
+ *
  */
 
 public class Rescale2OpImage extends PointOpImage {
@@ -79,7 +89,7 @@ public class Rescale2OpImage extends PointOpImage {
     private final boolean caseC;
 
     /** Precalculated rescale lookup table for fast computations */
-    private byte[][] byteRescaleTable = null;
+    private short[][] byteRescaleTable = null;
 
     /** Destination value for No Data byte */
     private byte destinationNoDataByte;
@@ -203,15 +213,15 @@ public class Rescale2OpImage extends PointOpImage {
         }
 
         if (isByte) {
-            byteRescaleTable = new byte[numBands][256];
+            byteRescaleTable = new short[numBands][256];
 
             // Initialize table which implements Rescale and clamping
             for (int b = 0; b < numBands; b++) {
-                byte[] band = byteRescaleTable[b];
+                short[] band = byteRescaleTable[b];
                 double c = scaleFactors[b];
                 double o = offsetArray[b];
                 for (int i = 0; i < 256; i++) {
-                    band[i] = clampTo(i * c + o, (byte)clamp);
+                    band[i] = clampTo(i * c + o, (int) clamp);
                 }
             }
         }
@@ -251,8 +261,8 @@ public class Rescale2OpImage extends PointOpImage {
 
     }
 
-    private byte clampTo(double in, byte value) {
-        return in > value ? value : (in >= 0 ? (byte)in : 0);
+    private short clampTo(double in, int value) {
+        return in > value ? (short)value : (in >= 0 ? (short)in : 0);
     }
 
     /**
@@ -373,7 +383,7 @@ public class Rescale2OpImage extends PointOpImage {
                 int dstLineOffset = dstBandOffsets[b];
                 int srcLineOffset = srcBandOffsets[b];
                 // Selection of the rescale table already created for the selected band
-                byte[] clamp = byteRescaleTable[b];
+                short[] clamp = byteRescaleTable[b];
                 // Cycle on the y-axis
                 for (int y = 0; y < dstHeight; y++) {
                     // creation of the pixel offsets
@@ -385,7 +395,7 @@ public class Rescale2OpImage extends PointOpImage {
                     // Cycle on the x-axis
                     for (int x = 0; x < dstWidth; x++) {
                         // Rescale operation
-                        dstData[b][dstPixelOffset] = clamp[srcData[b][srcPixelOffset] & 0xFF];
+                        dstData[b][dstPixelOffset] = (byte) clamp[srcData[b][srcPixelOffset] & 0xFF];
                         // update of the pixel offsets
                         dstPixelOffset += dstPixelStride;
                         srcPixelOffset += srcPixelStride;
@@ -418,8 +428,7 @@ public class Rescale2OpImage extends PointOpImage {
                             // Cycle on all the bands
                             for (int b = 0; b < dstBands; b++) {
                                 // Rescale operation
-                                byte[] clamp = byteRescaleTable[b];
-                                dstData[b][dstPixelOffset + dstBandOffsets[b]] = clamp[srcData[b][srcPixelOffset
+                                dstData[b][dstPixelOffset + dstBandOffsets[b]] = (byte) byteRescaleTable[b][srcData[b][srcPixelOffset
                                         + srcBandOffsets[b]] & 0xFF];
                             }
                         } else {
@@ -459,8 +468,7 @@ public class Rescale2OpImage extends PointOpImage {
                                 // TODO only cycle the band we change? (which is always just one)
                                 for (int b = 0; b < dstBands; b++) {
                                     // Rescale operation
-                                    byte[] clamp = byteRescaleTable[b];
-                                    dstData[b][dstPixelOffset + dstBandOffsets[b]] = clamp[srcData[b][srcPixelOffset
+                                    dstData[b][dstPixelOffset + dstBandOffsets[b]] = (byte) byteRescaleTable[b][srcData[b][srcPixelOffset
                                             + srcBandOffsets[b]] & 0xFF];
                                 }
                             } else {
@@ -491,8 +499,6 @@ public class Rescale2OpImage extends PointOpImage {
                 // creation of the line offsets
                 int dstLineOffset = dstBandOffsets[b];
                 int srcLineOffset = srcBandOffsets[b];
-                // Selection of the rescale table already created for the selected band
-                byte[] clamp = byteRescaleTable[b];
                 // Selection of the input band array
                 byte[] bandDataIn = srcData[b];
                 // Selection of the output band array
@@ -512,7 +518,7 @@ public class Rescale2OpImage extends PointOpImage {
                         // Check if the value is not a NoData
                         if (booleanLookupTable[value]) {
                             // Rescale operation
-                            bandDataOut[dstPixelOffset] = clamp[value];
+                            bandDataOut[dstPixelOffset] = (byte) byteRescaleTable[b][value];
                         } else {
                             // Else, destination No Data is set
                             bandDataOut[dstPixelOffset] = destinationNoDataByte;
@@ -554,8 +560,7 @@ public class Rescale2OpImage extends PointOpImage {
                                 // Check if the value is not a NoData
                                 if (booleanLookupTable[value]) {
                                     // Rescale operation
-                                    byte[] clamp = byteRescaleTable[b];
-                                    dstData[b][dstPixelOffset + dstBandOffsets[b]] = clamp[value];
+                                    dstData[b][dstPixelOffset + dstBandOffsets[b]] = (byte) byteRescaleTable[b][value];
                                 } else {
                                     // Else, destination No Data is set
                                     dstData[b][dstPixelOffset + dstBandOffsets[b]] = destinationNoDataByte;
@@ -602,8 +607,7 @@ public class Rescale2OpImage extends PointOpImage {
                                     // Check if the value is not a NoData
                                     if (booleanLookupTable[value]) {
                                         // Rescale operation
-                                        byte[] clamp = byteRescaleTable[b];
-                                        dstData[b][dstPixelOffset + dstBandOffsets[b]] = clamp[value];
+                                        dstData[b][dstPixelOffset + dstBandOffsets[b]] = (byte) byteRescaleTable[b][value];
                                     } else {
                                         // Else, destination No Data is set
                                         dstData[b][dstPixelOffset + dstBandOffsets[b]] = destinationNoDataByte;
