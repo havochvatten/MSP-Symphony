@@ -64,6 +64,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private readonly resultDeletedSubscription?: Subscription;
   private readonly userSubscription?: Subscription;
   private readonly aliasingSubscription: Subscription;
+  private readonly selectedAreasSubscription: Subscription;
   private areaSubscription?: Subscription;
   protected activeScenario$: Observable<Scenario | undefined>;
   private scenarioSubscription: Subscription;
@@ -88,6 +89,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   public baselineName = '';
   private geoJson?: GeoJSON;
+  private selectedAreas: StatePath[] = [];
 
   private aliasing = true;
 
@@ -156,6 +158,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.resultLayerGroup?.toggleImageSmoothing(aliasing);
       this.bandLayer?.toggleImageSmoothing(aliasing);
       this.aliasing = aliasing;
+    });
+
+    this.selectedAreasSubscription = this.store.select(AreaSelectors.selectSelectedArea).subscribe((selectedArea) => {
+      this.selectedAreas = selectedArea;
     });
   }
 
@@ -323,6 +329,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.aliasingSubscription.unsubscribe();
     }
 
+    this.selectedAreasSubscription.unsubscribe();
     this.scenarioCloseSubscription.unsubscribe();
     this.scenarioSubscription.unsubscribe();
   }
@@ -388,7 +395,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   // (Alt + Shift) keys + select area interaction
-  onMergeClick = async (features: Feature[]) => {
+  onMergeClick = async (lastFeature: Feature) => {
 
     // Some readability have been sacrificed for the convenience of
     // utilizing existing component logic (and versatility of integers).
@@ -400,16 +407,18 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     // To access the input arrays we, however arbitrarily, subtract 1
     // from the return value and treat -1 as the special case to indicate
     // new area creation.
+    const selectedFeatures =
+      [...(this.areaLayer.getFeaturesByStatePaths(this.selectedAreas) || []), lastFeature],
+      names = selectedFeatures.map(f => f.get('name')),
+      paths = selectedFeatures.map(f => f.get('statePath')),
+      merged = turfMergeAll(selectedFeatures);
 
-    const paths = features.map(f => f.get('statePath')),
-          names = features.map(f => f.get('name')),
-          merged = turfMergeAll(features);
     if(merged !== null) {
       const areaIndexToSave = await this.dialogService.open(MergeAreasModalComponent, this.moduleRef, {
         data : {
           areas: [this.reprojectAsFragment(merged, '')],
-          paths: paths,
-          names: names
+          paths,
+          names
         }
       }) as number - 1;
 
