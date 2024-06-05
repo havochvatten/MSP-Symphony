@@ -364,8 +364,6 @@ public class CalcService {
 
         BaselineVersion baseline = baselineVersionService.getBaselineVersionById(scenario.getBaselineId());
 
-        Overflow overflow = new Overflow();
-
         // To ensure consistency between results when recreating 'purged' calculations
         // and "implicit baseline calculations" for comparative calculations from the
         // resulting ScenarioSnapshots, we need to do this conspicuous "back-and-forth"
@@ -384,7 +382,7 @@ public class CalcService {
                 WGS84toTarget);
 
         GridCoverage2D coverage = calculateCoverage(scenario.getOperation(), JTS.transform(targetGeometry, targetToWGS84), scenario.getBaselineId(), ecosystemsToInclude,
-            scenario.getPressuresToInclude(), areas, matrixResponse, scenario.getOperationOptions(), null, overflow, coastalComplement != null);
+            scenario.getPressuresToInclude(), areas, matrixResponse, scenario.getOperationOptions(), null, coastalComplement != null);
 
         // Trigger actual calculation since GeoTiffWriter requests tiles in the same thread otherwise
         var ignored = ((PlanarImage) coverage.getRenderedImage()).getTiles();
@@ -408,7 +406,7 @@ public class CalcService {
             new CalculationResult(coverage) :
             persistCalculation( coverage, normalizationValues, areaMatrices, scenario,
                                 sc, ecosystemsToInclude, baseline,
-                                targetGeometry, overflow, isAreaCalculation);
+                                targetGeometry, isAreaCalculation);
     }
 
     public CalculationResult getImplicitBaselineCalculation(CalculationResult calc)
@@ -517,10 +515,10 @@ public class CalcService {
     public GridCoverage2D calculateCoverage(
         int operation, Geometry roi, Integer baselineId, int[] ecosystemsToInclude, int[] pressuresToInclude,
         List<ScenarioArea> areas, MatrixResponse matrixResponse, Map<String, String> operationOptions, BandChangeEntity altScenario,
-        Overflow overflow, boolean coastalExclusion)
+        boolean coastalExclusion)
         throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
         return calculateCoverage(operation, roi, baselineId, ecosystemsToInclude, pressuresToInclude, areas, matrixResponse,
-            operationOptions, altScenario, overflow, false, coastalExclusion);
+            operationOptions, altScenario,false, coastalExclusion);
     }
 
     public GridCoverage2D getImplicitBaselineCoverage(CalculationResult calc)
@@ -532,13 +530,13 @@ public class CalcService {
         return calculateCoverage(
             calc.getOperation(), roi, calc.getBaselineVersion().getId(),
             calc.getScenarioSnapshot().getEcosystemsToInclude(), calc.getScenarioSnapshot().getPressuresToInclude(),
-            calc.getScenarioSnapshot().getTmpAreas(), calc.getScenarioSnapshot().getMatrixResponse(), calc.getOperationOptions(), calc.getScenarioSnapshot(), null, true, coastalComplement != null);
+            calc.getScenarioSnapshot().getTmpAreas(), calc.getScenarioSnapshot().getMatrixResponse(), calc.getOperationOptions(), calc.getScenarioSnapshot(), true, coastalComplement != null);
     }
 
     private GridCoverage2D calculateCoverage(
             int operation, Geometry roi, Integer baselineId, int[] ecosystemsToInclude, int[] pressuresToInclude,
             List<ScenarioArea> areas, MatrixResponse matrixResponse, Map<String, String> operationOptions, BandChangeEntity altScenario,
-            Overflow overflow, boolean implicitBaseline, boolean coastalExclusion)
+            boolean implicitBaseline, boolean coastalExclusion)
                 throws SymphonyStandardAppException {
 
         try {
@@ -550,8 +548,7 @@ public class CalcService {
                     ecoComponents,
                     pressures,
                     areas,
-                    altScenario,
-                    overflow
+                    altScenario
                 );
 
                 ecoComponents = scenarioComponents.getLeft();
@@ -660,7 +657,7 @@ public class CalcService {
         GridCoverage2D coverage = calculateCoverage(
             calc.getOperation(),
             roi, calc.getBaselineVersion().getId(), scenario.getEcosystemsToInclude(), scenario.getPressuresToInclude(),
-            areas, scenario.getMatrixResponse(), calc.getOperationOptions(), scenario, null, coastalComplement != null);
+            areas, scenario.getMatrixResponse(), calc.getOperationOptions(), scenario, coastalComplement != null);
 
         // Trigger calculation to populate impact matrix
         var ignore = ((PlanarImage) coverage.getRenderedImage()).getTiles();
@@ -752,7 +749,6 @@ public class CalcService {
                                                 int[] includedEcosystems,
                                                 BaselineVersion baselineVersion,
                                                 Geometry projectedRoi,
-                                                Overflow overflow,
                                                 boolean isAreaCalculation)
         throws IOException {
         var calculation = new CalculationResult(result);
@@ -779,7 +775,6 @@ public class CalcService {
                 calculation.setBaselineVersion(baselineVersion);
                 calculation.setOperationName(scenario.getOperation());
                 calculation.setOperationOptions(scenario.getOperationOptions());
-                calculation.setOverflow(overflow);
 
                 em.persist(calculation);
                 em.flush(); // to have id generated

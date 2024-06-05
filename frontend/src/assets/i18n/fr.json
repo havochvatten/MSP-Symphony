@@ -645,11 +645,6 @@
             },
             "comparison": {
                 "legend-desc": "L'image montre la différence relative d'impact cumulé entre le scénario de référence et le scénario anticipé."
-            },
-            "overflow": {
-                "title": "Dépassement de la valeur maximale",
-                "detail": "Veuillez noter que la partie du résultat cumulé qui dépasse la valeur maximale par pixel n'est pas reflétée dans le rapport. Le résultat pour les bandes affectées est inférieur à ce qui serait attendu si l'ensemble du changement paramétré était pris en compte, sans limiter la valeur au maximum.",
-                "list-description": "La valeur maximale a été dépassée dans les bandes suivantes:"
             }
         },
         "sensitivity-matrices": {
@@ -688,15 +683,13 @@
             "and": "et",
             "base-changes": "Modifications à l'échelle du scénario",
             "area-changes": "Modifications spécifiques à la zone",
-            "no-changes": "Aucun modifications",
-            "overflow-notice": "Dépasse valeur maximale"
+            "no-changes": "Aucun modifications"
         },
         "impact-table": {
             "ecoComponent": "Impact par composante écosystème",
             "pressure": "Impact par pression",
             "cumulative": "Cumulatif",
-            "percentage-of-total": "% du total",
-            "overflow": "Dépassement max, rapport de changement erroné"
+            "percentage-of-total": "% du total"
         },
         "toolbar": {
             "export-csv": "Exporter en tant que CSV",

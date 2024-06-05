@@ -645,11 +645,6 @@
             },
             "comparison": {
                 "legend-desc": "The image shows the relative difference in total cumulative impact between the base and what-if scenario."
-            },
-            "overflow": {
-                "title": "Cumulative impact exceeds maximum value",
-                "detail": "Note that the part of the cumulative result that has exceeded the maximum value per pixel is not reflected in the report. Hence, the result for the affected bands is lower than the value would be if the entire parameterized change was factored in, without limiting each pixel value.",
-                "list-description": "The following changes exceed maximum value:"
             }
         },
         "sensitivity-matrices": {
@@ -688,15 +683,13 @@
             "and": "and",
             "base-changes": "Common changes",
             "area-changes": "Area-specific changes",
-            "no-changes": "No changes",
-            "overflow-notice": "Change exceeds maximum"
+            "no-changes": "No changes"
         },
         "impact-table": {
             "ecoComponent": "Impact per nature value",
             "pressure": "Impact per pressure",
             "cumulative": "Cumulative",
-            "percentage-of-total": "% of Total",
-            "overflow": "Maximum exceeded, entire change incorrectly reported"
+            "percentage-of-total": "% of Total"
         },
         "toolbar": {
             "export-csv": "Export as CSV",

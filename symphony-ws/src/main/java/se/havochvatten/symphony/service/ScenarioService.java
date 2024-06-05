@@ -21,7 +21,6 @@ import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.calculation.Operations;
-import se.havochvatten.symphony.calculation.Overflow;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
@@ -55,7 +54,7 @@ import java.util.stream.Stream;
 @Stateless
 public class ScenarioService {
     private static final Logger LOG = LoggerFactory.getLogger(ScenarioService.class);
-    private static final double MAX_IMPACT_VALUE = 100.0;
+    private static final double MAX_IMPACT_VALUE = 250.0;
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -157,16 +156,15 @@ public class ScenarioService {
     public Pair<GridCoverage2D, GridCoverage2D> applyScenario(GridCoverage2D ecosystems,
                                                               GridCoverage2D pressures,
                                                               List<ScenarioArea> areas,
-                                                              BandChangeEntity altScenario,
-                                                              Overflow overflow) throws FactoryException, TransformException {
+                                                              BandChangeEntity altScenario) throws FactoryException, TransformException {
         // We assume GeoJSON is in WGS84 and that ecosystem and pressures coverages are of the same CRS
         assert (ecosystems.getCoordinateReferenceSystem().equals(pressures.getCoordinateReferenceSystem()));
         MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
                 ecosystems.getCoordinateReferenceSystem());
 
         return Pair.of(
-                apply(ecosystems, ecosystems.getGridGeometry(), areas, LayerType.ECOSYSTEM, WGS84toTarget, altScenario, overflow),
-                apply(pressures, pressures.getGridGeometry(), areas, LayerType.PRESSURE, WGS84toTarget, altScenario, overflow)
+                apply(ecosystems, ecosystems.getGridGeometry(), areas, LayerType.ECOSYSTEM, WGS84toTarget, altScenario),
+                apply(pressures, pressures.getGridGeometry(), areas, LayerType.PRESSURE, WGS84toTarget, altScenario)
         );
     }
 
@@ -178,8 +176,8 @@ public class ScenarioService {
                                 List<ScenarioArea> areas,
                                 LayerType changeType,
                                 MathTransform roiTransform,
-                                BandChangeEntity alternateChangeSource,
-                                Overflow overflow) throws TransformException, FactoryException {
+                                BandChangeEntity alternateChangeSource)
+            throws TransformException, FactoryException {
         final int numBands = coverage.getNumSampleDimensions();
 
         return Util.reduce(areas, coverage, (state, area) -> {
@@ -210,7 +208,7 @@ public class ScenarioService {
                         offsets[bandChange.band] = bandChange.offset == null ? 0.0 : bandChange.offset;
 
                         GridCoverage2D g2d = (GridCoverage2D) operations.rescale(innerState, multipliers, offsets,
-                            gridROI, MAX_IMPACT_VALUE, changeType, overflow);
+                            gridROI, MAX_IMPACT_VALUE, changeType);
 
                         return g2d;
                     });

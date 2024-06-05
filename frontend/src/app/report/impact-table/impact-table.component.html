@@ -8,10 +8,8 @@
   </tr>
   <tr *ngFor="let band of group.bands"
       [ngClass]="{
-        'excluded' : isExcluded(band.bandNumber),
-        'overflow' : hasOverflow(band.bandNumber)
+        'excluded' : isExcluded(band.bandNumber)
       }"
-      [title]="hasOverflow(band.bandNumber) ? ('report.impact-table.overflow' | translate) : ''"
   >
     <td class="band-name">
       {{ band.displayName }}

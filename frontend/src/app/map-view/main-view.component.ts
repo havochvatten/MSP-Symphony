@@ -1,6 +1,6 @@
 import {
   Component, ViewChild, OnInit,
-  AfterViewInit, ChangeDetectorRef, Signal, signal, NgModuleRef
+  AfterViewInit, ChangeDetectorRef, NgModuleRef
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';

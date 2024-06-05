@@ -236,7 +236,6 @@ public class ReportService {
 
         report.scenarioChanges = scenario.getChangesForReport();
         report.timestamp = calc.getTimestamp().getTime();
-        report.overflow = calc.getOverflowForReport();
 
         return report;
     }

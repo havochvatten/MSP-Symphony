@@ -13,11 +13,6 @@
           </ng-container>
         </td>
       </tr>
-      <tr *ngIf="s_change.value.hasOverflow">
-        <td colspan="2" class="overflow">
-          <span>{{ 'report.scenario-changes.overflow-notice' | translate }}</span>
-        </td>
-      </tr>
     </ng-container>
     <tr *ngIf="anyAreaChanges()" class="title-row area-change"><th colspan="2">{{ 'report.scenario-changes.area-changes' | translate }}</th></tr>
     <ng-container *ngFor="let area of allAreaChanges | keyvalue">
@@ -36,11 +31,6 @@
   <!--            compoundChange :-->
   <!--             singleChange"-->
             </ng-container>
-          </td>
-        </tr>
-        <tr *ngIf="a_change.value.hasOverflow">
-          <td colspan="2" class="overflow">
-            <span>{{ 'report.scenario-changes.overflow-notice' | translate }}</span>
           </td>
         </tr>
       </ng-container>

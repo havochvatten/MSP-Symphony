@@ -40,7 +40,6 @@
         [bandDict]="metadata.bandDictionary"
         [areaDict]="areaDictA"
         [comparisonReport]="true"
-        [overflow]="report.a.overflow"
       ></app-scenario-changes>
     </ng-container>
     <ng-container *ngIf="report.b.scenarioChanges !== null"> <!-- indicates baseline calculation
@@ -51,7 +50,6 @@
         [bandDict]="metadata.bandDictionary"
         [areaDict]="areaDictB"
         [comparisonReport]="true"
-        [overflow]="report.b.overflow"
       ></app-scenario-changes>
     </ng-container>
     <app-impact-table
@@ -62,7 +60,6 @@
         calculateRelativeDifference([report.a.impactPerPressure, report.b.impactPerPressure])
        ]"
       [names]="[report.a.name, report.b.name, 'report.cumulative-effect-etc.relative-diff' | translate]"
-      [overflow]="allOverflow.PRESSURE || null"
       [locale]="locale"
     ></app-impact-table>
     <app-impact-table
@@ -73,7 +70,6 @@
         calculateRelativeDifference([report.a.impactPerEcoComponent, report.b.impactPerEcoComponent])
        ]"
       [names]="[report.a.name, report.b.name, 'report.cumulative-effect-etc.relative-diff' | translate]"
-      [overflow]="allOverflow.ECOSYSTEM || null"
       [locale]="locale"
     ></app-impact-table>
   </ng-container>

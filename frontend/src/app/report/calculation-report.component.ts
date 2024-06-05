@@ -13,7 +13,6 @@ import { environment as env } from "@src/environments/environment";
 import { NormalizationType } from "@data/calculation/calculation.service";
 import { ReportService } from "@src/app/report/report.service";
 import { AbstractReport } from "@src/app/report/abstract-report.directive";
-import { setOverflowProperty } from "@src/app/report/report.util";
 
 @Component({
   selector: 'app-calculation-report',
@@ -46,7 +45,7 @@ export class CalculationReportComponent extends AbstractReport {
           this.imageUrl = `${env.apiBaseUrl}/calculation/${calcId}/image`;
           reportService.getReport(calcId as string).subscribe({
             next: function (report) {
-              that.report = setOverflowProperty(report);
+              that.report = report;
               that.area = reportService.calculateArea(report);
               that.loadingReport = false;
               that.store.dispatch(MetadataActions.fetchMetadataForBaseline({baselineName: report.baselineName}));
