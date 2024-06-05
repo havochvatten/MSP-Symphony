@@ -1,4 +1,4 @@
-import { Collection, Map as OLMap, MapBrowserEvent, Overlay } from 'ol';
+import { Map as OLMap, MapBrowserEvent, Overlay } from 'ol';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import GeoJSON from 'ol/format/GeoJSON';
@@ -94,7 +94,6 @@ class AreaLayer extends VectorLayer<Feature> {
   private boundaries?: FeatureLike[];
   private optionsMenuActive = false;
   private featureMap = new Map<string, Feature<Geometry>>();
-  private selectedFeatures = new Collection<Feature<Geometry>>();
   private selectedStyle = new AreaStyle(true);
 
   constructor(
@@ -105,7 +104,7 @@ class AreaLayer extends VectorLayer<Feature> {
     private onDrawInvalid: () => void,
     private onDownloadClick: (path: string) => void,
     onSplitClick: (feature: Feature, prevFeature: Feature) => void,
-    onMergeClick: (features: Feature[]) => void,
+    onMergeClick: (lastFeature: Feature) => void,
     public scenarioLayer: ScenarioLayer,
     private translateService: TranslateService,
     private geoJson: GeoJSON
@@ -136,14 +135,13 @@ class AreaLayer extends VectorLayer<Feature> {
 
     this.areaSelect.on('select', (event) => {
 
-      const feature = event.selected[0],
-        features = this.areaSelect.getFeatures();
+      const feature = event.selected[0];
+
       if (feature !== undefined) {
         // Merge or split (Alt key pressed)
         if (event.mapBrowserEvent.originalEvent.altKey) {
           if (event.mapBrowserEvent.originalEvent.shiftKey) {
-            features.extend(event.deselected);
-            onMergeClick(features.getArray());
+            onMergeClick(feature);
           } else if (event.deselected[0]) {
             onSplitClick(feature, event.deselected[0]);
           }
@@ -154,6 +152,10 @@ class AreaLayer extends VectorLayer<Feature> {
       this.setSelection(event.selected[0]?.get('statePath') || undefined,
                          event.mapBrowserEvent.originalEvent.ctrlKey);
     });
+  }
+
+  public getFeaturesByStatePaths(statePaths: StatePath[]): Feature[] | null {
+    return getFeaturesByStatePaths(this.getSource()!, statePaths);
   }
 
   private async addHoverInteraction(map: OLMap, areaLayer: VectorLayer<Feature>) {
