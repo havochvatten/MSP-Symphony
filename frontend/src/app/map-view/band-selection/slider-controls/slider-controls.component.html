@@ -30,13 +30,15 @@
       <app-icon iconType="sliders"></app-icon>
     </button>
     <button
-      *ngIf="band.uncertainty !== null"
-      class="uncertainty"
-      [attr.data-active]="checkVisibleUncertainty(band)"
-      [title]="'map.editor.band-pressures.show-uncertainty' | translate"
-      (click)="showUncertainty(band)"
+      *ngIf="band.reliability !== null"
+      class="reliability"
+      [attr.data-active]="reliabilityVisible"
+      [title]="(reliabilityVisible ?
+        'map.editor.band-pressures.hide-reliability' :
+        'map.editor.band-pressures.show-reliability') | translate"
+      (click)="showReliability()"
     >
-      <app-icon iconType="uncertain-data"
+      <app-icon iconType="data-reliability"
       ></app-icon>
     </button>
     <app-icon

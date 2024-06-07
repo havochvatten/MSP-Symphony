@@ -24,7 +24,7 @@
     [searching]="search.length > 0"
     [change]="onChange"
     [changeVisible]="onChangeVisible"
-    [changeVisibleUncertainty]="onChangeVisibleUncertainty"
+    [changeVisibleReliability]="onChangeVisibleReliability"
     [scenarioActive]="!!(scenarioDisplayNames | async)?.scenarioName"
   ></app-checkbox-accordion>
   <p *ngIf="filteredGroups.length === 0">{{ 'map.eco-component.search.no-matches' | translate}}</p>

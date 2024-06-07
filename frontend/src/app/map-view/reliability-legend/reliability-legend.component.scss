@@ -26,7 +26,7 @@
     }
 
     .color-bar {
-      background: linear-gradient(to right, rgba(255, 255, 255, 0.1) 8%, rgba(255, 0, 0, 1) 92%);
+      background: linear-gradient(to right, rgba(255, 0, 0, 1) 8%, rgba(255, 255, 255, 1) 92%);
       height: 32px;
       width: 100%;
       border: 1px solid #303030;
@@ -55,11 +55,11 @@
       }
 
       &.low {
-        background-image: url('~src/assets/high-uncertainty-single.svg');
+        background-image: url('/assets/low-reliability-single.svg');
       }
 
       &.mid {
-        background-image: url('~src/assets/mid-uncertainty-single.svg');
+        background-image: url('/assets/mid-reliability-single.svg');
       }
     }
   }

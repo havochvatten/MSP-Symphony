@@ -57,13 +57,13 @@ export const setLoadedState = createAction(
   props<{ band: Band, value: boolean }>()
 );
 
-export const showUncertainty = createAction(
-  '[Metadata] Set uncertainty visibility for band',
+export const showReliability = createAction(
+  '[Metadata] Show reliability',
   props<{ band: Band  }>()
 );
 
-export const hideUncertainty = createAction(
-  '[Metadata] Hide uncertainty'
+export const hideReliability = createAction(
+  '[Metadata] Hide reliability'
 );
 
 export const updateMultiplier = createAction(

@@ -50,7 +50,7 @@
          (cmpLegends$ | async)?.length > 0 && this.getVisibleComparison() ||
          (legends$ | async).ecosystem ||
          (legends$ | async).pressure ||
-         (visibleUncertainty$ | async) !== null
+         (visibleReliability$ | async) !== null
       "
       class="color-scale-container"
     >
@@ -80,11 +80,11 @@
         [colors]="(legends$ | async).pressure.colorMap"
         [unit]="(legends$ | async).pressure.unit"
       ></app-result-color-scale>
-      <app-uncertainty-legend
-        class="legend-section uncertainty-legend"
-        *ngIf="(visibleUncertainty$ | async) !== null"
-        [uncertainty]="(visibleUncertainty$ | async)"
-      ></app-uncertainty-legend>
+      <app-reliability-legend
+        class="legend-section reliability-legend"
+        *ngIf="(visibleReliability$ | async) !== null"
+        [reliability]="(visibleReliability$ | async)"
+      ></app-reliability-legend>
     </div>
     <div id="scale-container"></div>
   </div>

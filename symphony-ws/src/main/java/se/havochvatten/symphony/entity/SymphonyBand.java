@@ -50,11 +50,11 @@ public class SymphonyBand {
     @OneToMany(mappedBy = "ecoBand")
     private Set<Sensitivity> ecoSensitivities = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "uceMetaband", fetch = FetchType.LAZY)
-    private Set<UncertaintyPartition> uncertaintyPartitions = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "rpMetaband", fetch = FetchType.LAZY)
+    private Set<ReliabilityPartition> reliabilityPartitions = new LinkedHashSet<>();
 
-    public Set<UncertaintyPartition> getUncertaintyExtents() {
-        return uncertaintyPartitions;
+    public Set<ReliabilityPartition> getReliabilityPartitions() {
+        return reliabilityPartitions;
     }
 
     @XmlTransient

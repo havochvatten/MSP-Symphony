@@ -143,8 +143,8 @@
                 "constant-increase": "Constant",
                 "show-intensity": "Show intensity controls",
                 "hide-intensity": "Hide intensity controls",
-                "show-uncertainty": "Show uncertainty",
-                "hide-uncertainty": "Hide uncertainty",
+                "show-reliability": "Show reliability",
+                "hide-reliability": "Hide reliability",
                 "note": "If you have modified any values in the data layers, you can save these modifications as new layers, and reuse them in other calculations.",
                 "no-scenario-selected": "Select a scenario to adjust intensity values"
             },
@@ -507,8 +507,10 @@
             "comparison": "Relative pressure difference",
             "ecosystem": "Ecosystem value",
             "pressure": "Pressure intensity",
-            "uncertainty": {
-                "knowledge-level": "Knowledge level"
+            "reliability": {
+                "title": "Reliability",
+                "low": "Low reliability",
+                "high": "High reliability"
             }
         },
         "area-selection-hint": {

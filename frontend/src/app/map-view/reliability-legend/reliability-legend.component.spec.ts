@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { UncertaintyLegendComponent } from './uncertainty-legend.component';
+import { ReliabilityLegendComponent } from './reliability-legend.component';
 import { provideMockStore } from "@ngrx/store/testing";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 
-describe('UncertaintyLegendComponent', () => {
-  let component: UncertaintyLegendComponent;
-  let fixture: ComponentFixture<UncertaintyLegendComponent>;
+describe('ReliabilityLegendComponent', () => {
+  let component: ReliabilityLegendComponent;
+  let fixture: ComponentFixture<ReliabilityLegendComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -16,11 +16,11 @@ describe('UncertaintyLegendComponent', () => {
         provideMockStore({
           initialState : { user: {} }
         })],
-      declarations: [UncertaintyLegendComponent]
+      declarations: [ReliabilityLegendComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(UncertaintyLegendComponent);
+    fixture = TestBed.createComponent(ReliabilityLegendComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

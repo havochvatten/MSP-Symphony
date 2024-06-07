@@ -82,11 +82,11 @@ export class BandSelectionComponent implements OnInit, OnChanges {
     this.store.dispatch(MetadataActions.setVisibility({ band, value }));
   };
 
-  onChangeVisibleUncertainty = (visible: boolean, band: Band) => {
+  onChangeVisibleReliability = (visible: boolean, band: Band) => {
     if (visible) {
-      this.store.dispatch(MetadataActions.showUncertainty({ band }));
+      this.store.dispatch(MetadataActions.showReliability({ band }));
     } else {
-      this.store.dispatch(MetadataActions.hideUncertainty());
+      this.store.dispatch(MetadataActions.hideReliability());
     }
   };
 

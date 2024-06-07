@@ -3,17 +3,17 @@ package se.havochvatten.symphony.dto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import se.havochvatten.symphony.entity.UncertaintyPartition;
+import se.havochvatten.symphony.entity.ReliabilityPartition;
 
 import java.util.Set;
 
-public class UncertaintyMapping {
+public class ReliabilityMapping {
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    public UncertaintyMapping(Set<UncertaintyPartition> uncertaintymap) {
-        partitions = new ClassificationPartition[uncertaintymap.size()];
+    public ReliabilityMapping(Set<ReliabilityPartition> reliabilitymap) {
+        partitions = new ClassificationPartition[reliabilitymap.size()];
         int i = 0;
-        for (UncertaintyPartition extent : uncertaintymap) {
+        for (ReliabilityPartition extent : reliabilitymap) {
             try {
                 partitions[i++] = new ClassificationPartition(extent.getValue(), extent.getPolygon());
             } catch (JsonProcessingException e) {

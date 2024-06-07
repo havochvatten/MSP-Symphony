@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { setIn, updateIn } from 'immutable';
+import { setIn } from 'immutable';
 import { State, Band, Groups, bandEquals } from './metadata.interfaces';
 import { MetadataActions, MetadataInterfaces } from './';
 import { ScenarioActions } from "@data/scenario";
@@ -8,7 +8,7 @@ import { getBandPath } from "@data/metadata/metadata.selectors";
 export const initialState: MetadataInterfaces.State = {
   ECOSYSTEM: {},
   PRESSURE: {},
-  visibleUncertainty: null
+  visibleReliability: null
 };
 
 export const metadataReducer = createReducer(
@@ -29,13 +29,13 @@ export const metadataReducer = createReducer(
     return setLayerAttribute(state, band, 'selected', value);
   }),
   on(MetadataActions.setVisibility, (state, { band, value }) => {
-    if (state.visibleUncertainty) {
-      if (bandEquals(state.visibleUncertainty.band, band)) {
-        state = setIn(state, ['visibleUncertainty', 'opaque'], !value);
+    if (state.visibleReliability) {
+      if (bandEquals(state.visibleReliability.band, band)) {
+        state = setIn(state, ['visibleReliability', 'opaque'], !value);
       } else if (value) {
         state = {
           ...state,
-          visibleUncertainty: null
+          visibleReliability: null
         };
       }
     }
@@ -52,7 +52,7 @@ export const metadataReducer = createReducer(
   on(MetadataActions.setLoadedState, (state, { band, value }) => {
     return setLayerAttribute(state, band, 'loaded', value);
   }),
-  on(MetadataActions.showUncertainty, (state, { band }) => {
+  on(MetadataActions.showReliability, (state, { band }) => {
     const opaque: boolean = !getLayerAttribute(state, band, 'visible');
     for (const groups of [...Object.values(state['ECOSYSTEM']), ...Object.values(state['PRESSURE'])]) {
       for (const gband of Object.values(groups.bands)) {
@@ -63,12 +63,12 @@ export const metadataReducer = createReducer(
     }
     return {
       ...state,
-      visibleUncertainty: { band, opaque }
+      visibleReliability: { band, opaque }
     }
   }),
-  on(MetadataActions.hideUncertainty, (state) => ({
+  on(MetadataActions.hideReliability, (state) => ({
     ...state,
-    visibleUncertainty: null
+    visibleReliability: null
   })),
   on(ScenarioActions.closeActiveScenario, (state) => ({
     ...state,

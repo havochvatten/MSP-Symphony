@@ -25,7 +25,7 @@ public class MetaDataService {
 
     // explicit fetch to load lazy-loaded collection
     public final static String fullBandQuery = "SELECT b FROM SymphonyBand b " +
-            "LEFT JOIN FETCH b.uncertaintyPartitions WHERE b.baseline.id = :baselineVersionId " +
+            "LEFT JOIN FETCH b.reliabilityPartitions WHERE b.baseline.id = :baselineVersionId " +
             "AND b.category = :category";
     
     public final static String sparseBandQuery = "SELECT b FROM SymphonyBand b " +

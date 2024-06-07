@@ -1,23 +1,23 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { State as AppState } from '@src/app/app-reducer';
-import { Band, BandGroup, BandType, Groups, State, UncertaintyMap, UncertaintyMapping } from './metadata.interfaces';
+import { Band, BandGroup, Groups, State, ReliabilityMap, ReliabilityMapping } from './metadata.interfaces';
 
 export const selectMetadataState = createFeatureSelector<AppState, State>('metadata');
 
 export const getBandPath = (band: Band) =>
   [band.symphonyCategory, band.meta.symphonytheme, 'bands', band.bandNumber];
 
-export const selectUncertaintyMap = createSelector(
+export const selectReliabilityMap = createSelector(
   selectMetadataState,
   (state: State) =>  {
-    const uncertainties : UncertaintyMap = { ECOSYSTEM: {}, PRESSURE: {} },
+    const uncertainties : ReliabilityMap = { ECOSYSTEM: {}, PRESSURE: {} },
       allBands = flattenBands([...selectGroups(state.ECOSYSTEM), ...selectGroups(state.PRESSURE)]),
-      bandsWithUncertainty = allBands.filter(band => band.uncertainty !== null);
+      bandsWithReliability = allBands.filter(band => band.reliability !== null);
 
     if (allBands.length === 0) return null;
 
-    for (const band of bandsWithUncertainty) {
-      uncertainties[band.symphonyCategory][band.bandNumber] = band.uncertainty as UncertaintyMapping;
+    for (const band of bandsWithReliability) {
+      uncertainties[band.symphonyCategory][band.bandNumber] = band.reliability as ReliabilityMapping;
     }
 
     return uncertainties;
@@ -103,9 +103,9 @@ export const selectBandNumbers = createSelector(
   })
 );
 
-export const selectVisibleUncertainty = createSelector(
+export const selectVisibleReliability = createSelector(
   selectMetadataState,
-  (state: State) =>  state.visibleUncertainty
+  (state: State) =>  state.visibleReliability
 );
 
 function includeAreaSpecificProperties(groups: BandGroup[]): BandGroup[] {

@@ -1,5 +1,5 @@
 import { Component, Input, NgModuleRef, OnDestroy, OnInit } from '@angular/core';
-import { Band, BandChange, bandEquals, BandType, VisibleUncertainty } from '@data/metadata/metadata.interfaces';
+import { Band, BandChange, bandEquals, BandType, VisibleReliability } from '@data/metadata/metadata.interfaces';
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
 import { ScenarioSelectors } from "@data/scenario";
@@ -24,7 +24,7 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
   scenario?: Scenario;
   multiplier?: number;
   offset?: number;
-  visibleUncertainty: VisibleUncertainty | null = null;
+  visibleReliability: VisibleReliability | null = null;
 
   public hasPublicMeta = false;
 
@@ -44,7 +44,7 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
   @Input() disabled = false;
   @Input() onSelect!: (event: MatCheckboxChange, band: Band)=> void;
   @Input() onChangeVisible!: (value: boolean, band: Band) => void;
-  @Input() onChangeVisibleUncertainty!: (value: boolean, band: Band) => void;
+  @Input() onChangeVisibleReliability!: (value: boolean, band: Band) => void;
 
   isEmpty = isEmpty;
 
@@ -89,9 +89,9 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
         this.overriddenChange = undefined;
       });
 
-    this.store.select(MetadataSelectors.selectVisibleUncertainty)
-      .subscribe(visibleUncertainty => {
-        this.visibleUncertainty = visibleUncertainty;
+    this.store.select(MetadataSelectors.selectVisibleReliability)
+      .subscribe(visibleReliability => {
+        this.visibleReliability = visibleReliability;
       });
   }
 
@@ -132,11 +132,11 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
     return this.groupSetting || !this.overriddenChange ? groupOffset : overriddenOffset;
   }
 
-  showUncertainty(band: Band) {
-    this.onChangeVisibleUncertainty(!this.checkVisibleUncertainty(band), band);
+  showReliability() {
+    this.onChangeVisibleReliability(!this.reliabilityVisible, this.band);
   }
 
-  checkVisibleUncertainty(band : Band): boolean {
-    return this.visibleUncertainty !== null && bandEquals(band, this.visibleUncertainty.band);
+  get reliabilityVisible(): boolean {
+    return this.visibleReliability !== null && bandEquals(this.band, this.visibleReliability.band);
   }
 }

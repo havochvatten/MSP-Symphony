@@ -6,25 +6,25 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "uncertaintypartition", schema = "symphony")
-public class UncertaintyPartition {
+@Table(name = "reliabilitypartition", schema = "symphony")
+public class ReliabilityPartition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "uce_id", nullable = false)
+    @Column(name = "rp_id", nullable = false)
     private Integer id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "uce_metaband_id", nullable = false)
+    @JoinColumn(name = "rp_metaband_id", nullable = false)
     private SymphonyBand band;
 
     @NotNull
-    @Column(name = "uce_value", nullable = false)
+    @Column(name = "rp_value", nullable = false)
     private Integer value;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "uce_metaband_id", insertable = false, updatable = false)
-    private SymphonyBand uceMetaband;
+    @JoinColumn(name = "rp_metaband_id", insertable = false, updatable = false)
+    private SymphonyBand rpMetaband;
 
     public Integer getId() {
         return id;
@@ -50,15 +50,15 @@ public class UncertaintyPartition {
         this.value = value;
     }
 
-    @Formula(value = "(SELECT ST_AsGeoJSON(u2.uce_polygon) FROM uncertaintypartition u2 WHERE u2.uce_id = uce_id)")
+    @Formula(value = "(SELECT ST_AsGeoJSON(u2.rp_polygon) FROM reliabilitypartition u2 WHERE u2.rp_id = rp_id)")
     private String polygon;
 
-    public SymphonyBand getUceMetaband() {
-        return uceMetaband;
+    public SymphonyBand getRpMetaband() {
+        return rpMetaband;
     }
 
-    public void setUceMetaband(SymphonyBand uceMetaband) {
-        this.uceMetaband = uceMetaband;
+    public void setRpMetaband(SymphonyBand rpMetaband) {
+        this.rpMetaband = rpMetaband;
     }
 
     public String getPolygon() {

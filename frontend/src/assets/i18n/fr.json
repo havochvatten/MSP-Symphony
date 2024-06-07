@@ -143,8 +143,8 @@
                 "constant-increase": "Constante",
                 "show-intensity": "Afficher les contrôles d'intensité",
                 "hide-intensity": "Masquer les contrôles d'intensité",
-                "show-uncertainty": "Afficher l'incertitude",
-                "hide-uncertainty": "Masquer l'incertitude",
+                "show-reliability": "Afficher la fiabilité",
+                "hide-reliability": "Masquer la fiabilité",
                 "note": "Si vous avez modifié les valeurs pour certaines cartes, vous pouvez enregistrer vos modifications pour les réutiliser dans d'autres calculs.",
                 "no-scenario-selected": "Veuillez sélectionnez un scénario pour ajuster les valeurs d'intensité"
             },
@@ -507,8 +507,10 @@
             "comparison": "Différence de pression relative",
             "ecosystem": "Valeur écosystème",
             "pressure": "Valeur pression",
-            "uncertainty": {
-                "knowledge-level": "Niveau de connaissance"
+            "reliability": {
+                "title": "Fiabilité",
+                "low": "Fiabilité faible",
+                "high": "Fiabilité élevée"
             }
         },
         "area-selection-hint": {

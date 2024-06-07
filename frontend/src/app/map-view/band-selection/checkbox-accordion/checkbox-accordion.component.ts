@@ -22,7 +22,7 @@ export class CheckboxAccordionComponent implements AfterViewInit {
   @Input() searching = false;
   @Input() change!: (value: boolean|undefined, band: Band) => void;
   @Input() changeVisible!: (value: boolean, band: Band) => void;
-  @Input() changeVisibleUncertainty!: (value: boolean, band: Band) => void;
+  @Input() changeVisibleReliability!: (value: boolean, band: Band) => void;
   @Input() open = false;
   toggle: () => void = () => this.open = !this.open;
 
@@ -52,8 +52,8 @@ export class CheckboxAccordionComponent implements AfterViewInit {
     }
   }
 
-  onChangeVisibleUncertainty = (visible: boolean, band: Band) => {
-    this.changeVisibleUncertainty(visible, band);
+  onChangeVisibleReliability = (visible: boolean, band: Band) => {
+    this.changeVisibleReliability(visible, band);
   }
 
   get allBoxesAreChecked(): boolean {

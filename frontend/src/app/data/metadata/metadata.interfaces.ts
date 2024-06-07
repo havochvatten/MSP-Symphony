@@ -7,7 +7,7 @@ export type BandType_Alt = 'ecoComponents' | 'pressures';
 
 export const BandTypes = ['ECOSYSTEM', 'PRESSURE'] as const;
 
-export interface UncertaintyMapping {
+export interface ReliabilityMapping {
   partitions: { value: number, polygon: MultiPolygon }[];
 }
 
@@ -16,7 +16,7 @@ export interface SelectableLayer {
   bandNumber: number;
   symphonyCategory: BandType;
   selected: boolean;
-  uncertainty: UncertaintyMapping | null;
+  reliability: ReliabilityMapping | null;
   visible?: boolean;
   loaded?: boolean;
 }
@@ -73,12 +73,12 @@ export interface BandChange {
   offset?: number;
 }
 
-export interface UncertaintyMap {
-  ECOSYSTEM:  {[key: number]:  UncertaintyMapping };
-  PRESSURE:   {[key: number]:  UncertaintyMapping };
+export interface ReliabilityMap {
+  ECOSYSTEM:  {[key: number]:  ReliabilityMapping };
+  PRESSURE:   {[key: number]:  ReliabilityMapping };
 }
 
-export interface VisibleUncertainty {
+export interface VisibleReliability {
   band: Band;
   opaque: boolean;
 }
@@ -86,7 +86,7 @@ export interface VisibleUncertainty {
 export interface State {
   ECOSYSTEM: Groups;
   PRESSURE: Groups;
-  visibleUncertainty: VisibleUncertainty | null;
+  visibleReliability: VisibleReliability | null;
 }
 
 export function bandEquals(a: Band, b: Band): boolean {

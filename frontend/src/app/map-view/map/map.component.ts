@@ -41,10 +41,10 @@ import { Geometry } from "geojson";
 import { MergeAreasModalComponent } from "@src/app/map-view/map/merge-areas-modal/merge-areas-modal.component";
 import { AreaSelectionConfig } from "@shared/select-intersection/select-intersection.interfaces";
 import { AreaHighlightLayer } from "@src/app/map-view/map/layers/area-highlight-layer";
-import { UncertaintyLayer } from "@src/app/map-view/map/layers/uncertainty-layer";
+import { ReliabilityLayer } from "@src/app/map-view/map/layers/reliability-layer";
 import {
   BandType,
-  UncertaintyMap,
+  ReliabilityMap,
 } from "@data/metadata/metadata.interfaces";
 
 @Component({
@@ -70,8 +70,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private scenarioSubscription: Subscription;
   private scenarioCloseSubscription: Subscription;
 
-  private uncertaintySubject$?: Observable<UncertaintyMap | null>
-  private uncertaintySubscription$?: Subscription;
+  private reliabilitySubject$?: Observable<ReliabilityMap | null>
+  private reliabilitySubscription$?: Subscription;
 
   // layers
   private background?: BackgroundLayer;
@@ -80,11 +80,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private bandLayer?: BandLayer;
   private resultLayerGroup!: ResultLayerGroup;
   private scenarioLayer!: ScenarioLayer;
-  private uncertaintyLayers!: {
-    ECOSYSTEM: UncertaintyLayer;
-    PRESSURE: UncertaintyLayer;
-    ECOSYSTEM_OL: UncertaintyLayer;
-    PRESSURE_OL: UncertaintyLayer;
+  private reliabilityLayers!: {
+    ECOSYSTEM: ReliabilityLayer;
+    PRESSURE: ReliabilityLayer;
+    ECOSYSTEM_OL: ReliabilityLayer;
+    PRESSURE_OL: ReliabilityLayer;
   };
 
   public baselineName = '';
@@ -234,37 +234,37 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.areaLayer.setVisibleAreas(paths.visible, paths.selected);
     });
 
-    this.uncertaintySubject$ = this.store.select(MetadataSelectors.selectUncertaintyMap).pipe(
-      skipWhile(uncertaintyMap => uncertaintyMap === null)
+    this.reliabilitySubject$ = this.store.select(MetadataSelectors.selectReliabilityMap).pipe(
+      skipWhile(reliabilityMap => reliabilityMap === null)
     );
 
-    this.uncertaintySubscription$ = this.uncertaintySubject$.pipe(
+    this.reliabilitySubscription$ = this.reliabilitySubject$.pipe(
       take(1)
-      ).subscribe((uncertaintyMap ) => {
+      ).subscribe((reliabilityMap ) => {
 
-      this.uncertaintyLayers = {
-        ECOSYSTEM: new UncertaintyLayer(uncertaintyMap!.ECOSYSTEM, true, this.geoJson!),
-        PRESSURE: new UncertaintyLayer(uncertaintyMap!.PRESSURE, true, this.geoJson!),
-        ECOSYSTEM_OL: new UncertaintyLayer(uncertaintyMap!.ECOSYSTEM, false, this.geoJson!),
-        PRESSURE_OL: new UncertaintyLayer(uncertaintyMap!.PRESSURE, false, this.geoJson!)
+      this.reliabilityLayers = {
+        ECOSYSTEM: new ReliabilityLayer(reliabilityMap!.ECOSYSTEM, true, this.geoJson!),
+        PRESSURE: new ReliabilityLayer(reliabilityMap!.PRESSURE, true, this.geoJson!),
+        ECOSYSTEM_OL: new ReliabilityLayer(reliabilityMap!.ECOSYSTEM, false, this.geoJson!),
+        PRESSURE_OL: new ReliabilityLayer(reliabilityMap!.PRESSURE, false, this.geoJson!)
       };
 
-      this.map!.getLayers().insertAt(1, this.uncertaintyLayers.ECOSYSTEM);
-      this.map!.getLayers().insertAt(1, this.uncertaintyLayers.PRESSURE);
-      this.map!.addLayer(this.uncertaintyLayers.ECOSYSTEM_OL);
-      this.map!.addLayer(this.uncertaintyLayers.PRESSURE_OL);
+      this.map!.getLayers().insertAt(1, this.reliabilityLayers.ECOSYSTEM);
+      this.map!.getLayers().insertAt(1, this.reliabilityLayers.PRESSURE);
+      this.map!.addLayer(this.reliabilityLayers.ECOSYSTEM_OL);
+      this.map!.addLayer(this.reliabilityLayers.PRESSURE_OL);
 
-      this.store.select(MetadataSelectors.selectVisibleUncertainty).subscribe( (visibleUncertainty) => {
-        this.uncertaintyLayers.ECOSYSTEM.clear();
-        this.uncertaintyLayers.PRESSURE.clear();
-        this.uncertaintyLayers.ECOSYSTEM_OL.clear();
-        this.uncertaintyLayers.PRESSURE_OL.clear();
+      this.store.select(MetadataSelectors.selectVisibleReliability).subscribe( (visibleReliability) => {
+        this.reliabilityLayers.ECOSYSTEM.clear();
+        this.reliabilityLayers.PRESSURE.clear();
+        this.reliabilityLayers.ECOSYSTEM_OL.clear();
+        this.reliabilityLayers.PRESSURE_OL.clear();
 
-        if (visibleUncertainty !== null) {
-          this.showUncertainty(
-            visibleUncertainty.band.symphonyCategory,
-            visibleUncertainty.band.bandNumber,
-            visibleUncertainty.opaque);
+        if (visibleReliability !== null) {
+          this.showReliability(
+            visibleReliability.band.symphonyCategory,
+            visibleReliability.band.bandNumber,
+            visibleReliability.opaque);
         }
       });
     });
@@ -287,9 +287,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  public showUncertainty = (bandType: BandType, bandNumber: number, opaqueLayer: boolean) => {
-    const layerKey = bandType + (opaqueLayer ? '' : '_OL') as keyof typeof this.uncertaintyLayers;
-    this.uncertaintyLayers[layerKey].highlightUncertainty(bandNumber);
+  public showReliability = (bandType: BandType, bandNumber: number, opaqueLayer: boolean) => {
+    const layerKey = bandType + (opaqueLayer ? '' : '_OL') as keyof typeof this.reliabilityLayers;
+    this.reliabilityLayers[layerKey].highlightReliability(bandNumber);
   }
 
   public emitLayerChange(resultIds: number[], cmpCount: number):void {

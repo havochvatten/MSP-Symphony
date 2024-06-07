@@ -25,7 +25,7 @@
         margin-right: 0.4rem;
         cursor: pointer;
 
-        &.uncertainty {
+        &.reliabilty {
           margin-right: 0.6rem;
         }
 
@@ -38,7 +38,7 @@
             margin: -0.2rem 0.4rem 0 0;
           }
 
-          &[icontype='uncertain-data'] {
+          &[icontype='data-reliability'] {
             margin: -0.16rem 0.4rem 0 0;
           }
 

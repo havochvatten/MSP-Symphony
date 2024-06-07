@@ -143,8 +143,8 @@
                 "constant-increase": "Konstant",
                 "show-intensity": "Visa förekomständring",
                 "hide-intensity": "Dölj förekomständring",
-                "show-uncertainty": "Visa osäkerhet",
-                "hide-uncertainty": "Dölj osäkerhet",
+                "show-reliability": "Visa tillförlitlighet",
+                "hide-reliability": "Dölj tillförlitlighet",
                 "note": "Om du har ändrat värdena i något kartlager kan du spara den/de justerade lagren, för att sedan använda dem i andra beräkningar.",
                 "no-scenario-selected": "Välj ett scenario för att ändra förekomster"
             },
@@ -507,8 +507,10 @@
             "comparison": "Relativ skillnad i belastning",
             "ecosystem": "Naturvärden",
             "pressure": "Belastningsintensitet",
-            "uncertainty": {
-                "knowledge-level": "Kunskapslägesnivå"
+            "reliability": {
+                "title": "Tillförlitlighet",
+                "low": "Låg tillförlitlighet",
+                "high": "Hög tillförlitlighet"
             }
         },
         "area-selection-hint": {
