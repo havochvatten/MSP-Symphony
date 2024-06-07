@@ -1,6 +1,5 @@
 package se.havochvatten.symphony.appconfig;
 
-import io.swagger.jaxrs.config.BeanConfig;
 import it.geosolutions.jaiext.JAIExt;
 
 import javax.ws.rs.core.Application;

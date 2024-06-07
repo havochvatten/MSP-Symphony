@@ -19,7 +19,6 @@ package se.havochvatten.symphony.calculation.jai.rescale2;
 
 import com.sun.media.jai.util.PropertyGeneratorImpl;
 import it.geosolutions.jaiext.range.Range;
-import se.havochvatten.symphony.dto.LayerType;
 
 import javax.media.jai.*;
 import javax.media.jai.registry.RenderableRegistryMode;

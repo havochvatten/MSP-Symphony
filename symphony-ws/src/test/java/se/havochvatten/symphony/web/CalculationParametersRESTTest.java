@@ -2,7 +2,6 @@ package se.havochvatten.symphony.web;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.junit.Test;
 import se.havochvatten.symphony.dto.*;
