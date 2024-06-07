@@ -1,20 +1,11 @@
 import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
-  QueryList,
-  ContentChildren,
-  OnChanges,
-  AfterViewInit
+  Component, ContentChildren, Input, Output,
+  EventEmitter, QueryList, OnChanges, AfterViewInit
 } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { IconType } from '@shared/icon/icon.component';
 import { v4 as uuid } from 'uuid';
 import { Observable } from 'rxjs/internal/Observable';
-import {
-  CompoundComparisonListDialogComponent
-} from "@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component";
 
 const DEFAULT_TAB = 0;
 

@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { ReportChanges } from "@data/calculation/calculation.interfaces";
 import { ChangesProperty } from "@data/scenario/scenario.interfaces";
-import { BandType, BandTypes } from "@data/metadata/metadata.interfaces";
+import { BandTypes } from "@data/metadata/metadata.interfaces";
 import { isEmpty } from "@shared/common.util";
 
 // TODO Show addition or removal of non-default layer selection (i.e. climate)?

@@ -6,7 +6,6 @@ import { Observable } from "rxjs";
 import { BatchCalculationProcessEntry } from "@data/calculation/calculation.interfaces";
 import { CalculationActions, CalculationSelectors } from "@data/calculation";
 import { MessageActions } from "@data/message";
-import { ScenarioSelectors } from "@data/scenario";
 import { State } from "@src/app/app-reducer";
 import { BatchStatusService } from "@src/app/socket/batch-status.service";
 import { CalculationReportModalComponent } from "@shared/report-modal/calculation-report-modal.component";

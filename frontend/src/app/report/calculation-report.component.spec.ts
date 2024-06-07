@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CalculationReportComponent } from './calculation-report.component';
-import { SharedModule } from '../shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { ImpactTableComponent } from './impact-table/impact-table.component';
 import { HighestImpactsComponent } from './highest-impacts/highest-impacts.component';
 import { CumulativeEffectEtcComponent } from './cumulative-effect-etc/cumulative-effect-etc.component';

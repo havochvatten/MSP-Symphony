@@ -42,7 +42,6 @@ import { MatrixRef } from "@src/app/map-view/scenario/scenario-area-detail/matri
 import {
   SetArbitraryMatrixComponent
 } from "@src/app/map-view/scenario/set-arbitrary-matrix/set-arbitrary-matrix.component";
-import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 

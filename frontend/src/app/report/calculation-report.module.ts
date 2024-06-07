@@ -6,7 +6,7 @@ import { CalculationReportComponent } from './calculation-report.component';
 import { PressureChartComponent } from './pressure-chart/pressure-chart.component';
 import { CumulativeEffectEtcComponent } from './cumulative-effect-etc/cumulative-effect-etc.component';
 import { ImpactTableComponent } from './impact-table/impact-table.component';
-import { SharedModule } from '../shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { HighestImpactsComponent } from './highest-impacts/highest-impacts.component';
 import { CalculationImageComponent } from './calculation-image/calculation-image.component';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
