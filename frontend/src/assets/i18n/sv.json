@@ -30,7 +30,9 @@
         "intensity": {
             "ecosystems": "Naturvärden",
             "pressures": "Belastningar",
-            "override": "Åsidosätt gruppinställning"
+            "override": "Åsidosätt gruppinställning",
+            "select-all": "Markera samtliga",
+            "deselect-all": "Avmarkera samtliga"
         },
         "confirm-reset": {
             "modal": {

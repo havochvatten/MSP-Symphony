@@ -41,6 +41,14 @@ export const metadataReducer = createReducer(
     }
     return setLayerAttribute(state, band, 'visible', value);
   }),
+  on(MetadataActions.selectBandsByType, (state, { bandType, value }) => {
+    for (const group of Object.values(state[bandType])) {
+      for (const band of Object.values(group.bands)) {
+        state = setLayerAttribute(state, band, 'selected', value);
+      }
+    }
+    return state;
+  }),
   on(MetadataActions.setLoadedState, (state, { band, value }) => {
     return setLayerAttribute(state, band, 'loaded', value);
   }),

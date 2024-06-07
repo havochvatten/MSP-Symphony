@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Band, Groups } from './metadata.interfaces';
+import { Band, BandType, Groups } from './metadata.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
 import { Scenario } from "@data/scenario/scenario.interfaces";
 
@@ -35,6 +35,11 @@ export const fetchSparseMetadataSuccess = createAction(
 export const fetchMetadataFailure = createAction(
   '[Metadata] Fetch metadata failure',
   props<{ error: ErrorMessage }>()
+);
+
+export const selectBandsByType = createAction(
+  '[Metadata] Select bands for inclusion',
+  props<{ bandType: BandType, value: boolean}>()
 );
 
 export const selectBand = createAction(

@@ -93,3 +93,11 @@ export function bandEquals(a: Band, b: Band): boolean {
   return a.bandNumber === b.bandNumber
     && a.symphonyCategory === b.symphonyCategory;
 }
+
+// TODO: Consolidate these everywhere
+export const bandTypesMap: Map<BandType | BandType_Alt, BandType | BandType_Alt>  = new Map([
+  ['ECOSYSTEM', 'ecoComponents'],
+  ['PRESSURE', 'pressures'],
+  ['ecoComponents', 'ECOSYSTEM'],
+  ['pressures', 'PRESSURE']
+]);

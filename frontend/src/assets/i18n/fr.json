@@ -30,7 +30,9 @@
         "intensity" : {
             "ecosystems": "Composante écosystèmes",
             "pressures": "Pressions",
-            "override": "Remplacer le paramètre de groupe"
+            "override": "Remplacer le paramètre de groupe",
+            "select-all": "Tout sélectionner",
+            "deselect-all": "Tout désélectionner"
         },
         "confirm-reset": {
             "modal": {
