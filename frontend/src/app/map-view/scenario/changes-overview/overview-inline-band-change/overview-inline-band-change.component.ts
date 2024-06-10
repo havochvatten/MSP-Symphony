@@ -112,4 +112,18 @@ export class OverviewInlineBandChangeComponent implements OnInit {
     this.localMultiplier = this.change?.multiplier ?? 1;
     this.localOffset = this.change?.offset ?? 0;
   }
+
+  setChange($event: Event) {
+    const target = ($event.target as HTMLInputElement);
+    let value = +target.value;
+
+    if (this.changeType === 'relative') {
+      value = value > 150 ? 150 : value;
+      this.localMultiplier = +(value.toFixed(2)) / 100 + 1;
+      this.multiplierInput.nativeElement.value = ((this.localMultiplier - 1) * 100) | 0;
+    } else {
+      this.localOffset = value > 150 ? 150 : value;
+      this.offsetInput.nativeElement.value = this.localOffset;
+    }
+  }
 }

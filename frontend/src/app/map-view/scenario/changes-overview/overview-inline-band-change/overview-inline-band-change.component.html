@@ -4,10 +4,11 @@
          [ngClass]="{'active' : editMode && changeType === 'relative', 'percentage': true }"
          type="number"
          step="1"
-         max="200"
+         max="150"
          min="-100"
          [value]="(localMultiplier - 1) * 100 | number:'1.0-0'"
-         (change)="localMultiplier = +((+$event.target.value).toFixed(2)) / 100 + 1"
+         (change)="setChange($event)"
+         (input)="setChange($event)"
          [disabled]="!editMode"
   />
   <input #offsetInput
@@ -15,8 +16,11 @@
          type="number"
          value="0"
          step="1"
+         max="150"
+         min="-100"
          [value]="localOffset"
-         (change)="localOffset = +($event.target.value)"
+         (change)="setChange($event)"
+         (input)="setChange($event)"
          [disabled]="!editMode"
   />
   <app-icon-button
