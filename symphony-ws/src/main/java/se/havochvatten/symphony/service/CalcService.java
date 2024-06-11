@@ -329,9 +329,11 @@ public class CalcService {
             Map<Integer, List<CaPolygon>> polygonCache;
             polygonCache = caList.stream().collect(Collectors.toMap(CalculationArea::getId, CalculationArea::getCaPolygonList));
 
-            for (var areaId : areasExcludingCoastal.keySet()) {
-                var caPolygons = polygonCache.get(areasExcludingCoastal.get(areaId));
-                for(var caPoly : caPolygons){
+            for (int areaId : areasExcludingCoastal.keySet()) {
+                List<CaPolygon> caPolygons = polygonCache.get(areasExcludingCoastal.get(areaId));
+                if (caPolygons == null) continue;
+
+                for(CaPolygon caPoly : caPolygons){
                     Geometry caGeo = CalculationAreaService.jsonToGeometry(caPoly.getPolygon());
                     if(caGeo != null) {
                         if (excludedCoastPolygon == null) {
