@@ -1,6 +1,6 @@
 {
   "name": "symphony-fe",
-  "version": "1.22.0",
+  "version": "1.23.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --ssl",
