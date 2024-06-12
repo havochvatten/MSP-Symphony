@@ -1,17 +1,13 @@
 import VectorSource from "ol/source/Vector";
-import { Map as OLMap } from "ol";
-import GeoJSON from "ol/format/GeoJSON";
 import { FeatureCollection, StatePath } from "@data/area/area.interfaces";
-import { Geometry } from "ol/geom";
 import Style from "ol/style/Style";
 import { Fill, Stroke } from "ol/style";
-import LayerGroup from "ol/layer/Group";
 import VectorImageLayer from "ol/layer/VectorImage";
 import { simpleHash } from "@shared/common.util";
+import { CachedVectorLayers } from "@src/app/map-view/map/layers/cached-vectorlayers";
 
-export class AreaHighlightLayer extends LayerGroup {
+export class AreaHighlightLayer extends CachedVectorLayers {
 
-  private featureMap = new Map<string, VectorImageLayer<VectorSource<Geometry>>>();
   private highlightStyle = new Style({
     stroke: new Stroke({
       color: 'red',
@@ -21,13 +17,6 @@ export class AreaHighlightLayer extends LayerGroup {
       color: 'transparent'
     })
   });
-
-  constructor(
-    private map: OLMap,
-    private geoJson: GeoJSON
-  ) {
-    super();
-  }
 
   public mapAreaLayers(areaFeatures: FeatureCollection[]): void {
     for(const feature of areaFeatures) {

@@ -2,7 +2,6 @@ import { ChartData } from '@src/app/report/pressure-chart/pressure-chart.compone
 import { Extent } from 'ol/extent';
 import { ProjectionLike } from "ol/proj";
 import { NormalizationOptions } from "@data/calculation/calculation.service";
-import { BandType } from "@data/metadata/metadata.interfaces";
 import { ChangesProperty } from '@data/scenario/scenario.interfaces';
 import { ListItemsSort, SortableListItem } from "@data/common/sorting.interfaces";
 
@@ -48,7 +47,6 @@ export interface Report {
   chartData: ChartData;
   chartWeightThreshold: number;
   timestamp: number;
-  overflow: Record<BandType, number[]> | null;
 }
 
 export interface ReportChanges {

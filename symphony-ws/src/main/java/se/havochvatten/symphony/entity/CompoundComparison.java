@@ -6,7 +6,6 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import org.hibernate.annotations.*;
 import se.havochvatten.symphony.calculation.ComparisonResult;
 import se.havochvatten.symphony.dto.CompoundComparisonSlice;
-import se.havochvatten.symphony.dto.StatisticsResult;
 
 import javax.persistence.*;
 import javax.persistence.Entity;

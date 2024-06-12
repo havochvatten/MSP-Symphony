@@ -1,13 +1,11 @@
 package se.havochvatten.symphony.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.time.Instant;
 import java.util.Date;
 
 /**

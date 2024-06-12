@@ -49,32 +49,42 @@
         ((legends$ | async).result && this.getVisibleImpact()) ||
          (cmpLegends$ | async)?.length > 0 && this.getVisibleComparison() ||
          (legends$ | async).ecosystem ||
-         (legends$ | async).pressure
+         (legends$ | async).pressure ||
+         (visibleReliability$ | async) !== null
       "
       class="color-scale-container"
     >
       <app-result-color-scale
+        class="legend-section"
         *ngIf="(legends$ | async).result && this.getVisibleImpact()"
         [title]="'map.color-scale.result' | translate"
         [colors]="(legends$ | async).result.colorMap"
         [unit]="(legends$ | async).result.unit"
       ></app-result-color-scale>
       <app-comparison-color-scale
+        class="legend-section"
         *ngIf="this.getVisibleComparison()"
         [legends]="(cmpLegends$ | async)"
       ></app-comparison-color-scale>
       <app-result-color-scale
+        class="legend-section"
         *ngIf="(legends$ | async).ecosystem"
         [title]="'map.color-scale.ecosystem' | translate"
         [colors]="(legends$ | async).ecosystem.colorMap"
         [unit]="(legends$ | async).ecosystem.unit"
       ></app-result-color-scale>
       <app-result-color-scale
+        class="legend-section"
         *ngIf="(legends$ | async).pressure"
         [title]="'map.color-scale.pressure' | translate"
         [colors]="(legends$ | async).pressure.colorMap"
         [unit]="(legends$ | async).pressure.unit"
       ></app-result-color-scale>
+      <app-reliability-legend
+        class="legend-section reliability-legend"
+        *ngIf="(visibleReliability$ | async) !== null"
+        [reliability]="(visibleReliability$ | async)"
+      ></app-reliability-legend>
     </div>
     <div id="scale-container"></div>
   </div>

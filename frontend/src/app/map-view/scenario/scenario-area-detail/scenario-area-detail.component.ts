@@ -89,7 +89,9 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
     this.areaFeatureName = this.area().feature.properties!['name'];
 
     if(this.associatedCoastalArea && this.associatedCoastalArea.areas.length > 0) {
-      const includeCoast = this.area().excludedCoastal !== -1 && this.area().excludedCoastal !== this.associatedCoastalArea?.areas[0].id;
+      const includeCoast =
+        this.area().excludedCoastal === null || // newly created area, include coast by default
+        this.area().excludedCoastal === -1;
       this.onCheckIncludeCoast(includeCoast);
     }
   }
@@ -126,20 +128,23 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
   }
 
   onCheckIncludeCoast(checked: boolean) {
-    if (!checked && this.associatedCoastalArea) {
+    if (!this.associatedCoastalArea)
+      return;
+
+    if (!checked) {
       this.areaCoastMatrices = {
         id: this.associatedCoastalArea.id,
-        areaMatrices:  this.associatedCoastalArea.areas.map(area => ({
+        areaMatrices: this.associatedCoastalArea.areas.map(area => ({
           areaId: area.id,
           matrixId: area.defaultMatrix.id
         }))
       };
-      if(this.areaCoastMatrices.areaMatrices.length > 0) {
+      if (this.areaCoastMatrices.areaMatrices.length > 0) {
         this.store.dispatch(ScenarioActions.excludeActiveAreaCoastal(
           { areaId: this.areaCoastMatrices.areaMatrices[0].areaId }));
       }
     } else {
-      this.store.dispatch(ScenarioActions.excludeActiveAreaCoastal({ areaId: null }));
+      this.store.dispatch(ScenarioActions.excludeActiveAreaCoastal({ areaId: -1 }));
     }
   }
 

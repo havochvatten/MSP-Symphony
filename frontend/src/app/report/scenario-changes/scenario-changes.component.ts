@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { ReportChanges } from "@data/calculation/calculation.interfaces";
 import { ChangesProperty } from "@data/scenario/scenario.interfaces";
-import { BandType, BandTypes } from "@data/metadata/metadata.interfaces";
+import { BandTypes } from "@data/metadata/metadata.interfaces";
 import { isEmpty } from "@shared/common.util";
 
 // TODO Show addition or removal of non-default layer selection (i.e. climate)?
@@ -16,7 +16,6 @@ export class ScenarioChangesComponent {
   @Input() areaDict!: Map<number, string>;
   @Input() bandDict!: { [k: string]: { [p: string]: string } };
   @Input() comparisonReport = false;
-  @Input() overflow!: Record<BandType, number[]> | null;
 
   get anyChanges() {
     return this.anyScenarioChanges() || this.anyAreaChanges();

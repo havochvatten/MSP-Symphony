@@ -18,7 +18,6 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import se.havochvatten.symphony.calculation.Operations;
-import se.havochvatten.symphony.calculation.Overflow;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
@@ -27,6 +26,7 @@ import se.havochvatten.symphony.service.ScenarioService;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
 import static se.havochvatten.symphony.scenario.ScenarioRESTTest.getTestArea;
@@ -59,10 +59,11 @@ public class ScenarioServiceTest {
     public static void setupClass() throws IOException, FactoryException {
         JAIExt.initJAIEXT();
 
-        testAreas = new ScenarioAreaDto[3];
+        testAreas = new ScenarioAreaDto[4];
         testAreas[0] = getTestArea("service0");
         testAreas[1] = getTestArea("service1");
         testAreas[2] = getTestArea("service2");
+        testAreas[3] = getTestArea("service3");
 
         testScenario = ScenarioDto.createWithoutId("TEST-SCENARIO",
             makeBaseline(),
@@ -87,7 +88,7 @@ public class ScenarioServiceTest {
     }
 
     private GridCoverage2D applyChanges(Scenario scenario) throws FactoryException, TransformException {
-        return service.apply(coverage, coverage.getGridGeometry(), scenario.getAreas(), LayerType.PRESSURE, transform, null, new Overflow());
+        return service.apply(coverage, coverage.getGridGeometry(), scenario.getAreas(), LayerType.PRESSURE, transform, null);
     }
 
     @Test
@@ -97,38 +98,19 @@ public class ScenarioServiceTest {
         testScenario.areas = new ScenarioAreaDto[] { testAreas[0] };
         Scenario scenario = new Scenario(testScenario, service);
 
-        var insideValues = (byte[]) coverage.evaluate(INSIDE_ROI);
-        var outsideValues = (byte[]) coverage.evaluate(OUTSIDE_ROI);
+        int[] insideValues  = upcastByteArray((byte[]) coverage.evaluate(INSIDE_ROI)),
+              outsideValues = upcastByteArray((byte[]) coverage.evaluate(OUTSIDE_ROI));
 
-        var result = applyChanges(scenario);
+        GridCoverage2D result = applyChanges(scenario);
 
-        var newOutsideValues = (byte[]) result.evaluate(OUTSIDE_ROI);
+        int[] newOutsideValues = upcastByteArray((byte[]) result.evaluate(OUTSIDE_ROI));
         assertEquals(outsideValues[BAND], newOutsideValues[BAND], TOL);
 
-        var newInsideValues = (byte[]) result.evaluate(INSIDE_ROI);
+        int[] newInsideValues = upcastByteArray((byte[]) result.evaluate(INSIDE_ROI));
         assertEquals(insideValues[17], newInsideValues[17], 0.1); // other bands should remain unchanged
         assertEquals(1.1 * insideValues[BAND], newInsideValues[BAND], TOL);
 
     }
-
-//    "compound change" is not supported
-//    @Test
-//    public void applyCompoundChange() {
-//        int BAND = 12;
-//
-//        var compoundChange = changes.subCollection(ff.id(ff.featureId("features.1")));
-//
-//        byte[] insideValues = (byte[]) coverage.evaluate(INSIDE_ROI);
-//        byte[] outsideValues = (byte[]) coverage.evaluate(OUTSIDE_ROI);
-//
-//        var result = applyChanges(compoundChange);
-//
-//        byte[] newOutsideValues = (byte[]) result.evaluate(OUTSIDE_ROI);
-//        assertEquals(outsideValues[BAND], newOutsideValues[BAND], TOL);
-//
-//        byte[] newInsideValues = (byte[]) result.evaluate(INSIDE_ROI);
-//        assertEquals(1.1 * insideValues[BAND] + 1, newInsideValues[BAND], TOL);
-//    }
 
     @Test
     public void applyBigChange() throws FactoryException, TransformException { // Test clamping of big values
@@ -137,10 +119,10 @@ public class ScenarioServiceTest {
         testScenario.areas = new ScenarioAreaDto[] { testAreas[1] };
         Scenario scenario = new Scenario(testScenario, service);
 
-        var result = applyChanges(scenario);
+        GridCoverage2D result = applyChanges(scenario);
 
-        byte[] newInsideValues = (byte[]) result.evaluate(INSIDE_ROI);
-        assertEquals(100, newInsideValues[BAND]);
+        int[] newInsideValues = upcastByteArray((byte[]) result.evaluate(INSIDE_ROI));
+        assertEquals(189, newInsideValues[BAND]);
     }
 
     @Test
@@ -151,9 +133,26 @@ public class ScenarioServiceTest {
         testScenario.areas = new ScenarioAreaDto[] { testAreas[2] };
         Scenario scenario = new Scenario(testScenario, service);
 
-        var result = applyChanges(scenario);
+        GridCoverage2D result = applyChanges(scenario);
 
-        byte[] newInsideValues = (byte[]) result.evaluate(INSIDE_ROI);
+        int[] newInsideValues = upcastByteArray((byte[]) result.evaluate(INSIDE_ROI));
         assertEquals(0, newInsideValues[BAND], TOL);
+    }
+
+    @Test
+    public void applyCappedChange() throws FactoryException, TransformException {
+        int BAND = 12;
+
+        testScenario.areas = new ScenarioAreaDto[] { testAreas[3] };
+        Scenario scenario = new Scenario(testScenario, service);
+
+        GridCoverage2D result = applyChanges(scenario);
+
+        int[] newInsideValues = upcastByteArray((byte[]) result.evaluate(INSIDE_ROI));
+        assertEquals(250, newInsideValues[BAND]);
+    }
+
+    private int[] upcastByteArray(byte[] ba) {
+        return IntStream.range(0, ba.length).map(i -> ba[i] & 0xFF).toArray();
     }
 }

@@ -8,7 +8,6 @@ import se.havochvatten.symphony.entity.Metadata;
 import se.havochvatten.symphony.entity.SymphonyBand;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import java.util.ArrayList;
@@ -33,10 +32,7 @@ public class MetaDataServiceTest {
 
         TypedQuery<SymphonyBand> mockedBandQuery = mock(TypedQuery.class);
         TypedQuery<Metadata> mockedMetadataQuery = mock(TypedQuery.class);
-        when(metaDataService.em.createQuery(
-            "SELECT b FROM SymphonyBand b " +
-            "WHERE b.baseline.id = :baselineVersionId " +
-            "AND b.category = :category", SymphonyBand.class))
+        when(metaDataService.em.createQuery(MetaDataService.sparseBandQuery, SymphonyBand.class))
             .thenReturn(mockedBandQuery);
 
         when(mockedBandQuery.setParameter(anyString(), anyObject())).thenReturn(mockedBandQuery);

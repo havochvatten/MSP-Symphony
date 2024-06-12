@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { EcoSliderComponent } from './band-selection/eco-slider/eco-slider.component';
-import { SharedModule } from '../shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { MatSelectModule } from "@angular/material/select";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatCheckboxModule } from "@angular/material/checkbox";
@@ -40,6 +40,7 @@ import { BatchProgressComponent } from './batch-progress-display/batch-progress.
 import { ConfirmGenerateComparisonComponent } from './calculation-history/confirm-generate-comparison/confirm-generate-comparison.component';
 import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component';
 import { DownloadCompoundComparisonDialogComponent } from './compound-comparison-list-dialog/download-compound-comparison-dialog/download-compound-comparison-dialog.component';
+import { ReliabilityLegendComponent } from "@src/app/map-view/reliability-legend/reliability-legend.component";
 
 @NgModule({
   declarations: [
@@ -70,18 +71,19 @@ import { DownloadCompoundComparisonDialogComponent } from './compound-comparison
     ConfirmGenerateComparisonComponent,
     CompoundComparisonListDialogComponent,
     DownloadCompoundComparisonDialogComponent,
+    ReliabilityLegendComponent
   ],
-    imports: [
-        SharedModule,
-        CoreModule,
-        FormsModule,
-        ScenarioEditorModule,
-        MatSelectModule,
-        MatProgressSpinnerModule,
-        MatCheckboxModule,
-        MatButtonModule,
-        MatRadioModule
-    ],
+  imports: [
+    SharedModule,
+    CoreModule,
+    FormsModule,
+    ScenarioEditorModule,
+    MatSelectModule,
+    MatProgressSpinnerModule,
+    MatCheckboxModule,
+    MatButtonModule,
+    MatRadioModule
+  ],
   providers: [AnchorPipe, DialogService],
   exports: [MainViewComponent, ComparisonComponent]
 })

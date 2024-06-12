@@ -30,7 +30,9 @@
         "intensity": {
             "ecosystems": "Naturvärden",
             "pressures": "Belastningar",
-            "override": "Åsidosätt gruppinställning"
+            "override": "Åsidosätt gruppinställning",
+            "select-all": "Markera samtliga",
+            "deselect-all": "Avmarkera samtliga"
         },
         "confirm-reset": {
             "modal": {
@@ -137,11 +139,12 @@
             },
             "band-pressures": {
                 "intensity": "Ändring av förekomst",
-                "opacity": "Genomskinlighet av lager",
                 "percentage": "Procentuell",
                 "constant-increase": "Konstant",
-                "intensity-label": "Visa/Dölj förekomst",
-                "opacity-label": "Visa/Dölj lageropacitet",
+                "show-intensity": "Visa förekomständring",
+                "hide-intensity": "Dölj förekomständring",
+                "show-reliability": "Visa tillförlitlighet",
+                "hide-reliability": "Dölj tillförlitlighet",
                 "note": "Om du har ändrat värdena i något kartlager kan du spara den/de justerade lagren, för att sedan använda dem i andra beräkningar.",
                 "no-scenario-selected": "Välj ett scenario för att ändra förekomster"
             },
@@ -503,7 +506,12 @@
             "result": "Kumulativ belastning",
             "comparison": "Relativ skillnad i belastning",
             "ecosystem": "Naturvärden",
-            "pressure": "Belastningsintensitet"
+            "pressure": "Belastningsintensitet",
+            "reliability": {
+                "title": "Tillförlitlighet",
+                "low": "Låg tillförlitlighet",
+                "high": "Hög tillförlitlighet"
+            }
         },
         "area-selection-hint": {
             "emphasis": "Välj / avmarkera flera områden",
@@ -641,11 +649,6 @@
             },
             "comparison": {
                 "legend-desc": "Bilden visar den relativa skillnaden i total kumulativ belastning mellan grund- och what-if-scenario."
-            },
-            "overflow": {
-                "title": "Förekomständring överstiger maxvärdet",
-                "detail": "Observera att den del av det kumulativa resultatet som överstigit maxvärdet per pixel, inte avspeglas i rapporten. Resultatet för de påverkade banden är lägre än värdet skulle vara om förekomständringen räknats in, utan hänsyn till maxvärdet per pixel.",
-                "list-description": "Maxvärdet överstigs inom följande band:"
             }
         },
         "sensitivity-matrices": {
@@ -684,15 +687,13 @@
             "and": "och",
             "base-changes": "Gemensamma förändringar",
             "area-changes": "Områdesspecifika förändringar",
-            "no-changes": "Inga förändringar",
-            "overflow-notice": "Förändringen överstiger maxvärdet"
+            "no-changes": "Inga förändringar"
         },
         "impact-table": {
             "ecoComponent": "Påverkan per naturvärde",
             "pressure": "Påverkan per belastning",
             "cumulative": "Kumulativt",
-            "percentage-of-total": "Av totalsumman",
-            "overflow": "Överstiger maxvärde, förändringen redovisas felaktigt"
+            "percentage-of-total": "Av totalsumman"
         },
         "toolbar": {
             "export-csv": "Ladda ner CSV",

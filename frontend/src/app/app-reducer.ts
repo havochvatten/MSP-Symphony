@@ -1,7 +1,7 @@
 import { ActionReducerMap, MetaReducer } from '@ngrx/store';
 import { environment } from '../environments/environment';
 import { MetadataInterfaces } from './data/metadata/';
-import { metadataReducer } from './data/metadata/metadata.reducers';
+import { metadataReducer } from '@data/metadata/metadata.reducers';
 import { UserInterfaces } from '@data/user';
 import { userReducer } from '@data/user/user.reducers';
 import { AreaInterfaces } from '@data/area';

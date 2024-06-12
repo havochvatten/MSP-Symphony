@@ -4,7 +4,6 @@ import { AfterViewInit, Component, Input } from '@angular/core';
 import * as d3 from 'd3';
 import * as d3Sankey from 'd3-sankey';
 import { DecimalPipe } from '@angular/common';
-import { SankeyExtraProperties  } from "d3-sankey";
 
 interface SNodeExtra {
   nodeId: number;

@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, NgModuleRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, NgModuleRef, ViewChild } from '@angular/core';
 import { Store } from "@ngrx/store";
 import { State } from '@src/app/app-reducer';
 import { Observable } from 'rxjs';
@@ -8,7 +8,7 @@ import { FormBuilder, Validators } from '@angular/forms'; //ValidationErrors, Va
 import { DialogService } from '@shared/dialog/dialog.service';
 import { ComparisonReportModalComponent } from '@shared/report-modal/comparison-report-modal.component';
 import { CalculationService } from '@data/calculation/calculation.service';
-import { map, tap, withLatestFrom } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { TranslateService } from "@ngx-translate/core";
 import { MatSelect } from "@angular/material/select";
 import { MatOption } from "@angular/material/core";

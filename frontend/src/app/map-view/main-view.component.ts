@@ -1,6 +1,6 @@
 import {
   Component, ViewChild, OnInit,
-  AfterViewInit, ChangeDetectorRef, Signal, signal, NgModuleRef
+  AfterViewInit, ChangeDetectorRef, NgModuleRef
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
@@ -10,7 +10,7 @@ import { State } from '@src/app/app-reducer';
 import { MetadataSelectors } from '@data/metadata';
 import { AreaSelectors } from '@data/area';
 import { AllAreas, StatePath } from '@data/area/area.interfaces';
-import { BandGroup } from '@data/metadata/metadata.interfaces';
+import { BandGroup, VisibleReliability } from '@data/metadata/metadata.interfaces';
 import { ComparisonLegendState, LegendState } from '@data/calculation/calculation.interfaces';
 import { CalculationSelectors } from '@data/calculation';
 import { environment } from "@src/environments/environment";
@@ -45,6 +45,7 @@ export class MainViewComponent implements OnInit, AfterViewInit {
   singleSelection = false
   multiSelection = false
   isMacOS = isMacOS();
+  visibleReliability$: Observable<VisibleReliability | null>;
 
   protected activeScenario$: Observable<Scenario | undefined>
     = this.store.select(ScenarioSelectors.selectActiveScenario);
@@ -63,6 +64,8 @@ export class MainViewComponent implements OnInit, AfterViewInit {
 
     this.compoundComparisonSuccess$.pipe(
       distinctUntilChanged(), skip(1)).subscribe(() => this.onOpenCCList());
+
+    this.visibleReliability$ = this.store.select(MetadataSelectors.selectVisibleReliability);
   }
 
   ngOnInit() {

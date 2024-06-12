@@ -8,7 +8,6 @@ import se.havochvatten.symphony.entity.*;
 import se.havochvatten.symphony.util.SymphonyDtoUtil;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;

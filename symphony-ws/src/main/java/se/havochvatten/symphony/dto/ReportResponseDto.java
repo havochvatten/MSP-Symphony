@@ -2,7 +2,6 @@ package se.havochvatten.symphony.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,8 +41,6 @@ public class ReportResponseDto {
     public Map<String, List> chartData;
     public double chartWeightThreshold;
     public JsonNode scenarioChanges;
-
-    public Map<String, Integer[]> overflow;
 
     public long timestamp;
 }

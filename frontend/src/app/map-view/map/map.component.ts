@@ -3,7 +3,7 @@ import { AfterViewInit, Component, EventEmitter, HostListener, Input, NgModuleRe
 import { Coordinate } from 'ol/coordinate';
 import { firstValueFrom, Observable, skipWhile, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
-import uuid from "uuid/v4";
+import { v4 as uuid } from 'uuid';
 import { State } from '@src/app/app-reducer';
 import { MetadataSelectors } from '@data/metadata';
 import { AreaActions, AreaSelectors } from '@data/area';
@@ -17,7 +17,7 @@ import { StaticImageOptions } from '@data/calculation/calculation.interfaces';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { CreateUserAreaModalComponent } from './create-user-area-modal/create-user-area-modal.component';
 import { Scenario } from '@data/scenario/scenario.interfaces';
-import { distinctUntilChanged, filter, mergeMap, skip } from 'rxjs/operators';
+import { distinctUntilChanged, filter, skip, take } from 'rxjs/operators';
 import { Feature, Map as OLMap, View } from 'ol';
 import { isNotNullOrUndefined } from '@src/util/rxjs';
 import { TranslateService } from '@ngx-translate/core';
@@ -41,6 +41,11 @@ import { Geometry } from "geojson";
 import { MergeAreasModalComponent } from "@src/app/map-view/map/merge-areas-modal/merge-areas-modal.component";
 import { AreaSelectionConfig } from "@shared/select-intersection/select-intersection.interfaces";
 import { AreaHighlightLayer } from "@src/app/map-view/map/layers/area-highlight-layer";
+import { ReliabilityLayer } from "@src/app/map-view/map/layers/reliability-layer";
+import {
+  BandType,
+  ReliabilityMap,
+} from "@data/metadata/metadata.interfaces";
 
 @Component({
   selector: 'app-map',
@@ -59,10 +64,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private readonly resultDeletedSubscription?: Subscription;
   private readonly userSubscription?: Subscription;
   private readonly aliasingSubscription: Subscription;
+  private readonly selectedAreasSubscription: Subscription;
   private areaSubscription?: Subscription;
   protected activeScenario$: Observable<Scenario | undefined>;
   private scenarioSubscription: Subscription;
   private scenarioCloseSubscription: Subscription;
+
+  private reliabilitySubject$?: Observable<ReliabilityMap | null>
+  private reliabilitySubscription$?: Subscription;
 
   // layers
   private background?: BackgroundLayer;
@@ -71,9 +80,16 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private bandLayer?: BandLayer;
   private resultLayerGroup!: ResultLayerGroup;
   private scenarioLayer!: ScenarioLayer;
+  private reliabilityLayers!: {
+    ECOSYSTEM: ReliabilityLayer;
+    PRESSURE: ReliabilityLayer;
+    ECOSYSTEM_OL: ReliabilityLayer;
+    PRESSURE_OL: ReliabilityLayer;
+  };
 
   public baselineName = '';
   private geoJson?: GeoJSON;
+  private selectedAreas: StatePath[] = [];
 
   private aliasing = true;
 
@@ -143,6 +159,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.bandLayer?.toggleImageSmoothing(aliasing);
       this.aliasing = aliasing;
     });
+
+    this.selectedAreasSubscription = this.store.select(AreaSelectors.selectSelectedArea).subscribe((selectedArea) => {
+      this.selectedAreas = selectedArea;
+    });
   }
 
   async ngAfterViewInit() {
@@ -196,7 +216,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         this.onDrawEnd, this.onDrawInvalid, this.onDownloadClick, this.onSplitClick, this.onMergeClick,
         this.scenarioLayer, this.translateService, this.geoJson); // Will add itself to the map
 
-    this.areaHighlightLayer = new AreaHighlightLayer(this.map, this.geoJson);
+    this.areaHighlightLayer = new AreaHighlightLayer(this.geoJson);
 
     this.areaLayer.setBoundaries(boundaries);
 
@@ -214,9 +234,44 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.areaLayer.setVisibleAreas(paths.visible, paths.selected);
     });
 
-    this.map.addLayer(this.areaLayer);
-    this.map.addLayer(this.scenarioLayer);
-    this.map.addLayer(this.areaHighlightLayer);
+    this.reliabilitySubject$ = this.store.select(MetadataSelectors.selectReliabilityMap).pipe(
+      skipWhile(reliabilityMap => reliabilityMap === null)
+    );
+
+    this.reliabilitySubscription$ = this.reliabilitySubject$.pipe(
+      take(1)
+      ).subscribe((reliabilityMap ) => {
+
+      this.reliabilityLayers = {
+        ECOSYSTEM: new ReliabilityLayer(reliabilityMap!.ECOSYSTEM, true, this.geoJson!),
+        PRESSURE: new ReliabilityLayer(reliabilityMap!.PRESSURE, true, this.geoJson!),
+        ECOSYSTEM_OL: new ReliabilityLayer(reliabilityMap!.ECOSYSTEM, false, this.geoJson!),
+        PRESSURE_OL: new ReliabilityLayer(reliabilityMap!.PRESSURE, false, this.geoJson!)
+      };
+
+      this.map!.getLayers().insertAt(1, this.reliabilityLayers.ECOSYSTEM);
+      this.map!.getLayers().insertAt(1, this.reliabilityLayers.PRESSURE);
+      this.map!.addLayer(this.reliabilityLayers.ECOSYSTEM_OL);
+      this.map!.addLayer(this.reliabilityLayers.PRESSURE_OL);
+
+      this.store.select(MetadataSelectors.selectVisibleReliability).subscribe( (visibleReliability) => {
+        this.reliabilityLayers.ECOSYSTEM.clear();
+        this.reliabilityLayers.PRESSURE.clear();
+        this.reliabilityLayers.ECOSYSTEM_OL.clear();
+        this.reliabilityLayers.PRESSURE_OL.clear();
+
+        if (visibleReliability !== null) {
+          this.showReliability(
+            visibleReliability.band.symphonyCategory,
+            visibleReliability.band.bandNumber,
+            visibleReliability.opaque);
+        }
+      });
+    });
+
+    this.map!.addLayer(this.areaLayer);
+    this.map!.addLayer(this.scenarioLayer);
+    this.map!.addLayer(this.areaHighlightLayer);
   }
 
   public clearResult() {
@@ -230,6 +285,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     } else {
       this.areaHighlightLayer.clearHighlight(statePath);
     }
+  }
+
+  public showReliability = (bandType: BandType, bandNumber: number, opaqueLayer: boolean) => {
+    const layerKey = bandType + (opaqueLayer ? '' : '_OL') as keyof typeof this.reliabilityLayers;
+    this.reliabilityLayers[layerKey].highlightReliability(bandNumber);
   }
 
   public emitLayerChange(resultIds: number[], cmpCount: number):void {
@@ -269,6 +329,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.aliasingSubscription.unsubscribe();
     }
 
+    this.selectedAreasSubscription.unsubscribe();
     this.scenarioCloseSubscription.unsubscribe();
     this.scenarioSubscription.unsubscribe();
   }
@@ -334,7 +395,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   // (Alt + Shift) keys + select area interaction
-  onMergeClick = async (features: Feature[]) => {
+  onMergeClick = async (lastFeature: Feature) => {
 
     // Some readability have been sacrificed for the convenience of
     // utilizing existing component logic (and versatility of integers).
@@ -346,16 +407,18 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     // To access the input arrays we, however arbitrarily, subtract 1
     // from the return value and treat -1 as the special case to indicate
     // new area creation.
+    const selectedFeatures =
+      [...(this.areaLayer.getFeaturesByStatePaths(this.selectedAreas) || []), lastFeature],
+      names = selectedFeatures.map(f => f.get('name')),
+      paths = selectedFeatures.map(f => f.get('statePath')),
+      merged = turfMergeAll(selectedFeatures);
 
-    const paths = features.map(f => f.get('statePath')),
-          names = features.map(f => f.get('name')),
-          merged = turfMergeAll(features);
     if(merged !== null) {
       const areaIndexToSave = await this.dialogService.open(MergeAreasModalComponent, this.moduleRef, {
         data : {
           areas: [this.reprojectAsFragment(merged, '')],
-          paths: paths,
-          names: names
+          paths,
+          names
         }
       }) as number - 1;
 

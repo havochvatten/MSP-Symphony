@@ -1,0 +1,10 @@
+@import 'src/styles/hav-colors';
+
+.select-all-wrapper {
+    margin: 0 1.2rem 1rem;
+
+  ::ng-deep mat-checkbox label {
+    font-style: oblique;
+    color: $medium-gray;
+  }
+}

@@ -3,8 +3,7 @@ import { DialogRef } from "@shared/dialog/dialog-ref";
 import { AreaSelectionConfig } from "@shared/select-intersection/select-intersection.interfaces";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { getArea } from "ol/sphere";
-import { MultiPolygon, Polygon } from "ol/geom";
-import { Geometry } from "geojson";
+import { Polygon } from "ol/geom";
 import { GeoJSON } from "ol/format";
 
 @Component({

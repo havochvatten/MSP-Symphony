@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { BandGroup, Band, BandType_Alt } from '@data/metadata/metadata.interfaces';
+import { BandGroup, Band, BandType_Alt, bandTypesMap, BandType } from '@data/metadata/metadata.interfaces';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { MetadataActions } from '@data/metadata';
@@ -40,8 +40,6 @@ function filterCheckBoxGroups(groups: BandGroup[], search: string): BandGroup[] 
     }));
 }
 
-type BandType = BandType_Alt;
-
 @Component({
   selector: 'app-band-selection',
   templateUrl: './band-selection.component.html',
@@ -50,7 +48,7 @@ type BandType = BandType_Alt;
 export class BandSelectionComponent implements OnInit, OnChanges {
   @Input() title?: string;
   @Input() bandGroups: BandGroup[] = [];
-  @Input() bandType: BandType = 'ecoComponents';
+  @Input() bandType: BandType_Alt = 'ecoComponents';
   search = '';
   filteredGroups: BandGroup[] = [];
   scenarioDisplayNames?: Observable<ScenarioDisplayMeta>;
@@ -84,6 +82,18 @@ export class BandSelectionComponent implements OnInit, OnChanges {
     this.store.dispatch(MetadataActions.setVisibility({ band, value }));
   };
 
+  onChangeVisibleReliability = (visible: boolean, band: Band) => {
+    if (visible) {
+      this.store.dispatch(MetadataActions.showReliability({ band }));
+    } else {
+      this.store.dispatch(MetadataActions.hideReliability());
+    }
+  };
+
+  flatBands(): Band[] {
+    return this.bandGroups.flatMap(group => group.bands);
+  }
+
   get placeholder() {
     return this.bandType === 'ecoComponents'
       ? 'map.eco-component.search.placeholder'
@@ -96,7 +106,25 @@ export class BandSelectionComponent implements OnInit, OnChanges {
       : 'map.pressure.search.label';
   }
 
+  get allBoxesAreChecked(): boolean {
+    return this.flatBands().filter(({ selected }) => !selected).length === 0;
+  }
+
+  get noBoxesAreChecked(): boolean {
+    return this.flatBands().filter(({ selected }) => selected).length === 0;
+  }
+
+  get someBoxesAreChecked(): boolean {
+    return !this.allBoxesAreChecked && !this.noBoxesAreChecked;
+  }
+
   displayName(index: number, group: BandGroup) {
     return group.symphonyThemeName;
+  }
+
+  updateAll() {
+    this.store.dispatch(MetadataActions.selectBandsByType(
+      { bandType: bandTypesMap.get(this.bandType) as BandType,
+              value: !this.allBoxesAreChecked }));
   }
 }

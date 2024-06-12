@@ -1,0 +1,21 @@
+<h5>{{ 'map.color-scale.reliability.title' | translate }},
+    {{ bandTypeLabel | translate }}:
+  <span class="component">{{ (reliability ? reliability.band.title : '') }}</span></h5>
+<div id="opaque-gradient" *ngIf="reliability && reliability.opaque">
+  <div class="labels-bar">
+    <span>{{ 'map.color-scale.reliability.low' | translate }}</span>
+    <span>{{ 'map.color-scale.reliability.high' | translate }}</span>
+  </div>
+  <div class="color-bar"></div>
+</div>
+<div id="symbolic-legend" *ngIf="reliability && !reliability.opaque">
+  <div class="symbolic-legend-item low">
+    <span>&lt;33%</span>
+  </div>
+  <div class="symbolic-legend-item mid">
+    <span>33&ndash;66%</span>
+  </div>
+  <div class="symbolic-legend-item high">
+    <span>&gt;66%</span>
+  </div>
+</div>
