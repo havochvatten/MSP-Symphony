@@ -47,7 +47,7 @@ export class CompoundComparisonListDialogComponent extends Listable {
   close = () => {
     this.setSort(ListItemsSort.None);
     this.dialog.close();
-    this.checkEmpty$.unsubscribe();
+    this.checkEmpty$?.unsubscribe();
   }
 
   async deleteCC (cmp: CompoundComparisonSlice) {
