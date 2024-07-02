@@ -184,11 +184,22 @@ public class ScenarioREST {
 
     }
 
+    // Added for conformant/intuitive API semantics.
+    // Not presently used by the default UI app (/symphony-fe).
     @DELETE
-    @ApiOperation(value = "Delete scenario")
+    @Path("{id}")
+    @ApiOperation(value = "Delete scenario by id")
+    @Produces
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response deleteScenario(@Context HttpServletRequest req, @PathParam("id") int scenarioId) {
+        return deleteScenarios(req, String.valueOf(scenarioId));
+    }
+
+    @DELETE
+    @ApiOperation(value = "Delete scenarios by ids, expected as comma separated query parameter")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    public Response deleteScenario(@Context HttpServletRequest req, @QueryParam("ids") String ids){
+    public Response deleteScenarios(@Context HttpServletRequest req, @QueryParam("ids") String ids){
         Principal principal = req.getUserPrincipal();
 
         if (principal == null)

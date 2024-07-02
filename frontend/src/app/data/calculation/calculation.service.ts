@@ -232,6 +232,10 @@ export class CalculationService implements OnDestroy {
     return this.http.delete(`${env.apiBaseUrl}/calculation/multi-comparison/${id}`);
   }
 
+  public deleteMultipleCompoundComparisons(ccIds: number[]) {
+    return this.http.delete(`${env.apiBaseUrl}/calculation/multi-comparison?ids=${ccIds.join()}`);
+  }
+
   private queueBatchScenarioCalculation(scenarioIds: number[]) {
     return this.http.post<BatchCalculationProcessEntry>(`${env.apiBaseUrl}/calculation/batch`, scenarioIds.join(), {
       headers: new HttpHeaders({ 'Content-Type': 'text/plain' })});

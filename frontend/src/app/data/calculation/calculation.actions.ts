@@ -205,6 +205,11 @@ export const deleteCompoundComparison = createAction(
   props<{ id: number }>()
 );
 
+export const deleteMultipleCompoundComparisons = createAction(
+  '[Calculation] Delete multiple compound comparisons',
+  props<{ ids: number[] }>()
+);
+
 export const deleteCompoundComparisonFailure = createAction(
   '[Calculation] Delete compound comparison failure',
   props<{ error: ErrorMessage }>()

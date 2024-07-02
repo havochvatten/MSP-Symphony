@@ -9,11 +9,23 @@
   width: 76rem;
   max-width: 90vw;
 
-  h3 {
-    color: $hav-black;
-    font-size: 2.2rem;
-    font-weight: 500;
-    margin: 0 0 1rem;
+  .title-wrap {
+    display: flex;
+    justify-content: space-between;
+    margin-right: 3rem;
+
+    h3 {
+      color: $hav-black;
+      font-size: 2.2rem;
+      font-weight: 500;
+      margin: 0 0 1rem;
+    }
+
+    app-multi-tools {
+      app-multi-action-button {
+        margin-left: 0.5rem;
+      }
+    }
   }
 
   ul {
@@ -25,51 +37,76 @@
     overflow-y: auto;
 
     li {
-      display: block;
-      padding: 0.8rem 1rem 1.2rem;
-      border: 1px solid $hav-grey;
-      margin-bottom: 1rem;
 
       &.filtered {
         display: none;
       }
 
-      h5 {
-        font-size: 1.4rem;
-        margin: 0;
+      .compound-calculation-wrap {
+        display: block;
+        padding: 0.8rem 1rem 1.2rem;
+        border: 1px solid $hav-grey;
+        margin-bottom: 1rem;
 
-        .cmp-name {
-          font-weight: 600;
+        h5 {
+          font-size: 1.4rem;
+          margin: 0;
+
+          .cmp-name {
+            font-weight: 600;
+          }
+        }
+
+        .timestamp {
+          display: block;
+          margin-bottom: 0.8rem;
+        }
+
+        .calculation-basis-info-header,
+        .calculation-basis-names {
+          font-size: 1.15rem;
+          letter-spacing: 0.06rem;
+        }
+
+        .calculation-basis-info-header {
+          display: block;
+          font-weight: 500;
+          text-decoration: underline;
+          margin-bottom: 0.5rem;
+        }
+
+        .calculation-basis-names {
+          line-height: 1.8rem;
+        }
+
+        .list-actions app-icon {
+          cursor: pointer;
+
+          &[icontype='delete'] {
+            margin-right: 0.4rem;
+          }
         }
       }
 
-      .timestamp {
-        display: block;
-        margin-bottom: 0.8rem;
+      .multi-selected-wrap {
+        display: none;
+        position: absolute;
+        background-color: white;
+        top: 14px;
+        left: -8px;
       }
+    }
 
-      .calculation-basis-info-header,
-      .calculation-basis-names {
-        font-size: 1.15rem;
-        letter-spacing: 0.06rem;
-      }
+    &.multi-mode {
+      padding: 0 2rem;
 
-      .calculation-basis-info-header {
-        display: block;
-        font-weight: 500;
-        text-decoration: underline;
-        margin-bottom: 0.5rem;
-      }
+      li {
+        .compound-calculation-wrap {
+          padding-left: 1.7rem;
+        }
 
-      .calculation-basis-names {
-        line-height: 1.8rem;
-      }
-
-      .list-actions app-icon {
-        cursor: pointer;
-
-        &[icontype='delete'] {
-          margin-right: 0.4rem;
+        .multi-selected-wrap {
+          display: inline-block;
         }
       }
     }

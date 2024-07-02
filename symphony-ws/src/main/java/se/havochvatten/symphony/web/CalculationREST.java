@@ -168,11 +168,22 @@ public class CalculationREST {
             return ok(Response.Status.NOT_IMPLEMENTED).build();
     }
 
+    // Endpoint added for conformant/intuitive API semantics.
+    // Not presently used by the default UI app (/symphony-fe).
     @DELETE
     @ApiOperation(value = "Delete calculation result")
+    @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    public Response deleteCalculation(@Context HttpServletRequest req, @QueryParam("ids") String ids) {
+    public Response deleteCalculation(@Context HttpServletRequest req, @PathParam("id") int id) {
+        return deleteCalculations(req, String.valueOf(id));
+    }
+
+    @DELETE
+    @ApiOperation(value = "Delete calculation results")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response deleteCalculations(@Context HttpServletRequest req, @QueryParam("ids") String ids) {
         var principal = req.getUserPrincipal();
         if (principal == null)
             throw new NotAuthorizedException("Null principal");
@@ -584,18 +595,30 @@ public class CalculationREST {
     @Path("/multi-comparison/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Deletes compound comparison with the given id")
+    @ApiOperation(value = "Delete compound comparison with the given id")
     public Response deleteCompoundComparison(@Context HttpServletRequest req, @PathParam("id") int id) {
+        return deleteCompoundComparisons(req, String.valueOf(id));
+    }
+
+    @DELETE
+    @Path("/multi-comparison/")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    @ApiOperation(value = "Delete compound comparisons with the given ids " +
+                         "(expected as comma separated list provided as query parameter 'ids=')")
+    public Response deleteCompoundComparisons(@Context HttpServletRequest req, @QueryParam("ids") String ids) {
         var principal = req.getUserPrincipal();
         if (principal == null)
             return status(Response.Status.UNAUTHORIZED).build();
 
         try {
-            if (calcService.deleteCompoundComparison(principal, id)) {
-                return ok().build();
-            } else {
-                return status(Response.Status.NOT_FOUND).build();
+            int[] idArray = WebUtil.intArrayParam(ids);
+            for(int id : idArray) {
+                if (!calcService.deleteCompoundComparison(principal, id)) {
+                    return status(Response.Status.NOT_FOUND).build();
+                }
             }
+            return Response.noContent().build();
         } catch (SymphonyStandardSystemException sx) {
             return status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
