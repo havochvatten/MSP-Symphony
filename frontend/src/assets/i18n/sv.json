@@ -545,7 +545,10 @@
             "filter-hint": "Filtrera listan per namn",
             "delete-modal": {
                 "header": "Radera sammanslagen jämförelse",
-                "message": "Bekräfta borttagning av sammanslagen jämförelse: <em>“{{ comparisonName }}”</em>"
+                "header-multiple": "Radera sammanslagna jämförelser",
+                "message": "Bekräfta borttagning av sammanslagen jämförelse: <em>“{{ comparisonName }}”</em>",
+                "message-multiple": "Bekräfta borttagning av <strong>{{ count }}</strong> sammanslagna jämförelser.",
+                "message-single": "Vill du ta bort den valda sammanslagna jämförelsen?"
             },
             "terms": {
                 "total": "Totalt",

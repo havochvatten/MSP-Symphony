@@ -1,5 +1,6 @@
-import { Component, NgModuleRef } from '@angular/core';
+import { Component, NgModuleRef, signal } from '@angular/core';
 import { Store } from "@ngrx/store";
+import { Subscription } from "rxjs";
 import { State } from "@src/app/app-reducer";
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { CalculationActions, CalculationSelectors } from "@data/calculation";
@@ -22,7 +23,11 @@ import {
 export class CompoundComparisonListDialogComponent extends Listable {
 
   compoundComparison$ = this.store.select(CalculationSelectors.selectCompoundComparisons);
+  checkEmpty$: Subscription;
   apiUrl: string;
+
+  selectedCompoundComparisonIds: number[] = [];
+  isMultiMode = signal<boolean>(false);
 
   constructor(private store: Store<State>,
               private dialog: DialogRef,
@@ -31,11 +36,18 @@ export class CompoundComparisonListDialogComponent extends Listable {
               private translateService: TranslateService) {
     super();
     this.apiUrl = env.apiBaseUrl + '/report/multi-comparison';
+
+    this.checkEmpty$ = this.compoundComparison$.subscribe((ccs) => {
+      if(ccs.length === 0) {
+        this.close();
+      }
+    });
   }
 
   close = () => {
     this.setSort(ListItemsSort.None);
     this.dialog.close();
+    this.checkEmpty$.unsubscribe();
   }
 
   async deleteCC (cmp: CompoundComparisonSlice) {
@@ -117,5 +129,37 @@ export class CompoundComparisonListDialogComponent extends Listable {
       ecosystem: titleCase(titles['map.metadata.ecosystem']),
       pressure: titleCase(titles['map.metadata.pressure'])
     });
+  }
+
+  async selectItem(id: number) {
+    if(!this.selectedCompoundComparisonIds.includes(id)) {
+      this.selectedCompoundComparisonIds.push(id);
+    } else {
+      this.selectedCompoundComparisonIds = this.selectedCompoundComparisonIds.filter(i => i !== id);
+    }
+  }
+
+  noneSelected = () => { return !(this.isMultiMode() && this.selectedCompoundComparisonIds.length > 0) };
+
+  deleteSelectedCompoundComparisons = async () => {
+    const multi = this.selectedCompoundComparisonIds.length > 1,
+      deletionConfirmed = await this.dialogService.open(ConfirmationModalComponent, this.moduleRef,
+        { data: {
+            header: this.translateService.instant(
+              multi ? 'map.compound-data-list.delete-modal.header-multiple' :
+                'map.compound-data-list.delete-modal.header'),
+            message: this.translateService.instant(
+              multi ? 'map.compound-data-list.delete-modal.message-multiple' :
+                'map.compound-data-list.delete-modal.message-single', { count: this.selectedCompoundComparisonIds.length }),
+            confirmText: this.translateService.instant('controls.delete'),
+            confirmColor: 'warn',
+            buttonsClass: 'no-margin'
+          }
+        });
+    if(deletionConfirmed) {
+      this.store.dispatch(CalculationActions.deleteMultipleCompoundComparisons({ ids: this.selectedCompoundComparisonIds }));
+      this.selectedCompoundComparisonIds = [];
+      this.isMultiMode.set(false);
+    }
   }
 }

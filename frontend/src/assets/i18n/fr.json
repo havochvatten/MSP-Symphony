@@ -545,7 +545,10 @@
             "filter-hint": "Filtrer la liste par nom",
             "delete-modal": {
                 "header": "Supprimer la comparaison composée",
-                "message": "Confirmer la suppression de la comparaison composée: <em>“{{ comparisonName }}”</em>"
+                "header-multiple": "Supprimer les comparaisons composées",
+                "message": "Confirmer la suppression de la comparaison composée: <em>“{{ comparisonName }}”</em>",
+                "message-multiple": "Confirmer la suppression de <strong>{{ count }}</strong> comparaisons composées",
+                "message-single": "Confirmer la suppression de la comparaison composée sélectionnée"
             },
             "terms": {
                 "total": "Total",

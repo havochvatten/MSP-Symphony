@@ -545,7 +545,10 @@
             "filter-hint": "Filter list item by name",
             "delete-modal": {
                 "header": "Delete compound comparison",
-                "message": "Confirm deletion of compound comparison: <em>“{{ comparisonName }}”</em>"
+                "header-multiple": "Delete compound comparisons",
+                "message": "Confirm deletion of compound comparison: <em>“{{ comparisonName }}”</em>",
+                "message-multiple": "Confirm deletion of <strong>{{ count }}</strong> compound comparisons?",
+                "message-single": "Confirm deletion of this compound comparison?"
             },
             "terms": {
                 "total": "Total",

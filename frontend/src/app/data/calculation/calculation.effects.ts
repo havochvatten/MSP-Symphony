@@ -173,6 +173,23 @@ export class CalculationEffects {
     )
   ));
 
+  deleteMultipleCompoundComparisons$ = createEffect(() => this.actions$.pipe(
+    ofType(CalculationActions.deleteMultipleCompoundComparisons),
+    mergeMap(({ ids }) =>
+      this.calcService.deleteMultipleCompoundComparisons(ids).pipe(
+        mergeMap(() =>
+          of(CalculationActions.fetchCompoundComparisons())),
+        catchError(({ status, message }) =>
+          of(
+            CalculationActions.deleteCompoundComparisonFailure({
+              error: { status, message }
+            })
+          )
+        )
+      )
+    )
+  ));
+
   fetchCompoundComparisons$ = createEffect(() => this.actions$.pipe(
     ofType(CalculationActions.fetchCompoundComparisons),
     mergeMap(() =>
