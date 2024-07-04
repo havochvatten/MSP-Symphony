@@ -422,8 +422,6 @@
                 "calculate": "Calculer"
             },
             "multi-mode": {
-                "enter": "Entrer en mode de sélection multiple",
-                "exit": "Quitter le mode de sélection multiple",
                 "delete-selected": "Supprimer les calculs sélectionnés",
                 "generate-comparison": "Générer des données de comparaison",
                 "none-selected": "Aucun calcul sélectionné"
@@ -492,15 +490,17 @@
             "delete": {
                 "label": "Supprimer",
                 "modal": {
-                    "title": "Confirmer la suppression",
+                    "header": "Confirmer la suppression",
                     "message": "Êtes-vous sûr de vouloir supprimer &laquo;&nbsp;{{ userAreaName }}&nbsp;&raquo;&nbsp;?",
-                    "delete": "Supprimer",
-                    "cancel": "Annuler"
+                    "header-multiple": "Supprimer les zones sélectionnées",
+                    "message-multiple": "Confirmer la suppression de <strong>{{ count }}</strong> zones"
                 }
             },
             "share": {
                 "label": "Partager"
-            }
+            },
+            "none-selected": "Aucune zone n'a été marquée pour suppression",
+            "delete-selected": "Supprimer les zones sélectionnées"
         },
         "color-scale": {
             "result": "Impact cumulé",
@@ -531,6 +531,8 @@
             "calculation-basis-info": "La comparaison des valeurs est basée sur les calculs suivants",
             "more": "de plus",
             "delete": "Supprimer ca comparaison composée",
+            "none-selected": "Aucune comparaison composée sélectionnée.",
+            "delete-selected": "Supprimer les comparaison composées sélectionnées",
             "download": {
                 "header": "Télécharger la comparaison composée",
                 "select-format": "Choisissez le format de téléchargement",
@@ -574,6 +576,10 @@
         "accordion": {
             "expand": "Afficher",
             "contract": "Masquer"
+        },
+        "multi-mode-list": {
+            "enter": "Entrer en mode de sélection multiple",
+            "exit": "Quitter le mode de sélection multiple"
         }
     },
     "rename": {

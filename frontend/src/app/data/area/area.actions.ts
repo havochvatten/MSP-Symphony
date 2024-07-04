@@ -92,6 +92,11 @@ export const deleteUserDefinedArea = createAction(
   props<{ userAreaId: number }>()
 );
 
+export const deleteMultipleUserDefinedAreas = createAction(
+  '[Area] Delete multiple user defined areas',
+  props<{ userAreaIds: number[] }>()
+);
+
 export const deleteUserDefinedAreaSuccess = createAction(
   '[Area] Delete user defined area success',
   props<{ userAreaId: number }>()

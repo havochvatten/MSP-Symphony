@@ -1,4 +1,4 @@
-import { Component, NgModuleRef, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, NgModuleRef, OnDestroy, OnInit } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { shareReplay, tap } from "rxjs/operators";
 import { select, Store } from '@ngrx/store';
@@ -14,18 +14,18 @@ import { Baseline } from "@data/user/user.interfaces";
 import { CalculationReportModalComponent } from "@shared/report-modal/calculation-report-modal.component";
 import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 import { TranslateService } from "@ngx-translate/core";
-import { Listable } from "@shared/list-filter/listable.directive";
 import {
   ConfirmGenerateComparisonComponent
 } from "@src/app/map-view/calculation-history/confirm-generate-comparison/confirm-generate-comparison.component";
 import { RenameItemModalComponent } from "@shared/rename-item-modal/rename-item-modal.component";
+import { MultiModeListable } from "@shared/multi-tools/multi-mode-listable";
 
 @Component({
   selector: 'app-history',
   templateUrl: './calculation-history.component.html',
   styleUrls: ['./calculation-history.component.scss']
 })
-export class CalculationHistoryComponent extends Listable implements OnInit, OnDestroy {
+export class CalculationHistoryComponent extends MultiModeListable implements OnInit, OnDestroy {
   calculations$ = this.store.select(CalculationSelectors.selectCalculations);
   comparedCalculations$ = this.store.select(CalculationSelectors.selectComparedCalculations);
   comparedCalculationsRepeat$ = this.comparedCalculations$.pipe(shareReplay(1));
@@ -40,18 +40,15 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
   private visibleResults: number[] = [];
   private calcLoadingState$: Subscription;
   private checkMessageHandler: ((this: Window, ev: MessageEvent<unknown>) => unknown) = () => undefined;
-  isMultiMode = signal<boolean>(false);
-  selectedIds: number[] = [];
-
 
   constructor(
     private store: Store<State>,
     private calcService: CalculationService,
-    private dialogService: DialogService,
     private translateService: TranslateService,
-    private moduleRef: NgModuleRef<never>
+    protected dialogService: DialogService,
+    protected moduleRef: NgModuleRef<never>
   ) {
-    super();
+    super(moduleRef, dialogService);
     this.store.dispatch(CalculationActions.fetchCalculations());
     this.loading$ = this.store.select(CalculationSelectors.selectLoadingCalculations);
 
@@ -116,21 +113,20 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
     event.preventDefault();    // would draw the calculation result selected for
                                // deletion to the map
 
-    const deletionConfirmed = await this.dialogService.open(ConfirmationModalComponent, this.moduleRef,
-      { data: {
-                header: this.translateService.instant('map.history.delete-modal.header'),
-                message: this.translateService.instant('map.history.delete-modal.message', { calculationName: calculation.name }),
-                confirmText: this.translateService.instant('map.history.delete-modal.confirm'),
-                confirmColor: 'warn',
-                buttonsClass: 'right no-margin'
-              }
-            });
-
-    if (deletionConfirmed) {
-      this.store.dispatch(CalculationActions.deleteCalculation({
-        calculationToBeDeleted: calculation
-      }));
-    }
+    await this.deleteSelected({
+        data: {
+          header: this.translateService.instant('map.history.delete-modal.header'),
+          message: this.translateService.instant('map.history.delete-modal.message', { calculationName: calculation.name }),
+          confirmText: this.translateService.instant('map.history.delete-modal.confirm'),
+          confirmColor: 'warn',
+          buttonsClass: 'right no-margin'
+        }
+      },
+      () => {
+        this.store.dispatch(CalculationActions.deleteCalculation({
+          calculationToBeDeleted: calculation
+        }));
+      });
   }
 
   checkMessage(msg: MessageEvent){
@@ -147,14 +143,6 @@ export class CalculationHistoryComponent extends Listable implements OnInit, OnD
 
   ngOnInit(): void {
     window.addEventListener("message", this.checkMessageHandler);
-  }
-
-  multiSelect(id: number) {
-    if(!this.selectedIds.includes(id)) {
-      this.selectedIds = [...this.selectedIds, id];
-    } else {
-      this.selectedIds = this.selectedIds.filter(i => i !== id);
-    }
   }
 
   isDisabled: () => boolean = () => { return !this.isMultiMode() || this.selectedIds.length === 0 };

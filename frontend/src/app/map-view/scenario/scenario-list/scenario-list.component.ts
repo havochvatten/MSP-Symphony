@@ -1,4 +1,4 @@
-import { Component, NgModuleRef, OnDestroy, signal } from '@angular/core';
+import { Component, NgModuleRef, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
@@ -14,17 +14,16 @@ import { TranslateService } from '@ngx-translate/core';
 import { deleteScenario } from "@src/app/map-view/scenario/scenario-common";
 import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenario-areas/add-scenario-areas.component";
 import { CopyScenarioComponent } from "@src/app/map-view/scenario/copy-scenario/copy-scenario.component";
-import { Listable } from "@shared/list-filter/listable.directive";
 import { ListItemsSort } from "@data/common/sorting.interfaces";
 import { CalculationService } from "@data/calculation/calculation.service";
-import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
+import { MultiModeListable } from "@shared/multi-tools/multi-mode-listable";
 
 @Component({
     selector: 'app-scenario-list',
     templateUrl: './scenario-list.component.html',
     styleUrls: ['./scenario-list.component.scss']
 })
-export class ScenarioListComponent extends Listable implements OnDestroy {
+export class ScenarioListComponent extends MultiModeListable implements OnDestroy {
 
   scenario$ = this.store.select(ScenarioSelectors.selectScenarios);
 
@@ -32,22 +31,18 @@ export class ScenarioListComponent extends Listable implements OnDestroy {
   ABUNDANT_AREA_COUNT = 4;
   MAX_AREAS = 9;
 
-  selectedBatchIds: number[] = [];
-
   private areaSubscription$: Subscription;
   private autoBatchSubscription$: Subscription;
   public selectionOverlap: Observable<boolean>;
 
-  isBatchMode = signal<boolean>(false);
-
   constructor(
     protected store: Store<State>,
     private translateService: TranslateService,
-    private dialogService: DialogService,
     private calculationService: CalculationService,
-    private moduleRef: NgModuleRef<never>
+    protected dialogService: DialogService,
+    protected moduleRef: NgModuleRef<never>
   ) {
-    super();
+    super(moduleRef, dialogService);
     this.areaSubscription$ = this.store
       .select(AreaSelectors.selectSelectedAreaData)
       .subscribe(area => (this.selectedAreas = area as Area[]));
@@ -59,8 +54,8 @@ export class ScenarioListComponent extends Listable implements OnDestroy {
       .select(ScenarioSelectors.selectAutoBatch).subscribe(
         (autoBatch) => {
           if(autoBatch && autoBatch.length > 0) {
-            this.isBatchMode.set(true);
-            this.selectedBatchIds = autoBatch;
+            this.isMultiMode.set(true);
+            this.selectedIds = autoBatch;
             this.store.dispatch(ScenarioActions.resetAutoBatch());
           }
         }
@@ -103,7 +98,7 @@ export class ScenarioListComponent extends Listable implements OnDestroy {
   }
 
   open(index: number) {
-    if(!this.isBatchMode()) {
+    if(!this.isMultiMode()) {
       this.store.dispatch(ScenarioActions.openScenario({ index: index }));
     }
   }
@@ -136,48 +131,34 @@ export class ScenarioListComponent extends Listable implements OnDestroy {
   }
 
   triggerBatchRun = async () => {
-    if(this.isBatchMode() && this.selectedBatchIds.length > 1) {
-      this.calculationService.queueBatchCalculation(this.selectedBatchIds);
+    if(this.isMultiMode() && this.selectedIds.length > 1) {
+      this.calculationService.queueBatchCalculation(this.selectedIds);
     }
   }
 
-  disableBatch = () => { return !(this.isBatchMode() && this.selectedBatchIds.length > 1) };
-  noneSelected = () => { return !(this.isBatchMode() && this.selectedBatchIds.length > 0) };
+  disableBatch = () => { return !(this.isMultiMode() && this.selectedIds.length > 1) };
   deleteSelectedScenarios = async () => {
-    if (this.selectedBatchIds.length === 1) {
+    if (this.selectedIds.length === 1) {
       const selectedScenario = await
         firstValueFrom(this.scenario$.pipe(
-          map(scenarios => scenarios.find(s => s.id === this.selectedBatchIds[0]))
+          map(scenarios => scenarios.find(s => s.id === this.selectedIds[0]))
         ));
       if (selectedScenario) {
         await this.deleteScenario(selectedScenario)
       }
     }
-    if (this.selectedBatchIds.length > 1) {
-      const confirmDeleteMany = await this.dialogService.open<boolean>(
-        ConfirmationModalComponent, this.moduleRef,
-        {
+    if (this.selectedIds.length > 1) {
+      await this.deleteSelected({
           data: {
             header: this.translateService.instant('map.editor.delete.modal.title-many'),
-            message: this.translateService.instant('map.editor.delete.modal.message-many', { count: this.selectedBatchIds.length }),
+            message: this.translateService.instant('map.editor.delete.modal.message-many', { count: this.selectedIds.length }),
             confirmText: this.translateService.instant('map.editor.delete.modal.delete'),
             confirmColor: 'warn',
             dialogClass: 'center'
           }
-        });
-      if (confirmDeleteMany) {
-        this.store.dispatch(ScenarioActions.deleteMultipleScenarios({ scenarioIds: this.selectedBatchIds }));
-        this.selectedBatchIds = [];
-        this.isBatchMode.set(false);
-      }
-    }
-  }
-
-  async selectForBatch(id: number) {
-    if(!this.selectedBatchIds.includes(id)) {
-      this.selectedBatchIds.push(id);
-    } else {
-      this.selectedBatchIds = this.selectedBatchIds.filter(i => i !== id);
+        }, () => {
+        this.store.dispatch(ScenarioActions.deleteMultipleScenarios({ scenarioIds: this.selectedIds }));
+      });
     }
   }
 }

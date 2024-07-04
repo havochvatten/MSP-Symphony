@@ -9,11 +9,19 @@
     align-items: baseline;
 
     h3 {
-      margin: 0;
-      margin-bottom: 1rem;
+      margin: 0 0 1rem;
+    }
+
+    .tools {
+      app-multi-tools {
+        vertical-align: top;
+        margin-right: 0.7rem;
+      }
     }
 
     fa-icon {
+      position:relative;
+      top: 6px;
       font-size: 1.6rem;
       margin-right: 1rem;
       color: $hav-turquoise;
@@ -52,6 +60,10 @@
           &.visible {
             margin-right: 1rem;
           }
+        }
+
+        .multi-selected-wrap {
+          padding: 1px 10px 3px 2px;
         }
 
         span {

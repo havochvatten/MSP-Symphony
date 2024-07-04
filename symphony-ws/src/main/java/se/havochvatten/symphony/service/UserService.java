@@ -206,7 +206,7 @@ public class UserService {
 
 
     /**
-     * Delete a UserDefinedArea wit the given id
+     * Delete a UserDefinedArea with the given id
      */
     public void delete(Principal principal, Integer id) throws SymphonyStandardAppException {
         UserDefinedArea userDefinedArea = getUserDefinedAreaByById(id);

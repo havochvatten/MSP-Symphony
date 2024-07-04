@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -202,11 +203,29 @@ public class UserREST {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
     public Response deleteUserDefinedArea(@Context HttpServletRequest req, @PathParam("id") Integer id) throws SymphonyStandardAppException {
+        return deleteUserDefinedAreas(req, String.valueOf(id));
+    }
+
+    @DELETE
+    @ApiOperation(value = "Delete user defined area", response = Response.class)
+    @Path("/area")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response deleteUserDefinedAreas(@Context HttpServletRequest req, @QueryParam("ids") String ids) throws SymphonyStandardAppException {
+        Principal principal = req.getUserPrincipal();
+
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");
 
-        userService.delete(req.getUserPrincipal(), id);
-        return Response.ok().build();
+        try {
+            int[] idArray = WebUtil.intArrayParam(ids);
+            for(int id : idArray) {
+                userService.delete(principal, id);
+            }
+            return Response.noContent().build();
+        } catch (SymphonyStandardAppException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
     }
 
     @PUT

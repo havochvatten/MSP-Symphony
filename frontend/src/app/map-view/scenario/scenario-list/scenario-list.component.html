@@ -1,9 +1,9 @@
-<section class="padded-container" [ngClass]="{ 'batch-mode': isBatchMode() }">
+<section class="padded-container" [ngClass]="{ 'batch-mode': isMultiMode() }">
   <div>
     <div class="top-tray">
       <h2>{{ 'map.editor.title' | translate }}</h2>
       <app-multi-tools
-        [isMultiMode]="isBatchMode"
+        [isMultiMode]="isMultiMode"
         [enterLabel]="'map.editor.list.batch-tools.enter-batch-mode'"
         [exitLabel]="'map.editor.list.batch-tools.exit-batch-mode'"
         [disabledPredicate]="noneSelected"
@@ -56,7 +56,7 @@
          class="scenario-wrap"
          [ngClass]="{'filtered': filter(scenario.name) }">
       <div class="scenario list-item interactive"
-           (click)="isBatchMode() ? selectForBatch(scenario.id) : open(scenarioIndex)"
+           (click)="isMultiMode() ? multiSelect(scenario.id) : open(scenarioIndex)"
            [title]="scenario.name"
            tabindex="0">
         <div class="scenario-info">
@@ -77,7 +77,7 @@
             <span class="feature-name">{{ 'map.editor.list.more-areas' | translate: { more: scenario.areas.length - MAX_AREAS } }}</span>
           </li>
         </ul>
-        <div class="list-actions" *ngIf="!isBatchMode()">
+        <div class="list-actions" *ngIf="!isMultiMode()">
           <app-icon *ngIf="scenario.latestCalculationId" iconType="report" [title]="'map.editor.list.show-report-label' | translate"
                     (click)="showReport(scenario.latestCalculationId); $event.stopPropagation()">
           </app-icon>
@@ -89,9 +89,9 @@
           </app-icon>
         </div>
       </div>
-      <div class="batch-selected-wrap" *ngIf="isBatchMode()">
-        <mat-checkbox [checked]="selectedBatchIds.includes(scenario.id)"
-                      (change)="selectForBatch(scenario.id)"
+      <div class="batch-selected-wrap" *ngIf="isMultiMode()">
+        <mat-checkbox [checked]="selectedIds.includes(scenario.id)"
+                      (change)="multiSelect(scenario.id)"
                       (click)="$event.stopPropagation()">
         </mat-checkbox>
       </div>

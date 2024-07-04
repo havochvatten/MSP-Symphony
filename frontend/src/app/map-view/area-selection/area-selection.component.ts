@@ -102,9 +102,9 @@ export class AreaSelectionComponent implements OnChanges {
     const deleteArea = await this.dialogService.open<boolean>(
       ConfirmationModalComponent, this.moduleRef, {
         data: {
-          header: this.translateService.instant('map.user-area.delete.modal.title'),
+          header: this.translateService.instant('map.user-area.delete.modal.header'),
           message: this.translateService.instant('map.user-area.delete.modal.message', { userAreaName }),
-          confirmText: this.translateService.instant('map.user-area.delete.modal.delete'),
+          confirmText: this.translateService.instant('controls.delete'),
           confirmColor: 'warn',
           cancelClass: 'primary',
           dialogClass: 'center'
@@ -114,6 +114,10 @@ export class AreaSelectionComponent implements OnChanges {
     if (deleteArea) {
       this.store.dispatch(AreaActions.deleteUserDefinedArea({ userAreaId }));
     }
+  };
+
+  deleteMultipleUserAreas = (userAreaIds: number[]) => {
+    this.store.dispatch(AreaActions.deleteMultipleUserDefinedAreas({ userAreaIds }));
   };
 
   importUserArea = async () => {

@@ -422,8 +422,6 @@
                 "calculate": "Beräkna"
             },
             "multi-mode": {
-                "enter": "Markera flera beräkningar",
-                "exit": "Avsluta markering av flera beräkningar",
                 "delete-selected": "Radera markerade beräkningar",
                 "generate-comparison": "Generera jämförelsedata",
                 "none-selected": "Inga beräkningar har markerats"
@@ -492,15 +490,17 @@
             "delete": {
                 "label": "Radera",
                 "modal": {
-                    "title": "Bekräfta radera område",
+                    "header": "Radera område",
                     "message": "Är du säker på att du vill radera området<br>&laquo;&nbsp;{{ userAreaName }}&nbsp;&raquo;&nbsp;?",
-                    "delete": "Radera",
-                    "close": "Avbryt"
+                    "header-multiple": "Radera valda områden",
+                    "message-multiple": "Bekräfta borttagning av <strong>{{ count }}</strong> områden."
                 }
             },
             "share": {
                 "label": "Dela"
-            }
+            },
+            "none-selected": "Inga användarområden har markerats för borttagning",
+            "delete-selected": "Radera markerade användarområden"
         },
         "color-scale": {
             "result": "Kumulativ belastning",
@@ -531,6 +531,8 @@
             "calculation-basis-info": "Jämförelsevärdena baserar sig på följande beräkningar",
             "more": "till",
             "delete": "Radera sammanslagen jämförelse",
+            "none-selected": "Inga sammanslagna jämförelser har markerats",
+            "delete-selected": "Radera markerade jämförelsevärden",
             "download": {
                 "header": "Spara ned sammanslagen jämförelse",
                 "select-format": "Välj format att ladda ned",
@@ -574,6 +576,10 @@
         "accordion": {
             "expand": "Fäll ut",
             "contract": "Fäll ihop"
+        },
+        "multi-mode-list": {
+            "enter": "Aktivera flervalsläge",
+            "exit": "Avsluta flervalsläge"
         }
     },
     "rename": {
