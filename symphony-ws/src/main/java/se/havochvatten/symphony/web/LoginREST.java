@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.dto.FrontendErrorDto;
 import se.havochvatten.symphony.dto.UserDto;
 import se.havochvatten.symphony.dto.UserLoginDto;
-import se.havochvatten.symphony.entity.UserSettings;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.service.PropertiesService;
 import se.havochvatten.symphony.service.UserService;

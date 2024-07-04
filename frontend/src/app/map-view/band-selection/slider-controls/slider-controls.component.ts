@@ -1,5 +1,5 @@
 import { Component, Input, NgModuleRef, OnDestroy, OnInit } from '@angular/core';
-import { Band, BandChange, BandType } from '@data/metadata/metadata.interfaces';
+import { Band, BandChange, bandEquals, BandType, VisibleReliability } from '@data/metadata/metadata.interfaces';
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
 import { ScenarioSelectors } from "@data/scenario";
@@ -11,6 +11,7 @@ import { MetaInfoComponent } from "@src/app/map-view/meta-info/meta-info.compone
 import { isEmpty } from "@shared/common.util";
 import { MatCheckboxChange } from "@angular/material/checkbox";
 import { environment as env } from "@src/environments/environment";
+import { MetadataSelectors } from "@data/metadata";
 
 @Component({
   selector: 'app-slider-controls',
@@ -23,6 +24,7 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
   scenario?: Scenario;
   multiplier?: number;
   offset?: number;
+  visibleReliability: VisibleReliability | null = null;
 
   public hasPublicMeta = false;
 
@@ -42,6 +44,7 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
   @Input() disabled = false;
   @Input() onSelect!: (event: MatCheckboxChange, band: Band)=> void;
   @Input() onChangeVisible!: (value: boolean, band: Band) => void;
+  @Input() onChangeVisibleReliability!: (value: boolean, band: Band) => void;
 
   isEmpty = isEmpty;
 
@@ -85,6 +88,11 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
         }
         this.overriddenChange = undefined;
       });
+
+    this.store.select(MetadataSelectors.selectVisibleReliability)
+      .subscribe(visibleReliability => {
+        this.visibleReliability = visibleReliability;
+      });
   }
 
   ngOnInit(): void {
@@ -122,5 +130,13 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
         overriddenOffset = this.overriddenChange?.offset ?? 0;
 
     return this.groupSetting || !this.overriddenChange ? groupOffset : overriddenOffset;
+  }
+
+  showReliability() {
+    this.onChangeVisibleReliability(!this.reliabilityVisible, this.band);
+  }
+
+  get reliabilityVisible(): boolean {
+    return this.visibleReliability !== null && bandEquals(this.band, this.visibleReliability.band);
   }
 }

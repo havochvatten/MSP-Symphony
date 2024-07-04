@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import * as uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import { IconType } from '@shared/icon/icon.component';
 
 @Component({

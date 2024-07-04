@@ -36,7 +36,7 @@ const SCENARIO_BOUNDARY_STYLE = new Style({
 const THE_EMPTY_STYLE = new Style({}); // This style will cause the feature to not be visible
 
 @Directive()
-export class ScenarioLayer extends VectorLayer<VectorSource> {
+export class ScenarioLayer extends VectorLayer<Feature> {
 
   private boundaryFeature?: Feature;
   private readonly format: GeoJSON;

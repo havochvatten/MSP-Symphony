@@ -12,6 +12,10 @@ import { ChangesListComponent } from "@src/app/map-view/scenario/scenario-detail
 import {
   MatrixSelectionComponent
 } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix-selection.component";
+import { initialState as calculation } from '@data/calculation/calculation.reducers';
+import { initialState as metadata } from '@data/metadata/metadata.reducers';
+import { initialState as scenario } from '@data/scenario/scenario.reducers';
+import { initialState as user } from '@data/user/user.reducers';
 describe('ScenarioAreaDetailComponent', () => {
   let component: ScenarioAreaDetailComponent;
   let fixture: ComponentFixture<ScenarioAreaDetailComponent>;
@@ -21,7 +25,16 @@ describe('ScenarioAreaDetailComponent', () => {
       imports: [ StoreModule.forRoot({},{}), HttpClientModule, TranslateModule.forRoot() ],
       declarations: [ ScenarioAreaDetailComponent, OrdinalPipe,
                       IconComponent, ChangesListComponent, MatrixSelectionComponent ],
-      providers: [ OrdinalPipe, TranslateService,  provideMockStore({}) ]
+      providers: [ OrdinalPipe, TranslateService,
+        provideMockStore({
+          initialState: {
+            calculation,
+            metadata,
+            scenario,
+            user
+          }
+        })
+      ]
     })
     .compileComponents();
 

@@ -16,8 +16,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { turfIntersects as intersects } from "@shared/turf-helper/turf-helper";
 import { Geometry } from "ol/geom";
 import { DrawEvent } from "ol/interaction/Draw";
-import { isEqual } from "@shared/common.util";
-
+import { simpleHash, statePathContains } from "@shared/common.util";
+import { AreaSelect } from "@src/app/map-view/map/layers/area-select";
 
 function unique<T>(value: T, index: number, self: T[]) {
   return self.indexOf(value) === index;
@@ -86,25 +86,26 @@ class DrawAreaInteraction extends Draw {
   }
 }
 
-class AreaLayer extends VectorLayer<VectorSource> {
-  private readonly onClickInteraction: Select;
+class AreaLayer extends VectorLayer<Feature> {
   private readonly drawAreaInteraction: DrawAreaInteraction;
-  private readonly boundaryLayer: VectorLayer<VectorSource>;
+  private readonly boundaryLayer: VectorLayer<Feature>;
+  private readonly areaSelect: AreaSelect;
   private drawInteractionActive = false;
   private boundaries?: FeatureLike[];
-  private selectedFeatures: Feature[] = [];
   private optionsMenuActive = false;
+  private featureMap = new Map<string, Feature<Geometry>>();
+  private selectedStyle = new AreaStyle(true);
 
   constructor(
     private map: OLMap,
-    private readonly setSelection: (features: Feature[] | undefined, overlap: boolean) => void,
+    public readonly setSelection: (statePath: StatePath | undefined, expand: boolean) => void,
     private readonly zoomToExtent: (extent: Extent, duration: number) => void,
     private onDrawEnd: (polygon: Polygon)=> void,
     private onDrawInvalid: () => void,
     private onDownloadClick: (path: string) => void,
     onSplitClick: (feature: Feature, prevFeature: Feature) => void,
-    onMergeClick: (features: Feature[]) => void,
-    private scenarioLayer: ScenarioLayer,
+    onMergeClick: (lastFeature: Feature) => void,
+    public scenarioLayer: ScenarioLayer,
     private translateService: TranslateService,
     private geoJson: GeoJSON
   ) {
@@ -128,85 +129,36 @@ class AreaLayer extends VectorLayer<VectorSource> {
         else { this.onDrawEnd(polygon); }
       }
     );
+    this.areaSelect = new AreaSelect(this);
 
+    this.map.addInteraction(this.areaSelect);
 
-    this.onClickInteraction = new (class extends Select {
-      constructor(that: AreaLayer) {
-        super({
-          style: new AreaStyle(true),
-          layers: [that, scenarioLayer],
-          condition: event => {
-            return (
-              condition.singleClick(event) &&
-              that.scenarioLayer.isScenarioActiveAndPointOutsideScenario(event.coordinate)
-            );
-          },
-          filter: (feature, layer) => {
-            if(that.scenarioLayer.getBoundaryFeature()) {
-              if (feature === that.scenarioLayer.getBoundaryFeature()) return false; // don't allow selection of whole scenario for now
-              if (intersects(feature, that.scenarioLayer.getBoundaryFeature()!)) return false; // don't allow selection of features inside scenario
-            }
-            const source = that.scenarioLayer.getSource();
-            return !(layer === that &&
-              source &&
-              getFeaturesByStatePaths(source, [feature.get('statePath')]));
+    this.areaSelect.on('select', (event) => {
+
+      const feature = event.selected[0];
+
+      if (feature !== undefined) {
+        // Merge or split (Alt key pressed)
+        if (event.mapBrowserEvent.originalEvent.altKey) {
+          if (event.mapBrowserEvent.originalEvent.shiftKey) {
+            onMergeClick(feature);
+          } else if (event.deselected[0]) {
+            onSplitClick(feature, event.deselected[0]);
           }
-        });
-        this.on('select', event => {
-          const feature = event.selected[0];
-          if (feature !== undefined) {
-            // Merge or split (Alt key pressed)
-            if (event.mapBrowserEvent.originalEvent.altKey) {
-              if (event.mapBrowserEvent.originalEvent.shiftKey) {
-                onMergeClick([feature, ...that.selectedFeatures]);
-              } else if (that.selectedFeatures.length === 1) {
-                onSplitClick(feature, that.selectedFeatures[0]);
-              }
-            } else {
-              // Expand selection (Ctrl key pressed)
-              if (event.mapBrowserEvent.originalEvent.ctrlKey) {
-                if (that.selectedFeatures.includes(feature)) {
-                  that.selectedFeatures = that.selectedFeatures.filter(f => !isEqual(feature.getGeometry(), f.getGeometry()));
-                } else {
-                  that.selectedFeatures.push(feature);
-                }
-              // Select single feature
-              } else {
-                that.selectedFeatures = [feature];
-              }
-            }
-          } else  {
-            if(event.deselected.length > 0) { // may indicate click within selected area, ctrl+click deselects
-              const clickedFeature = that.map.getFeaturesAtPixel(event.mapBrowserEvent.pixel)[0];
-              if(clickedFeature) {
-                  that.selectedFeatures = event.mapBrowserEvent.originalEvent.ctrlKey ?
-                    that.selectedFeatures.filter(f => clickedFeature.get('statePath') !== f.get('statePath')) :
-                    that.selectedFeatures.filter(f => clickedFeature.get('statePath') === f.get('statePath'))
-              }
-            } else {
-              that.selectedFeatures = [];
-            }
-          }
-          that.setSelection(that.selectedFeatures, that.checkOverlap());
-        });
-      }
-    })(this);
-
-    this.map.addInteraction(this.onClickInteraction);
-  }
-
-  private checkOverlap(): boolean {
-    for(const f of this.selectedFeatures) {
-      for(const f2 of this.selectedFeatures) {
-        if(f !== f2 && intersects(f, f2)) {
-          return true;
         }
       }
-    }
-    return false;
+
+      // Ctrl + click expands selection
+      this.setSelection(event.selected[0]?.get('statePath') || undefined,
+                         event.mapBrowserEvent.originalEvent.ctrlKey);
+    });
   }
 
-  private async addHoverInteraction(map: OLMap, areaLayer: VectorLayer<VectorSource>) {
+  public getFeaturesByStatePaths(statePaths: StatePath[]): Feature[] | null {
+    return getFeaturesByStatePaths(this.getSource()!, statePaths);
+  }
+
+  private async addHoverInteraction(map: OLMap, areaLayer: VectorLayer<Feature>) {
     const container = document.getElementById('popup') as HTMLElement;
     const content = document.getElementById('popup-title') as HTMLElement;
     const body = document.getElementById('popup-body') as HTMLElement;
@@ -337,25 +289,29 @@ class AreaLayer extends VectorLayer<VectorSource> {
     }
   }
 
-  // FIXME: This is called each time an area is selected!
-  setAreaLayers(featureCollections: FeatureCollection[], selected: StatePath[] | undefined) {
+  setVisibleAreas(visible: StatePath[], selected: StatePath[] | undefined) {
     const source = this.getSource();
-    if (!source) {
+    if (!source || !visible) {
       return;
     }
     source.clear();
-    // TODO: The different kinds of areas should probably go to different layers, so we do not need to read them
-    //  all after an area group visibility change...
-    featureCollections.forEach((featureCollection: FeatureCollection) =>
-      source.addFeatures(this.geoJson.readFeatures(featureCollection))
-    );
 
-    if (selected) {
-      const features = getFeaturesByStatePaths(source, selected);
-      if (features) {
-        for(const f of features) {
-          this.onClickInteraction.getFeatures().push(f);
+    for(const statePath of visible) {
+      const feature = this.featureMap.get(simpleHash(statePath));
+      if(feature) {
+        if (selected && statePathContains(statePath, selected)) {
+          feature.setStyle(this.selectedStyle);
         }
+        source.addFeature(feature);
+      }
+    }
+  }
+
+  mapAreaFeatures(featureCollections: FeatureCollection[]) {
+    for(const featureCollection of featureCollections) {
+      for(const feature of featureCollection.features) {
+        const gFeature = this.geoJson.readFeature(feature);
+        this.featureMap.set(simpleHash(gFeature.get('statePath')), gFeature);
       }
     }
   }
@@ -405,12 +361,12 @@ class AreaLayer extends VectorLayer<VectorSource> {
   }
 
   deselectAreas() {
-    this.selectedFeatures = [];
-    this.setSelection([], false);
+    this.areaSelect.getFeatures().clear();
+    this.setSelection(undefined, false);
   }
 }
 
-class BoundaryLayer extends VectorLayer<VectorSource> {
+class BoundaryLayer extends VectorLayer<Feature> {
   constructor() {
     super({
       source: new VectorSource({ format: new GeoJSON() }),

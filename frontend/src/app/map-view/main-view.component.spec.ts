@@ -4,7 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from "@angular/forms";
 
 import { MainViewComponent } from './main-view.component';
-import { SharedModule } from '../shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { MapComponent } from './map/map.component';
 import { MapToolbarComponent } from './map/map-toolbar/map-toolbar.component';
 import { MapOpacitySliderComponent } from './map/map-opacity-slider/map-opacity-slider.component';

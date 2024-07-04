@@ -104,7 +104,7 @@ export const deleteUserDefinedAreaFailure = createAction(
 
 export const updateSelectedArea = createAction(
   '[Area] Update selected area',
-  props<{ statePaths?: StatePath[], overlap: boolean }>()
+  props<{ statePath?: StatePath, expand: boolean }>()
 );
 
 export const addUserDefinedMatrix = createAction(
@@ -112,9 +112,9 @@ export const addUserDefinedMatrix = createAction(
   props<{ matrix: MatrixRef }>()
 );
 
-export const toggleVisibleArea = createAction(
-  '[Area] Toggle visible state of area',
-  props<{ statePath: StatePath }>()
+export const toggleAreaGroupState = createAction(
+  '[Area] Toggle state of area group',
+  props<{ statePath: StatePath, property: string }>()
 );
 
 export const fetchBoundaries = createAction('[Area] Fetch boundaries');

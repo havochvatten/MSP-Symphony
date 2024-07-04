@@ -7,7 +7,6 @@ import se.havochvatten.symphony.dto.FrontendErrorDto;
 import se.havochvatten.symphony.dto.SensMatrixDto;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.service.CalcAreaSensMatrixService;
-import se.havochvatten.symphony.service.PropertiesService;
 import se.havochvatten.symphony.service.SensMatrixService;
 
 import javax.annotation.security.RolesAllowed;

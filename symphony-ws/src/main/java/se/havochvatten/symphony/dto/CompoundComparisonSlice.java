@@ -1,7 +1,5 @@
 package se.havochvatten.symphony.dto;
 
-import se.havochvatten.symphony.entity.CompoundComparison;
-
 import java.util.Date;
 
 public class CompoundComparisonSlice {

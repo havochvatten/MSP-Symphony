@@ -11,6 +11,7 @@ import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 
 import se.havochvatten.symphony.scenario.BandChangeEntity;
 import se.havochvatten.symphony.scenario.ScenarioCopyOptions;
+import se.havochvatten.symphony.scenario.ScenarioCommon;
 import se.havochvatten.symphony.service.ScenarioService;
 import se.havochvatten.symphony.service.CalcService;
 import se.havochvatten.symphony.dto.NormalizationOptions;
@@ -46,7 +47,7 @@ import java.util.stream.Collectors;
 })
 @Embeddable
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Scenario implements Serializable, BandChangeEntity {
+public class Scenario implements Serializable, BandChangeEntity, ScenarioCommon {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     @Id
@@ -270,11 +271,11 @@ public class Scenario implements Serializable, BandChangeEntity {
     }
 
     public Geometry getGeometry() {
-        return (new CascadedPolygonUnion(areas.stream().map(a -> a.getGeometry()).collect(Collectors.toList()))).union();
+        return (new CascadedPolygonUnion(areas.stream().map(ScenarioArea::getGeometry).collect(Collectors.toList()))).union();
     }
 
     public Map<Integer, Integer> getAreasExcludingCoastal() {
         return areas.stream().filter(a -> a.getExcludedCoastal() != null)
-                .collect(Collectors.toMap(a -> a.getId(), a -> a.getExcludedCoastal()));
+                .collect(Collectors.toMap(ScenarioArea::getId, ScenarioArea::getExcludedCoastal));
     }
 }

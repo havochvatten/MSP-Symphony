@@ -4,6 +4,7 @@ import { provideMockStore } from '@ngrx/store/testing';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DialogRef } from '@src/app/shared/dialog/dialog-ref';
 import { DialogService } from '@src/app/shared/dialog/dialog.service';
+import { initialState as calculation } from '@data/calculation/calculation.reducers';
 
 import { CompoundComparisonListDialogComponent } from './compound-comparison-list-dialog.component';
 
@@ -21,7 +22,11 @@ describe('CompoundComparisonListDialogComponent', () => {
         DialogService,
         DialogRef,
         TranslateService,
-        provideMockStore({})
+        provideMockStore({
+          initialState: {
+            calculation
+          }
+        })
       ],
       declarations: [CompoundComparisonListDialogComponent]
     });

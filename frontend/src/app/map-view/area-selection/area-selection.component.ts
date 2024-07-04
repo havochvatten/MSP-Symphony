@@ -19,7 +19,7 @@ import {
   UploadUserAreaModalComponent
 } from "@src/app/map-view/map/upload-user-area-modal/upload-user-area-modal.component";
 import { MessageActions } from "@data/message";
-import * as uuid from "uuid/v4";
+import  { v4 as uuid } from "uuid";
 import { TranslateService } from "@ngx-translate/core";
 
 @Component({
@@ -38,6 +38,7 @@ export class AreaSelectionComponent implements OnChanges {
   filteredUserAreas: UserArea[] = [];
   @Input() drawUserArea!: () => void;
   @Input() zoomToArea!: (statePaths: StatePath[]) => void;
+  @Input() highlight!: (highlightEvent: [StatePath, boolean]) => void;
 
   constructor(
     private store: Store<State>,
@@ -56,9 +57,13 @@ export class AreaSelectionComponent implements OnChanges {
     this.filterAreas();
   }
 
-  toggleVisibleArea = (statePath: StatePath) => {
-    this.store.dispatch(AreaActions.toggleVisibleArea({ statePath }));
+  toggleVisibleAreaGroup = (statePath: StatePath) => {
+    this.store.dispatch(AreaActions.toggleAreaGroupState({ statePath, property: 'visible' }));
   };
+
+  toggleExpandedAreaGroup = (statePath: StatePath) => {
+    this.store.dispatch(AreaActions.toggleAreaGroupState({ statePath, property: 'expanded' }));
+  }
 
   onSearch = (value: string) => {
     if (typeof value === 'string') {
@@ -67,12 +72,11 @@ export class AreaSelectionComponent implements OnChanges {
     }
   };
 
-  selectArea = (statePaths: StatePath[], visible: boolean, groupStatePath: StatePath) => {
+  selectArea = (statePath: StatePath, visible: boolean, groupStatePath: StatePath, expand: boolean) => {
     if (!visible) {
-      this.toggleVisibleArea(groupStatePath);
+      this.toggleVisibleAreaGroup(groupStatePath);
     }
-    this.store.dispatch(AreaActions.updateSelectedArea({ statePaths, overlap: false }));
-    this.zoomToArea(statePaths); // listen for this in map instead?
+    this.store.dispatch(AreaActions.updateSelectedArea({ statePath, expand }));
   }
 
   renameUserArea = async (userArea: UserArea) => {

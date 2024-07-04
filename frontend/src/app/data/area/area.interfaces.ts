@@ -36,6 +36,7 @@ export interface AreaGroup {
   en: string;
   name: string;
   visible: boolean;
+  expanded: boolean;
   statePath: StatePath;
   areas: Area[];
   [lang: string]: unknown;
@@ -99,6 +100,7 @@ export interface AreaGroupState {
   name: string;
   visible: boolean;
   statePath: StatePath;
+  expanded: boolean;
   areas: {
     [key: string]: Area;
   };
@@ -135,7 +137,7 @@ export interface State {
   };
   userArea: UserAreasState;
   boundaries: Boundary[];
-  currentSelection?: StatePath[]; // currentFeature?
+  currentSelection: StatePath[];
   selectionOverlap: boolean;
   selectionMatrices?: AreaMatrixData;
   calibratedCalculationAreas: CalculationAreaSlice[];

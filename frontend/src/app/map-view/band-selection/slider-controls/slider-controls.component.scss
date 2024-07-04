@@ -3,11 +3,6 @@
 @import 'src/styles/margins';
 
 :host {
-  li {
-    display: grid;
-    row-gap: 1rem;
-    padding: 0.4rem 0;
-  }
   .controls {
     display: flex;
     flex-wrap: nowrap;
@@ -20,10 +15,6 @@
       justify-content: flex-end;
       align-items: center;
 
-      mat-spinner {
-        margin-right: 1rem;
-      }
-
       button {
         height: 24px;
         width: 24px;
@@ -34,9 +25,29 @@
         margin-right: 0.4rem;
         cursor: pointer;
 
+        &.reliabilty {
+          margin-right: 0.6rem;
+        }
+
         app-icon {
           font-size: 2.4rem;
           color: rgba(0,0,0,0.87);
+
+          &[icontype='sliders'],
+          &[icontype='info-circle-large'] {
+            margin: -0.2rem 0.4rem 0 0;
+          }
+
+          &[icontype='data-reliability'] {
+            margin: -0.16rem 0.4rem 0 0;
+          }
+
+          &[icontype='sliders'] {
+            ::ng-deep svg {
+              height: 2.4rem;
+              width: 2.4rem;
+            }
+          }
         }
 
         &[data-active='true'] {
@@ -49,12 +60,12 @@
           opacity: 0.5;
         }
       }
+
       .toggle-visibility-icon {
-        font-size: 1.8rem;
-        width: 1.8rem;
         &[data-visible='true'] {
           color: $hav-turquoise;
         }
+
         cursor: pointer;
 
         &.disabled-while-loading {
@@ -64,24 +75,35 @@
       }
     }
 
+    mat-spinner {
+      margin-right: 1rem;
+    }
+
     ::ng-deep mat-checkbox {
 
-      &.mdc-checkbox--disabled {
-        label.mdc-label {
-          color: $hav-black;
-        }
-
+      &.mat-mdc-checkbox {
         .mdc-form-field .mdc-checkbox {
-          display: none;
+          margin-left: 0.8rem;
         }
-      }
 
-      .mat-checkbox-layout {
-        .mat-checkbox-label {
-          white-space: pre-wrap;
-          word-wrap: break-word;
-          max-width: 216px;
-          line-height: 16px;
+        &.mdc-checkbox--disabled {
+          label.mdc-label {
+            color: $hav-black;
+          }
+
+          .mdc-form-field .mdc-checkbox {
+            display: none;
+            margin-left: 0;
+          }
+        }
+
+        .mat-checkbox-layout {
+          .mat-checkbox-label {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-width: 216px;
+            line-height: 16px;
+          }
         }
       }
     }

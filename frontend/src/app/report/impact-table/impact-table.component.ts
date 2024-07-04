@@ -13,14 +13,9 @@ export class ImpactTableComponent {
   @Input() scenarioImpacts: Record<string, number>[] = [];
   @Input() names: string[] = [];
   @Input() locale = 'en';
-  @Input() overflow!: number[] | null;
 
   isExcluded(bandNumber: number): boolean {
     return this.scenarioImpacts.every(impacts => !(bandNumber in impacts));
-  }
-
-  hasOverflow(bandNumber: number): boolean {
-    return this.overflow !== null && this.overflow.includes(bandNumber);
   }
 
   formatPercentage(value: number, ersatz: string, relative: boolean) {

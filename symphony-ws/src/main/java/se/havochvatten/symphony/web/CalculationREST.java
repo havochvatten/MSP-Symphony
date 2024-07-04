@@ -12,13 +12,13 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.precision.GeometryPrecisionReducer;
 import org.opengis.coverage.Coverage;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 import se.havochvatten.symphony.calculation.CalcUtil;
 import se.havochvatten.symphony.dto.BatchCalculationDto;
 import se.havochvatten.symphony.dto.CalculationResultSliceDto;
@@ -66,6 +66,8 @@ import static javax.ws.rs.core.Response.*;
 @Api(value = "/calculation")
 public class CalculationREST {
     private static final Logger logger = Logger.getLogger(CalculationREST.class.getName());
+
+    private static final GeometryPrecisionReducer precisionReducer = new GeometryPrecisionReducer(new PrecisionModel(10000));
 
     @Inject
     private CalcService calcService;
@@ -657,10 +659,8 @@ public class CalculationREST {
     }
 
     public GridCoverage2D cropToScenarioArea(SimpleFeature areaFeature, MathTransform transform)
-        throws MismatchedDimensionException, TransformException {
+        throws MismatchedDimensionException {
 
-        GridCoverage2D resultCoverage;
-        Geometry areaPoly = JTS.transform((Geometry) areaFeature.getDefaultGeometry(), transform);
         RenderedImage canvas = this.coverage.getRenderedImage();
 
         // Weirdly, we cannot instantiate a BufferedImage directly since it's encapsulated to java.awt,
@@ -670,7 +670,9 @@ public class CalculationREST {
 
         Geometry intersection = null;
         try {
-            intersection = IntersectUtils.intersection(areaPoly, this.scenario.getGeometry().getEnvelope());
+            intersection = IntersectUtils.intersection(
+                JTS.transform((Geometry) areaFeature.getDefaultGeometry(), transform),
+                this.scenario.getGeometry().getEnvelope());
         } catch (Exception e) {
             e = e;
         }
@@ -687,9 +689,7 @@ public class CalculationREST {
         params.parameter("ROI").setValue(intersection);
         params.parameter("ForceMosaic").setValue(true);
 
-        resultCoverage = (GridCoverage2D) processor.doOperation(params);
-
-        return resultCoverage;
+        return (GridCoverage2D) processor.doOperation(params);
     }
 
     private Response projectedPNGImageResponse(GridCoverage2D coverage, String crs, Double normalizationValue,

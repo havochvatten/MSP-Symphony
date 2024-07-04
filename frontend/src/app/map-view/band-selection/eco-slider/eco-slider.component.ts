@@ -11,7 +11,6 @@ import { Store } from '@ngrx/store';
 import { fromEvent } from 'rxjs';
 import { State } from '@src/app/app-reducer';
 import { Band } from '@data/metadata/metadata.interfaces';
-import { MetadataActions } from '@data/metadata';
 import { ScenarioActions } from "@data/scenario";
 import { debounceTime, map } from "rxjs/operators";
 
@@ -55,13 +54,16 @@ export class EcoSliderComponent implements  OnChanges, AfterViewInit {
       map((event: unknown) =>
         ((event as InputEvent).target as HTMLInputElement).value),
       debounceTime(300)
-    ).subscribe(value =>
-      this.store.dispatch(ScenarioActions.updateBandAttribute({
+    ).subscribe(value => {
+      const _value = parseInt(value),
+            offset = _value > 150 ? 150 : _value;
+      this.constantEl.nativeElement.value = offset;
+      return this.store.dispatch(ScenarioActions.updateBandAttribute({
         componentType: this.band.symphonyCategory,
         band: this.band.bandNumber,
         attribute: 'offset',
-        value: parseInt(value)
-      })));
+        value: offset }));
+    });
   }
 
   updateMultiplier(value: number) {
@@ -86,7 +88,4 @@ export class EcoSliderComponent implements  OnChanges, AfterViewInit {
     return !(this.overridden || this.groupSetting);
   }
 
-  updateLayerOpacity(value: number) {
-    this.store.dispatch(MetadataActions.updateLayerOpacity({ value, band: this.band }));
-  }
 }

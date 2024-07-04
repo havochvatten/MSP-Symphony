@@ -1,7 +1,8 @@
-import { Component, Input, NgModuleRef } from '@angular/core';
-import { StatePath, AreaGroup, UserArea } from '@data/area/area.interfaces';
+import { Component, EventEmitter, Input, NgModuleRef, Output } from '@angular/core';
+import { StatePath, AreaGroup, UserArea, Area } from '@data/area/area.interfaces';
 import { DialogService } from "@shared/dialog/dialog.service";
 import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
+import { statePathContains } from "@shared/common.util";
 
 @Component({
   selector: 'app-area-group',
@@ -13,24 +14,23 @@ export class AreaGroupComponent {
   @Input() areas: AreaGroup[] | UserArea[] = [];
   @Input() searching = false;
   @Input() selectedAreas?: StatePath[];
+  @Input() userArea = false;
   @Input() drawUserArea?: () => void;
   @Input() deleteUserArea?: (areaId: number, areaName: string) => void;
   @Input() renameUserArea?: (userArea: UserArea) => void;
-  @Input() selectArea?: (statePath: StatePath[], visible: boolean, groupStatePath: StatePath) => void;
-  @Input() updateVisible!: (statePath: StatePath) => void;
+  @Input() selectArea?: (statePath: StatePath, visible: boolean,
+                         groupStatePath: StatePath, expand: boolean) => void;
+  @Input() toggleVisible!: (statePath: StatePath) => void;
+  @Input() toggleExpanded?: (statePath: StatePath) => void;
   @Input() importArea?: () => void;
   faCloudUpload = faCloudUploadAlt;
+
+  @Output() highlight: EventEmitter<[StatePath, boolean]> = new EventEmitter();
 
   constructor(
     private dialogService: DialogService,
     private moduleRef: NgModuleRef<never>
   ) {}
-
-  // onDrawUserArea() {
-  //   if (typeof this.drawUserArea === 'function') {
-  //     this.drawUserArea();
-  //   }
-  // }
 
   onRenameUserArea = (userArea: UserArea) => () => {
     if (typeof this.renameUserArea === 'function') {
@@ -44,10 +44,22 @@ export class AreaGroupComponent {
     }
   };
 
-  onSelectArea(statePath: StatePath[], visible: boolean, groupStatePath: StatePath) {
+  onSelectArea(area: Area, group: AreaGroup, $event: MouseEvent) {
     if (typeof this.selectArea === 'function') {
-      this.selectArea(statePath, visible, groupStatePath);
+      this.selectArea(area.statePath, group.visible, group.statePath,  $event.ctrlKey);
     }
+  }
+
+  highlightArea(statePath: StatePath) {
+    this.highlight.emit([statePath, true]);
+  }
+
+  clearHighlight(statePath: StatePath) {
+    this.highlight.emit([statePath, false]);
+  }
+
+  isSelected(statePath: StatePath) {
+    return this.selectedAreas && statePathContains(statePath, this.selectedAreas);
   }
 }
 

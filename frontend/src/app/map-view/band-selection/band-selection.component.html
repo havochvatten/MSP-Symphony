@@ -8,6 +8,14 @@
   [searchPlaceholder]="placeholder | translate"
   [showResetButton]="true"
 >
+  <div class="select-all-wrapper" *ngIf="(scenarioDisplayNames | async)?.scenarioName !== undefined">
+    <mat-checkbox
+      *ngIf="title"
+      [checked]="allBoxesAreChecked"
+      [indeterminate]="someBoxesAreChecked"
+      (change)="updateAll()"
+    >{{ (allBoxesAreChecked? 'map.intensity.deselect-all' : 'map.intensity.select-all') | translate }}</mat-checkbox>
+  </div>
   <app-checkbox-accordion
     *ngFor="let group of filteredGroups; trackBy: displayName"
     [title]="group.symphonyThemeName"
@@ -16,6 +24,7 @@
     [searching]="search.length > 0"
     [change]="onChange"
     [changeVisible]="onChangeVisible"
+    [changeVisibleReliability]="onChangeVisibleReliability"
     [scenarioActive]="!!(scenarioDisplayNames | async)?.scenarioName"
   ></app-checkbox-accordion>
   <p *ngIf="filteredGroups.length === 0">{{ 'map.eco-component.search.no-matches' | translate}}</p>

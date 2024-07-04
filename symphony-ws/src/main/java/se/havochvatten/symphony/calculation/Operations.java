@@ -72,8 +72,8 @@ public class Operations extends org.geotools.coverage.processing.Operations {
     }
 
     // Forked version of JAI-Ext's rescale operation with some extra functionality
-    public Coverage  rescale(final Coverage source, double[] constants,
-                             double[] offsets, ROI roi, double maxClamp, LayerType category, Overflow overflow)
+    public Coverage rescale(final Coverage source, double[] constants,
+                             double[] offsets, ROI roi, double maxClamp, LayerType category)
         throws CoverageProcessingException {
         final var rescale = processor.getOperation("se.havochvatten.symphony.Rescale");
 
@@ -83,8 +83,6 @@ public class Operations extends org.geotools.coverage.processing.Operations {
         params.parameter("offsets").setValue(offsets);
         params.parameter("ROI").setValue(roi);
         params.parameter("clamp").setValue(maxClamp);
-        params.parameter("category").setValue(category);
-        params.parameter("overflow").setValue(overflow);
 
         return processor.doOperation(params);
     }

@@ -30,7 +30,9 @@
         "intensity": {
             "ecosystems": "Ecosystem Components",
             "pressures": "Pressures",
-            "override": "Override group setting"
+            "override": "Override group setting",
+            "select-all": "Select all",
+            "deselect-all": "Deselect all"
         },
         "confirm-reset": {
             "modal": {
@@ -110,9 +112,8 @@
             },
             "set-arbitrary-matrix": {
                 "title": "Set sensitivity matrix and calculation area",
-                "detail": "No default matrix coupling could be determined for the area \"{{ areaName }}\".\nTo allow the inclusion of this area in a calculation, an arbitrary sensitivity matrix and a area for value normalization* must first be set, manually.",
+                "detail": "No default matrix coupling could be determined for the area \"{{ areaName }}\".\nTo allow the inclusion of this area in a calculation, an arbitrary sensitivity matrix and corresponding MSP area must first be set",
                 "caution": "Note that cancelling this action will exclude the area from the scenario.",
-                "normalization-description": "*Value normalization means that the result is normalized with respect to the value that {{ percentileValue }}% of data points in the selected area belong to (including coastal areas).",
                 "calculation-area": "Calculation area",
                 "select-matrix-placeholder": "Select sensitivity matrix",
                 "select-area-placeholder": "Select area for normalizing values",
@@ -138,11 +139,12 @@
             },
             "band-pressures": {
                 "intensity": "Edit intensity",
-                "opacity": "Layer opacity",
                 "percentage": "Percentage",
                 "constant-increase": "Constant",
-                "intensity-label": "Show/hide intensity",
-                "opacity-label": "Show/hide opacity",
+                "show-intensity": "Show intensity controls",
+                "hide-intensity": "Hide intensity controls",
+                "show-reliability": "Show reliability",
+                "hide-reliability": "Hide reliability",
                 "note": "If you have modified any values in the data layers, you can save these modifications as new layers, and reuse them in other calculations.",
                 "no-scenario-selected": "Select a scenario to adjust intensity values"
             },
@@ -305,6 +307,7 @@
             "label": "Show metadata",
             "header": "Metadata regarding {{ layerType }}: {{ layerName }}",
             "close": "Close",
+            "theme": "theme",
             "ecosystem": "ecosystem",
             "pressure": "pressure",
             "no-info": "Metadatum missing.",
@@ -483,6 +486,9 @@
             "edit": {
                 "label": "Edit area"
             },
+            "expand": {
+                "label": "Expand area group"
+            },
             "delete": {
                 "label": "Delete",
                 "modal": {
@@ -500,7 +506,12 @@
             "result": "Cumulative impact",
             "comparison": "Relative pressure difference",
             "ecosystem": "Ecosystem value",
-            "pressure": "Pressure intensity"
+            "pressure": "Pressure intensity",
+            "reliability": {
+                "title": "Reliability",
+                "low": "Low reliability",
+                "high": "High reliability"
+            }
         },
         "area-selection-hint": {
             "emphasis": "Select / deselect multiple areas",
@@ -508,11 +519,11 @@
         },
         "special-actions-hint": {
             "emphasis": "Cut or merge area",
-            "detail": "{{ altButton }} + click splits by intersection, {{ altButton }} + Shift + click merges."
+            "detail": "{{ altButton }} + click in the map view splits by intersection, {{ altButton }} + Shift + click merges."
         },
         "merge-areas-hint" : {
             "emphasis": "Merge areas",
-            "detail": "{{ altButton }} + Shift + click on final area to merge selected."
+            "detail": "{{ altButton }} + Shift + click on final area in the map to merge selected."
         },
         "compound-data-list": {
             "title": "Compound comparisons",
@@ -520,14 +531,17 @@
             "calculation-basis-info": "The comparative values are based on the following calculations",
             "more": "more",
             "delete": "Delete compound comparison",
-            "download": "Download compound comparison",
-            "download-select-format": "Select format to download",
-            "download-format": {
-                "json": "As data (JSON)",
-                "ods": "As spreadsheet (ODS)"
+            "download": {
+                "header": "Download compound comparison",
+                "select-format": "Select format to download",
+                "format": {
+                    "json": "As data (JSON)",
+                    "ods": "As spreadsheet (ODS)"
+                },
+                "include-unchanged": "Include unchanged results",
+                "include-combined-dataset": "Include combined dataset",
+                "confirm": "Download"
             },
-            "download-allow-zero": "Allow zero values",
-            "confirm-download": "Download",
             "filter-hint": "Filter list item by name",
             "delete-modal": {
                 "header": "Delete compound comparison",
@@ -536,9 +550,13 @@
             "terms": {
                 "total": "Total",
                 "sum": "Sum",
+                "baseline": "Baseline",
                 "difference": "Difference",
                 "pixels": "Number of pixels",
-                "non-planar": "Non-planar projection"
+                "non-planar": "Non-planar projection",
+                "scenarioTitle": "Scenario title",
+                "scenario": "Scenario",
+                "combined": "Combined dataset"
             }
         },
         "area-options": {
@@ -632,11 +650,6 @@
             },
             "comparison": {
                 "legend-desc": "The image shows the relative difference in total cumulative impact between the base and what-if scenario."
-            },
-            "overflow": {
-                "title": "Cumulative impact exceeds maximum value",
-                "detail": "Note that the part of the cumulative result that has exceeded the maximum value per pixel is not reflected in the report. Hence, the result for the affected bands is lower than the value would be if the entire parameterized change was factored in, without limiting each pixel value.",
-                "list-description": "The following changes exceed maximum value:"
             }
         },
         "sensitivity-matrices": {
@@ -675,15 +688,13 @@
             "and": "and",
             "base-changes": "Common changes",
             "area-changes": "Area-specific changes",
-            "no-changes": "No changes",
-            "overflow-notice": "Change exceeds maximum"
+            "no-changes": "No changes"
         },
         "impact-table": {
             "ecoComponent": "Impact per nature value",
             "pressure": "Impact per pressure",
             "cumulative": "Cumulative",
-            "percentage-of-total": "% of Total",
-            "overflow": "Maximum exceeded, entire change incorrectly reported"
+            "percentage-of-total": "% of Total"
         },
         "toolbar": {
             "export-csv": "Export as CSV",

@@ -22,7 +22,7 @@ import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmat
 @Component({
     selector: 'app-scenario-list',
     templateUrl: './scenario-list.component.html',
-    styleUrls: ['./scenario-list.component.scss', '../../list-actions.scss']
+    styleUrls: ['./scenario-list.component.scss']
 })
 export class ScenarioListComponent extends Listable implements OnDestroy {
 

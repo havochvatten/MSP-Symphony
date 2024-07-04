@@ -65,7 +65,6 @@
       [scenarioChanges]="report.scenarioChanges"
       [bandDict]="metadata.bandDictionary"
       [areaDict]="areaDict"
-      [overflow]="report.overflow"
     ></app-scenario-changes>
     <!--TODO Localize names -->
     <app-impact-table class="pressure-impacts"
@@ -73,7 +72,6 @@
       [bandGroups]="metadata.metadata.pressureComponent"
       [scenarioImpacts]="[report.impactPerPressure, calculatePercentOfTotal(report.impactPerPressure, report.total)]"
       [names]="['report.impact-table.cumulative' | translate, 'report.impact-table.percentage-of-total' | translate]"
-      [overflow]="report.overflow?.PRESSURE || null"
       [locale]="locale"
     ></app-impact-table>
     <app-impact-table class="ecocomponent-impacts"
@@ -81,7 +79,6 @@
       [bandGroups]="metadata.metadata.ecoComponent"
       [scenarioImpacts]="[report.impactPerEcoComponent, calculatePercentOfTotal(report.impactPerEcoComponent, report.total)]"
       [names]="['report.impact-table.cumulative' | translate, 'report.impact-table.percentage-of-total' | translate]"
-      [overflow]="report.overflow?.ECOSYSTEM || null"
       [locale]="locale"
     ></app-impact-table>
   </ng-container>
