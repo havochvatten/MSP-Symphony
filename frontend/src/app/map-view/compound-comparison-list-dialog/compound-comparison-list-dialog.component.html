@@ -2,8 +2,6 @@
   <h3>{{ 'map.compound-data-list.title' | translate }}</h3>
   <app-multi-tools
     [isMultiMode]="isMultiMode"
-    [enterLabel]="'map.compound-data-list.enter-multi-mode'"
-    [exitLabel]="'map.compound-data-list.exit-multi-mode'"
     [disabledPredicate]="noneSelected"
   >
     <app-multi-action-button
@@ -48,8 +46,8 @@
       </div>
     </div>
     <div class="multi-selected-wrap" *ngIf="isMultiMode()">
-      <mat-checkbox [checked]="selectedCompoundComparisonIds.includes(cmp.id)"
-                    (change)="selectItem(cmp.id)">
+      <mat-checkbox [checked]="selectedIds.includes(cmp.id)"
+                    (change)="multiSelect(cmp.id)">
       </mat-checkbox>
     </div>
   </li>

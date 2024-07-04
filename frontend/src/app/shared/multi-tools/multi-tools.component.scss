@@ -18,8 +18,12 @@
         opacity: 0.6;
       }
     }
+  }
 
-    &.multi-action {
+  ::ng-deep app-multi-action-button {
+    margin-left: 0.5rem;
+
+    app-icon-button.multi-action {
       &.active {
         color: $hav-blue;
 
