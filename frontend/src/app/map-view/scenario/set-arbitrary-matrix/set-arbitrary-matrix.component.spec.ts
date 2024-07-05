@@ -5,6 +5,7 @@ import { DialogConfig } from "@shared/dialog/dialog-config";
 import { SetArbitraryMatrixComponent } from './set-arbitrary-matrix.component';
 import { TranslateModule } from "@ngx-translate/core";
 import { provideMockStore } from '@ngrx/store/testing';
+import { initialState as area } from "@data/area/area.reducers";
 
 describe('SetArbitraryMatrixComponent', () => {
   let component: SetArbitraryMatrixComponent;
@@ -28,7 +29,11 @@ describe('SetArbitraryMatrixComponent', () => {
             }
           }
         },
-        provideMockStore()
+        provideMockStore({
+          initialState: {
+            area
+          }
+        })
       ],
       declarations: [SetArbitraryMatrixComponent]
     });

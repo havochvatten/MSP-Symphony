@@ -1,7 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { setIn } from "immutable";
 import { CalculationActions, CalculationInterfaces } from './';
-import { AreaActions } from '@data/area';
 import { Legend } from "@data/calculation/calculation.interfaces";
 import { ListItemsSort } from "@data/common/sorting.interfaces";
 
@@ -52,11 +51,6 @@ export const calculationReducer = createReducer(
     ...state,
     calculations,
     loadingCalculations: false
-  })),
-  on(AreaActions.updateSelectedArea, (state) => ({
-    ...state,
-    calculating: false,
-    latestCalculationId: undefined
   })),
   on(CalculationActions.fetchLegendSuccess, (state, { legend, legendType }) => ({
     ...state,

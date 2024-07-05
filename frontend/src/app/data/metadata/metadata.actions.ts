@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Band, Groups } from './metadata.interfaces';
+import { Band, BandType, Groups } from './metadata.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
 import { Scenario } from "@data/scenario/scenario.interfaces";
 
@@ -37,6 +37,11 @@ export const fetchMetadataFailure = createAction(
   props<{ error: ErrorMessage }>()
 );
 
+export const selectBandsByType = createAction(
+  '[Metadata] Select bands for inclusion',
+  props<{ bandType: BandType, value: boolean}>()
+);
+
 export const selectBand = createAction(
   '[Metadata] Select band for inclusion',
   props<{ band: Band, value: boolean|undefined }>()
@@ -52,9 +57,13 @@ export const setLoadedState = createAction(
   props<{ band: Band, value: boolean }>()
 );
 
-export const updateLayerOpacity = createAction(
-  '[Metadata] Update Layer Opacity',
-  props<{ band: Band, value: number }>()
+export const showReliability = createAction(
+  '[Metadata] Show reliability',
+  props<{ band: Band  }>()
+);
+
+export const hideReliability = createAction(
+  '[Metadata] Hide reliability'
 );
 
 export const updateMultiplier = createAction(

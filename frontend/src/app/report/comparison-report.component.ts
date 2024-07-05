@@ -10,7 +10,7 @@ import { ComparisonReport, Legend } from '@data/calculation/calculation.interfac
 import { environment as env } from "@src/environments/environment";
 import { ReportService } from "@src/app/report/report.service";
 import { CalculationService } from "@data/calculation/calculation.service";
-import { relativeDifference, setOverflowProperty } from "@src/app/report/report.util";
+import { relativeDifference } from "@src/app/report/report.util";
 import { AbstractReport } from "@src/app/report/abstract-report.directive";
 
 @Component({
@@ -25,8 +25,6 @@ export class ComparisonReportComponent extends AbstractReport {
   now = new Date();
   areaDictA: Map<number, string> = new Map<number, string>();
   areaDictB: Map<number, string> = new Map<number, string>();
-
-  allOverflow: { [bandType: string]: number[] } = {};
 
   maxValue: number;
   reverse: boolean;
@@ -65,23 +63,14 @@ export class ComparisonReportComponent extends AbstractReport {
     reportService.getComparisonReport(aId, bId, this.reverse).subscribe({
       next(report) {
         that.report = report;
-        that.report.a = setOverflowProperty(report.a);
-        that.report.b = setOverflowProperty(report.b);
+        that.report.a = report.a;
+        that.report.b = report.b;
         that.area = reportService.calculateArea(report.a);
         that.loadingReport = false;
 
         that.store.dispatch(MetadataActions.fetchMetadataForBaseline({ baselineName: report.a.baselineName }));
         that.areaDictA = reportService.setAreaDict(report.a);
         that.areaDictB = reportService.setAreaDict(report.b);
-
-        that.allOverflow = {
-          'ECOSYSTEM': [...new Set([
-          ...(report.a.overflow?.ECOSYSTEM || []),
-          ...(report.b.overflow?.ECOSYSTEM || [])])],
-          'PRESSURE': [...new Set([
-          ...(report.a.overflow?.PRESSURE || []),
-          ...(report.b.overflow?.PRESSURE || [])])]
-        };
 
         that.chartWeightThresholdPercentage = formatPercent(report.a.chartWeightThreshold, that.locale);
       },

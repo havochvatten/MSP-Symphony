@@ -37,6 +37,7 @@ describe('SliderControlsComponent', () => {
       bandNumber: 0,
       selected: false,
       symphonyCategory: "ECOSYSTEM",
+      reliability: null,
       meta : {
         accessUserRestrictions: "",
         authorEmail: "",

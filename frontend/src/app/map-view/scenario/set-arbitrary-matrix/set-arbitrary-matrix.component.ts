@@ -16,7 +16,6 @@ import { AreaSelectors } from "@data/area";
 export class SetArbitraryMatrixComponent {
   matrices: MatrixRef[];
   areaName!: string;
-  percentileValue: number;
   selectedMatrix: MatrixRef | null = null;
   selectedCalculationArea: CalculationAreaSlice | null = null;
   calibratedAreas$: Observable<CalculationAreaSlice[]>;
@@ -26,7 +25,6 @@ export class SetArbitraryMatrixComponent {
                conf: DialogConfig ) {
     this.matrices = conf.data.matrices || [];
     this.areaName = conf.data.areaName;
-    this.percentileValue = conf.data.percentileValue;
     this.calibratedAreas$ = this.store.select(AreaSelectors.selectCalibratedCalculationAreas);
     this.calibratedAreas$.subscribe((areas) => {
       if (areas.length > 0) {

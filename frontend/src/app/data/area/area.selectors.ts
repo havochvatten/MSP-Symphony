@@ -45,10 +45,46 @@ export const selectUserAreas = createSelector(selectAreaState, (state: State) =>
   Object.values(state.userArea)
 );
 
+export const selectAreaFeatures = createSelector(
+  selectNationalAreas,
+  selectUserAreas,
+  (nationalAreas: NationalArea[], userAreas: UserArea[]): FeatureCollection[] =>
+    [...getNationalAreaFeatures(nationalAreas), ...getUserAreasFeatures(userAreas)]
+  );
+
+export const selectVisibleAreas = createSelector(
+  selectNationalAreas,
+  selectUserAreas,
+  selectSelectedArea,
+  (nationalAreas: NationalArea[], userAreas: UserArea[], currentSelection: StatePath[]) => {
+    const visibleGroups = nationalAreas.reduce(
+      (groups: AreaGroup[], nationalArea) => [
+        ...groups,
+        ...nationalArea.groups
+      ],
+      []
+    ).filter(group => group.visible);
+    const areas = visibleGroups.reduce(
+      (group_areas: SelectableArea[], group) => [...group_areas, ...group.areas],
+      []
+    );
+
+    return {
+      visible: [...areas, ...userAreas.filter(area => area.visible)]
+        .map(area => area.statePath),
+      selected: currentSelection
+    }
+  }
+);
+
 export const selectOverlap = createSelector(selectAreaState, state => state.selectionOverlap);
 
 export const selectBoundaries = createSelector(selectAreaState, state => state.boundaries);
 
+export const selectBoundaryFeatures = createSelector(
+  selectBoundaries,
+  (boundaries: Boundary[]) => createBoundaryFeature(boundaries)
+);
 export const selectCalibratedCalculationAreas = createSelector(
   selectAreaState,
   state => state.calibratedCalculationAreas
@@ -89,14 +125,14 @@ export const selectSelectedFeatureCollections = createSelector(
 );
 
 function getNationalAreaFeatures(nationalAreas: NationalArea[]): FeatureCollection[] {
-  const visibleGroups = nationalAreas.reduce(
+  const areaGroups = nationalAreas.reduce(
     (groups: AreaGroup[], nationalArea) => [
       ...groups,
-      ...nationalArea.groups.filter(group => group.visible)
+      ...nationalArea.groups
     ],
     []
   );
-  const features = visibleGroups.reduce(
+  const features = areaGroups.reduce(
     (areas: Feature[], group) => [...areas, ...group.areas.map(area => area.feature)],
     []
   );
@@ -104,7 +140,7 @@ function getNationalAreaFeatures(nationalAreas: NationalArea[]): FeatureCollecti
 }
 
 function getFeatures(areas: SelectableArea[]) {
-  return areas.filter(area => area.visible === true).map(area => area.feature);
+  return areas.map(area => area.feature);
 }
 
 function getUserAreasFeatures(userAreas: UserArea[]) {

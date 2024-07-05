@@ -166,10 +166,8 @@ public class CalculationAreaServiceTest {
         TypedQuery mockedPressuresQuery = mock(TypedQuery.class),
               mockedEcoQuery = mock(TypedQuery.class);
 
-        when(calculationAreaService.metadataService.em.createQuery(
-            "SELECT b FROM SymphonyBand b " +
-            "WHERE b.baseline.id = :baselineVersionId " +
-            "AND b.category = :category", SymphonyBand.class)).thenReturn(mockedPressuresQuery, mockedEcoQuery);
+        when(calculationAreaService.metadataService.em.createQuery(MetaDataService.sparseBandQuery, SymphonyBand.class))
+            .thenReturn(mockedPressuresQuery, mockedEcoQuery);
 
         when(mockedPressuresQuery.setParameter(anyString(), anyObject())).thenReturn(mockedPressuresQuery);
         when(mockedPressuresQuery.setParameter("baselineVersionId", 1)).thenReturn(mockedPressuresQuery);
@@ -231,7 +229,7 @@ public class CalculationAreaServiceTest {
         careasMatching.add(ca3);
 
         doReturn(careasMatching)
-                .when(calculationAreaServiceSpy).getAreasWithinPolygon(selectedPolygon, baselineVersionId);
+                .when(calculationAreaServiceSpy).getCalcAreaForScenarioArea(1, baselineVersionId);
 
         List<AreaMatrixMapping> relAreaMatrixMappings = new ArrayList<>();
         AreaMatrixMapping adto = new AreaMatrixMapping(2, 3);

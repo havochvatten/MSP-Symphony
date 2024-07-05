@@ -5,6 +5,9 @@
  */
 package se.havochvatten.symphony.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.locationtech.jts.geom.MultiPolygon;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -42,6 +45,10 @@ public class CaPolygon implements Serializable {
     @ManyToOne(optional = false)
     private CalculationArea calculationArea;
 
+    @JsonIgnore()
+    @Column(name = "pg_polygon", columnDefinition = "geometry(MultiPolygon,4326)")
+    private transient MultiPolygon pgPolygon;
+
     public CaPolygon() {}
 
     public Integer getId() {
@@ -59,6 +66,9 @@ public class CaPolygon implements Serializable {
     public void setPolygon(String polygon) {
         this.polygon = polygon;
     }
+
+    @JsonIgnore
+    public MultiPolygon getPgPolygon() { return pgPolygon; }
 
     @XmlTransient
     public CalculationArea getCalculationArea() {

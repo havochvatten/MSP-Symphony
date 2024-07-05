@@ -17,7 +17,11 @@ describe('BatchProgressDisplayComponent', () => {
       ],
       providers: [
         provideMockStore({
-          initialState: {}
+          initialState: {
+            calculation: {
+              batchProcesses: []
+            }
+          }
         })
       ],
       declarations: [ BatchProgressComponent ]

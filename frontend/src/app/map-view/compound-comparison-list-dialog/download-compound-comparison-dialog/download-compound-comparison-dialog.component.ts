@@ -14,7 +14,8 @@ export class DownloadCompoundComparisonDialogComponent {
   comparisonName = '';
   downloadOptions: DownloadCompoundComparisonOptions = {
     asJson: true,
-    allowZeroes: false
+    includeUnchanged: true,
+    includeCombined: false
   };
 
   constructor(private dialog: DialogRef,
@@ -32,5 +33,8 @@ export class DownloadCompoundComparisonDialogComponent {
 
   setFormat(changeEvent: MatRadioChange) {
     this.downloadOptions.asJson = changeEvent.value === 'json';
+    if (this.downloadOptions.asJson) {
+      this.downloadOptions.includeCombined = false;
+    }
   }
 }

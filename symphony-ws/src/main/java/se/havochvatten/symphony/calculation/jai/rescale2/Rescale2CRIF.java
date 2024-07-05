@@ -20,8 +20,6 @@ package se.havochvatten.symphony.calculation.jai.rescale2;
 import com.sun.media.jai.opimage.RIFUtil;
 import it.geosolutions.jaiext.range.Range;
 import it.geosolutions.jaiext.range.RangeFactory;
-import se.havochvatten.symphony.calculation.Overflow;
-import se.havochvatten.symphony.dto.LayerType;
 
 import javax.media.jai.CRIFImpl;
 import javax.media.jai.ImageLayout;
@@ -57,10 +55,8 @@ public class Rescale2CRIF extends CRIFImpl {
         boolean useRoiAccessor = (Boolean) pb.getObjectParameter(4);
         double destinationNoData = pb.getDoubleParameter(5);
         double clamp = (double) pb.getObjectParameter(6);
-        LayerType category = (LayerType) pb.getObjectParameter(7);
-        Overflow overflow = (Overflow) pb.getObjectParameter(8);
         // Creation of the new image
         return new Rescale2OpImage(source, layout, hints, scales, offsets, destinationNoData, roi, noData,
-            useRoiAccessor, clamp, category, overflow);
+            useRoiAccessor, clamp);
     }
 }

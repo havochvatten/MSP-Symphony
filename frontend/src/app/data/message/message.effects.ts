@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatMap, map } from 'rxjs/operators';
-import * as uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 
 import { MessageActions } from './';
 

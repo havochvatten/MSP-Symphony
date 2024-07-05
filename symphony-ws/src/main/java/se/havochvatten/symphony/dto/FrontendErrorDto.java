@@ -1,7 +1,6 @@
 package se.havochvatten.symphony.dto;
 
 import org.slf4j.MDC;
-import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 
 public class FrontendErrorDto {
     String errorCode;

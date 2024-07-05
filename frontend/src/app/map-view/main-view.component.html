@@ -6,12 +6,16 @@
                 (toggle)="toggleLeftSidebar()"
                 (navigate)="onNavigate($event)"
                 (openCCList)="onOpenCCList()">
-  <app-slide-view-tab [title]="'map.areas' | translate" icon="globe">
+  <app-slide-view-tab [id]="'areas'" [title]="'map.areas' | translate" icon="globe">
     <app-area-selection
       [areas]="areas | async"
       [drawUserArea]="toggleDrawArea"
       [zoomToArea]="zoomToArea"
+      [highlight]="highlight"
     ></app-area-selection>
+  </app-slide-view-tab>
+  <app-slide-view-tab [id]="'scenario'" [title]="'map.editor.title' | translate" icon="calculate">
+    <app-scenario-editor></app-scenario-editor>
   </app-slide-view-tab>
   <app-slide-view-tab [title]="'map.intensity.ecosystems' | translate" icon="fish">
     <app-band-selection
@@ -27,15 +31,11 @@
       [bandGroups]="$any(metadata | async).pressureComponent"
     ></app-band-selection>
   </app-slide-view-tab>
-  <app-slide-view-tab [id]="'scenario'" [title]="'map.editor.title' | translate" icon="calculate">
-<!--    <router-outlet></router-outlet>-->
-    <app-scenario-editor></app-scenario-editor> <!-- Add [named?] router-outlet?-->
+  <app-slide-view-tab [title]="'map.compare.title' | translate" icon="compare">
+    <app-comparison></app-comparison>
   </app-slide-view-tab>
   <app-slide-view-tab [title]="'map.history.title' | translate" icon="report">
     <app-history></app-history>
-  </app-slide-view-tab>
-  <app-slide-view-tab [title]="'map.compare.title' | translate" icon="compare">
-    <app-comparison></app-comparison>
   </app-slide-view-tab>
   <div id="map-overlay">
     <app-active-scenario-display *ngIf="activeScenario$ | async"
@@ -49,32 +49,42 @@
         ((legends$ | async).result && this.getVisibleImpact()) ||
          (cmpLegends$ | async)?.length > 0 && this.getVisibleComparison() ||
          (legends$ | async).ecosystem ||
-         (legends$ | async).pressure
+         (legends$ | async).pressure ||
+         (visibleReliability$ | async) !== null
       "
       class="color-scale-container"
     >
       <app-result-color-scale
+        class="legend-section"
         *ngIf="(legends$ | async).result && this.getVisibleImpact()"
         [title]="'map.color-scale.result' | translate"
         [colors]="(legends$ | async).result.colorMap"
         [unit]="(legends$ | async).result.unit"
       ></app-result-color-scale>
       <app-comparison-color-scale
+        class="legend-section"
         *ngIf="this.getVisibleComparison()"
         [legends]="(cmpLegends$ | async)"
       ></app-comparison-color-scale>
       <app-result-color-scale
+        class="legend-section"
         *ngIf="(legends$ | async).ecosystem"
         [title]="'map.color-scale.ecosystem' | translate"
         [colors]="(legends$ | async).ecosystem.colorMap"
         [unit]="(legends$ | async).ecosystem.unit"
       ></app-result-color-scale>
       <app-result-color-scale
+        class="legend-section"
         *ngIf="(legends$ | async).pressure"
         [title]="'map.color-scale.pressure' | translate"
         [colors]="(legends$ | async).pressure.colorMap"
         [unit]="(legends$ | async).pressure.unit"
       ></app-result-color-scale>
+      <app-reliability-legend
+        class="legend-section reliability-legend"
+        *ngIf="(visibleReliability$ | async) !== null"
+        [reliability]="(visibleReliability$ | async)"
+      ></app-reliability-legend>
     </div>
     <div id="scale-container"></div>
   </div>

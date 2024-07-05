@@ -49,8 +49,6 @@ although any web server capable of serving static content should do (see [Fronte
 has been tested using Wildfly 26.1, PostgreSQL 10 and PostGIS v2.4, but more recent versions should be fine.
 
 The frontend is realized as an Angular application (v 17), built with Node 20.11.1.
-Since we routinely test the UI only on Google Chrome under development, it is recommended specifically as the preferred 
-browser client.
 
 ## Getting the source
 
@@ -64,8 +62,7 @@ git clone --recurse-submodules https://github.com/havochvatten/MSP-Symphony.git
 
 Alternatively (if you are cloning through an IDE or such which doesn't allow you to specify the `--recurse-submodules` flag), you can do
 ```
-git submodule init
-git submodles update 
+git submodule update --init 
 ```
 after doing a regular (non-recursive) clone.
 
@@ -187,15 +184,20 @@ mvn surefire:test ... -Dsymphony.username=XXXX -Dsymphony.password=YYYY ...
 ```
 
 
-### Frondend tests
+### Frontend tests
 
 There are also frontend tests, see [frontend/README](frontend/README.md) for more details.
 
-### Swagger
+### Swagger (partially disabled)
 
-The package comes bundled with [Swagger](https://swagger.io/) which can be used for exploring APIs and debugging, but 
-may want to be disabled in a 
-production environment. By default it is available at the */symphony-ws/swagger* endpoint. 
+A previous Swagger integration has been partially disabled (won't generate documentation) in the build since release  
+version 1.3 due to certain compatibility issues with the internally recommended application server software (WildFly 26).
+However, the dependency remains in the software package, providing OpenAPI annotations.  
+Reintroducing the 'Swagger UI' capability is being considered.
+
+~~The package comes bundled with [Swagger](https://swagger.io/) which can be used for exploring APIs and debugging, but
+may want to be disabled in a
+production environment. By default it is available at the */symphony-ws/swagger* endpoint.~~
 
 ## License
 

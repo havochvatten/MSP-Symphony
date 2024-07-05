@@ -57,7 +57,8 @@
   <section class="coastal-area" *ngIf="hasAssociatedCoastalArea()">
     <h3>{{ 'map.editor.coastal-areas.title' | translate }}</h3>
     <mat-checkbox id="coast-checkbox"
-                  [checked]="(this.area()).excludedCoastal === null"
+                  [checked]="(this.area()).excludedCoastal === null ||
+                             (this.area()).excludedCoastal === -1"
                   (change)="onCheckIncludeCoast($event.checked)">
       {{ 'map.editor.coastal-areas.include-coast' | translate }}
     </mat-checkbox>

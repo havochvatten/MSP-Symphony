@@ -30,7 +30,9 @@
         "intensity" : {
             "ecosystems": "Composante écosystèmes",
             "pressures": "Pressions",
-            "override": "Remplacer le paramètre de groupe"
+            "override": "Remplacer le paramètre de groupe",
+            "select-all": "Tout sélectionner",
+            "deselect-all": "Tout désélectionner"
         },
         "confirm-reset": {
             "modal": {
@@ -110,9 +112,8 @@
             },
             "set-arbitrary-matrix": {
                 "title": "Déterminer une matrice de sensibilité et la zone de calcul",
-                "detail": "Aucun couplage matriciel par défaut n'a pu être déterminé pour la zone \"{{ areaName }}\".\nPour que cette zone soit incluse dans un calcul, une matrice de sensibilité arbitraire et une zone pour normalisation des valeurs* doivent d'abord être déterminées.",
+                "detail": "Aucun couplage matriciel par défaut n'a pu être déterminé pour la zone \"{{ areaName }}\".\nAfin d'analyser la zone, une matrice de sensibilité arbitraire et une zone d'aménagement maritime doivent d'abord être sélectionnées.",
                 "caution": "Veuillez noter que si vous annulez cette action, la zone sera exclue du scénario.",
-                "normalization-description": "*La normalisation des valeurs signifie que le résultat est normalisé par rapport à la valeur à laquelle {{ percentileValue }}% des points de données de la zone sélectionnée appartiennent (y compris les zones côtières).",
                 "calculation-area": "Zone de calcul",
                 "select-matrix-placeholder": "Sélectionnez une matrice de sensibilité",
                 "select-area-placeholder": "Sélectionnez une zone pour normaliser les valeurs",
@@ -138,11 +139,12 @@
             },
             "band-pressures": {
                 "intensity": "Changer l'intensité",
-                "opacity": "Changer la transparence",
                 "percentage": "Pourcentage",
                 "constant-increase": "Constante",
-                "intensity-label": "Afficher/masquer l'intensité",
-                "opacity-label": "Afficher/masquer la transparence",
+                "show-intensity": "Afficher les contrôles d'intensité",
+                "hide-intensity": "Masquer les contrôles d'intensité",
+                "show-reliability": "Afficher la fiabilité",
+                "hide-reliability": "Masquer la fiabilité",
                 "note": "Si vous avez modifié les valeurs pour certaines cartes, vous pouvez enregistrer vos modifications pour les réutiliser dans d'autres calculs.",
                 "no-scenario-selected": "Veuillez sélectionnez un scénario pour ajuster les valeurs d'intensité"
             },
@@ -305,6 +307,7 @@
             "label": "Voir les métadonnées",
             "header": "Métadonnées concernant {{ layerType }}: {{ layerName }}",
             "close": "Fermer",
+            "theme": "groupe",
             "ecosystem": "écosystème",
             "pressure": "pression",
             "no-info": "Métadonnée manquante.",
@@ -483,6 +486,9 @@
             "edit": {
                 "label": "Modifier la zone"
             },
+            "expand": {
+                "label": "Agrandir le groupe de zones"
+            },
             "delete": {
                 "label": "Supprimer",
                 "modal": {
@@ -500,7 +506,12 @@
             "result": "Impact cumulé",
             "comparison": "Différence de pression relative",
             "ecosystem": "Valeur écosystème",
-            "pressure": "Valeur pression"
+            "pressure": "Valeur pression",
+            "reliability": {
+                "title": "Fiabilité",
+                "low": "Fiabilité faible",
+                "high": "Fiabilité élevée"
+            }
         },
         "area-selection-hint": {
             "emphasis": "Sélectionner / désélectionner plusieurs zones ",
@@ -508,11 +519,11 @@
         },
         "special-actions-hint": {
             "emphasis": "Partager ou fusionner zone",
-            "detail": "{{ altButton }} + clic pour séparer par section, {{ altButton }} + Shift + clic pour fusionner"
+            "detail": "{{ altButton }} + clic dans la vue de la carte pour séparer par section, {{ altButton }} + Shift + clic pour fusionner"
         },
         "merge-areas-hint" : {
             "emphasis": "Fusionner les zones",
-            "detail": "{{ altButton }} + Shift + clic pour fusionner la sélection."
+            "detail": "{{ altButton }} + Shift + clic dans la vue de la carte pour fusionner la sélection."
         },
         "compound-data-list": {
             "title": "Comparaisons composées",
@@ -520,14 +531,17 @@
             "calculation-basis-info": "La comparaison des valeurs est basée sur les calculs suivants",
             "more": "de plus",
             "delete": "Supprimer ca comparaison composée",
-            "download": "Télécharger la comparaison composée",
-            "download-select-format": "Choisissez le format de téléchargement",
-            "download-format": {
-                "json": "En tant que données (JSON)",
-                "ods": "En tant que feuille de calcul (ODS)"
+            "download": {
+                "header": "Télécharger la comparaison composée",
+                "select-format": "Choisissez le format de téléchargement",
+                "format": {
+                    "json": "En tant que données (JSON)",
+                    "ods": "En tant que feuille de calcul (ODS)"
+                },
+                "include-unchanged": "Inclure les valeurs inchangées",
+                "include-combined-dataset": "Inclure des données combinées",
+                "confirm": "Télécharger"
             },
-            "download-allow-zero": "Inclure les valeurs nulles",
-            "confirm-download": "Télécharger",
             "filter-hint": "Filtrer la liste par nom",
             "delete-modal": {
                 "header": "Supprimer la comparaison composée",
@@ -536,9 +550,13 @@
             "terms": {
                 "total": "Total",
                 "sum": "Somme",
+                "baseline": "Reférence",
                 "difference": "Différence",
                 "pixels": "Nombre de pixels",
-                "non-planar": "Projection non planaire"
+                "non-planar": "Projection non planaire",
+                "scenarioTitle": "Nom du scénario",
+                "scenario": "Scénario",
+                "combined": "Données combinées"
             }
         },
         "area-options": {
@@ -632,11 +650,6 @@
             },
             "comparison": {
                 "legend-desc": "L'image montre la différence relative d'impact cumulé entre le scénario de référence et le scénario anticipé."
-            },
-            "overflow": {
-                "title": "Dépassement de la valeur maximale",
-                "detail": "Veuillez noter que la partie du résultat cumulé qui dépasse la valeur maximale par pixel n'est pas reflétée dans le rapport. Le résultat pour les bandes affectées est inférieur à ce qui serait attendu si l'ensemble du changement paramétré était pris en compte, sans limiter la valeur au maximum.",
-                "list-description": "La valeur maximale a été dépassée dans les bandes suivantes:"
             }
         },
         "sensitivity-matrices": {
@@ -675,15 +688,13 @@
             "and": "et",
             "base-changes": "Modifications à l'échelle du scénario",
             "area-changes": "Modifications spécifiques à la zone",
-            "no-changes": "Aucun modifications",
-            "overflow-notice": "Dépasse valeur maximale"
+            "no-changes": "Aucun modifications"
         },
         "impact-table": {
             "ecoComponent": "Impact par composante écosystème",
             "pressure": "Impact par pression",
             "cumulative": "Cumulatif",
-            "percentage-of-total": "% du total",
-            "overflow": "Dépassement max, rapport de changement erroné"
+            "percentage-of-total": "% du total"
         },
         "toolbar": {
             "export-csv": "Exporter en tant que CSV",
