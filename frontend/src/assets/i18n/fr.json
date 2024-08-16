@@ -20,25 +20,25 @@
         "location-within-scenario": "Cette zone se superpose au scénario actif.",
         "areas": "Régions",
         "matrix": "Matrice",
-        "no-active-scenario": "Activer un scénario pour effectuer les réglages",
+        "no-active-scenario": "Activer un scénario pour effectuer des réglages",
         "scenariowide-settings": "Paramètres à l'échelle du scénario",
         "no-selected-area": "Aucune région sélectionnée.",
         "reset-preselected": "Réinitialiser",
-        "reset-preselected-description": "Réinitialiser les composants et les pressions sélectionnés à la sélection par défaut, supprimez tous les changements d'intensité pour le scénario actif",
+        "reset-preselected-description": "Réinitialiser les composants/menaces et valeurs d'intensité sélectionnés",
         "selection-overlap": "Impossible de sélectionner des zones superposées",
-        "open-compound-data-list": "Comparaisons composées ({{ count }})",
-        "intensity" : {
+        "open-compound-data-list": "Comparaisons de composés ({{ count }})",
+        "intensity": {
             "ecosystems": "Composante écosystèmes",
-            "pressures": "Pressions",
+            "pressures": "Menaces",
             "override": "Remplacer le paramètre de groupe",
             "select-all": "Tout sélectionner",
             "deselect-all": "Tout désélectionner"
         },
         "confirm-reset": {
             "modal": {
-                "header": "Confirmer réinitialisation",
-                "message": "Voulez-vous réinitialiser les composants et les pressions sélectionnés à la sélection par défaut?",
-                "message-scenario": "Voulez-vous réinitialiser les composants et les pressions sélectionnés à la sélection par défaut, supprimez tous les changements d'intensité pour le scénario actif ({{ scenario }})?",
+                "header": "Confirmer la réinitialisation",
+                "message": "Voulez-vous réinitialiser les composants et les menaces sélectionnés à la sélection par défaut?",
+                "message-scenario": "Voulez-vous réinitialiser les composants et les menaces sélectionnés et toute modification d'intensité dans le scénario actif ({{ scenario }})? ",
                 "cancel": "Annuler",
                 "confirm": "Réinitialiser"
             }
@@ -46,10 +46,10 @@
         "split-area": {
             "modal": {
                 "header": "Outil de zonage différentiel",
-                "message": "Sélectionnez les sections à enregistrer en tant que nouvelles zones.",
+                "message": "Sélectionnez les sections à enregistrer en tant que nouvelles régions.",
                 "message-single": "Confirmez pour enregistrer cette section en tant que nouvelle région.",
                 "confirm": "Enregistrer les zones sélectionnées",
-                "confirm-single": "Enregistré cette section",
+                "confirm-single": "Enregistrer dans \"Zones créées par l'utilisateur\"",
                 "meta-description": "Enregistré comme:"
             }
         },
@@ -77,7 +77,7 @@
             "remove-finished": "Masquer le calcul par lots terminé",
             "cancelled-run": {
                 "title": "Calcul par lots annulé",
-                "message": "Le calcul par lots a été annulé. Les résultats des calculs terminés sont disponibles sous 'Résultat précédent'"
+                "message": "Le calcul par lots a été annulé. Les résultats des calculs terminés sont disponible dans l'onglet historique."
             }
         },
         "editor": {
@@ -85,7 +85,7 @@
             "areas": {
                 "title": "Zones de scénario",
                 "remove": {
-                    "button" : "Supprimer la zone",
+                    "button": "Supprimer la zone",
                     "label": "Supprimer cette zone du scénario actuel",
                     "modal": {
                         "title": "Supprimer la zone du scénario",
@@ -96,28 +96,28 @@
                 },
                 "specific-settings": "Des valeurs spécifiques ont été définies pour cette zone:\n{{ feature-changes }}",
                 "loading-matrices": "Chargement des matrices de sensibilité",
-                "add-scenario-label": "Ajouter des zones sélectionnées au scénario",
-                "add-scenario-label-single": "Ajouter {{ area }} au scénario",
-                "select-area-first-label": "Sélectionnez d'abord une zone."
+                "add-scenario-label": "Ajouter les zones sélectionnées au scénario actif",
+                "add-scenario-label-single": "Ajouter {{ area }} au scénario actif",
+                "select-area-first-label": "Commencez par sélectionner une zone"
             },
             "split-scenario-settings": {
                 "title": "Actions multi-zones",
-                "detail": "Générer un nouveau scénario pour chaque zone incluse dans le scénario en cours, ou lancez un \"calcul par lots\" sur les zones incluses. Notez que cette dernière action ne génère pas de nouveaux scénarios",
-                "set-batch-name": "Nom du calcul par lots",
-                "apply-scenario-changes": "Dupliquer les paramètres d'intensité du scénario",
+                "detail": "Générer un nouveau scénario pour chaque zone incluse dans le scénario en cours, ou exécutez un calcul par lots sur les zones incluses individuellement. Notez que cette dernière action ne générera pas de nouveaux scénarios.",
+                "set-batch-name": "Nom du lot à utiliser pour les scénarios générés",
+                "apply-scenario-changes": "Appliquer les changements d’intensité au niveau du scénario",
                 "apply-area-changes": "Appliquer les paramètres spécifiques à la zone aux scénarios/calculs correspondants",
-                "enter-batch-mode": "Entrer en mode de sélection par lots (l'action \"Générer\" uniquement)",
+                "enter-batch-mode": "Entrer en mode de sélection par lots (applicable uniquement à l'action \"Générer\")",
                 "generate": "Générer",
                 "batch-calculate": "Calculer"
             },
             "set-arbitrary-matrix": {
-                "title": "Déterminer une matrice de sensibilité et la zone de calcul",
-                "detail": "Aucun couplage matriciel par défaut n'a pu être déterminé pour la zone \"{{ areaName }}\".\nAfin d'analyser la zone, une matrice de sensibilité arbitraire et une zone d'aménagement maritime doivent d'abord être sélectionnées.",
+                "title": "Définir la matrice de sensibilité et la zone de calcul",
+                "detail": "Aucun couplage matriciel par défaut n'a pu être déterminé pour la zone \"{{ areaName }}\". Pour permettre l'inclusion de cette zone dans un calcul, une matrice de sensibilité arbitraire et une zone PSM correspondante doivent d'abord être définies",
                 "caution": "Veuillez noter que si vous annulez cette action, la zone sera exclue du scénario.",
                 "calculation-area": "Zone de calcul",
                 "select-matrix-placeholder": "Sélectionnez une matrice de sensibilité",
                 "select-area-placeholder": "Sélectionnez une zone pour normaliser les valeurs",
-                "set-matrix-and-normalization": "Utiliser cette matrice et zone"
+                "set-matrix-and-normalization": "Définir la matrice et la normalisation"
             },
             "operation": {
                 "title": "Algorithme",
@@ -132,7 +132,7 @@
                             "title": "Domaine de l'indice de rareté",
                             "description": "Calculer les coefficients de rareté en fonction de:",
                             "GLOBAL": "L'étendue de la grille de données",
-                            "LOCAL": "L'étendue de la grille du scénario."
+                            "LOCAL": "Étendue de la zone calculée"
                         }
                     }
                 }
@@ -167,9 +167,9 @@
                     "close": "Fermer",
                     "save": "Enregistrer la matrice",
                     "save-as": "Enregistrer en tant que nouvelle matrice",
-                    "name-exists": "Ne peut pas enregistrer.\nLe nom de matrice spécifié existe déjà.",
-                    "immutable-note": "La matrice \"{{ immutableName }}\" est immuable.",
-                    "save-as-tip": "Modifiez le nom de la matrice pour permettre l'enregistrement en tant que nouvelle",
+                    "name-exists": "Ne peut pas enregistrer.\nLe nom de matrice spécifié  (\"{{ takenName }}\")  existe déjà.",
+                    "immutable-note": "La matrice \"{{ immutableName }}\" est en lecture seule.",
+                    "save-as-tip": "Modifiez le nom de la matrice pour permettre l'enregistrement en tant que nouvelle matrice",
                     "confirm-delete": {
                         "header": "Supprimer cette matrice",
                         "message": "Confirmez la suppression de la matrice de sensibilité \"{{ matrixToDelete }}\".<br>Cette action ne peut pas être annulée.",
@@ -189,7 +189,7 @@
                 "title": "Palette de couleurs",
                 "description": "Définir la valeur maximale en tant que:",
                 "area": "Valeur maximale dans la zone de calcul",
-                "domain": "Normalisé au {{ ordinalPercentileValue }} centile dans la zone MSP",
+                "domain": " {{ ordinalPercentileValue }} percentile dans la zone PSM",
                 "mean-plus-stddev": "Moyenne + \nmultiple de l'écart type:",
                 "custom": "Valeur définie par l'utilisateur:",
                 "custom-value": "Valeur"
@@ -197,7 +197,7 @@
             "changes": {
                 "title": "Changements de scénario",
                 "no-changes": "Aucun modifications",
-                "make-changes-hint": "Modifier les paramètres sous les onglets composantes écosystème ou pressions.",
+                "make-changes-hint": "Modifier les paramètres sous les onglets composantes écosystème ou menaces.",
                 "clear-change": "Effacer les modifications",
                 "units": "unités",
                 "collapse": "Cacher les modifications",
@@ -212,24 +212,24 @@
                 "title": "Vue d'ensemble des modifications de scénario",
                 "show-overview": "Afficher une vue d'ensemble de tous les changements",
                 "global-changes": "Modifications générales",
-                "show-all": "Afficher toutes",
+                "show-all": "Afficher tout",
                 "edit-value": "Modifier cette valeur",
                 "confirm-change": "Confirmer la modification",
-                "discard-change": "Ignorer la modification",
+                "discard-change": "Annuler la modification",
                 "relative-label": "Pourcentage",
                 "absolute-label": "Constante",
                 "close": "Fermer"
             },
             "area-changes": {
-                "title": "Modifications spécifiques à la zone"
+                "title": "Modifications de la zone de scénario"
             },
-            "transfer-changes" : {
+            "transfer-changes": {
                 "title": "Transférer des modifications",
-                "tooltip": "Transférer des modifications à partir d'un scénario ou d'une zone",
+                "tooltip": "Transférer les modifications d'un scénario ou d'une zone de scénario existant",
                 "use-scenario-wide": "Utiliser les modifications à l'échelle du scénario",
                 "select-scenario": "Sélectionnez un scénario",
-                "select-scenario-detail": "Sélectionnez un scénario à partir duquel transférer les modifications",
-                "area-changes": "Zones de scénario avec modifications",
+                "select-scenario-detail": "Spécifier un scénario ou une zone à partir duquel transférer les modifications",
+                "area-changes": "Zones de scénario avec modifications disponibles",
                 "overwrite": "Remplacer les modifications (sinon les modifications sélectionnées sont ajoutées)"
             },
             "copy-scenario": {
@@ -237,13 +237,13 @@
                 "title": "Configurer la copie du scénario",
                 "new-scenario-name": "Nom du nouveau scénario",
                 "copy-specifier": "{{ scenario }} (copie)",
-                "include-scenario-changes": "Inclure les modifications globales de scénario",
-                "area-changes-to-include": "Sélectionnez les modifications de zone à inclure dans le scénario copié",
+                "include-scenario-changes": "Inclure les modifications au niveau du scénario",
+                "area-changes-to-include": "Sélectionnez la zone qui change à refléter dans le scénario copié",
                 "areas-without-changes": "Ces zones du scénario manquent de changements spécifiques: {{ areas-list }}",
                 "create-copy": "Copier",
                 "cancel": "Annuler"
             },
-            "select-area-message": "Sélectionnez une zone de calcul. Commencez par sélectionner une zone, puis modifiez les valeurs des composantes écosystèmes ou pressions dans le panel de gauche.",
+            "select-area-message": "Sélectionnez une zone de calcul. Commencez par sélectionner une zone, puis modifiez les valeurs des composantes écosystèmes ou menaces dans le panel de gauche.",
             "fetching-matrices": "Chargement des matrices de sensibilité...",
             "map-layer": "Couche de données",
             "list": {
@@ -262,15 +262,15 @@
                 "more-areas": "+ {{ more }} zones supplémentaires ..",
                 "filter-hint": "Filtrer les scénarios par nom",
                 "select-all-for-batch": "Tout sélectionner",
-                "select-all-for-batch-filtered": "Sélectionner les visibles",
+                "select-all-for-batch-filtered": "Sélectionnez visible",
                 "deselect-all-for-batch": "Tout désélectionner",
                 "none-selected": "Aucun scénario sélectionné",
                 "delete-selected": "Supprimer les scénarios sélectionnés",
                 "batch-tools": {
                     "enter-batch-mode": "Entrer en mode de sélection par lots",
                     "exit-batch-mode": "Quitter le mode de sélection par lots",
-                    "batch-too-small": "Au moins deux scénarios requis",
-                    "run-batch": "Exécuter le calcul par lots"
+                    "batch-too-small": "Sélectionner au moins deux scénarios ",
+                    "run-batch": "Calculer par lots les scénarios sélectionnés"
                 }
             },
             "clear": "Effacer",
@@ -292,14 +292,14 @@
                 "include-coast": "Inclure la côte"
             },
             "select-intersection": {
-                "header": "Couplages ambigus aux matrices de sensibilité",
-                "message": "La zone sélectionnée contient un couplage matriciel par défaut ambigu.<br>Choisissez les subdivisions à inclure dans le scénario parmi les suggestions correspondant à chaque matrice par défaut.",
+                "header": "Couplages de matrices par défaut multiples",
+                "message": "La zone sélectionnée présente des couplages de matrices standards ambigus.\nVous trouverez ci-dessous des suggestions de divisions de zone valides correspondant à chaque matrice standard.\nChoisissez celles que vous souhaitez inclure dans le scénario.",
                 "default-matrix": "Matrice par défaut pour cette zone:",
-                "confirm-selection": "Analyser les zones sélectionnées"
+                "confirm-selection": "Utiliser les zones sélectionnées"
             },
             "calculate": "Calculer",
             "unsaved-changes": "Modifications non enregistrées",
-            "save-changes": "Enregistrez les modifications maintenant",
+            "save-changes": "Enregistrez les modifications",
             "saved-by-user": "Modifications enregistrées",
             "saved-by-user-time": "Dernière sauvegarde: {{ timestamp }}"
         },
@@ -309,7 +309,7 @@
             "close": "Fermer",
             "theme": "groupe",
             "ecosystem": "écosystème",
-            "pressure": "pression",
+            "pressure": "menace",
             "no-info": "Métadonnée manquante.",
             "properties": {
                 "accessuserestrictions": "Restrictions d'accès et d'utilisation",
@@ -324,8 +324,8 @@
                 "limitationsforsymphony": "Limites connues",
                 "lineage": "Origine",
                 "maintenanceinformation": "Informations d'entretien",
-                "mapacknowledgement": "",
-                "marineplanarea": "Zone MSP",
+                "mapacknowledgement": "Reconnaissance de la carte",
+                "marineplanarea": "Zone d'aménagement de l'espace marin",
                 "metadatadate": "Date",
                 "metadataemail": "Adresse e-mail",
                 "metadatafilename": "Nom de fichier",
@@ -385,8 +385,8 @@
         },
         "pressure": {
             "search": {
-                "label": "Chercher une pression",
-                "placeholder": "Chercher une pression"
+                "label": "Chercher une menace",
+                "placeholder": "Chercher une menace"
             }
         },
         "history": {
@@ -396,7 +396,7 @@
             "previous-calculations": "Résultat précédent",
             "placeholder": "Aucun résultat calculé",
             "show-report": "Ouvrir le rapport de calcul “{{ calculationName }}”",
-            "delete": "Supprimer le résultat “{{ calculationName }}”",
+            "delete": "Supprimer le résultat de calcul enregistré “{{ calculationName }}”",
             "filter-hint": "Filtrer les calculs par nom",
             "show-result": "Afficher ce résultat en mode carte",
             "hide-result": "Masquer ce résultat en mode carte",
@@ -404,21 +404,21 @@
             "purged-result": "Les données de ce résultat ont été supprimées\nLe chargement peut prendre un peu plus de temps car le résultat doit être recalculé.",
             "edit-name": {
                 "label": "Renommer",
-                "header": "Modifier le nom de la calcul"
+                "header": "Entrez un nouveau nom pour le calcul"
             },
-            "delete-modal" : {
+            "delete-modal": {
                 "header": "Supprimer résultat",
-                "message": "Confirmer la suppression du résultat: <em>“{{ calculationName }}”</em>",
-                "header-multiple": "Supprimer les résultats",
+                "message": "Confirmer la suppression du résultat de calcul précédemment enregistré: <em>“{{ calculationName }}”</em>",
+                "header-multiple": "Supprimer les calculs ",
                 "message-multiple": "Confirmer la suppression de <strong>{{ count }}</strong> résultats",
-                "message-single": "Confirmer la suppression du résultat",
+                "message-single": "Confirmer la suppression de ce résultat de calcul ?",
                 "cancel": "Annuler",
                 "confirm": "Supprimer"
             },
             "generate-comparison-modal": {
                 "header": "Générer une comparaison composée",
-                "message": "Entrez un titre pour la comparaison composée.",
-                "placeholder": "Entrez un titre",
+                "message": "Définissez un titre pour le résultat de la comparaison composée.",
+                "placeholder": "Définissez un titre ",
                 "calculate": "Calculer"
             },
             "multi-mode": {
@@ -431,19 +431,19 @@
             "title": "Comparez les scénarios",
             "compare": "Comparez les résultats",
             "base-scenario": "Résultat du scénario de référence",
-            "implicit-baseline": "Référence implicite",
-            "explicit-baseline": "Référence explicite",
+            "implicit-baseline": "Valeur de base implicite",
+            "explicit-baseline": "Sélectionnez un calcul",
             "include-unchanged": "Inclure les scénarios inchangés",
             "reverse-projected": "Inverser l'ordre de comparaison",
             "what-if-scenario": "Résultat du scénario anticipé",
-            "select-calculation": "Choisissez un resultat de calcul",
-            "select-base-calculation-first": "Choisissez un scénario de référence avant",
+            "select-calculation": "Sélectionnez un calcul",
+            "select-base-calculation-first": "Sélectionnez d'abord le calcul",
             "no-matching-calculations": "Aucun résultat correspondant",
-            "base-scenario-suggestion": "",
-            "what-if-scenario-suggestion": "",
+            "base-scenario-suggestion": "(généralement votre analyse de base)",
+            "what-if-scenario-suggestion": "(généralement votre nouvelle analyse de scénario)",
             "select-scale": "Sélectionnez l'échelle de couleur",
             "scale-constant": "Maximum constant",
-            "scale-dynamic": "Maximum dynamique"
+            "scale-dynamic": "Dynamique maximale"
         },
         "user-area": {
             "create": {
@@ -456,7 +456,7 @@
                 },
                 "invalid-area" : {
                     "title": "Zone invalide",
-                    "message": "Les zones doivent chevaucher au moins une autre zone avec un couplage matriciel par défaut"
+                    "message": "Les zones définies par l'utilisateur doivent chevaucher au moins une autre zone ayant un couplage de matrice par défaut"
                 }
             },
             "upload": {
@@ -467,7 +467,7 @@
                     "notice": {
                         "WGS84-reprojection": "La projection des coordonnées sera transformée vers <em>EPSG:4326 (WGS 84)",
                         "multi-layer-pre": "Le fichier GeoPackage contient ces zones:",
-                        "multi-layer-all": "Toutes seront importé si vous confirmez."
+                        "multi-layer-all": "Ils seront importés en tant que zones distinctes."
                     },
                     "import": "Confirmer",
                     "cancel": "Annuler"
@@ -504,9 +504,9 @@
         },
         "color-scale": {
             "result": "Impact cumulé",
-            "comparison": "Différence de pression relative",
+            "comparison": "Différence de menace relative",
             "ecosystem": "Valeur écosystème",
-            "pressure": "Valeur pression",
+            "pressure": "Valeur menace",
             "reliability": {
                 "title": "Fiabilité",
                 "low": "Fiabilité faible",
@@ -515,22 +515,22 @@
         },
         "area-selection-hint": {
             "emphasis": "Sélectionner / désélectionner plusieurs zones ",
-            "detail": "par {{ ctrlButton }} + clic."
+            "detail": "en utilisant {{ ctrlButton }} + clic."
         },
         "special-actions-hint": {
-            "emphasis": "Partager ou fusionner zone",
-            "detail": "{{ altButton }} + clic dans la vue de la carte pour séparer par section, {{ altButton }} + Shift + clic pour fusionner"
+            "emphasis": "Couper ou fusionner zone",
+            "detail": "{{ altButton }} + Cliquez dans la vue cartographique pour diviser par intersection, {{ altButton }} + Maj + clic pour fusionner."
         },
-        "merge-areas-hint" : {
+        "merge-areas-hint": {
             "emphasis": "Fusionner les zones",
-            "detail": "{{ altButton }} + Shift + clic dans la vue de la carte pour fusionner la sélection."
+            "detail": "{{ altButton }} + Maj + clic sur la dernière zone de la carte pour fusionner la sélection."
         },
         "compound-data-list": {
-            "title": "Comparaisons composées",
-            "compound-comparison-data": "Données de comparaison composée",
+            "title": "Comparaisons de composés",
+            "compound-comparison-data": "Données de comparaison de composé",
             "calculation-basis-info": "La comparaison des valeurs est basée sur les calculs suivants",
             "more": "de plus",
-            "delete": "Supprimer ca comparaison composée",
+            "delete": "Supprimer la comparaison composée",
             "none-selected": "Aucune comparaison composée sélectionnée.",
             "delete-selected": "Supprimer les comparaison composées sélectionnées",
             "download": {
@@ -541,7 +541,7 @@
                     "ods": "En tant que feuille de calcul (ODS)"
                 },
                 "include-unchanged": "Inclure les valeurs inchangées",
-                "include-combined-dataset": "Inclure des données combinées",
+                "include-combined-dataset": "Inclure l'ensemble de données combiné",
                 "confirm": "Télécharger"
             },
             "filter-hint": "Filtrer la liste par nom",
@@ -550,7 +550,7 @@
                 "header-multiple": "Supprimer les comparaisons composées",
                 "message": "Confirmer la suppression de la comparaison composée: <em>“{{ comparisonName }}”</em>",
                 "message-multiple": "Confirmer la suppression de <strong>{{ count }}</strong> comparaisons composées",
-                "message-single": "Confirmer la suppression de la comparaison composée sélectionnée"
+                "message-single": "Confirmer la suppression de cette comparaison composée ?"
             },
             "terms": {
                 "total": "Total",
@@ -558,14 +558,14 @@
                 "baseline": "Reférence",
                 "difference": "Différence",
                 "pixels": "Nombre de pixels",
-                "non-planar": "Projection non planaire",
+                "non-planar": "Projection non plane",
                 "scenarioTitle": "Nom du scénario",
                 "scenario": "Scénario",
-                "combined": "Données combinées"
+                "combined": "Ensemble de données combinées"
             }
         },
         "area-options": {
-            "get-shapefile": "Télécharger des fichiers de forme (.zip)"
+            "get-shapefile": "Télécharger des fichiers de formes shapefile (.zip)"
         }
     },
     "controls": {
@@ -647,7 +647,7 @@
             "calculated-area": "Surface",
             "km2": "km²",
             "no-area": "N/A",
-            "no-area-desc": "Étendue indéterminable",
+            "no-area-desc": "étendue ne peut pas être mesurée",
             "normalization": {
                 "title": "Palette de couleurs",
                 "domain": "{{ ordinalPercentileValue }} centile",
@@ -673,20 +673,20 @@
         },
         "highest-impact": {
             "ecocomponent": "Composante écosystèmes avec l'impact le plus important",
-            "pressure": "Pressions avec l'impact le plus important"
+            "pressure": "Menaces avec l'impact le plus important"
         },
         "sankey": {
             "sankey-single": {
                 "title": "Diagramme Sankey",
-                "description": "Ce diagramme Sankey montre la relation entre les pressions et les valeurs des composantes écosystème. L'épaisseur des flèches est proportionnelle à l'importance des pressions et à leur impact sur les composantes écosystème."
+                "description": "Ce diagramme Sankey montre la relation entre les menaces et les valeurs des composantes écosystème. L'épaisseur des flèches est proportionnelle à l'importance des menaces et à leur impact sur les composantes écosystème."
             },
             "sankey-cmp-positive": {
                 "title": "Diagramme Sankey (augmentation)",
-                "description": "Ce diagramme de Sankey montre les relations entre les charges dont l'impact augmente sur différentes valeurs naturelles dans le scénario anticipé, par rapport au scénario de référence. L'épaisseur des flèches est proportionnelle à l'augmentation de chaque pression entre les deux scénarios spécifiés, par rapport à son impact sur les écosystèmes. Les valeurs inférieures à {{ chartThreshold }} ne sont pas incluses dans le diagramme."
+                "description": "Ce diagramme de Sankey montre la relation entre les menaces dont l'impact augmente sur différentes valeurs naturelles dans le scénario B, par rapport au scénario A. L'épaisseur des flèches est proportionnelle à l'augmentation de chaque menace entre les deux scénarios spécifiés, par rapport aux valeurs naturelles affectées. Les valeurs inférieures à {{ chartThreshold }} ne sont pas incluses dans le diagramme"
             },
             "sankey-cmp-negative": {
                 "title": "Diagramme Sankey (diminution)",
-                "description": "Ce diagramme de Sankey montre les relations entre les charges dont l'impact diminue sur différentes valeurs naturelles dans le scénario anticipé, par rapport au scénario de référence. L'épaisseur des flèches est proportionnelle à la diminution de chaque pression entre les deux scénarios spécifiés, par rapport à son impact sur les écosystèmes. Les valeurs inférieures à {{ chartThreshold }} ne sont pas incluses dans le diagramme."
+                "description": "Ce diagramme de Sankey montre la relation entre les menaces dont l'impact diminue sur différentes valeurs naturelles dans le scénario B, par rapport au scénario A. L'épaisseur des flèches est proportionnelle à la quantité d'atténuation de chaque menace entre les deux scénarios spécifiés, par rapport aux valeurs naturelles affectées. Les valeurs inférieures à {{ chartThreshold }} ne sont pas incluses dans le diagramme."
             }
         },
         "scenario-changes": {
@@ -694,13 +694,13 @@
             "percent-change-with": "Variation de <strong>{{percent}}%</strong>",
             "constant-offset-with": "Impact équivalent à <strong>{{offset}}</strong> unités",
             "and": "et",
-            "base-changes": "Modifications à l'échelle du scénario",
-            "area-changes": "Modifications spécifiques à la zone",
+            "base-changes": "Changements courants",
+            "area-changes": "Modifications spécifiques à une zone",
             "no-changes": "Aucun modifications"
         },
         "impact-table": {
             "ecoComponent": "Impact par composante écosystème",
-            "pressure": "Impact par pression",
+            "pressure": "Impact par menace",
             "cumulative": "Cumulatif",
             "percentage-of-total": "% du total"
         },
@@ -722,15 +722,15 @@
     },
     "api-messages": {
         "areas": {
-            "import-success" : {
+            "import-success": {
                 "title": "L'importation a réussi",
-                "message-single" : "Zone importée: \"{{ topLayerName }}\"",
-                "message-multi" : "Importé {{ layersCount }} zones"
+                "message-single": "Zone importée: \"{{ topLayerName }}\"",
+                "message-multi": "Importé {{ layersCount }} zones"
             }
         }
     },
     "list-sorting-options" : {
-        "indicate-order" : "Indiquer l'ordre comme {{ orderHint }}",
+        "indicate-order" : "Indiquer la commande comme {{ orderHint }}",
         "AlphaAsc" : "alphabétique croissant (A-Z)",
         "AlphaDesc" : "alphabétique décroissant (Z-A)",
         "DateAsc" : "croissant par date (les plus anciens en premier)",
