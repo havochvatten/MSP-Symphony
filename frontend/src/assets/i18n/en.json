@@ -401,7 +401,7 @@
             "show-result": "Show result in map view",
             "hide-result": "Hide result in map view",
             "visible-result": "Result is currently visible in map view",
-            "purged-result": "Data for this result has been purged\nThis will take a little longer to load because the result is being recalculated.",
+            "purged-result": "Data for this result has been purged\nThis will take a little longer to load because the result needs to be recalculated first.",
             "edit-name": {
                 "label": "Rename",
                 "header": "Enter a new name for the calculation"
