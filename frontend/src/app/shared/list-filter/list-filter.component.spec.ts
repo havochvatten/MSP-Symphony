@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ListFilterComponent } from './list-filter.component';
 import { TranslationSetupModule } from "@src/app/app-translation-setup.module";
 import { provideMockStore } from "@ngrx/store/testing";
+import { SharedModule } from "@shared/shared.module";
 
 describe('ListFilterComponent', () => {
   let component: ListFilterComponent;
@@ -10,7 +11,10 @@ describe('ListFilterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports:[TranslationSetupModule],
+      imports:[
+        SharedModule,
+        TranslationSetupModule
+      ],
       declarations: [ ListFilterComponent ],
       providers: [provideMockStore({ initialState : { user: {} } })]
     })

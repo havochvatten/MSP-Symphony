@@ -3,6 +3,7 @@ import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { signal } from '@angular/core';
 
 import { MultiActionButtonComponent } from './multi-action-button.component';
+import { SharedModule } from "@shared/shared.module";
 
 describe('MultiActionButtonComponent', () => {
   let component: MultiActionButtonComponent;
@@ -10,7 +11,10 @@ describe('MultiActionButtonComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ TranslateModule.forRoot() ],
+      imports: [
+        SharedModule,
+        TranslateModule.forRoot()
+      ],
       providers:[
         TranslateService,
       ],
@@ -18,6 +22,7 @@ describe('MultiActionButtonComponent', () => {
     });
     fixture = TestBed.createComponent(MultiActionButtonComponent);
     component = fixture.componentInstance;
+    component.multiActionIcon = 'cross';
     component.disabledPredicate = () => false;
     component.isMultiMode = signal(false);
     fixture.detectChanges();
