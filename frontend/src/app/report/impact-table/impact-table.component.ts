@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { BandGroup } from '@data/metadata/metadata.interfaces';
+import { Band, BandGroup } from '@data/metadata/metadata.interfaces';
 import { formatPercentage } from '@src/app/shared/common.util';
 
 @Component({
@@ -16,6 +16,10 @@ export class ImpactTableComponent {
 
   isExcluded(bandNumber: number): boolean {
     return this.scenarioImpacts.every(impacts => !(bandNumber in impacts));
+  }
+
+  groupExcluded(bandGroup: BandGroup): boolean {
+    return bandGroup.bands.every(b => this.isExcluded(b.bandNumber));
   }
 
   formatPercentage(value: number, ersatz: string, relative: boolean) {
