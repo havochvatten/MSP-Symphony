@@ -7,7 +7,7 @@
     "build": "ng build",
     "prod-build": "ng build --configuration production",
     "test": "ng test --code-coverage=true",
-    "test-headless": "ng test --watch=false --code-coverage=true --browsers=ChromiumHeadless",
+    "test-headless": "ng test --watch=false --code-coverage=true --browsers=ChromeCI",
     "test-headless-win": "ng test --watch=false --code-coverage=true --browsers=ChromeHeadless",
     "lint": "ng lint",
     "e2e": "ng e2e",
@@ -58,6 +58,7 @@
     "ol": "^9.2.2",
     "proj4": "^2.11.0",
     "rxjs": "^7.8.1",
+    "symphony-fe": "file:",
     "tslib": "^2.6.2",
     "uuid": "^9.0.1",
     "zone.js": "^0.14.6"
