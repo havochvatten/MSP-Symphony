@@ -27,7 +27,7 @@
         <version.jackson>2.12.6</version.jackson>
         <version.slf4j>1.7.35</version.slf4j>
         <version.javax.json.api>1.1.4</version.javax.json.api>
-        <version.resteasy>4.7.7.Final</version.resteasy>
+        <version.resteasy>4.7.10.Final</version.resteasy>
         <version.resteasy-jaxrs>3.15.6.Final</version.resteasy-jaxrs>
         <version.java.lang3>3.9</version.java.lang3>
         <version.jts>1.18.2</version.jts> <!--Sync with GeoTools JTS dependency -->
