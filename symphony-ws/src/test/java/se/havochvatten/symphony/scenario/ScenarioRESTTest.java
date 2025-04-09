@@ -148,7 +148,8 @@ public class ScenarioRESTTest extends RESTTest {
                 auth().
                 preemptive().
                 basic(getUsername(), getPassword()).
-                delete(endpoint("/scenario/?ids=") + id);
+                request().
+                delete(endpoint("/scenario/") + id);
     }
     public static ScenarioAreaDto getTestArea(String areaCode) throws IOException {
         return mapper.readValue(
