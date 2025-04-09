@@ -2,9 +2,7 @@ package se.havochvatten.symphony.entity;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -33,20 +31,16 @@ import se.havochvatten.symphony.scenario.BandChangeEntity;
 
 @Entity
 @Table(name = "scenarioarea")
-@NamedQueries({
-    @NamedQuery(name = "ScenarioArea.findMany",
-        query = "SELECT s FROM ScenarioArea s WHERE id IN :ids")
-})
-@NamedNativeQueries({
-    @NamedNativeQuery(name = "ScenarioArea.setSinglePolygon",
-        query = "UPDATE scenarioarea SET polygon = " +
-                    "ST_Multi(ST_GeomFromGeoJSON(cast(cast(feature as json)->>'geometry' as json))) " +
-                    "WHERE id = :id"),
-    @NamedNativeQuery(name = "ScenarioAreas.setPolygon",
-        query = "UPDATE scenarioarea SET polygon = " +
-                    "ST_Multi(ST_GeomFromGeoJSON(cast(cast(feature as json)->>'geometry' as json))) " +
-                    "WHERE scenario = :scenarioId")
-})
+@NamedQuery(name = "ScenarioArea.findMany",
+    query = "SELECT s FROM ScenarioArea s WHERE id IN :ids")
+@NamedNativeQuery(name = "ScenarioArea.setSinglePolygon",
+    query = "UPDATE scenarioarea SET polygon = " +
+                "ST_Multi(ST_GeomFromGeoJSON(cast(cast(feature as json)->>'geometry' as json))) " +
+                "WHERE id = :id")
+@NamedNativeQuery(name = "ScenarioAreas.setPolygon",
+    query = "UPDATE scenarioarea SET polygon = " +
+                "ST_Multi(ST_GeomFromGeoJSON(cast(cast(feature as json)->>'geometry' as json))) " +
+                "WHERE scenario = :scenarioId")
 public class ScenarioArea implements BandChangeEntity {
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -97,7 +91,7 @@ public class ScenarioArea implements BandChangeEntity {
 
     @JsonIgnore()
     @Column(name = "polygon", columnDefinition = "geometry(MultiPolygon,4326)")
-    public transient MultiPolygon polygon;
+    public MultiPolygon polygon;
 
     public ScenarioArea() {
 

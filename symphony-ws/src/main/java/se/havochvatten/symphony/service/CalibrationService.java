@@ -25,7 +25,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.servlet.http.HttpServletRequest;
 
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
@@ -130,7 +129,7 @@ public class CalibrationService {
             .collect(Collectors.toMap(bandTitles::get, i -> Double.valueOf(values[i])));
     }
 
-    public double calcPercentileNormalizationValue(HttpServletRequest req, Scenario scenario)
+    public double calcPercentileNormalizationValue(Scenario scenario)
         throws FactoryException, SymphonyStandardAppException, TransformException, IOException {
         CalculationResult result = calcService.calculateScenarioImpact(scenario, false);
         var coverage = result.getCoverage();

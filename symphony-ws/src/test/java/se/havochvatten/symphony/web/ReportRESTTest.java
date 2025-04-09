@@ -1,6 +1,5 @@
 package se.havochvatten.symphony.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.junit.AfterClass;
@@ -21,8 +20,6 @@ public class ReportRESTTest extends RESTTest {
     static String sessionCookieValue;
     private static int testScenarioId;
     static int reportId;
-
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     @BeforeClass
     public static void doCalculation() throws IOException {

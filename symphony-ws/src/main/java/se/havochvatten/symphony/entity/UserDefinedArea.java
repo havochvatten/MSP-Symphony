@@ -9,11 +9,9 @@ import java.io.Serializable;
 @Entity
 @Table(name = "userdefarea")
 @XmlRootElement
-@NamedQueries({
-        @NamedQuery(name = "UserDefinedArea.findAll", query = "SELECT u FROM UserDefinedArea u"),
-        @NamedQuery(name = "UserDefinedArea.findAllByOwner",
-				query = "SELECT u FROM UserDefinedArea u WHERE u.owner = :owner")
-})
+@NamedQuery(name = "UserDefinedArea.findAll", query = "SELECT u FROM UserDefinedArea u")
+@NamedQuery(name = "UserDefinedArea.findAllByOwner",
+        query = "SELECT u FROM UserDefinedArea u WHERE u.owner = :owner")
 public class UserDefinedArea implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -95,14 +93,10 @@ public class UserDefinedArea implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof UserDefinedArea)) {
+        if (!(object instanceof UserDefinedArea other)) {
             return false;
         }
-        UserDefinedArea other = (UserDefinedArea) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override

@@ -18,7 +18,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Stateless
 @Api(value = "/calculationarea",
@@ -41,7 +40,7 @@ public class CalculationAreaREST {
             return Response.ok(resp
                             .stream()
                             .map(CalculationAreaMapper::mapToDto)
-                            .collect(Collectors.toUnmodifiableList()))
+                            .toList())
                     .build();
         } else
             return Response.noContent().build();
@@ -70,7 +69,7 @@ public class CalculationAreaREST {
             return Response.ok(resp
                             .stream()
                             .map(CalculationAreaMapper::mapToSparseDto)
-                            .collect(Collectors.toUnmodifiableList()))
+                            .toList())
                     .build();
         } else
             return Response.noContent().build();

@@ -1,6 +1,5 @@
 package se.havochvatten.symphony.entity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vladmihalcea.hibernate.type.array.IntArrayType;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import org.hibernate.annotations.*;
@@ -17,10 +16,9 @@ import java.util.Date;
 import java.util.Map;
 
 @Entity
-@TypeDefs({
-    @TypeDef(name = "int-array", typeClass = IntArrayType.class),
-    @TypeDef(name = "json", typeClass = JsonBinaryType.class)
-})
+
+@TypeDef(name = "int-array", typeClass = IntArrayType.class)
+@TypeDef(name = "json", typeClass = JsonBinaryType.class)
 @Table(name = "compoundcomparison", schema = "symphony")
 //@NamedQuery(name = "CompoundComparison.findByOwner",
 //    query = "SELECT c FROM CompoundComparison c WHERE c.cmpOwner = :username")
@@ -47,8 +45,6 @@ import java.util.Map;
                 "ORDER BY c.id DESC",
     resultSetMapping = "CompoundCmpSliceMapping" )
 public class CompoundComparison {
-
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

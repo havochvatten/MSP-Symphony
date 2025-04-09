@@ -135,12 +135,12 @@ public class SensMatrixService {
 
 
     private void checkMatrixName(String matrixName, String baselineName, int matrixId, String owner) throws SymphonyStandardAppException {
-        List<SensitivityMatrix> matrices = em.createNamedQuery("SensitivityMatrix.findByMatrixNameAndOwnerAndBaseline")
+        List<SensitivityMatrix> matrices = em.createNamedQuery("SensitivityMatrix.findByMatrixNameAndOwnerAndBaseline", SensitivityMatrix.class)
                 .setParameter("matrixName", matrixName)
                 .setParameter("owner", owner)
                 .setParameter("baseLineName", baselineName)
                 .getResultList();
-        if (matrices.size() > 0 && matrices.get(0).getId() != matrixId) {
+        if (!matrices.isEmpty() && matrices.get(0).getId() != matrixId) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.SENSITIVITY_MATRIX_NAME_ALREADY_EXISTS);
         }
     }

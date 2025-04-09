@@ -28,7 +28,10 @@ import java.nio.file.Paths;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static se.havochvatten.symphony.web.WebUtil.noPrincipalStr;
 
 @Stateless
 @Api(value = "/userdefinedarea",
@@ -36,7 +39,7 @@ import java.util.logging.Logger;
         consumes = MediaType.APPLICATION_JSON)
 @Path("user")
 public class UserREST {
-    private static final Logger LOG = Logger.getLogger(LegendREST.class.getName());
+    private static final Logger LOG = Logger.getLogger(UserREST.class.getName());
     private static final java.nio.file.Path TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
 
     @EJB
@@ -50,7 +53,7 @@ public class UserREST {
     @RolesAllowed("GRP_SYMPHONY")
     public Response findAllByOwner(@Context HttpServletRequest req) throws SymphonyStandardAppException {
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         List<UserDefinedAreaDto> userDefinedAreas =
                 userService.findAllUserDefinedAreasByOwner(req.getUserPrincipal());
@@ -82,7 +85,7 @@ public class UserREST {
     public Response createUserDefinedArea(@Context HttpServletRequest req, @Context UriInfo uriInfo,
                                           UserDefinedAreaDto userDefinedAreaDto) throws SymphonyStandardAppException {
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         userDefinedAreaDto = userService.createUserDefinedArea(req.getUserPrincipal(),
                 userDefinedAreaDto);
@@ -149,7 +152,8 @@ public class UserREST {
 
         AreaImportResponse response;
         try (var pkg = new GeoPackage(pkgFile)) {
-            LOG.info("Importing uploaded GeoPackage "+pkgFile+" for user "+req.getUserPrincipal().getName());
+            LOG.log(Level.INFO,
+                () -> String.format("Importing uploaded GeoPackage %s for user %s", pkgFile ,req.getUserPrincipal().getName()));
             response = userService.importUserDefinedAreaFromPackage(req.getUserPrincipal(), pkg);
         } catch (IOException e) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.GEOPACKAGE_READ_FEATURE_FAILURE);
@@ -174,8 +178,7 @@ public class UserREST {
         for (String filename : contentDisposition) {
             if ((filename.trim().startsWith("filename"))) {
                 String[] name = filename.split("=");
-                String finalFileName = name[1].trim().replaceAll("\"", "");
-                return finalFileName;
+                return name[1].trim().replace("\"", "");
             }
         }
         return null;
@@ -190,7 +193,7 @@ public class UserREST {
     public Response updateUserDefinedArea(@Context HttpServletRequest req, @PathParam("id") Integer id,
                                           UserDefinedAreaDto userDefinedAreaDto) throws SymphonyStandardAppException {
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         userDefinedAreaDto = userService.updateUserDefinedArea(req.getUserPrincipal(),
                 userDefinedAreaDto);
@@ -215,7 +218,7 @@ public class UserREST {
         Principal principal = req.getUserPrincipal();
 
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         try {
             int[] idArray = WebUtil.intArrayParam(ids);
@@ -236,7 +239,7 @@ public class UserREST {
     @RolesAllowed("GRP_SYMPHONY")
     public Response updateUserSettings(@Context HttpServletRequest req, Map<String, Object> settings) {
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         try {
             userService.updateUserSettings(req.getUserPrincipal(), settings);

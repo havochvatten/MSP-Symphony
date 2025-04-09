@@ -1,6 +1,5 @@
 package se.havochvatten.symphony.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import se.havochvatten.symphony.dto.AreaTypeDto;
@@ -34,13 +33,11 @@ public class AreaTypeREST {
 			responseContainer = "List")
     @Produces({MediaType.APPLICATION_JSON})
     @RolesAllowed("GRP_SYMPHONY")
-    public Response findAll() throws JsonProcessingException {
+    public Response findAll() {
         List<AreaTypeDto> dto = new ArrayList<>();
         List<AreaType> areaType = areaTypeService.findAll();
         if (areaType != null) {
-            areaType.stream().forEach(at -> {
-                dto.add(new AreaTypeDto(at));
-            });
+            areaType.forEach(at -> dto.add(new AreaTypeDto(at)));
         }
         return Response.ok(dto).build();
     }

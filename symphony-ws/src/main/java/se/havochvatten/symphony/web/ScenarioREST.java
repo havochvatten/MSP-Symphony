@@ -11,7 +11,6 @@ import se.havochvatten.symphony.scenario.ChangesSelection;
 import se.havochvatten.symphony.scenario.ScenarioCopyOptions;
 import se.havochvatten.symphony.scenario.ScenarioSplitOptions;
 import se.havochvatten.symphony.service.CalcService;
-import se.havochvatten.symphony.calculation.CalcUtil;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
 import se.havochvatten.symphony.entity.CalculationResult;
@@ -24,6 +23,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
+
+import static se.havochvatten.symphony.web.WebUtil.noPrincipalStr;
 
 /**
  * Scenario REST API
@@ -36,6 +38,11 @@ import java.util.List;
 public class ScenarioREST {
     private static final Logger logger = LoggerFactory.getLogger(ScenarioREST.class);
 
+    // should utilize error mapping instead of messages defined locally
+    private static final String notFoundMessage = "Scenario not found";
+    private static final String areaNotFoundMessage = "Scenario area not found";
+    private static final String notAuthorizedMessage = "Not owner of scenario";
+
     @Inject
     ScenarioService service;
 
@@ -44,13 +51,13 @@ public class ScenarioREST {
 
     static void checkAndAuthorizeScenarioOwner(HttpServletRequest req, Scenario scenario) throws NotAuthorizedException {
         if(scenario == null)
-            throw new NotFoundException("Scenario not found");
+            throw new NotFoundException(notFoundMessage);
 
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         if (!req.getUserPrincipal().getName().equals(scenario.getOwner()))
-            throw new NotAuthorizedException("Not owner of scenario");
+            throw new NotAuthorizedException(notAuthorizedMessage);
     }
 
     @GET
@@ -59,7 +66,7 @@ public class ScenarioREST {
     @RolesAllowed("GRP_SYMPHONY")
     public List<ScenarioDto> findAllByOwner(@Context HttpServletRequest req) {
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
         else
             return service.findAllByOwner(req.getUserPrincipal());
     }
@@ -84,7 +91,7 @@ public class ScenarioREST {
     @RolesAllowed("GRP_SYMPHONY")
     public ScenarioDto updateScenario(@Context HttpServletRequest req, ScenarioDto updated) throws NoContentException {
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         var previous = service.findById(updated.id);
         if (previous == null)
@@ -93,13 +100,12 @@ public class ScenarioREST {
         if (req.getUserPrincipal().getName().equals(previous.getOwner())) {
             Scenario scenarioToSave = new Scenario(updated, service);
             if(updated.latestCalculationId != null) {
-                CalculationResult calc = CalcUtil.getCalculationResultFromSessionOrDb(
-                    updated.latestCalculationId, req.getSession(), calcService).orElseThrow(NotFoundException::new);
+                CalculationResult calc = Optional.ofNullable(calcService.getCalculation(updated.latestCalculationId)).orElseThrow(NotFoundException::new);
                 scenarioToSave.setLatestCalculation(calc);
             }
 
             return new ScenarioDto(service.update(scenarioToSave));
-        } else throw new NotAuthorizedException("Not owner of scenario");
+        } else throw new NotAuthorizedException(notAuthorizedMessage);
     }
 
     @GET
@@ -123,7 +129,7 @@ public class ScenarioREST {
     @RolesAllowed("GRP_SYMPHONY")
     public ScenarioAreaDto updateScenarioArea(@Context HttpServletRequest req, ScenarioAreaDto updated) throws NoContentException {
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         var previous = service.findAreaById(updated.id);
         if (previous == null)
@@ -150,7 +156,7 @@ public class ScenarioREST {
     public Response copyScenario(@Context HttpServletRequest req, @PathParam("id") int scenarioId,
                                           ScenarioCopyOptions options) {
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         Scenario scenario = service.findById(scenarioId);
 
@@ -159,7 +165,7 @@ public class ScenarioREST {
             return Response.ok(persistedScenario).build();
         }
         else
-            throw new NotAuthorizedException("Not owner of scenario");
+            throw new NotAuthorizedException(notAuthorizedMessage);
     }
 
     @POST
@@ -171,7 +177,7 @@ public class ScenarioREST {
     public Response splitAndReplaceArea(@Context HttpServletRequest req,
         @PathParam("id") int scenarioId, @PathParam("areaId") int scenarioAreaId, ScenarioAreaDto[] replacementAreas) {
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         Scenario scenario = service.findById(scenarioId);
 
@@ -180,7 +186,7 @@ public class ScenarioREST {
             return Response.ok(new ScenarioDto(updatedScenario)).build();
         }
         else
-            throw new NotAuthorizedException("Not owner of scenario");
+            throw new NotAuthorizedException(notAuthorizedMessage);
 
     }
 
@@ -203,7 +209,7 @@ public class ScenarioREST {
         Principal principal = req.getUserPrincipal();
 
         if (principal == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         int[] idArray = WebUtil.intArrayParam(ids);
 
@@ -226,7 +232,7 @@ public class ScenarioREST {
     @RolesAllowed("GRP_SYMPHONY")
     public Response deleteScenarioArea(@Context HttpServletRequest req, @PathParam("areaId") int areaId) {
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         service.deleteArea(req.getUserPrincipal(), areaId);
         return Response.noContent().build();
@@ -240,14 +246,14 @@ public class ScenarioREST {
                                        @PathParam("id") int scenarioId,
                                        ScenarioAreaDto[] areaDtos) throws JsonProcessingException {
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         Scenario scenario = service.findById(scenarioId);
         if (scenario == null)
-            throw new NotFoundException("Scenario not found");
+            throw new NotFoundException(notFoundMessage);
 
         if (!req.getUserPrincipal().getName().equals(scenario.getOwner()))
-            throw new NotAuthorizedException("Not owner of scenario");
+            throw new NotAuthorizedException(notAuthorizedMessage);
 
         var persistedAreas = service.addAreas(scenario, areaDtos);
         return Response.created(null).entity(persistedAreas).build();
@@ -263,16 +269,16 @@ public class ScenarioREST {
         var principal = req.getUserPrincipal().getName();
 
         if (principal == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         Scenario scenario = service.findById(scenarioId);
         Scenario sourceScenario = service.findById(changesSelection.Id());
 
         if (scenario == null || sourceScenario == null)
-            throw new NotFoundException("Scenario not found");
+            throw new NotFoundException(notFoundMessage);
 
         if (!(principal.equals(scenario.getOwner()) && principal.equals(sourceScenario.getOwner())))
-            throw new NotAuthorizedException("Not owner of scenario");
+            throw new NotAuthorizedException(notAuthorizedMessage);
 
         var persistedScenario = service.transferChanges(scenario, sourceScenario, changesSelection.overwrite());
 
@@ -289,19 +295,19 @@ public class ScenarioREST {
         var principal = req.getUserPrincipal().getName();
 
         if (principal == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         Scenario scenario = service.findById(scenarioId);
         ScenarioArea sourceArea = service.findAreaById(changesSelection.Id());
 
         if (scenario == null)
-            throw new NotFoundException("Scenario not found");
+            throw new NotFoundException(notFoundMessage);
 
         if (sourceArea == null)
-            throw new NotFoundException("Scenario area not found");
+            throw new NotFoundException(areaNotFoundMessage);
 
         if (!(principal.equals(scenario.getOwner()) && principal.equals(sourceArea.getScenario().getOwner())))
-            throw new NotAuthorizedException("Not owner of scenario");
+            throw new NotAuthorizedException(notAuthorizedMessage);
 
         var persistedScenario = service.transferChanges(scenario, sourceArea, changesSelection.overwrite());
 
@@ -318,14 +324,14 @@ public class ScenarioREST {
     @RolesAllowed("GRP_SYMPHONY")
     public Response splitScenario(@Context HttpServletRequest req, @PathParam("id") int scenarioId, ScenarioSplitOptions options) {
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         Scenario scenario = service.findById(scenarioId);
         if (scenario == null)
-            throw new NotFoundException("Scenario not found");
+            throw new NotFoundException(notFoundMessage);
 
         if (!req.getUserPrincipal().getName().equals(scenario.getOwner()))
-            throw new NotAuthorizedException("Not owner of scenario");
+            throw new NotAuthorizedException(notAuthorizedMessage);
 
         int[] splitScenarioIds = service.split(scenario, options);
 
@@ -347,19 +353,19 @@ public class ScenarioREST {
         var principal = req.getUserPrincipal().getName();
 
         if (principal == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         ScenarioArea area = service.findAreaById(areaId);
         Scenario sourceScenario = service.findById(changesSelection.Id());
 
         if(area == null)
-            throw new NotFoundException("Scenario area not found");
+            throw new NotFoundException(areaNotFoundMessage);
 
         if (sourceScenario == null)
-            throw new NotFoundException("Scenario not found");
+            throw new NotFoundException(notFoundMessage);
 
         if (!(principal.equals(area.getScenario().getOwner()) && principal.equals(sourceScenario.getOwner())))
-            throw new NotAuthorizedException("Not owner of scenario");
+            throw new NotAuthorizedException(notAuthorizedMessage);
 
         var persistedScenario = service.transferChanges(area, sourceScenario, changesSelection.overwrite());
 
@@ -376,16 +382,16 @@ public class ScenarioREST {
         var principal = req.getUserPrincipal().getName();
 
         if (principal == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         ScenarioArea area = service.findAreaById(areaId);
         ScenarioArea sourceArea = service.findAreaById(changesSelection.Id());
 
         if(area == null || sourceArea == null)
-            throw new NotFoundException("Scenario area not found");
+            throw new NotFoundException(areaNotFoundMessage);
 
         if (!(principal.equals(area.getScenario().getOwner()) && principal.equals(sourceArea.getScenario().getOwner())))
-            throw new NotAuthorizedException("Not owner of scenario");
+            throw new NotAuthorizedException(notAuthorizedMessage);
 
         var persistedScenario = service.transferChanges(area, sourceArea, changesSelection.overwrite());
 

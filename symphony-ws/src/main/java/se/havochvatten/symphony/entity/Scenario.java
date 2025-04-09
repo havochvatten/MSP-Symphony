@@ -20,7 +20,6 @@ import se.havochvatten.symphony.dto.ScenarioDto;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -32,19 +31,16 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "scenario")
-@NamedQueries({
-    @NamedQuery(name = "Scenario.findAllByOwner",
-            query = "SELECT NEW se.havochvatten.symphony.dto.ScenarioDto(s) FROM Scenario s" +
-                    " WHERE s.owner = :owner ORDER BY s.timestamp DESC"),
-    @NamedQuery(name = "Scenario.getEcosystemsToInclude",
-            query = "SELECT ecosystemsToInclude FROM Scenario WHERE id = :scenarioId"),
-    @NamedQuery(name = "Scenario.getPressuresToInclude",
-            query = "SELECT pressuresToInclude FROM Scenario WHERE id = :scenarioId")
-})
-@TypeDefs({
-        @TypeDef(name = "json", typeClass = JsonBinaryType.class),
-        @TypeDef(name = "int-array", typeClass = IntArrayType.class)
-})
+@NamedQuery(name = "Scenario.findAllByOwner",
+    query = "SELECT NEW se.havochvatten.symphony.dto.ScenarioDto(s) FROM Scenario s" +
+            " WHERE s.owner = :owner ORDER BY s.timestamp DESC")
+@NamedQuery(name = "Scenario.getEcosystemsToInclude",
+    query = "SELECT ecosystemsToInclude FROM Scenario WHERE id = :scenarioId")
+@NamedQuery(name = "Scenario.getPressuresToInclude",
+    query = "SELECT pressuresToInclude FROM Scenario WHERE id = :scenarioId")
+
+@TypeDef(name = "json", typeClass = JsonBinaryType.class)
+@TypeDef(name = "int-array", typeClass = IntArrayType.class)
 @Embeddable
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Scenario implements Serializable, BandChangeEntity, ScenarioCommon {
@@ -82,11 +78,9 @@ public class Scenario implements Serializable, BandChangeEntity, ScenarioCommon 
 
     @Embedded
     @NotNull
-    @AttributeOverrides({
-        @AttributeOverride(name = "type", column = @Column(name = "normalization_type", nullable = false)),
-        @AttributeOverride(name = "userDefinedValue", column = @Column(name = "normalization_userdefinedvalue", nullable = false)),
-        @AttributeOverride(name = "stdDevMultiplier", column = @Column(name = "normalization_stddevmultiplier", nullable = false))
-    })
+    @AttributeOverride(name = "type", column = @Column(name = "normalization_type", nullable = false))
+    @AttributeOverride(name = "userDefinedValue", column = @Column(name = "normalization_userdefinedvalue", nullable = false))
+    @AttributeOverride(name = "stdDevMultiplier", column = @Column(name = "normalization_stddevmultiplier", nullable = false))
     protected NormalizationOptions normalization;
 
     @Size(max = 255)
@@ -158,7 +152,7 @@ public class Scenario implements Serializable, BandChangeEntity, ScenarioCommon 
         operation = s.operation;
 
         List<Integer> changesToInclude =
-            Arrays.stream(options.areaChangesToInclude).boxed().collect(Collectors.toList());
+            Arrays.stream(options.areaChangesToInclude).boxed().toList();
 
         var areasToAdd = altAreas == null ? s.areas : altAreas;
 
@@ -271,7 +265,7 @@ public class Scenario implements Serializable, BandChangeEntity, ScenarioCommon 
     }
 
     public Geometry getGeometry() {
-        return (new CascadedPolygonUnion(areas.stream().map(ScenarioArea::getGeometry).collect(Collectors.toList()))).union();
+        return (new CascadedPolygonUnion(areas.stream().map(ScenarioArea::getGeometry).toList())).union();
     }
 
     public Map<Integer, Integer> getAreasExcludingCoastal() {

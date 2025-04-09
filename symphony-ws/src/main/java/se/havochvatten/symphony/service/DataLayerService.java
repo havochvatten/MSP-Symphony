@@ -22,13 +22,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 @Stateless
 public class DataLayerService {
-    private final Logger logger = Logger.getLogger(DataLayerService.class.getName());
 
-    private final static String rootNode = "javax_imageio_png_1.0";
+    private static final String rootNode = "javax_imageio_png_1.0";
 
     @EJB
     BaselineVersionService baselineVersionService;
@@ -37,8 +35,7 @@ public class DataLayerService {
     PropertiesService props;
 
     // TODO cache instances of layer type and baselineVersionId?
-    public GridCoverage2D getCoverage(LayerType type, int baselineVersionId) throws IOException,
-			SymphonyStandardAppException {
+    public GridCoverage2D getCoverage(LayerType type, int baselineVersionId) throws IOException {
         String filename = getComponentFilePath(type, baselineVersionId);
         File file = new File(filename);
         // See https://docs.geotools.org/latest/userguide/library/referencing/order.html
@@ -52,7 +49,7 @@ public class DataLayerService {
         return (GridCoverage2D) Operations.DEFAULT.selectSampleDimension(coverage, new int[]{bandNo});
     }
 
-    String getComponentFilePath(LayerType type, int baselineVersionId) throws SymphonyStandardAppException {
+    String getComponentFilePath(LayerType type, int baselineVersionId) {
         // To use for development purpose
         String localDevFilePath = localDevFilePath(type);
         if (localDevFilePath != null) {

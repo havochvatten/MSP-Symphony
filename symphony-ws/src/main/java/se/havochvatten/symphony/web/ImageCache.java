@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ImageCache {
@@ -25,14 +26,14 @@ public class ImageCache {
             // Write to temp file first and rename upon completion to avoid races
             File tmp = File.createTempFile("symphony_", ".png", dir.toFile());
 
-            FileOutputStream fos = new FileOutputStream(tmp);
-            // TODO add extent as metadata to file: http://www.javased.com/?post=721918
-            fos.write(data);
-            fos.close();
+            try (FileOutputStream fos = new FileOutputStream(tmp)) {
+                // TODO add extent as metadata to file: http://www.javased.com/?post=721918
+                fos.write(data);
+            }
 
             Path target = Files.move(tmp.toPath(), dir.resolve(key), StandardCopyOption.ATOMIC_MOVE); //
             // fails when
-            logger.info("Cached data layer at " + target);
+            logger.log(Level.INFO, () -> String.format("Cached data layer at %s", target));
         } catch (IOException e) {
             logger.severe("Unable to cache data layer of key=" + key);
         }
@@ -46,7 +47,7 @@ public class ImageCache {
         try {
             return Files.readAllBytes(dir.resolve(key));
         } catch (IOException e) {
-            return null;
+            return new byte[]{};
         }
     }
 }

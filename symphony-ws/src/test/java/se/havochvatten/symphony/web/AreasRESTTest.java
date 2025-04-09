@@ -39,10 +39,10 @@ public class AreasRESTTest extends RESTTest {
         assertThat(jsnType.asText(), is(type));
 
         JsonNode groups = jsNode.path("groups");
-        Assert.assertFalse(groups.getClass().equals(MissingNode.class));
+        Assert.assertNotEquals(groups.getClass(), MissingNode.class);
         assertTrue(groups.get(0).size() > 0);
         assertTrue(groups.get(0).path("areas").size() > 0);
-        Assert.assertFalse(groups.get(0).path("areas").get(0).path("polygon").getClass().equals(MissingNode.class));
+        Assert.assertNotEquals(groups.get(0).path("areas").get(0).path("polygon").getClass(), MissingNode.class);
     }
 
     @Test
@@ -93,8 +93,8 @@ public class AreasRESTTest extends RESTTest {
 
         JsonNode areas = jsNode.path("areas");
         JsonNode areaName = areas.get(0).path("name");
-        Assert.assertFalse(areaName.getClass().equals(MissingNode.class));
+        Assert.assertNotEquals(areaName.getClass(), MissingNode.class);
         JsonNode polygon = areas.get(0).path("polygon");
-        Assert.assertFalse(polygon.getClass().equals(MissingNode.class));
+        Assert.assertNotEquals(polygon.getClass(), MissingNode.class);
     }
 }

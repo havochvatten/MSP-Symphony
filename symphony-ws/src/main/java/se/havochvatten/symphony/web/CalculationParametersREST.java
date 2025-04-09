@@ -68,8 +68,7 @@ public class CalculationParametersREST {
     }
 
     private static Response areaMatrixErrorResponse(Exception ex) {
-        if (ex instanceof SymphonyStandardAppException) {
-            SymphonyStandardAppException ssx = (SymphonyStandardAppException) ex;
+        if (ex instanceof SymphonyStandardAppException ssx) {
             if (ssx.getErrorCode() == SymphonyModelErrorCode.NO_DEFAULT_MATRIX_FOUND) {
                 return Response.status(Response.Status.NOT_FOUND)
                     .entity(new FrontendErrorDto(ssx.getErrorCode().getErrorKey(), ssx.getErrorCode().getErrorMessage()))

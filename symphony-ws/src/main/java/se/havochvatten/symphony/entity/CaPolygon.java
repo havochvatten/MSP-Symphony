@@ -13,20 +13,21 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serial;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "capolygon")
 @XmlRootElement
-@NamedQueries({
-		@NamedQuery(name = "CaPolygon.findAll", query = "SELECT c FROM CaPolygon c"),
-		@NamedQuery(name = "CaPolygon.findForBaselineVersionId",
-				query = "SELECT c FROM CaPolygon c WHERE c" + ".calculationArea.defaultSensitivityMatrix" +
-						".baselineVersion.id = :versionId"),
-        @NamedQuery(name = "CaPolygon.findDefaultForBaselineVersionId",
-                    query = "SELECT c FROM CaPolygon c WHERE c.calculationArea.defaultSensitivityMatrix" +
-                        ".baselineVersion.id = :versionId AND c.calculationArea.careaDefault = true")})
+@NamedQuery(name = "CaPolygon.findAll", query = "SELECT c FROM CaPolygon c")
+@NamedQuery(name = "CaPolygon.findForBaselineVersionId",
+        query = "SELECT c FROM CaPolygon c WHERE c" + ".calculationArea.defaultSensitivityMatrix" +
+                ".baselineVersion.id = :versionId")
+@NamedQuery(name = "CaPolygon.findDefaultForBaselineVersionId",
+            query = "SELECT c FROM CaPolygon c WHERE c.calculationArea.defaultSensitivityMatrix" +
+                ".baselineVersion.id = :versionId AND c.calculationArea.careaDefault = true")
 public class CaPolygon implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -89,14 +90,10 @@ public class CaPolygon implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof CaPolygon)) {
+        if (!(object instanceof CaPolygon other)) {
             return false;
         }
-        CaPolygon other = (CaPolygon) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override

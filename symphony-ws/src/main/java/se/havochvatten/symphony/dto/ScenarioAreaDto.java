@@ -14,7 +14,6 @@ public class ScenarioAreaDto implements Serializable {
 
     public final Integer id;
     private final JsonNode changes;
-    @NotNull
     private final JsonNode feature;
     private final JsonNode matrix;
 

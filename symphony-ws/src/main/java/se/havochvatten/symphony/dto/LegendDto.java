@@ -9,9 +9,12 @@ public class LegendDto {
         ECOSYSTEM, PRESSURE, RESULT, COMPARISON
     }
 
+    private String unit;
+    private ColorMapEntry[] colorMap;
+
     public static class ColorMapEntry {
-        public String color; // web hex value
-        public int quantity; // same range as source raster values, except for result which is in percent
+        public final String color; // web hex value
+        public final int quantity; // same range as source raster values, except for result which is in percent
         @JsonInclude(JsonInclude.Include.NON_NULL)
         public Float opacity; // [0,1]
 
@@ -32,6 +35,19 @@ public class LegendDto {
         }
     }
 
-    public String unit;
-    public ColorMapEntry[] colorMap;
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public ColorMapEntry[] getColorMap() {
+        return colorMap;
+    }
+
+    public void setColorMap(ColorMapEntry[] colorMap) {
+        this.colorMap = colorMap;
+    }
 }

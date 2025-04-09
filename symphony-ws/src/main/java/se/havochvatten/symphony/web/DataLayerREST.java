@@ -27,6 +27,7 @@ import javax.ws.rs.core.Response;
 import java.awt.image.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static javax.ws.rs.core.Response.ok;
@@ -64,7 +65,7 @@ public class DataLayerREST {
                                  @PathParam("baselineName") String baselineName,
                                  @QueryParam("crs") String crs)
             throws Exception {
-        logger.info("Getting layer data of type " + type + " for bandNo=" + bandNo);
+        logger.log(Level.INFO, () -> String.format("Getting layer data of type %s for bandNo=%d", type, bandNo));
 
         BaselineVersion baselineVersion = baselineVersionService.getVersionByName(baselineName);
 
@@ -88,7 +89,7 @@ public class DataLayerREST {
 
             CRSAuthorityFactory factory = CRS.getAuthorityFactory(true);
             targetCRS = factory.createCoordinateReferenceSystem(crs);
-            logger.finer(coverage.getCoordinateReferenceSystem2D().toWKT());
+            logger.finer(() -> coverage.getCoordinateReferenceSystem2D().toWKT());
             GridGeometry2D gridGeometry = coverage.getGridGeometry();
             MathTransform transform = CRS.findMathTransform(gridGeometry.getCoordinateReferenceSystem(),
                 targetCRS);

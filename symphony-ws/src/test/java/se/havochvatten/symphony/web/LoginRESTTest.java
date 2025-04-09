@@ -25,7 +25,7 @@ public class LoginRESTTest extends RESTTest {
                 body(userLogin).
                 post(endpoint("/login"));
         assertThat(response.getStatusCode(), is(200));
-        assertEquals(uid, response.as(UserDto.class).username);
+        assertEquals(uid, response.as(UserDto.class).getUsername());
     }
 
     @Test

@@ -7,7 +7,7 @@ import se.havochvatten.symphony.calculation.Operations;
 public abstract class StatsNormalizer extends RasterNormalizer {
     protected Operations operations;
 
-    public StatsNormalizer(Operations ops) {
+    protected StatsNormalizer(Operations ops) {
         this.operations = ops;
     }
 

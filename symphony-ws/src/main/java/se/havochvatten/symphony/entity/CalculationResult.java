@@ -2,14 +2,12 @@ package se.havochvatten.symphony.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vladmihalcea.hibernate.type.array.DoubleArrayType;
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 import se.havochvatten.symphony.service.CalcService;
 import se.havochvatten.symphony.dto.CalculationResultSliceDto;
 
@@ -26,25 +24,23 @@ import java.util.Map;
 @Entity
 @Table(name = "calculationresult")
 @XmlRootElement
-@NamedQueries({
-        @NamedQuery(name = "CalculationResult.findAll",
-                query = "SELECT c FROM CalculationResult c"),
-        @NamedQuery(name = "CalculationResult.findAllExceptBaseline",
-                query = "SELECT c FROM CalculationResult c WHERE c.baselineCalculation = FALSE"),
-        @NamedQuery(name = "CalculationResult.findBaselineCalculationsByBaselineId",
-                query = "SELECT NEW se.havochvatten.symphony.dto.CalculationResultSliceDto(c.id, c" +
-                        ".calculationName, c.timestamp, (c.rasterData = null)) FROM " +
-                        "CalculationResult c WHERE c.baselineVersion.id = : id and c.baselineCalculation = " +
-                        "TRUE"),
-        @NamedQuery(name = "CalculationResult.findFullByOwner",
-                query = "SELECT c FROM CalculationResult c WHERE c.owner = :username ORDER BY c.timestamp " +
-                        "DESC"),
-        @NamedQuery(name = "CalculationResult.removeOldCalculationTiff",
-                query = "UPDATE CalculationResult c SET c.rasterData = null WHERE c.timestamp < :timestamp"),
-        @NamedQuery(name = "CalculationResult.findByIds_Owner_Baseline",
-                query = "SELECT c FROM CalculationResult c WHERE c.id IN :ids AND c.owner = :username AND " +
-                        "c.baselineVersion.id = :baselineId"),
-})
+@NamedQuery(name = "CalculationResult.findAll",
+        query = "SELECT c FROM CalculationResult c")
+@NamedQuery(name = "CalculationResult.findAllExceptBaseline",
+        query = "SELECT c FROM CalculationResult c WHERE c.baselineCalculation = FALSE")
+@NamedQuery(name = "CalculationResult.findBaselineCalculationsByBaselineId",
+        query = "SELECT NEW se.havochvatten.symphony.dto.CalculationResultSliceDto(c.id, c" +
+                ".calculationName, c.timestamp, (c.rasterData = null)) FROM " +
+                "CalculationResult c WHERE c.baselineVersion.id = : id and c.baselineCalculation = " +
+                "TRUE")
+@NamedQuery(name = "CalculationResult.findFullByOwner",
+        query = "SELECT c FROM CalculationResult c WHERE c.owner = :username ORDER BY c.timestamp " +
+                "DESC")
+@NamedQuery(name = "CalculationResult.removeOldCalculationTiff",
+        query = "UPDATE CalculationResult c SET c.rasterData = null WHERE c.timestamp < :timestamp")
+@NamedQuery(name = "CalculationResult.findByIds_Owner_Baseline",
+        query = "SELECT c FROM CalculationResult c WHERE c.id IN :ids AND c.owner = :username AND " +
+                "c.baselineVersion.id = :baselineId")
 
 @SqlResultSetMapping(
     name = "CalculationCmpMapping",
@@ -72,15 +68,12 @@ import java.util.Map;
             "AND s.owner = :username AND c.cares_op = :operation ORDER BY c.cares_timestamp DESC",
     resultSetMapping = "CalculationCmpMapping" )
 
-@TypeDefs({
-        @TypeDef(name = "json", typeClass = JsonType.class),
-        @TypeDef(name = "double-matrix", typeClass = DoubleArrayType.class)
-})
+
+@TypeDef(name = "json", typeClass = JsonType.class)
+@TypeDef(name = "double-matrix", typeClass = DoubleArrayType.class)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class CalculationResult implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

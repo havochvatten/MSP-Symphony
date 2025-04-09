@@ -3,21 +3,22 @@ package se.havochvatten.symphony.entity;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serial;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "calcareasensmatrix")
 @XmlRootElement
-@NamedQueries({
-	@NamedQuery(name = "CalcAreaSensMatrix.findAll", query = "SELECT c FROM CalcAreaSensMatrix c"),
-    @NamedQuery(name = "CalcAreaSensMatrix.findByBaselineAndArea", query = "SELECT c FROM CalcAreaSensMatrix c WHERE c.sensitivityMatrix.baselineVersion.name = :baseline AND c.calculationArea.id = :calcAreaId AND c.sensitivityMatrix.owner IS NULL"),
-	@NamedQuery(name = "CalcAreaSensMatrix.findByBaselineAndOwner", query = "SELECT c FROM CalcAreaSensMatrix c WHERE c.sensitivityMatrix.baselineVersion.name = :baseline AND c.sensitivityMatrix.owner = :owner"),
-	@NamedQuery(name = "CalcAreaSensMatrix.findByBaselineAndOwnerAndArea", query = "SELECT c FROM CalcAreaSensMatrix c WHERE c.sensitivityMatrix.baselineVersion.name = :baselineName AND c.sensitivityMatrix.owner = :owner AND c.calculationArea.id = :calcAreaId"),
-	@NamedQuery(name = "CalcAreaSensMatrix.findByMatrixIdAndOwner", query = "SELECT c FROM CalcAreaSensMatrix c WHERE c.sensitivityMatrix.id = :matrixId AND c.sensitivityMatrix.owner = :owner")
-	})
+@NamedQuery(name = "CalcAreaSensMatrix.findAll", query = "SELECT c FROM CalcAreaSensMatrix c")
+@NamedQuery(name = "CalcAreaSensMatrix.findByBaselineAndArea", query = "SELECT c FROM CalcAreaSensMatrix c WHERE c.sensitivityMatrix.baselineVersion.name = :baseline AND c.calculationArea.id = :calcAreaId AND c.sensitivityMatrix.owner IS NULL")
+@NamedQuery(name = "CalcAreaSensMatrix.findByBaselineAndOwner", query = "SELECT c FROM CalcAreaSensMatrix c WHERE c.sensitivityMatrix.baselineVersion.name = :baseline AND c.sensitivityMatrix.owner = :owner")
+@NamedQuery(name = "CalcAreaSensMatrix.findByBaselineAndOwnerAndArea", query = "SELECT c FROM CalcAreaSensMatrix c WHERE c.sensitivityMatrix.baselineVersion.name = :baselineName AND c.sensitivityMatrix.owner = :owner AND c.calculationArea.id = :calcAreaId")
+@NamedQuery(name = "CalcAreaSensMatrix.findByMatrixIdAndOwner", query = "SELECT c FROM CalcAreaSensMatrix c WHERE c.sensitivityMatrix.id = :matrixId AND c.sensitivityMatrix.owner = :owner")
+
 public class CalcAreaSensMatrix implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	@Serial
+    private static final long serialVersionUID = 1L;
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic(optional = false)
@@ -80,15 +81,11 @@ public class CalcAreaSensMatrix implements Serializable {
 	@Override
 	public boolean equals(Object object) {
 		// TODO: Warning - this method won't work in the case the id fields are not set
-		if (!(object instanceof CalcAreaSensMatrix)) {
+		if (!(object instanceof CalcAreaSensMatrix other)) {
 			return false;
 		}
-		CalcAreaSensMatrix other = (CalcAreaSensMatrix) object;
-		if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-			return false;
-		}
-		return true;
-	}
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+    }
 
 	@Override
 	public String toString() {

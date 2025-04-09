@@ -4,6 +4,7 @@ import se.havochvatten.symphony.entity.BatchCalculation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class BatchCalculationDto {
@@ -36,9 +37,9 @@ public class BatchCalculationDto {
         return entities;
     }
 
-    public ArrayList<Integer> getCalculated() { return calculated; }
+    public List<Integer> getCalculated() { return calculated; }
 
-    public ArrayList<Integer> getFailed() { return failed; }
+    public List<Integer> getFailed() { return failed; }
 
     public Integer[] getReports() { return reports; }
 

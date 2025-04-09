@@ -100,12 +100,11 @@ public class SymphonyBand {
     }
 
     public String getTitle(String preferredLanguage) {
-        var title = metaValues.stream().filter(m -> m.getMetaField().equals("title"))
+        return metaValues.stream().filter(m -> m.getMetaField().equals("title"))
             .filter(m -> m.getLanguage().equals(preferredLanguage))
             .map(Metadata::getMetaValue).findFirst().orElse(
                 metaValues.stream().filter(m -> m.getMetaField().equals("title"))
                 .map(Metadata::getMetaValue).findFirst().orElse("Band " + bandnumber));
-        return title;
     }
 
     // Exposure of setters for unit testing

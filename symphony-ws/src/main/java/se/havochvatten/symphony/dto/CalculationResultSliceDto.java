@@ -3,7 +3,6 @@ package se.havochvatten.symphony.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.geotools.data.geojson.GeoJSONReader;
 import org.locationtech.jts.geom.Geometry;
 import se.havochvatten.symphony.entity.CalculationResult;
@@ -15,13 +14,12 @@ import java.util.List;
 // TODO: Do away with this one? Or at least include parameters
 // (when ROI has been replaced with an ID instead of the full polygon data)
 public class CalculationResultSliceDto {
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     private String polygon;
 
-    public int id;
-    public String name; // params.areaName by default
-    public long timestamp;
+    private int id;
+    private String name; // params.areaName by default
+    private long timestamp;
     @JsonIgnore
     public Geometry getGeometry() {
         if(polygon == null)
@@ -36,9 +34,9 @@ public class CalculationResultSliceDto {
     @JsonIgnore
     public List<Integer> pressuresToInclude;
 
-    public boolean isPurged = false;
+    private boolean isPurged = false;
 
-    public boolean hasChanges = false;
+    private boolean hasChanges = false;
 
     public CalculationResultSliceDto(CalculationResult res) {
         id = res.getId();
@@ -67,5 +65,41 @@ public class CalculationResultSliceDto {
         this.pressuresToInclude = Arrays.stream(pressuresToInclude).boxed().toList();
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getName() {return name;}
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public boolean isPurged() {
+        return isPurged;
+    }
+
+    public void setPurged(boolean purged) {
+        isPurged = purged;
+    }
+
+    public boolean isHasChanges() {
+        return hasChanges;
+    }
+
+    public void setHasChanges(boolean hasChanges) {
+        this.hasChanges = hasChanges;
+    }
 }

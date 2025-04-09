@@ -29,9 +29,8 @@ public class SymphonyWSExceptionMapper implements ExceptionMapper<Exception> {
             resp = Response.status(Response.Status.NOT_FOUND);
         else if (e instanceof BadRequestException)
             resp = Response.status(Response.Status.BAD_REQUEST);
-        else if (e instanceof SymphonyStandardAppException) {
-            LOGGER.severe(e.toString());
-            SymphonyStandardAppException ex = (SymphonyStandardAppException) e;
+        else if (e instanceof SymphonyStandardAppException ex) {
+            LOGGER.log(Level.SEVERE, e::toString);
             resp = Response.status(Response.Status.BAD_REQUEST).
                     entity(new FrontendErrorDto(ex.getErrorCode().getErrorKey(), ex.getErrorCode().getErrorMessage()));
         } else if (e instanceof EJBAccessException || e instanceof NotAuthorizedException) {
