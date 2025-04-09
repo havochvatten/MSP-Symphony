@@ -7,6 +7,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -41,7 +42,7 @@ import se.havochvatten.symphony.scenario.BandChangeEntity;
     query = "UPDATE scenarioarea SET polygon = " +
                 "ST_Multi(ST_GeomFromGeoJSON(cast(cast(feature as json)->>'geometry' as json))) " +
                 "WHERE scenario = :scenarioId")
-public class ScenarioArea implements BandChangeEntity {
+public class ScenarioArea implements BandChangeEntity, Serializable {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     private static JsonNode defaultMatrixJSON() {
@@ -91,7 +92,7 @@ public class ScenarioArea implements BandChangeEntity {
 
     @JsonIgnore()
     @Column(name = "polygon", columnDefinition = "geometry(MultiPolygon,4326)")
-    public MultiPolygon polygon;
+    public transient MultiPolygon polygon;
 
     public ScenarioArea() {
 
