@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import se.havochvatten.symphony.dto.LayerType;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public interface BandChangeEntity {
@@ -13,7 +14,7 @@ public interface BandChangeEntity {
     void setChanges(JsonNode changes);
 
     default Map<LayerType, Map<Integer, BandChange>> getChangeMap() {
-        return  getChanges() == null || getChanges().isNull() ? Map.of() :
+        return  getChanges() == null || getChanges().isNull() ? new HashMap<>() :
                     getMapper().convertValue(getChanges(), new TypeReference<>() {});
     }
 }

@@ -9,7 +9,9 @@ import java.util.Set;
 
 public class ReliabilityMapping {
     private static final ObjectMapper mapper = new ObjectMapper();
-    private final ClassificationPartition[] partitions;
+    private ClassificationPartition[] partitions;
+
+    public ReliabilityMapping() {}
 
     public ReliabilityMapping(Set<ReliabilityPartition> reliabilitymap) {
         partitions = new ClassificationPartition[reliabilitymap.size()];
@@ -24,8 +26,10 @@ public class ReliabilityMapping {
     }
 
     public static class ClassificationPartition {
-        private final int value;
-        private final JsonNode polygon;
+        private int value;
+        private JsonNode polygon;
+
+        public ClassificationPartition() {}
 
         public ClassificationPartition(int value, String polygon) throws JsonProcessingException {
             this.value = value;
@@ -36,8 +40,16 @@ public class ReliabilityMapping {
             return value;
         }
 
+        public void setValue(int value) {
+            this.value = value;
+        }
+
         public JsonNode getPolygon() {
             return polygon;
+        }
+
+        public void setPolygon(JsonNode polygon) {
+            this.polygon = polygon;
         }
     }
 
