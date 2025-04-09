@@ -40,7 +40,7 @@ public class PropertiesService {
         }
 
         props.putAll(defaults);
-        LOG.config("Properties defaults: " + defaults.size());
+        LOG.log(Level.CONFIG, () -> String.format("Properties defaults: %d", defaults.size()));
         try (FileInputStream inputStream = new FileInputStream(GLOBAL_PROPERTIES)) {
             // Merge user properties with default properties
             LOG.config("Loading overrides");
@@ -48,7 +48,7 @@ public class PropertiesService {
         } catch (IOException ex) {
             LOG.config("No user properties, using defaults only");
         }
-        LOG.config("Properties with overrides: " + props.size());
+        LOG.log(Level.CONFIG, () -> String.format("Properties with overrides: %d", props.size()));
 
     }
 

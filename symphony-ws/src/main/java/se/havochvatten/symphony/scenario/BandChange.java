@@ -6,7 +6,7 @@ import se.havochvatten.symphony.dto.LayerType;
 
 // TODO: Add user-defined matrix id? (integer)
 public class BandChange {
-    public LayerType type; // TODO: Use Jackson subtype deserialization?
+    private LayerType type; // TODO: Use Jackson subtype deserialization?
 
     @JsonIgnore
     public Integer band; // Only used detached in calculation step on server side, not persisted
@@ -36,5 +36,9 @@ public class BandChange {
     public String toString() {
         return "BandChange{type=" + type + ", band=" + band +
                 ", multiplier=" + multiplier + ", offset=" + offset + '}';
+    }
+
+    public LayerType getType() {
+        return type;
     }
 }

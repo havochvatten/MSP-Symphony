@@ -38,11 +38,13 @@ public interface WebUtil {
 
     FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
-    static final String fileNameRx = "[^\\p{L}\\p{N}._-]+";
+    String fileNameRx = "[^\\p{L}\\p{N}._-]+";
 
-    public static String escapeFilename(String s) {
+    static String escapeFilename(String s) {
         return StringUtils.stripAccents(s).replaceAll(fileNameRx, "-");
     }
+
+    String noPrincipalStr = "Null principal";
 
     static JsonArray createExtent(Envelope targetEnvelope) {
         return Json.createArrayBuilder(List.of(targetEnvelope.getMinX(), targetEnvelope.getMinY(),
@@ -139,12 +141,13 @@ public interface WebUtil {
     }
 
     static void writeFile(byte[] content, File file) throws IOException {
-        if (!file.exists())
-            file.createNewFile();
+        if (!file.exists() && !file.createNewFile()) {
+            throw new IOException("Could not create file " + file.getAbsolutePath());
+        }
 
-        FileOutputStream fop = new FileOutputStream(file);
-        fop.write(content);
-        fop.close();
+        try(FileOutputStream fop = new FileOutputStream(file)) {
+            fop.write(content);
+        }
     }
 
     public static int[] intArrayParam(String param) {
@@ -156,12 +159,6 @@ public interface WebUtil {
             .stream()
             .collect(toMap(
                 key -> key,
-                key -> multiValued.getFirst(key)));
-//        Map<String, String> dest = new HashMap<>(multiValued.size());
-        // TODO collect
-//        multiValued.keySet().stream().forEach(key -> dest.put(key, multiValued.getFirst(key)));
-//        return dest;
-
-
+                multiValued::getFirst));
     }
 }

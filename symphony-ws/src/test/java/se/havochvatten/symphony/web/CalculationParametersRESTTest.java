@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static se.havochvatten.symphony.scenario.ScenarioRESTTest.getTestArea;
 
@@ -47,19 +48,19 @@ public class CalculationParametersRESTTest extends RESTTest {
 
         ScenarioAreaSelectionResponseDto scenarioAreaSlcResp = response.getBody().jsonPath().getObject("",
 				ScenarioAreaSelectionResponseDto.class);
-        assertTrue(scenarioAreaSlcResp.matrixData.size() > 0);
+        assertFalse(scenarioAreaSlcResp.matrixData.isEmpty());
         AreaSelectionResponseDto areaTypeResp = scenarioAreaSlcResp.matrixData.get(testScenario.areas[0].id);
-        assertTrue(areaTypeResp.getAreaTypes().stream().anyMatch((a) -> "Kustområde".equals(a.getName())));
-        assertTrue(areaTypeResp.getAreaTypes().stream().anyMatch((a) -> "n-område".equals(a.getName())));
+        assertTrue(areaTypeResp.getAreaTypes().stream().anyMatch(a -> "Kustområde".equals(a.getName())));
+        assertTrue(areaTypeResp.getAreaTypes().stream().anyMatch(a -> "n-område".equals(a.getName())));
     }
 
     private SensitivityMatrix firstDefaultMatrix(List<AreaMatrixResponse> areaMatrixResponse,
 												 List<SensitivityMatrix> sensitivityMatrices) {
         SensitivityMatrix firstDefaultMatrix = null;
         List<AreaMatrixResponse> amrList =
-				areaMatrixResponse.stream().filter(a -> a.isDefaultArea()).collect(Collectors.toList());
+				areaMatrixResponse.stream().filter(AreaMatrixResponse::isDefaultArea).toList();
         Integer firstDefaultMatrixId = amrList.isEmpty() ? 0 : amrList.get(0).getMatrixId();
-        sensitivityMatrices.stream().filter(s -> s.getMatrixId().equals(firstDefaultMatrixId));
+        sensitivityMatrices = sensitivityMatrices.stream().filter(s -> s.getMatrixId().equals(firstDefaultMatrixId)).toList();
         firstDefaultMatrix = sensitivityMatrices.stream().findFirst().isPresent() ?
 				sensitivityMatrices.stream().findFirst().get() : null;
         return firstDefaultMatrix;
@@ -87,7 +88,6 @@ public class CalculationParametersRESTTest extends RESTTest {
         List<String> rows = Files.readAllLines(sourceFile.toPath(), StandardCharsets.UTF_8);
         String lysekilPoly = rows.stream().collect(Collectors.joining(""));
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsNode = mapper.readTree(lysekilPoly);
-        return jsNode;
+        return mapper.readTree(lysekilPoly);
     }
 }

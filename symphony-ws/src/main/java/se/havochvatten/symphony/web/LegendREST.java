@@ -52,21 +52,18 @@ public class LegendREST {
 
             var legend = new LegendDto();
             switch (type) {
-                case RESULT: // TODO show absolute values here instead of %
-                case COMPARISON:
-                    legend.unit = "%";
+                case RESULT, COMPARISON:
+                    legend.setUnit("%");
                     break;
-                case ECOSYSTEM:
-                case PRESSURE:
-                    legend.unit = null;
+                case ECOSYSTEM, PRESSURE:
+                    legend.setUnit(null);
                     break;
             }
             var entries = symbolizer.getColorMap().getColorMapEntries();
-            legend.colorMap =
-                IntStream.range(0, symbolizer.getColorMap().getColorMapEntries().length)
+            legend.setColorMap(IntStream.range(0, symbolizer.getColorMap().getColorMapEntries().length)
                             .skip(type != LegendDto.Type.COMPARISON ? 1 : 0)
                             .mapToObj(index -> new LegendDto.ColorMapEntry(entries[index], type, index, dynamicMax))
-                            .toArray(LegendDto.ColorMapEntry[]::new);
+                            .toArray(LegendDto.ColorMapEntry[]::new));
 
             return Response.ok(legend).build();
         } catch (IllegalArgumentException e) {

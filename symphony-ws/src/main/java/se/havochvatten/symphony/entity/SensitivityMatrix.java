@@ -15,23 +15,22 @@ import java.util.List;
 @Entity
 @Table(name = "sensitivitymatrix")
 @XmlRootElement
-@NamedQueries({
-		@NamedQuery(name = "SensitivityMatrix.findAll", query = "SELECT s FROM SensitivityMatrix s"),
-		@NamedQuery(name = "SensitivityMatrix.findById",
-				query = "SELECT s FROM SensitivityMatrix s WHERE s.id = :id"),
-		@NamedQuery(name = "SensitivityMatrix.findBySensmName",
-				query = "SELECT s FROM SensitivityMatrix s WHERE s.name = :name"),
-		@NamedQuery(name = "SensitivityMatrix.findByBaselineName",
-				query = "SELECT s FROM SensitivityMatrix s WHERE s.baselineVersion.name = :name"),
-		@NamedQuery(name = "SensitivityMatrix.findByMatrixNameAndOwnerAndBaseline",
-				query = "SELECT s " +
-						"FROM SensitivityMatrix s WHERE s.owner = :matrixName AND s.owner = :owner AND s" +
-						".baselineVersion" +
-						".name = :baseLineName"),
-		@NamedQuery(name = "SensitivityMatrix.findOwnByBaselineNameAndOwner",
-				query = "SELECT s FROM " +
-						"SensitivityMatrix s WHERE s.baselineVersion.name = :name AND s.owner = :owner")
-})
+@NamedQuery(name = "SensitivityMatrix.findAll", query = "SELECT s FROM SensitivityMatrix s")
+@NamedQuery(name = "SensitivityMatrix.findById",
+        query = "SELECT s FROM SensitivityMatrix s WHERE s.id = :id")
+@NamedQuery(name = "SensitivityMatrix.findBySensmName",
+        query = "SELECT s FROM SensitivityMatrix s WHERE s.name = :name")
+@NamedQuery(name = "SensitivityMatrix.findByBaselineName",
+        query = "SELECT s FROM SensitivityMatrix s WHERE s.baselineVersion.name = :name")
+@NamedQuery(name = "SensitivityMatrix.findByMatrixNameAndOwnerAndBaseline",
+        query = "SELECT s " +
+                "FROM SensitivityMatrix s WHERE s.owner = :matrixName AND s.owner = :owner AND s" +
+                ".baselineVersion" +
+                ".name = :baseLineName")
+@NamedQuery(name = "SensitivityMatrix.findOwnByBaselineNameAndOwner",
+        query = "SELECT s FROM " +
+                "SensitivityMatrix s WHERE s.baselineVersion.name = :name AND s.owner = :owner")
+
 @NamedNativeQuery(name = "SensitivityMatrix.findAllByBaselineNameAndOwner",
         query = "SELECT sensm_id id, sensm_name name, (sensm_owner IS NULL) immutable FROM sensitivitymatrix s " +
                 "WHERE s.sensm_bver_id = " +
@@ -138,14 +137,10 @@ public class SensitivityMatrix implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof SensitivityMatrix)) {
+        if (!(object instanceof SensitivityMatrix other)) {
             return false;
         }
-        SensitivityMatrix other = (SensitivityMatrix) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override

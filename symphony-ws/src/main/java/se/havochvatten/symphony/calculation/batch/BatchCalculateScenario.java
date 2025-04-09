@@ -63,8 +63,6 @@ public class BatchCalculateScenario extends AbstractBatchlet {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private ScenarioSplitOptions areasOptions;
-
     private Session getSocketSession() {
         try {
             return sockets.connectToServer(statusBeacon,
@@ -77,7 +75,10 @@ public class BatchCalculateScenario extends AbstractBatchlet {
 
     private void dispatchStatus() {
         try {
-            getSocketSession().getAsyncRemote().sendText(mapper.writeValueAsString(this.batchCalculationDto));
+            Session session = getSocketSession();
+            if (session != null) {
+                session.getAsyncRemote().sendText(mapper.writeValueAsString(this.batchCalculationDto));
+            }
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -103,14 +104,14 @@ public class BatchCalculateScenario extends AbstractBatchlet {
 
         batchCalculation = em.find(BatchCalculation.class, batchCalculationId);
         batchCalculationDto = new BatchCalculationDto(batchCalculation, null);
-        areasOptions = batchCalculation.getAreasOptions();
+        ScenarioSplitOptions areasOptions = batchCalculation.getAreasOptions();
 
         int[] ids = batchCalculation.getEntities();
 
         Scenario currentScenario;
 
-        for(int ix = 0; ix < ids.length; ++ix) {
-            if(batchCalculation.isAreasCalculation()) {
+        for (int ix = 0; ix < ids.length; ++ix) {
+            if (batchCalculation.isAreasCalculation()) {
                 ScenarioArea area = em.find(ScenarioArea.class, ids[ix]);
                 ScenarioCopyOptions copyOptions = new ScenarioCopyOptions(area, areasOptions);
                 copyOptions.areaChangesToInclude =

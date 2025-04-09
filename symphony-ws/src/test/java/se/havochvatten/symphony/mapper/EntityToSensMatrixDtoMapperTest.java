@@ -18,7 +18,7 @@ public class EntityToSensMatrixDtoMapperTest {
     private final int MATRIX_ID = 123;
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() {
 
         sensMatrix = new SensitivityMatrix();
         sensMatrix.setId(MATRIX_ID);

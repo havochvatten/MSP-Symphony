@@ -18,13 +18,13 @@ import se.havochvatten.symphony.service.PropertiesService;
 
 import java.util.Date;
 
-public class RESTTest { // N.B: Must end with Test to be included in "only-apitests" profile
+public abstract class RESTTest { // N.B: Must end with Test to be included in "only-apitests" profile
     protected static final Logger LOG = LoggerFactory.getLogger(ScenarioService.class);
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
-    private static PropertiesService props = new PropertiesService();
+    private static final PropertiesService props = new PropertiesService();
 
-    protected final static String SESSION_COOKIE_NAME = "JSESSIONID";
+    protected static final String SESSION_COOKIE_NAME = "JSESSIONID";
 
     static {
         RestAssured.baseURI = getSymphonyOrSystemProperty("api.base_url");
@@ -101,11 +101,4 @@ public class RESTTest { // N.B: Must end with Test to be included in "only-apite
     public static NormalizationOptions getAreaNormalization() {
         return new NormalizationOptions(NormalizationType.AREA);
     }
-
-//    public static Geometry getLargerROI() throws ParseException {
-//        var reader = new InputStreamReader(
-//                ScenarioRESTTest.class.getClassLoader().getResourceAsStream("polygons/test.geojson"));
-//        var geometry = new GeoJsonReader().read(reader);
-//        return geometry;
-//    }
 }

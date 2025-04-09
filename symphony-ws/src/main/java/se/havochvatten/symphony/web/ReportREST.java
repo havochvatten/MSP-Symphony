@@ -5,7 +5,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
-import se.havochvatten.symphony.calculation.CalcUtil;
 import se.havochvatten.symphony.dto.ComparisonReportResponseDto;
 import se.havochvatten.symphony.dto.ReportResponseDto;
 import se.havochvatten.symphony.entity.CalculationResult;
@@ -23,6 +22,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static javax.ws.rs.core.Response.ok;
@@ -37,6 +38,8 @@ public class ReportREST {
     private static final Logger logger = Logger.getLogger(ReportREST.class.getName());
 
     private static final ObjectMapper mapper = new ObjectMapper();
+
+    private static final String contentDispositionStr = "Content-Disposition";
 
     @Inject
     private ReportService reportService;
@@ -58,9 +61,8 @@ public class ReportREST {
                               @DefaultValue("") @QueryParam("lang") String preferredLanguage,
                               @Context UriInfo uriInfo)
         throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
-        logger.info("Fetching report "+id);
-        var calc = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
-            calcService).orElseThrow(NotFoundException::new);
+        logger.log(Level.INFO, () -> String.format("Fetching report %d ",id));
+        var calc = Optional.ofNullable(calcService.getCalculation(id)).orElseThrow(NotFoundException::new);
 
         if (hasAccess(calc, req.getUserPrincipal()))
             return ok(reportService.generateReportData(calc, true,
@@ -77,12 +79,11 @@ public class ReportREST {
     @RolesAllowed("GRP_SYMPHONY")
     @ApiOperation(value = "Returns calculation result image")
      public Response getResultGeoTIFFImage(@Context HttpServletRequest req, @PathParam("id") int id) {
-        var calc = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
-            calcService).orElseThrow(BadRequestException::new);
+        var calc = Optional.ofNullable(calcService.getCalculation(id)).orElseThrow(NotFoundException::new);
 
         if (calc.isBaselineCalculation() || calc.getOwner().equals(req.getUserPrincipal().getName()))
             return ok(calc.getRasterData()).
-                    header("Content-Disposition",
+                    header(contentDispositionStr,
                             "attachment; filename=\""+calc.getId()+"-" + WebUtil.escapeFilename(calc.getCalculationName()) +
                                     ".tiff\"").
                     build();
@@ -101,7 +102,7 @@ public class ReportREST {
             var diff = CalculationREST.getDiffCoverageFromCalcIds(calcService, req, baseId, relativeId);
 
             return ok(calcService.writeGeoTiff(diff)).
-                header("Content-Disposition",
+                header(contentDispositionStr,
                     "attachment; filename=\"" +
                         "Comparison_report-calculationIDs_-_" + baseId + "-" + relativeId + ".tiff\"").
                 build();
@@ -123,7 +124,7 @@ public class ReportREST {
             var diff = getImplicitDiffCoverageFromCalcId(calcService, req, scenarioId, reverse);
 
             return ok(calcService.writeGeoTiff(diff)).
-                header("Content-Disposition",
+                header(contentDispositionStr,
                     "attachment; filename=\"" + comparisonFilename(scenarioId, reverse) + ".tiff\"").
                 build();
         } catch (NotAuthorizedException ax) {
@@ -141,11 +142,10 @@ public class ReportREST {
     // TODO Parameterize with locale front frontend
     public Response getResultCSV(@Context HttpServletRequest req, @PathParam("id") int id)
             throws SymphonyStandardAppException {
-        var calc = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
-            calcService).orElseThrow(BadRequestException::new);
+        var calc = Optional.ofNullable(calcService.getCalculation(id)).orElseThrow(NotFoundException::new);
         if (hasAccess(calc, req.getUserPrincipal()))
             return ok(reportService.generateCSVReport(calc, req.getLocale())).
-                    header("Content-Disposition",
+                    header(contentDispositionStr,
                             "attachment; filename=\""+calc.getId()+"-"+WebUtil.escapeFilename(calc.getCalculationName())+
                                     "-utf8.csv\"").
                     build();
@@ -165,14 +165,10 @@ public class ReportREST {
                                         @PathParam("b") int scenarioId,
                                         @DefaultValue("") @QueryParam("lang") String preferredLanguage,
                                         @Context UriInfo uriInfo) {
-        logger.info("Comparing report "+baseId+" and "+scenarioId);
+        logger.log(Level.INFO, () -> String.format("Comparing report %d and %d", baseId, scenarioId));
         try {
-            var baseRes =
-                CalcUtil.getCalculationResultFromSessionOrDb(baseId, req.getSession(), calcService)
-                    .orElseThrow(javax.ws.rs.BadRequestException::new);
-            var scenarioRes =
-                CalcUtil.getCalculationResultFromSessionOrDb(scenarioId, req.getSession(), calcService)
-                    .orElseThrow(javax.ws.rs.BadRequestException::new);
+            var baseRes = Optional.ofNullable(calcService.getCalculation(baseId)).orElseThrow(NotFoundException::new);
+            var scenarioRes = Optional.ofNullable(calcService.getCalculation(scenarioId)).orElseThrow(NotFoundException::new);
 
             if (hasAccess(baseRes, req.getUserPrincipal()) && hasAccess(scenarioRes, req.getUserPrincipal()) )
                 return ok(reportService.generateComparisonReportData(baseRes, scenarioRes, false, false, preferredLanguage)).build();
@@ -196,11 +192,9 @@ public class ReportREST {
                                         @DefaultValue("") @QueryParam("lang") String preferredLanguage,
                                         @DefaultValue("false") @QueryParam("reverse") boolean reverse,
                                         @Context UriInfo uriInfo) {
-        logger.info("Comparing report "+scenarioId+" with baseline");
+        logger.log(Level.INFO, () -> String.format("Comparing report %d with baseline", scenarioId));
         try {
-            var scenarioRes =
-                CalcUtil.getCalculationResultFromSessionOrDb(scenarioId, req.getSession(), calcService)
-                    .orElseThrow(javax.ws.rs.BadRequestException::new);
+            var scenarioRes = Optional.ofNullable(calcService.getCalculation(scenarioId)).orElseThrow(NotFoundException::new);
 
             if (hasAccess(scenarioRes, req.getUserPrincipal())) {
 
@@ -229,14 +223,12 @@ public class ReportREST {
                                         @PathParam("b") int scenarioId)
             throws SymphonyStandardAppException {
         CalculationResult
-            calcA = CalcUtil.getCalculationResultFromSessionOrDb(baseId, req.getSession(),
-            calcService).orElseThrow(BadRequestException::new),
-            calcB = CalcUtil.getCalculationResultFromSessionOrDb(scenarioId, req.getSession(),
-                        calcService).orElseThrow(BadRequestException::new);
+            calcA = Optional.ofNullable(calcService.getCalculation(baseId)).orElseThrow(NotFoundException::new),
+            calcB = Optional.ofNullable(calcService.getCalculation(scenarioId)).orElseThrow(NotFoundException::new);
 
         if (hasAccess(calcA, req.getUserPrincipal()) && hasAccess(calcB, req.getUserPrincipal()))
             return ok(reportService.generateCSVComparisonReport(calcA, calcB, req.getLocale())).
-                header("Content-Disposition",
+                header(contentDispositionStr,
                     "attachment; filename=\"" + comparisonFilename(baseId, scenarioId) + "_-utf8.csv\"").
                 build();
         else
@@ -251,10 +243,9 @@ public class ReportREST {
     public Response getComparisonReport(@Context HttpServletRequest req,
                                         @PathParam("id") int scenarioId,
                                         @DefaultValue("false") @QueryParam("reverse") boolean reverse)
-        throws SymphonyStandardAppException, FactoryException, TransformException, IOException {
+        throws SymphonyStandardAppException {
         CalculationResult
-            scenarioRes = CalcUtil.getCalculationResultFromSessionOrDb(scenarioId, req.getSession(),
-            calcService).orElseThrow(BadRequestException::new);
+            scenarioRes = Optional.ofNullable(calcService.getCalculation(scenarioId)).orElseThrow(NotFoundException::new);
 
         if (hasAccess(scenarioRes, req.getUserPrincipal())) {
 
@@ -267,7 +258,7 @@ public class ReportREST {
 
 
             return ok(csv).
-                header("Content-Disposition",
+                header(contentDispositionStr,
                     "attachment; filename=\"" + fileName + "_-utf8.csv\"").
                 build();
         }
@@ -301,13 +292,13 @@ public class ReportREST {
             try {
                 if(format.equals("json"))
                     return ok(reportService.generateMultiComparisonAsJSON(cmp, preferredLanguage, excludeZeroes)).
-                        header("Content-Disposition", attachmentHeader).build();
+                        header(contentDispositionStr, attachmentHeader).build();
                 else {
                     byte[] ods =
                         reportService.generateMultiComparisonAsODS(cmp, preferredLanguage,
                                                                    excludeZeroes, includeCombinedSheet, metaTerms);
                     return ok(ods).
-                        header("Content-Disposition",attachmentHeader).build();
+                        header(contentDispositionStr,attachmentHeader).build();
                 }
 
             } catch (Exception e) {

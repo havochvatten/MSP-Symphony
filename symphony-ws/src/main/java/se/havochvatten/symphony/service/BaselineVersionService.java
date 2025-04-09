@@ -51,7 +51,7 @@ public class BaselineVersionService {
         return versions.get(0);
     }
 
-    public BaselineVersion getBaselineVersionById(Integer id) throws SymphonyStandardAppException {
+    public BaselineVersion getBaselineVersionById(Integer id) {
         return em.find(BaselineVersion.class, id);
     }
 

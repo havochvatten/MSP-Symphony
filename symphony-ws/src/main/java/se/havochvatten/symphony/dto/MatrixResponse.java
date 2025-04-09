@@ -11,7 +11,7 @@ public class MatrixResponse {
      * and normalization value (R).
      * Used in calculation procedure only.
      */
-    public Map<Integer, MutablePair<Integer, Double>> areaMatrixMap = new java.util.HashMap<>();
+    private Map<Integer, MutablePair<Integer, Double>> areaMatrixMap = new java.util.HashMap<>();
 
     public MatrixResponse(int[] areaIds) {
         for (int areaId : areaIds) {
@@ -24,6 +24,10 @@ public class MatrixResponse {
         for (Map.Entry<Integer, Integer> entry : matrixMap.entrySet()) {
             this.areaMatrixMap.put(entry.getKey(), new MutablePair<>(entry.getValue(), normalizationValues[i++]));
         }
+    }
+
+    public Map<Integer, MutablePair<Integer, Double>> getAreaMatrixMap() {
+        return areaMatrixMap;
     }
 
     public void setAreaMatrixId(int areaId, int matrixId) {

@@ -3,12 +3,11 @@ package se.havochvatten.symphony.service.normalizer;
 import it.geosolutions.jaiext.stats.HistogramMode;
 import it.geosolutions.jaiext.stats.Statistics;
 import org.geotools.coverage.grid.GridCoverage2D;
-import se.havochvatten.symphony.service.normalizer.RasterNormalizer;
 
 import java.util.Arrays;
 
 public class PercentileNormalizer extends RasterNormalizer {
-    final static int NUM_BINS = 100; // More bins yields more accurate result
+    static final int NUM_BINS = 100; // More bins yields more accurate result
 
     private final int percentile;
     private final se.havochvatten.symphony.calculation.Operations operations;

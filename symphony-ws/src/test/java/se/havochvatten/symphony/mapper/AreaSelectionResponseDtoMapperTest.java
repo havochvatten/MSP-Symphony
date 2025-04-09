@@ -8,7 +8,6 @@ import se.havochvatten.symphony.entity.AreaType;
 import se.havochvatten.symphony.entity.CalcAreaSensMatrix;
 import se.havochvatten.symphony.entity.CalculationArea;
 import se.havochvatten.symphony.entity.SensitivityMatrix;
-import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +56,7 @@ public class AreaSelectionResponseDtoMapperTest {
     }
 
     @Test
-    public void testMapToDto() throws SymphonyStandardAppException {
+    public void testMapToDto() {
         List<AreaSelectionResponseDto.AreaTypeArea> areaTypeDtos = new ArrayList<>();
         AreaSelectionResponseDto.AreaTypeArea areaTypeDto =
 				AreaSelectionResponseDtoMapper.mapToAreaTypeDto(areaTypes.get(0), calculationAreasA1);

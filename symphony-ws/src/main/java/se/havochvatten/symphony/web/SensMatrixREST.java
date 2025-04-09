@@ -22,6 +22,8 @@ import java.net.URI;
 import java.util.Date;
 import java.util.List;
 
+import static se.havochvatten.symphony.web.WebUtil.noPrincipalStr;
+
 @Stateless
 @Api(value = "/sensitivitymatrix",
         produces = MediaType.APPLICATION_JSON,
@@ -82,7 +84,7 @@ public class SensMatrixREST {
 			"baselineName") String baselineName, SensMatrixDto sensMatrixDto,
             @DefaultValue("") @QueryParam("lang") String preferredLanguage) {
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         try {
             sensMatrixDto = sensMatrixService.createSensMatrix(sensMatrixDto, baselineName, preferredLanguage,
@@ -105,7 +107,7 @@ public class SensMatrixREST {
 									 @PathParam("id") Integer id, SensMatrixDto sensMatrixDto,
                                      @DefaultValue("") @QueryParam("lang") String preferredLanguage) {
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         try {
             sensMatrixDto.setId(id);
@@ -128,7 +130,7 @@ public class SensMatrixREST {
                                             @DefaultValue("") @QueryParam("lang") String preferredLanguage,
 											SensMatrixDto sensMatrixDto) {
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         try {
             sensMatrixDto = sensMatrixService.createSensMatrix(sensMatrixDto, baselineName, preferredLanguage,
@@ -155,7 +157,7 @@ public class SensMatrixREST {
     public Response deleteSensMatrixAndCalcAreaSens(@Context HttpServletRequest req,
 													@PathParam("matrixid") Integer matrixid) {
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         try {
             calcAreaSensMatrixService.deleteByAreaIdAndOwner(matrixid, req.getUserPrincipal());
@@ -174,7 +176,7 @@ public class SensMatrixREST {
     public Response deleteSensMatrix(@Context HttpServletRequest req,
 									 @PathParam("matrixid") Integer matrixid) {
         if (req.getUserPrincipal() == null)
-            throw new NotAuthorizedException("Null principal");
+            throw new NotAuthorizedException(noPrincipalStr);
 
         try {
             sensMatrixService.delete(matrixid, req.getUserPrincipal());

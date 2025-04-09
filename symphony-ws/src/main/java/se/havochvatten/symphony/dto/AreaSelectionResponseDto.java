@@ -109,8 +109,24 @@ public class AreaSelectionResponseDto {
     }
 
     public static class AreaOverlapFragment {
-        public JsonNode polygon;
-        public MatrixSelection defaultMatrix;
+        private JsonNode polygon;
+        private MatrixSelection defaultMatrix;
+
+        public JsonNode getPolygon() {
+            return polygon;
+        }
+
+        public void setPolygon(JsonNode polygon) {
+            this.polygon = polygon;
+        }
+
+        public MatrixSelection getDefaultMatrix() {
+            return defaultMatrix;
+        }
+
+        public void setDefaultMatrix(MatrixSelection defaultMatrix) {
+            this.defaultMatrix = defaultMatrix;
+        }
     }
 
     DefaultArea defaultArea;

@@ -71,9 +71,6 @@ public class CalculationAreaServiceTest {
         relevantSelectedAreaMatrices.add(areaMatrixMapping);
 
         calculationAreaService.baselineVersionService = mock(BaselineVersionService.class);
-
-        // Selected area
-        //selectedPolygon = jsonToGeometry("[p1]");
     }
 
     @Test
@@ -120,7 +117,7 @@ public class CalculationAreaServiceTest {
     }
 
     @Test
-    public void testGetNormalization() throws SymphonyStandardAppException {
+    public void testGetNormalization() {
         calculationAreaService.em = mock(EntityManager.class);
         double mspMaxValue = 1.2d;
 
@@ -131,7 +128,7 @@ public class CalculationAreaServiceTest {
     }
 
     @Test
-    public void testGetSensitivityMatrix() throws SymphonyStandardAppException {
+    public void testGetSensitivityMatrix() {
 
         BaselineVersion baselineVersion = new BaselineVersion();
         baselineVersion.setId(1);
@@ -173,11 +170,6 @@ public class CalculationAreaServiceTest {
         when(mockedPressuresQuery.setParameter("baselineVersionId", 1)).thenReturn(mockedPressuresQuery);
         when(mockedPressuresQuery.setParameter("category", "Pressure")).thenReturn(mockedPressuresQuery);
         when(mockedPressuresQuery.getResultList()).thenReturn(pressureBands);
-
-//        when(calculationAreaService.em.createQuery(
-//            "SELECT b FROM SymphonyBand b " +
-//            "WHERE b.baseline.id = :baselineVersionId " +
-//            "AND b.category = :category")).thenReturn(mockedEcoQuery);
 
         when(mockedEcoQuery.setParameter(anyString(), anyObject())).thenReturn(mockedEcoQuery);
         when(mockedEcoQuery.setParameter("baselineVersionId", 1)).thenReturn(mockedEcoQuery);
@@ -289,7 +281,7 @@ public class CalculationAreaServiceTest {
     }
 
     @Test
-    public void testGetNonDefaultAreasForAreaType() throws SymphonyStandardAppException {
+    public void testGetNonDefaultAreasForAreaType() {
         List<CalculationArea> calulationAreas = new ArrayList<>();
         AreaType a1 = new AreaType();
         a1.setId(1);

@@ -47,17 +47,11 @@ public class UserService {
      * Find all user defined areas
      */
     public List<UserDefinedAreaDto> findAllUserDefinedAreasByOwner(Principal principal) throws SymphonyStandardAppException {
-        List<UserDefinedArea> userDefinedAreas = em.createNamedQuery("UserDefinedArea.findAllByOwner")
+        List<UserDefinedArea> userDefinedAreas = em.createNamedQuery("UserDefinedArea.findAllByOwner", UserDefinedArea.class)
                 .setParameter("owner", principal.getName())
                 .getResultList();
-        List<UserDefinedAreaDto> userDefinedAreaDtos = UserDefinedAreaDtoMapper.mapToDtos(userDefinedAreas);
-        return userDefinedAreaDtos;
+        return UserDefinedAreaDtoMapper.mapToDtos(userDefinedAreas);
     }
-//    public UserDefinedAreaDto findById(Principal principal, Integer id) {
-//        var area = em.find(UserDefinedArea.class, id);
-//
-//    // FIXME check owner
-//    }
 
     /**
      * Create a new UserDefinedArea
@@ -100,7 +94,7 @@ public class UserService {
         if (principal.getName() == null || (userDefinedAreaToUpdate != null && !principal.getName().equals(userDefinedAreaToUpdate.getOwner()))) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_NOT_OWNED_BY_USER);
         }
-        if (userDefinedArea == null || userDefinedAreaToUpdate == null) {
+        if (userDefinedAreaToUpdate == null) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_NOT_FOUND);
         }
         return UserDefinedAreaDtoMapper.mapToDto(em.merge(userDefinedArea));
@@ -113,7 +107,7 @@ public class UserService {
         // https://docs.geotools.org/latest/userguide/library/data/geopackage.html
         try (GeoPackage pkg = new GeoPackage(file)) {
             var features = pkg.features();
-            if (features.size() > 0) {
+            if (!features.isEmpty()) {
 
                 SimpleFeatureReader sfReader;
                 List<String> featureIdentifiers = new ArrayList<>();
@@ -126,7 +120,7 @@ public class UserService {
                     }
                 }
 
-                if(featureIdentifiers.size() > 0) {
+                if (!featureIdentifiers.isEmpty()) {
                     var srid = features.get(0).getSrid();
                     return new UploadedUserDefinedAreaDto(featureIdentifiers, srid, file.getName());
                 } else {
@@ -231,8 +225,7 @@ public class UserService {
                 .setParameter("name", name)
                 .setParameter("owner", principal.getName())
                 .getResultList();
-        if (userDefinedAreas.size() < 1) return null;
-        return userDefinedAreas.get(0);
+        return userDefinedAreas.isEmpty() ? null : userDefinedAreas.get(0);
     }
 
     /**

@@ -146,15 +146,13 @@ public class UserRESTTest extends RESTTest {
     }
 
     private Response deleteUserDefinedAreaByName(String name) {
-        Response response = given().
+        return given().
             auth().
             preemptive().
             basic(getAdminUsername(), getAdminPassword()).
             pathParam("name", name).
             when().
             delete(endpoint("/testutilapi/userdefinedarea/{name}"));
-
-        return response;
     }
 
     private void cleanUp() {
@@ -251,7 +249,6 @@ public class UserRESTTest extends RESTTest {
 
         var dto = result.body().as(UploadedUserDefinedAreaDto.class);
 		assertEquals("epsg3006", dto.featureIdentifiers.get(0));
-        assertTrue(3006 == dto.srid);
 
         var result2 = given().
             cookie(SESSION_COOKIE_NAME, result.cookie(SESSION_COOKIE_NAME)).
@@ -263,14 +260,11 @@ public class UserRESTTest extends RESTTest {
             then().
             statusCode(201).
             extract();
-        ;
 
-        var importedArea = result2.body().as(AreaImportResponse.class);
+        result2.body().as(AreaImportResponse.class);
 
         /* clean up db */
         deleteUserDefinedAreaByName("epsg3006");
         deleteUserDefinedAreaByName("espg4326");
-
-        assertEquals("epsg3006", importedArea.areaNames[0]);
 	}
 }

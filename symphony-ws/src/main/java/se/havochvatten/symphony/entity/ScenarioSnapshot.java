@@ -11,7 +11,6 @@ import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.data.geojson.GeoJSONWriter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.locationtech.jts.geom.Geometry;
 import se.havochvatten.symphony.dto.MatrixResponse;
@@ -27,11 +26,9 @@ import java.util.*;
 
 @Entity
 @Table(name = "scenariosnapshot")
-@TypeDefs({
-        @TypeDef(name = "json", typeClass = JsonBinaryType.class),
-        @TypeDef(name = "int-array", typeClass = IntArrayType.class),
-        @TypeDef(name = "double-array", typeClass = DoubleArrayType.class)
-})
+@TypeDef(name = "json", typeClass = JsonBinaryType.class)
+@TypeDef(name = "int-array", typeClass = IntArrayType.class)
+@TypeDef(name = "double-array", typeClass = DoubleArrayType.class)
 public class ScenarioSnapshot implements BandChangeEntity, ScenarioCommon {
 
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -79,11 +76,9 @@ public class ScenarioSnapshot implements BandChangeEntity, ScenarioCommon {
 
     @Embedded
     @NotNull
-    @AttributeOverrides({
-        @AttributeOverride(name = "type", column = @Column(name = "normalization_type", nullable = false)),
-        @AttributeOverride(name = "userDefinedValue", column = @Column(name = "normalization_userdefinedvalue", nullable = false)),
-        @AttributeOverride(name = "stdDevMultiplier", column = @Column(name = "normalization_stddevmultiplier", nullable = false))
-    })
+    @AttributeOverride(name = "type", column = @Column(name = "normalization_type", nullable = false))
+    @AttributeOverride(name = "userDefinedValue", column = @Column(name = "normalization_userdefinedvalue", nullable = false))
+    @AttributeOverride(name = "stdDevMultiplier", column = @Column(name = "normalization_stddevmultiplier", nullable = false))
     protected NormalizationOptions normalization;
 
     @Size(max = 255)
@@ -196,9 +191,9 @@ public class ScenarioSnapshot implements BandChangeEntity, ScenarioCommon {
     public void setAreaMatrixMap(Map<Integer, Integer> areaMatrixMap) {
         int[][] map = new int[areaMatrixMap.size()][2];
         int i = 0;
-        for (Integer key : areaMatrixMap.keySet()) {
-            map[i][0] = key;
-            map[i][1] = areaMatrixMap.get(key);
+        for (Map.Entry<Integer, Integer> areaMapEntry : areaMatrixMap.entrySet()) {
+            map[i][0] = areaMapEntry.getKey();
+            map[i][1] = areaMapEntry.getValue();
             i++;
         }
         this.areaMatrixMap = map;
@@ -227,13 +222,14 @@ public class ScenarioSnapshot implements BandChangeEntity, ScenarioCommon {
         this.areas = mapper.valueToTree(areaMap);
     }
 
+    @Override
     public Map<LayerType, Map<Integer, BandChange>> getChangeMap() {
         ScenarioChanges sc = mapper.convertValue(changes, new TypeReference<>() {});
         return sc.baseChanges();
     }
 
     public List<ScenarioArea> getTmpAreas () {
-        List<ScenarioArea> areas = new ArrayList<>();
+        List<ScenarioArea> tmpAreas = new ArrayList<>();
 
 
         for (var areaEntry : getAreas().entrySet()) {
@@ -243,19 +239,19 @@ public class ScenarioSnapshot implements BandChangeEntity, ScenarioCommon {
             tmpArea.setId(areaId);
             tmpArea.setFeature(areaEntry.getValue().featureJson());
             tmpArea.setChanges(changes.get("areaChanges").get(areaId.toString()));
-            areas.add(tmpArea);
+            tmpAreas.add(tmpArea);
         }
-        return areas;
+        return tmpAreas;
     }
 
     public Map<Integer, Integer> getAreasExcludingCoastal() {
-        Map<Integer, Integer> areas = new HashMap<>();
+        Map<Integer, Integer> nonCoastal = new HashMap<>();
         for (var area : getAreas().entrySet()) {
             if (area.getValue().getExcludedCoastal() != -1) {
-                areas.put(area.getKey(), area.getValue().excludedCoastal());
+                nonCoastal.put(area.getKey(), area.getValue().excludedCoastal());
             }
         }
-        return areas;
+        return nonCoastal;
     }
 
     public ScenarioSnapshot() {}

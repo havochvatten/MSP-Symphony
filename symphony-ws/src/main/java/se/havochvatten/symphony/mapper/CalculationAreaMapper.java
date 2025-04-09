@@ -66,4 +66,6 @@ public class CalculationAreaMapper {
         return caPolygonDtos;
     }
 
+    // prevent instantiation
+    private CalculationAreaMapper() {}
 }

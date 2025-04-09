@@ -24,15 +24,15 @@ public class MetaDataService {
     BaselineVersionService baselineVersionService;
 
     // explicit fetch to load lazy-loaded collection
-    public final static String fullBandQuery = "SELECT b FROM SymphonyBand b " +
+    public static final String fullBandQuery = "SELECT b FROM SymphonyBand b " +
             "LEFT JOIN FETCH b.reliabilityPartitions WHERE b.baseline.id = :baselineVersionId " +
             "AND b.category = :category";
-    
-    public final static String sparseBandQuery = "SELECT b FROM SymphonyBand b " +
+
+    public static final String sparseBandQuery = "SELECT b FROM SymphonyBand b " +
             "WHERE b.baseline.id = :baselineVersionId " +
             "AND b.category = :category ";
 
-    public final static String fullMetaQuery = "SELECT m FROM Metadata m " +
+    public static final String fullMetaQuery = "SELECT m FROM Metadata m " +
             "WHERE m.band IN :bandsList " +
             "AND (m.language = :language " +
             "OR (m.language = m.band.baseline.locale " +
@@ -41,7 +41,7 @@ public class MetaDataService {
             "WHERE m2.band IN :bandsList " +
             "AND m2.language = :language)))";
 
-    public final static String sparseMetaQuery = "SELECT m FROM Metadata m " +
+    public static final String sparseMetaQuery = "SELECT m FROM Metadata m " +
             "WHERE m.band IN :bandsList " +
             "AND (m.language = :language " +
             "OR (m.language = m.band.baseline.locale " +

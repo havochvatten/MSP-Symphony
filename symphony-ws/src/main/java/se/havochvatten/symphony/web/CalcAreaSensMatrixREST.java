@@ -1,6 +1,5 @@
 package se.havochvatten.symphony.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import se.havochvatten.symphony.dto.CalcAreaSensMatrixDto;
@@ -38,13 +37,11 @@ public class CalcAreaSensMatrixREST {
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Get all relations between calculation areas and sensitivity matrices",
             response = CalcAreaSensMatrix.class, responseContainer = "List")
-    public Response findAllCalcAreaSensMatrices() throws JsonProcessingException {
+    public Response findAllCalcAreaSensMatrices() {
         List<CalcAreaSensMatrixDto> ret = new ArrayList<>();
         List<CalcAreaSensMatrix> resp = calcAreaSensMatrixService.find();
         if (resp != null) {
-            resp.stream().forEach(casm -> {
-                ret.add(new CalcAreaSensMatrixDto(casm));
-            });
+            resp.forEach(casm -> ret.add(new CalcAreaSensMatrixDto(casm)));
         }
         return Response.ok(ret).build();
     }
@@ -70,7 +67,7 @@ public class CalcAreaSensMatrixREST {
     @ApiOperation(value = "Create relations between calculation areas and sensitivity matrices in " +
             "CalcAreaSensMatrix", response = CalcAreaSensMatrixDto.class)
     public Response createCalcAreaSensMatrice(@Context UriInfo uriInfo,
-                                              CalcAreaSensMatrixDto calcAreaSensMatrixDto) throws SymphonyStandardAppException {
+                                              CalcAreaSensMatrixDto calcAreaSensMatrixDto) {
         CalcAreaSensMatrixDto calcAreaSensMatrix = calcAreaSensMatrixService.create(calcAreaSensMatrixDto);
         URI uri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(calcAreaSensMatrix.getId())).build();
         return Response.created(uri).entity(calcAreaSensMatrix).build();

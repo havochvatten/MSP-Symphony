@@ -12,13 +12,12 @@ import java.util.List;
 @Entity
 @Table(name = "baselineversion")
 @XmlRootElement
-@NamedQueries({
-        @NamedQuery(name = "BaselineVersion.findAll", query = "SELECT s FROM BaselineVersion s"),
-        @NamedQuery(name = "BaselineVersion.getByName", query = "SELECT s FROM BaselineVersion s WHERE s" +
-                ".name = :name"),
-        @NamedQuery(name = "BaselineVersion.getById", query = "SELECT s FROM BaselineVersion s WHERE s.id =" +
-                " :id")
-})
+
+@NamedQuery(name = "BaselineVersion.findAll", query = "SELECT s FROM BaselineVersion s")
+@NamedQuery(name = "BaselineVersion.getByName", query = "SELECT s FROM BaselineVersion s WHERE s" +
+        ".name = :name")
+@NamedQuery(name = "BaselineVersion.getById", query = "SELECT s FROM BaselineVersion s WHERE s.id =" +
+        " :id")
 public class BaselineVersion implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -107,14 +106,10 @@ public class BaselineVersion implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof BaselineVersion)) {
+        if (!(object instanceof BaselineVersion other)) {
             return false;
         }
-        BaselineVersion other = (BaselineVersion) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override

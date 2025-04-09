@@ -13,24 +13,24 @@ public class ComparisonResult {
 
     public record ComparisonTotal(double totalDifference, double totalBaseline) {}
 
-    public String calculationName;
-    public int[] includedEcosystems;
-    public int[] includedPressures;
+    private String calculationName;
+    private int[] includedEcosystems;
+    private int[] includedPressures;
 
-    public double[][] baseline;
-    public double[][] result;
+    private double[][] baseline;
+    private double[][] result;
 
-    public Map<Integer, ComparisonTotal> totalPerEcosystem;
-    public Map<Integer, ComparisonTotal> totalPerPressure;
+    private Map<Integer, ComparisonTotal> totalPerEcosystem;
+    private Map<Integer, ComparisonTotal> totalPerPressure;
 
-    public double cumulativeTotal;
-    public double cumulativeTotalDiff;
+    private double cumulativeTotal;
+    private double cumulativeTotalDiff;
 
-    public double area_m2;
+    private double area_m2;
 
-    public StatisticsResult statisticsDiff;
-    public StatisticsResult statisticsBaseline;
-    public boolean planar;
+    private StatisticsResult statisticsDiff;
+    private StatisticsResult statisticsBaseline;
+    private boolean planar;
 
     public ComparisonResult() {}
 
@@ -100,5 +100,57 @@ public class ComparisonResult {
             totalPerEcosystem.put(ecosystem,
                 new ComparisonTotal(totalDiffPerEcosystem.get(ecosystem), totalBaselinePerEcosystem.get(ecosystem)));
         }
+    }
+
+    public String getCalculationName() {
+        return calculationName;
+    }
+
+    public int[] getIncludedEcosystems() {
+        return includedEcosystems;
+    }
+
+    public int[] getIncludedPressures() {
+        return includedPressures;
+    }
+
+    public double[][] getBaseline() {
+        return baseline;
+    }
+
+    public double[][] getResult() {
+        return result;
+    }
+
+    public Map<Integer, ComparisonTotal> getTotalPerEcosystem() {
+        return totalPerEcosystem;
+    }
+
+    public Map<Integer, ComparisonTotal> getTotalPerPressure() {
+        return totalPerPressure;
+    }
+
+    public double getCumulativeTotal() {
+        return cumulativeTotal;
+    }
+
+    public double getCumulativeTotalDiff() {
+        return cumulativeTotalDiff;
+    }
+
+    public double getArea_m2() {
+        return area_m2;
+    }
+
+    public StatisticsResult getStatisticsDiff() {
+        return statisticsDiff;
+    }
+
+    public StatisticsResult getStatisticsBaseline() {
+        return statisticsBaseline;
+    }
+
+    public boolean isPlanar() {
+        return planar;
     }
 }

@@ -24,7 +24,7 @@ public class CalcAreaSensMatrixService {
      * specified sensitivity matrices in calculations)
      */
     public List<CalcAreaSensMatrix> find() {
-        return em.createNamedQuery("CalcAreaSensMatrix.findAll").getResultList();
+        return em.createNamedQuery("CalcAreaSensMatrix.findAll", CalcAreaSensMatrix.class).getResultList();
     }
 
     /**
@@ -32,7 +32,7 @@ public class CalcAreaSensMatrixService {
      *
      * @return calcAreaSensMatrixDto
      */
-    public CalcAreaSensMatrixDto create(CalcAreaSensMatrixDto calcAreaSensMatrixDto) throws SymphonyStandardAppException {
+    public CalcAreaSensMatrixDto create(CalcAreaSensMatrixDto calcAreaSensMatrixDto) {
         CalculationArea calculationArea = em.find(CalculationArea.class, calcAreaSensMatrixDto.getCalcareaId());
         SensitivityMatrix sensitivityMatrix = em.find(SensitivityMatrix.class,
 				calcAreaSensMatrixDto.getSensmatrixId());
@@ -48,22 +48,19 @@ public class CalcAreaSensMatrixService {
      */
     public CalcAreaSensMatrixDto get(Integer id) throws SymphonyStandardAppException {
         CalcAreaSensMatrix calcAreaSensMatrix = getCalcAreaSensMatrix(id);
-        CalcAreaSensMatrixDto calcAreaSensMatrixDto = CalcAreaSensMatrixMapper.mapToDto(calcAreaSensMatrix);
-        return calcAreaSensMatrixDto;
+        return CalcAreaSensMatrixMapper.mapToDto(calcAreaSensMatrix);
     }
 
     public List<CalcAreaSensMatrix> findByBaselineAndArea(String baselineName, int calcAreaId) {
-        List<CalcAreaSensMatrix> calcAreaSensMatrices =
-            em.createNamedQuery("CalcAreaSensMatrix.findByBaselineAndArea")
+        return em.createNamedQuery("CalcAreaSensMatrix.findByBaselineAndArea", CalcAreaSensMatrix.class)
                 .setParameter("baseline", baselineName)
                 .setParameter("calcAreaId", calcAreaId)
                 .getResultList();
-        return calcAreaSensMatrices;
     }
 
     public List<CalcAreaSensMatrixDto> findByBaselineAndOwner(String baselineName, Principal principal) {
         List<CalcAreaSensMatrix> calcAreaSensMatrices =
-				em.createNamedQuery("CalcAreaSensMatrix.findByBaselineAndOwner")
+				em.createNamedQuery("CalcAreaSensMatrix.findByBaselineAndOwner", CalcAreaSensMatrix.class)
 						.setParameter("baseline", baselineName)
 						.setParameter("owner", principal.getName())
 						.getResultList();
@@ -72,13 +69,11 @@ public class CalcAreaSensMatrixService {
 
     public List<CalcAreaSensMatrix> findByBaselineAndOwnerAndArea(String baselineName, Principal principal,
 																  int calcAreaId) {
-        List<CalcAreaSensMatrix> calcAreaSensMatrices =
-				em.createNamedQuery("CalcAreaSensMatrix.findByBaselineAndOwnerAndArea")
-						.setParameter("baselineName", baselineName)
-						.setParameter("owner", principal.getName())
-						.setParameter("calcAreaId", calcAreaId)
-						.getResultList();
-        return calcAreaSensMatrices;
+        return em.createNamedQuery("CalcAreaSensMatrix.findByBaselineAndOwnerAndArea", CalcAreaSensMatrix.class)
+                .setParameter("baselineName", baselineName)
+                .setParameter("owner", principal.getName())
+                .setParameter("calcAreaId", calcAreaId)
+                .getResultList();
     }
 
     /**
@@ -87,7 +82,7 @@ public class CalcAreaSensMatrixService {
      * @return calcAreaSensMatrixDto
      */
     public CalcAreaSensMatrixDto update(CalcAreaSensMatrixDto calcAreaSensMatrixDto) throws SymphonyStandardAppException {
-        CalcAreaSensMatrix calcAreaSensMatrixToUpdate = getCalcAreaSensMatrix(calcAreaSensMatrixDto.getId());
+        CalcAreaSensMatrix calcAreaSensMatrixToUpdate;
         CalculationArea calculationArea = getCalculationArea(calcAreaSensMatrixDto.getCalcareaId());
         SensitivityMatrix sensitivityMatrix = getSensitivityMatrix(calcAreaSensMatrixDto.getSensmatrixId());
         calcAreaSensMatrixToUpdate = CalcAreaSensMatrixMapper.mapToEntity(calcAreaSensMatrixDto,
@@ -108,16 +103,14 @@ public class CalcAreaSensMatrixService {
      * Delete all calcAreaMatrix objects with areaId for this owner
      */
     public void deleteByAreaIdAndOwner(Integer matrixId, Principal principal) throws SymphonyStandardAppException {
-        List<CalcAreaSensMatrix> calcAreaSensMatrices = em.createNamedQuery("CalcAreaSensMatrix.findByMatrixIdAndOwner")
+        List<CalcAreaSensMatrix> calcAreaSensMatrices = em.createNamedQuery("CalcAreaSensMatrix.findByMatrixIdAndOwner", CalcAreaSensMatrix.class)
 				.setParameter("matrixId", matrixId)
 				.setParameter("owner", principal.getName())
 				.getResultList();
         if (calcAreaSensMatrices.isEmpty()) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.CALC_AREA_SENS_MATRIX_NOT_FOUND);
         }
-        calcAreaSensMatrices.forEach(cs -> {
-            em.remove(cs);
-        });
+        calcAreaSensMatrices.forEach(cs -> em.remove(cs));
     }
 
     private CalcAreaSensMatrix getCalcAreaSensMatrix(Integer id) throws SymphonyStandardAppException {

@@ -7,12 +7,10 @@ import org.junit.Test;
 import se.havochvatten.symphony.dto.AreaTypeDto;
 import se.havochvatten.symphony.entity.AreaType;
 
-import java.io.IOException;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -33,7 +31,7 @@ public class AreaTypeRESTTest extends RESTTest {
     }
 
     @Test
-    public void testFindAll() throws IOException {
+    public void testFindAll() {
         Response response = given().
                 auth().
                 preemptive().
@@ -46,7 +44,7 @@ public class AreaTypeRESTTest extends RESTTest {
 
         try {
             List<AreaTypeDto> areaTypes = response.getBody().jsonPath().getList("", AreaTypeDto.class);
-            assertTrue(areaTypes.size() > 0);
+            assertFalse(areaTypes.isEmpty());
         } catch (Exception e) {
             System.out.println(e.toString());
         }
@@ -93,7 +91,7 @@ public class AreaTypeRESTTest extends RESTTest {
                 body(areaType).
                 put(endpoint + "/{id}");
 
-        assertEquals(response.getStatusCode(), 200);
+        assertEquals(200, response.getStatusCode());
         return response.getBody().jsonPath().getObject("", AreaType.class);
     }
 
@@ -118,6 +116,6 @@ public class AreaTypeRESTTest extends RESTTest {
                 when().
                 delete(endpoint("/testutilapi/areatype/{name}"));
 
-        assertEquals(response.getStatusCode(), 200);
+        assertEquals(200, response.getStatusCode());
     }
 }

@@ -18,7 +18,6 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.referencing.FactoryException;
 import se.havochvatten.symphony.entity.NationalArea;
 import se.havochvatten.symphony.entity.UserDefinedArea;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
@@ -57,8 +56,8 @@ public class AreasService {
         return typeField.asText().equals("MultiPolygon") ? _multiPolygonType : _polygonType;
     }
 
-    private final static SimpleFeatureType _polygonType;
-    private final static SimpleFeatureType _multiPolygonType;
+    private static final SimpleFeatureType _polygonType;
+    private static final SimpleFeatureType _multiPolygonType;
 
     static {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
@@ -105,7 +104,7 @@ public class AreasService {
     }
 
     private FeatureCollection<SimpleFeatureType, SimpleFeature> featuresFromStatePath(String[] statePath, String countryCode)
-        throws SymphonyStandardAppException, FactoryException {
+        throws SymphonyStandardAppException {
 
         if (statePath.length < 2) { // assert minimum path length
             return null;
@@ -159,13 +158,9 @@ public class AreasService {
         throws SymphonyStandardAppException {
         FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection;
 
-        try {
-            featureCollection = featuresFromStatePath(statePath, countryCode);
-        } catch (FactoryException fx) {
-            throw new SymphonyStandardAppException(SymphonyModelErrorCode.SHAPEFILE_GENERATION_ERROR, fx);
-        }
+        featureCollection = featuresFromStatePath(statePath, countryCode);
 
-        if(featureCollection == null || featureCollection.isEmpty()) {
+        if (featureCollection == null || featureCollection.isEmpty()) {
             return Optional.empty();
         }
 
@@ -220,32 +215,34 @@ public class AreasService {
         Path zipFile = Files.createTempFile(targetFileName, ".zip");
 
         FileOutputStream fos = new FileOutputStream(zipFile.toFile());
-        ZipOutputStream zos = new ZipOutputStream(fos);
 
-        for (String extension : shpComponents) {
+        try (ZipOutputStream zos = new ZipOutputStream(fos)) {
 
-            Path filePath = shapeFilePath.resolveSibling(
-                shapeFilePath.getFileName().toString().replace(".shp", "." + extension));
+            for (String extension : shpComponents) {
 
-            if (Files.exists(filePath)) {
-                ZipEntry zipEntry = new ZipEntry(targetFileName + "." + extension);
-                zos.putNextEntry(zipEntry);
+                Path filePath = shapeFilePath.resolveSibling(
+                    shapeFilePath.getFileName().toString().replace(".shp", "." + extension));
 
-                try (FileInputStream inputStream = new FileInputStream(filePath.toFile())) {
-                    int length;
-                    while ((length = inputStream.read(buffer)) > 0) {
-                        zos.write(buffer, 0, length);
+                if (Files.exists(filePath)) {
+                    ZipEntry zipEntry = new ZipEntry(targetFileName + "." + extension);
+                    zos.putNextEntry(zipEntry);
+
+                    try (FileInputStream inputStream = new FileInputStream(filePath.toFile())) {
+                        int length;
+                        while ((length = inputStream.read(buffer)) > 0) {
+                            zos.write(buffer, 0, length);
+                        }
                     }
+                    zos.closeEntry();
+
+                    Files.deleteIfExists(filePath);
                 }
-                zos.closeEntry();
-
-                Files.deleteIfExists(filePath);
             }
+
+            zos.finish();
+            zos.flush();
+
+            return zipFile.toString();
         }
-
-        zos.finish();
-        zos.flush();
-
-        return zipFile.toString();
     }
 }

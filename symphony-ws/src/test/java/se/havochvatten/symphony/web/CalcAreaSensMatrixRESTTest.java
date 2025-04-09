@@ -103,7 +103,7 @@ public class CalcAreaSensMatrixRESTTest extends RESTTest {
     private SensMatrixDto getSensMatrixDto(Integer calcAreaId) {
         SensMatrixDto sensMatrixDto = null;
 
-        String endpoint = endpoint("/sensitivitymatrix/{baselineName}");
+        String mxEndpoint = endpoint("/sensitivitymatrix/{baselineName}");
         String baselineName = "BASELINE2019";
 
         List<SensMatrixDto> sensMatrixDtos = given().
@@ -112,7 +112,7 @@ public class CalcAreaSensMatrixRESTTest extends RESTTest {
                 basic(getAdminUsername(), getAdminPassword()).
                 pathParam("baselineName", baselineName).
                 when().
-                get(endpoint).
+                get(mxEndpoint).
                 then().
                 extract().
                 body().
@@ -125,7 +125,6 @@ public class CalcAreaSensMatrixRESTTest extends RESTTest {
                 break;
             }
         }
-        ;
         return sensMatrixDto;
     }
 
@@ -170,11 +169,7 @@ public class CalcAreaSensMatrixRESTTest extends RESTTest {
         assertThat(sts, is(200));
 
         JsonPath jsonPathEvaluator = response.jsonPath();
-        List<CalcAreaSensMatrixDto> calcAreaSensMatricesDtos = jsonPathEvaluator.getList("",
-                CalcAreaSensMatrixDto.class);
-
-
-        return calcAreaSensMatricesDtos;
+        return jsonPathEvaluator.getList("", CalcAreaSensMatrixDto.class);
     }
 
     private void cleanUp() {

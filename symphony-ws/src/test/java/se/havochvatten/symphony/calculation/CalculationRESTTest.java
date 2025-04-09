@@ -1,7 +1,6 @@
 
 package se.havochvatten.symphony.calculation;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -28,7 +27,7 @@ CalculationRESTTest extends RESTTest {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     /** Helper method to make a calc request */
-    static ExtractableResponse makeSuccessfulCalcRequest(int scenarioId) throws JsonProcessingException {
+    static ExtractableResponse makeSuccessfulCalcRequest(int scenarioId) {
         return given().
                     header("Content-Type", "application/json").
                     auth().
@@ -206,7 +205,7 @@ CalculationRESTTest extends RESTTest {
 
     @Test
     public void testCalculation() {
-        assertTrue(testCalcId != 0);
+        assertNotEquals(testCalcId, 0);
     }
 
 //    @Test
@@ -281,7 +280,7 @@ CalculationRESTTest extends RESTTest {
     }
 
     @Test
-    public void testGetMatchingCalc() throws JsonProcessingException {
+    public void testGetMatchingCalc() {
 
         var resp2 = makeSuccessfulCalcRequest(testScenarioId);
         CalculationResultSlice crSlice = resp2.jsonPath().getObject("", CalculationResultSlice.class);
@@ -298,8 +297,8 @@ CalculationRESTTest extends RESTTest {
 
         assertEquals(200, report.statusCode());
         var res = report.jsonPath().getList("", CalculationResultSliceDto.class);
-        assertTrue(res.size() >= 1);
-        assertFalse(res.stream().anyMatch(calc -> calc.id == testCalcId));
+        assertFalse(res.isEmpty());
+        assertFalse(res.stream().anyMatch(calc -> calc.getId() == testCalcId));
         delete(crSlice.getId());
     }
 

@@ -20,9 +20,10 @@ public class BaselineVersionDtoMapper {
 
     public static List<BaselineVersionDto> mapEntitiesToDtos(List<BaselineVersion> baselineVersions) {
         List<BaselineVersionDto> dtos = new ArrayList<>();
-        baselineVersions.forEach(b -> {
-            dtos.add(mapEntityToDto(b));
-        });
+        baselineVersions.forEach(b -> dtos.add(mapEntityToDto(b)));
         return dtos;
     }
+
+    // prevent instantiation
+    private BaselineVersionDtoMapper() {}
 }

@@ -32,7 +32,7 @@ public class BaselineVersionServiceREST {
     @ApiOperation(value = "List all BaselineVersion", response = BaselineVersionDto.class,
             responseContainer = "List")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response findAll() throws SymphonyStandardAppException {
+    public Response findAll() {
         List<BaselineVersion> baselineVersions = baselineVersionService.findAll();
         return Response.ok(BaselineVersionDtoMapper.mapEntitiesToDtos(baselineVersions)).build();
     }

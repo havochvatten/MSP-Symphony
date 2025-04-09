@@ -12,10 +12,8 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "sensitivity")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Sensitivity.findAll", query = "SELECT s FROM Sensitivity s"),
-    @NamedQuery(name = "Sensitivity.findById", query = "SELECT s FROM Sensitivity s WHERE s.id = :is")
-})
+@NamedQuery(name = "Sensitivity.findAll", query = "SELECT s FROM Sensitivity s")
+@NamedQuery(name = "Sensitivity.findById", query = "SELECT s FROM Sensitivity s WHERE s.id = :is")
 public class Sensitivity implements Serializable {
     private static final long serialVersionUID = 1L;
 

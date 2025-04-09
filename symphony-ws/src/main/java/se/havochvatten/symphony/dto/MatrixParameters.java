@@ -11,8 +11,8 @@ public class MatrixParameters {
         STANDARD, OPTIONAL, CUSTOM
     }
     public static class AreaTypeRef {
-        public int id;
-        public List<AreaMatrixMapping> areaMatrices; // any specific matrix-area mappings to use
+        private int id;
+        private List<AreaMatrixMapping> areaMatrices; // any specific matrix-area mappings to use
 
         @JsonCreator
         public AreaTypeRef(@JsonProperty("id") int id,
@@ -20,12 +20,20 @@ public class MatrixParameters {
             this.id = id;
             this.areaMatrices = mapping;
         }
+
+        public int getId() {
+            return id;
+        }
+
+        public List<AreaMatrixMapping> getAreaMatrices() {
+            return areaMatrices;
+        }
     }
 
-    public MatrixType matrixType;
+    private MatrixType matrixType;
 
-    public Integer matrixId;
-    public List<AreaTypeRef> areaTypes;
+    private Integer matrixId;
+    private List<AreaTypeRef> areaTypes;
 
     public MatrixParameters() {
         this.matrixType = MatrixType.STANDARD;
@@ -46,5 +54,29 @@ public class MatrixParameters {
         matrixType = type;
         matrixId = id;
         areaTypes = types;
+    }
+
+    public MatrixType getMatrixType() {
+        return matrixType;
+    }
+
+    public void setMatrixType(MatrixType matrixType) {
+        this.matrixType = matrixType;
+    }
+
+    public Integer getMatrixId() {
+        return matrixId;
+    }
+
+    public void setMatrixId(Integer matrixId) {
+        this.matrixId = matrixId;
+    }
+
+    public List<AreaTypeRef> getAreaTypes() {
+        return areaTypes;
+    }
+
+    public void setAreaTypes(List<AreaTypeRef> areaTypes) {
+        this.areaTypes = areaTypes;
     }
 }
