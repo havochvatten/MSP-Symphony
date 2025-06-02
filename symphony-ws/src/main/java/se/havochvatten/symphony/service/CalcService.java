@@ -35,22 +35,23 @@ import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.exception.SymphonyStandardSystemException;
 import se.havochvatten.symphony.scenario.*;
 
-import javax.annotation.PostConstruct;
-import javax.batch.operations.JobOperator;
-import javax.batch.operations.NoSuchJobExecutionException;
-import javax.batch.runtime.BatchRuntime;
-import javax.batch.runtime.JobExecution;
-import javax.ejb.*;
+import jakarta.annotation.PostConstruct;
+import jakarta.batch.operations.JobOperator;
+import jakarta.batch.operations.NoSuchJobExecutionException;
+import jakarta.batch.runtime.BatchRuntime;
+import jakarta.batch.runtime.JobExecution;
+import jakarta.ejb.*;
 import javax.imageio.ImageWriteParam;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.*;
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.NotFoundException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.*;
+import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.NotFoundException;
+
 import java.awt.image.Raster;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -65,6 +66,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static se.havochvatten.symphony.dto.NormalizationType.PERCENTILE;
+import static se.havochvatten.symphony.util.CalculationUtil.*;
 
 /**
  * Calculation service
@@ -78,18 +80,6 @@ public class CalcService {
     public static final int OPERATION_CUMULATIVE = 0;
     public static final int OPERATION_RARITYADJUSTED = 1;
     private static final Logger LOG = LoggerFactory.getLogger(CalcService.class);
-
-    public static String operationName(int operation) {
-    // Temporary solution.
-    // Should utilize enum (?) but due to inadequacies re: Hibernate mapping of
-    // postgres enum data type (availalble for pgdb > v10) int is chosen instead.
-    // Operation options json object is also arguably suboptimal, but kept as
-    // legacy. There may be a case for a more thorough restructuring.
-
-     return operation == CalcService.OPERATION_CUMULATIVE ?
-        "CumulativeImpact" :
-        "RarityAdjustedCumulativeImpact";
-    }
 
     private static final ObjectMapper mapper = new ObjectMapper(); // TODO Inject instead
 
@@ -124,10 +114,8 @@ public class CalcService {
         JAI jai = JAI.getDefaultInstance();
         var scheduler = jai.getTileScheduler();
         scheduler.setParallelism(Runtime.getRuntime().availableProcessors());
-//                scheduler.setPrefetchParallelism(parallelism);
 
         var cache = jai.getTileCache();
-//        cache.setMemoryThreshold(0.80f);
         int megabytesOfCache = Integer.parseInt(
                 props.getProperty("calc.jai.tilecache.capacity", "1024"));
         cache.setMemoryCapacity(megabytesOfCache * 1024 * 1024L);
@@ -328,7 +316,7 @@ public class CalcService {
                 if (caPolygons == null) continue;
 
                 for(CaPolygon caPoly : caPolygons){
-                    Geometry caGeo = CalculationAreaService.jsonToGeometry(caPoly.getPolygon());
+                    Geometry caGeo = jsonToGeometry(caPoly.getPolygon());
                     if(caGeo != null) {
                         if (excludedCoastPolygon == null) {
                             excludedCoastPolygon = caGeo;
@@ -475,7 +463,7 @@ public class CalcService {
 
                 ScenarioSnapshot scenario = calc.getScenarioSnapshot();
 
-                double resolution = ReportService.getResolutionInMetres(implicitBaseline);
+                double resolution = getResolutionInMetres(implicitBaseline);
                 double area = Double.isNaN(resolution) ?
                     scenario.getGeometry().getArea() :
                     resolution * resolution * stats.pixels();
@@ -616,7 +604,7 @@ public class CalcService {
                     preprocessMatrices(matrices), layout, mask, nonZeroIndices);
             } else
                 coverage = operations.cumulativeImpact(
-                    CalcService.operationName(operation),
+                    operationName(operation),
                     ecoComponents,
                     pressures,
                     ecosystemsToInclude, pressuresToInclude, preprocessMatrices(matrices), layout, mask,
@@ -723,7 +711,7 @@ public class CalcService {
             return false;
         }
 
-        return execution.getBatchStatus() == javax.batch.runtime.BatchStatus.STARTED;
+        return execution.getBatchStatus() == jakarta.batch.runtime.BatchStatus.STARTED;
     }
 
     private ImageLayout getImageLayout(Envelope envelope) {
@@ -732,12 +720,6 @@ public class CalcService {
                 (int) envelope.getMinY(),
                 (int) envelope.getWidth(),
                 (int) envelope.getHeight());
-    }
-
-    public static double[][][] preprocessMatrices(List<SensitivityMatrix> sensitivityMatrices) {
-        return sensitivityMatrices.stream().
-                map(m -> m == null ? null : m.getMatrixValues()).
-                toArray(double[][][]::new);
     }
 
     public CalculationResult persistCalculation(GridCoverage2D result,

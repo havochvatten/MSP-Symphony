@@ -14,20 +14,20 @@ import se.havochvatten.symphony.service.CalcService;
 import se.havochvatten.symphony.service.PropertiesService;
 import se.havochvatten.symphony.service.ReportService;
 
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.EJB;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static javax.ws.rs.core.Response.ok;
-import static javax.ws.rs.core.Response.status;
+import static jakarta.ws.rs.core.Response.ok;
+import static jakarta.ws.rs.core.Response.status;
 import static se.havochvatten.symphony.web.CalculationREST.getImplicitDiffCoverageFromCalcId;
 import static se.havochvatten.symphony.web.CalculationREST.hasAccess;
 

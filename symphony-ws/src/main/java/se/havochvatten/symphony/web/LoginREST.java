@@ -11,14 +11,14 @@ import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.service.PropertiesService;
 import se.havochvatten.symphony.service.UserService;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ejb.EJB;
+import jakarta.ejb.Stateless;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.security.Principal;
 
@@ -72,20 +72,25 @@ public class LoginREST {
         }
     }
 
-    @SuppressWarnings("rawtypes")
     private Response loginUser(HttpServletRequest req, UserLoginDto user) throws ServletException, IOException {
         LOG.debug("User {} is being logged in", user.getUsername());
         req.getSession();
-        req.login(user.getUsername(), user.getPassword());
-        if (req.isUserInRole(propertiesService.getProperty("symphony.user")) || req.isUserInRole(propertiesService.getProperty("symphony.admin"))) {
-            LOG.info("User {} logged in", user.getUsername());
-            UserDto userDto = userService.getUser(req.getUserPrincipal());
-            return Response.ok(userDto).build();
-        } else {
-            LOG.warn("Authorization failed. User {} is not member of any allowed group.",
+        try {
+            req.login(user.getUsername(), user.getPassword());
+            if (req.isUserInRole(propertiesService.getProperty("symphony.user")) || req.isUserInRole(propertiesService.getProperty("symphony.admin"))) {
+                LOG.info("User {} logged in", user.getUsername());
+                UserDto userDto = userService.getUser(req.getUserPrincipal());
+                return Response.ok(userDto).build();
+            } else {
+                LOG.warn("Authorization failed. User {} is not member of any allowed group.",
                     user.getUsername());
-            logout(req);
-            return Response.status(Response.Status.UNAUTHORIZED).build();
+                logout(req);
+                return Response.status(Response.Status.UNAUTHORIZED).build();
+            }
+        } catch (ServletException ex) {
+            System.out.println("Fjärséeen!!");
+            System.out.println(ex.getMessage());
+            throw ex;
         }
     }
 
@@ -122,7 +127,7 @@ public class LoginREST {
         }
         LOG.info("Logging out user {}", principal.getName());
         req.logout();
-        req.getSession().invalidate();
+        req.logout();
         return Response.ok().build();
     }
 }

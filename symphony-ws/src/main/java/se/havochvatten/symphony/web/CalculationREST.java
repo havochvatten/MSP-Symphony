@@ -32,12 +32,12 @@ import se.havochvatten.symphony.service.normalizer.NormalizerService;
 import se.havochvatten.symphony.service.normalizer.RasterNormalizer;
 import se.havochvatten.symphony.service.normalizer.StatsNormalizer;
 
-import javax.annotation.security.RolesAllowed;
-import javax.inject.Inject;
-import javax.persistence.NoResultException;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Inject;
+import jakarta.persistence.NoResultException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
@@ -52,7 +52,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static javax.ws.rs.core.Response.*;
+import static jakarta.ws.rs.core.Response.*;
+import static se.havochvatten.symphony.util.CalculationUtil.*;
+import static se.havochvatten.symphony.util.MetaDataUtil.*;
 import static se.havochvatten.symphony.web.WebUtil.noPrincipalStr;
 
 /**
@@ -122,7 +124,7 @@ public class CalculationREST {
 
         var watch = new StopWatch();
         watch.start();
-        logger.log(Level.INFO, () -> String.format("Performing %s calculation for %s ...", CalcService.operationName(persistedScenario.getOperation()), persistedScenario.getName()));
+        logger.log(Level.INFO, () -> String.format("Performing %s calculation for %s ...", operationName(persistedScenario.getOperation()), persistedScenario.getName()));
         CalculationResult result = calcService.calculateScenarioImpact(persistedScenario, false);
         watch.stop();
         logger.log(Level.INFO, "DONE ({0} ms)", watch.getTime());
@@ -254,7 +256,7 @@ public class CalculationREST {
 
         if(calculationResult.getImagePNG() != null) {
             byte[] savedImage = calculationResult.getImagePNG();
-            String extent = DataLayerService.readMetaData(savedImage, "extent");
+            String extent = readMetaData(savedImage, "extent");
 
             if(extent != null) {
                 return ok(savedImage, IMAGE_PNG)
@@ -274,7 +276,7 @@ public class CalculationREST {
         // canonical needed if coverage is recreated
         this.targetCRS = this.coverage.getCoordinateReferenceSystem2D();
 
-        crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8.toString()) :
+        crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8) :
                 props.getProperty(DATA_SOURCE_STR, DEFAULT_PROJECTION);
 
         CoordinateReferenceSystem clientCRS =
@@ -317,7 +319,7 @@ public class CalculationREST {
         baos.flush();
 
         calculationResult.setImagePNG(
-            DataLayerService.addMetaData(cimage, cimage.getColorModel(), cimage.getSampleModel(), "extent", extent)
+            addMetaData(cimage, cimage.getColorModel(), cimage.getSampleModel(), "extent", extent)
         );
 
         calcService.updateCalculation(calculationResult);
@@ -368,7 +370,7 @@ public class CalculationREST {
                                        @QueryParam("max") Integer maxValue,
                                        @QueryParam("dynamic") boolean dynamic, @QueryParam("crs") String crs)
             throws Exception {
-        crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8.toString()) :
+        crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8) :
                 props.getProperty(DATA_SOURCE_STR, DEFAULT_PROJECTION);
         maxValue = maxValue != null ? maxValue : 45;
 
@@ -394,7 +396,7 @@ public class CalculationREST {
                                        @DefaultValue("false") @QueryParam("reverse") boolean reverse,
                                        @QueryParam("dynamic") boolean dynamic, @QueryParam("crs") String crs)
             throws Exception {
-        crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8.toString()) :
+        crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8) :
                 props.getProperty(DATA_SOURCE_STR, DEFAULT_PROJECTION);
         maxValue = maxValue != null ? maxValue : 45;
 

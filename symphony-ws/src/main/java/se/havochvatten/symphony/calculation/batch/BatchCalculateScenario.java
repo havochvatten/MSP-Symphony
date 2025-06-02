@@ -12,23 +12,23 @@ import se.havochvatten.symphony.scenario.*;
 import se.havochvatten.symphony.service.PropertiesService;
 import se.havochvatten.symphony.service.ScenarioService;
 
-import javax.annotation.Resource;
-import javax.batch.api.AbstractBatchlet;
-import javax.batch.runtime.BatchRuntime;
-import javax.batch.runtime.context.JobContext;
-import javax.ejb.*;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.*;
-import javax.websocket.*;
+import jakarta.annotation.Resource;
+import jakarta.batch.api.AbstractBatchlet;
+import jakarta.batch.runtime.BatchRuntime;
+import jakarta.batch.runtime.context.JobContext;
+import jakarta.ejb.*;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.*;
+import jakarta.websocket.*;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
-import static javax.ejb.LockType.READ;
-import static javax.ejb.LockType.WRITE;
+import static jakarta.ejb.LockType.READ;
+import static jakarta.ejb.LockType.WRITE;
 
 @Named
 @TransactionAttribute(TransactionAttributeType.REQUIRED)

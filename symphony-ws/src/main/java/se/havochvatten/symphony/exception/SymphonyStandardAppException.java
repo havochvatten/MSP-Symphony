@@ -1,6 +1,6 @@
 package se.havochvatten.symphony.exception;
 
-import javax.ejb.ApplicationException;
+import jakarta.ejb.ApplicationException;
 
 /**
  * Application exception to be used for checked exceptions which will be unchanged by the EJB container.

@@ -5,12 +5,9 @@ import com.github.miachm.sods.*;
 import it.geosolutions.jaiext.stats.Statistics;
 import org.apache.commons.lang3.StringUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.geometry.jts.JTS;
-import org.geotools.measure.Units;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
 import se.havochvatten.symphony.calculation.ComparisonResult;
@@ -21,24 +18,19 @@ import se.havochvatten.symphony.dto.CompoundComparisonExport.ComparisonResultExp
 import se.havochvatten.symphony.entity.*;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.util.ODSStyles;
-import tech.units.indriya.quantity.Quantities;
 
-import javax.ejb.EJB;
-import javax.ejb.Singleton;
-import javax.inject.Inject;
-import javax.measure.Quantity;
-import javax.measure.UnconvertibleException;
-import javax.measure.Unit;
-import javax.measure.quantity.Length;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.ejb.EJB;
+import jakarta.ejb.Singleton;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static java.util.stream.Collectors.toMap;
+import static se.havochvatten.symphony.util.CalculationUtil.*;
 
 @Singleton
 public class ReportService {
@@ -118,46 +110,6 @@ public class ReportService {
                             (double[]) operations.histogram(coverage, 0.0, max, 100).getResult() :
                             new double[0],
                         simpleStats[0].getNumSamples());
-    }
-
-    public static double getResolutionInMetres(GridCoverage2D coverage) {
-        double result;
-        GridGeometry2D geometry = coverage.getGridGeometry();
-        Double scale = ((AffineTransform2D) geometry.getGridToCRS()).getScaleX();
-        Unit<Length> unit = (Unit<Length>) geometry.getCoordinateReferenceSystem2D().getCoordinateSystem().getAxis(0).getUnit();
-        Quantity<Length> resolution = Quantities.getQuantity(scale, unit);
-
-        try {
-            result = resolution.to(Units.METRE).getValue().doubleValue();
-        } catch (UnconvertibleException e) { // Coordinate system isn't projected, unit (rad/deg) cannot be converted.
-                                             // We could check the CoordinateSystem or specific types of Unit but
-                                             // let it throw instead at the conversion stage.
-            result = Double.NaN;
-        }
-
-        return result;
-    }
-
-    /**
-     * @param pTotal  output param containing pressure row total
-     * @param esTotal output param containing ecosystem column total
-     */
-    public static double getComponentTotals(double[][] matrix, double[] pTotal, double[] esTotal) {
-        double totalTotal = 0;
-        for (int b = 0; b < matrix.length; b++) {
-            for (int e = 0; e < matrix[b].length; e++) {
-                pTotal[b] += matrix[b][e];
-                esTotal[e] += matrix[b][e];
-                totalTotal += matrix[b][e];
-            }
-        }
-        return totalTotal;
-    }
-
-    public static Map<Integer, Double> impactPerComponent(int[] components, double[] totals) {
-        return IntStream
-                .range(0, components.length).boxed()
-                .collect(toMap(i -> components[i], i -> totals[i]));
     }
 
     public ReportResponseDto generateReportData(CalculationResult calc, boolean computeChart, String preferredLanguage)

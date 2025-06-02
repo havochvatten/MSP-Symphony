@@ -3,8 +3,8 @@ package se.havochvatten.symphony.scheduled;
 import se.havochvatten.symphony.service.CalcService;
 import se.havochvatten.symphony.service.PropertiesService;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.*;
+import jakarta.annotation.PostConstruct;
+import jakarta.ejb.*;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;

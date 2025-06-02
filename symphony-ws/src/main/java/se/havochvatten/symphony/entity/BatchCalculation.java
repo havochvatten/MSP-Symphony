@@ -2,21 +2,17 @@ package se.havochvatten.symphony.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vladmihalcea.hibernate.type.array.IntArrayType;
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import se.havochvatten.symphony.scenario.ScenarioSplitOptions;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 
 @Entity
-@TypeDef(name = "int-array", typeClass = IntArrayType.class)
-@TypeDef(name = "json", typeClass = JsonBinaryType.class)
 @Table(name = "batchcalculation")
 public class BatchCalculation {
 
@@ -38,17 +34,17 @@ public class BatchCalculation {
 
     @NotNull
     @Column(name = "entities", nullable = false)
-    @Type(type = "int-array")
+    @JdbcTypeCode(SqlTypes.ARRAY)
     private int[] entities;
 
     @Column(name = "calculated", nullable = false)
     @ColumnDefault("ARRAY[]::integer[]")
-    @Type(type = "int-array")
+    @JdbcTypeCode(SqlTypes.ARRAY)
     private int[] calculated = new int[0];
 
     @Column(name = "failed", nullable = false)
     @ColumnDefault("ARRAY[]::integer[]")
-    @Type(type = "int-array")
+    @JdbcTypeCode(SqlTypes.ARRAY)
     private int[] failed = new int[0];
 
     @NotNull
@@ -56,7 +52,7 @@ public class BatchCalculation {
     private boolean areasCalculation = false;
 
     @Column(name = "areas_options", columnDefinition = "json")
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     private JsonNode areasOptions;
 
     public Integer getId() {

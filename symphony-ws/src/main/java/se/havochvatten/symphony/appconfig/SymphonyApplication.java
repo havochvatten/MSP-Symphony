@@ -2,9 +2,9 @@ package se.havochvatten.symphony.appconfig;
 
 import it.geosolutions.jaiext.JAIExt;
 
-import javax.ws.rs.core.Application;
+import jakarta.ws.rs.core.Application;
 
-@javax.ws.rs.ApplicationPath("service")
+@jakarta.ws.rs.ApplicationPath("service")
 public class SymphonyApplication extends Application {
     static {
         // According to JAI-Ext docs it is recommended to init from an application static initializer

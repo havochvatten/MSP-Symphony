@@ -125,12 +125,12 @@ public class CumulativeImpactDescriptor extends OperationDescriptorImpl implemen
         // TODO check all matrices
 
         if (pressures.getSampleModel().getNumBands() != matrix.length) {
-            message.append(getName() + ": " + "numbers of rows in matrix does not match number of pressures");
+            message.append(getName() + ": numbers of rows in matrix does not match number of pressures");
             return false;
         }
         for (int i = 0; i < matrix.length; i++) {
             if (matrix[i].length != ecoservices.getSampleModel().getNumBands()) {
-                message.append(getName() + ": " + "numbers of columns in matrix does not match number of ecosystem services in row " + i);
+                message.append(getName() + ": numbers of columns in matrix does not match number of ecosystem services in row " + i);
                 return false;
             }
         }

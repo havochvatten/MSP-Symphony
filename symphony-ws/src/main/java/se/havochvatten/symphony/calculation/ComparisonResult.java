@@ -7,8 +7,9 @@ import se.havochvatten.symphony.dto.StatisticsResult;
 import java.util.HashMap;
 import java.util.Map;
 
-import static se.havochvatten.symphony.service.ReportService.getComponentTotals;
-import static se.havochvatten.symphony.service.ReportService.impactPerComponent;
+import static se.havochvatten.symphony.util.CalculationUtil.getComponentTotals;
+import static se.havochvatten.symphony.util.CalculationUtil.impactPerComponent;
+
 public class ComparisonResult {
 
     public record ComparisonTotal(double totalDifference, double totalBaseline) {}

@@ -14,10 +14,10 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.SAXException;
 
 import javax.imageio.ImageIO;
-import javax.json.Json;
-import javax.json.JsonArray;
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import javax.media.jai.InterpolationNearest;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.image.RenderedImage;
@@ -150,7 +150,7 @@ public interface WebUtil {
         }
     }
 
-    public static int[] intArrayParam(String param) {
+    static int[] intArrayParam(String param) {
         return Arrays.stream(param.split(",")).mapToInt(Integer::parseInt).toArray();
     }
 

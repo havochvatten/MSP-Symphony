@@ -9,11 +9,11 @@ import se.havochvatten.symphony.service.ScenarioService;
 import se.havochvatten.symphony.service.MetaDataService;
 import se.havochvatten.symphony.service.PropertiesService;
 
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.EJB;
+import jakarta.ejb.Stateless;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 
 @Stateless
 @Api(value = "/metadata",
