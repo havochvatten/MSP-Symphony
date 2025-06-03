@@ -110,7 +110,7 @@ public class CalculationResult implements Serializable {
     @Type(value = DoubleArrayType.class,
         parameters = @org.hibernate.annotations.Parameter(
             name = "sql_array_type",
-            value = "double precision"
+            value = "float"
         )
     )
     @Column(name = "cares_impactmatrix", columnDefinition = "double precision[][]")

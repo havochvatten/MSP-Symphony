@@ -31,7 +31,7 @@ import static jakarta.ejb.LockType.READ;
 import static jakarta.ejb.LockType.WRITE;
 
 @Named
-@TransactionAttribute(TransactionAttributeType.REQUIRED)
+@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class BatchCalculateScenario extends AbstractBatchlet {
     @Inject
     private JobContext jobContext;
