@@ -109,7 +109,7 @@ public class ScenarioSnapshot implements BandChangeEntity, ScenarioCommon {
     @Column(name = "area_matrix_map", nullable = false, columnDefinition = "integer[][]")
     private int[][] areaMatrixMap;
 
-    @OneToOne(mappedBy = "scenarioSnapshot")
+    @OneToOne(mappedBy = "scenarioSnapshot", cascade = CascadeType.MERGE, orphanRemoval = true)
     private CalculationResult calculationresults;
 
     public CalculationResult getCalculationresults() {

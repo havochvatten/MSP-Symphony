@@ -126,7 +126,7 @@ public class CalculationResult implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @NotNull
     private ScenarioSnapshot scenarioSnapshot;
 
