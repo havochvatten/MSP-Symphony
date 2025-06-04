@@ -1,7 +1,7 @@
 package se.havochvatten.symphony.web;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import se.havochvatten.symphony.dto.CalculationAreaDto;
 import se.havochvatten.symphony.entity.CalculationArea;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
@@ -20,9 +20,7 @@ import java.net.URI;
 import java.util.List;
 
 @Stateless
-@Api(value = "/calculationarea",
-        produces = MediaType.APPLICATION_JSON,
-        consumes = MediaType.APPLICATION_JSON)
+@Tag(name = "/calculationarea")
 @Path("calculationarea")
 @RolesAllowed("GRP_SYMPHONY")
 public class CalculationAreaREST {
@@ -31,8 +29,7 @@ public class CalculationAreaREST {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get all calculation areas for baselineName defined in the system", response =
-            CalculationArea.class, responseContainer = "List")
+    @Operation(summary = "Get all calculation areas for baselineName defined in the system")
     @Path("all/{baselineName}")
     public Response findCalculationAreas(@PathParam("baselineName") String baselineName) {
         List<CalculationArea> resp = calculationAreaService.findCalculationAreas(baselineName);
@@ -49,8 +46,7 @@ public class CalculationAreaREST {
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get calculation area on id", response = CalculationArea.class,
-            responseContainer = "List")
+    @Operation(summary = "Get calculation area on id")
     public Response get(@PathParam("id") Integer id) throws SymphonyStandardAppException {
         CalculationAreaDto calculationAreaDto = calculationAreaService.get(id);
         return Response.ok(calculationAreaDto).build();
@@ -59,9 +55,8 @@ public class CalculationAreaREST {
     @GET
     @Path("calibrated/{baselineName}")
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get all calculation areas for baselineName defined in the system " +
-                          "for which a max value has been set",
-                  response = CalculationArea.class, responseContainer = "List")
+    @Operation(summary = "Get all calculation areas for baselineName defined in the system " +
+                          "for which a max value has been set")
     public Response findCalibratedCalculationAreas(@PathParam("baselineName") String baselineName) {
         List<CalculationArea> resp = calculationAreaService.findCalibratedCalculationAreas(baselineName);
 
@@ -77,7 +72,7 @@ public class CalculationAreaREST {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Create a CalculationArea", response = Response.class)
+    @Operation(summary = "Create a CalculationArea")
     public Response create(@Context UriInfo uriInfo, CalculationAreaDto calculationAreaDto) throws SymphonyStandardAppException {
         calculationAreaDto = calculationAreaService.create(calculationAreaDto);
         URI uri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(calculationAreaDto.getId())).build();
@@ -88,7 +83,7 @@ public class CalculationAreaREST {
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Update CalculationArea", response = Response.class)
+    @Operation(summary = "Update CalculationArea")
     public Response update(@PathParam("id") Integer id, CalculationAreaDto calculationAreaDto) throws SymphonyStandardAppException {
         calculationAreaDto.setId(id);
         calculationAreaDto = calculationAreaService.update(calculationAreaDto);
@@ -98,7 +93,7 @@ public class CalculationAreaREST {
     @DELETE
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Delete CalculationArea", response = Response.class)
+    @Operation(summary = "Delete CalculationArea")
     public Response deleteCalcAreaSensMatrix(@PathParam("id") Integer id) throws SymphonyStandardAppException {
         calculationAreaService.delete(id);
         return Response.ok().build();

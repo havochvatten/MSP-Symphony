@@ -1,7 +1,7 @@
 package se.havochvatten.symphony.web;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import se.havochvatten.symphony.dto.CalcAreaSensMatrixDto;
 import se.havochvatten.symphony.dto.FrontendErrorDto;
 import se.havochvatten.symphony.dto.SensMatrixDto;
@@ -25,9 +25,7 @@ import java.util.List;
 import static se.havochvatten.symphony.web.WebUtil.noPrincipalStr;
 
 @Stateless
-@Api(value = "/sensitivitymatrix",
-        produces = MediaType.APPLICATION_JSON,
-        consumes = MediaType.APPLICATION_JSON)
+@Tag(name ="/sensitivitymatrix")
 @Path("sensitivitymatrix")
 @RolesAllowed("GRP_SYMPHONY")
 public class SensMatrixREST {
@@ -38,7 +36,7 @@ public class SensMatrixREST {
     CalcAreaSensMatrixService calcAreaSensMatrixService;
 
     @GET
-    @ApiOperation(value = "List all sensitivity matrices in the system for the baseline (admin)")
+    @Operation(summary = "List all sensitivity matrices in the system for the baseline (admin)")
     @Produces({MediaType.APPLICATION_JSON})
     @Path("{baselineName}")
     @RolesAllowed("GRP_SYMPHONY_ADMIN")
@@ -48,7 +46,7 @@ public class SensMatrixREST {
     }
 
     @GET
-    @ApiOperation(value = "List all user defined sensitivity matrices in the system for the baseline and " +
+    @Operation(summary = "List all user defined sensitivity matrices in the system for the baseline and " +
 			"current user")
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/user/{baselineName}")
@@ -61,7 +59,7 @@ public class SensMatrixREST {
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get user defined SensMatrixDto by id", response = SensMatrixDto.class)
+    @Operation(summary = "Get user defined SensMatrixDto by id")
     @Path("/id/{id}")
     public Response getSensMatrix(@PathParam("id") Integer id,
                                   @DefaultValue("") @QueryParam("lang") String preferredLanguage) {
@@ -75,8 +73,7 @@ public class SensMatrixREST {
     }
 
     @POST
-    @ApiOperation(value = "Create user defined sensitivity matrix for current user", response =
-			SensMatrixDto.class)
+    @Operation(summary = "Create user defined sensitivity matrix for current user")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{baselineName}")
@@ -101,8 +98,7 @@ public class SensMatrixREST {
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Update user defined sensitivity matrix for current user", response =
-			SensMatrixDto.class)
+    @Operation(summary = "Update user defined sensitivity matrix for current user")
     public Response updateSensMatrix(@Context HttpServletRequest req,
 									 @PathParam("id") Integer id, SensMatrixDto sensMatrixDto,
                                      @DefaultValue("") @QueryParam("lang") String preferredLanguage) {
@@ -119,8 +115,8 @@ public class SensMatrixREST {
     }
 
     @POST
-    @ApiOperation(value = "Create user defined sensitivity matrix and connect to area in CalcAreaSensMatrix" +
-			" for current user", response = SensMatrixDto.class)
+    @Operation(summary = "Create user defined sensitivity matrix and connect to area in CalcAreaSensMatrix" +
+			" for current user")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{baselineName}/{areaid}")
@@ -150,8 +146,8 @@ public class SensMatrixREST {
     }
 
     @DELETE
-    @ApiOperation(value = "Delete user defined Sensitivity matrix and all the relations in " +
-			"CalcAreaSensMatrix for current user", response = Response.class)
+    @Operation(summary = "Delete user defined Sensitivity matrix and all the relations in " +
+			"CalcAreaSensMatrix for current user")
     @Path("/withcalcareasens/{matrixid}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteSensMatrixAndCalcAreaSens(@Context HttpServletRequest req,
@@ -169,8 +165,8 @@ public class SensMatrixREST {
     }
 
     @DELETE
-    @ApiOperation(value = "Delete user defined Sensitivity matrix and all the relations in " +
-			"CalcAreaSensMatrix for current user", response = Response.class)
+    @Operation(summary = "Delete user defined Sensitivity matrix and all the relations in " +
+			"CalcAreaSensMatrix for current user")
     @Path("/{matrixid}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteSensMatrix(@Context HttpServletRequest req,

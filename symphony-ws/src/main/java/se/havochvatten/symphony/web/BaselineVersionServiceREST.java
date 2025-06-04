@@ -1,8 +1,7 @@
 package se.havochvatten.symphony.web;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import se.havochvatten.symphony.dto.BaselineVersionDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.mapper.BaselineVersionDtoMapper;
@@ -19,9 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 @Stateless
-@Api(value = "/baselineversion",
-        produces = MediaType.APPLICATION_JSON,
-        consumes = MediaType.APPLICATION_JSON)
+@Tag(name = "/baselineversion")
 @Path("baselineversion")
 @RolesAllowed("GRP_SYMPHONY")
 public class BaselineVersionServiceREST {
@@ -29,8 +26,7 @@ public class BaselineVersionServiceREST {
     BaselineVersionService baselineVersionService;
 
     @GET
-    @ApiOperation(value = "List all BaselineVersion", response = BaselineVersionDto.class,
-            responseContainer = "List")
+    @Operation(summary = "List all BaselineVersion")
     @Produces({MediaType.APPLICATION_JSON})
     public Response findAll() {
         List<BaselineVersion> baselineVersions = baselineVersionService.findAll();
@@ -38,7 +34,7 @@ public class BaselineVersionServiceREST {
     }
 
     @GET
-    @ApiOperation(value = "Get BaselineVersion by name", response = BaselineVersionDto.class)
+    @Operation(summary = "Get BaselineVersion by name")
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/name/{name}")
     public Response getByName(@PathParam("name") String name) throws SymphonyStandardAppException {
@@ -47,8 +43,7 @@ public class BaselineVersionServiceREST {
     }
 
     @GET
-    @ApiOperation(value = "Get BaselineVersion by date (date long - number of milliseconds since 1970)",
-            response = BaselineVersionDto.class)
+    @Operation(summary = "Get BaselineVersion by date (date long - number of milliseconds since 1970)")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     @Path("/date/{date}")
@@ -58,7 +53,7 @@ public class BaselineVersionServiceREST {
     }
 
     @GET
-    @ApiOperation(value = "Get current BaselineVersion (today)", response = BaselineVersionDto.class)
+    @Operation(summary = "Get current BaselineVersion (today)")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     @Path("/current")

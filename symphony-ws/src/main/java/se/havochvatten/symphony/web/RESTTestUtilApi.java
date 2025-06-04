@@ -1,7 +1,7 @@
 package se.havochvatten.symphony.web;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import se.havochvatten.symphony.entity.*;
 import se.havochvatten.symphony.entity.Scenario;
 import se.havochvatten.symphony.service.PropertiesService;
@@ -21,7 +21,7 @@ import java.util.List;
 @Stateless
 @Path("testutilapi")
 @RolesAllowed("GRP_SYMPHONY_ADMIN")
-@Api(value = "/testutilapi")
+@Tag(name ="/testutilapi")
 public class RESTTestUtilApi {
     @EJB
     PropertiesService props;
@@ -98,7 +98,7 @@ public class RESTTestUtilApi {
 
     @DELETE
     @Path("/calculation/all")
-    @ApiOperation(value = "Delete all calculations except baseline calculations")
+    @Operation(summary = "Delete all calculations except baseline calculations")
     public Response deleteCalculations() {
         try {
             em.createNamedQuery("CalculationResult.findAllExceptBaseline", CalculationResult.class).getResultList().stream().forEach(em::remove);
@@ -110,7 +110,7 @@ public class RESTTestUtilApi {
 
     @DELETE
     @Path("/sensitivitymatrix/sensmatrixandcalcareasensmatrix/{name}")
-    @ApiOperation(value = "Delete SensitivityMatrices and CalcAreaSensMatrices with requested name")
+    @Operation(summary = "Delete SensitivityMatrices and CalcAreaSensMatrices with requested name")
     public Response deleteSensMatrixAndCalcareaSensMatrix(@PathParam("name") String name) {
         try {
             // Delete CalcAreaSensMatrices

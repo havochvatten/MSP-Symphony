@@ -1,12 +1,10 @@
 package se.havochvatten.symphony.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
-import se.havochvatten.symphony.dto.ComparisonReportResponseDto;
-import se.havochvatten.symphony.dto.ReportResponseDto;
 import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.entity.CompoundComparison;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
@@ -33,7 +31,7 @@ import static se.havochvatten.symphony.web.CalculationREST.hasAccess;
 
 
 @Path("/report")
-@Api(value = "/report")
+@Tag(name ="/report")
 public class ReportREST {
     private static final Logger logger = Logger.getLogger(ReportREST.class.getName());
 
@@ -54,8 +52,7 @@ public class ReportREST {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Return data for report associated with calculation",
-            response = ReportResponseDto.class)
+    @Operation(summary = "Return data for report associated with calculation")
     public Response getReport(@Context HttpServletRequest req,
                               @PathParam("id") int id,
                               @DefaultValue("") @QueryParam("lang") String preferredLanguage,
@@ -77,7 +74,7 @@ public class ReportREST {
     @Path("/{id}/geotiff")
     @Produces({"image/geotiff"})
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Returns calculation result image")
+    @Operation(summary = "Returns calculation result image")
      public Response getResultGeoTIFFImage(@Context HttpServletRequest req, @PathParam("id") int id) {
         var calc = Optional.ofNullable(calcService.getCalculation(id)).orElseThrow(NotFoundException::new);
 
@@ -95,7 +92,7 @@ public class ReportREST {
     @Path("/comparison/{a}/{b}/geotiff")
     @Produces({"image/geotiff"})
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Returns comparison result image")
+    @Operation(summary = "Returns comparison result image")
     public Response getResultGeoTIFFImage(@Context HttpServletRequest req, @PathParam("a") int baseId, @PathParam("b") int relativeId) throws IOException {
 
         try {
@@ -117,7 +114,7 @@ public class ReportREST {
     @Path("/comparison/{a}/geotiff")
     @Produces({"image/geotiff"})
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Returns comparison result image for comparison by implicit baseline")
+    @Operation(summary = "Returns comparison result image for comparison by implicit baseline")
     public Response getResultGeoTIFFImage(@Context HttpServletRequest req, @PathParam("a") int scenarioId,
                                           @DefaultValue("false") @QueryParam("reverse") boolean reverse) throws IOException {
         try {
@@ -138,7 +135,7 @@ public class ReportREST {
     @Path("/{id}/csv")
     @Produces(MediaType.TEXT_PLAIN)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Returns aggregated calculation results as CSV file")
+    @Operation(summary = "Returns aggregated calculation results as CSV file")
     // TODO Parameterize with locale front frontend
     public Response getResultCSV(@Context HttpServletRequest req, @PathParam("id") int id)
             throws SymphonyStandardAppException {
@@ -157,9 +154,8 @@ public class ReportREST {
     @Path("/comparison/{a}/{b}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Return data for a differential scenario report based on two disparate calculations "
-                        + "covering the same area",
-            response = ComparisonReportResponseDto.class)
+    @Operation(summary = "Return data for a differential scenario report based on two disparate calculations "
+                        + "covering the same area")
     public Response getComparisonReport(@Context HttpServletRequest req,
                                         @PathParam("a") int baseId,
                                         @PathParam("b") int scenarioId,
@@ -185,8 +181,7 @@ public class ReportREST {
     @Path("/comparison/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Return data for differential scenario report using an implicit baseline calculation",
-            response = ComparisonReportResponseDto.class)
+    @Operation(summary = "Return data for differential scenario report using an implicit baseline calculation")
     public Response getComparisonReport(@Context HttpServletRequest req,
                                         @PathParam("id") int scenarioId,
                                         @DefaultValue("") @QueryParam("lang") String preferredLanguage,
@@ -217,7 +212,7 @@ public class ReportREST {
     @Path("/comparison/{a}/{b}/csv")
     @Produces(MediaType.TEXT_PLAIN)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Return comparison report as CSV file")
+    @Operation(summary = "Return comparison report as CSV file")
     public Response getComparisonReport(@Context HttpServletRequest req,
                                         @PathParam("a") int baseId,
                                         @PathParam("b") int scenarioId)
@@ -239,7 +234,7 @@ public class ReportREST {
     @Path("/comparison/{id}/csv")
     @Produces(MediaType.TEXT_PLAIN)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Return comparison report as CSV file using an implicit baseline calculation")
+    @Operation(summary = "Return comparison report as CSV file using an implicit baseline calculation")
     public Response getComparisonReport(@Context HttpServletRequest req,
                                         @PathParam("id") int scenarioId,
                                         @DefaultValue("false") @QueryParam("reverse") boolean reverse)
@@ -271,7 +266,7 @@ public class ReportREST {
     @Produces({ MediaType.APPLICATION_JSON,
                 "application/vnd.oasis.opendocument.spreadsheet" })
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Return compound comparison data as ODS file")
+    @Operation(summary = "Return compound comparison data as ODS file")
     public Response getMultiComparisonReport(@Context HttpServletRequest req,
                                              @PathParam("id") Integer id,
                                              @PathParam("format") String format,

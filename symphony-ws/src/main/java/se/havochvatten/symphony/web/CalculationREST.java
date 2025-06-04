@@ -1,7 +1,7 @@
 package se.havochvatten.symphony.web;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.time.StopWatch;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -64,7 +64,7 @@ import static se.havochvatten.symphony.web.WebUtil.noPrincipalStr;
  */
 
 @Path("/calculation")
-@Api(value = "/calculation")
+@Tag(name = "/calculation")
 public class CalculationREST {
     private static final Logger logger = Logger.getLogger(CalculationREST.class.getName());
 
@@ -108,7 +108,7 @@ public class CalculationREST {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Computes cumulative impact sum")
+    @Operation(summary = "Computes cumulative impact sum")
     public CalculationResultSlice sum(@Context HttpServletRequest req,
                                       @Context UriInfo uriInfo,
                                       Integer scenarioId)
@@ -135,7 +135,7 @@ public class CalculationREST {
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Get a specified calculation", response = CalculationResultSliceDto.class)
+    @Operation(summary = "Get a specified calculation")
     public Response getCalculation(@Context HttpServletRequest req, @PathParam("id") int id) {
         try {
             var calculation = Optional.ofNullable(calcService.getCalculation(id)).orElseThrow(NotFoundException::new);
@@ -154,7 +154,7 @@ public class CalculationREST {
     @Consumes(MediaType.TEXT_PLAIN) // APPLICATION_JSON_PATCH_JSON_TYPE
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Update name of an existing calculation", response = CalculationResultSliceDto.class)
+    @Operation(summary = "Update name of an existing calculation")
     public Response updateName(@Context HttpServletRequest req, @PathParam("id") int id,
                                @QueryParam("action") String action,
                                String newName) {
@@ -174,7 +174,7 @@ public class CalculationREST {
     // Endpoint added for conformant/intuitive API semantics.
     // Not presently used by the default UI app (/symphony-fe).
     @DELETE
-    @ApiOperation(value = "Delete calculation result")
+    @Operation(summary = "Delete calculation result")
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
@@ -183,7 +183,7 @@ public class CalculationREST {
     }
 
     @DELETE
-    @ApiOperation(value = "Delete calculation results")
+    @Operation(summary = "Delete calculation results")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
     public Response deleteCalculations(@Context HttpServletRequest req, @QueryParam("ids") String ids) {
@@ -215,7 +215,7 @@ public class CalculationREST {
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Gets all previous computations for the user")
+    @Operation(summary = "Gets all previous computations for the user")
     @RolesAllowed("GRP_SYMPHONY")
     public List<CalculationResultSlice> getAllCalculations(@Context HttpServletRequest req) {
         if (req.getUserPrincipal() == null)
@@ -227,8 +227,7 @@ public class CalculationREST {
     @GET
     @Path("/baseline/{baselineName}")
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get baseline BaseCalculations for baselineName",
-            response = CalculationResultSliceDto.class, responseContainer = "List")
+    @Operation(summary = "Get baseline BaseCalculations for baselineName")
     @RolesAllowed("GRP_SYMPHONY")
     public Response getBaselineCalculations(@PathParam("baselineName") String baselineName)
             throws SymphonyStandardAppException {
@@ -243,7 +242,7 @@ public class CalculationREST {
     @Path("{id}/image")
     @Produces({"image/png"})
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Returns calculation result image", response = byte[].class)
+    @Operation(summary = "Returns calculation result image")
     public Response getResultImage(@Context HttpServletRequest req,
                                    @PathParam("id") int id,
                                    @QueryParam("crs") String crs)
@@ -354,7 +353,7 @@ public class CalculationREST {
     @Path("/average")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces("text/plain")
-    @ApiOperation(value = "Computes cumulative impact average", response = String.class)
+    @Operation(summary = "Computes cumulative impact average")
     public Response average() {
         return status(Response.Status.NOT_IMPLEMENTED).build();
     }
@@ -364,7 +363,7 @@ public class CalculationREST {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces({"image/png"}) // for now
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Computes the difference between two calculations", response = byte[].class)
+    @Operation(summary = "Computes the difference between two calculations")
     public Response getDifferenceImage(@Context HttpServletRequest req,
                                        @PathParam("a") int baseId, @PathParam("b") int scenarioId,
                                        @QueryParam("max") Integer maxValue,
@@ -389,7 +388,7 @@ public class CalculationREST {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces({"image/png"})
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Computes the difference between a calculation and an implicit baseline", response = byte[].class)
+    @Operation(summary = "Computes the difference between a calculation and an implicit baseline")
     public Response getDifferenceImage(@Context HttpServletRequest req,
                                        @PathParam("id") int scenarioId,
                                        @QueryParam("max") Integer maxValue,
@@ -415,7 +414,7 @@ public class CalculationREST {
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Queues batch run of scenario calculations", response = BatchCalculationDto.class)
+    @Operation(summary = "Queues batch run of scenario calculations")
     public BatchCalculationDto queueBatchCalculation(@Context HttpServletRequest req, String ids) {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException(noPrincipalStr);
@@ -442,7 +441,7 @@ public class CalculationREST {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Queues batch run of scenario area calculations for the given scenario", response = BatchCalculationDto.class)
+    @Operation(summary = "Queues batch run of scenario area calculations for the given scenario")
     public BatchCalculationDto queueAreaBatchCalculation(@Context HttpServletRequest req, @PathParam("scenarioId") Integer id,
                                                          ScenarioSplitOptions options) {
         if (req.getUserPrincipal() == null)
@@ -478,7 +477,7 @@ public class CalculationREST {
     @Path("/batch/{id}/cancel")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Cancels batch calculation process")
+    @Operation(summary = "Cancels batch calculation process")
     public Response cancelBatchCalculation(@Context HttpServletRequest req, @PathParam("id") int id) {
         var principal = req.getUserPrincipal();
         if (principal == null)
@@ -499,7 +498,7 @@ public class CalculationREST {
     @Path("/batch/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Deletes batch calculation process entry")
+    @Operation(summary = "Deletes batch calculation process entry")
     public Response deleteBatchCalculation(@Context HttpServletRequest req, @PathParam("id") int id) {
         var principal = req.getUserPrincipal();
         if (principal == null)
@@ -521,7 +520,7 @@ public class CalculationREST {
     @Path("/matching/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Returns a list of calculation matching the ROI of specified calculation")
+    @Operation(summary = "Returns a list of calculation matching the ROI of specified calculation")
     public List<CalculationResultSliceDto> getCalculationsWithMatchingGeometry(@Context HttpServletRequest req,
                                                                                @PathParam("id") int id) {
         var base = Optional.ofNullable(calcService.getCalculation(id)).orElseThrow(NotFoundException::new);
@@ -534,7 +533,7 @@ public class CalculationREST {
     @Path("/last-mask")
     @Produces("image/png")
     @RolesAllowed("GRP_SYMPHONY_ADMIN")
-    @ApiOperation(value = "Returns calculation mask for the last calculation (for debugging purposes)")
+    @Operation(summary = "Returns calculation mask for the last calculation (for debugging purposes)")
     public Response getMask(@Context HttpServletRequest req) {
         var session = req.getSession(false);
         if (session == null)
@@ -547,8 +546,8 @@ public class CalculationREST {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Computes compound difference matrix (relative to an implicit baseline) for multiple calculations.\n" +
-                          "Returns entity PK id (if successful)", response = Integer.class)
+    @Operation(summary = "Computes compound difference matrix (relative to an implicit baseline) for multiple calculations.\n" +
+                          "Returns entity PK id (if successful)")
     public Response multiComparison(@Context HttpServletRequest req, @PathParam("baselineName") String baselineName,
                                     @Context UriInfo uriInfo, CompoundComparisonRequest request)
             throws SymphonyStandardAppException, SymphonyStandardSystemException {
@@ -574,7 +573,7 @@ public class CalculationREST {
     @Path("/multi-comparison/all")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Returns all compound comparisons for the given baseline", response = CompoundComparisonSlice.class, responseContainer = "List")
+    @Operation(summary = "Returns all compound comparisons for the given baseline")
     public Response getCompoundComparisons(@Context HttpServletRequest req) {
 
         Principal principal = req.getUserPrincipal();
@@ -594,7 +593,7 @@ public class CalculationREST {
     @Path("/multi-comparison/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Delete compound comparison with the given id")
+    @Operation(summary = "Delete compound comparison with the given id")
     public Response deleteCompoundComparison(@Context HttpServletRequest req, @PathParam("id") int id) {
         return deleteCompoundComparisons(req, String.valueOf(id));
     }
@@ -603,7 +602,7 @@ public class CalculationREST {
     @Path("/multi-comparison/")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Delete compound comparisons with the given ids " +
+    @Operation(summary = "Delete compound comparisons with the given ids " +
                          "(expected as comma separated list provided as query parameter 'ids=')")
     public Response deleteCompoundComparisons(@Context HttpServletRequest req, @QueryParam("ids") String ids) {
         var principal = req.getUserPrincipal();

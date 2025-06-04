@@ -1,8 +1,8 @@
 package se.havochvatten.symphony.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.entity.Scenario;
@@ -32,9 +32,7 @@ import static se.havochvatten.symphony.web.WebUtil.noPrincipalStr;
  */
 
 @Path("/scenario")
-@Api(value = "/scenario",
-        produces = MediaType.APPLICATION_JSON,
-        consumes = MediaType.APPLICATION_JSON)
+@Tag(name ="/scenario")
 public class ScenarioREST {
     private static final Logger logger = LoggerFactory.getLogger(ScenarioREST.class);
 
@@ -61,7 +59,7 @@ public class ScenarioREST {
     }
 
     @GET
-    @ApiOperation(value = "List all scenarios belonging to logged in user")
+    @Operation(summary = "List all scenarios belonging to logged in user")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
     public List<ScenarioDto> findAllByOwner(@Context HttpServletRequest req) {
@@ -72,7 +70,7 @@ public class ScenarioREST {
     }
 
     @POST
-    @ApiOperation(value = "Create new scenario", response = ScenarioDto.class)
+    @Operation(summary = "Create new scenario")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
@@ -85,7 +83,7 @@ public class ScenarioREST {
     }
 
     @PUT
-    @ApiOperation(value = "Update scenario")
+    @Operation(summary = "Update scenario")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
@@ -109,7 +107,7 @@ public class ScenarioREST {
     }
 
     @GET
-    @ApiOperation(value = "Get scenario by id", response = ScenarioDto.class)
+    @Operation(summary = "Get scenario by id")
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
@@ -122,7 +120,7 @@ public class ScenarioREST {
     // Unused endpoint at the moment.
     // Might be useful for future functionality.
     @PUT
-    @ApiOperation(value = "Update scenario area")
+    @Operation(summary = "Update scenario area")
     @Path("/area")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -148,7 +146,7 @@ public class ScenarioREST {
     // pure copying operation, but rather a convenience method facilitating scenario creation
     // (typically utilized for making comparison analyses)
     @POST
-    @ApiOperation(value = "Copy scenario", response = ScenarioDto.class)
+    @Operation(summary = "Copy scenario")
     @Path("{id}/copy")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -169,7 +167,7 @@ public class ScenarioREST {
     }
 
     @POST
-    @ApiOperation(value = "Split and replace area within scenario", response = ScenarioDto.class)
+    @Operation(summary = "Split and replace area within scenario")
     @Path("{id}/splitAndReplaceArea/{areaId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -194,7 +192,7 @@ public class ScenarioREST {
     // Not presently used by the default UI app (/symphony-fe).
     @DELETE
     @Path("{id}")
-    @ApiOperation(value = "Delete scenario by id")
+    @Operation(summary = "Delete scenario by id")
     @Produces
     @RolesAllowed("GRP_SYMPHONY")
     public Response deleteScenario(@Context HttpServletRequest req, @PathParam("id") int scenarioId) {
@@ -202,7 +200,7 @@ public class ScenarioREST {
     }
 
     @DELETE
-    @ApiOperation(value = "Delete scenarios by ids, expected as comma separated query parameter")
+    @Operation(summary = "Delete scenarios by ids, expected as comma separated query parameter")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
     public Response deleteScenarios(@Context HttpServletRequest req, @QueryParam("ids") String ids){
@@ -226,7 +224,7 @@ public class ScenarioREST {
     }
 
     @DELETE
-    @ApiOperation(value = "Delete a scenario area")
+    @Operation(summary = "Delete a scenario area")
     @Path("/area/{areaId}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
@@ -317,7 +315,7 @@ public class ScenarioREST {
     record ScenarioSplitResponse(int scenarioId, int[] splitScenarioIds) {}
 
     @POST
-    @ApiOperation(value = "Split scenario by its areas")
+    @Operation(summary = "Split scenario by its areas")
     @Path("{id}/split")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)

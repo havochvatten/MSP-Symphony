@@ -1,7 +1,7 @@
 package se.havochvatten.symphony.web;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import se.havochvatten.symphony.dto.AreaTypeDto;
 import se.havochvatten.symphony.dto.FrontendErrorDto;
 import se.havochvatten.symphony.entity.AreaType;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Stateless
-@Api(value = "/areatype", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
+@Tag(name = "/areatype")
 @Path("areatype")
 @RolesAllowed("GRP_SYMPHONY")
 public class AreaTypeREST {
@@ -29,8 +29,7 @@ public class AreaTypeREST {
     AreaTypeService areaTypeService;
 
     @GET
-    @ApiOperation(value = "List all area types in the system", response = AreaType.class,
-			responseContainer = "List")
+    @Operation(summary = "List all area types in the system")
     @Produces({MediaType.APPLICATION_JSON})
     @RolesAllowed("GRP_SYMPHONY")
     public Response findAll() {
@@ -43,7 +42,7 @@ public class AreaTypeREST {
     }
 
     @POST
-    @ApiOperation(value = "Create area type", response = AreaType.class)
+    @Operation(summary = "Create area type")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY_ADMIN")
@@ -61,7 +60,7 @@ public class AreaTypeREST {
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Update AreaType", response = AreaType.class)
+    @Operation(summary = "Update AreaType")
     @RolesAllowed("GRP_SYMPHONY_ADMIN")
     public Response updateCalcAreaSensMatrix(@PathParam("id") Integer id, AreaType areaType) {
         try {
@@ -74,7 +73,7 @@ public class AreaTypeREST {
     }
 
     @DELETE
-    @ApiOperation(value = "Delete area type")
+    @Operation(summary = "Delete area type")
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY_ADMIN")

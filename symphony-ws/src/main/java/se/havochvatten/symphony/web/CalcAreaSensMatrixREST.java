@@ -1,7 +1,7 @@
 package se.havochvatten.symphony.web;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import se.havochvatten.symphony.dto.CalcAreaSensMatrixDto;
 import se.havochvatten.symphony.dto.FrontendErrorDto;
 import se.havochvatten.symphony.entity.CalcAreaSensMatrix;
@@ -24,9 +24,7 @@ import java.util.List;
 
 
 @Stateless
-@Api(value = "/calculationareasensmatrix",
-        produces = MediaType.APPLICATION_JSON,
-        consumes = MediaType.APPLICATION_JSON)
+@Tag(name = "/calculationareasensmatrix")
 @Path("calculationareasensmatrix")
 @RolesAllowed("GRP_SYMPHONY")
 public class CalcAreaSensMatrixREST {
@@ -35,8 +33,7 @@ public class CalcAreaSensMatrixREST {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get all relations between calculation areas and sensitivity matrices",
-            response = CalcAreaSensMatrix.class, responseContainer = "List")
+    @Operation(summary = "Get all relations between calculation areas and sensitivity matrices")
     public Response findAllCalcAreaSensMatrices() {
         List<CalcAreaSensMatrixDto> ret = new ArrayList<>();
         List<CalcAreaSensMatrix> resp = calcAreaSensMatrixService.find();
@@ -50,7 +47,7 @@ public class CalcAreaSensMatrixREST {
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get CalcAreaSensMatrix with id", response = CalcAreaSensMatrixDto.class)
+    @Operation(summary = "Get CalcAreaSensMatrix with id")
     public Response getCalcAreaSensMatrix(@PathParam("id") Integer id) {
         try {
             CalcAreaSensMatrixDto calcAreaSensMatrixD = calcAreaSensMatrixService.get(id);
@@ -64,8 +61,8 @@ public class CalcAreaSensMatrixREST {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Create relations between calculation areas and sensitivity matrices in " +
-            "CalcAreaSensMatrix", response = CalcAreaSensMatrixDto.class)
+    @Operation(summary = "Create relations between calculation areas and sensitivity matrices in " +
+            "CalcAreaSensMatrix")
     public Response createCalcAreaSensMatrice(@Context UriInfo uriInfo,
                                               CalcAreaSensMatrixDto calcAreaSensMatrixDto) {
         CalcAreaSensMatrixDto calcAreaSensMatrix = calcAreaSensMatrixService.create(calcAreaSensMatrixDto);
@@ -77,7 +74,7 @@ public class CalcAreaSensMatrixREST {
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Update CalcAreaSensMatrix", response = CalcAreaSensMatrixDto.class)
+    @Operation(summary = "Update CalcAreaSensMatrix")
     public Response updateCalcAreaSensMatrix(@PathParam("id") Integer id,
                                              CalcAreaSensMatrixDto calcAreaSensMatrixDto) throws SymphonyStandardAppException {
         calcAreaSensMatrixDto.setId(id);
@@ -88,15 +85,15 @@ public class CalcAreaSensMatrixREST {
     @DELETE
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Delete CalcAreaSensMatrix")
+    @Operation(summary = "Delete CalcAreaSensMatrix")
     public Response deleteCalcAreaSensMatrix(@PathParam("id") Integer id) throws SymphonyStandardAppException {
         calcAreaSensMatrixService.delete(id);
         return Response.ok().build();
     }
 
     @GET
-    @ApiOperation(value = "List all user defined CalcAreaSensMatrices in the system for the baseline and " +
-            "current user", response = CalcAreaSensMatrixDto.class, responseContainer = "List")
+    @Operation(summary = "List all user defined CalcAreaSensMatrices in the system for the baseline and " +
+            "current user")
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/user/{baselineName}")
     public List<CalcAreaSensMatrixDto> findByBaselineAndOwner(@Context HttpServletRequest req, @PathParam(
@@ -108,8 +105,8 @@ public class CalcAreaSensMatrixREST {
     }
 
     @GET
-    @ApiOperation(value = "List all user defined CalcAreaSensMatrices in the system for the baseline, " +
-            "current user and areaId", response = CalcAreaSensMatrixDto.class, responseContainer = "List")
+    @Operation(summary = "List all user defined CalcAreaSensMatrices in the system for the baseline, " +
+            "current user and areaId")
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/user/{baselineName}/{areaId}")
     public List<CalcAreaSensMatrixDto> findByBaselineAndOwnerAndAreaId(@Context HttpServletRequest req,

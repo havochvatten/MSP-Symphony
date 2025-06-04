@@ -1,7 +1,7 @@
 package se.havochvatten.symphony.web;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.service.BaselineVersionService;
@@ -36,7 +36,7 @@ import java.util.Map;
  */
 
 @Path("/calibration")
-@Api(value = "/calibration")
+@Tag(name ="/calibration")
 @RolesAllowed({"GRP_SYMPHONY_ADMIN", "GRP_SYMPHONY"})
 public class CalibrationREST {
     private static final Logger LOG = LoggerFactory.getLogger(CalibrationREST.class);
@@ -60,7 +60,7 @@ public class CalibrationREST {
     @Path("/rarity-indices/{baseline}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Gets baseline-global rarity indices (or actually its inverse, i.e. " +
+    @Operation(summary = "Gets baseline-global rarity indices (or actually its inverse, i.e. " +
         "commonness)")
     public Response calcGlobalCommonnessIndices(@Context HttpServletRequest req,
                                                 @PathParam("baseline") String baselineName)
@@ -75,7 +75,7 @@ public class CalibrationREST {
 
     @PUT
     @Path("/percentile-normalization-values/{scenarioId}/{calcAreaId}")
-    @ApiOperation(value = "Computes and sets percentile normalization value for a given calculation area")
+    @Operation(summary = "Computes and sets percentile normalization value for a given calculation area")
     public Response calcPercentileNormalizationValue(@Context HttpServletRequest req,
                                                     @PathParam("scenarioId") int scenarioId,
                                                     @PathParam("calcAreaId") int calculationAreaId)
@@ -103,7 +103,7 @@ public class CalibrationREST {
     @GET
     @Path("/percentile-value")
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get percentile setting used for value normalization")
+    @Operation(summary = "Get percentile setting used for value normalization")
     public Response checkPercentileValue(@Context HttpServletRequest req) throws NotAuthorizedException {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException("Null principal");

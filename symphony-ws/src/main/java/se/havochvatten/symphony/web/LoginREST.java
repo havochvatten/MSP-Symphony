@@ -1,7 +1,7 @@
 package se.havochvatten.symphony.web;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.dto.FrontendErrorDto;
@@ -24,7 +24,7 @@ import java.security.Principal;
 
 @Stateless
 @Path("/")
-@Api(value = "/")
+@Tag(name ="/")
 public class LoginREST {
     private static final Logger LOG = LoggerFactory.getLogger(LoginREST.class);
 
@@ -35,7 +35,7 @@ public class LoginREST {
     UserService userService;
 
     @SuppressWarnings("rawtypes")
-    @ApiOperation(value = "Login to application", response = UserDto.class)
+    @Operation(summary = "Login to application")
     @POST
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -94,7 +94,7 @@ public class LoginREST {
         }
     }
 
-    @ApiOperation(value = "Get already logged in user", response = UserDto.class)
+    @Operation(summary = "Get already logged in user")
     @GET
     @Path("/getuser")
     @Produces(MediaType.APPLICATION_JSON)
@@ -116,7 +116,7 @@ public class LoginREST {
         }
     }
 
-    @ApiOperation(value = "Logout")
+    @Operation(summary = "Logout")
     @POST
     @Path("/logout")
     @Produces(MediaType.APPLICATION_JSON)

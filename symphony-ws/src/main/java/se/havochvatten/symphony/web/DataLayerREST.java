@@ -1,7 +1,7 @@
 package se.havochvatten.symphony.web;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.geometry.jts.JTS;
@@ -34,7 +34,7 @@ import static jakarta.ws.rs.core.Response.ok;
 import static se.havochvatten.symphony.util.MetaDataUtil.*;
 
 @Path("/datalayer")
-@Api(value = "/datalayer")
+@Tag(name ="/datalayer")
 public class DataLayerREST {
     private static final Logger logger = Logger.getLogger(DataLayerREST.class.getName());
 
@@ -60,7 +60,7 @@ public class DataLayerREST {
     @Path("/{type}/{id}/{baselineName}")
     @Produces({"image/png"}) // make JPEG and/or WebP available?
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Returns calculation result image")
+    @Operation(summary = "Returns calculation result image")
     public Response getLayerData(@PathParam("type") String type,
                                  @PathParam("id") int bandNo,
                                  @PathParam("baselineName") String baselineName,
