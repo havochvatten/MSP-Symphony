@@ -9,11 +9,11 @@ export default [
   ['tslib', 'https://www.typescriptlang.org/', '2.6.2'],
   ['RxJS', 'https://rxjs.dev/', '7.8.1'],
   ['Turf.js', 'https://turfjs.org/', '6.5.0'],
-  ['GeoTools', "https://www.geotools.org/", "27.4"],
-  ['Jakarta EE', 'https://jakarta.ee/', '8.0.0'],
+  ['GeoTools', "https://www.geotools.org/", "29.6"],
+  ['Jakarta EE', 'https://jakarta.ee/', '10.0.0'],
   ['JAI', "https://www.oracle.com/java/technologies/advanced-imaging-api.html", "1.1.3"],
-  ['Commons Lang', 'https://commons.apache.org/proper/commons-lang/', '3.9'],
-  ['Jackson', 'https://github.com/FasterXML/jackson', '2.12.6'],
-  ['RESTEasy', 'https://resteasy.dev/', '4.7.7.Final'],
-  ['SODS', 'https://github.com/miachm/SODS', '1.6.7']
+  ['Commons Lang', 'https://commons.apache.org/proper/commons-lang/', '3.17'],
+  ['Jackson', 'https://github.com/FasterXML/jackson', '2.19'],
+  ['RESTEasy', 'https://resteasy.dev/', '6.2.12.Final'],
+  ['SODS', 'https://github.com/miachm/SODS', '1.6.8']
 ];
