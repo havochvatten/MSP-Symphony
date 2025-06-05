@@ -23,7 +23,6 @@ import java.util.List;
 @Stateless
 @Tag(name = "/areatype")
 @Path("areatype")
-@RolesAllowed("GRP_SYMPHONY")
 public class AreaTypeREST {
     @EJB
     AreaTypeService areaTypeService;

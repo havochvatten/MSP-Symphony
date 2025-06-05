@@ -88,8 +88,7 @@ public class LoginREST {
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
         } catch (ServletException ex) {
-            System.out.println("Fjärséeen!!");
-            System.out.println(ex.getMessage());
+            LOG.error(ex.getMessage());
             throw ex;
         }
     }
