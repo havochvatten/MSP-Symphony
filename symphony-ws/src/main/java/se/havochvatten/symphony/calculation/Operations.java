@@ -20,8 +20,8 @@ import se.havochvatten.symphony.calculation.jai.CIA.RarityAdjustedCumulativeImpa
 import se.havochvatten.symphony.calculation.jai.rescale2.Rescale2Descriptor;
 import se.havochvatten.symphony.dto.LayerType;
 
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
+import jakarta.ejb.Singleton;
+import jakarta.ejb.Startup;
 import javax.media.jai.*;
 import java.util.List;
 

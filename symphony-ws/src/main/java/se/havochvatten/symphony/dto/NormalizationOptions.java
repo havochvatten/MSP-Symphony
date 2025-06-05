@@ -1,6 +1,6 @@
 package se.havochvatten.symphony.dto;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 // TODO Create separate subclasses for each type?

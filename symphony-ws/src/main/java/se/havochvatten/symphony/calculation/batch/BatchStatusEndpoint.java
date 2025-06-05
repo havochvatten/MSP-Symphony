@@ -2,8 +2,8 @@ package se.havochvatten.symphony.calculation.batch;
 
 import org.apache.mina.util.ConcurrentHashSet;
 
-import javax.websocket.*;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.*;
+import jakarta.websocket.server.ServerEndpoint;
 import java.util.Set;
 
 @ServerEndpoint("/batch-status/{batchId}")

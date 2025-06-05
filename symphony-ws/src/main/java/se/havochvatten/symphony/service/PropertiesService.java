@@ -1,9 +1,9 @@
 package se.havochvatten.symphony.service;
 
-import javax.ejb.ConcurrencyManagement;
-import javax.ejb.ConcurrencyManagementType;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
+import jakarta.ejb.ConcurrencyManagement;
+import jakarta.ejb.ConcurrencyManagementType;
+import jakarta.ejb.Singleton;
+import jakarta.ejb.Startup;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;

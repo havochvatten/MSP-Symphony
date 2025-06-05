@@ -2,10 +2,9 @@ package se.havochvatten.symphony.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vladmihalcea.hibernate.type.array.IntArrayType;
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import jakarta.persistence.CascadeType;
 import org.hibernate.annotations.*;
-import org.hibernate.annotations.CascadeType;
+import org.hibernate.type.SqlTypes;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 
@@ -18,13 +17,13 @@ import se.havochvatten.symphony.dto.NormalizationOptions;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
 
-import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
-import javax.validation.constraints.Size;
+import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,9 +38,6 @@ import java.util.stream.Collectors;
 @NamedQuery(name = "Scenario.getPressuresToInclude",
     query = "SELECT pressuresToInclude FROM Scenario WHERE id = :scenarioId")
 
-@TypeDef(name = "json", typeClass = JsonBinaryType.class)
-@TypeDef(name = "int-array", typeClass = IntArrayType.class)
-@Embeddable
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Scenario implements Serializable, BandChangeEntity, ScenarioCommon {
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -62,17 +58,17 @@ public class Scenario implements Serializable, BandChangeEntity, ScenarioCommon 
     protected Integer baselineId;
 
     @Basic
-    @Type(type = "int-array")
+    @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "integer[]", name = "ecosystems")
     protected int[] ecosystemsToInclude;
 
     @Basic
-    @Type(type = "int-array")
+    @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "integer[]", name = "pressures")
     protected int[] pressuresToInclude;
 
     @Basic(optional = true)
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "json")
     protected JsonNode changes;
 
@@ -101,17 +97,16 @@ public class Scenario implements Serializable, BandChangeEntity, ScenarioCommon 
     protected int operation = CalcService.OPERATION_CUMULATIVE;
 
     @Basic(optional = true)
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "operation_options", columnDefinition = "json")
     protected JsonNode operationOptions;
 
-    @OneToMany(mappedBy = "scenario", orphanRemoval = true, fetch = FetchType.EAGER)
-    @Cascade({ CascadeType.MERGE, CascadeType.PERSIST })
+    @OneToMany(mappedBy = "scenario", orphanRemoval = true, fetch = FetchType.EAGER,
+        cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @Fetch(FetchMode.SUBSELECT)
     private List<ScenarioArea> areas = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @Cascade({ CascadeType.MERGE, CascadeType.REMOVE })
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "latestcalculation_cares_id")
     private CalculationResult latestCalculation;
 

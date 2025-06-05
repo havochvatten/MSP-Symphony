@@ -12,7 +12,7 @@ import se.havochvatten.symphony.entity.ScenarioArea;
 
 import javax.imageio.ImageIO;
 import javax.media.jai.ImageLayout;
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;

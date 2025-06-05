@@ -1,7 +1,7 @@
 package se.havochvatten.symphony.web;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.geometry.jts.JTS;
@@ -17,23 +17,24 @@ import se.havochvatten.symphony.service.BaselineVersionService;
 import se.havochvatten.symphony.service.DataLayerService;
 import se.havochvatten.symphony.service.PropertiesService;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.json.JsonArray;
-import javax.ws.rs.*;
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.Response;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.EJB;
+import jakarta.json.JsonArray;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.CacheControl;
+import jakarta.ws.rs.core.Response;
 import java.awt.image.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static javax.ws.rs.core.Response.ok;
+import static jakarta.ws.rs.core.Response.ok;
+import static se.havochvatten.symphony.util.MetaDataUtil.*;
 
 @Path("/datalayer")
-@Api(value = "/datalayer")
+@Tag(name ="/datalayer")
 public class DataLayerREST {
     private static final Logger logger = Logger.getLogger(DataLayerREST.class.getName());
 
@@ -59,7 +60,7 @@ public class DataLayerREST {
     @Path("/{type}/{id}/{baselineName}")
     @Produces({"image/png"}) // make JPEG and/or WebP available?
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Returns calculation result image")
+    @Operation(summary = "Returns calculation result image")
     public Response getLayerData(@PathParam("type") String type,
                                  @PathParam("id") int bandNo,
                                  @PathParam("baselineName") String baselineName,
@@ -74,7 +75,7 @@ public class DataLayerREST {
         java.nio.file.Path cacheKey = java.nio.file.Path.of(baselineName, type).resolve(bandNo + ".png");
         if (cache != null && cache.containsKey(cacheKey)) { // TODO: check CRS
             byte[] bytes = cache.get(cacheKey);
-            String extent = DataLayerService.readMetaData(bytes, "extent");
+            String extent = readMetaData(bytes, "extent");
             return ok(cache.get(cacheKey), "image/png")
                     .header("SYM-Image-Extent", (extent == null ? "" : extent))
                     .build();
@@ -84,7 +85,7 @@ public class DataLayerREST {
             Envelope dataEnvelope = new ReferencedEnvelope(coverage.getEnvelope());
             CoordinateReferenceSystem targetCRS;
             Envelope targetEnvelope;
-            crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8.toString()) : "EPSG:3035";
+            crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8) : "EPSG:3035";
 
 
             CRSAuthorityFactory factory = CRS.getAuthorityFactory(true);
@@ -112,7 +113,7 @@ public class DataLayerREST {
             var image = new BufferedImage(cm, raster, false, null);
             JsonArray extent = WebUtil.createExtent(targetEnvelope);
 
-            byte[] bs = DataLayerService.addMetaData(image, cm, sm, "extent", extent.toString());
+            byte[] bs = addMetaData(image, cm, sm, "extent", extent.toString());
             if (cache != null)
                 cache.put(cacheKey, bs);
 

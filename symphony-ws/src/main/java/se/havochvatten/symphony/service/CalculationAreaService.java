@@ -15,21 +15,22 @@ import se.havochvatten.symphony.mapper.CalculationAreaMapper;
 import se.havochvatten.symphony.entity.Scenario;
 import se.havochvatten.symphony.entity.ScenarioArea;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
+import jakarta.ejb.EJB;
+import jakarta.ejb.Stateless;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
 
 import static se.havochvatten.symphony.mapper.AreaSelectionResponseDtoMapper.mapSensitivityMatrixToDto;
+import static se.havochvatten.symphony.util.CalculationUtil.jsonListToGeometryList;
+import static se.havochvatten.symphony.util.CalculationUtil.jsonToGeometry;
 
 @Stateless
 public class CalculationAreaService {
     private static final ObjectMapper mapper = new ObjectMapper();
-    private static final GeometryJSON geometryJSON = new GeometryJSON();
 
     @PersistenceContext(unitName = "symphonyPU")
     public EntityManager em;
@@ -47,19 +48,19 @@ public class CalculationAreaService {
      * @return All CalculationAreas defined in the system (areas meant to be used in calculations)
      */
     public List<CalculationArea> findCalculationAreas(String baselineName) {
-        return em.createNamedQuery("CalculationArea.findByBaselineName")
+        return em.createNamedQuery("CalculationArea.findByBaselineName", CalculationArea.class)
                 .setParameter("name", baselineName)
                 .getResultList();
     }
 
     public List<CalculationArea> findCalibratedCalculationAreas(String baselineName) {
-        return em.createNamedQuery("CalculationArea.findCalibratedByBaselineName")
+        return em.createNamedQuery("CalculationArea.findCalibratedByBaselineName", CalculationArea.class)
                 .setParameter("name", baselineName)
                 .getResultList();
     }
 
     public List<CalculationArea> findCalculationAreas(List<Integer> ids) {
-        return em.createNamedQuery("CalculationArea.findByIds")
+        return em.createNamedQuery("CalculationArea.findByIds", CalculationArea.class)
                 .setParameter("ids", ids)
                 .getResultList();
     }
@@ -305,7 +306,7 @@ public class CalculationAreaService {
         switch (normalization.getType()) {
             case DOMAIN:
                 Optional<CalculationArea> caOpt =
-                        defaultAreas.stream().filter(d -> d.isCareaDefault()).findFirst();
+                        defaultAreas.stream().filter(CalculationArea::isCareaDefault).findFirst();
                 if (caOpt.isPresent())
                     maxValue = caOpt.get().getMaxValue() == null ? 0 : caOpt.get().getMaxValue();
                 break;
@@ -457,30 +458,6 @@ public class CalculationAreaService {
     List<CalculationArea> getNonDefaultAreasForAreaType(Integer areaTypeId,
                                                         List<CalculationArea> calulationAreas) {
         return calulationAreas.stream().filter(ca -> !ca.isCareaDefault() && ca.getAreaType() != null && ca.getAreaType().getId().equals(areaTypeId)).toList();
-    }
-
-    /**
-     * @return A Geometry object created from the string geoJSON
-     */
-    public static Geometry jsonToGeometry(String geoJSON) throws SymphonyStandardAppException {
-        Geometry geometry = null;
-        try {
-            geometry = geometryJSON.read(geoJSON);
-        } catch (IOException e) {
-            throw new SymphonyStandardAppException(SymphonyModelErrorCode.GEOJSON_TO_GEOMETRY_CONVERSION_ERROR);
-        }
-        return geometry;
-    }
-
-    /**
-     * @return A list of geometries (List<Geometry>) from the geoJSON list of strings geoJSONList
-     */
-    public static List<Geometry> jsonListToGeometryList(List<String> geoJSONList) throws SymphonyStandardAppException {
-        List<Geometry> geometries = new ArrayList<>();
-        for (String geoJSON : geoJSONList) {
-            geometries.add(jsonToGeometry(geoJSON));
-        }
-        return geometries;
     }
 }
 

@@ -8,11 +8,11 @@ package se.havochvatten.symphony.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.locationtech.jts.geom.MultiPolygon;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 import java.io.Serial;
 import java.io.Serializable;
 

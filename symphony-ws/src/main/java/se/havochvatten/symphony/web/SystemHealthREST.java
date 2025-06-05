@@ -1,16 +1,15 @@
 package se.havochvatten.symphony.web;
 
-import io.swagger.annotations.Api;
-
-import javax.ejb.Stateless;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.ejb.Stateless;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Stateless
-@Api(value = "/ping", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
+@Tag(name ="/ping")
 @Path("ping")
 public class SystemHealthREST {
     /**

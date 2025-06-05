@@ -1,11 +1,11 @@
 package se.havochvatten.symphony.entity;
 
-import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.geotools.data.geojson.GeoJSONReader;
 import org.hibernate.annotations.*;
-import org.hibernate.annotations.CascadeType;
+import org.hibernate.type.SqlTypes;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.opengis.feature.simple.SimpleFeature;
@@ -54,31 +54,30 @@ public class ScenarioArea implements BandChangeEntity, Serializable {
     }
 
     @Id
-    @Generated(GenerationTime.INSERT)
+    @Generated()
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
     @Basic(optional = true)
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "json")
     protected JsonNode changes;
 
     @Basic(optional = false)
     @NotNull
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "json")
     protected JsonNode feature;
 
     @Basic
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "json")
     protected JsonNode matrix;
 
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "scenario", nullable = false)
     private Scenario scenario;
 

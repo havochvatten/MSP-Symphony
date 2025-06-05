@@ -14,15 +14,15 @@ import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.entity.Scenario;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 public class CalculationAreaServiceTest {
@@ -166,12 +166,12 @@ public class CalculationAreaServiceTest {
         when(calculationAreaService.metadataService.em.createQuery(MetaDataService.sparseBandQuery, SymphonyBand.class))
             .thenReturn(mockedPressuresQuery, mockedEcoQuery);
 
-        when(mockedPressuresQuery.setParameter(anyString(), anyObject())).thenReturn(mockedPressuresQuery);
+        when(mockedPressuresQuery.setParameter(anyString(), any())).thenReturn(mockedPressuresQuery);
         when(mockedPressuresQuery.setParameter("baselineVersionId", 1)).thenReturn(mockedPressuresQuery);
         when(mockedPressuresQuery.setParameter("category", "Pressure")).thenReturn(mockedPressuresQuery);
         when(mockedPressuresQuery.getResultList()).thenReturn(pressureBands);
 
-        when(mockedEcoQuery.setParameter(anyString(), anyObject())).thenReturn(mockedEcoQuery);
+        when(mockedEcoQuery.setParameter(anyString(), any())).thenReturn(mockedEcoQuery);
         when(mockedEcoQuery.setParameter("baselineVersionId", 1)).thenReturn(mockedEcoQuery);
         when(mockedEcoQuery.setParameter("category", "Ecosystem")).thenReturn(mockedEcoQuery);
         when(mockedEcoQuery.getResultList()).thenReturn(ecoBands);
