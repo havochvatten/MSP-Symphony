@@ -1,5 +1,6 @@
 package se.havochvatten.symphony.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -117,6 +118,7 @@ public class BaselineVersion implements Serializable {
         return "se.havochvatten.symphony.entity.BaselineVersion[ sverId=" + id + " ]";
     }
 
+    @JsonIgnore
     @XmlTransient
     public List<CalculationResult> getCalculationResultList() {
         return calculationResultList;
