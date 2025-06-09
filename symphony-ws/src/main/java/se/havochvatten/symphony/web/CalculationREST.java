@@ -55,6 +55,7 @@ import java.util.logging.Logger;
 import static jakarta.ws.rs.core.Response.*;
 import static se.havochvatten.symphony.util.CalculationUtil.*;
 import static se.havochvatten.symphony.util.MetaDataUtil.*;
+import static se.havochvatten.symphony.web.WebUtil.fixedDecimal;
 import static se.havochvatten.symphony.web.WebUtil.noPrincipalStr;
 
 /**
@@ -766,9 +767,7 @@ public class CalculationREST {
             .build();
 
         if (dynamicComparativeScale) {
-            try (Formatter fmt = new Formatter(Locale.US)) {
-                response.getHeaders().add("SYM-Dynamic-Max", fmt.format("%.3f", dynamicMax));
-            }
+            response.getHeaders().add("SYM-Dynamic-Max", fixedDecimal(dynamicMax, 3));
         }
 
         return response;
