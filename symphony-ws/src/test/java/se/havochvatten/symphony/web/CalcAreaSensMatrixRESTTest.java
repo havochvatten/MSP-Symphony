@@ -1,6 +1,10 @@
 package se.havochvatten.symphony.web;
 
+import com.fasterxml.jackson.core.JsonFactoryBuilder;
+import com.fasterxml.jackson.core.StreamReadConstraints;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.path.json.JsonPath;
+import io.restassured.path.json.mapper.factory.GsonObjectMapperFactory;
 import io.restassured.response.Response;
 import org.junit.After;
 import org.junit.Before;
@@ -51,7 +55,7 @@ public class CalcAreaSensMatrixRESTTest extends RESTTest {
         Response response = given().
                 auth().
                 preemptive().
-                basic(getUsername(), getPassword()).
+                basic(getAdminUsername(), getAdminPassword()).
                 when().
                 header("Content-Type", "application/json").
                 body(calcAreaSensMatrixDto).
