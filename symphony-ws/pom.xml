@@ -17,7 +17,7 @@
         <version.mockito>5.18.0</version.mockito>
         <version.geotools>29.6</version.geotools>
         <version.rest.assured>5.5.5</version.rest.assured>
-        <version.postgresql-jdbc-driver>42.7.5</version.postgresql-jdbc-driver>
+        <version.postgresql-jdbc-driver>42.7.7</version.postgresql-jdbc-driver>
         <version.hibernate>6.6.7.Final</version.hibernate>
         <version.junit>4.13.2</version.junit>
         <version.jackson>2.19.0</version.jackson>
