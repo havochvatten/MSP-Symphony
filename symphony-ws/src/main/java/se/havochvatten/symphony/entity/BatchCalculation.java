@@ -2,24 +2,17 @@ package se.havochvatten.symphony.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vladmihalcea.hibernate.type.array.IntArrayType;
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import se.havochvatten.symphony.scenario.ScenarioSplitOptions;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.util.ArrayList;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import java.util.List;
 
 @Entity
-@TypeDefs({
-    @TypeDef(name = "int-array", typeClass = IntArrayType.class),
-    @TypeDef(name = "json", typeClass = JsonBinaryType.class)
-})
 @Table(name = "batchcalculation")
 public class BatchCalculation {
 
@@ -41,25 +34,25 @@ public class BatchCalculation {
 
     @NotNull
     @Column(name = "entities", nullable = false)
-    @Type(type = "int-array")
+    @JdbcTypeCode(SqlTypes.ARRAY)
     private int[] entities;
 
     @Column(name = "calculated", nullable = false)
     @ColumnDefault("ARRAY[]::integer[]")
-    @Type(type = "int-array")
+    @JdbcTypeCode(SqlTypes.ARRAY)
     private int[] calculated = new int[0];
 
     @Column(name = "failed", nullable = false)
     @ColumnDefault("ARRAY[]::integer[]")
-    @Type(type = "int-array")
+    @JdbcTypeCode(SqlTypes.ARRAY)
     private int[] failed = new int[0];
 
     @NotNull
     @Column(name = "areas_calculation", nullable = false)
-    private Boolean areasCalculation = false;
+    private boolean areasCalculation = false;
 
     @Column(name = "areas_options", columnDefinition = "json")
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     private JsonNode areasOptions;
 
     public Integer getId() {
@@ -102,15 +95,15 @@ public class BatchCalculation {
         this.calculated = calculated;
     }
 
-    public void setCalculated(ArrayList<Integer> calculated) { this.calculated = calculated.stream().mapToInt(i -> i).toArray(); }
+    public void setCalculated(List<Integer> calculated) { this.calculated = calculated.stream().mapToInt(i -> i).toArray(); }
 
     public int[] getFailed() { return failed; }
 
     public void setFailed(int[] failed) { this.failed = failed; }
 
-    public void setFailed(ArrayList<Integer> failed) { this.failed = failed.stream().mapToInt(i -> i).toArray(); }
+    public void setFailed(List<Integer> failed) { this.failed = failed.stream().mapToInt(i -> i).toArray(); }
 
-    public Boolean isAreasCalculation() { return areasCalculation; }
+    public boolean isAreasCalculation() { return areasCalculation; }
 
     public void setAreasCalculation(Boolean areasCalculation) { this.areasCalculation = areasCalculation; }
 

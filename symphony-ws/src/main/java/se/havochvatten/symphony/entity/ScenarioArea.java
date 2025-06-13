@@ -1,14 +1,13 @@
 package se.havochvatten.symphony.entity;
 
-import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -20,7 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.geotools.data.geojson.GeoJSONReader;
 import org.hibernate.annotations.*;
-import org.hibernate.annotations.CascadeType;
+import org.hibernate.type.SqlTypes;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.opengis.feature.simple.SimpleFeature;
@@ -33,21 +32,17 @@ import se.havochvatten.symphony.scenario.BandChangeEntity;
 
 @Entity
 @Table(name = "scenarioarea")
-@NamedQueries({
-    @NamedQuery(name = "ScenarioArea.findMany",
-        query = "SELECT s FROM ScenarioArea s WHERE id IN :ids")
-})
-@NamedNativeQueries({
-    @NamedNativeQuery(name = "ScenarioArea.setSinglePolygon",
-        query = "UPDATE scenarioarea SET polygon = " +
-                    "ST_Multi(ST_GeomFromGeoJSON(cast(cast(feature as json)->>'geometry' as json))) " +
-                    "WHERE id = :id"),
-    @NamedNativeQuery(name = "ScenarioAreas.setPolygon",
-        query = "UPDATE scenarioarea SET polygon = " +
-                    "ST_Multi(ST_GeomFromGeoJSON(cast(cast(feature as json)->>'geometry' as json))) " +
-                    "WHERE scenario = :scenarioId")
-})
-public class ScenarioArea implements BandChangeEntity {
+@NamedQuery(name = "ScenarioArea.findMany",
+    query = "SELECT s FROM ScenarioArea s WHERE id IN :ids")
+@NamedNativeQuery(name = "ScenarioArea.setSinglePolygon",
+    query = "UPDATE scenarioarea SET polygon = " +
+                "ST_Multi(ST_GeomFromGeoJSON(cast(cast(feature as json)->>'geometry' as json))) " +
+                "WHERE id = :id")
+@NamedNativeQuery(name = "ScenarioAreas.setPolygon",
+    query = "UPDATE scenarioarea SET polygon = " +
+                "ST_Multi(ST_GeomFromGeoJSON(cast(cast(feature as json)->>'geometry' as json))) " +
+                "WHERE scenario = :scenarioId")
+public class ScenarioArea implements BandChangeEntity, Serializable {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     private static JsonNode defaultMatrixJSON() {
@@ -59,31 +54,30 @@ public class ScenarioArea implements BandChangeEntity {
     }
 
     @Id
-    @Generated(GenerationTime.INSERT)
+    @Generated()
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
     @Basic(optional = true)
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "json")
     protected JsonNode changes;
 
     @Basic(optional = false)
     @NotNull
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "json")
     protected JsonNode feature;
 
     @Basic
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "json")
     protected JsonNode matrix;
 
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @Cascade(CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "scenario", nullable = false)
     private Scenario scenario;
 

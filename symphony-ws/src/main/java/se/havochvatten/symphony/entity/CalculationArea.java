@@ -3,35 +3,31 @@ package se.havochvatten.symphony.entity;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "calculationarea")
 @XmlRootElement
-@NamedQueries({
-		@NamedQuery(name = "CalculationArea.findAll", query = "SELECT c FROM CalculationArea c"),
-		@NamedQuery(name = "CalculationArea.findByBaselineName", query = "SELECT c FROM CalculationArea c " +
-				"WHERE c.defaultSensitivityMatrix.baselineVersion.name = :name"),
-        @NamedQuery(name = "CalculationArea.findCalibratedByBaselineName", query = "SELECT c FROM CalculationArea c " +
-                "WHERE c.defaultSensitivityMatrix.baselineVersion.name = :name AND c.maxValue IS NOT NULL"),
-        @NamedQuery(name = "CalculationArea.findByIds", query = "SELECT c FROM CalculationArea c " +
-                "WHERE c.id IN :ids")
-})
-@NamedNativeQueries({
-        @NamedNativeQuery(name = "CalculationArea.findByScenarioArea",
-                query = "SELECT c.* FROM calculationarea c " +
-                        "JOIN sensitivitymatrix smx ON smx.sensm_id = c.carea_default_sensm_id " +
-                        "AND smx.sensm_bver_id = :versionId " +
-                        "JOIN capolygon cap ON cap.cap_carea_id = c.carea_id AND " +
-                        "ST_Intersects((SELECT polygon FROM scenarioarea WHERE id = :scenarioAreaId), cap.pg_polygon)",
-                resultClass = CalculationArea.class)
-})
+@NamedQuery(name = "CalculationArea.findAll", query = "SELECT c FROM CalculationArea c")
+@NamedQuery(name = "CalculationArea.findByBaselineName", query = "SELECT c FROM CalculationArea c " +
+        "WHERE c.defaultSensitivityMatrix.baselineVersion.name = :name")
+@NamedQuery(name = "CalculationArea.findCalibratedByBaselineName", query = "SELECT c FROM CalculationArea c " +
+        "WHERE c.defaultSensitivityMatrix.baselineVersion.name = :name AND c.maxValue IS NOT NULL")
+@NamedQuery(name = "CalculationArea.findByIds", query = "SELECT c FROM CalculationArea c " +
+        "WHERE c.id IN :ids")
+@NamedNativeQuery(name = "CalculationArea.findByScenarioArea",
+        query = "SELECT c.* FROM calculationarea c " +
+                "JOIN sensitivitymatrix smx ON smx.sensm_id = c.carea_default_sensm_id " +
+                "AND smx.sensm_bver_id = :versionId " +
+                "JOIN capolygon cap ON cap.cap_carea_id = c.carea_id AND " +
+                "ST_Intersects((SELECT polygon FROM scenarioarea WHERE id = :scenarioAreaId), cap.pg_polygon)",
+        resultClass = CalculationArea.class)
 public class CalculationArea implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -125,15 +121,11 @@ public class CalculationArea implements Serializable {
 	@Override
 	public boolean equals(Object object) {
 		// TODO: Warning - this method won't work in the case the id fields are not set
-		if (!(object instanceof CalculationArea)) {
+		if (!(object instanceof CalculationArea other)) {
 			return false;
 		}
-		CalculationArea other = (CalculationArea) object;
-		if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-			return false;
-		}
-		return true;
-	}
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+    }
 
 	@Override
 	public String toString() {

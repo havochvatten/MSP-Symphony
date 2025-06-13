@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+<persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
   <persistence-unit name="symphonyPU" transaction-type="JTA">
     <jta-data-source>java:/SymphonyDS</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
-      <property name="hibernate.hbm2ddl.auto" value="update"/> <!-- N.B: Use "validate" in production -->
-      <property name="hibernate.implicit_naming_strategy" value="org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl" />
-      <property name="hibernate.types.print.banner" value="false"/>
-      <property name="hibernate.dialect" value="se.havochvatten.symphony.hibernate.PostgreSQL9DialectExtension"/>
+
+      <!-- Hibernate feature hbm2ddl may be utilized temporarily with values "update"/"create"
+           for convenience, but probably not in a production environment.
+           ( https://vladmihalcea.com/hibernate-hbm2ddl-auto-schema/ )
+           Note that the legal value "validate" may present problems due to certain data types
+           (multidim. arrays) not detecting correctly and should be avoided.               -->
+      <!-- <property name="hibernate.hbm2ddl.auto" value="update"/> -->
+      <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
     </properties>
   </persistence-unit>
 </persistence>

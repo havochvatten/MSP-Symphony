@@ -38,7 +38,7 @@ public class UserDefinedAreaDtoMapper {
         ObjectMapper ob = new ObjectMapper();
 
         try {
-            TypeReference ref = new TypeReference<Object>() {};
+            TypeReference ref = new TypeReference<>() {};
             Object o = ob.readValue(entity.getPolygon(), ref);
             dto.setPolygon(o);
         } catch (IOException e) {
@@ -58,4 +58,6 @@ public class UserDefinedAreaDtoMapper {
         return userDefinedAreaDtos;
     }
 
+    // prevent instantiation
+    private UserDefinedAreaDtoMapper() {}
 }

@@ -8,10 +8,10 @@ import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.mapper.EntityToSensMatrixDtoMapper;
 import se.havochvatten.symphony.mapper.SensMatrixDtoToEntityMapper;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.ejb.EJB;
+import jakarta.ejb.Stateless;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,8 @@ public class SensMatrixService {
 
     public List<SensMatrixDto> findSensMatrixDtos(String baselineName, String preferredLanguage) {
         List<SensMatrixDto> sensMatrixDtos = new ArrayList<>();
-        List<SensitivityMatrix> matrices = em.createNamedQuery("SensitivityMatrix.findByBaselineName")
+        List<SensitivityMatrix> matrices =
+            em.createNamedQuery("SensitivityMatrix.findByBaselineName", SensitivityMatrix.class)
                 .setParameter("name", baselineName)
                 .getResultList();
         matrices.forEach(s -> sensMatrixDtos.add(EntityToSensMatrixDtoMapper.map(s, preferredLanguage)));
@@ -39,7 +40,8 @@ public class SensMatrixService {
 
     public List<SensMatrixDto> findSensMatrixDtosByOwner(String baselineName, Principal principal, String preferredLanguage) {
         List<SensMatrixDto> sensMatrixDtos = new ArrayList<>();
-        List<SensitivityMatrix> matrices = em.createNamedQuery("SensitivityMatrix.findOwnByBaselineNameAndOwner")
+        List<SensitivityMatrix> matrices =
+            em.createNamedQuery("SensitivityMatrix.findOwnByBaselineNameAndOwner", SensitivityMatrix.class)
                 .setParameter("name", baselineName)
                 .setParameter("owner", principal.getName())
                 .getResultList();
@@ -49,7 +51,8 @@ public class SensMatrixService {
 
     public List<SensMatrixDto> findAllSensMatrixDtosByOwner(String baselineName, Principal principal, String preferredLanguage) {
         List<SensMatrixDto> sensMatrixDtos = new ArrayList<>();
-        List<SensitivityMatrix> matrices = em.createNamedQuery("SensitivityMatrix.findAllByBaselineNameAndOwner")
+        List<SensitivityMatrix> matrices =
+            em.createNamedQuery("SensitivityMatrix.findAllByBaselineNameAndOwner", SensitivityMatrix.class)
                 .setParameter("name", baselineName)
                 .setParameter("owner", principal.getName())
                 .getResultList();
@@ -135,12 +138,12 @@ public class SensMatrixService {
 
 
     private void checkMatrixName(String matrixName, String baselineName, int matrixId, String owner) throws SymphonyStandardAppException {
-        List<SensitivityMatrix> matrices = em.createNamedQuery("SensitivityMatrix.findByMatrixNameAndOwnerAndBaseline")
+        List<SensitivityMatrix> matrices = em.createNamedQuery("SensitivityMatrix.findByMatrixNameAndOwnerAndBaseline", SensitivityMatrix.class)
                 .setParameter("matrixName", matrixName)
                 .setParameter("owner", owner)
                 .setParameter("baseLineName", baselineName)
                 .getResultList();
-        if (matrices.size() > 0 && matrices.get(0).getId() != matrixId) {
+        if (!matrices.isEmpty() && matrices.get(0).getId() != matrixId) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.SENSITIVITY_MATRIX_NAME_ALREADY_EXISTS);
         }
     }

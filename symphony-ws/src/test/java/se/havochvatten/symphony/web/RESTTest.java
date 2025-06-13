@@ -1,35 +1,35 @@
 package se.havochvatten.symphony.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
+import io.restassured.config.ObjectMapperConfig;
 import io.restassured.parsing.Parser;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import se.havochvatten.symphony.appconfig.ObjectMapperConfiguration;
 import se.havochvatten.symphony.dto.NormalizationOptions;
 import se.havochvatten.symphony.dto.NormalizationType;
 import se.havochvatten.symphony.entity.BaselineVersion;
-import se.havochvatten.symphony.service.ScenarioService;
 import se.havochvatten.symphony.service.PropertiesService;
 
 import java.util.Date;
 
-public class RESTTest { // N.B: Must end with Test to be included in "only-apitests" profile
-    protected static final Logger LOG = LoggerFactory.getLogger(ScenarioService.class);
-    private static ObjectMapper mapper = new ObjectMapper();
+public abstract class RESTTest {
+    private static final PropertiesService props = new PropertiesService();
 
-    private static PropertiesService props = new PropertiesService();
-
-    protected final static String SESSION_COOKIE_NAME = "JSESSIONID";
+    protected static final String SESSION_COOKIE_NAME = "JSESSIONID";
 
     static {
         RestAssured.baseURI = getSymphonyOrSystemProperty("api.base_url");
         RestAssured.basePath = getSymphonyOrSystemProperty("api.base_path");
         RestAssured.defaultParser = Parser.JSON;
+        RestAssured.config = RestAssured.config().objectMapperConfig(
+            ObjectMapperConfig.objectMapperConfig()
+                .jackson2ObjectMapperFactory(
+                    (type, s) -> new ObjectMapperConfiguration().getContext(type.getClass())
+                ));
     }
 
     protected static String getUsername() {
@@ -55,10 +55,6 @@ public class RESTTest { // N.B: Must end with Test to be included in "only-apite
             return System.getProperty(name);
         else
             throw new RuntimeException("Property " + name + " not found!");
-    }
-
-    protected static ObjectMapper getMapper() {
-        return mapper;
     }
 
     protected static String endpoint(String pathSuffix) {
@@ -101,11 +97,4 @@ public class RESTTest { // N.B: Must end with Test to be included in "only-apite
     public static NormalizationOptions getAreaNormalization() {
         return new NormalizationOptions(NormalizationType.AREA);
     }
-
-//    public static Geometry getLargerROI() throws ParseException {
-//        var reader = new InputStreamReader(
-//                ScenarioRESTTest.class.getClassLoader().getResourceAsStream("polygons/test.geojson"));
-//        var geometry = new GeoJsonReader().read(reader);
-//        return geometry;
-//    }
 }

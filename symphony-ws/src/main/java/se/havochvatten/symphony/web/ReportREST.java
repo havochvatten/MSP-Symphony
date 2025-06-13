@@ -1,13 +1,10 @@
 package se.havochvatten.symphony.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
-import se.havochvatten.symphony.calculation.CalcUtil;
-import se.havochvatten.symphony.dto.ComparisonReportResponseDto;
-import se.havochvatten.symphony.dto.ReportResponseDto;
 import se.havochvatten.symphony.entity.CalculationResult;
 import se.havochvatten.symphony.entity.CompoundComparison;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
@@ -15,28 +12,32 @@ import se.havochvatten.symphony.service.CalcService;
 import se.havochvatten.symphony.service.PropertiesService;
 import se.havochvatten.symphony.service.ReportService;
 
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.EJB;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static javax.ws.rs.core.Response.ok;
-import static javax.ws.rs.core.Response.status;
+import static jakarta.ws.rs.core.Response.ok;
+import static jakarta.ws.rs.core.Response.status;
 import static se.havochvatten.symphony.web.CalculationREST.getImplicitDiffCoverageFromCalcId;
 import static se.havochvatten.symphony.web.CalculationREST.hasAccess;
 
 
 @Path("/report")
-@Api(value = "/report")
+@Tag(name ="/report")
 public class ReportREST {
     private static final Logger logger = Logger.getLogger(ReportREST.class.getName());
 
     private static final ObjectMapper mapper = new ObjectMapper();
+
+    private static final String contentDispositionStr = "Content-Disposition";
 
     @Inject
     private ReportService reportService;
@@ -51,16 +52,14 @@ public class ReportREST {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Return data for report associated with calculation",
-            response = ReportResponseDto.class)
+    @Operation(summary = "Return data for report associated with calculation")
     public Response getReport(@Context HttpServletRequest req,
                               @PathParam("id") int id,
                               @DefaultValue("") @QueryParam("lang") String preferredLanguage,
                               @Context UriInfo uriInfo)
         throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
-        logger.info("Fetching report "+id);
-        var calc = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
-            calcService).orElseThrow(NotFoundException::new);
+        logger.log(Level.INFO, () -> String.format("Fetching report %d ",id));
+        var calc = Optional.ofNullable(calcService.getCalculation(id)).orElseThrow(NotFoundException::new);
 
         if (hasAccess(calc, req.getUserPrincipal()))
             return ok(reportService.generateReportData(calc, true,
@@ -75,14 +74,13 @@ public class ReportREST {
     @Path("/{id}/geotiff")
     @Produces({"image/geotiff"})
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Returns calculation result image")
+    @Operation(summary = "Returns calculation result image")
      public Response getResultGeoTIFFImage(@Context HttpServletRequest req, @PathParam("id") int id) {
-        var calc = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
-            calcService).orElseThrow(BadRequestException::new);
+        var calc = Optional.ofNullable(calcService.getCalculation(id)).orElseThrow(NotFoundException::new);
 
         if (calc.isBaselineCalculation() || calc.getOwner().equals(req.getUserPrincipal().getName()))
             return ok(calc.getRasterData()).
-                    header("Content-Disposition",
+                    header(contentDispositionStr,
                             "attachment; filename=\""+calc.getId()+"-" + WebUtil.escapeFilename(calc.getCalculationName()) +
                                     ".tiff\"").
                     build();
@@ -94,14 +92,14 @@ public class ReportREST {
     @Path("/comparison/{a}/{b}/geotiff")
     @Produces({"image/geotiff"})
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Returns comparison result image")
+    @Operation(summary = "Returns comparison result image")
     public Response getResultGeoTIFFImage(@Context HttpServletRequest req, @PathParam("a") int baseId, @PathParam("b") int relativeId) throws IOException {
 
         try {
             var diff = CalculationREST.getDiffCoverageFromCalcIds(calcService, req, baseId, relativeId);
 
             return ok(calcService.writeGeoTiff(diff)).
-                header("Content-Disposition",
+                header(contentDispositionStr,
                     "attachment; filename=\"" +
                         "Comparison_report-calculationIDs_-_" + baseId + "-" + relativeId + ".tiff\"").
                 build();
@@ -116,14 +114,14 @@ public class ReportREST {
     @Path("/comparison/{a}/geotiff")
     @Produces({"image/geotiff"})
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Returns comparison result image for comparison by implicit baseline")
+    @Operation(summary = "Returns comparison result image for comparison by implicit baseline")
     public Response getResultGeoTIFFImage(@Context HttpServletRequest req, @PathParam("a") int scenarioId,
                                           @DefaultValue("false") @QueryParam("reverse") boolean reverse) throws IOException {
         try {
             var diff = getImplicitDiffCoverageFromCalcId(calcService, req, scenarioId, reverse);
 
             return ok(calcService.writeGeoTiff(diff)).
-                header("Content-Disposition",
+                header(contentDispositionStr,
                     "attachment; filename=\"" + comparisonFilename(scenarioId, reverse) + ".tiff\"").
                 build();
         } catch (NotAuthorizedException ax) {
@@ -137,15 +135,14 @@ public class ReportREST {
     @Path("/{id}/csv")
     @Produces(MediaType.TEXT_PLAIN)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Returns aggregated calculation results as CSV file")
+    @Operation(summary = "Returns aggregated calculation results as CSV file")
     // TODO Parameterize with locale front frontend
     public Response getResultCSV(@Context HttpServletRequest req, @PathParam("id") int id)
             throws SymphonyStandardAppException {
-        var calc = CalcUtil.getCalculationResultFromSessionOrDb(id, req.getSession(),
-            calcService).orElseThrow(BadRequestException::new);
+        var calc = Optional.ofNullable(calcService.getCalculation(id)).orElseThrow(NotFoundException::new);
         if (hasAccess(calc, req.getUserPrincipal()))
             return ok(reportService.generateCSVReport(calc, req.getLocale())).
-                    header("Content-Disposition",
+                    header(contentDispositionStr,
                             "attachment; filename=\""+calc.getId()+"-"+WebUtil.escapeFilename(calc.getCalculationName())+
                                     "-utf8.csv\"").
                     build();
@@ -157,22 +154,17 @@ public class ReportREST {
     @Path("/comparison/{a}/{b}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Return data for a differential scenario report based on two disparate calculations "
-                        + "covering the same area",
-            response = ComparisonReportResponseDto.class)
+    @Operation(summary = "Return data for a differential scenario report based on two disparate calculations "
+                        + "covering the same area")
     public Response getComparisonReport(@Context HttpServletRequest req,
                                         @PathParam("a") int baseId,
                                         @PathParam("b") int scenarioId,
                                         @DefaultValue("") @QueryParam("lang") String preferredLanguage,
                                         @Context UriInfo uriInfo) {
-        logger.info("Comparing report "+baseId+" and "+scenarioId);
+        logger.log(Level.INFO, () -> String.format("Comparing report %d and %d", baseId, scenarioId));
         try {
-            var baseRes =
-                CalcUtil.getCalculationResultFromSessionOrDb(baseId, req.getSession(), calcService)
-                    .orElseThrow(javax.ws.rs.BadRequestException::new);
-            var scenarioRes =
-                CalcUtil.getCalculationResultFromSessionOrDb(scenarioId, req.getSession(), calcService)
-                    .orElseThrow(javax.ws.rs.BadRequestException::new);
+            var baseRes = Optional.ofNullable(calcService.getCalculation(baseId)).orElseThrow(NotFoundException::new);
+            var scenarioRes = Optional.ofNullable(calcService.getCalculation(scenarioId)).orElseThrow(NotFoundException::new);
 
             if (hasAccess(baseRes, req.getUserPrincipal()) && hasAccess(scenarioRes, req.getUserPrincipal()) )
                 return ok(reportService.generateComparisonReportData(baseRes, scenarioRes, false, false, preferredLanguage)).build();
@@ -189,18 +181,15 @@ public class ReportREST {
     @Path("/comparison/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Return data for differential scenario report using an implicit baseline calculation",
-            response = ComparisonReportResponseDto.class)
+    @Operation(summary = "Return data for differential scenario report using an implicit baseline calculation")
     public Response getComparisonReport(@Context HttpServletRequest req,
                                         @PathParam("id") int scenarioId,
                                         @DefaultValue("") @QueryParam("lang") String preferredLanguage,
                                         @DefaultValue("false") @QueryParam("reverse") boolean reverse,
                                         @Context UriInfo uriInfo) {
-        logger.info("Comparing report "+scenarioId+" with baseline");
+        logger.log(Level.INFO, () -> String.format("Comparing report %d with baseline", scenarioId));
         try {
-            var scenarioRes =
-                CalcUtil.getCalculationResultFromSessionOrDb(scenarioId, req.getSession(), calcService)
-                    .orElseThrow(javax.ws.rs.BadRequestException::new);
+            var scenarioRes = Optional.ofNullable(calcService.getCalculation(scenarioId)).orElseThrow(NotFoundException::new);
 
             if (hasAccess(scenarioRes, req.getUserPrincipal())) {
 
@@ -223,20 +212,18 @@ public class ReportREST {
     @Path("/comparison/{a}/{b}/csv")
     @Produces(MediaType.TEXT_PLAIN)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Return comparison report as CSV file")
+    @Operation(summary = "Return comparison report as CSV file")
     public Response getComparisonReport(@Context HttpServletRequest req,
                                         @PathParam("a") int baseId,
                                         @PathParam("b") int scenarioId)
             throws SymphonyStandardAppException {
         CalculationResult
-            calcA = CalcUtil.getCalculationResultFromSessionOrDb(baseId, req.getSession(),
-            calcService).orElseThrow(BadRequestException::new),
-            calcB = CalcUtil.getCalculationResultFromSessionOrDb(scenarioId, req.getSession(),
-                        calcService).orElseThrow(BadRequestException::new);
+            calcA = Optional.ofNullable(calcService.getCalculation(baseId)).orElseThrow(NotFoundException::new),
+            calcB = Optional.ofNullable(calcService.getCalculation(scenarioId)).orElseThrow(NotFoundException::new);
 
         if (hasAccess(calcA, req.getUserPrincipal()) && hasAccess(calcB, req.getUserPrincipal()))
             return ok(reportService.generateCSVComparisonReport(calcA, calcB, req.getLocale())).
-                header("Content-Disposition",
+                header(contentDispositionStr,
                     "attachment; filename=\"" + comparisonFilename(baseId, scenarioId) + "_-utf8.csv\"").
                 build();
         else
@@ -247,14 +234,13 @@ public class ReportREST {
     @Path("/comparison/{id}/csv")
     @Produces(MediaType.TEXT_PLAIN)
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Return comparison report as CSV file using an implicit baseline calculation")
+    @Operation(summary = "Return comparison report as CSV file using an implicit baseline calculation")
     public Response getComparisonReport(@Context HttpServletRequest req,
                                         @PathParam("id") int scenarioId,
                                         @DefaultValue("false") @QueryParam("reverse") boolean reverse)
-        throws SymphonyStandardAppException, FactoryException, TransformException, IOException {
+        throws SymphonyStandardAppException {
         CalculationResult
-            scenarioRes = CalcUtil.getCalculationResultFromSessionOrDb(scenarioId, req.getSession(),
-            calcService).orElseThrow(BadRequestException::new);
+            scenarioRes = Optional.ofNullable(calcService.getCalculation(scenarioId)).orElseThrow(NotFoundException::new);
 
         if (hasAccess(scenarioRes, req.getUserPrincipal())) {
 
@@ -267,7 +253,7 @@ public class ReportREST {
 
 
             return ok(csv).
-                header("Content-Disposition",
+                header(contentDispositionStr,
                     "attachment; filename=\"" + fileName + "_-utf8.csv\"").
                 build();
         }
@@ -280,7 +266,7 @@ public class ReportREST {
     @Produces({ MediaType.APPLICATION_JSON,
                 "application/vnd.oasis.opendocument.spreadsheet" })
     @RolesAllowed("GRP_SYMPHONY")
-    @ApiOperation(value = "Return compound comparison data as ODS file")
+    @Operation(summary = "Return compound comparison data as ODS file")
     public Response getMultiComparisonReport(@Context HttpServletRequest req,
                                              @PathParam("id") Integer id,
                                              @PathParam("format") String format,
@@ -301,13 +287,13 @@ public class ReportREST {
             try {
                 if(format.equals("json"))
                     return ok(reportService.generateMultiComparisonAsJSON(cmp, preferredLanguage, excludeZeroes)).
-                        header("Content-Disposition", attachmentHeader).build();
+                        header(contentDispositionStr, attachmentHeader).build();
                 else {
                     byte[] ods =
                         reportService.generateMultiComparisonAsODS(cmp, preferredLanguage,
                                                                    excludeZeroes, includeCombinedSheet, metaTerms);
                     return ok(ods).
-                        header("Content-Disposition",attachmentHeader).build();
+                        header(contentDispositionStr,attachmentHeader).build();
                 }
 
             } catch (Exception e) {

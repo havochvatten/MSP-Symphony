@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class EntityToSensMatrixDtoMapper {
 
@@ -21,7 +20,7 @@ public class EntityToSensMatrixDtoMapper {
         dto.setOwner(sensMatrix.getOwner());
         Comparator<Sensitivity> compE = Comparator.comparing(s -> s.getEcoBand().getBandNumber());
         List<Sensitivity> sortedSensitivities =
-            sensMatrix.getSensitivityList().stream().sorted(compE).collect(Collectors.toList());
+            sensMatrix.getSensitivityList().stream().sorted(compE).toList();
 
         dto.setSensMatrix(mapToMatrixDto(sortedSensitivities, preferredLanguage));
 
@@ -65,10 +64,11 @@ public class EntityToSensMatrixDtoMapper {
 
         rowMap.values().stream().sorted(
             Comparator.comparingInt(r -> rowOrderMap.get(r.getPresMetaId()))
-        ).collect(Collectors.toList()).stream().forEach(s -> {
-            sensDto.getRows().add(s);
-        });
+        ).forEach(s ->  sensDto.getRows().add(s));
 
         return sensDto;
     }
+
+    // prevent instantiation
+    private EntityToSensMatrixDtoMapper() {}
 }

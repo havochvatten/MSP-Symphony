@@ -2,15 +2,15 @@ package se.havochvatten.symphony.calculation.batch;
 
 import org.apache.mina.util.ConcurrentHashSet;
 
-import javax.websocket.*;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.*;
+import jakarta.websocket.server.ServerEndpoint;
 import java.util.Set;
 
 @ServerEndpoint("/batch-status/{batchId}")
 public class BatchStatusEndpoint {
 
     private Session session;
-    private static Set<BatchStatusEndpoint> listeners = new ConcurrentHashSet<>();
+    private static final Set<BatchStatusEndpoint> listeners = new ConcurrentHashSet<>();
     private String lastStatus;
 
     @OnMessage
@@ -34,12 +34,12 @@ public class BatchStatusEndpoint {
     }
 
     private static void notify(String message, BatchStatusEndpoint sender) {
-        listeners.forEach(listener -> {
+        for (BatchStatusEndpoint listener : listeners) {
             synchronized (listener) {
-                if(listener == sender) return;
+                if (listener == sender) return;
                 sendTo(message, listener.session.getBasicRemote());
             }
-        });
+        }
     }
 
     private static void sendTo(String message, RemoteEndpoint.Basic recipient) {

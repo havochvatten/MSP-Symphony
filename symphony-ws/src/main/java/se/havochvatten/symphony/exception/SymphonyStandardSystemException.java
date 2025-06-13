@@ -1,11 +1,11 @@
 package se.havochvatten.symphony.exception;
 
-import javax.ejb.EJBException;
+import jakarta.ejb.EJBException;
 
 // Runtime exceptions which will be handled by the EJB container
 
 public class SymphonyStandardSystemException extends EJBException {
-    private SymphonyModelErrorCode errorCode;
+    private final SymphonyModelErrorCode errorCode;
 
     public SymphonyStandardSystemException(SymphonyModelErrorCode errorCode) {
         super(errorCode.getErrorMessage());

@@ -4,8 +4,40 @@ import java.util.List;
 import java.util.Map;
 
 public class ComparisonReportResponseDto {
-    public ReportResponseDto a; // base scenario
-    public ReportResponseDto b; // what-if
-    public Map<String, List> chartDataPositive;
-    public Map<String, List> chartDataNegative;
+    private ReportResponseDto a; // base scenario
+    private ReportResponseDto b; // what-if
+
+    private Map<String, List> chartDataPositive;
+    private Map<String, List> chartDataNegative;
+
+    public ComparisonReportResponseDto(
+            ReportResponseDto a,
+            ReportResponseDto b) {
+        this.a = a;
+        this.b = b;
+    }
+
+    public ReportResponseDto getA() {
+        return a;
+    }
+
+    public ReportResponseDto getB() {
+        return b;
+    }
+
+    public Map<String, List> getChartDataPositive() {
+        return chartDataPositive;
+    }
+
+    public Map<String, List> getChartDataNegative() {
+        return chartDataNegative;
+    }
+
+    public void setChartDataPositive(Map<String, List> chartDataPositive) {
+        this.chartDataPositive = chartDataPositive;
+    }
+
+    public void setChartDataNegative(Map<String, List> chartDataNegative) {
+        this.chartDataNegative = chartDataNegative;
+    }
 }

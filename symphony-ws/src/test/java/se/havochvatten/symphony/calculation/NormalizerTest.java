@@ -38,7 +38,7 @@ public class NormalizerTest {
         var areaNormalizer = factory.getNormalizer(NormalizationType.AREA);
         var result = areaNormalizer.apply(coverage, 242.0);
 
-        assertEquals(1.0, result.doubleValue(), TOL);
+        assertEquals(1.0, result, TOL);
     }
 
     @Test
@@ -48,7 +48,7 @@ public class NormalizerTest {
         var normalizer = factory.getNormalizer(NormalizationType.DOMAIN);
         var result = normalizer.apply(coverage, val);
 
-        assertEquals(10.0, result.doubleValue(), TOL);
+        assertEquals(10.0, result, TOL);
     }
 
     @Test
@@ -58,7 +58,7 @@ public class NormalizerTest {
         var normalizer = factory.getNormalizer(NormalizationType.USER_DEFINED);
         var result = normalizer.apply(coverage, val);
 
-        assertEquals(10.0, result.doubleValue(), TOL);
+        assertEquals(10.0, result, TOL);
     }
 
     @Test
@@ -70,6 +70,6 @@ public class NormalizerTest {
         var normalizer = factory.getNormalizer(NormalizationType.PERCENTILE);
         var result = normalizer.apply(coverage, Double.NaN);
 
-        assertEquals(0.015, result.doubleValue(), TOL); // other bands should remain unchanged
+        assertEquals(0.015, result, TOL); // other bands should remain unchanged
     }
 }

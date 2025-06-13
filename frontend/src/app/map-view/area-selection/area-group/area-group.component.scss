@@ -9,11 +9,19 @@
     align-items: baseline;
 
     h3 {
-      margin: 0;
-      margin-bottom: 1rem;
+      margin: 0 0 1rem;
+    }
+
+    .tools {
+      app-multi-tools {
+        vertical-align: top;
+        margin-right: 0.7rem;
+      }
     }
 
     fa-icon {
+      position:relative;
+      top: 6px;
       font-size: 1.6rem;
       margin-right: 1rem;
       color: $hav-turquoise;
@@ -54,6 +62,10 @@
           }
         }
 
+        .multi-selected-wrap {
+          padding: 1px 10px 3px 2px;
+        }
+
         span {
           display: flex;
           flex-wrap: nowrap;
@@ -92,7 +104,7 @@
           font-size: 1.4rem;
           line-height: 1.7rem;
           padding: 0.4rem 0 0.4rem 2.6rem;
-          background-image: url('/assets/graphic/mid-tree.svg');
+          background-image: url('/assets/mid-tree.svg');
           background-repeat: no-repeat;
           background-position: 0 0;
 
@@ -101,7 +113,7 @@
           }
 
           &:last-child {
-            background-image: url("/assets/graphic/end-tree.svg");
+            background-image: url("/assets/end-tree.svg");
           }
 
           &:hover {

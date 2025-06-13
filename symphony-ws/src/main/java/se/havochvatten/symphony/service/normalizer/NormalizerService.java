@@ -4,8 +4,8 @@ import se.havochvatten.symphony.calculation.Operations;
 import se.havochvatten.symphony.dto.NormalizationType;
 import se.havochvatten.symphony.service.PropertiesService;
 
-import javax.ejb.Singleton;
-import javax.inject.Inject;
+import jakarta.ejb.Singleton;
+import jakarta.inject.Inject;
 
 @Singleton
 public class NormalizerService {

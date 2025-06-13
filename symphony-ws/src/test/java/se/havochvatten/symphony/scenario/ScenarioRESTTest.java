@@ -6,7 +6,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.locationtech.jts.io.ParseException;
 import se.havochvatten.symphony.dto.ScenarioAreaDto;
 import se.havochvatten.symphony.dto.ScenarioDto;
 import se.havochvatten.symphony.entity.CalculationResultSlice;
@@ -25,7 +24,7 @@ public class ScenarioRESTTest extends RESTTest {
     static ScenarioDto testScenario;
 
     @BeforeClass
-    public static void setup() throws ParseException, IOException {
+    public static void setup() throws IOException {
 
         testScenario = ScenarioDto.createWithoutId("TEST-SCENARIO", makeBaseline(),
                 getTestArea("V330FN"), getDomainNormalization());
@@ -88,7 +87,7 @@ public class ScenarioRESTTest extends RESTTest {
         update(testScenario);
         // temperature
         // increase
-        var result = calculate(testScenario);
+        calculate(testScenario);
         delete(testScenario.id);
     }
 
@@ -149,7 +148,8 @@ public class ScenarioRESTTest extends RESTTest {
                 auth().
                 preemptive().
                 basic(getUsername(), getPassword()).
-                delete(endpoint("/scenario/?ids=") + id);
+                request().
+                delete(endpoint("/scenario/") + id);
     }
     public static ScenarioAreaDto getTestArea(String areaCode) throws IOException {
         return mapper.readValue(

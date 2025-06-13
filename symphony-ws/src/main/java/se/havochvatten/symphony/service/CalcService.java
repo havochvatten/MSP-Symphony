@@ -35,21 +35,23 @@ import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.exception.SymphonyStandardSystemException;
 import se.havochvatten.symphony.scenario.*;
 
-import javax.annotation.PostConstruct;
-import javax.batch.operations.JobOperator;
-import javax.batch.operations.NoSuchJobExecutionException;
-import javax.batch.runtime.BatchRuntime;
-import javax.batch.runtime.JobExecution;
-import javax.ejb.*;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.batch.operations.JobOperator;
+import jakarta.batch.operations.NoSuchJobExecutionException;
+import jakarta.batch.runtime.BatchRuntime;
+import jakarta.batch.runtime.JobExecution;
+import jakarta.ejb.*;
+import javax.imageio.ImageWriteParam;
+import jakarta.inject.Inject;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.*;
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.NotFoundException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.*;
+import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.NotFoundException;
+
 import java.awt.image.Raster;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -64,6 +66,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static se.havochvatten.symphony.dto.NormalizationType.PERCENTILE;
+import static se.havochvatten.symphony.util.CalculationUtil.*;
 
 /**
  * Calculation service
@@ -77,18 +80,6 @@ public class CalcService {
     public static final int OPERATION_CUMULATIVE = 0;
     public static final int OPERATION_RARITYADJUSTED = 1;
     private static final Logger LOG = LoggerFactory.getLogger(CalcService.class);
-
-    public static String operationName(int operation) {
-    // Temporary solution.
-    // Should utilize enum (?) but due to inadequacies re: Hibernate mapping of
-    // postgres enum data type (availalble for pgdb > v10) int is chosen instead.
-    // Operation options json object is also arguably suboptimal, but kept as
-    // legacy. There may be a case for a more thorough restructuring.
-
-     return operation == CalcService.OPERATION_CUMULATIVE ?
-        "CumulativeImpact" :
-        "RarityAdjustedCumulativeImpact";
-    }
 
     private static final ObjectMapper mapper = new ObjectMapper(); // TODO Inject instead
 
@@ -123,10 +114,8 @@ public class CalcService {
         JAI jai = JAI.getDefaultInstance();
         var scheduler = jai.getTileScheduler();
         scheduler.setParallelism(Runtime.getRuntime().availableProcessors());
-//                scheduler.setPrefetchParallelism(parallelism);
 
         var cache = jai.getTileCache();
-//        cache.setMemoryThreshold(0.80f);
         int megabytesOfCache = Integer.parseInt(
                 props.getProperty("calc.jai.tilecache.capacity", "1024"));
         cache.setMemoryCapacity(megabytesOfCache * 1024 * 1024L);
@@ -172,12 +161,12 @@ public class CalcService {
                       pressureList  = Arrays.stream(base.getScenarioSnapshot().getPressuresToInclude()).boxed().toList();
 
         return candidates.stream()
-                .filter(c -> !base.getId().equals(c.id)) // omit the calculation whose matches we are
+                .filter(c -> !base.getId().equals(c.getId())) // omit the calculation whose matches we are
                                                          // searching for
                 .filter(c -> ecoList.size() == c.ecosystemsToInclude.size() &&
-                             ecoList.containsAll(c.ecosystemsToInclude))
+                             new HashSet<>(ecoList).containsAll(c.ecosystemsToInclude))
                 .filter(c -> pressureList.size() == c.pressuresToInclude.size() &&
-                             pressureList.containsAll(c.pressuresToInclude))
+                             new HashSet<>(pressureList).containsAll(c.pressuresToInclude))
                 .filter(c -> baseGeometry.equals(c.getGeometry()))
                 .toList();
     }
@@ -234,11 +223,11 @@ public class CalcService {
             try {
                 if (transaction.getStatus() == Status.STATUS_ACTIVE)
                     transaction.rollback();
-            } catch (Throwable e) {/* ignore */}
+            } catch (Exception e) {/* ignore */}
         }
     }
 
-    public synchronized void delete(Principal user, Object entity) {
+    public synchronized void delete(Object entity) {
         try {
             transaction.begin();
             em.remove(em.merge(entity));
@@ -250,7 +239,7 @@ public class CalcService {
             try {
                 if (transaction.getStatus() == Status.STATUS_ACTIVE)
                     transaction.rollback();
-            } catch (Throwable e) {/* ignore */}
+            } catch (Exception e) {/* ignore */}
         }
 
     }
@@ -263,7 +252,7 @@ public class CalcService {
         if (!calc.getOwner().equals(user.getName()))
             throw new NotAuthorizedException(user.getName());
         else {
-            delete(user, calc);
+            delete(calc);
         }
     }
 
@@ -277,7 +266,7 @@ public class CalcService {
             var wp = new GeoTiffWriteParams();
 
             if (type != null) {
-                wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
+                wp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                 wp.setCompressionType(type);
                 if (quality != null)
                     wp.setCompressionQuality(Float.parseFloat(quality));
@@ -290,24 +279,17 @@ public class CalcService {
             writer.write(coverage, pvg.values().toArray(new GeneralParameterValue[1]));
             writer.dispose();
         } catch (IOException e) {
-            LOG.error("Error making result GeoTIFF: " + e);
+            LOG.error(String.format("Error making result GeoTIFF: %s", e));
             throw e;
         }
         return baos.toByteArray();
     }
 
     private List<SensitivityMatrix> getUniqueMatrices(MatrixResponse matrixResponse, Integer baselineId) {
-        List<Integer> matrixIds = matrixResponse.areaMatrixMap.values().stream().map(MutablePair::getLeft).distinct().toList();
-        List<SensitivityMatrix> smList = matrixIds.stream().map(matrixId ->
-        {
-            try {
-                return new SensitivityMatrix(matrixId, calculationAreaService.getSensitivityMatrix(matrixId, baselineId));
-            } catch (SymphonyStandardAppException e) {
-                throw new RuntimeException(e);
-            }
-        }).toList();
+        List<Integer> matrixIds = matrixResponse.getAreaMatrixMap().values().stream().map(MutablePair::getLeft).distinct().toList();
 
-        return new ArrayList<>(smList);
+        return new ArrayList<>(matrixIds.stream().map(matrixId ->
+            new SensitivityMatrix(matrixId, calculationAreaService.getSensitivityMatrix(matrixId, baselineId))).toList());
     }
 
     private Geometry coastalComplement(ScenarioCommon scenario) throws SymphonyStandardAppException {
@@ -329,12 +311,12 @@ public class CalcService {
             Map<Integer, List<CaPolygon>> polygonCache;
             polygonCache = caList.stream().collect(Collectors.toMap(CalculationArea::getId, CalculationArea::getCaPolygonList));
 
-            for (int areaId : areasExcludingCoastal.keySet()) {
-                List<CaPolygon> caPolygons = polygonCache.get(areasExcludingCoastal.get(areaId));
+            for (int areaId : areasExcludingCoastal.values()) {
+                List<CaPolygon> caPolygons = polygonCache.get(areaId);
                 if (caPolygons == null) continue;
 
                 for(CaPolygon caPoly : caPolygons){
-                    Geometry caGeo = CalculationAreaService.jsonToGeometry(caPoly.getPolygon());
+                    Geometry caGeo = jsonToGeometry(caPoly.getPolygon());
                     if(caGeo != null) {
                         if (excludedCoastPolygon == null) {
                             excludedCoastPolygon = caGeo;
@@ -353,6 +335,7 @@ public class CalcService {
      *
      * @return CalculationResult entity containing resulting coverage
      */
+    @SuppressWarnings({ "java:S1854", "java:S1481"})
     public CalculationResult calculateScenarioImpact(Scenario scenario, boolean isAreaCalculation)
             throws FactoryException, TransformException, IOException, SymphonyStandardAppException {
 
@@ -394,25 +377,26 @@ public class CalcService {
         // Importantly, areas list is sorted numerically by id
         double[] normalizationValues = new double[areas.size()];
         Map<Integer, Integer> areaMatrices = new HashMap<>();
-        int a_ix = 0, a_id;
+        int aIx = 0, aId;
 
         for(ScenarioArea area : scenario.getAreas()) {
-            a_id = area.getId();
-            normalizationValues[a_ix] = matrixResponse.getAreaNormalizationValue(a_id);
-            areaMatrices.put(a_id, matrixResponse.getAreaMatrixId(a_id));
-            sc.areaChanges().put(a_id, area.getChangeMap());
-            ++a_ix;
+            aId = area.getId();
+            normalizationValues[aIx] = matrixResponse.getAreaNormalizationValue(aId);
+            areaMatrices.put(aId, matrixResponse.getAreaMatrixId(aId));
+            sc.areaChanges().put(aId, area.getChangeMap());
+            ++aIx;
         }
 
-        return scenario.getNormalization().type == PERCENTILE ?
+        return scenario.getNormalization().getType() == PERCENTILE ?
             new CalculationResult(coverage) :
             persistCalculation( coverage, normalizationValues, areaMatrices, scenario,
                                 sc, ecosystemsToInclude, baseline,
                                 targetGeometry, isAreaCalculation);
     }
 
+    @SuppressWarnings({ "java:S1854", "java:S1481"})
     public CalculationResult getImplicitBaselineCalculation(CalculationResult calc)
-        throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
+        throws SymphonyStandardAppException {
 
         GridCoverage2D coverage = getImplicitBaselineCoverage(calc);
         Raster[] tmp = ((PlanarImage) coverage.getRenderedImage()).getTiles(); // trigger calculation
@@ -444,6 +428,7 @@ public class CalcService {
         );
     }
 
+    @SuppressWarnings({ "java:S1854", "java:S1481", "java:S1659"})
     public Integer createCompoundComparison(int[] calcResultIds, String name, Principal owner, BaselineVersion baseline) throws SymphonyStandardSystemException {
 
         List<CalculationResult> calcResults = em.createNamedQuery("CalculationResult.findByIds_Owner_Baseline", CalculationResult.class).
@@ -478,7 +463,7 @@ public class CalcService {
 
                 ScenarioSnapshot scenario = calc.getScenarioSnapshot();
 
-                double resolution = ReportService.getResolutionInMetres(implicitBaseline);
+                double resolution = getResolutionInMetres(implicitBaseline);
                 double area = Double.isNaN(resolution) ?
                     scenario.getGeometry().getArea() :
                     resolution * resolution * stats.pixels();
@@ -510,7 +495,7 @@ public class CalcService {
             try {
                 if (transaction.getStatus() == Status.STATUS_ACTIVE)
                     transaction.rollback();
-            } catch (Throwable e) {/* ignore */}
+            } catch (Exception e) {/* ignore */}
         }
     }
 
@@ -518,7 +503,7 @@ public class CalcService {
         int operation, Geometry roi, Integer baselineId, int[] ecosystemsToInclude, int[] pressuresToInclude,
         List<ScenarioArea> areas, MatrixResponse matrixResponse, Map<String, String> operationOptions, BandChangeEntity altScenario,
         boolean coastalExclusion)
-        throws FactoryException, TransformException, SymphonyStandardAppException, IOException {
+        throws SymphonyStandardAppException {
         return calculateCoverage(operation, roi, baselineId, ecosystemsToInclude, pressuresToInclude, areas, matrixResponse,
             operationOptions, altScenario,false, coastalExclusion);
     }
@@ -564,7 +549,7 @@ public class CalcService {
 
             List<SensitivityMatrix> matrices = getUniqueMatrices(matrixResponse, baselineId);
             matrices.add(0, null); // do away with this hack and compensate on paint?
-            matrixResponse.areaMatrixMap.put(0, null);
+            matrixResponse.getAreaMatrixMap().put(0, null);
             GridGeometry2D gridGeometry = ecoComponents.getGridGeometry(); // assumed identical to pressures
             ReferencedEnvelope targetEnv = JTS.bounds(targetRoi, ecoComponents.getCoordinateReferenceSystem());
             Envelope targetGridEnvelope = JTS.transform(targetEnv, gridGeometry.getCRSToGrid2D());
@@ -592,15 +577,16 @@ public class CalcService {
                             ecosystemsToInclude, baselineId);
                     case "LOCAL":
                         yield calibrationService.calculateLocalCommonnessIndices(ecoComponents,
-                            ecosystemsToInclude, areas.stream().map(a -> a.getFeature()).collect(Collectors.toList()));
+                            ecosystemsToInclude, areas.stream().map(ScenarioArea::getFeature).toList());
                     default:
                         throw new RuntimeException("Unknown rarity index calculation domain: "+domain);
                 };
 
                 // Filter out small layers that would cause division by zero, i.e. infinite impact.
                 final var COMMONNESS_THRESHOLD = props.getPropertyAsDouble("calc.rarity_index.threshold", 0);
-                DoublePredicate indexThresholdPredicate = (index) -> index > COMMONNESS_THRESHOLD;
-                int[] ecosystemsToIncludeFiltered = IntStream.range(0, ecosystemsToInclude.length)
+                DoublePredicate indexThresholdPredicate = index -> index > COMMONNESS_THRESHOLD;
+
+                ecosystemsToInclude = IntStream.range(0, ecosystemsToInclude.length)
                     .map(i -> {
                         var keep = indexThresholdPredicate.test(indices[i]);
                         if (!keep)
@@ -608,8 +594,6 @@ public class CalcService {
                                 COMMONNESS_THRESHOLD);
                         return keep ? tmpEcoSystems[i] : -1;
                     }).filter(e -> e >= 0).toArray();
-
-                ecosystemsToInclude = ecosystemsToIncludeFiltered;
 
                 var nonZeroIndices = Arrays.stream(indices).filter(indexThresholdPredicate).toArray();
                 // TODO report this information to the user and show in a dialog on frontend?
@@ -620,7 +604,7 @@ public class CalcService {
                     preprocessMatrices(matrices), layout, mask, nonZeroIndices);
             } else
                 coverage = operations.cumulativeImpact(
-                    CalcService.operationName(operation),
+                    operationName(operation),
                     ecoComponents,
                     pressures,
                     ecosystemsToInclude, pressuresToInclude, preprocessMatrices(matrices), layout, mask,
@@ -649,8 +633,9 @@ public class CalcService {
         }
     }
 
+    @SuppressWarnings({ "java:S1854", "java:S1481"})
     public GridCoverage2D recreateCoverageFromResult(ScenarioSnapshot scenario, CalculationResult calc)
-        throws IOException, FactoryException, TransformException, SymphonyStandardAppException {
+        throws SymphonyStandardAppException {
         List<ScenarioArea> areas = scenario.getTmpAreas();
 
         Geometry coastalComplement = coastalComplement(scenario);
@@ -693,7 +678,7 @@ public class CalcService {
     }
 
     public void cancelBatchCalculation(Principal userPrincipal, int id)
-        throws NotFoundException, NotAuthorizedException, SymphonyStandardAppException {
+        throws NotFoundException, NotAuthorizedException {
 
         BatchCalculation batchCalculation = getBatchCalculationStatusAuthorized(userPrincipal, id);
 
@@ -712,7 +697,7 @@ public class CalcService {
                 SymphonyModelErrorCode.BATCH_CALCULATION_JOB_RUNNING,
                 SymphonyModelErrorCode.BATCH_CALCULATION_JOB_RUNNING.getErrorMessage());
         else {
-            delete(userPrincipal, batchCalculation);
+            delete(batchCalculation);
         }
     }
 
@@ -726,7 +711,7 @@ public class CalcService {
             return false;
         }
 
-        return execution.getBatchStatus() == javax.batch.runtime.BatchStatus.STARTED;
+        return execution.getBatchStatus() == jakarta.batch.runtime.BatchStatus.STARTED;
     }
 
     private ImageLayout getImageLayout(Envelope envelope) {
@@ -735,12 +720,6 @@ public class CalcService {
                 (int) envelope.getMinY(),
                 (int) envelope.getWidth(),
                 (int) envelope.getHeight());
-    }
-
-    public static double[][][] preprocessMatrices(List<SensitivityMatrix> sensitivityMatrices) {
-        return sensitivityMatrices.stream().
-                map(m -> m == null ? null : m.getMatrixValues()).
-                toArray(double[][][]::new);
     }
 
     public CalculationResult persistCalculation(GridCoverage2D result,
@@ -794,7 +773,7 @@ public class CalcService {
                 try {
                     if (transaction.getStatus() == Status.STATUS_ACTIVE)
                         transaction.rollback();
-                } catch (Throwable e) {/* ignore */}
+                } catch (Exception e) {/* ignore */}
             }
         }
 
@@ -807,11 +786,11 @@ public class CalcService {
             }
 
             String filename = calculation.getId() + ".tiff";
-            File file = dir.toPath().resolve(filename).toFile(); //.of(dir.toString, filename).toFile();
+            File file = dir.toPath().resolve(filename).toFile();
             try (FileOutputStream stream = new FileOutputStream(file)) {
                 stream.write(tiff);
             } catch (IOException e) {
-                LOG.warn("Error writing result GeoTIFF to disk: " + e);
+                LOG.warn(String.format("Error writing result GeoTIFF to disk: %s", e));
             }
         }
         return calculation;
@@ -834,7 +813,7 @@ public class CalcService {
             try {
                 if (transaction.getStatus() == Status.STATUS_ACTIVE)
                     transaction.rollback();
-            } catch (Throwable e) {}
+            } catch (Exception e) {/* ignore */}
         }
     }
 
@@ -854,7 +833,7 @@ public class CalcService {
             var lastSequenceNumber = matcher.find() ? Integer.parseInt(matcher.group(1)) : 1;
             var previousCalculations = findAllByUsername(scenario.getOwner());
             return findSequentialUniqueName(scenario.getName(),
-                    previousCalculations.stream().map(CalculationResultSlice::getName).collect(Collectors.toList()),
+                    previousCalculations.stream().map(CalculationResultSlice::getName).toList(),
                     lastSequenceNumber);
         }
     }
@@ -868,7 +847,7 @@ public class CalcService {
     }
 
     private String makeNumberedCalculationName(String name, int n) {
-        return String.format(name + " (%d)", n);
+        return String.format("%s (%d)", name, n);
     }
 
     /**
@@ -894,7 +873,7 @@ public class CalcService {
         if (cmp == null || !cmp.getOwner().equals(user.getName()))
             return false;
 
-        delete(user, cmp);
+        delete(cmp);
         return true;
     }
 

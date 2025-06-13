@@ -4,6 +4,7 @@ import { OverviewInlineBandChangeComponent } from './overview-inline-band-change
 import { provideMockStore } from "@ngrx/store/testing";
 import { initialState } from "@data/metadata/metadata.reducers";
 import { TranslationSetupModule } from "@src/app/app-translation-setup.module";
+import { SharedModule } from "@shared/shared.module";
 
 describe('OverviewInlineBandChangeComponent', () => {
   let component: OverviewInlineBandChangeComponent;
@@ -11,7 +12,7 @@ describe('OverviewInlineBandChangeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TranslationSetupModule],
+      imports: [TranslationSetupModule, SharedModule],
       declarations: [ OverviewInlineBandChangeComponent ],
       providers: [provideMockStore({ initialState: {
           metadata: initialState,

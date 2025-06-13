@@ -6,7 +6,6 @@ import se.havochvatten.symphony.entity.AreaType;
 import se.havochvatten.symphony.entity.CalcAreaSensMatrix;
 import se.havochvatten.symphony.entity.CalculationArea;
 import se.havochvatten.symphony.entity.SensitivityMatrix;
-import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,7 @@ public class AreaSelectionResponseDtoMapper {
     public static AreaSelectionResponseDto mapToDto(CalculationArea defaultArea,
 													List<AreaSelectionResponseDto.AreaTypeArea> areaTypeDtos,
                                                     List<CalcAreaSensMatrix> userDefinedMatrices,
-                                                    List<CalcAreaSensMatrix> commonBaselineMatrices) throws SymphonyStandardAppException {
+                                                    List<CalcAreaSensMatrix> commonBaselineMatrices) {
         AreaSelectionResponseDto resp = new AreaSelectionResponseDto();
         List<MatrixSelection> userDefinedMatrixDtos =
 				mapToCalcAreaSensMatrixDtos(userDefinedMatrices, false);
@@ -43,9 +42,7 @@ public class AreaSelectionResponseDtoMapper {
 
     private static List<AreaSelectionResponseDto.Area> mapToAreas(List<CalculationArea> calculationAreas) {
         List<AreaSelectionResponseDto.Area> areaDtos = new ArrayList<>();
-        calculationAreas.forEach(a -> {
-            areaDtos.add(mapToAreaDto(a));
-        });
+        calculationAreas.forEach(a -> areaDtos.add(mapToAreaDto(a)));
         return areaDtos;
     }
 
@@ -86,4 +83,7 @@ public class AreaSelectionResponseDtoMapper {
         }
         return dto;
     }
+
+    // prevent instantiation
+    private AreaSelectionResponseDtoMapper() {}
 }

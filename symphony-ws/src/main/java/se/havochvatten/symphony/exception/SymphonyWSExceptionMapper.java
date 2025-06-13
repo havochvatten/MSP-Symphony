@@ -2,14 +2,14 @@ package se.havochvatten.symphony.exception;
 
 import se.havochvatten.symphony.dto.FrontendErrorDto;
 
-import javax.ejb.EJBAccessException;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import jakarta.ejb.EJBAccessException;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,9 +29,8 @@ public class SymphonyWSExceptionMapper implements ExceptionMapper<Exception> {
             resp = Response.status(Response.Status.NOT_FOUND);
         else if (e instanceof BadRequestException)
             resp = Response.status(Response.Status.BAD_REQUEST);
-        else if (e instanceof SymphonyStandardAppException) {
-            LOGGER.severe(e.toString());
-            SymphonyStandardAppException ex = (SymphonyStandardAppException) e;
+        else if (e instanceof SymphonyStandardAppException ex) {
+            LOGGER.log(Level.SEVERE, e::toString);
             resp = Response.status(Response.Status.BAD_REQUEST).
                     entity(new FrontendErrorDto(ex.getErrorCode().getErrorKey(), ex.getErrorCode().getErrorMessage()));
         } else if (e instanceof EJBAccessException || e instanceof NotAuthorizedException) {

@@ -5,6 +5,7 @@ import { DialogService } from "@shared/dialog/dialog.service";
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 
 describe('DownloadCompoundComparisonDialogComponent', () => {
   let component: DownloadCompoundComparisonDialogComponent;
@@ -13,6 +14,7 @@ describe('DownloadCompoundComparisonDialogComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        MatCheckboxModule,
         TranslateModule.forRoot()
       ],
       providers: [

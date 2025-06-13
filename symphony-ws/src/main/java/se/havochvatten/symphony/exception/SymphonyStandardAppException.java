@@ -1,6 +1,6 @@
 package se.havochvatten.symphony.exception;
 
-import javax.ejb.ApplicationException;
+import jakarta.ejb.ApplicationException;
 
 /**
  * Application exception to be used for checked exceptions which will be unchanged by the EJB container.
@@ -11,7 +11,7 @@ import javax.ejb.ApplicationException;
 public class SymphonyStandardAppException extends Exception {
     private static final long serialVersionUID = 1L;
 
-    private SymphonyModelErrorCode errorCode;
+    private final SymphonyModelErrorCode errorCode;
 
     public SymphonyStandardAppException(SymphonyModelErrorCode errorCode) {
         super();

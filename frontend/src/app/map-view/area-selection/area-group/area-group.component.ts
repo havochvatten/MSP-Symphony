@@ -3,13 +3,17 @@ import { StatePath, AreaGroup, UserArea, Area } from '@data/area/area.interfaces
 import { DialogService } from "@shared/dialog/dialog.service";
 import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
 import { statePathContains } from "@shared/common.util";
+import { MultiModeListable } from "@shared/multi-tools/multi-mode-listable";
+import { ListItemsSort } from "@data/common/sorting.interfaces";
+import { area } from "d3";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
   selector: 'app-area-group',
   templateUrl: './area-group.component.html',
   styleUrls: ['./area-group.component.scss']
 })
-export class AreaGroupComponent {
+export class AreaGroupComponent extends MultiModeListable {
   @Input() title?: string;
   @Input() areas: AreaGroup[] | UserArea[] = [];
   @Input() searching = false;
@@ -17,6 +21,7 @@ export class AreaGroupComponent {
   @Input() userArea = false;
   @Input() drawUserArea?: () => void;
   @Input() deleteUserArea?: (areaId: number, areaName: string) => void;
+  @Input() deleteMultipleUserAreas?: (areaIds: number[]) => void;
   @Input() renameUserArea?: (userArea: UserArea) => void;
   @Input() selectArea?: (statePath: StatePath, visible: boolean,
                          groupStatePath: StatePath, expand: boolean) => void;
@@ -28,9 +33,12 @@ export class AreaGroupComponent {
   @Output() highlight: EventEmitter<[StatePath, boolean]> = new EventEmitter();
 
   constructor(
-    private dialogService: DialogService,
-    private moduleRef: NgModuleRef<never>
-  ) {}
+    protected dialogService: DialogService,
+    protected moduleRef: NgModuleRef<never>,
+    private translateService: TranslateService
+  ) {
+    super(moduleRef, dialogService);
+  }
 
   onRenameUserArea = (userArea: UserArea) => () => {
     if (typeof this.renameUserArea === 'function') {
@@ -44,8 +52,29 @@ export class AreaGroupComponent {
     }
   };
 
+  deleteSelectedUserAreas = async () => {
+    const multi = this.selectedIds.length > 1,
+          userAreaName = multi ? '' : this.areas.find(area => area.id === this.selectedIds[0])?.name || '';
+    await this.deleteSelected(
+      { data: {
+          header: this.translateService.instant(
+            multi ? 'map.user-area.delete.modal.header-multiple' :
+              'map.user-area.delete.modal.header'),
+          message: this.translateService.instant(
+            multi ? 'map.user-area.delete.modal.message-multiple' :
+              'map.user-area.delete.modal.message',
+              { count: this.selectedIds.length, userAreaName }),
+          confirmText: this.translateService.instant('controls.delete'),
+          confirmColor: 'warn',
+          buttonsClass: 'no-margin'
+        }
+      }, this.deleteMultipleUserAreas!.bind(this, this.selectedIds));
+  }
+
   onSelectArea(area: Area, group: AreaGroup, $event: MouseEvent) {
-    if (typeof this.selectArea === 'function') {
+    if(this.isMultiMode()){
+      this.multiSelect(parseInt(<string>group.id));
+    } else if (typeof this.selectArea === 'function') {
       this.selectArea(area.statePath, group.visible, group.statePath,  $event.ctrlKey);
     }
   }
@@ -61,6 +90,14 @@ export class AreaGroupComponent {
   isSelected(statePath: StatePath) {
     return this.selectedAreas && statePathContains(statePath, this.selectedAreas);
   }
+
+  setSort(sortType: ListItemsSort): void {}
+
+  deselectAreas = () => {
+    this.selectedIds = [];
+  }
+
+  protected readonly area = area;
 }
 
 @Component({

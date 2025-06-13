@@ -1,9 +1,9 @@
 package se.havochvatten.symphony.service;
 
-import javax.ejb.ConcurrencyManagement;
-import javax.ejb.ConcurrencyManagementType;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
+import jakarta.ejb.ConcurrencyManagement;
+import jakarta.ejb.ConcurrencyManagementType;
+import jakarta.ejb.Singleton;
+import jakarta.ejb.Startup;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -40,7 +40,7 @@ public class PropertiesService {
         }
 
         props.putAll(defaults);
-        LOG.config("Properties defaults: " + defaults.size());
+        LOG.log(Level.CONFIG, () -> String.format("Properties defaults: %d", defaults.size()));
         try (FileInputStream inputStream = new FileInputStream(GLOBAL_PROPERTIES)) {
             // Merge user properties with default properties
             LOG.config("Loading overrides");
@@ -48,7 +48,7 @@ public class PropertiesService {
         } catch (IOException ex) {
             LOG.config("No user properties, using defaults only");
         }
-        LOG.config("Properties with overrides: " + props.size());
+        LOG.log(Level.CONFIG, () -> String.format("Properties with overrides: %d", props.size()));
 
     }
 

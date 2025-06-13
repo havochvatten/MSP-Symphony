@@ -16,11 +16,12 @@ public class SensMatrixDtoToEntityMapper {
         sensitivityMatrix.setId(sensMatrixDto.getId());
         sensitivityMatrix.setName(sensMatrixDto.getName());
         sensitivityMatrix.setBaselineVersion(baselineVersion);
-        sensitivities.forEach(s -> {
-            s.setMatrix(sensitivityMatrix);
-        });
+        sensitivities.forEach(s ->  s.setMatrix(sensitivityMatrix));
         sensitivityMatrix.setSensitivityList(sensitivities);
 
         return sensitivityMatrix;
     }
+
+    // prevent instantiation
+    private SensMatrixDtoToEntityMapper() {}
 }

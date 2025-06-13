@@ -4,10 +4,10 @@ import it.geosolutions.jaiext.stats.Statistics;
 import org.apache.commons.lang3.time.StopWatch;
 import org.geotools.coverage.grid.GridCoverage2D;
 
-import javax.ejb.*;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.ejb.*;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -25,7 +25,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.servlet.http.HttpServletRequest;
 
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
@@ -35,7 +34,7 @@ import se.havochvatten.symphony.entity.Scenario;
 import se.havochvatten.symphony.service.normalizer.NormalizerService;
 import se.havochvatten.symphony.service.normalizer.PercentileNormalizer;
 
-import static javax.ejb.ConcurrencyManagementType.BEAN;
+import static jakarta.ejb.ConcurrencyManagementType.BEAN;
 
 @ConcurrencyManagement(BEAN)
 @Singleton
@@ -119,7 +118,7 @@ public class CalibrationService {
         List<String> bandTitles =
             em.createQuery("select metaValue from Metadata m where m.band.baseline.id = :baselineId and " +
                 "m.band.category = 'Ecosystem' and " +
-                "m.metaField = 'title' order by m.band.bandnumber")
+                "m.metaField = 'title' order by m.band.bandnumber", String.class)
                 .setParameter("baselineId", baseline.getId())
                 .getResultList();
 
@@ -127,10 +126,10 @@ public class CalibrationService {
         var values = calculateGlobalCommonnessIndices(ecoComponents, bandNumbers, baseline.getId());
 
         return IntStream.range(0, values.length).boxed()
-            .collect(Collectors.toMap(bandTitles::get, i -> Double.valueOf(values[i])));
+            .collect(Collectors.toMap(bandTitles::get, i -> values[i]));
     }
 
-    public double calcPercentileNormalizationValue(HttpServletRequest req, Scenario scenario)
+    public double calcPercentileNormalizationValue(Scenario scenario)
         throws FactoryException, SymphonyStandardAppException, TransformException, IOException {
         CalculationResult result = calcService.calculateScenarioImpact(scenario, false);
         var coverage = result.getCoverage();

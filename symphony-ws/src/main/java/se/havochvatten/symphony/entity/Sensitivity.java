@@ -3,19 +3,17 @@ package se.havochvatten.symphony.entity;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "sensitivity")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Sensitivity.findAll", query = "SELECT s FROM Sensitivity s"),
-    @NamedQuery(name = "Sensitivity.findById", query = "SELECT s FROM Sensitivity s WHERE s.id = :is")
-})
+@NamedQuery(name = "Sensitivity.findAll", query = "SELECT s FROM Sensitivity s")
+@NamedQuery(name = "Sensitivity.findById", query = "SELECT s FROM Sensitivity s WHERE s.id = :is")
 public class Sensitivity implements Serializable {
     private static final long serialVersionUID = 1L;
 

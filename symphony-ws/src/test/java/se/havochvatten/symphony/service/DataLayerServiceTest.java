@@ -20,7 +20,7 @@ public class DataLayerServiceTest {
     int baseLineVersionId = 1;
 
     @Before
-    public void setUp() throws SymphonyStandardAppException {
+    public void setUp() {
         dataLayerService.baselineVersionService = mock(BaselineVersionService.class);
         dataLayerService.props = mock(PropertiesService.class);
         baselineVersion.setId(1);

@@ -1,7 +1,6 @@
 package se.havochvatten.symphony.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
@@ -13,7 +12,6 @@ import org.geotools.geometry.jts.LiteShape2;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.MathTransform;
@@ -27,28 +25,29 @@ import se.havochvatten.symphony.dto.ScenarioDto;
 import se.havochvatten.symphony.entity.CalculationArea;
 import se.havochvatten.symphony.entity.Scenario;
 import se.havochvatten.symphony.entity.ScenarioArea;
+import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
+import se.havochvatten.symphony.exception.SymphonyStandardSystemException;
 import se.havochvatten.symphony.scenario.BandChange;
 import se.havochvatten.symphony.scenario.BandChangeEntity;
 import se.havochvatten.symphony.scenario.ScenarioCopyOptions;
 import se.havochvatten.symphony.scenario.ScenarioSplitOptions;
 import se.havochvatten.symphony.util.Util;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.EJB;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import javax.media.jai.ROI;
 import javax.media.jai.ROIShape;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.NotFoundException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.NotFoundException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Stateless
@@ -86,9 +85,9 @@ public class ScenarioService {
             return em.createNamedQuery("Scenario.findAllByOwner", ScenarioDto.class)
                 .setParameter("owner", principal.getName())
                 .getResultList().stream().filter(s -> s.id != null)
-                .sorted(Comparator.<ScenarioDto>comparingInt(s -> s.id).reversed()).collect(Collectors.toList());
+                .sorted(Comparator.<ScenarioDto>comparingInt(s -> s.id).reversed()).toList();
         } catch (Exception e) {
-            return null;
+            return List.of();
         }
     }
 
@@ -156,16 +155,19 @@ public class ScenarioService {
     public Pair<GridCoverage2D, GridCoverage2D> applyScenario(GridCoverage2D ecosystems,
                                                               GridCoverage2D pressures,
                                                               List<ScenarioArea> areas,
-                                                              BandChangeEntity altScenario) throws FactoryException, TransformException {
+                                                              BandChangeEntity altScenario) throws FactoryException {
         // We assume GeoJSON is in WGS84 and that ecosystem and pressures coverages are of the same CRS
-        assert (ecosystems.getCoordinateReferenceSystem().equals(pressures.getCoordinateReferenceSystem()));
-        MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
+        if (ecosystems.getCoordinateReferenceSystem().equals(pressures.getCoordinateReferenceSystem())) {
+            MathTransform WGS84toTarget = CRS.findMathTransform(DefaultGeographicCRS.WGS84,
                 ecosystems.getCoordinateReferenceSystem());
 
-        return Pair.of(
+            return Pair.of(
                 apply(ecosystems, ecosystems.getGridGeometry(), areas, LayerType.ECOSYSTEM, WGS84toTarget, altScenario),
                 apply(pressures, pressures.getGridGeometry(), areas, LayerType.PRESSURE, WGS84toTarget, altScenario)
-        );
+            );
+        } else {
+            throw new SymphonyStandardSystemException(SymphonyModelErrorCode.OTHER_ERROR);
+        }
     }
 
     /**
@@ -176,8 +178,7 @@ public class ScenarioService {
                                 List<ScenarioArea> areas,
                                 LayerType changeType,
                                 MathTransform roiTransform,
-                                BandChangeEntity alternateChangeSource)
-            throws TransformException, FactoryException {
+                                BandChangeEntity alternateChangeSource) {
         final int numBands = coverage.getNumSampleDimensions();
 
         return Util.reduce(areas, coverage, (state, area) -> {
@@ -190,14 +191,12 @@ public class ScenarioService {
                 var gridROI = (ROI) new ROIShape(
                     new LiteShape2(projectedROI, gridGeometry.getCRSToGrid2D(), null, false));
 
-                List<BandChange> bandChanges = Arrays.stream(area.getAllChangesByType(alternateChangeSource, changeType))
-                    .collect(Collectors.toList());
+                List<BandChange> bandChanges = Arrays.stream(area.getAllChangesByType(alternateChangeSource, changeType)).toList();
 
                 return Util.reduce(bandChanges, // iterate over band changes
                     state,
                     (GridCoverage2D innerState, BandChange bandChange) -> {
-                        LOG.info("Applying changes for feature {}: " + bandChange,
-                            area.getName());
+                        LOG.info("Applying changes for feature {}: {}", area.getName(), bandChange);
 
                         var multipliers = new double[numBands];
                         Arrays.fill(multipliers, 1.0);  // default to no change
@@ -207,47 +206,32 @@ public class ScenarioService {
                         // No need to fill since array is initialized to zero by default
                         offsets[bandChange.band] = bandChange.offset == null ? 0.0 : bandChange.offset;
 
-                        GridCoverage2D g2d = (GridCoverage2D) operations.rescale(innerState, multipliers, offsets,
+                        assert operations != null;
+                        return (GridCoverage2D) operations.rescale(innerState, multipliers, offsets,
                             gridROI, MAX_IMPACT_VALUE, changeType);
-
-                        return g2d;
                     });
             } catch (TransformException | FactoryException e) {
-                LOG.error("Error transforming change ROI: " + e);
+                LOG.error("Error transforming change ROI: %s", e);
                 return state;
             }
         });
-    }
-
-    /**
-     * @param type The type of change to extract
-     */
-    private List<BandChange> getBandChangesFromFeatureProperty(Property changeProperty, LayerType type) {
-        Map<String, Object> changes = mapper.convertValue(changeProperty.getValue(),
-                new TypeReference<Map<String, Object>>() {});
-
-        return changes.entrySet().stream()
-                .peek(entry -> LOG.debug("Parsing change " + entry.getKey()))
-                .map(entry -> mapper.convertValue(entry.getValue(), BandChange.class))
-                .filter(change -> change.type == type)
-                .collect(Collectors.toUnmodifiableList());
     }
 
     public void deleteArea(Principal userPrincipal, int areaId) {
         ScenarioArea area = em.find(ScenarioArea.class, areaId);
         Scenario scenario = area.getScenario();
 
-        if (area == null)
-            throw new NotFoundException();
         if (!scenario.getOwner().equals(userPrincipal.getName()))
             throw new NotAuthorizedException(userPrincipal.getName());
-        else
+        else {
             scenario.getAreas().remove(area);
             em.remove(area);
             em.merge(scenario);
+        }
 
-        if(scenario.getAreas().isEmpty())
+        if(scenario.getAreas().isEmpty()) {
             em.remove(scenario);
+        }
     }
 
     public ScenarioAreaDto[] addAreas(Scenario scenario, ScenarioAreaDto[] areaDtos) throws JsonProcessingException {
@@ -314,8 +298,7 @@ public class ScenarioService {
             target.setChanges(mapper.valueToTree(changes));
         }
 
-        if(target instanceof ScenarioArea) {
-            var area = (ScenarioArea) target;
+        if(target instanceof ScenarioArea area) {
             var targetScenario = area.getScenario();
             targetScenario.getAreas().remove(area);
             targetScenario.getAreas().add(area);
@@ -354,10 +337,11 @@ public class ScenarioService {
     }
 
     public Scenario splitAndReplaceArea(Scenario scenario, int scenarioAreaId, ScenarioAreaDto[] replacementAreas) {
-        ScenarioArea area = scenario.getAreas().stream()
+        scenario.getAreas().stream()
             .filter(a -> a.getId() == scenarioAreaId)
             .findFirst()
             .orElseThrow(NotFoundException::new);
+
         try {
             replacementAreas = addAreas(scenario, replacementAreas);
 
@@ -366,8 +350,7 @@ public class ScenarioService {
                     Arrays.stream(scenario.getAreas().toArray(new ScenarioArea[0]))
                         .filter(a -> a.getId() != scenarioAreaId),
                     Arrays.stream(replacementAreas).map(
-                        areaDto -> em.find(ScenarioArea.class, areaDto.id))).collect(Collectors.toList())
-            );
+                        areaDto -> em.find(ScenarioArea.class, areaDto.id))).toList());
 
             em.merge(scenario);
             em.flush();

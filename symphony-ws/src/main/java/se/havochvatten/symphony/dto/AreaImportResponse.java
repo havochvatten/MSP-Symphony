@@ -1,7 +1,11 @@
 package se.havochvatten.symphony.dto;
 
 public class AreaImportResponse {
-    public String areaNames[];
+    private String[] areaNames;
+
+    public String[] getAreaNames() {
+        return areaNames;
+    }
 
     public void setAreaNames(String[] names) {
         areaNames = names;

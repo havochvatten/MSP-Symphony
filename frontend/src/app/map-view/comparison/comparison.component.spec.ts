@@ -11,6 +11,7 @@ import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { initialState as calculation } from '@data/calculation/calculation.reducers';
 import { initialState as user } from '@data/user/user.reducers';
 import { MatRadioModule } from "@angular/material/radio";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 
 describe('ComparisonComponent', () => {
   let fixture: ComponentFixture<ComparisonComponent>,
@@ -21,6 +22,7 @@ describe('ComparisonComponent', () => {
       imports: [
         MatSelectModule,
         MatRadioModule,
+        MatCheckboxModule,
         HttpClientModule,
         StoreModule.forRoot({},{}),
         TranslateModule.forRoot()

@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.dto.MatrixResponse;
 import se.havochvatten.symphony.dto.SensitivityMatrix;
 import se.havochvatten.symphony.entity.ScenarioArea;
-import se.havochvatten.symphony.service.CalcService;
 
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
@@ -40,6 +39,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
+import static se.havochvatten.symphony.util.CalculationUtil.preprocessMatrices;
 
 @State(Scope.Benchmark)
 public class CalcEngineBenchmark {
@@ -260,7 +260,7 @@ public class CalcEngineBenchmark {
         ParameterBlockJAI pb = new ParameterBlockJAI("se.havochvatten.symphony.CumulativeImpact");
         pb.setSource("source0", /*croppedEcosystems*/ecosystems.getRenderedImage());
         pb.setSource("source1", /*croppedPressures*/pressures.getRenderedImage());
-        pb.setParameter("matrix", CalcService.preprocessMatrices(matrices));
+        pb.setParameter("matrix", preprocessMatrices(matrices));
         pb.setParameter("mask", mask.getRaster());
         pb.setParameter("ecosystemBands", IntStream.range(0, ecosystems.getNumSampleDimensions()).toArray());
         pb.setParameter("pressureBands", IntStream.range(0, pressures.getNumSampleDimensions()).toArray());

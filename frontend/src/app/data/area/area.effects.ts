@@ -178,6 +178,18 @@ export class AreaEffects {
     )
   ));
 
+  deleteMultipleUserDefinedAreas$ = createEffect(() => this.actions$.pipe(
+    ofType(AreaActions.deleteMultipleUserDefinedAreas),
+    mergeMap(({ userAreaIds }) =>
+      this.areaService.deletemultipleUserAreas(userAreaIds).pipe(
+        map(() => AreaActions.fetchUserDefinedAreas()),
+        catchError(({ status, error: message }) =>
+          of(AreaActions.deleteUserDefinedAreaFailure({ error: { status, message } }))
+        )
+      )
+    )
+  ));
+
   fetchBoundaries$ = createEffect(() => this.actions$.pipe(
     ofType(AreaActions.fetchBoundaries),
     mergeMap(() =>

@@ -12,9 +12,10 @@ import se.havochvatten.symphony.entity.ScenarioArea;
 
 import javax.imageio.ImageIO;
 import javax.media.jai.ImageLayout;
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,6 +27,16 @@ import java.util.stream.IntStream;
 /* Immutable */
 public class MatrixMask { // TODO: Make serializable for distributed session management
     private static final Logger logger = Logger.getLogger(MatrixMask.class.getName());
+
+    private static IndexColorModel makeIndexedColorModel(Color[] cs) {
+        byte[] rs = new byte[cs.length], gs = new byte[cs.length], bs = new byte[cs.length];
+        for (int i = 0; i < cs.length; i++) {
+            rs[i] = (byte) (cs[i].getRed() & 0xff);
+            gs[i] = (byte) (cs[i].getGreen() & 0xff);
+            bs[i] = (byte) (cs[i].getBlue() & 0xff);
+        }
+        return new IndexColorModel(4, cs.length, rs, gs, bs, 0);
+    }
 
     // should color zero be transparent instead?
     private final Color[] palette;
@@ -50,7 +61,7 @@ public class MatrixMask { // TODO: Make serializable for distributed session man
 
         // Or create writableraster with origin location?
         this.image = new BufferedImage(layout.getWidth(null), layout.getHeight(null),
-                BufferedImage.TYPE_BYTE_INDEXED, CalcUtil.makeIndexedColorModel(palette));
+                BufferedImage.TYPE_BYTE_INDEXED, makeIndexedColorModel(palette));
 
         paint(image.createGraphics(), gridGeometry, matrixResponse, areas, matrixIdToPaletteIndex, coastalComplement);
     }

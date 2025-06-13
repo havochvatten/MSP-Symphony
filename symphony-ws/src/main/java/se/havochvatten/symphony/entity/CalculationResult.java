@@ -2,49 +2,47 @@ package se.havochvatten.symphony.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vladmihalcea.hibernate.type.array.DoubleArrayType;
-import com.vladmihalcea.hibernate.type.json.JsonType;
+import io.hypersistence.utils.hibernate.type.array.DoubleArrayType;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
+import org.hibernate.type.SqlTypes;
 import se.havochvatten.symphony.service.CalcService;
 import se.havochvatten.symphony.dto.CalculationResultSliceDto;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
+import static se.havochvatten.symphony.util.CalculationUtil.operationName;
+
 @Entity
 @Table(name = "calculationresult")
 @XmlRootElement
-@NamedQueries({
-        @NamedQuery(name = "CalculationResult.findAll",
-                query = "SELECT c FROM CalculationResult c"),
-        @NamedQuery(name = "CalculationResult.findAllExceptBaseline",
-                query = "SELECT c FROM CalculationResult c WHERE c.baselineCalculation = FALSE"),
-        @NamedQuery(name = "CalculationResult.findBaselineCalculationsByBaselineId",
-                query = "SELECT NEW se.havochvatten.symphony.dto.CalculationResultSliceDto(c.id, c" +
-                        ".calculationName, c.timestamp, (c.rasterData = null)) FROM " +
-                        "CalculationResult c WHERE c.baselineVersion.id = : id and c.baselineCalculation = " +
-                        "TRUE"),
-        @NamedQuery(name = "CalculationResult.findFullByOwner",
-                query = "SELECT c FROM CalculationResult c WHERE c.owner = :username ORDER BY c.timestamp " +
-                        "DESC"),
-        @NamedQuery(name = "CalculationResult.removeOldCalculationTiff",
-                query = "UPDATE CalculationResult c SET c.rasterData = null WHERE c.timestamp < :timestamp"),
-        @NamedQuery(name = "CalculationResult.findByIds_Owner_Baseline",
-                query = "SELECT c FROM CalculationResult c WHERE c.id IN :ids AND c.owner = :username AND " +
-                        "c.baselineVersion.id = :baselineId"),
-})
+@NamedQuery(name = "CalculationResult.findAll",
+        query = "SELECT c FROM CalculationResult c")
+@NamedQuery(name = "CalculationResult.findAllExceptBaseline",
+        query = "SELECT c FROM CalculationResult c WHERE c.baselineCalculation = FALSE")
+@NamedQuery(name = "CalculationResult.findBaselineCalculationsByBaselineId",
+        query = "SELECT NEW se.havochvatten.symphony.dto.CalculationResultSliceDto(c.id, c" +
+                ".calculationName, c.timestamp, (c.rasterData = null)) FROM " +
+                "CalculationResult c WHERE c.baselineVersion.id = : id and c.baselineCalculation = " +
+                "TRUE")
+@NamedQuery(name = "CalculationResult.findFullByOwner",
+        query = "SELECT c FROM CalculationResult c WHERE c.owner = :username ORDER BY c.timestamp " +
+                "DESC")
+@NamedQuery(name = "CalculationResult.removeOldCalculationTiff",
+        query = "UPDATE CalculationResult c SET c.rasterData = null WHERE c.timestamp < :timestamp")
+@NamedQuery(name = "CalculationResult.findByIds_Owner_Baseline",
+        query = "SELECT c FROM CalculationResult c WHERE c.id IN :ids AND c.owner = :username AND " +
+                "c.baselineVersion.id = :baselineId")
 
 @SqlResultSetMapping(
     name = "CalculationCmpMapping",
@@ -72,15 +70,10 @@ import java.util.Map;
             "AND s.owner = :username AND c.cares_op = :operation ORDER BY c.cares_timestamp DESC",
     resultSetMapping = "CalculationCmpMapping" )
 
-@TypeDefs({
-        @TypeDef(name = "json", typeClass = JsonType.class),
-        @TypeDef(name = "double-matrix", typeClass = DoubleArrayType.class)
-})
+
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class CalculationResult implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -95,7 +88,7 @@ public class CalculationResult implements Serializable {
     private String operationName;
 
     @Basic
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "cares_op_options", columnDefinition = "json")
     private Map<String, String> operationOptions;
 
@@ -112,9 +105,14 @@ public class CalculationResult implements Serializable {
     private String calculationName;
 
     // See https://vladmihalcea.com/multidimensional-array-jpa-hibernate/
-    @Basic(optional = false)
+
     @NotNull
-    @Type(type = "double-matrix")
+    @Type(value = DoubleArrayType.class,
+        parameters = @org.hibernate.annotations.Parameter(
+            name = "sql_array_type",
+            value = "float"
+        )
+    )
     @Column(name = "cares_impactmatrix", columnDefinition = "double precision[][]")
     private double[][] impactMatrix;
 
@@ -128,7 +126,7 @@ public class CalculationResult implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @NotNull
     private ScenarioSnapshot scenarioSnapshot;
 
@@ -244,7 +242,7 @@ public class CalculationResult implements Serializable {
     }
 
     public void setOperationName(int operation) {
-        this.operationName = CalcService.operationName(operation);
+        this.operationName = operationName(operation);
     }
 
     public String getOperationName() { return operationName; }

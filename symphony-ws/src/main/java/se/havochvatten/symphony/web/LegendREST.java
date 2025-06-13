@@ -1,26 +1,26 @@
 package se.havochvatten.symphony.web;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.StyledLayerDescriptor;
 import se.havochvatten.symphony.dto.LegendDto;
 import se.havochvatten.symphony.service.PropertiesService;
 
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
 @Path("/legend")
 @Stateless
 @RolesAllowed("GRP_SYMPHONY")
-@Api(value = "/legend")
+@Tag(name ="/legend")
 public class LegendREST {
     private static final Logger logger = Logger.getLogger(LegendREST.class.getName());
 
@@ -29,11 +29,10 @@ public class LegendREST {
 
     @GET
     @Path("{type}")
-    @ApiOperation(value = "Get legend definition", response = LegendDto.class)
+    @Operation(summary = "Get legend definition")
     @Produces({MediaType.APPLICATION_JSON})
     public Response get(
-            @ApiParam(  value = "type of legend",
-                        allowableValues = "result,ecosystem,pressure,comparison")
+            @Parameter(description = "type of legend")
             @PathParam("type") String legendType, @QueryParam("maxValue") String maxParam) {
         try {
             var type = LegendDto.Type.valueOf(legendType.toUpperCase());
@@ -52,21 +51,18 @@ public class LegendREST {
 
             var legend = new LegendDto();
             switch (type) {
-                case RESULT: // TODO show absolute values here instead of %
-                case COMPARISON:
-                    legend.unit = "%";
+                case RESULT, COMPARISON:
+                    legend.setUnit("%");
                     break;
-                case ECOSYSTEM:
-                case PRESSURE:
-                    legend.unit = null;
+                case ECOSYSTEM, PRESSURE:
+                    legend.setUnit(null);
                     break;
             }
             var entries = symbolizer.getColorMap().getColorMapEntries();
-            legend.colorMap =
-                IntStream.range(0, symbolizer.getColorMap().getColorMapEntries().length)
+            legend.setColorMap(IntStream.range(0, symbolizer.getColorMap().getColorMapEntries().length)
                             .skip(type != LegendDto.Type.COMPARISON ? 1 : 0)
                             .mapToObj(index -> new LegendDto.ColorMapEntry(entries[index], type, index, dynamicMax))
-                            .toArray(LegendDto.ColorMapEntry[]::new);
+                            .toArray(LegendDto.ColorMapEntry[]::new));
 
             return Response.ok(legend).build();
         } catch (IllegalArgumentException e) {

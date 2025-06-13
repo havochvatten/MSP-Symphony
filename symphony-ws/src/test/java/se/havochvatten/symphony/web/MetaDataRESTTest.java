@@ -54,15 +54,15 @@ public class MetaDataRESTTest extends RESTTest {
 
 
         Assert.assertNotNull(res);
-        Assert.assertTrue(res.size() > 0);
+        Assert.assertFalse(res.isEmpty());
 
         JsonNode ecoComponent = res.path("ecoComponent");
         JsonNode pressureComponent = res.path("pressureComponent");
-        Assert.assertFalse(ecoComponent.getClass().equals(MissingNode.class));
-        Assert.assertFalse(pressureComponent.getClass().equals(MissingNode.class));
+        Assert.assertNotEquals(ecoComponent.getClass(), MissingNode.class);
+        Assert.assertNotEquals(pressureComponent.getClass(), MissingNode.class);
 
         JsonNode missingNode = res.path("donaldDuck");
-        Assert.assertTrue(missingNode.getClass().equals(MissingNode.class));
+        assertEquals(missingNode.getClass(), MissingNode.class);
 
         String pressureComponentJSON = res.path("pressureComponent").toString();
         String ecoComponentJSON = res.path("ecoComponent").toString();

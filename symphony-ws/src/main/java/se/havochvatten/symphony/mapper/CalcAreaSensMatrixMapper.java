@@ -38,9 +38,10 @@ public class CalcAreaSensMatrixMapper {
 
     public static List<CalcAreaSensMatrixDto> mapToDtos(List<CalcAreaSensMatrix> calcAreaSensMatrices) {
         List<CalcAreaSensMatrixDto> dtos = new ArrayList<>();
-        calcAreaSensMatrices.forEach((ca) -> {
-            dtos.add(mapToDto(ca));
-        });
+        calcAreaSensMatrices.forEach(ca -> dtos.add(mapToDto(ca)));
         return dtos;
     }
+
+    // prevent instantiation
+    private CalcAreaSensMatrixMapper() {}
 }

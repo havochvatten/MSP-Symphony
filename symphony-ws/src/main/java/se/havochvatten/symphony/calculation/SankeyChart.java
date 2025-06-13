@@ -3,7 +3,6 @@ package se.havochvatten.symphony.calculation;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -59,15 +58,13 @@ public class SankeyChart {
                 IntStream.range(0, esLen).mapToObj(e ->
                         new Link(pressureNodeId(b), ecocomponentNodeId(e, pLen), impactMatrix[b][e] / total)));
         List<Link> links = linksStream.flatMap(Function.identity()).
-                filter(link -> link.value > LINK_WEIGHT_TOLERANCE).
-                collect(Collectors.toList());
+                filter(link -> link.value > LINK_WEIGHT_TOLERANCE).toList();
 
         chartData = Map.of(
                 "nodes", Stream.concat(ps, es).
                         // filter out nodes which are not referenced by any link
                                 filter(node -> links.stream().anyMatch(link ->
-                                link.source == node.nodeId || link.target == node.nodeId)).
-                        collect(Collectors.toList()),
+                                link.source == node.nodeId || link.target == node.nodeId)).toList(),
                 "links", links);
     }
 

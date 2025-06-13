@@ -12,26 +12,26 @@ import se.havochvatten.symphony.scenario.*;
 import se.havochvatten.symphony.service.PropertiesService;
 import se.havochvatten.symphony.service.ScenarioService;
 
-import javax.annotation.Resource;
-import javax.batch.api.AbstractBatchlet;
-import javax.batch.runtime.BatchRuntime;
-import javax.batch.runtime.context.JobContext;
-import javax.ejb.*;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.*;
-import javax.websocket.*;
+import jakarta.annotation.Resource;
+import jakarta.batch.api.AbstractBatchlet;
+import jakarta.batch.runtime.BatchRuntime;
+import jakarta.batch.runtime.context.JobContext;
+import jakarta.ejb.*;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.*;
+import jakarta.websocket.*;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
-import static javax.ejb.LockType.READ;
-import static javax.ejb.LockType.WRITE;
+import static jakarta.ejb.LockType.READ;
+import static jakarta.ejb.LockType.WRITE;
 
 @Named
-@TransactionAttribute(TransactionAttributeType.REQUIRED)
+@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class BatchCalculateScenario extends AbstractBatchlet {
     @Inject
     private JobContext jobContext;
@@ -63,8 +63,6 @@ public class BatchCalculateScenario extends AbstractBatchlet {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private ScenarioSplitOptions areasOptions;
-
     private Session getSocketSession() {
         try {
             return sockets.connectToServer(statusBeacon,
@@ -77,7 +75,10 @@ public class BatchCalculateScenario extends AbstractBatchlet {
 
     private void dispatchStatus() {
         try {
-            getSocketSession().getAsyncRemote().sendText(mapper.writeValueAsString(this.batchCalculationDto));
+            Session session = getSocketSession();
+            if (session != null) {
+                session.getAsyncRemote().sendText(mapper.writeValueAsString(this.batchCalculationDto));
+            }
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -103,14 +104,14 @@ public class BatchCalculateScenario extends AbstractBatchlet {
 
         batchCalculation = em.find(BatchCalculation.class, batchCalculationId);
         batchCalculationDto = new BatchCalculationDto(batchCalculation, null);
-        areasOptions = batchCalculation.getAreasOptions();
+        ScenarioSplitOptions areasOptions = batchCalculation.getAreasOptions();
 
         int[] ids = batchCalculation.getEntities();
 
         Scenario currentScenario;
 
-        for(int ix = 0; ix < ids.length; ++ix) {
-            if(batchCalculation.isAreasCalculation()) {
+        for (int ix = 0; ix < ids.length; ++ix) {
+            if (batchCalculation.isAreasCalculation()) {
                 ScenarioArea area = em.find(ScenarioArea.class, ids[ix]);
                 ScenarioCopyOptions copyOptions = new ScenarioCopyOptions(area, areasOptions);
                 copyOptions.areaChangesToInclude =

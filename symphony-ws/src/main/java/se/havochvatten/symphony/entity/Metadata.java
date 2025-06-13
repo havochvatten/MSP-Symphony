@@ -1,10 +1,8 @@
 package se.havochvatten.symphony.entity;
 
-import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "meta_values", indexes = {
@@ -33,7 +31,6 @@ public class Metadata {
 
     @NotNull
     @Column(name = "metaval_value", nullable = false)
-    @Type(type = "org.hibernate.type.TextType")
     private String metaValue;
 
     public Integer getId() {

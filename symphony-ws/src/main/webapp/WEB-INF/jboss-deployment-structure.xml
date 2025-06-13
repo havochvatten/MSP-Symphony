@@ -4,7 +4,7 @@
 <jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
    <deployment>
       <dependencies>
-         <module name="org.hibernate.commons-annotations"/>
+            <module name="org.hibernate.commons-annotations"/>
       </dependencies>
       <exclude-subsystems>
          <subsystem name="logging"/>

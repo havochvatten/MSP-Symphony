@@ -77,7 +77,7 @@ public class CalculationAreaRESTTest extends RESTTest {
         Assert.assertTrue(calculationAreas.size() > 0);
 
         // retrieve all of them with id
-        Boolean foundError = false;
+        boolean foundError = false;
         for (CalculationAreaDto calcArea : calculationAreas) {
             Integer id = calcArea.getId();
             CalculationAreaDto fetchedCalulationArea = given().

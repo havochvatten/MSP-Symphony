@@ -1,26 +1,21 @@
 package se.havochvatten.symphony.entity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vladmihalcea.hibernate.type.array.IntArrayType;
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import org.hibernate.annotations.*;
+import org.hibernate.type.SqlTypes;
 import se.havochvatten.symphony.calculation.ComparisonResult;
 import se.havochvatten.symphony.dto.CompoundComparisonSlice;
 
-import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.util.Date;
 import java.util.Map;
 
 @Entity
-@TypeDefs({
-    @TypeDef(name = "int-array", typeClass = IntArrayType.class),
-    @TypeDef(name = "json", typeClass = JsonBinaryType.class)
-})
+
 @Table(name = "compoundcomparison", schema = "symphony")
 //@NamedQuery(name = "CompoundComparison.findByOwner",
 //    query = "SELECT c FROM CompoundComparison c WHERE c.cmpOwner = :username")
@@ -48,8 +43,6 @@ import java.util.Map;
     resultSetMapping = "CompoundCmpSliceMapping" )
 public class CompoundComparison {
 
-    private static final ObjectMapper mapper = new ObjectMapper();
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -68,12 +61,12 @@ public class CompoundComparison {
 
     @NotNull
     @Column(name = "cmp_calculations", nullable = false)
-    @Type(type = "int-array")
+    @JdbcTypeCode(SqlTypes.ARRAY)
     private int[] calculations;
 
     @NotNull
     @Column(name = "cmp_result", nullable = false)
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     private Map<Integer, ComparisonResult> result = new java.util.HashMap<>();
 
     @Size(max = 255)

@@ -197,4 +197,7 @@ public class ODSStyles {
                 true, "thin solid #000000",
                 true, "thin solid #000000"));
     }
+
+    // prevent instantiation
+    private ODSStyles() {}
 }

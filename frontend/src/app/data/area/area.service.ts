@@ -46,6 +46,10 @@ export default class AreaService {
     return this.http.delete(`${BASE_URL}/user/area/${userAreaId}`);
   }
 
+  deletemultipleUserAreas(userAreaIds: number[]) {
+    return this.http.delete(`${BASE_URL}/user/area?ids=${userAreaIds.join()}`);
+  }
+
   getBoundaries() {
     return this.http.get<{ areas: AreaInterfaces.Boundary[] }>(`${BASE_URL}/areas/boundary`
     );

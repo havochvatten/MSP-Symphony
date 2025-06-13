@@ -6,9 +6,9 @@ import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.exception.SymphonyStandardSystemException;
 
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.ejb.Stateless;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.List;
 
 @Stateless
@@ -31,11 +31,11 @@ public class AreaTypeService {
      */
     public AreaType createAreaType(AreaType areaType) throws SymphonyStandardAppException {
         AreaType foundAreaTypeById = getAreaType(areaType.getId());
-        if (areaType != null && foundAreaTypeById != null) {
+        if (foundAreaTypeById != null) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.AREA_TYPE_EXISTS_ERROR);
         }
         AreaType existingAreaTypeByName = getAreaTypeByName(areaType.getAtypeName());
-        if (existingAreaTypeByName != null && !existingAreaTypeByName.getId().equals(existingAreaTypeByName.getId())) {
+        if (existingAreaTypeByName != null && !areaType.getId().equals(existingAreaTypeByName.getId())) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.AREA_TYPE_NAME_EXISTS_ON_OTHER);
         }
         try {
@@ -56,7 +56,7 @@ public class AreaTypeService {
      */
     public AreaType updateAreaType(AreaType areaType) throws SymphonyStandardAppException {
         AreaType areaTypeToUpdate = getAreaType(areaType.getId());
-        if (areaType == null || areaTypeToUpdate == null) {
+        if (areaTypeToUpdate == null) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.AREA_TYPE_NOT_FOUND);
         }
         AreaType existingAreaTypeByName = getAreaTypeByName(areaType.getAtypeName());
@@ -121,7 +121,9 @@ public class AreaTypeService {
 				em.createQuery("Select a FROM AreaType a WHERE a.atypeName = :name", AreaType.class)
 						.setParameter("name", name)
 						.getResultList();
-		if (userDefinedAreas.size() < 1) return null;
+		if (userDefinedAreas.isEmpty()) {
+            return null;
+        }
         return userDefinedAreas.get(0);
     }
 
@@ -133,6 +135,6 @@ public class AreaTypeService {
 				em.createQuery("Select c FROM CalculationArea c WHERE c.areaType.id = :id", CalculationArea.class)
 						.setParameter("id", id)
 						.getResultList();
-        return areaTypesUsed.size() > 0;
+        return !areaTypesUsed.isEmpty();
     }
 }

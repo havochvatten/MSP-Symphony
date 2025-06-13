@@ -1,27 +1,24 @@
 package se.havochvatten.symphony.web;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import se.havochvatten.symphony.dto.AreaSelectionResponseDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import se.havochvatten.symphony.dto.FrontendErrorDto;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.service.CalculationAreaService;
 
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.EJB;
+import jakarta.ejb.Stateless;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Stateless
 // TODO Move to se/havochvatten/symphony/web/CalcAreaSensMatrixREST.java?
-@Api(value = "/calculationparams",
-        produces = MediaType.APPLICATION_JSON,
-        consumes = MediaType.TEXT_PLAIN)
+@Tag(name = "/calculationparams")
 @Path("calculationparams")
 public class CalculationParametersREST {
     @EJB
@@ -29,9 +26,7 @@ public class CalculationParametersREST {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get a selection of possible matrices for a given scenario area",
-        response = AreaSelectionResponseDto.class,
-        responseContainer = "Object")
+    @Operation(summary = "Get a selection of possible matrices for a given scenario area")
     @Path("areamatrix/{baselineName}/{areaId}")
     @RolesAllowed("GRP_SYMPHONY")
     public Response getAreaMatrix(@Context HttpServletRequest req,
@@ -49,9 +44,7 @@ public class CalculationParametersREST {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get a list of possible matrices for each area within a given scenario",
-        response = AreaSelectionResponseDto.class,
-        responseContainer = "List")
+    @Operation(summary = "Get a list of possible matrices for each area within a given scenario")
     @Path("areamatrices/{baselineName}/{scenarioId}")
     @RolesAllowed("GRP_SYMPHONY")
     public Response getAreaMatrices(@Context HttpServletRequest req,
@@ -68,8 +61,7 @@ public class CalculationParametersREST {
     }
 
     private static Response areaMatrixErrorResponse(Exception ex) {
-        if (ex instanceof SymphonyStandardAppException) {
-            SymphonyStandardAppException ssx = (SymphonyStandardAppException) ex;
+        if (ex instanceof SymphonyStandardAppException ssx) {
             if (ssx.getErrorCode() == SymphonyModelErrorCode.NO_DEFAULT_MATRIX_FOUND) {
                 return Response.status(Response.Status.NOT_FOUND)
                     .entity(new FrontendErrorDto(ssx.getErrorCode().getErrorKey(), ssx.getErrorCode().getErrorMessage()))

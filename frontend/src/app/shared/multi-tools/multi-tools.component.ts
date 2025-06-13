@@ -13,8 +13,9 @@ export class MultiToolsComponent implements AfterContentInit {
   @Input() isMultiMode!: WritableSignal<boolean>
   @Input() modeChangeEffect: (() => void) | undefined;
   @Input() disabledPredicate!: () => boolean
-  @Input() exitLabel!: string
-  @Input() enterLabel!: string
+  @Input() exitLabel = 'controls.multi-mode-list.exit';
+  @Input() enterLabel = 'controls.multi-mode-list.enter';
+
 
   ngAfterContentInit() {
     this.actionButtons!.forEach((actionButton) => {
@@ -32,5 +33,4 @@ export class MultiToolsComponent implements AfterContentInit {
       this.modeChangeEffect();
     }
   }
-
 }

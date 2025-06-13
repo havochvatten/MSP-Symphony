@@ -7,16 +7,16 @@ import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.entity.Metadata;
 import se.havochvatten.symphony.entity.SymphonyBand;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -35,13 +35,13 @@ public class MetaDataServiceTest {
         when(metaDataService.em.createQuery(MetaDataService.sparseBandQuery, SymphonyBand.class))
             .thenReturn(mockedBandQuery);
 
-        when(mockedBandQuery.setParameter(anyString(), anyObject())).thenReturn(mockedBandQuery);
+        when(mockedBandQuery.setParameter(anyString(), any())).thenReturn(mockedBandQuery);
         when(mockedBandQuery.setParameter("baselineVersionId", 1)).thenReturn(mockedBandQuery);
         when(mockedBandQuery.setParameter("category", "Ecosystem")).thenReturn(mockedBandQuery);
         when(mockedBandQuery.getResultList()).thenReturn(symphonyThemes);
 
         when(metaDataService.em.createQuery(MetaDataService.sparseMetaQuery, Metadata.class)).thenReturn(mockedMetadataQuery);
-        when(mockedMetadataQuery.setParameter(anyString(), anyObject())).thenReturn(mockedMetadataQuery);
+        when(mockedMetadataQuery.setParameter(anyString(), any())).thenReturn(mockedMetadataQuery);
         when(mockedMetadataQuery.setParameter("bandsList", symphonyThemes)).thenReturn(mockedMetadataQuery);
         when(mockedMetadataQuery.setParameter("language", "en")).thenReturn(mockedMetadataQuery);
         when(mockedMetadataQuery.getResultList()).thenReturn(metadataENList, metadataSVList);

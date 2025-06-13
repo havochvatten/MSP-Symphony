@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.locationtech.jts.geom.Geometry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import se.havochvatten.symphony.dto.SensitivityMatrix;
 import se.havochvatten.symphony.dto.*;
 import se.havochvatten.symphony.entity.*;
@@ -17,23 +15,22 @@ import se.havochvatten.symphony.mapper.CalculationAreaMapper;
 import se.havochvatten.symphony.entity.Scenario;
 import se.havochvatten.symphony.entity.ScenarioArea;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
+import jakarta.ejb.EJB;
+import jakarta.ejb.Stateless;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static se.havochvatten.symphony.mapper.AreaSelectionResponseDtoMapper.mapSensitivityMatrixToDto;
+import static se.havochvatten.symphony.util.CalculationUtil.jsonListToGeometryList;
+import static se.havochvatten.symphony.util.CalculationUtil.jsonToGeometry;
 
 @Stateless
 public class CalculationAreaService {
-    private static final Logger LOG = LoggerFactory.getLogger(CalculationAreaService.class);
-    private static ObjectMapper mapper = new ObjectMapper();
-    private static GeometryJSON geometryJSON = new GeometryJSON();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     @PersistenceContext(unitName = "symphonyPU")
     public EntityManager em;
@@ -51,19 +48,19 @@ public class CalculationAreaService {
      * @return All CalculationAreas defined in the system (areas meant to be used in calculations)
      */
     public List<CalculationArea> findCalculationAreas(String baselineName) {
-        return em.createNamedQuery("CalculationArea.findByBaselineName")
+        return em.createNamedQuery("CalculationArea.findByBaselineName", CalculationArea.class)
                 .setParameter("name", baselineName)
                 .getResultList();
     }
 
     public List<CalculationArea> findCalibratedCalculationAreas(String baselineName) {
-        return em.createNamedQuery("CalculationArea.findCalibratedByBaselineName")
+        return em.createNamedQuery("CalculationArea.findCalibratedByBaselineName", CalculationArea.class)
                 .setParameter("name", baselineName)
                 .getResultList();
     }
 
     public List<CalculationArea> findCalculationAreas(List<Integer> ids) {
-        return em.createNamedQuery("CalculationArea.findByIds")
+        return em.createNamedQuery("CalculationArea.findByIds", CalculationArea.class)
                 .setParameter("ids", ids)
                 .getResultList();
     }
@@ -93,10 +90,10 @@ public class CalculationAreaService {
 
             List<CalculationArea> defaultAreas = calcAreasWithinRoi
                 .stream()
-                .filter((ca) -> ca.isCareaDefault())
-                .collect(Collectors.toList());
+                .filter(CalculationArea::isCareaDefault)
+                .toList();
 
-            if(defaultAreas.size() == 0) {
+            if(defaultAreas.isEmpty()) {
                 return new AreaSelectionResponseDto(){{
                     setAlternativeMatrices(findAvailableMatricesForUser(baselineName, principal));
                 }};
@@ -104,7 +101,7 @@ public class CalculationAreaService {
 
             if(defaultAreas.size() > 1) {
                 GeometryJSON geoJson = new GeometryJSON(7);
-                ObjectMapper mapper = new JsonMapper();
+                ObjectMapper fragmentMapper = new JsonMapper();
                 List<AreaOverlapFragment> fragmentMap = new ArrayList<>();
 
                 for(CalculationArea dca : defaultAreas) {
@@ -114,8 +111,8 @@ public class CalculationAreaService {
                         Geometry daPolygon = jsonToGeometry(dapStr);
                         if (daPolygon.intersects(geoRoi)) {
                             var defMatrixFragment = new AreaOverlapFragment();
-                            defMatrixFragment.polygon = mapper.readTree(geoJson.toString(geoRoi.intersection(daPolygon)));
-                            defMatrixFragment.defaultMatrix = mapSensitivityMatrixToDto(dca.getDefaultSensitivityMatrix());
+                            defMatrixFragment.setPolygon(fragmentMapper.readTree(geoJson.toString(geoRoi.intersection(daPolygon))));
+                            defMatrixFragment.setDefaultMatrix(mapSensitivityMatrixToDto(dca.getDefaultSensitivityMatrix()));
                             fragmentMap.add(defMatrixFragment);
                         }
                     }
@@ -139,10 +136,9 @@ public class CalculationAreaService {
                         principal, defaultArea.getId());
                 List<CalcAreaSensMatrix> commonBaselineMatrices =
                     calcAreaSensMatrixService.findByBaselineAndArea(baselineVersion.getName(), defaultArea.getId());
-                commonBaselineMatrices.removeIf(m -> m.getSensitivityMatrix().getId() == defaultArea.getDefaultSensitivityMatrix().getId());
-                AreaSelectionResponseDto resp = AreaSelectionResponseDtoMapper.mapToDto(defaultArea,
+                commonBaselineMatrices.removeIf(m -> m.getSensitivityMatrix().getId().equals(defaultArea.getDefaultSensitivityMatrix().getId()));
+                return AreaSelectionResponseDtoMapper.mapToDto(defaultArea,
                     areaTypeDtos, userDefinedMatrices, commonBaselineMatrices);
-                return resp;
             }
         } catch (IOException e) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.MAPPING_OBJECT_TO_POLYGON_STRING_ERROR);
@@ -180,8 +176,7 @@ public class CalculationAreaService {
         if (calculationArea == null) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.CALCULATION_AREA_NOT_FOUND);
         }
-        CalculationAreaDto calculationAreaDto = CalculationAreaMapper.mapToDto(calculationArea);
-        return calculationAreaDto;
+        return CalculationAreaMapper.mapToDto(calculationArea);
     }
 
     /**
@@ -239,7 +234,7 @@ public class CalculationAreaService {
     public MatrixResponse getAreaCalcMatrices(Scenario scenario) throws SymphonyStandardAppException {
         // Explicit fetch join bringing lazy-loaded customCalcArea into session
         TypedQuery<ScenarioArea> query = em.createQuery("SELECT area FROM ScenarioArea area LEFT JOIN FETCH area.customCalcArea WHERE area.id IN :ids", ScenarioArea.class);
-        query.setParameter("ids", scenario.getAreas().stream().mapToInt(ScenarioArea::getId).boxed().collect(Collectors.toList()));
+        query.setParameter("ids", scenario.getAreas().stream().mapToInt(ScenarioArea::getId).boxed().toList());
         List<ScenarioArea> j_areas = query.getResultList();
 
         return getAreaCalcMatrices(j_areas, scenario.getBaselineId());
@@ -272,10 +267,10 @@ public class CalculationAreaService {
                 areaMatrixMap.setAreaNormalizationValue(areaId, customCalcArea.getMaxValue());
             }
 
-            if(areaMatrixParameters.matrixId != null) {
-                areaMatrixMap.setAreaMatrixId(areaId, areaMatrixParameters.matrixId);
+            if(areaMatrixParameters.getMatrixId() != null) {
+                areaMatrixMap.setAreaMatrixId(areaId, areaMatrixParameters.getMatrixId());
             } else {
-                if (areaMatrixParameters.matrixType == MatrixParameters.MatrixType.STANDARD && defaultSensMatrixId != null) {
+                if (areaMatrixParameters.getMatrixType() == MatrixParameters.MatrixType.STANDARD && defaultSensMatrixId != null) {
                     areaMatrixMap.setAreaMatrixId(areaId, defaultSensMatrixId);
                 } else {
                     throw new SymphonyStandardAppException(SymphonyModelErrorCode.MATRIX_NOT_SET);
@@ -308,21 +303,20 @@ public class CalculationAreaService {
      */
     double getNormalization(List<CalculationArea> defaultAreas, NormalizationOptions normalization) {
         double maxValue = 0;
-        switch (normalization.type) {
+        switch (normalization.getType()) {
             case DOMAIN:
                 Optional<CalculationArea> caOpt =
-                        defaultAreas.stream().filter(d -> d.isCareaDefault()).findFirst();
+                        defaultAreas.stream().filter(CalculationArea::isCareaDefault).findFirst();
                 if (caOpt.isPresent())
                     maxValue = caOpt.get().getMaxValue() == null ? 0 : caOpt.get().getMaxValue();
                 break;
             case STANDARD_DEVIATION:
-                maxValue = normalization.stdDevMultiplier;
+                maxValue = normalization.getStdDevMultiplier();
                 break;
             case USER_DEFINED:
-                maxValue = normalization.userDefinedValue;
+                maxValue = normalization.getUserDefinedValue();
                 break;
-            case AREA:
-            case PERCENTILE:
+            case AREA, PERCENTILE:
                 /* do nothing at this stage */
         }
         return maxValue;
@@ -345,7 +339,7 @@ public class CalculationAreaService {
             areaMatrixResponseDto.setMatrixId(defaultArea.getDefaultSensitivityMatrix() == null ? null :
                     defaultArea.getDefaultSensitivityMatrix().getId());
             List<String> polygons =
-                    defaultArea.getCaPolygonList().stream().map(p -> p.getPolygon()).collect(Collectors.toList());
+                    defaultArea.getCaPolygonList().stream().map(CaPolygon::getPolygon).toList();
             areaMatrixResponseDto.getPolygons().addAll(withinSelectedPolygon(selectedPolygon, polygons));
             areaMatrixResponseDtos.add(areaMatrixResponseDto);
         }
@@ -360,7 +354,7 @@ public class CalculationAreaService {
             }
             areaMatrixResponseDto.setMatrixId(matrixId);
             List<String> polygons =
-                    nonDefaultArea.getCaPolygonList().stream().map(p -> p.getPolygon()).collect(Collectors.toList());
+                    nonDefaultArea.getCaPolygonList().stream().map(CaPolygon::getPolygon).toList();
             areaMatrixResponseDto.getPolygons().addAll(withinSelectedPolygon(selectedPolygon, polygons));
             areaMatrixResponseDtos.add(areaMatrixResponseDto);
         }
@@ -371,9 +365,8 @@ public class CalculationAreaService {
      * @return The matrices referenced by the areas in the service response (MatrixResponse).
      */
     List<SensitivityMatrix> getMatrixList(List<AreaMatrixMapping> relevantSelectedAreaMatrices,
-                                          List<CalculationArea> defaultAreas, Integer baseDataVersionId)
-            throws SymphonyStandardAppException {
-        Set<SensitivityMatrix> sensitivityMatrices = new HashSet();
+                                          List<CalculationArea> defaultAreas, Integer baseDataVersionId) {
+        Set<SensitivityMatrix> sensitivityMatrices = new HashSet<>();
 
         for (CalculationArea defaultArea : defaultAreas) {
             SensitivityMatrix sensitivityMatrix =
@@ -396,7 +389,7 @@ public class CalculationAreaService {
      * @return The array of sensitivity values for the matrix with matrixId. Ordered by band number in
      * metadata for pressures (vertically) and eco components (horizontally)
      */
-    public double[][] getSensitivityMatrix(Integer matrixId, int baseDataVersionId) throws SymphonyStandardAppException {
+    public double[][] getSensitivityMatrix(Integer matrixId, int baseDataVersionId) {
         if (em.find(se.havochvatten.symphony.entity.SensitivityMatrix.class, matrixId) == null) {
             return new double[][]{};
         }
@@ -440,7 +433,7 @@ public class CalculationAreaService {
 
     public List<Geometry> withinSelectedPolygon(Geometry selectedPolygon, List<String> polygons) throws SymphonyStandardAppException {
         List<Geometry> geoPolygons = jsonListToGeometryList(polygons);
-        return geoPolygons.stream().map(p -> selectedPolygon.intersection(p)).collect(Collectors.toList());
+        return geoPolygons.stream().map(selectedPolygon::intersection).toList();
     }
 
     public void updateMaximumValue(int areaId, double value) {
@@ -453,44 +446,18 @@ public class CalculationAreaService {
      * Get distinct List<AreaType> from calculationareas
      *
      * @return Area Types
-     * @throws SymphonyStandardAppException
      */
-    private List<AreaType> getAreaTypes(List<CalculationArea> calulationAreas) throws SymphonyStandardAppException {
-        List<AreaType> areatypes =
-                calulationAreas.stream().filter(ca -> !ca.isCareaDefault() && ca.getAreaType() != null).map((ca) -> ca.getAreaType()).distinct().collect(Collectors.toList());
-        return areatypes;
+    private List<AreaType> getAreaTypes(List<CalculationArea> calulationAreas) {
+        return calulationAreas.stream().filter(ca -> !ca.isCareaDefault() && ca.getAreaType() != null)
+                                        .map(CalculationArea::getAreaType).distinct().toList();
     }
 
     /**
      * @return Alist of calculation areas with requested areaType from the given calulationAreas
      */
     List<CalculationArea> getNonDefaultAreasForAreaType(Integer areaTypeId,
-                                                        List<CalculationArea> calulationAreas) throws SymphonyStandardAppException {
-        return calulationAreas.stream().filter((ca) -> !ca.isCareaDefault() && ca.getAreaType() != null && ca.getAreaType().getId().equals(areaTypeId)).collect(Collectors.toList());
-    }
-
-    /**
-     * @return A Geometry object created from the string geoJSON
-     */
-    public static Geometry jsonToGeometry(String geoJSON) throws SymphonyStandardAppException {
-        Geometry geometry = null;
-        try {
-            geometry = geometryJSON.read(geoJSON);
-        } catch (IOException e) {
-            throw new SymphonyStandardAppException(SymphonyModelErrorCode.GEOJSON_TO_GEOMETRY_CONVERSION_ERROR);
-        }
-        return geometry;
-    }
-
-    /**
-     * @return A list of geometries (List<Geometry>) from the geoJSON list of strings geoJSONList
-     */
-    public static List<Geometry> jsonListToGeometryList(List<String> geoJSONList) throws SymphonyStandardAppException {
-        List<Geometry> geometries = new ArrayList<>();
-        for (String geoJSON : geoJSONList) {
-            geometries.add(jsonToGeometry(geoJSON));
-        }
-        return geometries;
+                                                        List<CalculationArea> calulationAreas) {
+        return calulationAreas.stream().filter(ca -> !ca.isCareaDefault() && ca.getAreaType() != null && ca.getAreaType().getId().equals(areaTypeId)).toList();
     }
 }
 

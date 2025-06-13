@@ -8,17 +8,17 @@ package se.havochvatten.symphony.entity;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "areatype")
 @XmlRootElement
-@NamedQueries({@NamedQuery(name = "AreaType.findAll", query = "SELECT a FROM AreaType a")})
+@NamedQuery(name = "AreaType.findAll", query = "SELECT a FROM AreaType a")
 public class AreaType implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -88,14 +88,11 @@ public class AreaType implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof AreaType)) {
+        if (!(object instanceof AreaType other)) {
             return false;
         }
-        AreaType other = (AreaType) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override

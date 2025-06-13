@@ -43,10 +43,13 @@ organizational needs.
 
 ### Implementation recommendations
 
-While any Jakarta EE 8.0-compliant application should be OK, during development [Wildfly](https://www.wildfly.org/)
-has been used and is thus the recommended choice. At SwAM the frontend is served separately using Apache, 
-although any web server capable of serving static content should do (see [Frontend](#frontend-1) below). The backend 
-has been tested using Wildfly 26.1, PostgreSQL 10 and PostGIS v2.4, but more recent versions should be fine.
+While any Jakarta EE 10.0-compliant application server should work in principle, please note that the build (and 
+consequently, the [provided release artifacts](https://github.com/havochvatten/MSP-Symphony/releases)) is adapted 
+specifically to the dependency provisions of the [Wildfly](https://www.wildfly.org/) application server (@ 
+v[36.0.1](https://www.wildfly.org/downloads/#36.0.1.Final)).  
+At SwAM the frontend is served separately using Apache, although any web server capable of serving static content 
+will do (see [Frontend](#frontend-1) below). The backend has been tested using Wildfly 36.0, PostgreSQL 14 and PostGIS v3.4,
+but more recent versions should be fine (as for Wildfly, at least all versions providing Jakarta EE 10).
 
 The frontend is realized as an Angular application (v 17), built with Node 20.11.1.
 

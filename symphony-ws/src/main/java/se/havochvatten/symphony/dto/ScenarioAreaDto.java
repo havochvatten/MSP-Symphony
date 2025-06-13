@@ -3,7 +3,7 @@ package se.havochvatten.symphony.dto;
 import com.fasterxml.jackson.databind.JsonNode;
 import se.havochvatten.symphony.entity.ScenarioArea;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -14,7 +14,6 @@ public class ScenarioAreaDto implements Serializable {
 
     public final Integer id;
     private final JsonNode changes;
-    @NotNull
     private final JsonNode feature;
     private final JsonNode matrix;
 

@@ -4,34 +4,27 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vladmihalcea.hibernate.type.array.DoubleArrayType;
-import com.vladmihalcea.hibernate.type.array.IntArrayType;
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import io.hypersistence.utils.hibernate.type.array.IntArrayType;
 import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.data.geojson.GeoJSONWriter;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 import org.locationtech.jts.geom.Geometry;
 import se.havochvatten.symphony.dto.MatrixResponse;
 import se.havochvatten.symphony.dto.NormalizationOptions;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.scenario.*;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
-import javax.validation.constraints.Size;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Size;
 import java.util.*;
 
 @Entity
 @Table(name = "scenariosnapshot")
-@TypeDefs({
-        @TypeDef(name = "json", typeClass = JsonBinaryType.class),
-        @TypeDef(name = "int-array", typeClass = IntArrayType.class),
-        @TypeDef(name = "double-array", typeClass = DoubleArrayType.class)
-})
 public class ScenarioSnapshot implements BandChangeEntity, ScenarioCommon {
 
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -53,13 +46,13 @@ public class ScenarioSnapshot implements BandChangeEntity, ScenarioCommon {
 
     @Basic
     @NotNull
-    @Type(type = "int-array")
+    @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "integer[]", name = "ecosystems")
     protected int[] ecosystemsToInclude;
 
     @Basic
     @NotNull
-    @Type(type = "int-array")
+    @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "integer[]", name = "pressures")
     protected int[] pressuresToInclude;
 
@@ -67,23 +60,21 @@ public class ScenarioSnapshot implements BandChangeEntity, ScenarioCommon {
      * JSON object serializing the ScenarioChanges record class.
      */
     @Basic(optional = true)
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "json")
     protected JsonNode changes;
 
     @Basic
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     @NotNull
     @Column(columnDefinition = "json")
     protected JsonNode areas;
 
     @Embedded
     @NotNull
-    @AttributeOverrides({
-        @AttributeOverride(name = "type", column = @Column(name = "normalization_type", nullable = false)),
-        @AttributeOverride(name = "userDefinedValue", column = @Column(name = "normalization_userdefinedvalue", nullable = false)),
-        @AttributeOverride(name = "stdDevMultiplier", column = @Column(name = "normalization_stddevmultiplier", nullable = false))
-    })
+    @AttributeOverride(name = "type", column = @Column(name = "normalization_type", nullable = false))
+    @AttributeOverride(name = "userDefinedValue", column = @Column(name = "normalization_userdefinedvalue", nullable = false))
+    @AttributeOverride(name = "stdDevMultiplier", column = @Column(name = "normalization_stddevmultiplier", nullable = false))
     protected NormalizationOptions normalization;
 
     @Size(max = 255)
@@ -100,20 +91,25 @@ public class ScenarioSnapshot implements BandChangeEntity, ScenarioCommon {
 
     @Basic(optional = false)
     @NotNull
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "json")
     protected JsonNode polygon;
 
     @Column(name = "normalization_value")
-    @Type(type = "double-array")
+    @JdbcTypeCode(SqlTypes.ARRAY)
     private double[] normalizationValue;
 
     @NotNull
-    @Column(name = "area_matrix_map", nullable = false)
-    @Type(type = "int-array")
+    @Type(value = IntArrayType.class,
+        parameters = @org.hibernate.annotations.Parameter(
+            name = "sql_array_type",
+            value = "integer"
+        )
+    )
+    @Column(name = "area_matrix_map", nullable = false, columnDefinition = "integer[][]")
     private int[][] areaMatrixMap;
 
-    @OneToOne(mappedBy = "scenarioSnapshot")
+    @OneToOne(mappedBy = "scenarioSnapshot", cascade = CascadeType.MERGE, orphanRemoval = true)
     private CalculationResult calculationresults;
 
     public CalculationResult getCalculationresults() {
@@ -196,9 +192,9 @@ public class ScenarioSnapshot implements BandChangeEntity, ScenarioCommon {
     public void setAreaMatrixMap(Map<Integer, Integer> areaMatrixMap) {
         int[][] map = new int[areaMatrixMap.size()][2];
         int i = 0;
-        for (Integer key : areaMatrixMap.keySet()) {
-            map[i][0] = key;
-            map[i][1] = areaMatrixMap.get(key);
+        for (Map.Entry<Integer, Integer> areaMapEntry : areaMatrixMap.entrySet()) {
+            map[i][0] = areaMapEntry.getKey();
+            map[i][1] = areaMapEntry.getValue();
             i++;
         }
         this.areaMatrixMap = map;
@@ -227,13 +223,14 @@ public class ScenarioSnapshot implements BandChangeEntity, ScenarioCommon {
         this.areas = mapper.valueToTree(areaMap);
     }
 
+    @Override
     public Map<LayerType, Map<Integer, BandChange>> getChangeMap() {
         ScenarioChanges sc = mapper.convertValue(changes, new TypeReference<>() {});
         return sc.baseChanges();
     }
 
     public List<ScenarioArea> getTmpAreas () {
-        List<ScenarioArea> areas = new ArrayList<>();
+        List<ScenarioArea> tmpAreas = new ArrayList<>();
 
 
         for (var areaEntry : getAreas().entrySet()) {
@@ -243,19 +240,19 @@ public class ScenarioSnapshot implements BandChangeEntity, ScenarioCommon {
             tmpArea.setId(areaId);
             tmpArea.setFeature(areaEntry.getValue().featureJson());
             tmpArea.setChanges(changes.get("areaChanges").get(areaId.toString()));
-            areas.add(tmpArea);
+            tmpAreas.add(tmpArea);
         }
-        return areas;
+        return tmpAreas;
     }
 
     public Map<Integer, Integer> getAreasExcludingCoastal() {
-        Map<Integer, Integer> areas = new HashMap<>();
+        Map<Integer, Integer> nonCoastal = new HashMap<>();
         for (var area : getAreas().entrySet()) {
             if (area.getValue().getExcludedCoastal() != -1) {
-                areas.put(area.getKey(), area.getValue().excludedCoastal());
+                nonCoastal.put(area.getKey(), area.getValue().excludedCoastal());
             }
         }
-        return areas;
+        return nonCoastal;
     }
 
     public ScenarioSnapshot() {}

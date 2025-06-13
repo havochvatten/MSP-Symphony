@@ -5,6 +5,7 @@ import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as calculation } from '@data/calculation/calculation.reducers';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { IconComponent } from "@shared/icon/icon.component";
+import { SharedModule } from "@shared/shared.module";
 
 describe('CalculationHistoryComponent', () => {
   let fixture: ComponentFixture<CalculationHistoryComponent>,
@@ -13,7 +14,7 @@ describe('CalculationHistoryComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [CalculationHistoryComponent, IconComponent],
-      imports: [TranslationSetupModule],
+      imports: [TranslationSetupModule, SharedModule],
       providers: [
         provideMockStore({
           initialState: {

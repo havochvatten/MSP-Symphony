@@ -1,5 +1,6 @@
 import { Component, NgModuleRef } from '@angular/core';
 import { Store } from "@ngrx/store";
+import { Subscription } from "rxjs";
 import { State } from "@src/app/app-reducer";
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { CalculationActions, CalculationSelectors } from "@data/calculation";
@@ -8,34 +9,42 @@ import { TranslateService } from '@ngx-translate/core';
 import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 import { environment as env } from "@src/environments/environment";
 import { DialogService } from '@src/app/shared/dialog/dialog.service';
-import { Listable } from '@src/app/shared/list-filter/listable.directive';
 import { ListItemsSort } from "@data/common/sorting.interfaces";
 import {
   DownloadCompoundComparisonDialogComponent
 } from "@src/app/map-view/compound-comparison-list-dialog/download-compound-comparison-dialog/download-compound-comparison-dialog.component";
+import { MultiModeListable } from "@shared/multi-tools/multi-mode-listable";
 
 @Component({
   selector: 'app-compound-comparison-list-dialog',
   templateUrl: './compound-comparison-list-dialog.component.html',
   styleUrls: ['./compound-comparison-list-dialog.component.scss']
 })
-export class CompoundComparisonListDialogComponent extends Listable {
+export class CompoundComparisonListDialogComponent extends MultiModeListable {
 
   compoundComparison$ = this.store.select(CalculationSelectors.selectCompoundComparisons);
+  checkEmpty$: Subscription;
   apiUrl: string;
 
   constructor(private store: Store<State>,
               private dialog: DialogRef,
-              private moduleRef: NgModuleRef<never>,
-              private dialogService: DialogService,
-              private translateService: TranslateService) {
-    super();
+              protected dialogService: DialogService,
+              private translateService: TranslateService,
+              protected moduleRef: NgModuleRef<never>) {
+    super(moduleRef, dialogService);
     this.apiUrl = env.apiBaseUrl + '/report/multi-comparison';
+
+    this.checkEmpty$ = this.compoundComparison$.subscribe((ccs) => {
+      if(ccs.length === 0) {
+        this.close();
+      }
+    });
   }
 
   close = () => {
     this.setSort(ListItemsSort.None);
     this.dialog.close();
+    this.checkEmpty$?.unsubscribe();
   }
 
   async deleteCC (cmp: CompoundComparisonSlice) {
@@ -117,5 +126,25 @@ export class CompoundComparisonListDialogComponent extends Listable {
       ecosystem: titleCase(titles['map.metadata.ecosystem']),
       pressure: titleCase(titles['map.metadata.pressure'])
     });
+  }
+
+  deleteSelectedCompoundComparisons = async () => {
+    const multi = this.selectedIds.length > 1;
+    await this.deleteSelected(
+        { data: {
+            header: this.translateService.instant(
+              multi ? 'map.compound-data-list.delete-modal.header-multiple' :
+                'map.compound-data-list.delete-modal.header'),
+            message: this.translateService.instant(
+              multi ? 'map.compound-data-list.delete-modal.message-multiple' :
+                'map.compound-data-list.delete-modal.message-single', { count: this.selectedIds.length }),
+            confirmText: this.translateService.instant('controls.delete'),
+            confirmColor: 'warn',
+            buttonsClass: 'no-margin'
+          }
+        },
+    () => {
+        this.store.dispatch(CalculationActions.deleteMultipleCompoundComparisons({ ids: this.selectedIds }));
+      });
   }
 }

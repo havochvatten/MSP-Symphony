@@ -1,4 +1,17 @@
-<h3>{{ 'map.compound-data-list.title' | translate }}</h3>
+<div class="title-wrap">
+  <h3>{{ 'map.compound-data-list.title' | translate }}</h3>
+  <app-multi-tools
+    [isMultiMode]="isMultiMode"
+    [disabledPredicate]="noneSelected"
+  >
+    <app-multi-action-button
+      [multiActionDelegate]="deleteSelectedCompoundComparisons"
+      [multiActionIcon]="'delete'"
+      [multiActionLabel]="'map.compound-data-list.delete-selected'"
+      [multiActionLabelDisabled]="'map.compound-data-list.none-selected'"
+    ></app-multi-action-button>
+  </app-multi-tools>
+</div>
 <div class="list-filter-container">
   <app-list-filter
     [filterPlaceholder]="'map.compound-data-list.filter-hint' | translate"
@@ -6,29 +19,36 @@
     (sortChange)="setSort($event)"
   ></app-list-filter>
 </div>
-<ul>
+<ul [ngClass]="{ 'multi-mode': isMultiMode() }">
   <li *ngFor="let cmp of compoundComparison$ | async"
       class="list-item"
       [ngClass]="{ 'filtered': filter(cmp.name) }">
-    <h5>{{ 'map.compound-data-list.compound-comparison-data' | translate }}:
-      <span class="cmp-name">{{ cmp.name }}</span>
-    </h5>
-    <div>
-      <span class="timestamp">{{ cmp.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
-      <span class="calculation-basis-info-header">{{
-          'map.compound-data-list.calculation-basis-info' | translate
-        }}:</span>
-      <span class="calculation-basis-names"
-            [innerHTML]="cmp.calcNamesList('map.compound-data-list.more' | translate)"
-      ></span>
+    <div class="compound-calculation-wrap">
+      <h5>{{ 'map.compound-data-list.compound-comparison-data' | translate }}:
+        <span class="cmp-name">{{ cmp.name }}</span>
+      </h5>
+      <div>
+        <span class="timestamp">{{ cmp.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
+        <span class="calculation-basis-info-header">{{
+            'map.compound-data-list.calculation-basis-info' | translate
+          }}:</span>
+        <span class="calculation-basis-names"
+              [innerHTML]="cmp.calcNamesList('map.compound-data-list.more' | translate)"
+        ></span>
+      </div>
+      <div class="list-actions" *ngIf="!isMultiMode()">
+        <app-icon iconType="save" [title]="'map.compound-data-list.download.header' | translate"
+                  (click)="downloadCC(cmp); $event.stopPropagation()">
+        </app-icon>
+        <app-icon iconType="delete" [title]="'map.compound-data-list.delete' | translate"
+                  (click)="deleteCC(cmp); $event.stopPropagation()">
+        </app-icon>
+      </div>
     </div>
-    <div class="list-actions">
-      <app-icon iconType="save" [title]="'map.compound-data-list.download.header' | translate"
-                (click)="downloadCC(cmp); $event.stopPropagation()">
-      </app-icon>
-      <app-icon iconType="delete" [title]="'map.compound-data-list.delete' | translate"
-                (click)="deleteCC(cmp); $event.stopPropagation()">
-      </app-icon>
+    <div class="multi-selected-wrap" *ngIf="isMultiMode()">
+      <mat-checkbox [checked]="selectedIds.includes(cmp.id)"
+                    (change)="multiSelect(cmp.id)">
+      </mat-checkbox>
     </div>
   </li>
 </ul>

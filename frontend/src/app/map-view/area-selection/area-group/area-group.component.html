@@ -1,11 +1,26 @@
 <ng-container *ngIf="!searching">
   <div class="title-container">
     <h3>{{ title }}</h3>
-    <fa-icon *ngIf="importArea"
-             [icon]="faCloudUpload"
-             [title]="'map.user-area.upload.label' | translate"
-             (click)="importArea()"
-    ></fa-icon>
+    <div class="tools">
+      <app-multi-tools
+        *ngIf="userArea"
+        [isMultiMode]="isMultiMode"
+        [disabledPredicate]="noneSelected"
+        [modeChangeEffect]="deselectAreas"
+      >
+        <app-multi-action-button
+          [multiActionDelegate]="deleteSelectedUserAreas"
+          [multiActionIcon]="'delete'"
+          [multiActionLabel]="'map.user-area.delete-selected'"
+          [multiActionLabelDisabled]="'map.user-area.none-selected'"
+        ></app-multi-action-button>
+      </app-multi-tools>
+      <fa-icon *ngIf="importArea"
+               [icon]="faCloudUpload"
+               [title]="'map.user-area.upload.label' | translate"
+               (click)="importArea()"
+      ></fa-icon>
+    </div>
   </div>
   <div class="divider"></div>
 </ng-container>
@@ -25,7 +40,14 @@
         class="title-text"
         [class]="{ 'selected': userArea && isSelected(group.statePath) }"
         (click)="this.userArea && onSelectArea(group, group, $event); $event.stopPropagation()">
+        <div class="multi-selected-wrap" *ngIf="isMultiMode()">
+          <mat-checkbox [checked]="selectedIds.includes(group.id)"
+                        (change)="multiSelect(group.id)"
+                        (click)="$event.stopPropagation()">
+          </mat-checkbox>
+        </div>
         <app-icon
+          *ngIf="!isMultiMode()"
           [iconType]="group.visible ? 'eye' : 'eye-slash'"
           (click)="toggleVisible(group.statePath); $event.stopPropagation()"
           class="visible"></app-icon>

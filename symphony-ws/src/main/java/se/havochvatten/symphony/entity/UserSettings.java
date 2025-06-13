@@ -3,14 +3,16 @@ package se.havochvatten.symphony.entity;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import org.hibernate.type.SqlTypes;
+
 import java.util.Map;
 
 @Entity
@@ -25,7 +27,7 @@ public class UserSettings {
 
     @NotNull
     @Column(name = "settings", nullable = false)
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     private JsonNode settings;
 
     public String getUser() {

@@ -31,7 +31,7 @@ public record ScenarioAreaRecord(String areaName, JsonNode featureJson, Integer 
         try {
             return GeoJSONReader.parseFeature(mapper.writeValueAsString(featureJson));
         } catch (IOException e) {
-            throw new RuntimeException("Unable to parse feature: "+featureJson.toString());
+            throw new RuntimeException(String.format("Unable to parse feature: %s", featureJson.toString()));
         }
     }
 }

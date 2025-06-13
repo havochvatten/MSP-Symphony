@@ -58,7 +58,6 @@ public class BaselineVersionServiceRESTTest extends RESTTest {
 
     @Test
     public void TestGetByDate() {
-        //		List<BaselineVersionDto> baselineVersions = getAllBaselineVersions();
         Date date = versions.get(0).getValidFrom();
 
         BaselineVersionDto res = given().
@@ -77,7 +76,7 @@ public class BaselineVersionServiceRESTTest extends RESTTest {
     }
 
     private static List<BaselineVersionDto> getAllBaselineVersions() {
-        List<BaselineVersionDto> res = given().
+        return given().
             auth().
             preemptive().
             basic(getUsername(), getPassword()).
@@ -87,7 +86,5 @@ public class BaselineVersionServiceRESTTest extends RESTTest {
             extract().
             body().
             jsonPath().getList(".", BaselineVersionDto.class);
-
-        return res;
     }
 }

@@ -2,18 +2,18 @@ package se.havochvatten.symphony.scheduled;
 
 import se.havochvatten.symphony.service.CalcService;
 import se.havochvatten.symphony.service.PropertiesService;
-import se.havochvatten.symphony.service.ReportService;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.*;
+import jakarta.annotation.PostConstruct;
+import jakarta.ejb.*;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Startup
 @Singleton
 public class ScheduledDbPurge {
-    private static final Logger logger = Logger.getLogger(ReportService.class.getName());
+    private static final Logger logger = Logger.getLogger(ScheduledDbPurge.class.getName());
 
     @EJB
     CalcService calcService;
@@ -38,7 +38,7 @@ public class ScheduledDbPurge {
                 int maxDays = Integer.parseInt(maxDaysParam);
                 Date earliest = new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(maxDays));
                 int removed = calcService.removeCalculationTiffOlderThan(earliest);
-                logger.info("Removed " + removed + " calculation blobs older than (" + maxDays + ") days");
+                logger.log(Level.INFO, () -> String.format("Removed %d calculation blobs older than (%d) days", removed, maxDays));
             } catch (NumberFormatException e) {
                 logger.warning("Daily calculation blobs purge attempt failed: " +
                                     "Invalid integer value found for calc.dbpurge_calculation_max_age_days");

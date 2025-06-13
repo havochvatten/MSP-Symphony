@@ -1,19 +1,17 @@
 package se.havochvatten.symphony.entity;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "nationalarea")
 @XmlRootElement
-@NamedQueries({
-        @NamedQuery(name = "NationalArea.findAll", query = "SELECT n FROM NationalArea n"),
-        @NamedQuery(name = "NationalArea.findByCountryIso3AndType", query = "SELECT n FROM NationalArea n " +
-				"WHERE n.countryIso3 = :countryIso3 and n.type = :type")
-})
+@NamedQuery(name = "NationalArea.findAll", query = "SELECT n FROM NationalArea n")
+@NamedQuery(name = "NationalArea.findByCountryIso3AndType", query = "SELECT n FROM NationalArea n " +
+        "WHERE n.countryIso3 = :countryIso3 and n.type = :type")
 public class NationalArea implements Serializable { // TODO Rename to Areas
 	private static final long serialVersionUID = 1L;
 
@@ -107,14 +105,10 @@ public class NationalArea implements Serializable { // TODO Rename to Areas
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof NationalArea)) {
+        if (!(object instanceof NationalArea other)) {
             return false;
         }
-        NationalArea other = (NationalArea) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override

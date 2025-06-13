@@ -1,6 +1,10 @@
 package se.havochvatten.symphony.web;
 
+import com.fasterxml.jackson.core.JsonFactoryBuilder;
+import com.fasterxml.jackson.core.StreamReadConstraints;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.path.json.JsonPath;
+import io.restassured.path.json.mapper.factory.GsonObjectMapperFactory;
 import io.restassured.response.Response;
 import org.junit.After;
 import org.junit.Before;
@@ -51,7 +55,7 @@ public class CalcAreaSensMatrixRESTTest extends RESTTest {
         Response response = given().
                 auth().
                 preemptive().
-                basic(getUsername(), getPassword()).
+                basic(getAdminUsername(), getAdminPassword()).
                 when().
                 header("Content-Type", "application/json").
                 body(calcAreaSensMatrixDto).
@@ -103,7 +107,7 @@ public class CalcAreaSensMatrixRESTTest extends RESTTest {
     private SensMatrixDto getSensMatrixDto(Integer calcAreaId) {
         SensMatrixDto sensMatrixDto = null;
 
-        String endpoint = endpoint("/sensitivitymatrix/{baselineName}");
+        String mxEndpoint = endpoint("/sensitivitymatrix/{baselineName}");
         String baselineName = "BASELINE2019";
 
         List<SensMatrixDto> sensMatrixDtos = given().
@@ -112,7 +116,7 @@ public class CalcAreaSensMatrixRESTTest extends RESTTest {
                 basic(getAdminUsername(), getAdminPassword()).
                 pathParam("baselineName", baselineName).
                 when().
-                get(endpoint).
+                get(mxEndpoint).
                 then().
                 extract().
                 body().
@@ -125,7 +129,6 @@ public class CalcAreaSensMatrixRESTTest extends RESTTest {
                 break;
             }
         }
-        ;
         return sensMatrixDto;
     }
 
@@ -170,11 +173,7 @@ public class CalcAreaSensMatrixRESTTest extends RESTTest {
         assertThat(sts, is(200));
 
         JsonPath jsonPathEvaluator = response.jsonPath();
-        List<CalcAreaSensMatrixDto> calcAreaSensMatricesDtos = jsonPathEvaluator.getList("",
-                CalcAreaSensMatrixDto.class);
-
-
-        return calcAreaSensMatricesDtos;
+        return jsonPathEvaluator.getList("", CalcAreaSensMatrixDto.class);
     }
 
     private void cleanUp() {

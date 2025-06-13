@@ -14,34 +14,54 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.SAXException;
 
 import javax.imageio.ImageIO;
-import javax.json.Json;
-import javax.json.JsonArray;
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import javax.media.jai.InterpolationNearest;
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.image.RenderedImage;
 import java.io.*;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toMap;
 
-public interface WebUtil {
-    int ONE_YEAR_IN_SECONDS = 31536000;
+public class WebUtil {
+    static int ONE_YEAR_IN_SECONDS = 31536000;
 
     // arbitrary constant series based entirely on the
     // legacy comparison color scale style definition
     // (styles/comparison.xml)
-    double[] COMPARISON_STEPS = { -1, -0.6666, -0.3333, -0.1111, -0.022223, 0, 0.022223, 0.1111, 0.3333, 0.6666, 1 };
+    public static double[] COMPARISON_STEPS = { -1, -0.6666, -0.3333, -0.1111, -0.022223, 0, 0.022223, 0.1111, 0.3333, 0.6666, 1 };
 
-    FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+    static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
-    static final String fileNameRx = "[^\\p{L}\\p{N}._-]+";
+    static String fileNameRx = "[^\\p{L}\\p{N}._-]+";
 
     public static String escapeFilename(String s) {
         return StringUtils.stripAccents(s).replaceAll(fileNameRx, "-");
+    }
+
+    static String noPrincipalStr = "Null principal";
+
+    static DecimalFormatSymbols decimalFormatSymbols = DecimalFormatSymbols.getInstance();
+
+    static {
+        decimalFormatSymbols.setDecimalSeparator('.');
+    }
+
+    static String fixedDecimal(double number, int precision) {
+        if (precision < 0)
+            throw new IllegalArgumentException();
+        if (precision > 0) {
+            return new DecimalFormat("0." + "0".repeat(precision), decimalFormatSymbols).format(number);
+        } else { // precision == 0
+            return String.valueOf((int) number);
+        }
     }
 
     static JsonArray createExtent(Envelope targetEnvelope) {
@@ -139,15 +159,16 @@ public interface WebUtil {
     }
 
     static void writeFile(byte[] content, File file) throws IOException {
-        if (!file.exists())
-            file.createNewFile();
+        if (!file.exists() && !file.createNewFile()) {
+            throw new IOException("Could not create file " + file.getAbsolutePath());
+        }
 
-        FileOutputStream fop = new FileOutputStream(file);
-        fop.write(content);
-        fop.close();
+        try(FileOutputStream fop = new FileOutputStream(file)) {
+            fop.write(content);
+        }
     }
 
-    public static int[] intArrayParam(String param) {
+    static int[] intArrayParam(String param) {
         return Arrays.stream(param.split(",")).mapToInt(Integer::parseInt).toArray();
     }
 
@@ -156,12 +177,8 @@ public interface WebUtil {
             .stream()
             .collect(toMap(
                 key -> key,
-                key -> multiValued.getFirst(key)));
-//        Map<String, String> dest = new HashMap<>(multiValued.size());
-        // TODO collect
-//        multiValued.keySet().stream().forEach(key -> dest.put(key, multiValued.getFirst(key)));
-//        return dest;
-
-
+                multiValued::getFirst));
     }
+
+    private WebUtil(){}
 }

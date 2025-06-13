@@ -401,7 +401,7 @@
             "show-result": "Show result in map view",
             "hide-result": "Hide result in map view",
             "visible-result": "Result is currently visible in map view",
-            "purged-result": "Data for this result has been purged\nThis will take a little longer to load because the result is being recalculated.",
+            "purged-result": "Data for this result has been purged\nThis will take a little longer to load because the result needs to be recalculated first.",
             "edit-name": {
                 "label": "Rename",
                 "header": "Enter a new name for the calculation"
@@ -422,8 +422,6 @@
                 "calculate": "Calculate"
             },
             "multi-mode": {
-                "enter": "Enter multi-selection mode",
-                "exit": "Exit multi-selection mode",
                 "delete-selected": "Delete selected calculations",
                 "generate-comparison": "Generate comparison data",
                 "none-selected": "No calculations selected"
@@ -492,15 +490,17 @@
             "delete": {
                 "label": "Delete",
                 "modal": {
-                    "title": "Confirm area deletion",
+                    "header": "Delete area",
                     "message": "Are you sure you want to delete &laquo;&nbsp;{{ userAreaName }}&nbsp;&raquo;&nbsp;?",
-                    "delete": "Delete",
-                    "cancel": "Cancel"
+                    "header-multiple": "Delete selected areas",
+                    "message-multiple": "Confirm deletion of <strong>{{ count }}</strong> areas."
                 }
             },
             "share": {
                 "label": "Share"
-            }
+            },
+            "none-selected": "No user areas have been marked for deletion",
+            "delete-selected": "Delete selected user areas"
         },
         "color-scale": {
             "result": "Cumulative impact",
@@ -531,6 +531,8 @@
             "calculation-basis-info": "The comparative values are based on the following calculations",
             "more": "more",
             "delete": "Delete compound comparison",
+            "none-selected": "No compound comparisons selected",
+            "delete-selected": "Delete selected compound comparisons",
             "download": {
                 "header": "Download compound comparison",
                 "select-format": "Select format to download",
@@ -545,7 +547,10 @@
             "filter-hint": "Filter list item by name",
             "delete-modal": {
                 "header": "Delete compound comparison",
-                "message": "Confirm deletion of compound comparison: <em>“{{ comparisonName }}”</em>"
+                "header-multiple": "Delete compound comparisons",
+                "message": "Confirm deletion of compound comparison: <em>“{{ comparisonName }}”</em>",
+                "message-multiple": "Confirm deletion of <strong>{{ count }}</strong> compound comparisons?",
+                "message-single": "Confirm deletion of this compound comparison?"
             },
             "terms": {
                 "total": "Total",
@@ -571,6 +576,10 @@
         "accordion": {
             "expand": "Expand",
             "contract": "Contract"
+        },
+        "multi-mode-list": {
+            "enter": "Enter multi-selection mode",
+            "exit": "Exit multi-selection mode"
         }
     },
     "rename": {
