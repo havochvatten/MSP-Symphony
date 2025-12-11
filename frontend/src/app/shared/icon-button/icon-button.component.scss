@@ -1,6 +1,7 @@
-@import 'src/styles/hav-colors';
+@use 'src/styles/hav-colors' as colors;
+@use 'sass:color';
 
-$primary-disabled-bg-grey: darken(#d4d4d4, 10);
+$primary-disabled-bg-grey: color.adjust(#d4d4d4, $lightness: -10%);
 
 :host {
   font-size: 2rem;
@@ -13,7 +14,7 @@ $primary-disabled-bg-grey: darken(#d4d4d4, 10);
     align-items: center;
     background-color: transparent;
     border: none;
-    color: $dark-blue;
+    color: colors.$dark-blue;
     min-height: 3rem;
     outline: none;
     padding: 0;
@@ -29,7 +30,7 @@ $primary-disabled-bg-grey: darken(#d4d4d4, 10);
       cursor: pointer;
 
       &:not(.on-dark-background) {
-        color: lighten($dark-blue, 5);
+        color: color.adjust(colors.$dark-blue, $lightness: 5%);
       }
     }
 

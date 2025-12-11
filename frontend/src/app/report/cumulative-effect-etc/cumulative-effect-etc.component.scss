@@ -1,4 +1,4 @@
-@import 'src/styles/hav-colors';
+@use 'src/styles/hav-colors' as colors;
 
 :host {
   display: block;
@@ -32,7 +32,7 @@
         width: 10em;
 
         &.invalid {
-          color: $hav-darkgrey;
+          color: colors.$hav-darkgrey;
           text-decoration: line-through;
         }
       }
@@ -45,7 +45,7 @@
 
       td {
         &.invalid {
-          color: $hav-darkgrey;
+          color: colors.$hav-darkgrey;
           font-style: oblique;
         }
       }

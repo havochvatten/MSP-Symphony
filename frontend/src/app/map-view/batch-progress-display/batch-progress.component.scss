@@ -1,4 +1,4 @@
-@import 'src/styles/hav-colors';
+@use 'src/styles/hav-colors' as colors;
 
 :host {
   min-width: 24rem;
@@ -60,12 +60,12 @@
         height: 1.8rem;
 
         &.calculation-report {
-          color: $hav-turquoise;
+          color: colors.$hav-turquoise;
           cursor: pointer;
         }
 
         &.calculation-failed {
-          color: $hav-warning;
+          color: colors.$hav-warning;
         }
       }
 

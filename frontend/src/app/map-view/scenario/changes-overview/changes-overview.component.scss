@@ -1,4 +1,4 @@
-@import 'src/styles/hav-colors';
+@use 'src/styles/hav-colors' as colors;
 
 :host {
   display: flex;
@@ -24,7 +24,7 @@
     span {
       height: 2.8rem;
       font-size: 1.6rem;
-      color: $medium-gray;
+      color: colors.$medium-gray;
     }
 
     mat-radio-group {
@@ -75,8 +75,8 @@
         }
 
         th, td {
-          border-right: 1px solid $hav-web-neutralgrey;
-          border-bottom: 1px solid $hav-web-neutralgrey;
+          border-right: 1px solid colors.$hav-web-neutralgrey;
+          border-bottom: 1px solid colors.$hav-web-neutralgrey;
 
           &:last-child {
             border-right: none;
@@ -98,7 +98,7 @@
 
               &.first-band {
                 padding-top: 0.5rem;
-                border-left: 1px solid $hav-web-neutralgrey;
+                border-left: 1px solid colors.$hav-web-neutralgrey;
 
                 span.symphony-theme {
                   font-family: 'Roboto', sans-serif;
@@ -108,7 +108,7 @@
                   letter-spacing: 0.04rem;
                   font-weight: 300;
                   white-space: nowrap;
-                  color: $medium-gray;
+                  color: colors.$medium-gray;
                 }
               }
             }
@@ -144,9 +144,9 @@
         }
 
         tr:nth-child(2n) {
-          background-color: $lighter-gray;
+          background-color: colors.$lighter-gray;
           th {
-            background-color: $lighter-gray;
+            background-color: colors.$lighter-gray;
           }
         }
 
@@ -155,7 +155,7 @@
           left: 0;
           z-index: 10;
           position: sticky;
-          border-right: 1px solid $hav-web-neutralgrey;
+          border-right: 1px solid colors.$hav-web-neutralgrey;
 
           span.band-name {
             display: block;
@@ -164,7 +164,7 @@
         }
 
         &.global {
-          color: $medium-gray;
+          color: colors.$medium-gray;
         }
       }
 
@@ -181,7 +181,7 @@
 
     &.editing table {
       td ::ng-deep app-overview-inline-band-change:not(.cell-editing) {
-        color: $hav-darkgrey;
+        color: colors.$hav-darkgrey;
 
         app-icon-button {
           display: none;

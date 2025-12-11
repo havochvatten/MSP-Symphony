@@ -1,6 +1,6 @@
-@import 'src/styles/constants';
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
+@use 'src/styles/constants' as cns;
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
 
 $thumb-size: 12px;
 
@@ -8,7 +8,7 @@ $thumb-size: 12px;
   width: $thumb-size;
   height: $thumb-size;
   border-radius: 50%;
-  background: $hav-turquoise;
+  background: colors.$hav-turquoise;
 }
 
 :host {
@@ -39,11 +39,11 @@ $thumb-size: 12px;
 
   :disabled {
     &::-webkit-slider-thumb {
-      background: $hav-darkgrey
+      background: colors.$hav-darkgrey
     }
 
     &::-moz-range-thumb {
-      background: $hav-darkgrey
+      background: colors.$hav-darkgrey
     }
   }
 

@@ -1,11 +1,11 @@
-@import 'src/styles/constants';
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
+@use 'src/styles/constants' as cns;
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
 
 :host {
-  background: $hav-darkcoldgrey;
+  background: colors.$hav-darkcoldgrey;
   position: relative;
-  height: calc(100vh - #{$header-height});
+  height: calc(100vh - #{cns.$header-height});
 
   #map {
     height: 100%;
@@ -88,7 +88,7 @@
       margin: 0.3rem;
 
       &:hover {
-        background-color: $hav-lightturquoise;
+        background-color: colors.$hav-lightturquoise;
         color: white;
       }
     }

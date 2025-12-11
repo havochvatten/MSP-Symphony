@@ -1,4 +1,4 @@
-@import 'src/styles/hav-colors';
+@use 'src/styles/hav-colors' as colors;
 
 :host {
   display: flex;
@@ -43,7 +43,7 @@
   .areas-notice {
     font-size: 1.2rem;
     line-height: 2rem;
-    color: $hav-darkergrey;
+    color: colors.$hav-darkergrey;
   }
 
   .button-pane button:first-child {

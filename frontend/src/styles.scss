@@ -2,6 +2,10 @@
 @use '@angular/material' as mat;
 @use 'styles/mat-hav-palette' as mat-hav;
 
+@use 'styles/mat-hav-component.scss';
+@use "styles/dialog.scss";
+@use "styles/list-actions.scss";
+
 @include mat.all-component-typographies();
 @include mat.elevation-classes();
 @include mat.app-background();
@@ -165,10 +169,6 @@ html {
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 button { all: unset; }
-
-@import 'styles/mat-hav-component.scss';
-@import "styles/dialog.scss";
-@import "styles/list-actions.scss";
 
 span.timestamp {
   text-align: left;

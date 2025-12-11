@@ -1,4 +1,4 @@
-@import "hav-colors";
+@use "hav-colors" as colors;
 
 button.mdc-button.mat-mdc-unelevated-button,
 button.mdc-button.mat-mdc-unelevated-button.mat-primary {
@@ -8,8 +8,8 @@ button.mdc-button.mat-mdc-unelevated-button.mat-primary {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: .5px;
-  border: 2px solid $primary-border-blue;
-  background-color: $hav-turquoise;
+  border: 2px solid colors.$primary-border-blue;
+  background-color: colors.$hav-turquoise;
   border-radius: 2px;
   padding: 0 16px;
   margin-left: 1rem;
@@ -18,27 +18,27 @@ button.mdc-button.mat-mdc-unelevated-button.mat-primary {
     border-color: white;
 
     &.mat-warn {
-      background-color: $alert-disabled-bg-red;
-      color: $alert-disabled-text-red;
+      background-color: colors.$alert-disabled-bg-red;
+      color: colors.$alert-disabled-text-red;
     }
 
     &:hover {
-      background-color: $primary-disabled-bg-grey;
-      color: $primary-disabled-text-blue !important;
+      background-color: colors.$primary-disabled-bg-grey;
+      color: colors.$primary-disabled-text-blue !important;
       &.mat-warn {
-        color: $alert-disabled-text-red !important;
+        color: colors.$alert-disabled-text-red !important;
       }
     }
   }
 
   &.mat-warn {
-    background-color: $alert-bg-red;
-    border-color: $alert-bg-red;
+    background-color: colors.$alert-bg-red;
+    border-color: colors.$alert-bg-red;
   }
 
   &.green {
-    background-color: $success-bg-green;
-    border-color: $success-bg-green;
+    background-color: colors.$success-bg-green;
+    border-color: colors.$success-bg-green;
   }
 
   &.basic, &.basic.secondary {
@@ -46,52 +46,52 @@ button.mdc-button.mat-mdc-unelevated-button.mat-primary {
   }
 
   &:hover, &.secondary:hover, &.basic:hover {
-    background-color: $primary-hover-bg-blue;
-    border-color: $primary-border-blue;
+    background-color: colors.$primary-hover-bg-blue;
+    border-color: colors.$primary-border-blue;
     color: white !important;
 
     &.mat-warn:not([disabled]) {
-      background-color: $alert-hover-bg-red;
-      border-color: $alert-hover-bg-red;
+      background-color: colors.$alert-hover-bg-red;
+      border-color: colors.$alert-hover-bg-red;
     }
 
     &.green:not([disabled]) {
-      background-color: $success-hover-bg-green;
-      border-color: $success-hover-bg-green;
+      background-color: colors.$success-hover-bg-green;
+      border-color: colors.$success-hover-bg-green;
     }
   }
 
   &.primary-alt {
-    background-color: $hav-ext-emerald;
+    background-color: colors.$hav-ext-emerald;
     color: white;
-    border-color: $hav-ext-emerald;
+    border-color: colors.$hav-ext-emerald;
 
     &:hover {
-      background-color: $hav-ext-emerald-hover;
-      border-color: $hav-ext-emerald-hover;
+      background-color: colors.$hav-ext-emerald-hover;
+      border-color: colors.$hav-ext-emerald-hover;
       color: white !important;
     }
   }
 
   &.secondary, &.basic {
     background-color: white;
-    color: $primary-border-blue;
+    color: colors.$primary-border-blue;
 
     &.mat-warn {
-      border-color: $alert-bg-red;
-      color: $alert-bg-red;
+      border-color: colors.$alert-bg-red;
+      color: colors.$alert-bg-red;
     }
   }
 
   &[disabled], &[disabled]:hover {
-    background-color: $primary-disabled-bg-grey !important;
-    color: $primary-disabled-text-blue !important;
+    background-color: colors.$primary-disabled-bg-grey !important;
+    color: colors.$primary-disabled-text-blue !important;
   }
 
   &.secondary[disabled], &.secondary[disabled]:hover {
     background-color: white !important;
-    border-color: $primary-disabled-text-grey;
-    color: $primary-disabled-text-grey !important;
+    border-color: colors.$primary-disabled-text-grey;
+    color: colors.$primary-disabled-text-grey !important;
   }
 }
 
@@ -100,7 +100,7 @@ mat-select,
   display: flex !important;
   height: 44px;
   align-items: center;
-  border: 2px solid $primary-bg-blue;
+  border: 2px solid colors.$primary-bg-blue;
   padding-left: 7px;
   font-size: 15px;
   color: black;
@@ -113,11 +113,11 @@ mat-select,
   }
 
   &.mat-mdc-select-disabled {
-    border-color: $primary-disabled-border-grey;
+    border-color: colors.$primary-disabled-border-grey;
 
     .mat-mdc-select-value {
       .mat-mdc-select-placeholder {
-        color: $primary-disabled-text-blue;
+        color: colors.$primary-disabled-text-blue;
       }
     }
   }
@@ -187,9 +187,9 @@ mat-checkbox.mat-mdc-checkbox {
   &.mat-mdc-checkbox-checked, &.mat-mdc-checkbox-indeterminate {
     .mdc-form-field {
       .mdc-checkbox .mdc-checkbox__native-control~.mdc-checkbox__background {
-        color: $hav-turquoise;
-        background-color: $hav-turquoise;
-        border-color: $hav-turquoise;
+        color: colors.$hav-turquoise;
+        background-color: colors.$hav-turquoise;
+        border-color: colors.$hav-turquoise;
         svg.mdc-checkbox__checkmark {
           color: white;
         }
@@ -220,7 +220,7 @@ mat-checkbox.mat-mdc-checkbox {
       }
 
       label.mdc-label {
-        color: $primary-disabled-text-grey;
+        color: colors.$primary-disabled-text-grey;
       }
     }
   }
@@ -247,7 +247,7 @@ mat-radio-button {
     .mdc-form-field {
       .mdc-radio {
         .mdc-radio__background {
-          color: $hav-turquoise;
+          color: colors.$hav-turquoise;
         }
       }
     }
@@ -264,21 +264,21 @@ mat-radio-button {
 .ddPanel {
   margin: 14px 0 0 -8px;
   min-width: calc(100% + 8px) !important;
-  border: 1px solid $primary-bg-blue;
+  border: 1px solid colors.$primary-bg-blue;
   border-radius: 0 !important;
 
   mat-option.mat-mdc-option {
     &.mat-active {
       background: white !important;
       .mat-option-text {
-        color: $primary-bg-blue;
+        color: colors.$primary-bg-blue;
         font-weight: 600;
       }
     }
 
     &:not(.mat-active):hover {
       .mat-option-text {
-        color: $primary-bg-blue;
+        color: colors.$primary-bg-blue;
       }
     }
   }
@@ -303,12 +303,12 @@ mat-radio-button {
   .mdc-radio.mdc-radio--disabled {
     .mdc-radio__background {
       .mdc-radio__outer-circle, .mdc-radio_inner_circle {
-        border-color: $primary-disabled-text-grey !important;
+        border-color: colors.$primary-disabled-text-grey !important;
       }
     }
 
     & + label {
-      color: $primary-disabled-border-grey
+      color: colors.$primary-disabled-border-grey
     }
   }
 }
@@ -329,5 +329,5 @@ input[type='number'].percentage {
 
 /* Material progress spinner */
 .mat-mdc-progress-spinner circle {
-  stroke: $hav-turquoise;
+  stroke: colors.$hav-turquoise;
 }

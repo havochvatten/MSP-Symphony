@@ -1,6 +1,6 @@
-@import 'src/styles/constants';
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
+@use 'src/styles/constants' as cns;
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
 
 :host {
   .title-container {
@@ -24,7 +24,7 @@
       top: 6px;
       font-size: 1.6rem;
       margin-right: 1rem;
-      color: $hav-turquoise;
+      color: colors.$hav-turquoise;
 
       &:hover {
         cursor: pointer;
@@ -83,11 +83,11 @@
       }
 
       &[data-visible='true'] .group-title .visible {
-        color: $hav-turquoise;
+        color: colors.$hav-turquoise;
       }
 
       .group-title .title-text.selected {
-        color: $hav-turquoise;
+        color: colors.$hav-turquoise;
       }
 
       &:hover {
@@ -109,7 +109,7 @@
           background-position: 0 0;
 
           &[data-selected='true'] {
-            color: $hav-turquoise;
+            color: colors.$hav-turquoise;
           }
 
           &:last-child {
@@ -117,7 +117,7 @@
           }
 
           &:hover {
-            background-color: $hav-coldgrey;
+            background-color: colors.$hav-coldgrey;
           }
         }
       }
@@ -128,7 +128,7 @@
     font-size: 1.4rem;
     &[data-active='true'] {
       box-shadow: 0 0 3px #999;
-      background-color: $hav-turquoise;
+      background-color: colors.$hav-turquoise;
       ::ng-deep app-icon {
         color: white;
       }
@@ -150,10 +150,10 @@
         border-bottom: 1px solid #ddd;
       }
       &:hover {
-        background-color: $hav-turquoise;
+        background-color: colors.$hav-turquoise;
         color: white;
         &.delete {
-          background-color: $hav-warning;
+          background-color: colors.$hav-warning;
         }
       }
     }

@@ -1,6 +1,6 @@
-@import 'src/styles/constants';
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
+@use 'src/styles/constants' as cns;
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
 
 $border: 1px solid 1px solid #979797;
 $icon-margin: 1rem;
@@ -55,13 +55,13 @@ $shadow: rgba(0, 0, 0, 0.5);
 
         &.for-panel {
           color: white;
-          background-color: $hav-turquoise;
+          background-color: colors.$hav-turquoise;
           transition: width ease-in-out 200ms;
 
           &.active, &:hover {
             width: 4.4rem;
             background-color: white;
-            color: $hav-turquoise;
+            color: colors.$hav-turquoise;
           }
 
           &:not(:last-child) {
@@ -75,14 +75,14 @@ $shadow: rgba(0, 0, 0, 0.5);
 
         &.for-dialog {
           background-color: white;
-          color: $hav-lightturquoise;
+          color: colors.$hav-lightturquoise;
           border-radius: 4px;
           margin-left: 0.4rem;
           cursor: pointer;
           opacity: 0.8;
 
           &:hover {
-            color: $hav-turquoise;
+            color: colors.$hav-turquoise;
             opacity: 1;
           }
         }

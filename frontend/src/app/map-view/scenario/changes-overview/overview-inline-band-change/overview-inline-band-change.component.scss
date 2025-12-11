@@ -1,4 +1,4 @@
-@import 'src/styles/hav-colors';
+@use 'src/styles/hav-colors' as colors;
 
 :host {
    display: block;
@@ -103,11 +103,11 @@
         }
 
         &.change button {
-          color: $hav-success;
+          color: colors.$hav-success;
         }
 
         &.discard button {
-          color: $hav-warning;
+          color: colors.$hav-warning;
         }
       }
     }

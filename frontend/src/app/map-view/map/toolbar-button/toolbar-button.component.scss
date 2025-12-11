@@ -1,6 +1,6 @@
-@import 'src/styles/constants';
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
+@use 'src/styles/constants' as cns;
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
 
 :host {
   min-height: 4.4rem;
@@ -17,7 +17,7 @@
     height: 4.4rem;
     width: 4.4rem;
     outline: none;
-    background-color: $hav-turquoise;
+    background-color: colors.$hav-turquoise;
     border-radius: 50%;
     border: none;
     box-sizing: border-box;
@@ -42,7 +42,7 @@
 
       &:first-child > button {
         border-radius: 50% 50% 0 0;
-        border-bottom: 1px solid $hav-lightturquoise;
+        border-bottom: 1px solid colors.$hav-lightturquoise;
       }
 
       &:last-child > button {
@@ -53,11 +53,11 @@
 
   button {
     &:hover {
-      background-color: $hav-darkturquoise;
+      background-color: colors.$hav-darkturquoise;
       cursor: pointer;
     }
     &:active, &[data-active="true"] {
-      background-color: $hav-black;
+      background-color: colors.$hav-black;
     }
     &:disabled {
       background-color: #005E871A;

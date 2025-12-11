@@ -1,5 +1,5 @@
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
 
 :host {
   display: block;
@@ -21,14 +21,14 @@
 
       input {
         border-radius: 4px;
-        border: 1px solid $hav-darkcoldgrey;
+        border: 1px solid colors.$hav-darkcoldgrey;
         padding: 0.4rem 0.8rem;
         font-size: 2rem;
       }
 
       button {
         margin-left: 1rem;
-        color: $hav-turquoise;
+        color: colors.$hav-turquoise;
         background: none;
         outline: none;
         border: none;
@@ -73,21 +73,21 @@
         background-color: white;
         th[scope='row'], td {
           background-color: white;
-          border-color: white $light-gray $light-gray white;
+          border-color: white colors.$light-gray colors.$light-gray white;
         }
         th[scope='row']{
-          border-right-color: $darker-gray;
+          border-right-color: colors.$darker-gray;
         }
       }
 
       &:nth-child(even) {
-        background-color: $hav-coldgrey;
+        background-color: colors.$hav-coldgrey;
         th[scope='row'], th.empty, td {
-          background-color: $hav-coldgrey;
-          border-color: $hav-coldgrey $light-gray $light-gray $hav-coldgrey;
+          background-color: colors.$hav-coldgrey;
+          border-color: colors.$hav-coldgrey colors.$light-gray colors.$light-gray colors.$hav-coldgrey;
         }
         th[scope='row'] {
-          border-right-color: $darker-gray;
+          border-right-color: colors.$darker-gray;
         }
       }
 
@@ -109,13 +109,13 @@
           overflow: hidden;
           text-overflow: ellipsis;
           border: 1px solid;
-          border-color: white $light-gray $light-gray white;
+          border-color: white colors.$light-gray colors.$light-gray white;
         }
 
         &[scope='col'] {
           top: 0;
           background-color: white;
-          border-color: white $light-gray $darker-gray white;
+          border-color: white colors.$light-gray colors.$darker-gray white;
         }
       }
 
