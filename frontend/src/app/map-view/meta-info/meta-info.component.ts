@@ -8,7 +8,8 @@ import { environment as env } from '@src/environments/environment';
 @Component({
   selector: 'app-meta-info',
   templateUrl: './meta-info.component.html',
-  styleUrls: ['./meta-info.component.scss']
+  styleUrls: ['./meta-info.component.scss'],
+  standalone: false
 })
 export class MetaInfoComponent implements AfterViewInit {
 

@@ -18,7 +18,8 @@ import { Subscription } from "rxjs";
 @Component({
   selector: 'app-matrix-selection',
   templateUrl: './matrix-selection.component.html',
-  styleUrls: ['./matrix-selection.component.scss']
+  styleUrls: ['./matrix-selection.component.scss'],
+  standalone: false
 })
 export class MatrixSelectionComponent implements OnInit, OnDestroy {
   matrixOption: MatrixOption = 'STANDARD';

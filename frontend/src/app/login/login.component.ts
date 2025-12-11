@@ -10,12 +10,14 @@ import buildInfo from '@src/build-info';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
+  standalone: false
 })
 export class LoginComponent implements OnInit, OnDestroy {
   loginForm = this.fb.nonNullable.group({
     username: ['', Validators.required],
-    password: ['', Validators.required]
+    password: ['', Validators.required],
+    standalone: false
   });
   errorMessage?: string;
   loading?: Observable<boolean>;

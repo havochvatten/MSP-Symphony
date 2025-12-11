@@ -7,7 +7,8 @@ import { ScenarioSplitDialogResult, ScenarioSplitOptions } from "@data/scenario/
 @Component({
   selector: 'app-split-scenario-settings',
   templateUrl: './split-scenario-settings.component.html',
-  styleUrls: ['./split-scenario-settings.component.scss']
+  styleUrls: ['./split-scenario-settings.component.scss'],
+  standalone: false
 })
 export class SplitScenarioSettingsComponent {
 

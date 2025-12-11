@@ -18,7 +18,8 @@ import { MultiModeListable } from "@shared/multi-tools/multi-mode-listable";
 @Component({
   selector: 'app-compound-comparison-list-dialog',
   templateUrl: './compound-comparison-list-dialog.component.html',
-  styleUrls: ['./compound-comparison-list-dialog.component.scss']
+  styleUrls: ['./compound-comparison-list-dialog.component.scss'],
+  standalone: false
 })
 export class CompoundComparisonListDialogComponent extends MultiModeListable {
 

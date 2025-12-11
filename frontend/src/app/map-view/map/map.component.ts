@@ -50,7 +50,8 @@ import {
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
-  styleUrls: ['./map.component.scss']
+  styleUrls: ['./map.component.scss'],
+  standalone: false
 })
 export class MapComponent implements AfterViewInit, OnDestroy {
   @Input() mapCenter?: Coordinate;

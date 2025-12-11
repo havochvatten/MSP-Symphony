@@ -5,7 +5,8 @@ import { DialogConfig } from '@shared/dialog/dialog-config';
 @Component({
   selector: 'app-rename-user-area-modal',
   templateUrl: './rename-item-modal.component.html',
-  styleUrls: ['./rename-item-modal.component.scss']
+  styleUrls: ['./rename-item-modal.component.scss'],
+  standalone: false
 })
 export class RenameItemModalComponent {
   headerText: string;

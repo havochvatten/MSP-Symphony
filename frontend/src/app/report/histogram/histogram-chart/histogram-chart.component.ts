@@ -5,7 +5,8 @@ import { formatPercentage } from "@src/app/shared/common.util";
 @Component({
   selector: 'app-histogram-chart',
   templateUrl: './histogram-chart.component.html',
-  styleUrls: ['./histogram-chart.component.scss']
+  styleUrls: ['./histogram-chart.component.scss'],
+  standalone: false
 })
 
 export class HistogramChartComponent implements OnInit, OnChanges {

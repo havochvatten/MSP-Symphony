@@ -5,7 +5,8 @@ import { colors } from '@shared/pressure-color-scale/pressure-color-scale.compon
 @Component({
   selector: 'app-highest-impacts',
   templateUrl: './highest-impacts.component.html',
-  styleUrls: ['./highest-impacts.component.scss']
+  styleUrls: ['./highest-impacts.component.scss'],
+  standalone: false
 })
 export class HighestImpactsComponent implements OnChanges {
   @Input() title?: string;

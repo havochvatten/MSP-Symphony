@@ -16,7 +16,8 @@ import { GeoJSON } from "ol/format";
 @Component({
   selector: 'app-add-scenario-areas',
   templateUrl: './add-scenario-areas.component.html',
-  styleUrls: ['./add-scenario-areas.component.scss']
+  styleUrls: ['./add-scenario-areas.component.scss'],
+  standalone: false
 })
 export class AddScenarioAreasComponent implements OnDestroy {
   public selectedAreas: Area[] = [];

@@ -12,7 +12,8 @@ export const DEFAULT_OPTIONS: NormalizationOptions = {
 @Component({
   selector: 'app-normalization-selection',
   templateUrl: './normalization-selection.component.html',
-  styleUrls: ['./normalization-selection.component.scss']
+  styleUrls: ['./normalization-selection.component.scss'],
+  standalone: false
 })
 export class NormalizationSelectionComponent implements OnChanges {
   @Input() options: NormalizationOptions = DEFAULT_OPTIONS;

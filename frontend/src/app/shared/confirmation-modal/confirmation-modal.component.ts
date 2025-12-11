@@ -5,7 +5,8 @@ import { DialogConfig } from "@shared/dialog/dialog-config";
 @Component({
   selector: 'app-confirmation-modal',
   templateUrl: './confirmation-modal.component.html',
-  styleUrls: ['./confirmation-modal.component.scss']
+  styleUrls: ['./confirmation-modal.component.scss'],
+  standalone: false
 })
 export class ConfirmationModalComponent  {
 

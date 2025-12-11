@@ -4,7 +4,8 @@ import { getNextSortType, ListItemsSort } from "@data/common/sorting.interfaces"
 @Component({
   selector: 'app-list-filter',
   templateUrl: './list-filter.component.html',
-  styleUrls: ['./list-filter.component.scss']
+  styleUrls: ['./list-filter.component.scss'],
+  standalone: false
 })
 export class ListFilterComponent {
 

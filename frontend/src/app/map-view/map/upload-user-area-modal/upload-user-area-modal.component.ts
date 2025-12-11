@@ -13,7 +13,8 @@ import { ServerError } from "@data/message/message.interfaces";
 @Component({
   selector: 'app-upload-user-area-modal',
   templateUrl: './upload-user-area-modal.component.html',
-  styleUrls: ['./upload-user-area-modal.component.scss']
+  styleUrls: ['./upload-user-area-modal.component.scss'],
+  standalone: false
 })
 export class UploadUserAreaModalComponent {
   readonly requiredFileType: string;

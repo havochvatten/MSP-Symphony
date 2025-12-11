@@ -10,7 +10,7 @@ import { tap, take, switchMap, catchError } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class AuthenticationGuard  {
-  constructor(private store: Store<State>) {}
+  constructor(private readonly store: Store<State>) {}
 
   getFromStoreOrAPI(): Observable<unknown> {
     return this.store.select(UserSelectors.selectIsLoggedIn).pipe(

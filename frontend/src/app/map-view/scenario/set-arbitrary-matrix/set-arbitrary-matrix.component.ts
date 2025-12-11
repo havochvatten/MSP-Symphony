@@ -11,7 +11,8 @@ import { AreaSelectors } from "@data/area";
 @Component({
   selector: 'app-set-arbitrary-matrix',
   templateUrl: './set-arbitrary-matrix.component.html',
-  styleUrls: ['./set-arbitrary-matrix.component.scss']
+  styleUrls: ['./set-arbitrary-matrix.component.scss'],
+  standalone: false
 })
 export class SetArbitraryMatrixComponent {
   matrices: MatrixRef[];

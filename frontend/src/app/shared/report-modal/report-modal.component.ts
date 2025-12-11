@@ -4,7 +4,7 @@ import { DialogRef } from '../dialog/dialog-ref';
 import { environment as env } from "@src/environments/environment";
 import * as d3 from "d3";
 
-@Directive()
+@Directive({ standalone: false })
 export abstract class ReportModalComponent implements OnDestroy {
   safeUrl: SafeResourceUrl;
   apiUrl: string;

@@ -17,6 +17,7 @@ import { AbstractReport } from "@src/app/report/abstract-report.directive";
   selector: 'app-calculation-report',
   templateUrl: './comparison-report.component.html',
   styleUrls: ['./report.component.scss'],
+  standalone: false
 })
 export class ComparisonReportComponent extends AbstractReport {
   report?: ComparisonReport;

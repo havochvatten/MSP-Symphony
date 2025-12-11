@@ -13,6 +13,7 @@ import * as proj from "ol/proj";
 
 @Directive({
   selector: '[appInlineMap]',
+  standalone: false
 })
 
 export class InlineMapComponent implements OnInit {

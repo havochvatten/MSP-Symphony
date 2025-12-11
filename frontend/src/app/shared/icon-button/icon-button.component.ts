@@ -4,7 +4,8 @@ import { IconType } from '@shared/icon/icon.component';
 @Component({
   selector: 'app-icon-button',
   templateUrl: './icon-button.component.html',
-  styleUrls: ['./icon-button.component.scss']
+  styleUrls: ['./icon-button.component.scss'],
+  standalone: false
 })
 export class IconButtonComponent implements OnInit {
   @Input() disabled = false;

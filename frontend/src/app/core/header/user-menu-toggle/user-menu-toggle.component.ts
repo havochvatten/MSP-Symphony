@@ -4,7 +4,8 @@ import { User } from "@data/user/user.interfaces";
 @Component({
   selector: 'app-user-menu-toggle',
   templateUrl: './user-menu-toggle.component.html',
-  styleUrls: ['./user-menu-toggle.component.scss']
+  styleUrls: ['./user-menu-toggle.component.scss'],
+  standalone: false
 })
 export class UserMenuToggleComponent {
   @Input() user?: User;

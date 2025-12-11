@@ -9,7 +9,8 @@ export interface Option {
 @Component({
   selector: 'app-select',
   templateUrl: './select.component.html',
-  styleUrls: ['./select.component.scss']
+  styleUrls: ['./select.component.scss'],
+  standalone: false
 })
 export class SelectComponent {
   @Input() disabled = false;

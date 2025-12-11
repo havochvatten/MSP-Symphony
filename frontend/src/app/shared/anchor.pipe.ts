@@ -1,6 +1,9 @@
 import { Pipe, PipeTransform } from "@angular/core";
 
-@Pipe({name: 'anchor'})
+@Pipe({
+  name: 'anchor',
+  standalone: false
+})
 export class AnchorPipe implements PipeTransform {
 
   private urlRx = /(https?:\/\/[^ ]*)/g;

@@ -27,7 +27,8 @@ export interface ChartData {
 @Component({
   selector: 'app-pressure-chart',
   templateUrl: './pressure-chart.component.html',
-  styleUrls: ['./pressure-chart.component.scss']
+  styleUrls: ['./pressure-chart.component.scss'],
+  standalone: false
 })
 export class PressureChartComponent implements AfterViewInit {
   @Input() data!: ChartData;

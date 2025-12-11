@@ -25,7 +25,8 @@ import { TranslateService } from "@ngx-translate/core";
 @Component({
   selector: 'app-area-selection',
   templateUrl: './area-selection.component.html',
-  styleUrls: ['./area-selection.component.scss']
+  styleUrls: ['./area-selection.component.scss'],
+  standalone: false
 })
 export class AreaSelectionComponent implements OnChanges {
   @Input() areas?: AllAreas;

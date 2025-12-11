@@ -8,7 +8,8 @@ import { isEmpty } from "@shared/common.util";
 @Component({
   selector: 'app-scenario-changes',
   templateUrl: './scenario-changes.component.html',
-  styleUrls: ['./scenario-changes.component.scss']
+  styleUrls: ['./scenario-changes.component.scss'],
+  standalone: false
 })
 export class ScenarioChangesComponent {
   @Input() name = '';

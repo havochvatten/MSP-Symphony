@@ -43,7 +43,8 @@ function filterCheckBoxGroups(groups: BandGroup[], search: string): BandGroup[] 
 @Component({
   selector: 'app-band-selection',
   templateUrl: './band-selection.component.html',
-  styleUrls: ['./band-selection.component.scss']
+  styleUrls: ['./band-selection.component.scss'],
+  standalone: false
 })
 export class BandSelectionComponent implements OnInit, OnChanges {
   @Input() title?: string;

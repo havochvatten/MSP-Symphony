@@ -11,7 +11,8 @@ import { TranslateService } from "@ngx-translate/core";
 @Component({
   selector: 'app-area-group',
   templateUrl: './area-group.component.html',
-  styleUrls: ['./area-group.component.scss']
+  styleUrls: ['./area-group.component.scss'],
+  standalone: false
 })
 export class AreaGroupComponent extends MultiModeListable {
   @Input() title?: string;
@@ -121,7 +122,8 @@ export class AreaGroupComponent extends MultiModeListable {
       </ul>
     </div>
   `,
-  styleUrls: ['./area-group.component.scss']
+  styleUrls: ['./area-group.component.scss'],
+  standalone: false
 })
 export class EditAreaComponent {
   @Input() deleteUserArea?: () => void;

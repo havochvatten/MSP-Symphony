@@ -12,7 +12,8 @@ import { CalculationActions, CalculationSelectors } from "@data/calculation";
 import { BandGroup } from "@data/metadata/metadata.interfaces";
 
 @Directive({
-  selector: '[appAbstractReport]'
+  selector: '[appAbstractReport]',
+  standalone: false
 })
 export class AbstractReport {
 

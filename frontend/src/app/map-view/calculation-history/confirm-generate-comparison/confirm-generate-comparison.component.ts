@@ -4,7 +4,8 @@ import { DialogRef } from '@src/app/shared/dialog/dialog-ref';
 @Component({
   selector: 'app-confirm-generate-comparison',
   templateUrl: './confirm-generate-comparison.component.html',
-  styleUrls: ['./confirm-generate-comparison.component.scss']
+  styleUrls: ['./confirm-generate-comparison.component.scss'],
+  standalone: false
 })
 export class ConfirmGenerateComparisonComponent {
 

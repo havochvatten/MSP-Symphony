@@ -7,6 +7,7 @@ import { Component } from '@angular/core';
     <ng-content select="app-modal-content"></ng-content>
     <ng-content select="app-modal-footer"></ng-content>
   `,
-  styleUrls: ['./modal.component.scss']
+  styleUrls: ['./modal.component.scss'],
+  standalone: false
 })
 export class ModalComponent {}

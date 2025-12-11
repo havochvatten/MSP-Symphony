@@ -10,7 +10,8 @@ import { Scenario } from "@data/scenario/scenario.interfaces";
 @Component({
   selector: 'app-confirm-reset',
   templateUrl: './confirm-reset.component.html',
-  styleUrls: ['./confirm-reset.component.scss']
+  styleUrls: ['./confirm-reset.component.scss'],
+  standalone: false
 })
 
 export class ConfirmResetComponent implements OnInit {

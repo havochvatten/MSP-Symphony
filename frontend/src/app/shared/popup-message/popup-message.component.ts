@@ -8,7 +8,8 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-popup-message',
   templateUrl: './popup-message.component.html',
-  styleUrls: ['./popup-message.component.scss']
+  styleUrls: ['./popup-message.component.scss'],
+  standalone: false
 })
 export class PopupMessageComponent implements OnInit, OnDestroy {
   messages: Message[] = [];

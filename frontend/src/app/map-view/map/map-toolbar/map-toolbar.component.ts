@@ -7,7 +7,8 @@ import { Subscription } from "rxjs";
 @Component({
   selector: 'app-map-toolbar',
   templateUrl: './map-toolbar.component.html',
-  styleUrls: ['./map-toolbar.component.scss']
+  styleUrls: ['./map-toolbar.component.scss'],
+  standalone: false
 })
 export class MapToolbarComponent implements OnDestroy {
   @Input() hasResults = false;

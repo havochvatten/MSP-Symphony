@@ -7,7 +7,8 @@ import { MatCheckbox, MatCheckboxChange } from "@angular/material/checkbox";
 @Component({
   selector: 'app-copy-scenario',
   templateUrl: './copy-scenario.component.html',
-  styleUrls: ['./copy-scenario.component.scss']
+  styleUrls: ['./copy-scenario.component.scss'],
+  standalone: false
 })
 export class CopyScenarioComponent {
 

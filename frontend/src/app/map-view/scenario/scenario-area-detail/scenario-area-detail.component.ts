@@ -30,7 +30,8 @@ const availableOperationsByValue: Map<CalcOperation, string> = new Map<CalcOpera
   selector: 'app-scenario-area-detail',
   templateUrl: './scenario-area-detail.component.html',
   styleUrls: ['../scenario-detail/scenario-detail.component.scss',
-              './scenario-area-detail.component.scss']
+              './scenario-area-detail.component.scss'],
+  standalone: false
 })
 export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
   env = environment;

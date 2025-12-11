@@ -1,6 +1,9 @@
 import { Pipe, PipeTransform } from "@angular/core";
 
-@Pipe({name: 'ordinal'})
+@Pipe({
+  name: 'ordinal',
+  standalone: false
+})
 export class OrdinalPipe implements PipeTransform {
   transform(value: number, locale: string): string {
     locale = locale ?? '';

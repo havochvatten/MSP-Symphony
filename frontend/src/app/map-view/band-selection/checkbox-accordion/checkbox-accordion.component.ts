@@ -10,7 +10,8 @@ import { MatCheckboxChange } from "@angular/material/checkbox";
 @Component({
   selector: 'app-checkbox-accordion',
   templateUrl: './checkbox-accordion.component.html',
-  styleUrls: ['./checkbox-accordion.component.scss']
+  styleUrls: ['./checkbox-accordion.component.scss'],
+  standalone: false
 })
 export class CheckboxAccordionComponent implements AfterViewInit {
   @Input() title?: string;

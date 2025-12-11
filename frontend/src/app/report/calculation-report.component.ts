@@ -17,7 +17,8 @@ import { AbstractReport } from "@src/app/report/abstract-report.directive";
 @Component({
   selector: 'app-calculation-report',
   templateUrl: './calculation-report.component.html',
-  styleUrls: ['./report.component.scss']
+  styleUrls: ['./report.component.scss'],
+  standalone: false
 })
 export class CalculationReportComponent extends AbstractReport {
 

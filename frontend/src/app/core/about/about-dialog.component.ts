@@ -6,7 +6,8 @@ import attributions from 'attributions';
 @Component({
   selector: 'app-about-dialog-component',
   templateUrl: './about-dialog.component.html',
-  styleUrls: ['./about-dialog.component.scss']
+  styleUrls: ['./about-dialog.component.scss'],
+  standalone: false
 })
 export class AboutDialogComponent {
   protected buildInfo = buildInfo; // make available to template

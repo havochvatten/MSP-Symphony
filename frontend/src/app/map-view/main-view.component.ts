@@ -26,7 +26,8 @@ import { DialogService } from "@shared/dialog/dialog.service";
 @Component({
   selector: 'app-main-view',
   templateUrl: './main-view.component.html',
-  styleUrls: ['./main-view.component.scss']
+  styleUrls: ['./main-view.component.scss'],
+  standalone: false
 })
 export class MainViewComponent implements OnInit, AfterViewInit {
   @ViewChild(MapComponent) map: MapComponent | undefined;

@@ -18,7 +18,8 @@ interface BandShim {
 @Component({
   selector: 'app-changes-overview',
   templateUrl: './changes-overview.component.html',
-  styleUrls: ['./changes-overview.component.scss']
+  styleUrls: ['./changes-overview.component.scss'],
+  standalone: false
 })
 export class ChangesOverviewComponent implements OnInit {
 

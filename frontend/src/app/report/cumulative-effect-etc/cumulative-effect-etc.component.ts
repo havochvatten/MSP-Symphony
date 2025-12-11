@@ -8,7 +8,8 @@ import { formatPercentage } from "@src/app/shared/common.util";
 @Component({
   selector: 'app-cumulative-effect-etc',
   templateUrl: './cumulative-effect-etc.component.html',
-  styleUrls: ['./cumulative-effect-etc.component.scss']
+  styleUrls: ['./cumulative-effect-etc.component.scss'],
+  standalone: false
 })
 export class CumulativeEffectEtcComponent implements OnInit {
   @Input() reports?: Report[];

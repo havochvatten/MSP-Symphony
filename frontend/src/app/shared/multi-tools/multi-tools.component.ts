@@ -4,7 +4,8 @@ import { MultiActionButtonComponent } from "@shared/multi-action-button/multi-ac
 @Component({
   selector: 'app-multi-tools',
   templateUrl: './multi-tools.component.html',
-  styleUrls: ['./multi-tools.component.scss']
+  styleUrls: ['./multi-tools.component.scss'],
+  standalone: false
 })
 export class MultiToolsComponent implements AfterContentInit {
 

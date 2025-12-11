@@ -17,7 +17,8 @@ import { debounceTime, map } from "rxjs/operators";
 @Component({
   selector: 'app-eco-slider',
   templateUrl: './eco-slider.component.html',
-  styleUrls: ['./eco-slider.component.scss']
+  styleUrls: ['./eco-slider.component.scss'],
+  standalone: false
 })
 export class EcoSliderComponent implements  OnChanges, AfterViewInit {
   @Input() multiplier!: number;

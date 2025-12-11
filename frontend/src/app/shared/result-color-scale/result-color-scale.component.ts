@@ -4,7 +4,8 @@ import { LegendColor } from '@data/calculation/calculation.interfaces';
 @Component({
   selector: 'app-result-color-scale',
   templateUrl: './result-color-scale.component.html',
-  styleUrls: ['./result-color-scale.component.scss']
+  styleUrls: ['./result-color-scale.component.scss'],
+  standalone: false
 })
 export class ResultColorScaleComponent {
   @Input() locale = 'en';

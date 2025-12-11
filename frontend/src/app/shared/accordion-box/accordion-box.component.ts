@@ -3,7 +3,8 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'app-accordion-box',
   templateUrl: './accordion-box.component.html',
-  styleUrls: ['./accordion-box.component.scss']
+  styleUrls: ['./accordion-box.component.scss'],
+  standalone: false
 })
 export class AccordionBoxComponent {
   @Input() open = false;
@@ -17,12 +18,14 @@ export class AccordionBoxComponent {
 
 @Component({
   selector: 'app-accordion-box-header',
-  template: `<ng-content></ng-content>`
+  template: `<ng-content></ng-content>`,
+  standalone: false
 })
 export class AccordionBoxHeaderComponent {}
 
 @Component({
   selector: 'app-accordion-box-content',
-  template: `<ng-content></ng-content>`
+  template: `<ng-content></ng-content>`,
+  standalone: false
 })
 export class AccordionBoxContentComponent {}

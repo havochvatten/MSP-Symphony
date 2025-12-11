@@ -23,7 +23,8 @@ import { MultiModeListable } from "@shared/multi-tools/multi-mode-listable";
 @Component({
   selector: 'app-history',
   templateUrl: './calculation-history.component.html',
-  styleUrls: ['./calculation-history.component.scss']
+  styleUrls: ['./calculation-history.component.scss'],
+  standalone: false
 })
 export class CalculationHistoryComponent extends MultiModeListable implements OnInit, OnDestroy {
   calculations$ = this.store.select(CalculationSelectors.selectCalculations);

@@ -17,7 +17,8 @@ interface NamedObject {
 @Component({
   selector: 'app-matrix-table',
   templateUrl: './matrix-table.component.html',
-  styleUrls: ['./matrix-table.component.scss']
+  styleUrls: ['./matrix-table.component.scss'],
+  standalone: false
 })
 export class MatrixTableComponent {
   area: string;

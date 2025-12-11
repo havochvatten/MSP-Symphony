@@ -6,11 +6,12 @@ import { IconType } from '@shared/icon/icon.component';
   selector: 'app-tab',
   template: `
     <ng-content *ngIf="active"></ng-content>
-  `
+  `,
+  standalone: false
 })
 export class TabComponent {
   @Input() title?: string;
   @Input() icon: IconType = 'info-circle';
   @Input() id: string = uuid();
-  active = false;
+  active = false
 }

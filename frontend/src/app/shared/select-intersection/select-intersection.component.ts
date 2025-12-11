@@ -9,7 +9,8 @@ import { GeoJSON } from "ol/format";
 @Component({
   selector: 'app-select-intersection',
   templateUrl: './select-intersection.component.html',
-  styleUrls: ['./select-intersection.component.scss']
+  styleUrls: ['./select-intersection.component.scss'],
+  standalone: false
 })
 export class SelectIntersectionComponent {
 

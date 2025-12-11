@@ -14,7 +14,8 @@ import { DialogService } from "@shared/dialog/dialog.service";
 @Component({
   selector: 'app-batch-progress-display',
   templateUrl: './batch-progress.component.html',
-  styleUrls: ['./batch-progress.component.scss']
+  styleUrls: ['./batch-progress.component.scss'],
+  standalone: false
 })
 export class BatchProgressComponent {
 

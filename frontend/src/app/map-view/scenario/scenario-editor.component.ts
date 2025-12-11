@@ -17,6 +17,7 @@ import { BandChange } from "@data/metadata/metadata.interfaces";
 @Component({
   selector: 'app-scenario-editor',
   templateUrl: './scenario-editor.component.html',
+  standalone: false
 })
 export class ScenarioEditorComponent {
   activeScenario?: Scenario;

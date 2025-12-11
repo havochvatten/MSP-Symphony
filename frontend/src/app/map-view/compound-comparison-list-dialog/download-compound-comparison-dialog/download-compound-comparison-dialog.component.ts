@@ -7,7 +7,8 @@ import { MatRadioChange } from "@angular/material/radio";
 @Component({
   selector: 'app-download-compound-comparison-dialog',
   templateUrl: './download-compound-comparison-dialog.component.html',
-  styleUrls: ['./download-compound-comparison-dialog.component.scss']
+  styleUrls: ['./download-compound-comparison-dialog.component.scss'],
+  standalone: false
 })
 export class DownloadCompoundComparisonDialogComponent {
 

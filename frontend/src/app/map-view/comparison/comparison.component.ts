@@ -20,7 +20,8 @@ enum ComparisonScaleOptions { CONSTANT, DYNAMIC }
 @Component({
   selector: 'app-comparison',
   templateUrl: './comparison.component.html',
-  styleUrls: ['./comparison.component.scss']
+  styleUrls: ['./comparison.component.scss'],
+  standalone: false
 })
 export class ComparisonComponent implements AfterViewInit {
   calculations$?: Observable<CalculationSlice[]>;

@@ -5,7 +5,8 @@ import { TranslateService } from "@ngx-translate/core";
 @Component({
   selector: 'app-change-language-dialog',
   templateUrl: './change-language-dialog.component.html',
-  styleUrls: ['./change-language-dialog.component.scss']
+  styleUrls: ['./change-language-dialog.component.scss'],
+  standalone: false
 })
 export class ChangeLanguageDialogComponent {
 

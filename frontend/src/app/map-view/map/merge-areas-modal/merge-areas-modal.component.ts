@@ -7,7 +7,8 @@ import { DialogConfig } from "@shared/dialog/dialog-config";
   selector: 'app-merge-areas-modal',
   templateUrl: './merge-areas-modal.component.html',
   styleUrls: ['../../../shared/select-intersection/select-intersection.component.scss',
-              './merge-areas-modal.component.scss']
+              './merge-areas-modal.component.scss'],
+  standalone: false
 })
 export class MergeAreasModalComponent extends SelectIntersectionComponent {
 

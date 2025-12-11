@@ -16,7 +16,8 @@ import { MetadataSelectors } from "@data/metadata";
 @Component({
   selector: 'app-slider-controls',
   templateUrl: './slider-controls.component.html',
-  styleUrls: ['./slider-controls.component.scss']
+  styleUrls: ['./slider-controls.component.scss'],
+  standalone: false
 })
 export class SliderControlsComponent implements OnDestroy, OnInit {
   open = false;

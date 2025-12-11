@@ -20,7 +20,8 @@ interface ScenarioWithChanges {
 @Component({
   selector: 'app-transfer-changes',
   templateUrl: './transfer-changes.component.html',
-  styleUrls: ['./transfer-changes.component.scss']
+  styleUrls: ['./transfer-changes.component.scss'],
+  standalone: false
 })
 export class TransferChangesComponent {
 

@@ -21,7 +21,8 @@ import { MultiModeListable } from "@shared/multi-tools/multi-mode-listable";
 @Component({
     selector: 'app-scenario-list',
     templateUrl: './scenario-list.component.html',
-    styleUrls: ['./scenario-list.component.scss']
+    styleUrls: ['./scenario-list.component.scss'],
+    standalone: false
 })
 export class ScenarioListComponent extends MultiModeListable implements OnDestroy {
 

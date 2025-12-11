@@ -9,7 +9,8 @@ import { convertMultiplierToPercent } from "@data/metadata/metadata.selectors";
 @Component({
   selector: 'app-overview-inline-band-change',
   templateUrl: './overview-inline-band-change.component.html',
-  styleUrls: ['./overview-inline-band-change.component.scss']
+  styleUrls: ['./overview-inline-band-change.component.scss'],
+  standalone: false
 })
 export class OverviewInlineBandChangeComponent implements OnInit {
 

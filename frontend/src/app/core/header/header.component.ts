@@ -40,7 +40,8 @@ type OpenState = 'MAIN' | 'USER' | 'NONE';
         )
       ])
     ])
-  ]
+  ],
+  standalone: false
 })
 export class HeaderComponent implements OnInit {
   @Input() title: string | undefined;

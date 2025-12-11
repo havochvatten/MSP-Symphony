@@ -4,7 +4,8 @@ import { DialogRef } from '@shared/dialog/dialog-ref';
 @Component({
   selector: 'app-create-user-area-modal',
   templateUrl: './create-user-area-modal.component.html',
-  styleUrls: ['./create-user-area-modal.component.scss']
+  styleUrls: ['./create-user-area-modal.component.scss'],
+  standalone: false
 })
 export class CreateUserAreaModalComponent {
   areaName = '';

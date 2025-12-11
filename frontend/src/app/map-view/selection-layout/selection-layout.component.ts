@@ -5,7 +5,8 @@ import { ConfirmResetComponent } from "@src/app/map-view/confirm-reset/confirm-r
 @Component({
   selector: 'app-selection-layout',
   templateUrl: './selection-layout.component.html',
-  styleUrls: ['./selection-layout.component.scss']
+  styleUrls: ['./selection-layout.component.scss'],
+  standalone: false
 })
 export class SelectionLayoutComponent {
   @Input() title?: string;
