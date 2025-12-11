@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { concatLatestFrom } from '@ngrx/operators';
 import { catchError, concatMap, debounceTime, map, mergeMap, skipWhile, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import MetadataService from './metadata.service';
