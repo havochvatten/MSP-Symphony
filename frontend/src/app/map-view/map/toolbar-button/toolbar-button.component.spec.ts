@@ -6,12 +6,13 @@ import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { provideMockStore } from "@ngrx/store/testing";
 import { initialState as scenario } from "@data/scenario/scenario.reducers";
 import { StoreModule } from "@ngrx/store";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('ToolbarButtonComponent', () => {
   let fixture: ComponentFixture<ToolbarButtonComponent>,
       component: ToolbarButtonComponent;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
@@ -19,6 +20,7 @@ describe('ToolbarButtonComponent', () => {
         StoreModule.forRoot({}, {})
       ],
       providers: [
+        provideZonelessChangeDetection(),
         provideMockStore({
           initialState:{
             scenario: scenario,
@@ -31,7 +33,7 @@ describe('ToolbarButtonComponent', () => {
     fixture = TestBed.createComponent(ToolbarButtonComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

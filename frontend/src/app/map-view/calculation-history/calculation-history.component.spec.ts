@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CalculationHistoryComponent } from './calculation-history.component';
 import { provideMockStore } from '@ngrx/store/testing';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
@@ -6,16 +6,18 @@ import { initialState as calculation } from '@data/calculation/calculation.reduc
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { IconComponent } from "@shared/icon/icon.component";
 import { SharedModule } from "@shared/shared.module";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('CalculationHistoryComponent', () => {
   let fixture: ComponentFixture<CalculationHistoryComponent>,
       component: CalculationHistoryComponent;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [CalculationHistoryComponent, IconComponent],
       imports: [TranslationSetupModule, SharedModule],
       providers: [
+        provideZonelessChangeDetection(),
         provideMockStore({
           initialState: {
             metadata: metadata,
@@ -28,7 +30,7 @@ describe('CalculationHistoryComponent', () => {
     fixture = TestBed.createComponent(CalculationHistoryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

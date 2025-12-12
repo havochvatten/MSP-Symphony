@@ -5,12 +5,13 @@ import { DialogConfig } from '@shared/dialog/dialog-config';
 
 import { CreateUserAreaModalComponent } from './create-user-area-modal.component';
 import { provideMockStore } from "@ngrx/store/testing";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('CreateUserAreaModalComponent', () => {
   let fixture: ComponentFixture<CreateUserAreaModalComponent>,
       component: CreateUserAreaModalComponent;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [CreateUserAreaModalComponent],
       imports: [TranslationSetupModule],
@@ -27,13 +28,14 @@ describe('CreateUserAreaModalComponent', () => {
             }
           }
         },
-        provideMockStore({ initialState : { user: {} } })
+        provideMockStore({ initialState : { user: {} } }),
+        provideZonelessChangeDetection()
       ]
     }).compileComponents();
     fixture = TestBed.createComponent(CreateUserAreaModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

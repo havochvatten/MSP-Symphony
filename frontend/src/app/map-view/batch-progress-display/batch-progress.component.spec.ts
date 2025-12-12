@@ -4,6 +4,7 @@ import { BatchProgressComponent } from './batch-progress.component';
 import { StoreModule } from "@ngrx/store";
 import { provideMockStore } from "@ngrx/store/testing";
 import { TranslateModule } from "@ngx-translate/core";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('BatchProgressDisplayComponent', () => {
   let component: BatchProgressComponent;
@@ -16,6 +17,7 @@ describe('BatchProgressDisplayComponent', () => {
         TranslateModule.forRoot()
       ],
       providers: [
+        provideZonelessChangeDetection(),
         provideMockStore({
           initialState: {
             calculation: {

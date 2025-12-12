@@ -1,6 +1,5 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 
 import { ScenarioEditorComponent } from './scenario-editor.component';
 import { SharedModule } from '@shared/shared.module';
@@ -13,18 +12,20 @@ import { ScenarioListComponent } from "@src/app/map-view/scenario/scenario-list/
 import { initialState as metadata } from "@data/metadata/metadata.reducers";
 import { initialState as area } from "@data/area/area.reducers";
 import { initialState as scenario } from "@data/scenario/scenario.reducers";
-import { NO_ERRORS_SCHEMA } from "@angular/core";
+import { provideZonelessChangeDetection } from "@angular/core";
+import { RouterModule } from "@angular/router";
+import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenario-areas/add-scenario-areas.component";
 
 describe('ScenarioEditorComponent', () => {
   let component: ScenarioEditorComponent;
   let fixture: ComponentFixture<ScenarioEditorComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
         TranslationSetupModule,
-        RouterTestingModule,
+        RouterModule.forRoot([]),
         StoreModule.forRoot({},{})
       ],
       declarations: [
@@ -32,7 +33,8 @@ describe('ScenarioEditorComponent', () => {
         SliderControlsComponent,
         EcoSliderComponent,
         MatrixSelectionComponent,
-        ScenarioListComponent
+        ScenarioListComponent,
+        AddScenarioAreasComponent
       ],
       providers: [
         provideMockStore({
@@ -41,14 +43,14 @@ describe('ScenarioEditorComponent', () => {
             metadata: metadata,
             area: area,
             scenario: scenario
-          }})
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
+          }}),
+        provideZonelessChangeDetection()
+      ]
     }).compileComponents();
     fixture = TestBed.createComponent(ScenarioEditorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

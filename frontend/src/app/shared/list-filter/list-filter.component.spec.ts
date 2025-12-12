@@ -4,6 +4,7 @@ import { ListFilterComponent } from './list-filter.component';
 import { TranslationSetupModule } from "@src/app/app-translation-setup.module";
 import { provideMockStore } from "@ngrx/store/testing";
 import { SharedModule } from "@shared/shared.module";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('ListFilterComponent', () => {
   let component: ListFilterComponent;
@@ -16,7 +17,10 @@ describe('ListFilterComponent', () => {
         TranslationSetupModule
       ],
       declarations: [ ListFilterComponent ],
-      providers: [provideMockStore({ initialState : { user: {} } })]
+      providers: [
+        provideMockStore({ initialState : { user: {} } }),
+        provideZonelessChangeDetection()
+      ]
     })
     .compileComponents();
 

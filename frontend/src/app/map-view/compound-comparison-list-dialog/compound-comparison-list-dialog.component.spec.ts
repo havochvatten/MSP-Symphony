@@ -8,6 +8,7 @@ import { SharedModule } from "@shared/shared.module";
 import { initialState as calculation } from '@data/calculation/calculation.reducers';
 
 import { CompoundComparisonListDialogComponent } from './compound-comparison-list-dialog.component';
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('CompoundComparisonListDialogComponent', () => {
   let component: CompoundComparisonListDialogComponent;
@@ -28,7 +29,8 @@ describe('CompoundComparisonListDialogComponent', () => {
           initialState: {
             calculation
           }
-        })
+        }),
+        provideZonelessChangeDetection()
       ],
       declarations: [CompoundComparisonListDialogComponent]
     });

@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ScenarioDetailComponent } from './scenario-detail.component';
 import { StoreModule } from "@ngrx/store";
-import { HttpClientModule } from "@angular/common/http";
+import { provideHttpClient } from "@angular/common/http";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { NormalizationType } from "@data/calculation/calculation.service";
 import { MatRadioModule } from "@angular/material/radio";
@@ -21,15 +21,16 @@ import {
 import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenario-areas/add-scenario-areas.component";
 import { OrdinalPipe } from "@shared/ordinal.pipe";
 import { ChangesListComponent } from "@src/app/map-view/scenario/scenario-detail/changes-list/changes-list.component";
+import { provideZonelessChangeDetection } from "@angular/core";
+import { IconButtonComponent } from "@shared/icon-button/icon-button.component";
 
 describe('ScenarioDetailComponent', () => {
   let component: ScenarioDetailComponent;
   let fixture: ComponentFixture<ScenarioDetailComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpClientModule,
         StoreModule.forRoot({}, {}),
         TranslateModule.forRoot(),
         MatRadioModule
@@ -37,6 +38,7 @@ describe('ScenarioDetailComponent', () => {
       providers: [
         TranslateService,
         OrdinalPipe,
+        provideHttpClient(),
         provideMockStore(
           { initialState: {
               metadata: metadata,
@@ -44,7 +46,8 @@ describe('ScenarioDetailComponent', () => {
               calculation: calculation,
               area: area,
               user: { baseline: undefined }
-            }})
+            }}),
+        provideZonelessChangeDetection()
       ],
       declarations: [
         ScenarioDetailComponent,
@@ -53,7 +56,8 @@ describe('ScenarioDetailComponent', () => {
         AddScenarioAreasComponent,
         ChangesListComponent,
         OrdinalPipe,
-        IconComponent
+        IconComponent,
+        IconButtonComponent
       ]
     })
     .compileComponents();
@@ -74,7 +78,7 @@ describe('ScenarioDetailComponent', () => {
       latestCalculationId: null
     };
     component.ngOnInit();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

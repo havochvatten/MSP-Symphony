@@ -1,9 +1,10 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AboutDialogComponent } from './about-dialog.component';
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { TranslationSetupModule } from "@src/app/app-translation-setup.module";
 import { provideMockStore } from "@ngrx/store/testing";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 class MockDialogRef {
   close = () => {}
@@ -13,7 +14,7 @@ describe('AboutDialogComponentComponent', () => {
   let component: AboutDialogComponent;
   let fixture: ComponentFixture<AboutDialogComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [TranslationSetupModule],
       declarations: [ AboutDialogComponent ],
@@ -21,11 +22,12 @@ describe('AboutDialogComponentComponent', () => {
         { provide: DialogRef, useClass: MockDialogRef },
         provideMockStore({
           initialState : { user: {} }
-        })
+        }),
+        provideZonelessChangeDetection()
       ]
     })
     .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AboutDialogComponent);

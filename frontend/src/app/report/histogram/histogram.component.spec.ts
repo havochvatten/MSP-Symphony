@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HistogramComponent } from './histogram.component';
 import { DecimalPipe } from "@angular/common";
@@ -6,24 +6,29 @@ import { CalculationReportModule } from "@src/app/report/calculation-report.modu
 import { Report } from "@data/calculation/calculation.interfaces";
 import { NormalizationType } from "@data/calculation/calculation.service";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('HistogramComponent', () => {
   let component: HistogramComponent;
   let fixture: ComponentFixture<HistogramComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         CalculationReportModule,
         TranslateModule.forRoot()
       ],
       declarations: [ HistogramComponent ],
-      providers: [ DecimalPipe, TranslateService ]
+      providers: [
+        DecimalPipe,
+        TranslateService,
+        provideZonelessChangeDetection()
+      ]
     })
     .compileComponents();
     fixture = TestBed.createComponent(HistogramComponent);
     component = fixture.componentInstance;
-  }));
+  });
 
   it('should create', () => {
     const report: Report = {

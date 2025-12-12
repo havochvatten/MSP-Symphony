@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { StoreModule } from "@ngrx/store";
 import { provideMockStore } from "@ngrx/store/testing";
-import { HttpClientModule } from "@angular/common/http";
+import { provideHttpClient } from "@angular/common/http";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { OrdinalPipe } from "@shared/ordinal.pipe";
 import { NormalizationType } from "@data/calculation/calculation.service";
@@ -16,16 +16,25 @@ import { initialState as calculation } from '@data/calculation/calculation.reduc
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { initialState as user } from '@data/user/user.reducers';
+import { provideZonelessChangeDetection } from "@angular/core";
+import { MatRadioModule } from "@angular/material/radio";
+import { MatSelectModule } from "@angular/material/select";
 describe('ScenarioAreaDetailComponent', () => {
   let component: ScenarioAreaDetailComponent;
   let fixture: ComponentFixture<ScenarioAreaDetailComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ StoreModule.forRoot({},{}), HttpClientModule, TranslateModule.forRoot() ],
+      imports: [
+        StoreModule.forRoot({},{}),
+        TranslateModule.forRoot() ,
+        MatRadioModule,
+        MatSelectModule
+      ],
       declarations: [ ScenarioAreaDetailComponent, OrdinalPipe,
                       IconComponent, ChangesListComponent, MatrixSelectionComponent ],
       providers: [ OrdinalPipe, TranslateService,
+        provideHttpClient(),
         provideMockStore({
           initialState: {
             calculation,
@@ -33,7 +42,8 @@ describe('ScenarioAreaDetailComponent', () => {
             scenario,
             user
           }
-        })
+        }),
+        provideZonelessChangeDetection()
       ]
     })
     .compileComponents();

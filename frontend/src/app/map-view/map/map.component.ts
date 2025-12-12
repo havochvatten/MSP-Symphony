@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, EventEmitter, HostListener, Input, NgModuleRef, OnDestroy, Output
-} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, HostListener, Input,
+  NgModuleRef, OnDestroy, Output } from '@angular/core';
 import { Coordinate } from 'ol/coordinate';
 import { firstValueFrom, Observable, skipWhile, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';

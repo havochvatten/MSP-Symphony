@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CheckboxAccordionComponent } from './checkbox-accordion.component';
 import {
@@ -12,12 +12,13 @@ import { StoreModule } from "@ngrx/store";
 import { provideMockStore } from "@ngrx/store/testing";
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('CheckboxAccordionComponent', () => {
   let fixture: ComponentFixture<CheckboxAccordionComponent>,
       component: CheckboxAccordionComponent;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         StoreModule.forRoot({},{}),
@@ -27,7 +28,9 @@ describe('CheckboxAccordionComponent', () => {
         TranslateService,
         provideMockStore({
           initialState: { scenario: scenario }
-        })],
+        }),
+        provideZonelessChangeDetection()
+      ],
       declarations: [
         CheckboxAccordionComponent,
         AccordionBoxComponent,
@@ -40,7 +43,7 @@ describe('CheckboxAccordionComponent', () => {
     fixture = TestBed.createComponent(CheckboxAccordionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();
