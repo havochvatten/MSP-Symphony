@@ -161,7 +161,7 @@ mat-select,
   }
 }
 
-.cdk-overlay-container {
+.cdk-overlay-popover {
 
   /* Material dropdown bug, workaround / effective solution */
   z-index: 100000 !important;

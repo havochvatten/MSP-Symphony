@@ -94,21 +94,21 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
   private drawInteractionActive = false;
   private boundaries?: FeatureLike[];
   private optionsMenuActive = false;
-  private featureMap = new Map<string, Feature<Geometry>>();
-  private selectedStyle = new AreaStyle(true);
+  private readonly featureMap = new Map<string, Feature<Geometry>>();
+  private readonly selectedStyle = new AreaStyle(true);
 
   constructor(
-    private map: OLMap,
+    private readonly map: OLMap,
     public readonly setSelection: (statePath: StatePath | undefined, expand: boolean) => void,
     private readonly zoomToExtent: (extent: Extent, duration: number) => void,
-    private onDrawEnd: (polygon: Polygon)=> void,
-    private onDrawInvalid: () => void,
-    private onDownloadClick: (path: string) => void,
+    private readonly onDrawEnd: (polygon: Polygon)=> void,
+    private readonly onDrawInvalid: () => void,
+    private readonly onDownloadClick: (path: string) => void,
     onSplitClick: (feature: Feature, prevFeature: Feature) => void,
     onMergeClick: (lastFeature: Feature) => void,
     public scenarioLayer: ScenarioLayer,
-    private translateService: TranslateService,
-    private geoJson: GeoJSON
+    private readonly translateService: TranslateService,
+    private readonly geoJson: GeoJSON
   ) {
     super({
       source: new VectorSource({ format: new GeoJSON() }),
@@ -159,7 +159,7 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
     return getFeaturesByStatePaths(this.getSource()!, statePaths);
   }
 
-  private async addHoverInteraction(map: OLMap, areaLayer: VectorLayer<VectorSource<Feature>>) {
+  private addHoverInteraction(map: OLMap, areaLayer: VectorLayer<VectorSource<Feature>>) {
     const container = document.getElementById('popup') as HTMLElement;
     const content = document.getElementById('popup-title') as HTMLElement;
     const body = document.getElementById('popup-body') as HTMLElement;
@@ -170,13 +170,9 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
       autoPan: false
     });
     map.addOverlay(overlay);
+    const clickArea = this.translateService.instant('map.click-area'),
+          pointWithinScenario = this.translateService.instant('map.location-within-scenario');
 
-    const {
-      'map.click-area': clickArea,
-      'map.location-within-scenario': pointWithinScenario
-    } = await this.translateService
-      .get(['map.click-area', 'map.location-within-scenario'])
-      .toPromise();
     map.on('pointermove', event => {
       if(this.optionsMenuActive) return;
 
@@ -194,12 +190,13 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
 
         const hoveredFeature = (detectedFeatures[0] as Feature);
 
-        if (!this.scenarioLayer.hasActiveScenario()) body.innerText = clickArea;
-        else {
-          if (this.scenarioLayer.isPointInsideScenario(event.coordinate) ||
-              intersects(this.scenarioLayer.getBoundaryFeature()!, hoveredFeature))
-            body.innerText = pointWithinScenario;
-          else body.innerText = clickArea;
+        if (!this.scenarioLayer.hasActiveScenario()) {
+          body.innerText = clickArea;
+        } else if (this.scenarioLayer.isPointInsideScenario(event.coordinate) ||
+          intersects(this.scenarioLayer.getBoundaryFeature()!, hoveredFeature)) {
+          body.innerText = pointWithinScenario;
+        } else {
+          body.innerText = clickArea;
         }
 
         const extent = hoveredFeature.getGeometry()?.getExtent();

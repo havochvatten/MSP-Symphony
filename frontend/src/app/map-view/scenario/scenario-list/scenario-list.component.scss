@@ -76,6 +76,14 @@ $buttons-row-gap: 1rem;
           position: absolute;
           background-color: white;
           top: 14px;
+
+          ::ng-deep .mdc-checkbox {
+            padding: 0;
+            .mdc-checkbox__background {
+              top: 0;
+              left: 0;
+            }
+          }
         }
       }
 

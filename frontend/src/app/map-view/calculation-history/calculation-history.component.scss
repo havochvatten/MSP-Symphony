@@ -177,8 +177,10 @@ section.tab-section {
         top: 14px;
         left: 4px;
 
-        ::ng-deep {
+        ::ng-deep .mdc-checkbox {
+          padding: 0;
           .mdc-checkbox__background {
+            top: 0;
             left: 0;
           }
         }

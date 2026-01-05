@@ -1,12 +1,11 @@
-import { Component, ElementRef, Input, NgModuleRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterContentInit, Component, ElementRef, Input, NgModuleRef, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms'
-import { firstValueFrom, Observable, OperatorFunction, Subscription } from 'rxjs';
+import { firstValueFrom, Observable, Subscription } from 'rxjs';
 import { debounceTime, filter, tap } from 'rxjs/operators';
 import { TranslateService } from "@ngx-translate/core";
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { environment } from '@src/environments/environment';
-import { isEmpty } from '@src/app/shared/common.util';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { turfIntersects } from "@shared/turf-helper/turf-helper";
 import { CalculationReportModalComponent } from '@shared/report-modal/calculation-report-modal.component';
@@ -27,8 +26,7 @@ import {
   ChangesProperty,
   Scenario, ScenarioArea, ScenarioSplitDialogResult
 } from '@data/scenario/scenario.interfaces';
-import { changeText } from "@src/app/shared/common.util";
-import { ScenarioService } from "@data/scenario/scenario.service";
+import { changeText, isEmpty } from "@src/app/shared/common.util";
 import { Area } from "@data/area/area.interfaces";
 import { deleteScenario, transferChanges } from "@src/app/map-view/scenario/scenario-common";
 import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenario-areas/add-scenario-areas.component";
@@ -42,6 +40,8 @@ import { MatrixRef } from "@src/app/map-view/scenario/scenario-area-detail/matri
 import {
   SetArbitraryMatrixComponent
 } from "@src/app/map-view/scenario/set-arbitrary-matrix/set-arbitrary-matrix.component";
+import { Feature } from "ol";
+import { Geometry } from "ol/geom";
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 
@@ -55,7 +55,7 @@ const availableOperations: Map<string, CalcOperation> = new Map<string, CalcOper
   styleUrls: ['./scenario-detail.component.scss'],
   standalone: false
 })
-export class ScenarioDetailComponent implements OnInit, OnDestroy {
+export class ScenarioDetailComponent implements AfterContentInit, OnDestroy {
   env = environment;
   autoSaveSubscription$?: Subscription;
   changesText: { [key: number]: string } = {};
@@ -81,19 +81,18 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
   savedByInteraction = false;
 
   constructor(
-    private store: Store<State>,
-    private calcService: CalculationService,
-    private dialogService: DialogService,
-    private translateService: TranslateService,
-    private scenarioService: ScenarioService,
-    private moduleRef: NgModuleRef<never>
+    private readonly store: Store<State>,
+    private readonly calcService: CalculationService,
+    private readonly dialogService: DialogService,
+    private readonly translateService: TranslateService,
+    private readonly moduleRef: NgModuleRef<never>
   ) {
     // https://stackoverflow.com/questions/59684733/how-to-access-previous-state-and-current-state-and-compare-them-when-you-subscri
     if (AUTO_SAVE_TIMEOUT) {
       this.autoSaveSubscription$ = this.store
         .select(ScenarioSelectors.selectActiveScenario)
         .pipe(
-          filter(s => s !== undefined) as OperatorFunction<Scenario | undefined, Scenario>,
+          filter(s => s !== undefined),
           debounceTime(AUTO_SAVE_TIMEOUT * 1000), // TODO use fixed interval instead
           tap((s: Scenario) => console.info('Auto-saving scenario ' + s.name))
         )
@@ -118,7 +117,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     return this.scenario.changes;
   }
 
-  async ngOnInit() {
+  ngAfterContentInit() {
     if (!this.scenario)
       throw new Error("Attribute 'scenario' is required");
 
@@ -126,11 +125,11 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
       this.operation.setValue([...availableOperations.keys()][this.scenario.operation]);
     });
 
-    await this.setChangesText();
+    this.setChangesText();
 
     this.matrixDataSubscription$ = this.store.select(ScenarioSelectors.selectAreaMatrixData).subscribe(
       async data => {
-        if (data !== null && !Object.values(data).some(d => d === null)) {
+        if (data !== null && !Object.values(data).includes(null)) {
           for (const area_id of Object.keys(data).map(id => +id)) {
             const matrixData = data[area_id];
             if (!matrixData.defaultArea) {
@@ -178,7 +177,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
                 }
               }) as boolean[]);
 
-              if (selectedAreas.filter(a => a).length > 0) {
+              if (selectedAreas.some(Boolean)) {
                 const replacementAreas = selectedAreas.map((selectedArea, ix) => {
                     if (!selectedArea) return undefined;
                     const area = this.scenario.areas[this.scenario.areas.findIndex(a => a.id === area_id)];
@@ -197,12 +196,10 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
                 this.store.dispatch(ScenarioActions.splitAndReplaceScenarioArea(
                   {scenarioId: this.scenario.id, replacedAreaId: area_id, replacementAreas: replacementAreas}));
 
+              } else if (this.scenario.areas.some(a => a.id !== area_id)) {
+                this.store.dispatch(ScenarioActions.closeActiveScenario());
               } else {
-                if (this.scenario.areas.filter(a => a.id !== area_id).length > 0) {
-                  this.store.dispatch(ScenarioActions.closeActiveScenario());
-                } else {
-                  this.store.dispatch(ScenarioActions.deleteScenarioArea({areaId: area_id}));
-                }
+                this.store.dispatch(ScenarioActions.deleteScenarioArea({ areaId: area_id }));
               }
             }
           }
@@ -255,7 +252,9 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
 
   addScenarioArea(selectedAreas: Area[], that: AddScenarioAreasComponent) {
     const areas = selectedAreas.filter(a => !that.scenario!.areas.some(
-        s => turfIntersects(that.format.readFeature(a.feature), that.format.readFeature(s.feature))));
+        s =>
+          turfIntersects(that.format.readFeature(a.feature) as Feature<Geometry>,
+                         that.format.readFeature(s.feature) as Feature<Geometry>)));
     this.unsaved = true;
     this.store.dispatch(ScenarioActions.addAreasToActiveScenario({ areas: that.scenarioService.convertAreas(areas) }));
   }
@@ -265,10 +264,11 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     setTimeout(() => this.nameElement.nativeElement.focus(), 0);
   }
 
-  onChangeName(name: string) {
+  onChangeName(ev: Event) {
     this.editName = !this.editName;
     this.unsaved = true;
-    setTimeout(() => this.store.dispatch(ScenarioActions.changeScenarioName({ name })));
+    setTimeout(() =>
+      this.store.dispatch(ScenarioActions.changeScenarioName({ name: (ev.target as HTMLInputElement).value })));
   }
 
   setNormalizationOptions(opts: NormalizationOptions) {
@@ -325,7 +325,7 @@ export class ScenarioDetailComponent implements OnInit, OnDestroy {
     });
 
     this.unsaved ||= intensityChanged;
-    this.setChangesText();
+    await this.setChangesText();
   }
 
   setOperation() {

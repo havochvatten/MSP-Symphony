@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { of } from 'rxjs';
-import { filter, switchMap,tap } from 'rxjs/operators';
+import { filter, switchMap, tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { State } from '../app-reducer';
@@ -20,18 +20,17 @@ import { AbstractReport } from "@src/app/report/abstract-report.directive";
   styleUrls: ['./report.component.scss'],
   standalone: false
 })
-export class CalculationReportComponent extends AbstractReport {
+export class CalculationReportComponent extends AbstractReport<Report> {
 
-  report?: Report;
   area?: number;
   areaDict: Map<number, string> = new Map<number, string>();
   isDomainNormalization = false;
 
   constructor(
-    private translate: TranslateService,
-    private store: Store<State>,
-    private route: ActivatedRoute,
-    private reportService: ReportService
+    private readonly translate: TranslateService,
+    private readonly store: Store<State>,
+    private readonly route: ActivatedRoute,
+    private readonly reportService: ReportService
   ) {
     super(
       translate,
@@ -46,7 +45,7 @@ export class CalculationReportComponent extends AbstractReport {
           this.imageUrl = `${env.apiBaseUrl}/calculation/${calcId}/image`;
           reportService.getReport(calcId as string).subscribe({
             next: function (report) {
-              that.report = report;
+              that.reportSignal.set(report);
               that.area = reportService.calculateArea(report);
               that.loadingReport = false;
               that.store.dispatch(MetadataActions.fetchMetadataForBaseline({baselineName: report.baselineName}));
@@ -70,22 +69,23 @@ export class CalculationReportComponent extends AbstractReport {
   }
 
   getGroupedMatrixMap(): Map<string, string[]> {
-    const matrixMap = new Map<string, string[]>();
+    const matrixMap = new Map<string, string[]>(), report = this.reportSignal();
     let mxName: string | undefined
 
-    for (const mxEntry of this.report!.areaMatrices) {
-      mxName = mxEntry.matrix;
-      if (matrixMap.get(mxName)) {
-        matrixMap.get(mxName)?.push(mxEntry.areaName);
-      } else {
-        matrixMap.set(mxName, [mxEntry.areaName]);
+    if (report !== null) {
+      for (const mxEntry of report.areaMatrices) {
+        mxName = mxEntry.matrix;
+        if (matrixMap.get(mxName)) {
+          matrixMap.get(mxName)?.push(mxEntry.areaName);
+        } else {
+          matrixMap.set(mxName, [mxEntry.areaName]);
+        }
+      }
+
+      if (matrixMap.size === 1 && report.areaMatrices.length > 1) {
+        matrixMap.set(mxName!, [this.translate.instant('report.sensitivity-matrices.all-areas')]);
       }
     }
-
-    if(matrixMap.size === 1 && this.report!.areaMatrices.length > 1) {
-      matrixMap.set(mxName!, [this.translate.instant('report.sensitivity-matrices.all-areas')]);
-    }
-
     return matrixMap;
   }
 }

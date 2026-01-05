@@ -19,8 +19,8 @@ import { AbstractReport } from "@src/app/report/abstract-report.directive";
   styleUrls: ['./report.component.scss'],
   standalone: false
 })
-export class ComparisonReportComponent extends AbstractReport {
-  report?: ComparisonReport;
+export class ComparisonReportComponent extends AbstractReport<ComparisonReport> {
+
   area?: number;
 
   now = new Date();
@@ -36,7 +36,7 @@ export class ComparisonReportComponent extends AbstractReport {
 
   constructor(
     translate: TranslateService,
-    private store: Store<State>,
+    private readonly store: Store<State>,
     route: ActivatedRoute,
     reportService: ReportService,
     calcService: CalculationService
@@ -63,9 +63,9 @@ export class ComparisonReportComponent extends AbstractReport {
 
     reportService.getComparisonReport(aId, bId, this.reverse).subscribe({
       next(report) {
-        that.report = report;
-        that.report.a = report.a;
-        that.report.b = report.b;
+        that.reportSignal.set(report);
+        that.report().a = report.a;
+        that.report().b = report.b;
         that.area = reportService.calculateArea(report.a);
         that.loadingReport = false;
 

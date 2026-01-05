@@ -77,7 +77,7 @@ describe('ScenarioDetailComponent', () => {
       areas: [],
       latestCalculationId: null
     };
-    component.ngOnInit();
+    component.ngAfterContentInit();
   });
 
   it('should create', () => {

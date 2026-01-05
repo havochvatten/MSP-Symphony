@@ -1,8 +1,8 @@
 <script src="calculation-report.component.ts"></script>
-@if (report) {
+@if (reportSignal()) {
   <tbody>
     <header class="title">
-      <h3>{{ report.name }}</h3>
+      <h3>{{ report().name }}</h3>
     </header>
     <div class="logo">
       <img src="../../assets/sweden-logotype-english-nomargin.svg" class="sweden"
@@ -12,9 +12,9 @@
     </div>
     <app-calculation-image [imageURL]="imageUrl"></app-calculation-image>
     @if ((metadata$ | async); as metadata) {
-      <app-cumulative-effect-etc [reports]="report ? [report] : undefined"
+      <app-cumulative-effect-etc [reports]="[report()]"
         [area]="area"
-        [normalization]="report.normalization"
+        [normalization]="report().normalization"
         [percentileValue]="metadata.percentileValue"
         [bandDict]="metadata.bandDictionary"
         [normalized]="isDomainNormalization"
@@ -46,28 +46,28 @@
   class="pressure-impacts"
   [title]="'report.highest-impact.pressure' | translate"
   [bandGroups]="metadata.metadata.pressureComponent"
-  [impacts]="report.impactPerPressure"
-  [total]="report.total"
+  [impacts]="report().impactPerPressure"
+  [total]="report().total"
   [locale]="locale"
 ></app-highest-impacts>
-@if (report.impactPerEcoComponent) {
+@if (report().impactPerEcoComponent) {
   <app-highest-impacts
     class="ecocomponent-impacts"
     [title]="'report.highest-impact.ecocomponent' | translate"
     [bandGroups]="metadata.metadata.ecoComponent"
-    [impacts]="report.impactPerEcoComponent"
-    [total]="report.total"
+    [impacts]="report().impactPerEcoComponent"
+    [total]="report().total"
     [locale]="locale"
   ></app-highest-impacts>
 }
 <app-result-color-scale [locale]="locale" class="calc-report-legend"></app-result-color-scale>
 <app-pressure-chart [id]="'sankey-single'" [diagramId]="'sankey-single'"
-  [chartWeightThreshold]="formatPercent(report.chartWeightThreshold, this.locale)"
-  [data]="formatChartData(report.chartData, metadata.bandDictionary)"
+  [chartWeightThreshold]="formatPercent(report().chartWeightThreshold, this.locale)"
+  [data]="formatChartData(report().chartData, metadata.bandDictionary)"
   [locale]="locale"
 ></app-pressure-chart>
 <app-scenario-changes
-  [scenarioChanges]="report.scenarioChanges"
+  [scenarioChanges]="report().scenarioChanges"
   [bandDict]="metadata.bandDictionary"
   [areaDict]="areaDict"
 ></app-scenario-changes>
@@ -75,22 +75,22 @@
 <app-impact-table class="pressure-impacts"
   [title]="'report.impact-table.pressure' | translate"
   [bandGroups]="metadata.metadata.pressureComponent"
-  [scenarioImpacts]="[report.impactPerPressure, calculatePercentOfTotal(report.impactPerPressure, report.total)]"
+  [scenarioImpacts]="[report().impactPerPressure, calculatePercentOfTotal(report().impactPerPressure, report().total)]"
   [names]="['report.impact-table.cumulative' | translate, 'report.impact-table.percentage-of-total' | translate]"
   [locale]="locale"
 ></app-impact-table>
 <app-impact-table class="ecocomponent-impacts"
   [title]="'report.impact-table.ecoComponent' | translate"
   [bandGroups]="metadata.metadata.ecoComponent"
-  [scenarioImpacts]="[report.impactPerEcoComponent, calculatePercentOfTotal(report.impactPerEcoComponent, report.total)]"
+  [scenarioImpacts]="[report().impactPerEcoComponent, calculatePercentOfTotal(report().impactPerEcoComponent, report().total)]"
   [names]="['report.impact-table.cumulative' | translate, 'report.impact-table.percentage-of-total' | translate]"
   [locale]="locale"
 ></app-impact-table>
 }
 <app-histogram
     [title]="('report.histogram.caption'| translate) +
-        ' (' + ('map.editor.operation.'+ (report.operationName) + '.title' | translate | lowercase) +')'"
-  [report]="report"
+        ' (' + ('map.editor.operation.'+ (report().operationName) + '.title' | translate | lowercase) +')'"
+  [report]="report()"
   [locale]="locale"
   >
 </app-histogram>
@@ -103,7 +103,7 @@
 </p>
 <p class="closing-matter-smaller">
   Symphony version {{ symphonyVersion }}<br/>
-  {{ report.timestamp | date: 'yyyy-MM-dd HH:mm' }}
+  {{ report().timestamp | date: 'yyyy-MM-dd HH:mm' }}
 </p>
 </tbody>
 }
@@ -115,7 +115,7 @@
   </div>
 }
 
-@if (!report && !loadingReport) {
+@if (!reportSignal() && !loadingReport) {
   <article class="error-page">
     <app-status-icon type="WARNING"></app-status-icon>
     <h3>

@@ -100,10 +100,6 @@
 }
 
 ::ng-deep {
-  .ddPanel.cmp {
-    margin-top: 48px;
-  }
-
   .cdk-overlay-container .cdk-overlay-pane .mat-mdc-select-panel.ddPanel.cmp {
     mat-option.purged {
       background: #f7f4f4 url('~/src/assets/cross.svg') no-repeat 98% 50%;

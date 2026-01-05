@@ -1,4 +1,4 @@
-import { Directive } from '@angular/core';
+import { computed, Directive, signal } from '@angular/core';
 import { formatPercent } from "@angular/common";
 import { Store } from "@ngrx/store";
 import { map, withLatestFrom } from "rxjs/operators";
@@ -15,7 +15,12 @@ import { BandGroup } from "@data/metadata/metadata.interfaces";
   selector: '[appAbstractReport]',
   standalone: false
 })
-export class AbstractReport {
+export class AbstractReport<ReportType> {
+
+  reportSignal = signal<ReportType | null>(null);
+  report = computed(() => {
+    return this.reportSignal()!;
+  });
 
   protected locale = 'en';
   protected loadingReport = true;

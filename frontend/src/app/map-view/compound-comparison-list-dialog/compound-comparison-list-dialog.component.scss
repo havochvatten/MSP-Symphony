@@ -88,6 +88,14 @@
         background-color: white;
         top: 14px;
         left: -8px;
+
+        ::ng-deep .mdc-checkbox {
+          padding: 0;
+          .mdc-checkbox__background {
+            top: 0;
+            left: 0;
+          }
+        }
       }
     }
 
