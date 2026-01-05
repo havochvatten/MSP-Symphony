@@ -281,10 +281,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   public highlightArea = (statePath: StatePath, highlight: boolean) => {
-    if (highlight) {
-      this.areaHighlightLayer.highlightArea(statePath);
-    } else {
-      this.areaHighlightLayer.clearHighlight(statePath);
+    if (this.areaHighlightLayer) {
+      if (highlight) {
+        this.areaHighlightLayer.highlightArea(statePath);
+      } else {
+        this.areaHighlightLayer.clearHighlight(statePath);
+      }
     }
   }
 

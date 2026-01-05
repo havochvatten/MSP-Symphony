@@ -18,6 +18,7 @@ import { Geometry } from "ol/geom";
 import { DrawEvent } from "ol/interaction/Draw";
 import { simpleHash, statePathContains } from "@shared/common.util";
 import { AreaSelect } from "@src/app/map-view/map/layers/area-select";
+import FeatureFormat from "ol/format/Feature";
 
 function unique<T>(value: T, index: number, self: T[]) {
   return self.indexOf(value) === index;
@@ -51,7 +52,7 @@ class DrawAreaInteraction extends Draw {
   constructor(
     map: OLMap,
     source: VectorSource,
-    drawCondition: (event: MapBrowserEvent<UIEvent>) => boolean,
+    drawCondition: (event: MapBrowserEvent) => boolean,
     onDrawEnd: (polygon: Polygon) => Polygon | void
   ) {
     super({
@@ -86,9 +87,9 @@ class DrawAreaInteraction extends Draw {
   }
 }
 
-class AreaLayer extends VectorLayer<Feature> {
+class AreaLayer extends VectorLayer<VectorSource<Feature>> {
   private readonly drawAreaInteraction: DrawAreaInteraction;
-  private readonly boundaryLayer: VectorLayer<Feature>;
+  private readonly boundaryLayer: VectorLayer<VectorSource>;
   private readonly areaSelect: AreaSelect;
   private drawInteractionActive = false;
   private boundaries?: FeatureLike[];
@@ -158,7 +159,7 @@ class AreaLayer extends VectorLayer<Feature> {
     return getFeaturesByStatePaths(this.getSource()!, statePaths);
   }
 
-  private async addHoverInteraction(map: OLMap, areaLayer: VectorLayer<Feature>) {
+  private async addHoverInteraction(map: OLMap, areaLayer: VectorLayer<VectorSource<Feature>>) {
     const container = document.getElementById('popup') as HTMLElement;
     const content = document.getElementById('popup-title') as HTMLElement;
     const body = document.getElementById('popup-body') as HTMLElement;
@@ -269,7 +270,7 @@ class AreaLayer extends VectorLayer<Feature> {
     });
   }
 
-  private appendCoordinates = (event: MapBrowserEvent<UIEvent>) => {
+  private appendCoordinates = (event: MapBrowserEvent) => {
     this.drawAreaInteraction.addCoordinate(event.coordinate);
     return true;
   };
@@ -281,7 +282,7 @@ class AreaLayer extends VectorLayer<Feature> {
     }).readFeature(polygon);
 
     if(boundaries.some(boundary => {
-        return intersects(testFeature, boundary as Feature<Geometry>)
+        return intersects(testFeature as Feature<Geometry>, boundary as Feature<Geometry>)
     })) {
       this.onDrawEnd(polygon);
     } else {
@@ -310,7 +311,7 @@ class AreaLayer extends VectorLayer<Feature> {
   mapAreaFeatures(featureCollections: FeatureCollection[]) {
     for(const featureCollection of featureCollections) {
       for(const feature of featureCollection.features) {
-        const gFeature = this.geoJson.readFeature(feature);
+        const gFeature = this.geoJson.readFeature(feature) as Feature<Geometry>;
         this.featureMap.set(simpleHash(gFeature.get('statePath')), gFeature);
       }
     }
@@ -340,11 +341,11 @@ class AreaLayer extends VectorLayer<Feature> {
     }
 
     const newSource = new VectorSource({
-      format: source.getFormat(),
+      format: source.getFormat() as FeatureFormat<Feature<Geometry>>,
       features: geo
     });
 
-    return this.zoomToExtent(newSource.getExtent(), 1000), true;
+    return this.zoomToExtent(newSource.getExtent(), 1000);
   }
 
   toggleDrawInteraction(): boolean {
@@ -366,7 +367,7 @@ class AreaLayer extends VectorLayer<Feature> {
   }
 }
 
-class BoundaryLayer extends VectorLayer<Feature> {
+class BoundaryLayer extends VectorLayer<VectorSource<Feature>> {
   constructor() {
     super({
       source: new VectorSource({ format: new GeoJSON() }),
