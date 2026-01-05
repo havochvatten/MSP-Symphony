@@ -1,23 +1,29 @@
-<h5 *ngIf="title">{{ title }}</h5>
-<svg *ngIf="colors" [attr.viewBox]="'0 0 ' + 20 * colors.length + ' 30'" overflow="visible">
-  <rect
-    *ngFor="let color of colors; index as i"
-    width="20"
-    height="20"
-    y="10"
-    [attr.x]="i * 20"
-    [attr.fill]="color.color"
-  >
-    <title>{{ color.quantity * (perMille ? 0.1 : 1)  | number : digitsInfo():locale }}{{ unit }}</title>
-  </rect>
-  <text
-    *ngFor="let color of colors; index as i"
-    [attr.x]="i * 20 + 10"
-    y="6"
-    font-size="7.2"
-    letter-spacing="-0.3px"
-    text-anchor="middle"
-    text-rendering="optimizeLegibility"
-  ><tspan text-anchor="middle">{{ color.quantity * (perMille ? 0.1 : 1) | number:digitsInfo():locale }}{{ unit }}</tspan>
-  </text>
-</svg>
+@if (title) {
+  <h5>{{ title }}</h5>
+}
+@if (colors) {
+  <svg [attr.viewBox]="'0 0 ' + 20 * colors.length + ' 30'" overflow="visible">
+    @for (color of colors; track color; let i = $index) {
+      <rect
+        width="20"
+        height="20"
+        y="10"
+        [attr.x]="i * 20"
+        [attr.fill]="color.color"
+        >
+        <title>{{ color.quantity * (perMille ? 0.1 : 1)  | number : digitsInfo():locale }}{{ unit }}</title>
+      </rect>
+    }
+    @for (color of colors; track color; let i = $index) {
+      <text
+        [attr.x]="i * 20 + 10"
+        y="6"
+        font-size="7.2"
+        letter-spacing="-0.3px"
+        text-anchor="middle"
+        text-rendering="optimizeLegibility"
+        ><tspan text-anchor="middle">{{ color.quantity * (perMille ? 0.1 : 1) | number:digitsInfo():locale }}{{ unit }}</tspan>
+      </text>
+    }
+  </svg>
+}

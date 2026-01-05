@@ -112,16 +112,18 @@ export class AreaGroupComponent extends MultiModeListable {
         label="{{ 'map.user-area.edit.label' | translate }}"
         (iconClick)="toggleOpen()"
       ></app-icon-button>
-      <ul *ngIf="open" class="edit-options">
-        <li (click)="onRenameUserArea($event)"
-            tabindex="0">{{ 'map.user-area.rename.label' | translate }}</li>
-        <li class="delete" (click)="onDeleteUserArea($event)"
+      @if (open) {
+        <ul class="edit-options">
+          <li (click)="onRenameUserArea($event)"
+          tabindex="0">{{ 'map.user-area.rename.label' | translate }}</li>
+          <li class="delete" (click)="onDeleteUserArea($event)"
             tabindex="0">
-          {{ 'map.user-area.delete.label' | translate }}
-        </li>
-      </ul>
+            {{ 'map.user-area.delete.label' | translate }}
+          </li>
+        </ul>
+      }
     </div>
-  `,
+    `,
   styleUrls: ['./area-group.component.scss'],
   standalone: false
 })

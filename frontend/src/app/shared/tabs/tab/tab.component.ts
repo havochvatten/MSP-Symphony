@@ -5,8 +5,10 @@ import { IconType } from '@shared/icon/icon.component';
 @Component({
   selector: 'app-tab',
   template: `
-    <ng-content *ngIf="active"></ng-content>
-  `,
+    @if (active) {
+      <ng-content></ng-content>
+    }
+    `,
   standalone: false
 })
 export class TabComponent {

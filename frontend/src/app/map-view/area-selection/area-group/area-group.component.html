@@ -1,86 +1,99 @@
-<ng-container *ngIf="!searching">
+@if (!searching) {
   <div class="title-container">
     <h3>{{ title }}</h3>
     <div class="tools">
-      <app-multi-tools
-        *ngIf="userArea"
-        [isMultiMode]="isMultiMode"
-        [disabledPredicate]="noneSelected"
-        [modeChangeEffect]="deselectAreas"
-      >
-        <app-multi-action-button
-          [multiActionDelegate]="deleteSelectedUserAreas"
-          [multiActionIcon]="'delete'"
-          [multiActionLabel]="'map.user-area.delete-selected'"
-          [multiActionLabelDisabled]="'map.user-area.none-selected'"
-        ></app-multi-action-button>
-      </app-multi-tools>
-      <fa-icon *ngIf="importArea"
-               [icon]="faCloudUpload"
-               [title]="'map.user-area.upload.label' | translate"
-               (click)="importArea()"
-      ></fa-icon>
+      @if (userArea) {
+        <app-multi-tools
+          [isMultiMode]="isMultiMode"
+          [disabledPredicate]="noneSelected"
+          [modeChangeEffect]="deselectAreas"
+          >
+          <app-multi-action-button
+            [multiActionDelegate]="deleteSelectedUserAreas"
+            [multiActionIcon]="'delete'"
+            [multiActionLabel]="'map.user-area.delete-selected'"
+            [multiActionLabelDisabled]="'map.user-area.none-selected'"
+          ></app-multi-action-button>
+        </app-multi-tools>
+      }
+      @if (importArea) {
+        <fa-icon
+          [icon]="faCloudUpload"
+          [title]="'map.user-area.upload.label' | translate"
+          (click)="importArea()"
+        ></fa-icon>
+      }
     </div>
   </div>
   <div class="divider"></div>
-</ng-container>
-<ul *ngIf="areas.length > 0; else noAreas">
-  <li
-    *ngFor="let group of areas"
-    [attr.data-visible]="group.visible"
-    tabindex="0"
-  >
-    <div class="group-title"
-      (mouseover)="this.userArea && highlightArea(group.statePath)"
-      (mouseout)="this.userArea && clearHighlight(group.statePath)"
-      (focus)="this.userArea && highlightArea(group.statePath)"
-      (blur)="this.userArea && clearHighlight(group.statePath)"
-    >
-      <span
-        class="title-text"
-        [class]="{ 'selected': userArea && isSelected(group.statePath) }"
-        (click)="this.userArea && onSelectArea(group, group, $event); $event.stopPropagation()">
-        <div class="multi-selected-wrap" *ngIf="isMultiMode()">
-          <mat-checkbox [checked]="selectedIds.includes(group.id)"
-                        (change)="multiSelect(group.id)"
-                        (click)="$event.stopPropagation()">
-          </mat-checkbox>
-        </div>
-        <app-icon
-          *ngIf="!isMultiMode()"
-          [iconType]="group.visible ? 'eye' : 'eye-slash'"
-          (click)="toggleVisible(group.statePath); $event.stopPropagation()"
-          class="visible"></app-icon>
-        {{ group.name }}
-      </span>
-      <app-icon
-        *ngIf="!userArea && !searching"
-        [iconType]="group.expanded ? 'chevron-up' : 'chevron-down'"
-        (click)="toggleExpanded(group.statePath)"
-        class="expand"></app-icon>
-      <app-edit-area
-        *ngIf="drawUserArea"
-        [renameUserArea]="onRenameUserArea(group)"
-        [deleteUserArea]="onDeleteUserArea(group.id, group.name)"
-      ></app-edit-area>
-    </div>
-    <ul *ngIf="searching || group.expanded" class="area-list">
+}
+@if (areas.length > 0) {
+  <ul>
+    @for (group of areas; track group) {
       <li
-        *ngFor="let area of group.areas"
-        [attr.data-selected]="isSelected(area.statePath)"
-        (click)="onSelectArea(area, group, $event); $event.stopPropagation()"
-        (mouseover)="highlightArea(area.statePath)"
-        (mouseout)="clearHighlight(area.statePath)"
-        (focus)="highlightArea(area.statePath)"
-        (blur)="clearHighlight(area.statePath)"
+        [attr.data-visible]="group.visible"
         tabindex="0"
-      >
-        {{ area.displayName }}
+        >
+        <div class="group-title"
+          (mouseover)="this.userArea && highlightArea(group.statePath)"
+          (mouseout)="this.userArea && clearHighlight(group.statePath)"
+          (focus)="this.userArea && highlightArea(group.statePath)"
+          (blur)="this.userArea && clearHighlight(group.statePath)"
+          >
+          <span
+            class="title-text"
+            [class]="{ 'selected': userArea && isSelected(group.statePath) }"
+            (click)="this.userArea && onSelectArea(group, group, $event); $event.stopPropagation()">
+            @if (isMultiMode()) {
+              <div class="multi-selected-wrap">
+                <mat-checkbox [checked]="selectedIds.includes(group.id)"
+                  (change)="multiSelect(group.id)"
+                  (click)="$event.stopPropagation()">
+                </mat-checkbox>
+              </div>
+            }
+            @if (!isMultiMode()) {
+              <app-icon
+                [iconType]="group.visible ? 'eye' : 'eye-slash'"
+                (click)="toggleVisible(group.statePath); $event.stopPropagation()"
+              class="visible"></app-icon>
+            }
+            {{ group.name }}
+          </span>
+          @if (!userArea && !searching) {
+            <app-icon
+              [iconType]="group.expanded ? 'chevron-up' : 'chevron-down'"
+              (click)="toggleExpanded(group.statePath)"
+            class="expand"></app-icon>
+          }
+          @if (drawUserArea) {
+            <app-edit-area
+              [renameUserArea]="onRenameUserArea(group)"
+              [deleteUserArea]="onDeleteUserArea(group.id, group.name)"
+            ></app-edit-area>
+          }
+        </div>
+        @if (searching || group.expanded) {
+          <ul class="area-list">
+            @for (area of group.areas; track area) {
+              <li
+                [attr.data-selected]="isSelected(area.statePath)"
+                (click)="onSelectArea(area, group, $event); $event.stopPropagation()"
+                (mouseover)="highlightArea(area.statePath)"
+                (mouseout)="clearHighlight(area.statePath)"
+                (focus)="highlightArea(area.statePath)"
+                (blur)="clearHighlight(area.statePath)"
+                tabindex="0"
+                >
+                {{ area.displayName }}
+              </li>
+            }
+          </ul>
+        }
       </li>
-    </ul>
-  </li>
-</ul>
-
-<ng-template #noAreas>
+    }
+  </ul>
+} @else {
   <p>{{ 'map.area.no-areas' | translate }}</p>
-</ng-template>
+}
+

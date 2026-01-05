@@ -12,8 +12,10 @@ const DEFAULT_TAB = 0;
 @Component({
   selector: 'app-slide-view-tab',
   template: `
-    <ng-content *ngIf="active"></ng-content>
-  `,
+    @if (active) {
+      <ng-content></ng-content>
+    }
+    `,
   standalone: false
 })
 export class SlideViewTabComponent {

@@ -8,76 +8,93 @@
     [checked]="matrixOption === 'STANDARD'"
     (change)="check('STANDARD', null)"
     [disabled]="arbitraryMatrixSelection()"
-  > {{ standardLabel }}
+    > {{ standardLabel }}
   </mat-radio-button>
-  <section *ngIf="hasOptionalMatrices()">
-    <mat-radio-button
-      [checked]="matrixOption === 'OPTIONAL'"
-      (change)="check('OPTIONAL', altMx)"
-    >{{ 'map.editor.matrix.alt-matrix' | translate }}
-    </mat-radio-button>
+  @if (hasOptionalMatrices()) {
+    <section>
+      <mat-radio-button
+        [checked]="matrixOption === 'OPTIONAL'"
+        (change)="check('OPTIONAL', altMx)"
+        >{{ 'map.editor.matrix.alt-matrix' | translate }}
+      </mat-radio-button>
+      <article>
+        <mat-select #altMx
+          [disabled]="matrixOption !== 'OPTIONAL'"
+          [placeholder]="'map.editor.matrix.choose-matrix' | translate"
+          [value]="this.selectedOptionalMatrix"
+          (valueChange)="customSelect($event)" [className]="'tiny'" panelClass="ddPanel tiny mxDrop">
+          @for (matrix of commonOptionalMatrices; track matrix) {
+            <mat-option [value]="matrix">
+              {{ matrix.name }}
+            </mat-option>
+          }
+        </mat-select>
+      </article>
+    </section>
+  }
+  @if (hasAreaTypes()) {
     <article>
-      <mat-select #altMx
-                  [disabled]="matrixOption !== 'OPTIONAL'"
-                  [placeholder]="'map.editor.matrix.choose-matrix' | translate"
-                  [value]="this.selectedOptionalMatrix"
-                  (valueChange)="customSelect($event)" [className]="'tiny'" panelClass="ddPanel tiny mxDrop">
-        <mat-option *ngFor="let matrix of commonOptionalMatrices" [value]="matrix">
-          {{ matrix.name }}
+      <mat-select [disabled]="matrixOption !== 'STANDARD'"
+        [placeholder]="'map.editor.matrix.choose-area-type' | translate"
+        [value]="this.selectedAreaType"
+        (valueChange)="areaTypeSelect($event)" [className]="'tiny'" panelClass="ddPanel tiny mxDrop">
+        <mat-option [value]="null">
+          {{ 'map.editor.matrix.no-area-type' | translate }}
         </mat-option>
+        @for (areaType of areaTypes; track areaType) {
+          <mat-option [value]="areaType">
+            {{ areaType.name }}
+          </mat-option>
+        }
       </mat-select>
+      @if (hasAreaTypes()) {
+        <mat-select #typeMx
+          [disabled]="matrixOption !== 'STANDARD' || !selectedAreaType"
+          [placeholder]="'map.editor.matrix.choose-area-type-matrix' | translate"
+          [value]="this.selectedTypedMatrix"
+          (valueChange)="customSelect($event)" [className]="'tiny'" panelClass="ddPanel tiny mxDrop">
+          @for (matrix of areaTypeMatrixOptions; track matrix) {
+            <mat-option [value]="matrix">
+              {{ matrix.name }}
+            </mat-option>
+          }
+        </mat-select>
+      }
     </article>
-  </section>
-  <article *ngIf="hasAreaTypes()">
-    <mat-select [disabled]="matrixOption !== 'STANDARD'"
-                [placeholder]="'map.editor.matrix.choose-area-type' | translate"
-                [value]="this.selectedAreaType"
-                (valueChange)="areaTypeSelect($event)" [className]="'tiny'" panelClass="ddPanel tiny mxDrop">
-      <mat-option [value]="null">
-        {{ 'map.editor.matrix.no-area-type' | translate }}
-      </mat-option>
-      <mat-option *ngFor="let areaType of areaTypes" [value]="areaType">
-        {{ areaType.name }}
-      </mat-option>
-    </mat-select>
-
-    <mat-select #typeMx
-                *ngIf="hasAreaTypes()" [disabled]="matrixOption !== 'STANDARD' || !selectedAreaType"
-                [placeholder]="'map.editor.matrix.choose-area-type-matrix' | translate"
-                [value]="this.selectedTypedMatrix"
-                (valueChange)="customSelect($event)" [className]="'tiny'" panelClass="ddPanel tiny mxDrop">
-      <mat-option *ngFor="let matrix of areaTypeMatrixOptions" [value]="matrix">
-        {{ matrix.name }}
-      </mat-option>
-    </mat-select>
-  </article>
+  }
 </section>
 
 <section>
   <mat-radio-button
     [checked]="matrixOption === 'CUSTOM'"
     (change)="check('CUSTOM', usrMx)"
-  >{{ 'map.editor.matrix.user-matrix' | translate }}
+    >{{ 'map.editor.matrix.user-matrix' | translate }}
   </mat-radio-button>
   <article>
     <mat-select #usrMx
-                [disabled]="matrixOption !== 'CUSTOM'"
-                [placeholder]="'map.editor.matrix.choose-matrix' | translate"
-                [value]="this.selectedCustomMatrix"
-                (valueChange)="customSelect($event)" [className]="'tiny'" panelClass="ddPanel tiny mxDrop">
-      <mat-option *ngFor="let matrix of matrixOptions" [value]="matrix" class="{{ matrix.immutable ? 'locked' : '' }}">
-        <span>
-          {{ matrix.name }}
-        </span>
-        <app-icon iconType="padlock" *ngIf="matrix.immutable"></app-icon>
-      </mat-option>
+      [disabled]="matrixOption !== 'CUSTOM'"
+      [placeholder]="'map.editor.matrix.choose-matrix' | translate"
+      [value]="this.selectedCustomMatrix"
+      (valueChange)="customSelect($event)" [className]="'tiny'" panelClass="ddPanel tiny mxDrop">
+      @for (matrix of matrixOptions; track matrix) {
+        <mat-option [value]="matrix" class="{{ matrix.immutable ? 'locked' : '' }}">
+          <span>
+            {{ matrix.name }}
+          </span>
+          @if (matrix.immutable) {
+            <app-icon iconType="padlock"></app-icon>
+          }
+        </mat-option>
+      }
     </mat-select>
     <button mat-flat-button
       [disabled]="matrixOption !== 'CUSTOM' || !(selectedCustomMatrix && selectedCustomMatrix.id)"
       (click)="editMatrix()"
-    >
+      >
       {{'map.editor.matrix.edit-matrix' | translate}}
-      <mat-spinner *ngIf="loadingMatrix" diameter="20"></mat-spinner>
+      @if (loadingMatrix) {
+        <mat-spinner diameter="20"></mat-spinner>
+      }
     </button>
   </article>
 </section>

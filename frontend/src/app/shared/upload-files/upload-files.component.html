@@ -4,15 +4,17 @@
   appDragDrop
   (fileDropped)="uploadFile($event)"
   tabindex="0"
->
+  >
   <input hidden type="file" #fileInput (change)="uploadFile($event.target.files)" />
 </div>
-<div class="files-list" *ngFor="let file of files; let i = index">
-  <p>{{ file }}</p>
-  <app-icon-button
-    class="delete-file"
-    icon="delete"
-    label="{{ 'controls.delete' | translate }}"
-    (iconClick)="deleteAttachment(i)"
-  ></app-icon-button>
-</div>
+@for (file of files; track file; let i = $index) {
+  <div class="files-list">
+    <p>{{ file }}</p>
+    <app-icon-button
+      class="delete-file"
+      icon="delete"
+      label="{{ 'controls.delete' | translate }}"
+      (iconClick)="deleteAttachment(i)"
+    ></app-icon-button>
+  </div>
+}

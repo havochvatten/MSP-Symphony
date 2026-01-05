@@ -3,59 +3,68 @@
     <h2>{{ 'map.editor.changes-overview.title' | translate }}</h2>
     <span>{{ scenario.name }}</span>
   </div>
-  <mat-radio-group name="changes-to-show" (change)="selectType($event.value)" *ngIf="bothTypes">
-    <mat-radio-button [value]="'ecoComponents'" [checked]="ecoChanges && !pressureChanges">
-      <strong>{{ 'map.intensity.ecosystems' | translate }}</strong>
-    </mat-radio-button>
-    <mat-radio-button [value]="'pressures'" [checked]="!ecoChanges && pressureChanges">
-      <strong>{{ 'map.intensity.pressures' | translate }}</strong>
-    </mat-radio-button>
-    <mat-radio-button [value]="'both'" [checked]="ecoChanges && pressureChanges">
-      <strong>{{ 'map.editor.changes-overview.show-all' | translate }}</strong>
-    </mat-radio-button>
-  </mat-radio-group>
+  @if (bothTypes) {
+    <mat-radio-group name="changes-to-show" (change)="selectType($event.value)">
+      <mat-radio-button [value]="'ecoComponents'" [checked]="ecoChanges && !pressureChanges">
+        <strong>{{ 'map.intensity.ecosystems' | translate }}</strong>
+      </mat-radio-button>
+      <mat-radio-button [value]="'pressures'" [checked]="!ecoChanges && pressureChanges">
+        <strong>{{ 'map.intensity.pressures' | translate }}</strong>
+      </mat-radio-button>
+      <mat-radio-button [value]="'both'" [checked]="ecoChanges && pressureChanges">
+        <strong>{{ 'map.editor.changes-overview.show-all' | translate }}</strong>
+      </mat-radio-button>
+    </mat-radio-group>
+  }
 </header>
 <div [ngClass]="{'intensity-tables-wrapper': true, 'editing': editingCell }">
   <table class="intensity-table">
     <thead>
       <tr>
         <th></th>
-        <ng-container *ngFor="let $bandType of selectedBandTypes()">
-          <ng-container *ngFor="let $bandGroups of groupMap.get($bandType) | keyvalue">
-            <th *ngFor="let $band of $bandGroups.value; let $ix = index"
-                [ngClass]="{ 'first-band' : $ix === 0, 'band-name-cell': true}">
-              <span *ngIf="$ix === 0" class="symphony-theme">{{ $bandGroups.key}}</span>
-              <span class="band-name">{{ $band.name }}</span>
-            </th>
-          </ng-container>
-        </ng-container>
+        @for ($bandType of selectedBandTypes(); track $bandType) {
+          @for ($bandGroups of groupMap.get($bandType) | keyvalue; track $bandGroups.key) {
+            @for($band of Object.values($bandGroups.value); track $band; let $ix = $index) {
+              <th [ngClass]="{ 'first-band' : $ix === 0, 'band-name-cell': true}">
+                @if ($ix === 0) {
+                  <span class="symphony-theme">{{ $bandGroups.key}}</span>
+                }
+                <span class="band-name">{{ $band.name }}</span>
+              </th>
+            }
+          }
+        }
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let $change of areaChangeMap | keyvalue">
-        <th>
-          <span class="band-name">
-            {{ $change.key >= 0 ? scenario.areas[$change.key].feature.properties['name'] :
-              ('map.editor.changes-overview.global-changes' | translate) }}
-          </span>
-        </th>
-        <ng-container *ngFor="let $bandType of selectedBandTypes()">
-          <ng-container *ngFor="let $bandGroups of groupMap.get($bandType) | keyvalue">
-            <td *ngFor="let $band of $bandGroups.value"
-            [ngClass]="{
-                  eco:      $bandType === 'ecoComponents',
-                  pressure: $bandType === 'pressures' }"
-            >
-              <app-overview-inline-band-change
-                [change]="getChange($bandType, +$change.key, $band.number)"
-                [areaIndex]="+$change.key"
-                [bandNumber]="+$band.number"
-                (editModeChange)="setEditingCell($event)"
-                >
-              </app-overview-inline-band-change>
-          </ng-container>
-        </ng-container>
-      </tr>
+      @for ($change of areaChangeMap | keyvalue; track $change.key) {
+        <tr>
+          <th>
+            <span class="band-name">
+              {{ Number($change.key) >= 0 ? scenario.areas[Number($change.key)].feature.properties?.['name'] :
+                ('map.editor.changes-overview.global-changes' | translate) }}
+            </span>
+          </th>
+          @for ($bandType of selectedBandTypes(); track $bandType) {
+            @for ($bandGroups of groupMap.get($bandType) | keyvalue; track $bandGroups.key) {
+              @for($band of Object.values($bandGroups.value); track $band) {
+              <td [ngClass]="{
+                    eco:      $bandType === 'ecoComponents',
+                    pressure: $bandType === 'pressures' }"
+              >
+                <app-overview-inline-band-change
+                  [change]="getChange($bandType, +$change.key, $band.number)"
+                  [areaIndex]="+$change.key"
+                  [bandNumber]="+$band.number"
+                  (editModeChange)="setEditingCell($event)"
+                  >
+                </app-overview-inline-band-change>
+              </td>
+              }
+            }
+          }
+        </tr>
+      }
     </tbody>
   </table>
 </div>

@@ -6,26 +6,30 @@
     <div>
       <h3>{{ 'map.editor.operation.title' | translate }}</h3>
       <span>{{ 'map.editor.operation.'+ availableOperations.get(scenario.operation) +'.title' | translate }}</span>
-      <span class="rarityOptions" *ngIf="scenario.operation === operation.RarityAdjusted">{{ 'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.' + getOptions().domain | translate }}</span>
+      @if (scenario.operation === operation.RarityAdjusted) {
+        <span class="rarityOptions">{{ 'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.' + getOptions().domain | translate }}</span>
+      }
     </div>
     <div>
       <h3>{{ 'map.editor.normalization.title' | translate }}</h3>
-      <span [ngSwitch]="scenario.normalization.type">
-        <ng-container *ngSwitchCase="type.DOMAIN">
-          {{ 'map.editor.normalization.domain' | translate:{ ordinalPercentileValue: (percentileValue$ | async) | ordinal:locale } }}
-        </ng-container>
-        <ng-container *ngSwitchCase="type.AREA">
-          {{ 'map.editor.normalization.area' | translate }}
-        </ng-container>
-        <ng-container *ngSwitchCase="type.STANDARD_DEVIATION">
-          {{ 'report.cumulative-effect-etc.normalization.mean-plus-stddev' | translate:
-          { stddevMultiplier: jsMath.abs(scenario.normalization.stdDevMultiplier),
+      <span>
+        @switch (scenario.normalization.type) {
+          @case (type.DOMAIN) {
+            {{ 'map.editor.normalization.domain' | translate:{ ordinalPercentileValue: (percentileValue$ | async) | ordinal:locale } }}
+          }
+          @case (type.AREA) {
+            {{ 'map.editor.normalization.area' | translate }}
+          }
+          @case (type.STANDARD_DEVIATION) {
+            {{ 'report.cumulative-effect-etc.normalization.mean-plus-stddev' | translate:
+            { stddevMultiplier: jsMath.abs(scenario.normalization.stdDevMultiplier),
             positiveOrNegative: scenario.normalization.stdDevMultiplier > 0 ? '+' : '-' } }}
-        </ng-container>
-        <ng-container *ngSwitchCase="type.USER_DEFINED">
-          {{ 'map.editor.normalization.custom' | translate }} = {{
-          scenario.normalization.userDefinedValue | number: '1.0-4':locale }}
-        </ng-container>
+          }
+          @case (type.USER_DEFINED) {
+            {{ 'map.editor.normalization.custom' | translate }} = {{
+            scenario.normalization.userDefinedValue | number: '1.0-4':locale }}
+          }
+        }
       </span>
     </div>
   </div>
@@ -34,8 +38,8 @@
     <h3>{{ 'map.editor.area-changes.title' | translate }}</h3>
     <div class="changes-tools">
       <app-icon iconType="copy-setting"
-                (click)="importChanges()"
-                title="{{ 'map.editor.transfer-changes.tooltip' | translate }}"></app-icon>
+        (click)="importChanges()"
+      title="{{ 'map.editor.transfer-changes.tooltip' | translate }}"></app-icon>
     </div>
     <app-changes-list
       [changes]="changes()"
@@ -50,19 +54,21 @@
       [scenario]="this.scenario"
       [areaIndex]="this.areaIndex"
       (setMatrix)="onMatrixSelection($event)"
-    >
+      >
     </app-matrix-selection>
   </section>
 
-  <section class="coastal-area" *ngIf="hasAssociatedCoastalArea()">
-    <h3>{{ 'map.editor.coastal-areas.title' | translate }}</h3>
-    <mat-checkbox id="coast-checkbox"
+  @if (hasAssociatedCoastalArea()) {
+    <section class="coastal-area">
+      <h3>{{ 'map.editor.coastal-areas.title' | translate }}</h3>
+      <mat-checkbox id="coast-checkbox"
                   [checked]="(this.area()).excludedCoastal === null ||
                              (this.area()).excludedCoastal === -1"
-                  (change)="onCheckIncludeCoast($event.checked)">
-      {{ 'map.editor.coastal-areas.include-coast' | translate }}
-    </mat-checkbox>
-  </section>
+        (change)="onCheckIncludeCoast($event.checked)">
+        {{ 'map.editor.coastal-areas.include-coast' | translate }}
+      </mat-checkbox>
+    </section>
+  }
 </section>
 
 <div class="toolbar">

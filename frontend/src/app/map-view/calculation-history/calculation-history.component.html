@@ -1,23 +1,29 @@
 <section class="tab-section" [ngClass]="{ 'multi-mode' : isMultiMode() }">
 
-  <div *ngIf="environment.showBaseCalculations">
-    <h3>{{ 'map.history.baseline-calculations' | translate }}</h3>
-    <div class="baseline-name" [title]="baseline?.description">{{baseline?.name}}</div>
-    <section class="list-section baseline">
-      <button *ngFor="let calculation of baselineCalculations$ | async" class="calculation">
-<!--              (click)="load(calculation)"-->
-        <div class="calculation-info">
-          <h4 class="baseline" [title]="calculation.name">{{ calculation.name }}</h4>
-          <!--TODO: show calc param summary instead of [from user's point of view arbitrary] time -->
-          <span>{{ calculation.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
-        </div>
-        <app-icon iconType="report" (click)="showReport(calculation.id)">
-        </app-icon>
-      </button>
-      <ng-container *ngIf="!$any(baselineCalculations$ | async)?.length" [ngTemplateOutlet]="noCalculations">
-      </ng-container>
-    </section>
-  </div>
+  @if (environment.showBaseCalculations) {
+    <div>
+      <h3>{{ 'map.history.baseline-calculations' | translate }}</h3>
+      <div class="baseline-name" [title]="baseline?.description">{{baseline?.name}}</div>
+      <section class="list-section baseline">
+        @for (calculation of baselineCalculations$ | async; track calculation) {
+          <button class="calculation">
+            <!--              (click)="load(calculation)"-->
+            <div class="calculation-info">
+              <h4 class="baseline" [title]="calculation.name">{{ calculation.name }}</h4>
+              <!--TODO: show calc param summary instead of [from user's point of view arbitrary] time -->
+              <span>{{ calculation.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
+            </div>
+            <app-icon iconType="report" (click)="showReport(calculation.id)">
+            </app-icon>
+          </button>
+        }
+        @if (!$any(baselineCalculations$ | async)?.length) {
+          <ng-container [ngTemplateOutlet]="noCalculations">
+          </ng-container>
+        }
+      </section>
+    </div>
+  }
 
   <div class="title-container">
     <h3>{{ 'map.history.previous-calculations' | translate }}</h3>
@@ -26,94 +32,115 @@
       [enterLabel]="'map.history.multi-mode.enter'"
       [exitLabel]="'map.history.multi-mode.exit'"
       [disabledPredicate]="isDisabled"
-    >
+      >
       <app-multi-action-button class="action-compare"
-         [multiActionDelegate]="generateComparisonDataSet"
-         [multiActionIcon]="'compare'"
-         [multiActionLabel]="'map.history.multi-mode.generate-comparison'"
-         [multiActionLabelDisabled]="'map.history.multi-mode.none-selected'"
+        [multiActionDelegate]="generateComparisonDataSet"
+        [multiActionIcon]="'compare'"
+        [multiActionLabel]="'map.history.multi-mode.generate-comparison'"
+        [multiActionLabelDisabled]="'map.history.multi-mode.none-selected'"
       ></app-multi-action-button>
       <app-multi-action-button class="action-delete"
-         [multiActionDelegate]="deleteSelectedCalculations"
-         [multiActionIcon]="'delete'"
-         [multiActionLabel]="'map.history.multi-mode.delete-selected'"
-         [multiActionLabelDisabled]="'map.history.multi-mode.none-selected'"
+        [multiActionDelegate]="deleteSelectedCalculations"
+        [multiActionIcon]="'delete'"
+        [multiActionLabel]="'map.history.multi-mode.delete-selected'"
+        [multiActionLabelDisabled]="'map.history.multi-mode.none-selected'"
       ></app-multi-action-button>
     </app-multi-tools>
   </div>
 
   <div class="list-filter-container">
     <app-list-filter
-        [filterPlaceholder]="'map.history.filter-hint' | translate"
-        (filterChange)="setFilter($event)"
-        (sortChange)="setSort($event)"
+      [filterPlaceholder]="'map.history.filter-hint' | translate"
+      (filterChange)="setFilter($event)"
+      (sortChange)="setSort($event)"
     ></app-list-filter>
   </div>
 
-  <section class="list-section" *ngIf="(loading$ | async) === false else loading">
-    <div class="calculation-wrap"
-         [ngClass]="{ 'filtered': filter(calculation.name) }"
-         *ngFor="let calculation of calculations$ | async; index as i">
-      <button class="calculation list-item interactive"
+  @if ((loading$ | async) === false) {
+    <section class="list-section">
+      @for (calculation of calculations$ | async; track calculation; let i = $index) {
+        <div class="calculation-wrap"
+          [ngClass]="{ 'filtered': filter(calculation.name) }"
+          >
+          <button class="calculation list-item interactive"
               [ngClass]="{
                 'visible': resultIsVisible(calculation.id),
                 'purged': calculation.isPurged }"
-              [title]="(calculation.isPurged ? ('map.history.purged-result' | translate) : '')"
-              (click)="isMultiMode() ? multiSelect(calculation.id) : showReport(calculation.id)"
-              >
-        <div class="calculation-info">
-          <div class="name">
-            <h4 *ngIf="editingId !== calculation.id" [title]="calculation.name">{{ calculation.name }}</h4>
-          </div>
-          <span class="timestamp">{{ calculation.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
+            [title]="(calculation.isPurged ? ('map.history.purged-result' | translate) : '')"
+            (click)="isMultiMode() ? multiSelect(calculation.id) : showReport(calculation.id)"
+            >
+            <div class="calculation-info">
+              <div class="name">
+                @if (editingId !== calculation.id) {
+                  <h4 [title]="calculation.name">{{ calculation.name }}</h4>
+                }
+              </div>
+              <span class="timestamp">{{ calculation.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
+            </div>
+            @if (!(isMultiMode() || (comparedCalculationsRepeat$ | async)?.includes(calculation.id))) {
+              <div class="list-actions">
+                @if (!resultIsVisible(calculation.id)) {
+                  <app-icon iconType="eye" (click)="loadResult(calculation.id); $event.stopPropagation()"
+                  title="{{ 'map.history.show-result' | translate }}"></app-icon>
+                }
+                @if (resultIsVisible(calculation.id)) {
+                  <app-icon iconType="eye-slash" (click)="removeResult(calculation.id); $event.stopPropagation()"
+                  title="{{ 'map.history.hide-result' | translate }}"></app-icon>
+                }
+                <app-icon iconType="report" (click)="showReport(calculation.id); $event.stopPropagation()"
+                  title="{{ 'map.history.show-report' | translate: { calculationName: calculation.name } }}">
+                </app-icon>
+                <app-icon iconType="edit" (click)="$event.stopPropagation(); editCalculationName(calculation.id, calculation.name);"
+                  title="{{ 'map.history.edit-name.label' | translate }}">
+                </app-icon>
+                <app-icon iconType="delete" (click)="confirmDelete(calculation, $event)"
+                  title="{{ 'map.history.delete' | translate: { calculationName: calculation.name } }}"
+                  >
+                </app-icon>
+              </div>
+            }
+            @if ((comparedCalculationsRepeat$ | async)?.includes(calculation.id)) {
+              <mat-spinner diameter="20" ></mat-spinner>
+            }
+            @if (resultIsVisible(calculation.id)) {
+              <app-icon iconType="eye" class="visible"
+              title="{{ 'map.history.visible-result' | translate }}"></app-icon>
+            }
+            @if (!loadingCalculations.has(calculation.id) && calculation.isPurged) {
+              <app-icon iconType="cross" class="purged"></app-icon>
+            }
+          </button>
+          @if (isMultiMode()) {
+            <div class="multi-selected-wrap">
+              <mat-checkbox [checked]="selectedIds.includes(calculation.id)"
+                [disabled]="(comparedCalculationsRepeat$ | async)?.includes(calculation.id)"
+                (change)="multiSelect(calculation.id)"
+                (click)="$event.stopPropagation()">
+              </mat-checkbox>
+            </div>
+          }
         </div>
-        <div class="list-actions" *ngIf="!(isMultiMode() || (comparedCalculationsRepeat$ | async)?.includes(calculation.id))">
-          <app-icon *ngIf="!resultIsVisible(calculation.id)" iconType="eye" (click)="loadResult(calculation.id); $event.stopPropagation()"
-                    title="{{ 'map.history.show-result' | translate }}"></app-icon>
-          <app-icon *ngIf="resultIsVisible(calculation.id)" iconType="eye-slash" (click)="removeResult(calculation.id); $event.stopPropagation()"
-                    title="{{ 'map.history.hide-result' | translate }}"></app-icon>
-          <app-icon iconType="report" (click)="showReport(calculation.id); $event.stopPropagation()"
-                    title="{{ 'map.history.show-report' | translate: { calculationName: calculation.name } }}">
-          </app-icon>
-          <app-icon iconType="edit" (click)="$event.stopPropagation(); editCalculationName(calculation.id, calculation.name);"
-                    title="{{ 'map.history.edit-name.label' | translate }}">
-          </app-icon>
-          <app-icon iconType="delete" (click)="confirmDelete(calculation, $event)"
-            title="{{ 'map.history.delete' | translate: { calculationName: calculation.name } }}"
-          >
-          </app-icon>
-        </div>
-        <mat-spinner *ngIf="(comparedCalculationsRepeat$ | async)?.includes(calculation.id)" diameter="20" ></mat-spinner>
-        <app-icon iconType="eye" class="visible" *ngIf="resultIsVisible(calculation.id)"
-                  title="{{ 'map.history.visible-result' | translate }}"></app-icon>
-        <app-icon iconType="cross" class="purged" *ngIf="!loadingCalculations.has(calculation.id) && calculation.isPurged"></app-icon>
-      </button>
-      <div class="multi-selected-wrap" *ngIf="isMultiMode()">
-        <mat-checkbox [checked]="selectedIds.includes(calculation.id)"
-                      [disabled]="(comparedCalculationsRepeat$ | async)?.includes(calculation.id)"
-                      (change)="multiSelect(calculation.id)"
-                      (click)="$event.stopPropagation()">
-        </mat-checkbox>
-      </div>
+      }
+      @if (!$any(calculations$ | async).length) {
+        <ng-container [ngTemplateOutlet]="noCalculations">
+        </ng-container>
+      }
+    </section>
+  } @else {
+    <div class="loading">
+      <mat-spinner diameter="20"></mat-spinner>
+      <h4>{{ 'map.history.loading' | translate }}</h4>
     </div>
-    <ng-container *ngIf="!$any(calculations$ | async).length" [ngTemplateOutlet]="noCalculations">
-    </ng-container>
-  </section>
+  }
   <!--TODO Add useful hover info such as normalization, band selection etc?-->
 </section>
 
-<ng-template #loading>
-  <div class="loading">
-    <mat-spinner diameter="20"></mat-spinner>
-    <h4>{{ 'map.history.loading' | translate }}</h4>
-  </div>
-</ng-template>
 
 <ng-template #noCalculations>
   <div class="no-calculations">
     <span>
       <app-icon iconType="info-circle"></app-icon>
-        {{ 'map.history.placeholder' | translate }}
+      {{ 'map.history.placeholder' | translate }}
     </span>
   </div>
 </ng-template>

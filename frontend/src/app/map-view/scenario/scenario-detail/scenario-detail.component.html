@@ -1,9 +1,13 @@
 <section class="padded-container">
   <div class="title">
-    <h2 *ngIf="!editName" (click)="editTheName()" tabindex="0">{{ scenario.name }}</h2>
-    <input *ngIf="editName" #name type="text" [value]="scenario.name"
-           (keydown.enter)="onChangeName($event.target.value)"
-           (blur)="onChangeName($event.target.value)">
+    @if (!editName) {
+      <h2 (click)="editTheName()" tabindex="0">{{ scenario.name }}</h2>
+    }
+    @if (editName) {
+      <input #name type="text" [value]="scenario.name"
+        (keydown.enter)="onChangeName($event.target.value)"
+        (blur)="onChangeName($event.target.value)">
+    }
     <button (click)="editTheName()">
       <app-icon iconType="edit"></app-icon>
     </button>
@@ -11,7 +15,7 @@
   <div [ngClass]="{'is-dirty': this.unsaved, 'scenario-info-stripe' : true, 'active-save': !this.unsaved && this.savedByInteraction }">
     <span class="scenario-timestamp">{{ scenario.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
     <button class="save-immediate" (click)="saveImmediate()"
-            title="{{ 'map.editor.save-changes' | translate }}">
+      title="{{ 'map.editor.save-changes' | translate }}">
       {{ 'map.editor.unsaved-changes' | translate }}
     </button>
     <div class="interactive-save-indication"
@@ -23,12 +27,13 @@
   <main>
     <section class="scenario-areas">
       <h3>{{ 'map.editor.areas.title' | translate }}</h3>
-      <app-icon-button icon="split"
-        class="batch-options-button"
-        *ngIf="scenario.areas.length > 1"
-        [label]="'map.editor.split-scenario-settings.title' | translate"
-        (iconClick)="openSplitDialog()">
-      </app-icon-button>
+      @if (scenario.areas.length > 1) {
+        <app-icon-button icon="split"
+          class="batch-options-button"
+          [label]="'map.editor.split-scenario-settings.title' | translate"
+          (iconClick)="openSplitDialog()">
+        </app-icon-button>
+      }
       <app-add-scenario-areas
         [disabled]="(calculating$ | async) || (areaMatricesLoading$ | async)"
         [noneSelectedTipKey]="'map.editor.areas.select-area-first-label'"
@@ -38,26 +43,32 @@
         [scenario]="scenario"
       ></app-add-scenario-areas>
       <div class="scenario-areas-wrap">
-        <div class="pendingMatricesOverlay" *ngIf="areaMatricesLoading$ | async">
-          <mat-spinner diameter="32"></mat-spinner>
-          <span class="loadingMessage">{{ 'map.editor.areas.loading-matrices' | translate }}</span>
-        </div>
+        @if (areaMatricesLoading$ | async) {
+          <div class="pendingMatricesOverlay">
+            <mat-spinner diameter="32"></mat-spinner>
+            <span class="loadingMessage">{{ 'map.editor.areas.loading-matrices' | translate }}</span>
+          </div>
+        }
         <ul [class]="(areaMatricesLoading$ | async) ? 'pendingMatrices' : ''">
-          <li *ngFor="let area of scenario.areas; let aix = index" (click)="openScenarioArea(aix)"
+          @for (area of scenario.areas; track area; let aix = $index) {
+            <li (click)="openScenarioArea(aix)"
               tabindex="0">
-            <span class="feature-name">{{ area.feature.properties['name'] }}</span>
-            <div class="actions">
-              <ng-container *ngIf="area.changes">
-                <app-icon iconType="not-equal" *ngIf="!isEmpty(area.changes)"
+              <span class="feature-name">{{ area.feature.properties['name'] }}</span>
+              <div class="actions">
+                @if (area.changes) {
+                  @if (!isEmpty(area.changes)) {
+                    <app-icon iconType="not-equal"
                           title="{{ 'map.editor.areas.specific-settings'
                           | translate: { 'feature-changes': getChangesText(aix) }  }}">
+                    </app-icon>
+                  }
+                }
+                <app-icon iconType="delete" (click)="deleteAreaDelegate(area.id, $event, scenario)"
+                  title="{{ 'map.editor.areas.remove.label' | translate }}">
                 </app-icon>
-              </ng-container>
-              <app-icon iconType="delete" (click)="deleteAreaDelegate(area.id, $event, scenario)"
-                        title="{{ 'map.editor.areas.remove.label' | translate }}">
-              </app-icon>
-            </div>
-          </li>
+              </div>
+            </li>
+          }
         </ul>
       </div>
     </section>
@@ -65,13 +76,15 @@
     <section class="scenario-changes">
       <h3>{{ 'map.editor.changes.title' | translate }}</h3>
       <div class="changes-tools">
-        <app-icon iconType="table"
-                  (click)="openIntensityOverview()"
-                  title="{{ 'map.editor.changes-overview.show-overview' | translate }}"
-                  *ngIf="anyChanges()"></app-icon>
+        @if (anyChanges()) {
+          <app-icon iconType="table"
+            (click)="openIntensityOverview()"
+            title="{{ 'map.editor.changes-overview.show-overview' | translate }}"
+          ></app-icon>
+        }
         <app-icon iconType="copy-setting"
-                  (click)="importChanges()"
-                  title="{{ 'map.editor.transfer-changes.tooltip' | translate }}"></app-icon>
+          (click)="importChanges()"
+        title="{{ 'map.editor.transfer-changes.tooltip' | translate }}"></app-icon>
       </div>
       <app-changes-list
         [changes]="changes()"
@@ -84,25 +97,31 @@
       <h3>{{ 'map.editor.operation.title' | translate }}</h3>
       <article>
         <mat-radio-group [formControl]="operation" (change)="setOperation()">
-          <mat-radio-button *ngFor="let op of availableOperations | keyvalue" [value]="op.key">
-            {{ 'map.editor.operation.'+op.key+'.title' | translate }}
-          </mat-radio-button>
+          @for (op of availableOperations | keyvalue; track op) {
+            <mat-radio-button [value]="op.key">
+              {{ 'map.editor.operation.'+op.key+'.title' | translate }}
+            </mat-radio-button>
+          }
         </mat-radio-group>
       </article>
-      <article *ngIf="operation.value === 'RarityAdjustedCumulativeImpact'">
-        <p>{{ 'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.description' | translate}}</p>
-        <mat-radio-button *ngFor="let paramValue of ['GLOBAL', 'LOCAL']"
-                          value="{{paramValue}}" [checked]="getParams().domain === paramValue"
-                          (change)="onCheckRarityIndicesDomain(paramValue)">
-          {{ 'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.' + paramValue | translate }}
-        </mat-radio-button>
-      </article>
+      @if (operation.value === 'RarityAdjustedCumulativeImpact') {
+        <article>
+          <p>{{ 'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.description' | translate}}</p>
+          @for (paramValue of ['GLOBAL', 'LOCAL']; track paramValue) {
+            <mat-radio-button
+              value="{{paramValue}}" [checked]="getParams().domain === paramValue"
+              (change)="onCheckRarityIndicesDomain(paramValue)">
+              {{ 'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.' + paramValue | translate }}
+            </mat-radio-button>
+          }
+        </article>
+      }
     </section>
 
     <section class="normalization"> <!--Wrap in accordion-box?-->
       <h3>{{ 'map.editor.normalization.title' | translate }}</h3>
       <app-normalization-selection [options]="getNormalizationOptions()" [algorithm]="operation.value"
-                                   [percentileValue]="this.percentileValue$ | async"
+        [percentileValue]="this.percentileValue$ | async"
         (modeSelectionEvent)="setNormalizationOptions($event)">
       </app-normalization-selection>
     </section>
@@ -111,29 +130,31 @@
 
 </section>
 
-<div class="toolbar" *ngIf="{ mxLoading: areaMatricesLoading$ | async, calculating: calculating$ | async } as state">
-
-  <button mat-flat-button id="exit" (click)="close()" [ngClass]="'basic'"
-          [disabled]="state.calculating">
-    {{ 'map.editor.close' | translate }}
-  </button>
-
-  <button mat-flat-button id="delete" color="warn" [ngClass]="'secondary'"
-          [disabled]="state.calculating" (click)="delete()">
-    {{ 'map.editor.delete.label' | translate }}
-  </button>
-
-  <button mat-flat-button id="calculate"
-          [disabled]="state.calculating || state.mxLoading"
-          (click)="calculate()"
-  >
-    {{ 'map.editor.calculate' | translate }}
-  </button>
-
-  <button mat-flat-button id="report-button" [ngClass]="{'green' : !state.calculating, 'mat-button-disabled' : state.calculating }"
-          (click)="showReport(scenario.latestCalculationId+'')"
-          [disabled]="!scenario.latestCalculationId || state.calculating">
-    <mat-spinner *ngIf="state.calculating" diameter="20"></mat-spinner>
-    <app-icon *ngIf="!state.calculating" iconType="report"></app-icon>
-  </button>
-</div>
+@if ({ mxLoading: areaMatricesLoading$ | async, calculating: calculating$ | async }; as state) {
+  <div class="toolbar">
+    <button mat-flat-button id="exit" (click)="close()" [ngClass]="'basic'"
+      [disabled]="state.calculating">
+      {{ 'map.editor.close' | translate }}
+    </button>
+    <button mat-flat-button id="delete" color="warn" [ngClass]="'secondary'"
+      [disabled]="state.calculating" (click)="delete()">
+      {{ 'map.editor.delete.label' | translate }}
+    </button>
+    <button mat-flat-button id="calculate"
+      [disabled]="state.calculating || state.mxLoading"
+      (click)="calculate()"
+      >
+      {{ 'map.editor.calculate' | translate }}
+    </button>
+    <button mat-flat-button id="report-button" [ngClass]="{'green' : !state.calculating, 'mat-button-disabled' : state.calculating }"
+      (click)="showReport(scenario.latestCalculationId+'')"
+      [disabled]="!scenario.latestCalculationId || state.calculating">
+      @if (state.calculating) {
+        <mat-spinner diameter="20"></mat-spinner>
+      }
+      @if (!state.calculating) {
+        <app-icon iconType="report"></app-icon>
+      }
+    </button>
+  </div>
+}

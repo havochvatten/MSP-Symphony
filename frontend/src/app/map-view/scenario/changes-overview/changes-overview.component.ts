@@ -160,4 +160,7 @@ export class ChangesOverviewComponent implements OnInit {
       }
     }
   }
+
+  protected readonly Number = Number;
+  protected readonly Object = Object;
 }

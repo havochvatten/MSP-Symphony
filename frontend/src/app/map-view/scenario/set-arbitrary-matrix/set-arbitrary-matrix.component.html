@@ -5,21 +5,25 @@
 <mat-form-field>
   <mat-select [(ngModel)]="selectedMatrix" placeholder="{{
     'map.editor.set-arbitrary-matrix.select-matrix-placeholder' | translate }}"
-              [panelClass]="'select-sensitivity-matrix-panel'">
-    <mat-option *ngFor="let matrix of matrices" [value]="matrix">
-      {{ matrix.name }}
-    </mat-option>
+    [panelClass]="'select-sensitivity-matrix-panel'">
+    @for (matrix of matrices; track matrix) {
+      <mat-option [value]="matrix">
+        {{ matrix.name }}
+      </mat-option>
+    }
   </mat-select>
 </mat-form-field>
 <mat-label>{{ 'map.editor.set-arbitrary-matrix.calculation-area' | translate }}</mat-label>
 <mat-form-field floatLabel="never">
   <mat-select [(ngModel)]="selectedCalculationArea" placeholder="{{
     'map.editor.set-arbitrary-matrix.select-area-placeholder' | translate }}"
-              [panelClass]="'select-calibrated-area-panel'"
-              [disabled]="(calibratedAreas$ | async)?.length < 2">
-    <mat-option *ngFor="let area of calibratedAreas$ | async" [value]="area">
-      {{ area.name }}
+    [panelClass]="'select-calibrated-area-panel'"
+    [disabled]="(calibratedAreas$ | async)?.length < 2">
+    @for (area of calibratedAreas$ | async; track area) {
+      <mat-option [value]="area">
+        {{ area.name }}
       </mat-option>
+    }
   </mat-select>
 </mat-form-field>
 <div class="button-pane">
@@ -27,7 +31,7 @@
     'confirmation-modal.cancel' | translate
   }}</button>
   <button mat-flat-button (click)="confirm()"
-          [disabled]="selectedMatrix === null || selectedCalculationArea === null">{{
+    [disabled]="selectedMatrix === null || selectedCalculationArea === null">{{
     'map.editor.set-arbitrary-matrix.set-matrix-and-normalization' | translate
   }}</button>
 </div>

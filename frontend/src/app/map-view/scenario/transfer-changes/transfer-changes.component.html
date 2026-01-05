@@ -3,23 +3,29 @@
 <mat-form-field>
   <mat-label>{{ 'map.editor.transfer-changes.select-scenario' | translate }}</mat-label>
   <mat-select (selectionChange)="onScenarioChange($event)" [ngClass]="'scenario-select'" [(ngModel)]="selectedScenario"
-              [panelClass]="'select-scenario-transfer-panel'">
-    <mat-option *ngFor="let scenarioWithChanges of (scenarios$ | async)" [value]="scenarioWithChanges" [ngClass]="{ 'grayed' : !scenarioWithChanges.hasGlobalChanges }">
-      {{ scenarioWithChanges.scenario.name }}
-    </mat-option>
+    [panelClass]="'select-scenario-transfer-panel'">
+    @for (scenarioWithChanges of (scenarios$ | async); track scenarioWithChanges) {
+      <mat-option [value]="scenarioWithChanges" [ngClass]="{ 'grayed' : !scenarioWithChanges.hasGlobalChanges }">
+        {{ scenarioWithChanges.scenario.name }}
+      </mat-option>
+    }
   </mat-select>
 </mat-form-field>
 <mat-radio-group class="area-selection" #changesSelection (change)="setChangesToTransfer($event)" (click)="$event.stopPropagation()">
   <mat-radio-button [value]="-1"
-                    [checked]="selectedChange === -1"
+    [checked]="selectedChange === -1"
                     [disabled]="selectedScenario === null ||
                                 !selectedScenario.hasGlobalChanges">{{ 'map.editor.transfer-changes.use-scenario-wide' | translate }}
   </mat-radio-button>
-  <h4 *ngIf="getSelectableAreas().length > 0">{{ 'map.editor.transfer-changes.area-changes' | translate }}</h4>
-  <mat-radio-button *ngFor="let area of getSelectableAreas()"
-                    [value]="area.id"
-                    [checked]="selectedChange === area.id">{{ area.feature.properties['name'] }}
-  </mat-radio-button>
+  @if (getSelectableAreas().length > 0) {
+    <h4>{{ 'map.editor.transfer-changes.area-changes' | translate }}</h4>
+  }
+  @for (area of getSelectableAreas(); track area) {
+    <mat-radio-button
+      [value]="area.id"
+      [checked]="selectedChange === area.id">{{ area.feature.properties['name'] }}
+    </mat-radio-button>
+  }
 </mat-radio-group>
 <mat-checkbox [(ngModel)]="selectedChanges.overwrite">{{ 'map.editor.transfer-changes.overwrite' | translate }}</mat-checkbox>
 <div class="button-pane">

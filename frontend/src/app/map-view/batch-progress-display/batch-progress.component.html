@@ -1,39 +1,49 @@
-<div *ngFor="let process of processes$ | async" class="batch-process-list">
-  <div class="batch-progress-top">
-    <h6 class="batch-progress-header"
+@for (process of processes$ | async; track process) {
+  <div class="batch-process-list">
+    <div class="batch-progress-top">
+      <h6 class="batch-progress-header"
         [title]="
         checkCompleted(process) ? '' :
             'map.batch-progress.message' | translate:
           { count: process.calculated.length, total: process.entities.length }"
-      >{{ (checkCompleted(process) ?
-            (process.cancelled ? 'map.batch-progress.header-cancelled' :
-                                 'map.batch-progress.header-finished')   :
-              'map.batch-progress.header-in-progress') | translate }}</h6>
-    <app-icon [iconType]="'times'"
-              *ngIf="!checkCompleted(process)"
-              class="batch-progress-cancel"
-              [title]="'map.batch-progress.cancel' | translate"
-              (click)="cancelRunningProcess(process.id)"
-    ></app-icon>
-    <app-icon [iconType]="'eye-slash'"
-              *ngIf="checkCompleted(process)"
-              class="batch-progress-remove"
-              [title]="'map.batch-progress.remove-finished' | translate"
-              (click)="removeFinishedProcess(process.id)"
-    ></app-icon>
+        >{{ (checkCompleted(process) ?
+        (process.cancelled ? 'map.batch-progress.header-cancelled' :
+        'map.batch-progress.header-finished')   :
+      'map.batch-progress.header-in-progress') | translate }}</h6>
+      @if (!checkCompleted(process)) {
+        <app-icon [iconType]="'times'"
+          class="batch-progress-cancel"
+          [title]="'map.batch-progress.cancel' | translate"
+          (click)="cancelRunningProcess(process.id)"
+        ></app-icon>
+      }
+      @if (checkCompleted(process)) {
+        <app-icon [iconType]="'eye-slash'"
+          class="batch-progress-remove"
+          [title]="'map.batch-progress.remove-finished' | translate"
+          (click)="removeFinishedProcess(process.id)"
+        ></app-icon>
+      }
+    </div>
+    @for (entity of process.entities; track entity; let i = $index) {
+      <div class="batch-scenario">
+        <span class="batch-scenario-name">{{
+          process.entityNames[entity]
+        }}</span>
+        @if (process.currentEntity === entity) {
+          <mat-spinner [diameter]="14"></mat-spinner>
+        }
+        @if ((process.calculated.includes(entity))) {
+          <app-icon [iconType]="'report'"
+            (click)="showReport(process.reports[i])"
+          class="calculation-report"></app-icon>
+        }
+        @if ((process.failed.includes(entity))) {
+          <app-icon [iconType]="'cross'"
+            class="calculation-failed"
+          ></app-icon>
+        }
+      </div>
+    }
   </div>
-  <div class="batch-scenario" *ngFor="let entity of process.entities; index as i">
-    <span class="batch-scenario-name">{{
-      process.entityNames[entity]
-    }}</span>
-    <mat-spinner *ngIf="process.currentEntity === entity" [diameter]="14"></mat-spinner>
-    <app-icon [iconType]="'report'"
-              *ngIf="(process.calculated.includes(entity))"
-              (click)="showReport(process.reports[i])"
-              class="calculation-report"></app-icon>
-    <app-icon [iconType]="'cross'"
-              *ngIf="(process.failed.includes(entity))"
-              class="calculation-failed"
-              ></app-icon>
-  </div>
-</div>
+}
