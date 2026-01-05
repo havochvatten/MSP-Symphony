@@ -1,5 +1,5 @@
 <nav class="nav nav-tabs">
-  @for (tab of tabs; track tab) {
+  @for (tab of tabs; track $index) {
     <a
       class="tab"
       [class.active]="tab.active"

@@ -24,7 +24,7 @@
         <div id="matrix-selection">
           <h4>{{'report.sensitivity-matrices.title' | translate}}</h4>
           <table>
-            @for (matrixMap of getGroupedMatrixMap() | keyvalue; track matrixMap) {
+            @for (matrixMap of getGroupedMatrixMap() | keyvalue; track $index) {
               <tr>
                 <th>{{ matrixMap.value.join(", ") }}</th>
                 <td>{{ matrixMap.key }}</td>

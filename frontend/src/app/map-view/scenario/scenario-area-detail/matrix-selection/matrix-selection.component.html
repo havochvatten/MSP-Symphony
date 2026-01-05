@@ -23,7 +23,7 @@
           [placeholder]="'map.editor.matrix.choose-matrix' | translate"
           [value]="this.selectedOptionalMatrix"
           (valueChange)="customSelect($event)" [className]="'tiny'" panelClass="ddPanel tiny mxDrop">
-          @for (matrix of commonOptionalMatrices; track matrix) {
+          @for (matrix of commonOptionalMatrices; track matrix.id) {
             <mat-option [value]="matrix">
               {{ matrix.name }}
             </mat-option>
@@ -41,7 +41,7 @@
         <mat-option [value]="null">
           {{ 'map.editor.matrix.no-area-type' | translate }}
         </mat-option>
-        @for (areaType of areaTypes; track areaType) {
+        @for (areaType of areaTypes; track areaType.id) {
           <mat-option [value]="areaType">
             {{ areaType.name }}
           </mat-option>
@@ -53,7 +53,7 @@
           [placeholder]="'map.editor.matrix.choose-area-type-matrix' | translate"
           [value]="this.selectedTypedMatrix"
           (valueChange)="customSelect($event)" [className]="'tiny'" panelClass="ddPanel tiny mxDrop">
-          @for (matrix of areaTypeMatrixOptions; track matrix) {
+          @for (matrix of areaTypeMatrixOptions; track matrix.id) {
             <mat-option [value]="matrix">
               {{ matrix.name }}
             </mat-option>
@@ -76,7 +76,7 @@
       [placeholder]="'map.editor.matrix.choose-matrix' | translate"
       [value]="this.selectedCustomMatrix"
       (valueChange)="customSelect($event)" [className]="'tiny'" panelClass="ddPanel tiny mxDrop">
-      @for (matrix of matrixOptions; track matrix) {
+      @for (matrix of matrixOptions; track matrix.id) {
         <mat-option [value]="matrix" class="{{ matrix.immutable ? 'locked' : '' }}">
           <span>
             {{ matrix.name }}

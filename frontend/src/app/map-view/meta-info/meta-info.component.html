@@ -3,7 +3,7 @@
   layerName: this.title }
 }}</h4>
 <div class="meta-sections">
-  @for (metaSection of bandMetadata | keyvalue : preserveKV; track metaSection) {
+  @for (metaSection of bandMetadata | keyvalue : preserveKV; track metaSection.key) {
     <div class="meta-content">
       <h5>{{ 'map.metadata.properties.' + metaSection.key | translate }}</h5>
       @if (!(metaSection.value)) {
@@ -11,16 +11,16 @@
           {{ 'map.metadata.no-info' | translate }}
         </p>
       }
-      @for (meta of metaSection.value; track meta) {
+      @for (meta of metaSection.value; track $index) {
         <p [innerHTML]="meta | anchor"></p>
       }
     </div>
   }
-  @for (metaList of bandMetadataLists | keyvalue : preserveKV; track metaList) {
+  @for (metaList of bandMetadataLists | keyvalue : preserveKV; track metaList.key) {
     <div class="meta-content meta-list">
       <h5>{{ 'map.metadata.properties.' + metaList.key | translate }}</h5>
       <ul>
-        @for (mdListEntry of metaList.value; track mdListEntry) {
+        @for (mdListEntry of metaList.value; track $index) {
           <li [innerHTML]="mdListEntry | anchor"></li>
         }
       </ul>

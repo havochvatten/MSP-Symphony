@@ -1,5 +1,5 @@
 <select>
-  @for (option of options; track option) {
+  @for (option of options; track $index) {
     <option
       [selected]="option.selected"
       >

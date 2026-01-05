@@ -20,7 +20,7 @@
         <div class="select-base-wrapper" [ngClass]="{'hidden' : useImplicit }">
           <mat-select #base [placeholder]="'map.compare.select-calculation' | translate"
             (valueChange)="changeBase($event)" [panelClass]="{ 'ddPanel cmp': true }">
-            @for (c of calculations$ | async; track c) {
+            @for (c of calculations$ | async; track c.id) {
               <mat-option [value]="c.id"
               [ngClass]="{ 'purged' : c.isPurged }">{{ c.name }}</mat-option>
             }
@@ -45,7 +45,7 @@
         <mat-select #candidates formControlName="b" class="target-calculation" required
           [placeholder]="targetScenarioPlaceHolderKey(this.useImplicit || (candidates$ | async)?.length) | translate"
           [panelClass]="'ddPanel cmp'">
-          @for (c of candidates$ | async; track c) {
+          @for (c of candidates$ | async; track c.id) {
             <mat-option [value]="c.id"
               [ngClass]="{ 'purged' : c.isPurged }">{{ c.name }}
             </mat-option>

@@ -20,7 +20,7 @@
   ></app-list-filter>
 </div>
 <ul [ngClass]="{ 'multi-mode': isMultiMode() }">
-  @for (cmp of compoundComparison$ | async; track cmp) {
+  @for (cmp of compoundComparison$ | async; track cmp.id) {
     <li
       class="list-item"
       [ngClass]="{ 'filtered': filter(cmp.name) }">

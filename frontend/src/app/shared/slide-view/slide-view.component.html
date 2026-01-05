@@ -5,7 +5,7 @@
   [@openClose]="open ? 'open' : 'closed'"
   >
   <nav class="nav-tabs">
-    @for (tab of tabs; track tab) {
+    @for (tab of tabs; track $index) {
       <a
         class="tab for-panel"
         [class.active]="tab.active"

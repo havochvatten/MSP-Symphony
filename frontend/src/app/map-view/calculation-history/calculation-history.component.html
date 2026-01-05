@@ -5,7 +5,7 @@
       <h3>{{ 'map.history.baseline-calculations' | translate }}</h3>
       <div class="baseline-name" [title]="baseline?.description">{{baseline?.name}}</div>
       <section class="list-section baseline">
-        @for (calculation of baselineCalculations$ | async; track calculation) {
+        @for (calculation of baselineCalculations$ | async; track calculation.id) {
           <button class="calculation">
             <!--              (click)="load(calculation)"-->
             <div class="calculation-info">
@@ -58,7 +58,7 @@
 
   @if ((loading$ | async) === false) {
     <section class="list-section">
-      @for (calculation of calculations$ | async; track calculation; let i = $index) {
+      @for (calculation of calculations$ | async; track calculation.id; let i = $index) {
         <div class="calculation-wrap"
           [ngClass]="{ 'filtered': filter(calculation.name) }"
           >

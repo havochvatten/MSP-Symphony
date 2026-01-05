@@ -29,7 +29,7 @@
 }
 @if (areas.length > 0) {
   <ul>
-    @for (group of areas; track group) {
+    @for (group of areas; track $index) {
       <li
         [attr.data-visible]="group.visible"
         tabindex="0"
@@ -75,7 +75,7 @@
         </div>
         @if (searching || group.expanded) {
           <ul class="area-list">
-            @for (area of group.areas; track area) {
+            @for (area of group.areas; track $index) {
               <li
                 [attr.data-selected]="isSelected(area.statePath)"
                 (click)="onSelectArea(area, group, $event); $event.stopPropagation()"

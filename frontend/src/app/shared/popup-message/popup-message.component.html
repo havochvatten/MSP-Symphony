@@ -21,7 +21,7 @@
           <div [innerHTML]="messages[0].message"></div>
         }
         @if (!isHtml(messages[0].message)) {
-          @for (message of messages[0].message.split('\n'); track message) {
+          @for (message of messages[0].message.split('\n'); track $index) {
             <p [innerHTML]="message"></p>
           }
         }

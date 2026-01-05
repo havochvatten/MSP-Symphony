@@ -3,7 +3,7 @@
 }
 @if (colors) {
   <svg [attr.viewBox]="'0 0 ' + 20 * colors.length + ' 30'" overflow="visible">
-    @for (color of colors; track color; let i = $index) {
+    @for (color of colors; track $index; let i = $index) {
       <rect
         width="20"
         height="20"
@@ -14,7 +14,7 @@
         <title>{{ color.quantity * (perMille ? 0.1 : 1)  | number : digitsInfo():locale }}{{ unit }}</title>
       </rect>
     }
-    @for (color of colors; track color; let i = $index) {
+    @for (color of colors; track $index; let i = $index) {
       <text
         [attr.x]="i * 20 + 10"
         y="6"

@@ -24,7 +24,7 @@
       </app-multi-tools>
     </div>
     @if (!((selectionOverlap | async) ?? false)) {
-      @for (selectedArea of selectedAreas; track selectedArea) {
+      @for (selectedArea of selectedAreas; track selectedArea.code) {
         <p class="area-name">{{ selectedArea.displayName }}</p>
       }
     }
@@ -59,7 +59,7 @@
 
   @if ((scenario$ | async)?.length) {
     <section class="list-section">
-      @for (scenario of scenario$ | async; track scenario; let scenarioIndex = $index) {
+      @for (scenario of scenario$ | async; track scenario.id; let scenarioIndex = $index) {
         <div
           class="scenario-wrap"
           [ngClass]="{'filtered': filter(scenario.name) }">
@@ -74,7 +74,7 @@
               <span class="timestamp">{{ scenario.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
             </div>
             <ul [ngClass]="{'scenario-areas' : true, 'abundant' : scenario.areas.length > ABUNDANT_AREA_COUNT}">
-              @for (area of scenario.areas.slice(0, MAX_AREAS); track area) {
+              @for (area of scenario.areas.slice(0, MAX_AREAS); track area.id) {
                 <li
                   [title]="'map.editor.list.scenario-area' | translate: { scenario: scenario.name, 'area-feature': area.feature.properties['name'] }">
                   <span class="feature-name">{{ area.feature.properties['name'] }}</span>

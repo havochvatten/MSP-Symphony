@@ -1,7 +1,7 @@
 <div>
   <h4>{{ title }}</h4>
   <table>
-    @for (impact of highestImpacts; track impact) {
+    @for (impact of highestImpacts; track impact.bandNumber) {
       <tr>
         <td>
           <span
@@ -27,7 +27,7 @@
       stroke-width="1"
     ></line>
   }
-  @for (impact of highestImpacts; track impact; let i = $index) {
+  @for (impact of highestImpacts; track impact.bandNumber; let i = $index) {
     <path
       [attr.d]="bar(40 + i * 40, 220, 20, getImpact(impact.bandNumber) * 2, 2)"
       [attr.fill]="getColor(getImpact(impact.bandNumber))"

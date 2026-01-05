@@ -9,7 +9,7 @@
 <div id="third-party-container"> <!--Extract this to a separate dialog? -->
   <p>{{ 'about-dialog.third-party-software' | translate }}</p>
   <div class="scrollable">
-    @for (lib of thirdPartyLibraries; track lib) {
+    @for (lib of thirdPartyLibraries; track $index) {
       <p>
         <a href="{{ lib[1] }}" target="_blank">{{ lib[0] }}</a> {{ lib[2] }}
       </p>

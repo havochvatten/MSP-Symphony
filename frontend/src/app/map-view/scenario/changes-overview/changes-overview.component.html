@@ -24,7 +24,7 @@
         <th></th>
         @for ($bandType of selectedBandTypes(); track $bandType) {
           @for ($bandGroups of groupMap.get($bandType) | keyvalue; track $bandGroups.key) {
-            @for($band of Object.values($bandGroups.value); track $band; let $ix = $index) {
+            @for($band of Object.values($bandGroups.value); track $index; let $ix = $index) {
               <th [ngClass]="{ 'first-band' : $ix === 0, 'band-name-cell': true}">
                 @if ($ix === 0) {
                   <span class="symphony-theme">{{ $bandGroups.key}}</span>
@@ -47,7 +47,7 @@
           </th>
           @for ($bandType of selectedBandTypes(); track $bandType) {
             @for ($bandGroups of groupMap.get($bandType) | keyvalue; track $bandGroups.key) {
-              @for($band of Object.values($bandGroups.value); track $band) {
+              @for($band of Object.values($bandGroups.value); track $band.number) {
               <td [ngClass]="{
                     eco:      $bandType === 'ecoComponents',
                     pressure: $bandType === 'pressures' }"

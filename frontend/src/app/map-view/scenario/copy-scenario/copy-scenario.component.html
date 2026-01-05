@@ -6,7 +6,7 @@
   <div
     class="include-areas">
     <mat-label class="select-areas">{{ 'map.editor.copy-scenario.area-changes-to-include' | translate }}</mat-label>
-    @for (area of allAreasWithChanges; track area) {
+    @for (area of allAreasWithChanges; track area.id) {
       <mat-checkbox class="scenario-area-cb" checked="true" (change)="areaSelection($event, area.id)">{{ area.feature.properties['name'] }}</mat-checkbox>
     }
   </div>

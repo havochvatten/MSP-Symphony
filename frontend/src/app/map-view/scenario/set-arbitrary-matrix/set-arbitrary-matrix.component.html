@@ -6,7 +6,7 @@
   <mat-select [(ngModel)]="selectedMatrix" placeholder="{{
     'map.editor.set-arbitrary-matrix.select-matrix-placeholder' | translate }}"
     [panelClass]="'select-sensitivity-matrix-panel'">
-    @for (matrix of matrices; track matrix) {
+    @for (matrix of matrices; track matrix.id) {
       <mat-option [value]="matrix">
         {{ matrix.name }}
       </mat-option>
@@ -19,7 +19,7 @@
     'map.editor.set-arbitrary-matrix.select-area-placeholder' | translate }}"
     [panelClass]="'select-calibrated-area-panel'"
     [disabled]="(calibratedAreas$ | async)?.length < 2">
-    @for (area of calibratedAreas$ | async; track area) {
+    @for (area of calibratedAreas$ | async; track area.id) {
       <mat-option [value]="area">
         {{ area.name }}
       </mat-option>

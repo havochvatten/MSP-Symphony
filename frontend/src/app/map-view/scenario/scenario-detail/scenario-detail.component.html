@@ -50,7 +50,7 @@
           </div>
         }
         <ul [class]="(areaMatricesLoading$ | async) ? 'pendingMatrices' : ''">
-          @for (area of scenario.areas; track area; let aix = $index) {
+          @for (area of scenario.areas; track area.id; let aix = $index) {
             <li (click)="openScenarioArea(aix)"
               tabindex="0">
               <span class="feature-name">{{ area.feature.properties['name'] }}</span>
@@ -97,7 +97,7 @@
       <h3>{{ 'map.editor.operation.title' | translate }}</h3>
       <article>
         <mat-radio-group [formControl]="operation" (change)="setOperation()">
-          @for (op of availableOperations | keyvalue; track op) {
+          @for (op of availableOperations | keyvalue; track op.key) {
             <mat-radio-button [value]="op.key">
               {{ 'map.editor.operation.'+op.key+'.title' | translate }}
             </mat-radio-button>

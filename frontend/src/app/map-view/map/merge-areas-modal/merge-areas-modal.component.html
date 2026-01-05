@@ -9,7 +9,7 @@
     <mat-radio-button [value]="0">
       <strong>{{ 'map.merge-areas.modal.save-new' | translate }}</strong>
     </mat-radio-button>
-    @for (area of altAreas; track area) {
+    @for (area of altAreas; track area.index) {
       <mat-radio-button [value]="area.index">
         {{ 'map.merge-areas.modal.save-overwrite' | translate: area }}
       </mat-radio-button>

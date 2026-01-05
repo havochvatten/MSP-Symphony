@@ -5,19 +5,19 @@
       <tr class="title-row">
         <th>{{ group.symphonyThemeName }}</th>
         @if (true) {
-          @for (name of names; track name) {
+          @for (name of names; track $index) {
             <th>{{ name }}</th>
           }
         }
       </tr>
-      @for (band of group.bands; track band) {
+      @for (band of group.bands; track band.bandNumber) {
         @if (!isExcluded(band.bandNumber)) {
           <tr>
             <td class="band-name">
               {{ band.displayName }}
               <span class="line"></span>
             </td>
-            @for (impact of scenarioImpacts; track impact; let percentageColumn = $last) {
+            @for (impact of scenarioImpacts; track $index; let percentageColumn = $last) {
               <td class="impact">
                 @if (percentageColumn) {
                   {{ formatPercentage(impact[band.bandNumber], 'report.common.not-measurable' | translate, scenarioImpacts.length > 2) }}

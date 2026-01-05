@@ -1,7 +1,7 @@
 @if (menuItems) {
   <nav [attr.aria-label]="menuLabel">
     <ul>
-      @for (item of menuItems; track item) {
+      @for (item of menuItems; track $index) {
         <li>
           <a
             [routerLink]="item.url ? [{ outlets: { primary: item.url, overlay: null } }] : undefined"

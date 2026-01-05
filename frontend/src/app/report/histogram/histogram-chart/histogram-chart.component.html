@@ -1,5 +1,5 @@
 <svg [attr.viewBox]=chartViewBox()>
-  @for (bVal of bins; track bVal; let i = $index) {
+  @for (bVal of bins; track $index; let i = $index) {
     <ng-container>
       <path
         [attr.d]="phDraw(i, false)"
@@ -17,7 +17,7 @@
       </path>
     </ng-container>
   }
-  @for (hr of segments; track hr) {
+  @for (hr of segments; track $index) {
     <ng-container>
       <text
         [attr.x]="leftMargin - binWidth * 6"
@@ -35,7 +35,7 @@
     class="segment"
     [attr.d]="'M 154 ' + (cHeight + topMargin) + ' h 1040'">
   </path>
-  @for (xl of xlabels; track xl; let i = $index) {
+  @for (xl of xlabels; track $index; let i = $index) {
     <ng-container>
       <path
         class="segment"

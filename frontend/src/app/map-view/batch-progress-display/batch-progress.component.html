@@ -1,4 +1,4 @@
-@for (process of processes$ | async; track process) {
+@for (process of processes$ | async; track process.id) {
   <div class="batch-process-list">
     <div class="batch-progress-top">
       <h6 class="batch-progress-header"

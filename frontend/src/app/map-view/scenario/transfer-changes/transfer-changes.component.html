@@ -4,7 +4,7 @@
   <mat-label>{{ 'map.editor.transfer-changes.select-scenario' | translate }}</mat-label>
   <mat-select (selectionChange)="onScenarioChange($event)" [ngClass]="'scenario-select'" [(ngModel)]="selectedScenario"
     [panelClass]="'select-scenario-transfer-panel'">
-    @for (scenarioWithChanges of (scenarios$ | async); track scenarioWithChanges) {
+    @for (scenarioWithChanges of (scenarios$ | async); track scenarioWithChanges.scenario.id) {
       <mat-option [value]="scenarioWithChanges" [ngClass]="{ 'grayed' : !scenarioWithChanges.hasGlobalChanges }">
         {{ scenarioWithChanges.scenario.name }}
       </mat-option>
@@ -20,7 +20,7 @@
   @if (getSelectableAreas().length > 0) {
     <h4>{{ 'map.editor.transfer-changes.area-changes' | translate }}</h4>
   }
-  @for (area of getSelectableAreas(); track area) {
+  @for (area of getSelectableAreas(); track area.id) {
     <mat-radio-button
       [value]="area.id"
       [checked]="selectedChange === area.id">{{ area.feature.properties['name'] }}

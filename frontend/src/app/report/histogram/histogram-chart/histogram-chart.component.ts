@@ -24,14 +24,14 @@ export class HistogramChartComponent implements OnInit, OnChanges {
   binInfo: BinInfo[] = [];
   xlabels: [number, number][] = [];
 
-  private readonly chartWidth  = 1200
-  private readonly chartHeight = 864;
-  private readonly binWidth    = 10;
+  readonly chartWidth  = 1200
+  readonly chartHeight = 864;
+  readonly binWidth    = 10;
 
-  private max         = 0;
-  private bmax        = 0;
-  private binSz       = 0;
-  private isRarityAdjusted = false;
+  max         = 0;
+  bmax        = 0;
+  binSz       = 0;
+  isRarityAdjusted = false;
 
   constructor(private decimalPipe: DecimalPipe) { }
 

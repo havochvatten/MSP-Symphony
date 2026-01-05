@@ -2,7 +2,7 @@
 <p [innerHTML]=" messageTextKey | translate"></p>
 <mat-radio-group name="selected-area" (change)="select($event.value)">
   <ul>
-    @for (fragment of areas; track fragment; let ix = $index) {
+    @for (fragment of areas; track $index; let ix = $index) {
       <li>
         <div class="intersection-alt" (click)="multi ? selectMulti(ix) : select(ix)"
           tabindex="0">

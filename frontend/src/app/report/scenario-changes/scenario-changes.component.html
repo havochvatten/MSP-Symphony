@@ -8,7 +8,7 @@
       @if (anyScenarioChanges()) {
         <tr class="title-row scenario-wide"><th colspan="2">{{ 'report.scenario-changes.base-changes' | translate }}</th></tr>
       }
-      @for (s_change of allBaseChanges | keyvalue; track s_change) {
+      @for (s_change of allBaseChanges | keyvalue; track $index) {
         <tr>
           <th class="change-label">{{ bandDict[s_change.value.type][s_change.key] }}</th>
           <td>
@@ -22,13 +22,13 @@
       @if (anyAreaChanges()) {
         <tr class="title-row area-change"><th colspan="2">{{ 'report.scenario-changes.area-changes' | translate }}</th></tr>
       }
-      @for (area of allAreaChanges | keyvalue; track area) {
+      @for (area of allAreaChanges | keyvalue; track $index) {
         @if (!isEmpty(area.value)) {
           <tr class="area-row">
             <th colspan="2">{{ areaDict.get(+area.key) }}</th>
           </tr>
         }
-        @for (a_change of area.value | keyvalue; track a_change) {
+        @for (a_change of area.value | keyvalue; track $index) {
           <tr>
             <th class="change-label">{{ bandDict[a_change.value.type][a_change.key] }}</th>
             <td>
@@ -42,9 +42,9 @@
             </ng-container>
           </td>
         </tr>
-      
+
 }
-    
+
 }
   </table>
 </div>

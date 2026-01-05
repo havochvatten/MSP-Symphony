@@ -23,17 +23,17 @@
     <tbody>
       <tr>
         <th class="empty"></th>
-        @for (column of matrixData.sensMatrix.rows[0].columns; track column) {
+        @for (column of matrixData.sensMatrix.rows[0].columns; track [column.sensId, column.ecoMetaId]) {
           <th scope="col">
             {{ getName(column) }}
           </th>
         }
       </tr>
-      @for (row of matrixData.sensMatrix.rows; track row; let i = $index) {
+      @for (row of matrixData.sensMatrix.rows; track row.presMetaId; let i = $index) {
         <tr>
           <th scope="row" title="{{ getName(row) }}">{{ getName(row)
           // FIXME: ugly duplicate call, refactorise. See comment in getName method. }}</th>
-          @for (column of row.columns; track column; let j = $index) {
+          @for (column of row.columns; track [column.sensId, column.ecoMetaId]; let j = $index) {
             <td [attr.data-pressure]="column.value > 0">
               <input
                 type="number"

@@ -7,7 +7,7 @@
   >
   <input hidden type="file" #fileInput (change)="uploadFile($event.target.files)" />
 </div>
-@for (file of files; track file; let i = $index) {
+@for (file of files; track $index; let i = $index) {
   <div class="files-list">
     <p>{{ file }}</p>
     <app-icon-button
