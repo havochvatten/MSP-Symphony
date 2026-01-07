@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy, inject } from '@angular/core';
 import { AreaSelectors } from "@data/area";
 import { Area } from "@data/area/area.interfaces";
 import { Store } from "@ngrx/store";
@@ -20,6 +20,10 @@ import { GeoJSON } from "ol/format";
   standalone: false
 })
 export class AddScenarioAreasComponent implements OnDestroy {
+  store = inject<Store<State>>(Store);
+  translateService = inject(TranslateService);
+  scenarioService = inject(ScenarioService);
+
   public selectedAreas: Area[] = [];
   baseline?: Baseline; // required in delegate context
 
@@ -37,11 +41,7 @@ export class AddScenarioAreasComponent implements OnDestroy {
   private areaSubscription$: Subscription;
   private componentSubscription$: Subscription;
 
-  constructor(
-    public store: Store<State>,
-    public translateService: TranslateService,
-    public scenarioService: ScenarioService
-  ) {
+  constructor() {
     this.areaSubscription$ = this.store
       .select(AreaSelectors.selectSelectedAreaData)
       .subscribe(area => (this.selectedAreas = area as Area[]));

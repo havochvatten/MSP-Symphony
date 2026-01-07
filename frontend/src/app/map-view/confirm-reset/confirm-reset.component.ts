@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Store } from "@ngrx/store";
 import { first } from "rxjs/operators";
 import { State } from "@src/app/app-reducer";
@@ -15,12 +15,12 @@ import { Scenario } from "@data/scenario/scenario.interfaces";
 })
 
 export class ConfirmResetComponent implements OnInit {
+  private store = inject<Store<State>>(Store);
+  private dialog = inject(DialogRef);
+
 
   public activeScenario? : Scenario;
   public activeArea? : number | undefined;
-
-  constructor(private store: Store<State>,
-              private dialog: DialogRef) {}
 
   confirm = () => {
     // Reset default band selection

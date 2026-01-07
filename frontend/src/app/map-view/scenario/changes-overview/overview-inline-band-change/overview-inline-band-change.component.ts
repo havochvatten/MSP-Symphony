@@ -1,5 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostBinding,
-         Input, Output, ViewChild, OnInit } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostBinding, Input, Output, ViewChild, OnInit, inject } from '@angular/core';
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
 import { BandChange  } from "@data/metadata/metadata.interfaces";
@@ -13,6 +12,8 @@ import { convertMultiplierToPercent } from "@data/metadata/metadata.selectors";
   standalone: false
 })
 export class OverviewInlineBandChangeComponent implements OnInit {
+  private store = inject<Store<State>>(Store);
+
 
   @Input() change!: BandChange;
   @Input() currentValueAsString!: string;
@@ -30,8 +31,6 @@ export class OverviewInlineBandChangeComponent implements OnInit {
 
   localMultiplier = 1;
   localOffset = 0;
-
-  constructor(private store: Store<State>) {}
 
   editValue() {
     this.editMode = true;

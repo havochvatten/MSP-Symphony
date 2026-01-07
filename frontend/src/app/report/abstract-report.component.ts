@@ -1,4 +1,4 @@
-import { computed, Directive, signal } from '@angular/core';
+import { computed, signal, inject, Component } from '@angular/core';
 import { formatPercent } from "@angular/common";
 import { Store } from "@ngrx/store";
 import { map, withLatestFrom } from "rxjs/operators";
@@ -11,11 +11,11 @@ import { MetadataSelectors } from "@data/metadata";
 import { CalculationActions, CalculationSelectors } from "@data/calculation";
 import { BandGroup } from "@data/metadata/metadata.interfaces";
 
-@Directive({
-  selector: '[appAbstractReport]',
+@Component({
+  template: '',
   standalone: false
 })
-export class AbstractReport<ReportType> {
+export abstract class AbstractReport<ReportType> {
 
   reportSignal = signal<ReportType | null>(null);
   report = computed(() => {
@@ -44,10 +44,9 @@ export class AbstractReport<ReportType> {
   protected formatChartData = formatChartData;
   protected formatPercent = formatPercent;
 
-  constructor(
-    translate: TranslateService,
-    store: Store<State>
-  ) {
+  protected constructor() {
+    const translate = inject(TranslateService);
+    const store = inject<Store<State>>(Store);
 
     this.locale = translate.currentLang;
     this._metadata$ = store.select(MetadataSelectors.selectMetadata);

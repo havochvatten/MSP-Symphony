@@ -40,7 +40,9 @@ export class ScenarioLayer extends VectorLayer<VectorSource<Feature>> {
   private readonly format: GeoJSON;
 
   constructor(
-    private scenarioService: ScenarioService,
+    /* eslint-disable @angular-eslint/prefer-inject */
+    private readonly scenarioService: ScenarioService,
+    /* eslint-enable */
     featureProjection: string
   ) {
     super({
@@ -52,7 +54,6 @@ export class ScenarioLayer extends VectorLayer<VectorSource<Feature>> {
       style: new AreaStyle(false)
     });
     this.format = this.getSource()?.getFormat() as GeoJSON;
-
     this.set('name', 'Scenario Layer'); // for debugging only
 
     this.scenarioService.setScenarioLayer(this);

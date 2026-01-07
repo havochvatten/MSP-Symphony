@@ -1,4 +1,4 @@
-import { Component, NgModuleRef } from '@angular/core';
+import { Component, inject, NgModuleRef } from '@angular/core';
 import { Scenario } from "@data/scenario/scenario.interfaces";
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
@@ -13,6 +13,7 @@ import { changeText } from "@src/app/shared/common.util";
 import { Observable } from "rxjs";
 import { MetadataActions } from "@data/metadata";
 import { BandChange } from "@data/metadata/metadata.interfaces";
+import { MapViewModule } from "@src/app/map-view/map-view.module";
 
 @Component({
   selector: 'app-scenario-editor',
@@ -20,16 +21,16 @@ import { BandChange } from "@data/metadata/metadata.interfaces";
   standalone: false
 })
 export class ScenarioEditorComponent {
+  private readonly translateService = inject(TranslateService);
+  private readonly dialogService = inject(DialogService);
+  private readonly store = inject<Store<State>>(Store);
+  private readonly moduleRef = inject(NgModuleRef<MapViewModule>);
+
   activeScenario?: Scenario;
   activeAreaIndex?: number;
   matrixData?: Observable<AreaMatrixData | null>;
 
-  constructor(
-    private translateService: TranslateService,
-    private dialogService: DialogService,
-    private moduleRef: NgModuleRef<never>,
-    private store: Store<State>,
-  ) {
+  constructor() {
     this.store.dispatch(ScenarioActions.fetchScenarios());
     this.store.select(ScenarioSelectors.selectActiveScenario)
       .subscribe(scenario => {
@@ -59,7 +60,7 @@ export class ScenarioEditorComponent {
 
     if(area) {
       const param = { scenario: scenario.name, area: area.feature.properties!['name'] },
-        confirmDeleteArea = await this.dialogService.open<boolean>(
+        confirmDeleteArea: boolean = await this.dialogService.open(
           ConfirmationModalComponent, this.moduleRef,
           {
             data: {

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input } from '@angular/core';
+import { AfterViewInit, Component, Input, inject } from '@angular/core';
 import { Band, BandType } from '@data/metadata/metadata.interfaces';
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
@@ -14,6 +14,8 @@ import { MatCheckboxChange } from "@angular/material/checkbox";
   standalone: false
 })
 export class CheckboxAccordionComponent implements AfterViewInit {
+  private store = inject<Store<State>>(Store);
+
   @Input() title?: string;
   @Input() checked?: boolean;
   @Input() category!: BandType;
@@ -29,7 +31,7 @@ export class CheckboxAccordionComponent implements AfterViewInit {
 
   private groupBandNumbers = new Set();
 
-  constructor(private store: Store<State>) {
+  constructor() {
     this.store.select(ScenarioSelectors.selectActiveScenarioChanges)
         .subscribe(( changes: {[bandType: string] : ChangesProperty }) => {
           const changesBandNumbers = !changes[this.category] ? new Set() : new Set(Object.keys(changes[this.category]).map(n => +n));

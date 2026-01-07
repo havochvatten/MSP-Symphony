@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
 import { NormalizationOptions, NormalizationType } from "@data/calculation/calculation.service";
 import { TranslateService } from "@ngx-translate/core";
 import { environment } from "@src/environments/environment";
@@ -16,6 +16,8 @@ export const DEFAULT_OPTIONS: NormalizationOptions = {
   standalone: false
 })
 export class NormalizationSelectionComponent implements OnChanges {
+  private translateService = inject(TranslateService);
+
   @Input() options: NormalizationOptions = DEFAULT_OPTIONS;
   @Input() algorithm = '';
   @Input() percentileValue = 0;
@@ -23,7 +25,7 @@ export class NormalizationSelectionComponent implements OnChanges {
   readonly NormalizationType = NormalizationType;
   locale = 'en';
 
-  constructor(private translateService: TranslateService) {
+  constructor() {
     this.locale = this.translateService.currentLang;
   }
 

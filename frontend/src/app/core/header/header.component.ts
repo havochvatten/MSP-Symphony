@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, NgModuleRef } from '@angular/core';
+import { Component, Input, OnInit, NgModuleRef, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
   faInfoCircle,
@@ -16,6 +16,7 @@ import { DialogService } from "@shared/dialog/dialog.service";
 import { AboutDialogComponent } from "@src/app/core/about/about-dialog.component";
 import { User } from "@data/user/user.interfaces";
 import { ChangeLanguageDialogComponent } from "@shared/change-language-dialog/change-language-dialog.component";
+import { CoreModule } from "@src/app/core/core.module";
 
 type MenuId = 'main' | 'user';
 type OpenState = 'MAIN' | 'USER' | 'NONE';
@@ -44,6 +45,10 @@ type OpenState = 'MAIN' | 'USER' | 'NONE';
   standalone: false
 })
 export class HeaderComponent implements OnInit {
+  private readonly store = inject<Store<State>>(Store);
+  private readonly dialogService = inject(DialogService);
+  private readonly moduleRef = inject(NgModuleRef<CoreModule>);
+
   @Input() title: string | undefined;
   menuIcon: IconType = 'menu';
   openState: OpenState = 'NONE';
@@ -55,9 +60,7 @@ export class HeaderComponent implements OnInit {
   ]);
   user$: Observable<User | undefined>;
 
-  constructor(private store: Store<State>,
-              private dialogService: DialogService,
-              private moduleRef: NgModuleRef<never>) {
+  constructor() {
     this.user$ = this.store.select(UserSelectors.selectUser);
   }
 

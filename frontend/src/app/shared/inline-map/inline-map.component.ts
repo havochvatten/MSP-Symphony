@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Input, OnInit } from '@angular/core';
+import { Directive, ElementRef, Input, OnInit, inject } from '@angular/core';
 import { Map, View } from 'ol';
 import Style from "ol/style/Style"
 import { Polygon } from "ol/geom";
@@ -33,7 +33,9 @@ export class InlineMapComponent implements OnInit {
     return this.polygon as Polygon;
   }
 
-  constructor(element: ElementRef) {
+  constructor() {
+    const element = inject(ElementRef);
+
     this.domElement = element.nativeElement;
   }
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, concatMap, map, mergeMap } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -14,13 +14,11 @@ import { UserActions } from "@data/user";
 
 @Injectable()
 export class AreaEffects {
-  constructor(
-    private actions$: Actions,
-    private store$: Store<State>,
-    private areaService: AreaService,
-    private translateService: TranslateService
-  ) {
-  }
+  private readonly actions$ = inject(Actions);
+  private readonly store$ = inject<Store<State>>(Store);
+  private readonly areaService = inject(AreaService);
+  private readonly translateService = inject(TranslateService);
+
 
   fetchNationalAreas$ = createEffect(() => this.actions$.pipe(
     ofType(AreaActions.fetchNationalAreas),

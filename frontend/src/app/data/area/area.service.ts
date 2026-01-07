@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment as env } from '@src/environments/environment';
 import { AreaInterfaces } from './';
@@ -10,7 +10,7 @@ const BASE_URL = env.apiBaseUrl;
   providedIn: 'root'
 })
 export default class AreaService {
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   getNationalAreaTypes() {
     return this.http.get<string[]>(`${BASE_URL}/areas`);

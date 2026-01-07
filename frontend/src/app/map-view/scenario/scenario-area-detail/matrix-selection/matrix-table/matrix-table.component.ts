@@ -1,4 +1,4 @@
-import { Component, NgModuleRef } from '@angular/core';
+import { Component, inject, NgModuleRef } from '@angular/core';
 import { DialogRef } from '@shared/dialog/dialog-ref';
 import { DialogConfig } from '@shared/dialog/dialog-config';
 import { SensitivityMatrix } from '@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces';
@@ -9,6 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { isEqual } from "@shared/common.util";
 import { DialogService } from "@shared/dialog/dialog.service";
 import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
+import { ScenarioEditorModule } from "@src/app/map-view/scenario/scenario-editor.module";
 
 interface NamedObject {
   name: string;
@@ -21,6 +22,13 @@ interface NamedObject {
   standalone: false
 })
 export class MatrixTableComponent {
+  protected dialog = inject(DialogRef);
+  private readonly config = inject(DialogConfig);
+  private readonly dialogService = inject(DialogService);
+  private readonly matrixService = inject(MatrixService);
+  private readonly translateService = inject(TranslateService);
+  private readonly moduleRef = inject(NgModuleRef<ScenarioEditorModule>);
+
   area: string;
   areaId: number;
   immutable: boolean; // default matrices are read-only
@@ -34,14 +42,7 @@ export class MatrixTableComponent {
   editName = false;
   locale = 'en';
 
-  constructor(
-    protected dialog: DialogRef,
-    private config: DialogConfig,
-    private dialogService: DialogService,
-    private moduleRef: NgModuleRef<never>,
-    private matrixService: MatrixService,
-    private translateService: TranslateService
-  ) {
+  constructor() {
     this.area = this.config.data.area;
     this.areaId = this.config.data.areaId;
     this.matrixData = this.config.data.matrixData;
@@ -100,7 +101,7 @@ export class MatrixTableComponent {
   }
 
   async deleteMatrix() {
-    const confirmDelete = await this.dialogService.open<boolean>(ConfirmationModalComponent, this.moduleRef, {
+    const confirmDelete: boolean = await this.dialogService.open(ConfirmationModalComponent, this.moduleRef, {
       data: {
         header: this.translateService.instant('map.editor.matrix.table.confirm-delete.header'),
         message: this.translateService.instant('map.editor.matrix.table.confirm-delete.message',
@@ -145,7 +146,7 @@ export class MatrixTableComponent {
 
       closeModal.message = this.translateService.instant('map.editor.matrix.table.changes.immutable-message', { suggestedName: nextName });
 
-      const confirmSaveCopy = await this.dialogService.open<boolean>(
+      const confirmSaveCopy: boolean = await this.dialogService.open(
         ConfirmationModalComponent, this.moduleRef, { data: closeModal });
 
       if(confirmSaveCopy) {
@@ -163,8 +164,7 @@ export class MatrixTableComponent {
 
       // note: inverse condition for brevity ('short-circuit' conjunction)
       const confirmAbandon = this.immutable || !(this.dirty || (!this.nameExists() && this.hasChangedName())) ||
-        !(await this.dialogService.open<boolean>(
-          ConfirmationModalComponent, this.moduleRef, { data: closeModal }));
+        !(await this.dialogService.open(ConfirmationModalComponent, this.moduleRef, { data: closeModal }));
 
       if (!confirmAbandon) {
         if (this.hasChangedName() && !this.nameExists()) {

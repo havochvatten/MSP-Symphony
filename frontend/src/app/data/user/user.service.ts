@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UserInterfaces } from './';
 import { environment as env } from '@src/environments/environment';
@@ -10,7 +10,7 @@ const BASE_URL = env.apiBaseUrl;
   providedIn: 'root'
 })
 export default class UserService {
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   login(username: string, password: string) {
     return this.http.post<UserInterfaces.User>(`${BASE_URL}/login`, { username, password });

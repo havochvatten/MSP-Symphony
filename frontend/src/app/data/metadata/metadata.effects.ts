@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
 import { catchError, concatMap, debounceTime, map, mergeMap, skipWhile, switchMap } from 'rxjs/operators';
@@ -20,11 +20,10 @@ import { UserSelectors } from "@data/user";
 
 @Injectable()
 export class MetadataEffects {
-  constructor(
-    private actions$: Actions,
-    private store: Store<State>,
-    private metadataService: MetadataService
-  ) {}
+  private readonly actions$ = inject(Actions);
+  private readonly store = inject<Store<State>>(Store);
+  private readonly metadataService = inject(MetadataService);
+
 
   fetchMetadata$ = createEffect(() => this.actions$.pipe(
     ofType(MetadataActions.fetchMetadata, MetadataActions.fetchMetadataForBaseline),

@@ -1,7 +1,4 @@
-import {
-  Component, ViewChild, OnInit,
-  AfterViewInit, ChangeDetectorRef, NgModuleRef
-} from '@angular/core';
+import { Component, ViewChild, OnInit, AfterViewInit, ChangeDetectorRef, NgModuleRef, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 import { distinctUntilChanged, skip, take } from "rxjs/operators";
@@ -22,6 +19,7 @@ import {
   CompoundComparisonListDialogComponent
 } from "@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component";
 import { DialogService } from "@shared/dialog/dialog.service";
+import { MapViewModule } from "@src/app/map-view/map-view.module";
 
 @Component({
   selector: 'app-main-view',
@@ -30,6 +28,11 @@ import { DialogService } from "@shared/dialog/dialog.service";
   standalone: false
 })
 export class MainViewComponent implements OnInit, AfterViewInit {
+  private readonly store = inject<Store<State>>(Store);
+  private readonly cd = inject(ChangeDetectorRef);
+  private readonly dialogService = inject(DialogService);
+  private readonly moduleRef = inject(NgModuleRef<MapViewModule>);
+
   @ViewChild(MapComponent) map: MapComponent | undefined;
   leftSidebarIsOpen = true; // TODO create action, or observable??
   metadata?: Observable<Record<string, BandGroup[]>>;
@@ -57,11 +60,7 @@ export class MainViewComponent implements OnInit, AfterViewInit {
   protected scenarioAreaSelection = false
   private selectedAreas$?: Subscription;
 
-  constructor(
-    private store: Store<State>,
-    private cd: ChangeDetectorRef,
-    private moduleRef: NgModuleRef<never>,
-    private dialogService: DialogService) {
+  constructor() {
 
     this.compoundComparisonSuccess$.pipe(
       distinctUntilChanged(), skip(1)).subscribe(() => this.onOpenCCList());

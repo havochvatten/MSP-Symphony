@@ -3,7 +3,7 @@
 <app-slide-view position="left"
   [open]="leftSidebarIsOpen"
   [compoundComparisonCount$]="compoundComparisonCount$"
-  (toggle)="toggleLeftSidebar()"
+  (toggleTab)="toggleLeftSidebar()"
   (navigate)="onNavigate($event)"
   (openCCList)="onOpenCCList()">
   <app-slide-view-tab [id]="'areas'" [title]="'map.areas' | translate" icon="globe">

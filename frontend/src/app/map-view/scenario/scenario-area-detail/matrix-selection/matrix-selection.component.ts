@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, NgModuleRef, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, NgModuleRef, OnDestroy, OnInit, Output, ViewChild, inject } from '@angular/core';
 import {
   Area, AreaTypeMatrixMapping,
   MatrixRef, MatrixOption, MatrixParameters,
@@ -14,6 +14,7 @@ import { MatSelect } from "@angular/material/select";
 import { Scenario } from "@data/scenario/scenario.interfaces";
 import { ScenarioActions, ScenarioSelectors } from "@data/scenario";
 import { Subscription } from "rxjs";
+import { ScenarioEditorModule } from "@src/app/map-view/scenario/scenario-editor.module";
 
 @Component({
   selector: 'app-matrix-selection',
@@ -22,6 +23,12 @@ import { Subscription } from "rxjs";
   standalone: false
 })
 export class MatrixSelectionComponent implements OnInit, OnDestroy {
+  private readonly translateService = inject(TranslateService);
+  private readonly matrixService = inject(MatrixService);
+  private readonly dialogService = inject(DialogService);
+  private readonly moduleRef = inject(NgModuleRef<ScenarioEditorModule>);
+  private readonly store = inject<Store<State>>(Store);
+
   matrixOption: MatrixOption = 'STANDARD';
   loadingMatrix = false;
   areaTypes: AreaTypeMatrixMapping[] = []; // get from input?
@@ -43,13 +50,7 @@ export class MatrixSelectionComponent implements OnInit, OnDestroy {
   private matrixDataSubscription$: Subscription;
 
 
-  constructor(
-    private translateService: TranslateService,
-    private matrixService: MatrixService,
-    private dialogService: DialogService,
-    private moduleRef: NgModuleRef<never>,
-    private store: Store<State>
-  ) {
+  constructor() {
     this.translateService.get('map.editor.matrix.default-matrix').subscribe(res => {
       this.defaultMatrixTranslation = res;
     });
@@ -199,7 +200,7 @@ export class MatrixSelectionComponent implements OnInit, OnDestroy {
       const sensitivityMatrix = await this.matrixService.getSensitivityMatrix(matrixId as number).toPromise();
       this.loadingMatrix = false;
 
-      const { savedAsNew, deleted } = await this.dialogService.open<SensitivityMatrix & {savedAsNew: boolean, deleted: boolean}>(MatrixTableComponent, this.moduleRef, {
+      const { savedAsNew, deleted } = await this.dialogService.open<SensitivityMatrix & {savedAsNew: boolean, deleted: boolean}, ScenarioEditorModule>(MatrixTableComponent, this.moduleRef, {
         data: {
           area: this.matrixData!.defaultArea?.name,
           areaId: this.matrixData!.defaultArea?.id,

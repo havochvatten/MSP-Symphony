@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { Scenario, ScenarioArea, ScenarioCopyOptions } from "@data/scenario/scenario.interfaces";
@@ -11,6 +11,9 @@ import { MatCheckbox, MatCheckboxChange } from "@angular/material/checkbox";
   standalone: false
 })
 export class CopyScenarioComponent {
+  private dialog = inject(DialogRef);
+  private conf = inject(DialogConfig);
+
 
   scenario: Scenario;
   allAreasWithChanges: ScenarioArea[] = [];
@@ -19,8 +22,9 @@ export class CopyScenarioComponent {
   selectedAreaIds: number[] = [];
   areasWithoutChangeFmt: string;
 
-  constructor(private dialog: DialogRef,
-              private conf: DialogConfig ) {
+  constructor() {
+    const conf = this.conf;
+
     this.scenario = conf.data.scenario;
     this.allAreasWithChanges = this.scenario.areas.filter(a => !!a.changes);
     this.selectedAreaIds = this.allAreasWithChanges.map(a => a.id);

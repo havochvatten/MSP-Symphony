@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HistogramComponent } from './histogram.component';
 import { DecimalPipe } from "@angular/common";
 import { CalculationReportModule } from "@src/app/report/calculation-report.module";
-import { Report } from "@data/calculation/calculation.interfaces";
 import { NormalizationType } from "@data/calculation/calculation.service";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { provideZonelessChangeDetection } from "@angular/core";

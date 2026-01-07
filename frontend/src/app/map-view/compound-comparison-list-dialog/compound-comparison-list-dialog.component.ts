@@ -1,4 +1,4 @@
-import { Component, NgModuleRef } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Store } from "@ngrx/store";
 import { Subscription } from "rxjs";
 import { State } from "@src/app/app-reducer";
@@ -8,7 +8,6 @@ import { CompoundComparisonSlice, DownloadCompoundComparisonOptions } from "@dat
 import { TranslateService } from '@ngx-translate/core';
 import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 import { environment as env } from "@src/environments/environment";
-import { DialogService } from '@src/app/shared/dialog/dialog.service';
 import { ListItemsSort } from "@data/common/sorting.interfaces";
 import {
   DownloadCompoundComparisonDialogComponent
@@ -22,17 +21,18 @@ import { MultiModeListable } from "@shared/multi-tools/multi-mode-listable";
   standalone: false
 })
 export class CompoundComparisonListDialogComponent extends MultiModeListable {
+  private readonly store = inject<Store<State>>(Store);
+  private readonly dialog = inject(DialogRef);
+  private readonly translateService = inject(TranslateService);
+
 
   compoundComparison$ = this.store.select(CalculationSelectors.selectCompoundComparisons);
   checkEmpty$: Subscription;
   apiUrl: string;
 
-  constructor(private store: Store<State>,
-              private dialog: DialogRef,
-              protected dialogService: DialogService,
-              private translateService: TranslateService,
-              protected moduleRef: NgModuleRef<never>) {
-    super(moduleRef, dialogService);
+  constructor() {
+    super();
+
     this.apiUrl = env.apiBaseUrl + '/report/multi-comparison';
 
     this.checkEmpty$ = this.compoundComparison$.subscribe((ccs) => {
@@ -49,7 +49,7 @@ export class CompoundComparisonListDialogComponent extends MultiModeListable {
   }
 
   async deleteCC (cmp: CompoundComparisonSlice) {
-    const confirmDelete = await this.dialogService.open<boolean>(ConfirmationModalComponent, this.moduleRef, {
+    const confirmDelete: boolean = await this.dialogService.open(ConfirmationModalComponent, this.moduleRef, {
       data: {
         header: this.translateService.instant('map.compound-data-list.delete-modal.header'),
         message: this.translateService.instant('map.compound-data-list.delete-modal.message',
@@ -67,8 +67,8 @@ export class CompoundComparisonListDialogComponent extends MultiModeListable {
   }
 
   async downloadCC(cmp: CompoundComparisonSlice) {
-    const ccDownloadOptions =
-      await this.dialogService.open<DownloadCompoundComparisonOptions>(
+    const ccDownloadOptions: DownloadCompoundComparisonOptions =
+      await this.dialogService.open(
         DownloadCompoundComparisonDialogComponent, this.moduleRef, {
           data: {
             comparisonName: cmp.name

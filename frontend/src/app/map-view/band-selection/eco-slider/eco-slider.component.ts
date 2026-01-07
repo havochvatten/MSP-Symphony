@@ -1,12 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { fromEvent } from 'rxjs';
 import { State } from '@src/app/app-reducer';
@@ -21,6 +13,8 @@ import { debounceTime, map } from "rxjs/operators";
   standalone: false
 })
 export class EcoSliderComponent implements  OnChanges, AfterViewInit {
+  private store = inject<Store<State>>(Store);
+
   @Input() multiplier!: number;
   @Input() offset!: number;
   @Input() band!: Band;
@@ -31,10 +25,6 @@ export class EcoSliderComponent implements  OnChanges, AfterViewInit {
   @Input() locale = 'en';
 
   @ViewChild("constant") constantEl!: ElementRef;
-
-  constructor(private store: Store<State>) {
-
-  }
 
 
 

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { AreaSelectionConfig } from "@shared/select-intersection/select-intersection.interfaces";
 import { DialogConfig } from "@shared/dialog/dialog-config";
@@ -13,6 +13,8 @@ import { GeoJSON } from "ol/format";
   standalone: false
 })
 export class SelectIntersectionComponent {
+  private readonly dialog = inject(DialogRef);
+  private readonly conf = inject(DialogConfig);
 
   areas : AreaSelectionConfig[];
   selected: number;
@@ -26,8 +28,9 @@ export class SelectIntersectionComponent {
   reprojection: string;
   metaDescriptionTextKey: string | null;
 
-  constructor( private dialog: DialogRef,
-               private conf: DialogConfig ) {
+  constructor() {
+    const conf = this.conf;
+
     this.areas                  = conf.data.areas;
     this.headerTextKey          = conf.data.headerTextKey;
     this.messageTextKey         = conf.data.messageTextKey;

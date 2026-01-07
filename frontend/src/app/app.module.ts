@@ -60,7 +60,10 @@ import { MatRadioModule } from "@angular/material/radio";
     CalculationReportModule,
     LoginModule
   ],
-  providers: [provideHttpClient(), provideZonelessChangeDetection()],
+  providers: [
+    provideHttpClient(),
+    provideZonelessChangeDetection()
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

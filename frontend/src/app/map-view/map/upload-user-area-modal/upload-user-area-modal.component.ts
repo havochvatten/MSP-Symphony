@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DialogRef } from '@shared/dialog/dialog-ref';
 import AreaService from "@data/area/area.service";
 import { DialogConfig } from "@shared/dialog/dialog-config";
@@ -17,6 +17,11 @@ import { ServerError } from "@data/message/message.interfaces";
   standalone: false
 })
 export class UploadUserAreaModalComponent {
+  private areaService = inject(AreaService);
+  private store = inject<Store<State>>(Store);
+  private dialog = inject(DialogRef);
+  private config = inject(DialogConfig);
+
   readonly requiredFileType: string;
   errorIcon = faExclamationCircle;
 
@@ -26,11 +31,9 @@ export class UploadUserAreaModalComponent {
   firstFeatureId?: string;
   inspectionError?: ServerError;
 
-  constructor(private areaService: AreaService,
-              private store: Store<State>,
-              private dialog: DialogRef,
-              private config: DialogConfig,
-  ) {
+  constructor() {
+    const config = this.config;
+
     this.requiredFileType = config.data.mimeType;
   }
 

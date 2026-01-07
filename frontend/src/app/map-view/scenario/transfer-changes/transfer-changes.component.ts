@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, inject } from '@angular/core';
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
@@ -24,6 +24,10 @@ interface ScenarioWithChanges {
   standalone: false
 })
 export class TransferChangesComponent {
+  dialog = inject(DialogRef);
+  private config = inject(DialogConfig);
+  private store = inject<Store<State>>(Store);
+
 
   targetChanges: Scenario | ScenarioArea;
   @ViewChild('changesSelection') changesSelection!: MatRadioGroup;
@@ -38,10 +42,9 @@ export class TransferChangesComponent {
     overwrite: false
   };
 
-  constructor(
-    public dialog: DialogRef,
-    private config: DialogConfig,
-    private store: Store<State>) {
+  constructor() {
+    const config = this.config;
+
     this.targetChanges = config.data.target;
     this.scenarios$ = this.store.select(ScenarioSelectors.selectScenarios).pipe(
       map(scenarios => scenarios.map(scenario => {

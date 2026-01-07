@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { EMPTY, from, of } from 'rxjs';
 import { catchError, concatMap, map, mergeMap, switchMap, take, withLatestFrom } from 'rxjs/operators';
@@ -12,11 +12,10 @@ import { MessageActions } from "@data/message";
 
 @Injectable()
 export class CalculationEffects {
-  constructor(private actions$: Actions,
-              private store: Store<State>,
-              private calcService: CalculationService) {
+  private readonly actions$ = inject(Actions);
+  private readonly store = inject<Store<State>>(Store);
+  private readonly calcService = inject(CalculationService);
 
-  }
 
   fetchCalculations$ = createEffect(() => this.actions$.pipe(
     ofType(CalculationActions.fetchCalculations),

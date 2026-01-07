@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { State } from '../app-reducer';
@@ -10,7 +10,8 @@ import { tap, take, switchMap, catchError } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class AuthenticationGuard  {
-  constructor(private readonly store: Store<State>) {}
+  private readonly store = inject<Store<State>>(Store);
+
 
   getFromStoreOrAPI(): Observable<unknown> {
     return this.store.select(UserSelectors.selectIsLoggedIn).pipe(

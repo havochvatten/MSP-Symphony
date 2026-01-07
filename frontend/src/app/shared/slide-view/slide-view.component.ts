@@ -45,7 +45,7 @@ export class SlideViewComponent implements OnChanges, AfterViewInit {
   @Input() open = false;
   @Input() position: ViewOrientation = 'right';
   @Input() compoundComparisonCount$!: Observable<number>;
-  @Output() toggle = new EventEmitter<void>();
+  @Output() toggleTab = new EventEmitter<void>();
   @Output() navigate = new EventEmitter<string>();
   @Output() openCCList = new EventEmitter<void>();
   @ContentChildren(SlideViewTabComponent) tabs!: QueryList<SlideViewTabComponent>;
@@ -79,7 +79,7 @@ export class SlideViewComponent implements OnChanges, AfterViewInit {
   }
 
   onClick() {
-    this.toggle.emit();
+    this.toggleTab.emit();
   }
 
   openCompoundComparisonList() {

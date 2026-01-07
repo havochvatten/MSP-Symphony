@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import buildInfo from '@src/build-info';
 import attributions from 'attributions';
@@ -10,10 +10,10 @@ import attributions from 'attributions';
   standalone: false
 })
 export class AboutDialogComponent {
+  private readonly dialog = inject(DialogRef);
+
   protected buildInfo = buildInfo; // make available to template
   protected thirdPartyLibraries: string[][] = attributions;
-
-  constructor(private dialog: DialogRef) {}
 
   close() {
     this.dialog.close();

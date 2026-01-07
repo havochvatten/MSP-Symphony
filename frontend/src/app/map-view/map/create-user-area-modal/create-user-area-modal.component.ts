@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DialogRef } from '@shared/dialog/dialog-ref';
 
 @Component({
@@ -8,8 +8,9 @@ import { DialogRef } from '@shared/dialog/dialog-ref';
   standalone: false
 })
 export class CreateUserAreaModalComponent {
+  private readonly dialog = inject(DialogRef);
+
   areaName = '';
-  constructor(private dialog: DialogRef) {}
 
   onChange(value: string) {
     this.areaName = value;

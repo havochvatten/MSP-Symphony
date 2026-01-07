@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Observable } from "rxjs";
 import { take } from "rxjs/operators";
 import { DialogRef } from "@shared/dialog/dialog-ref";
@@ -22,6 +22,10 @@ interface BandShim {
   standalone: false
 })
 export class ChangesOverviewComponent implements OnInit {
+  dialog = inject(DialogRef);
+  private config = inject(DialogConfig);
+  private store = inject<Store<State>>(Store);
+
 
   scenario: Scenario;
   bands: Observable<Record<string, BandGroup[]>>;
@@ -50,11 +54,7 @@ export class ChangesOverviewComponent implements OnInit {
     return this.bandTypeDict.get(bandType)!;
   }
 
-  constructor(
-    public dialog: DialogRef,
-    private config: DialogConfig,
-    private store: Store<State>
-  ) {
+  constructor() {
       this.scenario = this.config.data.scenario;
       this.bands = this.store.select(MetadataSelectors.selectMetadata)
 

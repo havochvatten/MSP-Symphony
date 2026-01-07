@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import { environment as env } from '@src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Store } from '@ngrx/store';
@@ -12,13 +12,16 @@ import { TranslateService } from "@ngx-translate/core";
   providedIn: 'root'
 })
 export class MatrixService implements OnDestroy {
+  private http = inject(HttpClient);
+  private store = inject<Store<State>>(Store);
+  private translate = inject(TranslateService);
+
   baseline = '';
   baselineSubscription?: Subscription;
 
   private langParam = `?lang=${this.translate.currentLang}`;
 
-  constructor(private http: HttpClient, private store: Store<State>,
-              private translate: TranslateService) {
+  constructor() {
     this.baselineSubscription = this.store.select(UserSelectors.selectBaseline).subscribe(baseline => {
       if (baseline) {
         this.baseline = baseline.name;

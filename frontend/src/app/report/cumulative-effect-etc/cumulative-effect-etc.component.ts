@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { TranslateService } from "@ngx-translate/core";
 import { NormalizationOptions, NormalizationType } from "@data/calculation/calculation.service";
 import { Report } from "@data/calculation/calculation.interfaces";
@@ -12,6 +12,8 @@ import { formatPercentage } from "@src/app/shared/common.util";
   standalone: false
 })
 export class CumulativeEffectEtcComponent implements OnInit {
+  private readonly translate = inject(TranslateService);
+
   @Input() reports?: Report[];
   @Input() area?: number;
   @Input() normalized = false;
@@ -24,7 +26,7 @@ export class CumulativeEffectEtcComponent implements OnInit {
   type = NormalizationType; // make enum available to template
   validArea: boolean;
 
-  constructor(private translate : TranslateService) {
+  constructor() {
     this.validArea = false;
   }
 

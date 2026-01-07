@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
@@ -14,6 +14,9 @@ import buildInfo from '@src/build-info';
   standalone: false
 })
 export class LoginComponent implements OnInit, OnDestroy {
+  private readonly fb = inject(FormBuilder);
+  private readonly store = inject<Store<State>>(Store);
+
   loginForm = this.fb.nonNullable.group({
     username: ['', Validators.required],
     password: ['', Validators.required],
@@ -28,7 +31,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   private storeSubscription?: Subscription;
 
-  constructor(private fb: FormBuilder, private store: Store<State>) {
+  constructor() {
     this.passwordPeekEnabled = this.env.peekPassword || false;
   }
 

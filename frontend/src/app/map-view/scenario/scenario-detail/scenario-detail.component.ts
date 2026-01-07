@@ -1,4 +1,4 @@
-import { AfterContentInit, Component, ElementRef, Input, NgModuleRef, OnDestroy, ViewChild } from '@angular/core';
+import { AfterContentInit, Component, ElementRef, Input, NgModuleRef, OnDestroy, ViewChild, inject } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms'
 import { firstValueFrom, Observable, Subscription } from 'rxjs';
 import { debounceTime, filter, tap } from 'rxjs/operators';
@@ -42,6 +42,7 @@ import {
 } from "@src/app/map-view/scenario/set-arbitrary-matrix/set-arbitrary-matrix.component";
 import { Feature } from "ol";
 import { Geometry } from "ol/geom";
+import { ScenarioEditorModule } from "@src/app/map-view/scenario/scenario-editor.module";
 
 const AUTO_SAVE_TIMEOUT = environment.editor.autoSaveIntervalInSeconds;
 
@@ -56,6 +57,12 @@ const availableOperations: Map<string, CalcOperation> = new Map<string, CalcOper
   standalone: false
 })
 export class ScenarioDetailComponent implements AfterContentInit, OnDestroy {
+  private readonly store = inject<Store<State>>(Store);
+  private readonly calcService = inject(CalculationService);
+  private readonly dialogService = inject(DialogService);
+  private readonly translateService = inject(TranslateService);
+  private readonly moduleRef = inject(NgModuleRef<ScenarioEditorModule>);
+
   env = environment;
   autoSaveSubscription$?: Subscription;
   changesText: { [key: number]: string } = {};
@@ -80,13 +87,7 @@ export class ScenarioDetailComponent implements AfterContentInit, OnDestroy {
   unsaved = false;
   savedByInteraction = false;
 
-  constructor(
-    private readonly store: Store<State>,
-    private readonly calcService: CalculationService,
-    private readonly dialogService: DialogService,
-    private readonly translateService: TranslateService,
-    private readonly moduleRef: NgModuleRef<never>
-  ) {
+  constructor() {
     // https://stackoverflow.com/questions/59684733/how-to-access-previous-state-and-current-state-and-compare-them-when-you-subscri
     if (AUTO_SAVE_TIMEOUT) {
       this.autoSaveSubscription$ = this.store
@@ -318,7 +319,7 @@ export class ScenarioDetailComponent implements AfterContentInit, OnDestroy {
   }
 
   async openIntensityOverview() {
-    const intensityChanged = await this.dialogService.open<boolean>(ChangesOverviewComponent, this.moduleRef, {
+    const intensityChanged: boolean = await this.dialogService.open(ChangesOverviewComponent, this.moduleRef, {
       data: {
         scenario: this.scenario,
       }
@@ -360,7 +361,7 @@ export class ScenarioDetailComponent implements AfterContentInit, OnDestroy {
   }
 
   async openSplitDialog(): Promise<void> {
-    const splitDialogResult = await this.dialogService.open<ScenarioSplitDialogResult>(
+    const splitDialogResult: ScenarioSplitDialogResult = await this.dialogService.open(
       SplitScenarioSettingsComponent,
       this.moduleRef,
       { data: {

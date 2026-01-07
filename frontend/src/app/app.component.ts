@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { ActivatedRoute, Event, NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter, map, mergeMap } from 'rxjs/operators';
@@ -10,13 +10,13 @@ import { filter, map, mergeMap } from 'rxjs/operators';
   standalone: false
 })
 export class AppComponent implements OnDestroy {
+  private readonly router = inject(Router);
+  private readonly activatedRoute = inject(ActivatedRoute);
+
   headerTitle = '';
   routeDataSubscription: Subscription | undefined;
 
-  constructor(
-    private router: Router,
-    private activatedRoute: ActivatedRoute
-  ) {
+  constructor() {
     this.routeDataSubscription = this.router.events
       .pipe(
         filter((e: Event) => e instanceof NavigationEnd),

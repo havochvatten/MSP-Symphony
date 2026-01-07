@@ -1,6 +1,4 @@
-import { Component } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { DialogRef } from '../dialog/dialog-ref';
+import { Component, inject } from '@angular/core';
 import { DialogConfig } from '../dialog/dialog-config';
 import { ReportModalComponent } from "@shared/report-modal/report-modal.component";
 
@@ -12,17 +10,16 @@ import { ReportModalComponent } from "@shared/report-modal/report-modal.componen
 })
 export class ComparisonReportModalComponent extends ReportModalComponent {
 
-  constructor(
-    dialog: DialogRef,
-    config: DialogConfig,
-    dom: DomSanitizer
-  ) {
+  constructor() {
+    const config = inject(DialogConfig);
+
     const locationPS =
       (config.data.a === null ?
         `${config.data.b}` : `${config.data.a}/${config.data.b}`)
 
-    super(dialog, dom, window.location.origin + `/report/compare/${locationPS}/${config.data.max}`,
-      `/report/comparison/${locationPS}`, config.data.reverse ? new URLSearchParams([['reverse', 'true']]) : null,
-      'report.comparison.title');
+    super(window.location.origin + `/report/compare/${locationPS}/${config.data.max}`,
+      `/report/comparison/${locationPS}`,
+      'report.comparison.title',
+      config.data.reverse ? new URLSearchParams([['reverse', 'true']]).toString() : undefined);
   }
 }

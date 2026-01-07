@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, inject } from '@angular/core';
 import { DecimalPipe } from "@angular/common";
 import { formatPercentage } from "@src/app/shared/common.util";
 
@@ -10,6 +10,8 @@ import { formatPercentage } from "@src/app/shared/common.util";
 })
 
 export class HistogramChartComponent implements OnInit, OnChanges {
+  private readonly decimalPipe = inject(DecimalPipe);
+
   @Input() bins: number[] = []
   @Input() reportMax!: number;
   @Input() inclusive = false;
@@ -32,8 +34,6 @@ export class HistogramChartComponent implements OnInit, OnChanges {
   bmax        = 0;
   binSz       = 0;
   isRarityAdjusted = false;
-
-  constructor(private decimalPipe: DecimalPipe) { }
 
   ngOnInit(): void {
 

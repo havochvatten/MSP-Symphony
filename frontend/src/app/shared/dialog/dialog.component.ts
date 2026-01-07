@@ -1,13 +1,4 @@
-import {
-  Component,
-  Type,
-  ViewChild,
-  ComponentRef,
-  OnDestroy,
-  AfterViewInit,
-  ChangeDetectorRef,
-  HostBinding
-} from '@angular/core';
+import { Component, Type, ViewChild, ComponentRef, OnDestroy, AfterViewInit, ChangeDetectorRef, HostBinding, inject } from '@angular/core';
 import { InsertionDirective } from './insertion.directive';
 import { Subject } from 'rxjs';
 
@@ -18,12 +9,9 @@ import { Subject } from 'rxjs';
   standalone: false
 })
 export class DialogComponent implements OnDestroy, AfterViewInit {
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   @HostBinding('class.app-dialog') dialogClass = true;
-
-  constructor(
-    private changeDetectorRef: ChangeDetectorRef
-  ) {}
 
   componentRef: ComponentRef<unknown> | undefined;
   childComponentType: Type<unknown> | undefined;

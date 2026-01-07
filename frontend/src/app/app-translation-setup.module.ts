@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, inject } from '@angular/core';
 import { CommonModule, registerLocaleData } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
@@ -42,8 +42,10 @@ export function findBestLanguageMatch(setLocale?: string | undefined) {
   exports: [TranslateModule]
 })
 export class TranslationSetupModule {
-  constructor(translate: TranslateService,
-              store: Store<State>) {
+  constructor() {
+    const translate = inject(TranslateService);
+    const store = inject<Store<State>>(Store);
+
     translate.setDefaultLang(defaultLanguage);
     translate.use(findBestLanguageMatch());
     translate.addLangs(supportedLanguages);

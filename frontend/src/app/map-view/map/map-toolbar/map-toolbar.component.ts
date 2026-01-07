@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, Input, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnDestroy, inject } from '@angular/core';
 import { UserActions, UserSelectors } from "@data/user";
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
@@ -11,6 +11,8 @@ import { Subscription } from "rxjs";
   standalone: false
 })
 export class MapToolbarComponent implements OnDestroy {
+  private readonly store = inject<Store<State>>(Store);
+
   @Input() hasResults = false;
   @Input() drawIsActive = false;
   @Output() zoomIn: EventEmitter<void> = new EventEmitter<void>();
@@ -24,9 +26,7 @@ export class MapToolbarComponent implements OnDestroy {
 
   hasImageSmoothing = true;
 
-  constructor(
-    private readonly store: Store<State>
-  ) {
+  constructor() {
     this.aliasingSubscription$ = this.store.select(UserSelectors.selectAliasing).subscribe((aliasing: boolean) => {
       this.hasImageSmoothing = aliasing;
     });

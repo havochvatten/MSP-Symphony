@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // TODO: rework approach to dialog rendering
 
 import { Injector, Type, InjectionToken } from '@angular/core';

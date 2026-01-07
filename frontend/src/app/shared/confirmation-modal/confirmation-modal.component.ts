@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostBinding } from '@angular/core';
+import { Component, ElementRef, HostBinding, inject } from '@angular/core';
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 
@@ -9,6 +9,8 @@ import { DialogConfig } from "@shared/dialog/dialog-config";
   standalone: false
 })
 export class ConfirmationModalComponent  {
+  private readonly dialog = inject(DialogRef);
+  private readonly element = inject(ElementRef);
 
   @HostBinding('class.app-confirmation-modal') dialogClass = true;
 
@@ -22,9 +24,9 @@ export class ConfirmationModalComponent  {
   matColorCancel: string;
   matColorConfirm: string;
 
-  constructor(private dialog: DialogRef,
-              private element: ElementRef,
-              conf: DialogConfig ) {
+  constructor() {
+    const conf = inject(DialogConfig);
+
     this.header = conf.data.header;
     this.message = conf.data.message || null;
     this.confirmText = conf.data.confirmText || null;

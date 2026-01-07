@@ -1,6 +1,6 @@
 import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { mergeMap, map, catchError, tap, concatMap, withLatestFrom } from 'rxjs/operators';
@@ -17,12 +17,10 @@ const legendTypes: LegendType[] = ['result', 'ecosystem', 'pressure'];
 
 @Injectable()
 export class UserEffects {
-  constructor(
-    private actions$: Actions,
-    private store$: Store<State>,
-    private userService: UserService,
-    private router: Router
-  ) {}
+  private readonly actions$ = inject(Actions);
+  private readonly store$ = inject<Store<State>>(Store);
+  private readonly userService = inject(UserService);
+  private readonly router = inject(Router);
 
   loginUser$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.loginUser),

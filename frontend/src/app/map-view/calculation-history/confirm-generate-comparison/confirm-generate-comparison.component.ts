@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DialogRef } from '@src/app/shared/dialog/dialog-ref';
 
 @Component({
@@ -8,10 +8,10 @@ import { DialogRef } from '@src/app/shared/dialog/dialog-ref';
   standalone: false
 })
 export class ConfirmGenerateComparisonComponent {
+  private dialog = inject(DialogRef);
+
 
   cmpName = '';
-
-  constructor(private dialog: DialogRef) {}
 
   close = () => {
     this.dialog.close();

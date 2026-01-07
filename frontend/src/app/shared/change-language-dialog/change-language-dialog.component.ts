@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { TranslateService } from "@ngx-translate/core";
 
@@ -9,11 +9,15 @@ import { TranslateService } from "@ngx-translate/core";
   standalone: false
 })
 export class ChangeLanguageDialogComponent {
+  private dialog = inject(DialogRef);
+
 
   languages: string[] = ['en'];
   selectedLanguage = 'en';
 
-  constructor( private dialog: DialogRef, translateService: TranslateService) {
+  constructor() {
+    const translateService = inject(TranslateService);
+
     const browserLang = translateService.getBrowserLang();
 
     this.languages = translateService.getLangs();
