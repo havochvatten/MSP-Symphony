@@ -67,10 +67,8 @@ export class BandSelectionComponent implements OnInit, OnChanges {
   }
 
   onSearch = (value: string) => {
-    if (typeof value === 'string') {
-      this.search = value;
-      this.filteredGroups = filterCheckBoxGroups(this.bandGroups, this.search);
-    }
+    this.search = value;
+    this.filteredGroups = filterCheckBoxGroups(this.bandGroups, this.search);
   };
 
   onChange = (value: boolean|undefined, band: Band) => {

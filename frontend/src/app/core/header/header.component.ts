@@ -2,7 +2,7 @@ import { Component, Input, OnInit, NgModuleRef } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
   faInfoCircle,
-  faDoorClosed, IconDefinition, faGlobe,
+  faDoorClosed, IconDefinition
 } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 import { trigger, style, transition, animate, keyframes } from '@angular/animations';

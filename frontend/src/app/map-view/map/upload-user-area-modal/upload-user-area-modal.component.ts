@@ -47,16 +47,17 @@ export class UploadUserAreaModalComponent {
 
       this.areaService.uploadUserArea(formdata).pipe(
         finalize(() => this.loading = false)
-      ).subscribe(inspectionResults => {
+      ).subscribe({
+        next: (inspectionResults) => {
           this.uploadedArea = inspectionResults
           if (inspectionResults.featureIdentifiers.length > 0)
             this.firstFeatureId = inspectionResults.featureIdentifiers[0]
         },
-        ({ status, error }) => {
+        error: err => {
           // TODO: Show in dialog instead of new modal
-          this.inspectionError = error;
+          this.inspectionError = err;
           // this.store.dispatch(AreaActions.inspectUserUploadedAreaFailure({ error: { status, message } }));
-        }
+        }}
       );
     }
   }
@@ -71,13 +72,13 @@ export class UploadUserAreaModalComponent {
 
   confirmImport() {
     this.areaService.confirmUserAreaImport(this.uploadedArea!.key)
-      .subscribe(
-      importedArea => this.dialog.close(importedArea),
-      ({ status, error: message }) => {
-        this.store.dispatch(AreaActions.createUserDefinedAreaFailure({ error: { status, message} }));
-        this.dialog.close();
-      }     // TODO: Show some message?
-    );
+      .subscribe({
+        next: (importedArea) =>  this.dialog.close(importedArea),
+        error: ({ status, error }) => {
+          this.store.dispatch(AreaActions.createUserDefinedAreaFailure({ error: { status, message: error } }));
+          this.dialog.close();
+        }     // TODO: Show some message?
+      });
   }
 
   cancel = () => {

@@ -12,7 +12,6 @@ import { MapOpacitySliderComponent } from '../map-opacity-slider/map-opacity-sli
 import { provideMockStore } from "@ngrx/store/testing";
 import { initialState as user } from '@data/user/user.reducers';
 import { provideZonelessChangeDetection } from "@angular/core";
-import { async } from "rxjs";
 
 describe('MapToolbarComponent', () => {
   let fixture: ComponentFixture<MapToolbarComponent>,

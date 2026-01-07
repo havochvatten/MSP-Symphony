@@ -1,8 +1,7 @@
 import { State } from './user.interfaces';
-import { State as AppState } from '@src/app/app-reducer';
 import { createSelector, createFeatureSelector } from '@ngrx/store';
 
-export const selectUserState = createFeatureSelector<AppState, State>('user');
+export const selectUserState = createFeatureSelector<State>('user');
 
 export const selectIsLoggedIn = createSelector(
   selectUserState,

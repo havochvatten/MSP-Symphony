@@ -199,8 +199,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       pixelRatio: 1 // to fix tile size to 256x256
     });
 
-    const areaObservable = this.store.select(AreaSelectors.selectAreaFeatures),
-      boundaries = await firstValueFrom(this.store.select(AreaSelectors.selectBoundaryFeatures).pipe(
+    this.store.select(AreaSelectors.selectAreaFeatures);
+    const boundaries = await firstValueFrom(this.store.select(AreaSelectors.selectBoundaryFeatures).pipe(
       skipWhile(value => !value || value.features.length === 0)
     ));
 
@@ -210,7 +210,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       featureProjection: this.map.getView().getProjection()
     });
 
-    this.scenarioLayer = new ScenarioLayer(this.scenarioService, this.map.getView().getProjection().getCode(), this.store);
+    this.scenarioLayer = new ScenarioLayer(this.scenarioService, this.map.getView().getProjection().getCode());
 
     this.areaLayer = new AreaLayer(
         this.map, this.dispatchSelectionUpdate, this.zoomToExtent,

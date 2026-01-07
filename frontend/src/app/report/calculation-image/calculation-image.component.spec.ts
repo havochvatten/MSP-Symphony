@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CalculationImageComponent } from './calculation-image.component';
 import { provideZonelessChangeDetection } from "@angular/core";

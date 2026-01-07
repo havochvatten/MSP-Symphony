@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PressureColorScaleComponent } from './pressure-color-scale.component';
 import { provideZonelessChangeDetection } from "@angular/core";

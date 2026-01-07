@@ -58,7 +58,7 @@
 
   @if ((loading$ | async) === false) {
     <section class="list-section">
-      @for (calculation of calculations$ | async; track calculation.id; let i = $index) {
+      @for (calculation of calculations$ | async; track calculation.id) {
         <div class="calculation-wrap"
           [ngClass]="{ 'filtered': filter(calculation.name) }"
           >

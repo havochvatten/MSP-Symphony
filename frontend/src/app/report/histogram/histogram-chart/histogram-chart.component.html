@@ -35,7 +35,7 @@
     class="segment"
     [attr.d]="'M 154 ' + (cHeight + topMargin) + ' h 1040'">
   </path>
-  @for (xl of xlabels; track $index; let i = $index) {
+  @for (xl of xlabels; track $index) {
     <ng-container>
       <path
         class="segment"

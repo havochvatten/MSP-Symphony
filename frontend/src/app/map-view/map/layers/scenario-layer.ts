@@ -4,8 +4,6 @@ import { GeoJSON } from 'ol/format';
 import VectorLayer from 'ol/layer/Vector';
 import { Feature } from 'ol';
 import { BandChange } from '@data/metadata/metadata.interfaces';
-import { Store } from '@ngrx/store';
-import { State } from '@src/app/app-reducer';
 import { AreaStyle } from '@src/app/map-view/map/layers/area-layer';
 import { ChangesProperty, Scenario } from '@data/scenario/scenario.interfaces';
 import { Fill, Stroke, Style } from 'ol/style';
@@ -43,8 +41,7 @@ export class ScenarioLayer extends VectorLayer<VectorSource<Feature>> {
 
   constructor(
     private scenarioService: ScenarioService,
-    featureProjection: string,
-    private store: Store<State>
+    featureProjection: string
   ) {
     super({
       source: new VectorSource({

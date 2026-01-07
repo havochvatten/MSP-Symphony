@@ -25,7 +25,6 @@ import { LoginModule } from './login/login.module';
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatButtonModule } from "@angular/material/button";
 import { MatRadioModule } from "@angular/material/radio";
-import { FormsModule } from "@angular/forms";
 
 @NgModule({
   declarations: [AppComponent],

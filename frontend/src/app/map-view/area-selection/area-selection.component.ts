@@ -67,10 +67,8 @@ export class AreaSelectionComponent implements OnChanges {
   }
 
   onSearch = (value: string) => {
-    if (typeof value === 'string') {
-      this.search = value;
-      this.filterAreas();
-    }
+    this.search = value;
+    this.filterAreas();
   };
 
   selectArea = (statePath: StatePath, visible: boolean, groupStatePath: StatePath, expand: boolean) => {
@@ -144,9 +142,6 @@ export class AreaSelectionComponent implements OnChanges {
       }));
       // TODO Zoom area?
     }
-    else
-      ; // user cancelled modal
-    // toggle visibily of area?
   }
 
 

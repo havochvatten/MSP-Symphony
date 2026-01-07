@@ -224,7 +224,7 @@ export class CalculationEffects {
 
   $calculateActiveScenario = createEffect(() => this.actions$.pipe(
     ofType(CalculationActions.calculateActiveScenario),
-    concatMap((action) =>
+    concatMap(() =>
       this.store.select(ScenarioSelectors.selectActiveScenario).pipe(
         take(1),
         switchMap(

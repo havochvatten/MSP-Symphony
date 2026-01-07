@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CalculationReportModalComponent } from './calculation-report-modal.component';
 import { IconButtonComponent } from '../icon-button/icon-button.component';

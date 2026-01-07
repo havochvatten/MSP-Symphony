@@ -5,8 +5,8 @@
     }
     @if (editName) {
       <input #name type="text" [value]="scenario.name"
-        (keydown.enter)="onChangeName($event.target.value)"
-        (blur)="onChangeName($event.target.value)">
+        (keydown.enter)="onChangeName($event)"
+        (blur)="onChangeName($event)">
     }
     <button (click)="editTheName()">
       <app-icon iconType="edit"></app-icon>

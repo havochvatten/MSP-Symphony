@@ -11,7 +11,7 @@
             routerLinkActive
             [routerLinkActiveOptions]="{ exact: true }"
             #rla="routerLinkActive"
-            [attr.aria-current]="rla.isActive === true"
+            [attr.aria-current]="rla.isActive"
             >
             @if (item.icon) {
               <fa-icon [icon]="item.icon"></fa-icon>

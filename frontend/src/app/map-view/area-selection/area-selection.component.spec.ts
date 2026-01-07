@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AreaSelectionComponent } from './area-selection.component';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';

@@ -31,30 +31,29 @@ describe('HistogramComponent', () => {
   });
 
   it('should create', () => {
-    const report: Report = {
+    component.report = {
       average: 0,
       calculatedPixels: 0,
-      chartData: {nodes:[], links:[]},
+      chartData: { nodes: [], links: [] },
       chartWeightThreshold: 0.001,
       geographicalArea: 0,
       gridResolution: 0,
       histogram: new Array(100).fill(100),
-      impactPerEcoComponent: {"0": 0},
-      impactPerPressure: {"0": 0},
+      impactPerEcoComponent: { "0": 0 },
+      impactPerPressure: { "0": 0 },
       areaMatrices: [],
       max: 100,
       min: 0,
       name: "",
-      normalization: {type: NormalizationType.DOMAIN},
+      normalization: { type: NormalizationType.DOMAIN },
       operationName: "",
       operationOptions: {},
-      scenarioChanges: {baseChanges: {}, areaChanges: {}},
+      scenarioChanges: { baseChanges: {}, areaChanges: {} },
       stddev: 0,
       timestamp: 0,
       total: 0,
-      baselineName : ""
+      baselineName: ""
     };
-    component.report = report;
     fixture.detectChanges();
     expect(component).toBeTruthy();
   });

@@ -90,18 +90,20 @@ export class ChangesOverviewComponent implements OnInit {
       this.bothTypes = this.ecoChanges && this.pressureChanges;
   }
 
-  async ngOnInit(): Promise<void> {
-    const bandMeta = await (this.bands).pipe(take(1)).toPromise();
-    for(const bandType in bandMeta) { // ecocomponents, pressures
-      for(const bandGroup of bandMeta[bandType]) {
-        for(const band of bandGroup.bands) {
-          if(this.allChangedBands.get(this.getBandType(bandType))!.has(band.bandNumber)) {
-            this.setGroupedChangeToDisplay(bandType, bandGroup.symphonyThemeName,
-              { number: band.bandNumber, name: band.title })
+  ngOnInit() {
+    (this.bands).pipe(
+      take(1)).subscribe(bandMeta => {
+      for (const bandType in bandMeta) { // ecocomponents, pressures
+        for (const bandGroup of bandMeta[bandType]) {
+          for (const band of bandGroup.bands) {
+            if (this.allChangedBands.get(this.getBandType(bandType))!.has(band.bandNumber)) {
+              this.setGroupedChangeToDisplay(bandType, bandGroup.symphonyThemeName,
+                { number: band.bandNumber, name: band.title })
+            }
           }
         }
       }
-    }
+    });
   }
 
   getChange(bandType: string, areaIndex: number, id: number): BandChange {

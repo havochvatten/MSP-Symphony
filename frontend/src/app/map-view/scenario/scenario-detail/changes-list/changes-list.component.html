@@ -13,7 +13,7 @@
         </app-accordion-box-header>
       }
       <app-accordion-box-content>
-        @for (change of getChanges(); track [change[0].type, change[1]]) {
+        @for (change of getChanges(); track $index) {
           <div class="change">
             <div class="band-name">{{ bandDictionary![change[0].type][change[1]] }}</div>
             <div class="spec">

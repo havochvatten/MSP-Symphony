@@ -1,9 +1,8 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { CommonModule, registerLocaleData } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { registerLocaleData } from '@angular/common';
 import localeSv from '@angular/common/locales/sv';
 import localeEn from '@angular/common/locales/en';
 import localeFr from '@angular/common/locales/fr';
@@ -15,7 +14,6 @@ registerLocaleData(localeSv);
 registerLocaleData(localeEn);
 registerLocaleData(localeFr);
 
-export type Language = 'en' | 'sv' | 'fr';
 export const supportedLanguages = ['en', 'sv', 'fr'];
 
 const defaultLanguage = 'en';
@@ -33,7 +31,6 @@ export function findBestLanguageMatch(setLocale?: string | undefined) {
 @NgModule({
   imports: [
     CommonModule,
-    HttpClientModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

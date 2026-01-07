@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ToolbarButtonComponent } from './toolbar-button.component';
 import { SharedModule } from '@shared/shared.module';
