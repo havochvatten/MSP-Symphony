@@ -11,6 +11,11 @@
   "parserOptions": {
     "ecmaVersion": 2020
   },
+  "plugins": [
+    "@typescript-eslint",
+    "@angular-eslint",
+    "@stylistic"
+  ],
   "overrides": [
     {
       "files": [
@@ -44,6 +49,7 @@
           }
         ],
         "@angular-eslint/directive-class-suffix": "off",
+        "@angular-eslint/prefer-standalone": "off",
         "@typescript-eslint/prefer-function-type": "error",
         "@typescript-eslint/consistent-type-definitions": "error",
         "@typescript-eslint/no-non-null-assertion": "off",
@@ -54,9 +60,8 @@
         "@typescript-eslint/no-this-alias": ["error", { "allowedNames": ["that"] } ],
         "@typescript-eslint/unified-signatures": "error",
         "@typescript-eslint/no-shadow": "error",
-        "@typescript-eslint/member-delimiter-style": ["error", { "singleline": { "delimiter": "comma" } }],
+        "@stylistic/member-delimiter-style": ["error", { "singleline": { "delimiter": "comma" } }],
         "no-throw-literal": "off",
-        "@typescript-eslint/no-throw-literal": "error",
         "arrow-body-style": "off",
         "no-unused-labels": "error",
         "no-unused-vars": ["off", { "args": "none" }],
