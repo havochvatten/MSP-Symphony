@@ -1,4 +1,6 @@
-import { AfterViewInit, Component, EventEmitter, HostListener, Input, NgModuleRef, OnDestroy, Output
+import { AfterViewInit, Component, EventEmitter, HostListener, Input,
+  NgModuleRef, OnDestroy,
+  Output, inject,
 } from '@angular/core';
 import { Coordinate } from 'ol/coordinate';
 import { firstValueFrom, Observable, skipWhile, Subscription } from 'rxjs';
@@ -21,7 +23,6 @@ import { distinctUntilChanged, filter, skip, take } from 'rxjs/operators';
 import { Feature, Map as OLMap, View } from 'ol';
 import { isNotNullOrUndefined } from '@src/util/rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { ScenarioService } from '@data/scenario/scenario.service';
 import { environment as env } from '@src/environments/environment';
 import { BackgroundLayer } from '@src/app/map-view/map/layers/background-layer';
 import { Attribution, ScaleLine } from 'ol/control';
@@ -46,13 +47,23 @@ import {
   BandType,
   ReliabilityMap,
 } from "@data/metadata/metadata.interfaces";
+import { MapViewModule } from "@src/app/map-view/map-view.module";
+import { ScenarioService } from "@data/scenario/scenario.service";
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
-  styleUrls: ['./map.component.scss']
+  styleUrls: ['./map.component.scss'],
+  standalone: false
 })
 export class MapComponent implements AfterViewInit, OnDestroy {
+  private readonly store = inject<Store<State>>(Store);
+  private readonly calcService = inject(CalculationService);
+  private readonly dialogService = inject(DialogService);
+  private readonly translateService = inject(TranslateService);
+  private readonly dataLayerService = inject(DataLayerService);
+  private readonly scenarioService = inject(ScenarioService);
+
   @Input() mapCenter?: Coordinate;
   @Output() resultLayerGroupChange: EventEmitter<number> = new EventEmitter<number>();
   @Output() resultLayerGroupChangeCmp: EventEmitter<number> = new EventEmitter<number>();
@@ -67,8 +78,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private readonly selectedAreasSubscription: Subscription;
   private areaSubscription?: Subscription;
   protected activeScenario$: Observable<Scenario | undefined>;
-  private scenarioSubscription: Subscription;
-  private scenarioCloseSubscription: Subscription;
+  private readonly scenarioSubscription: Subscription;
+  private readonly scenarioCloseSubscription: Subscription;
+
+  private readonly moduleRef = inject(NgModuleRef<MapViewModule>);
 
   private reliabilitySubject$?: Observable<ReliabilityMap | null>
   private reliabilitySubscription$?: Subscription;
@@ -93,15 +106,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   private aliasing = true;
 
-  constructor(
-    private store: Store<State>,
-    private calcService: CalculationService,
-    private scenarioService: ScenarioService,
-    private dialogService: DialogService,
-    private translateService: TranslateService,
-    private dataLayerService: DataLayerService,
-    private moduleRef: NgModuleRef<never>
-  ) {
+  constructor() {
+    const dataLayerService = this.dataLayerService;
+
     this.userSubscription = this.store        /* TOOD: Just get from static environment?*/
       .select(UserSelectors.selectBaseline).pipe(isNotNullOrUndefined())
       .subscribe((baseline) => {
@@ -198,8 +205,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       pixelRatio: 1 // to fix tile size to 256x256
     });
 
-    const areaObservable = this.store.select(AreaSelectors.selectAreaFeatures),
-      boundaries = await firstValueFrom(this.store.select(AreaSelectors.selectBoundaryFeatures).pipe(
+    this.store.select(AreaSelectors.selectAreaFeatures);
+    const boundaries = await firstValueFrom(this.store.select(AreaSelectors.selectBoundaryFeatures).pipe(
       skipWhile(value => !value || value.features.length === 0)
     ));
 
@@ -209,7 +216,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       featureProjection: this.map.getView().getProjection()
     });
 
-    this.scenarioLayer = new ScenarioLayer(this.scenarioService, this.map.getView().getProjection().getCode(), this.store);
+    this.scenarioLayer = new ScenarioLayer(this.scenarioService, this.map.getView().getProjection().getCode());
 
     this.areaLayer = new AreaLayer(
         this.map, this.dispatchSelectionUpdate, this.zoomToExtent,
@@ -280,10 +287,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   public highlightArea = (statePath: StatePath, highlight: boolean) => {
-    if (highlight) {
-      this.areaHighlightLayer.highlightArea(statePath);
-    } else {
-      this.areaHighlightLayer.clearHighlight(statePath);
+    if (this.areaHighlightLayer) {
+      if (highlight) {
+        this.areaHighlightLayer.highlightArea(statePath);
+      } else {
+        this.areaHighlightLayer.clearHighlight(statePath);
+      }
     }
   }
 

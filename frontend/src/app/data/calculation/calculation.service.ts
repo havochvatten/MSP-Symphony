@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable, OnDestroy } from '@angular/core';
+import { EventEmitter, Injectable, OnDestroy, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Store } from '@ngrx/store';
 import { firstValueFrom, Subscription } from 'rxjs';
@@ -44,6 +44,9 @@ export interface NormalizationOptions {
   providedIn: 'root'
 })
 export class CalculationService implements OnDestroy {
+  private readonly http = inject(HttpClient);
+  private readonly store = inject<Store<State>>(Store);
+
   public resultReady$ = new EventEmitter<StaticImageOptions>();
   public resultRemoved$ = new EventEmitter<number>();
   private ecoBands: number[] = [];
@@ -52,7 +55,7 @@ export class CalculationService implements OnDestroy {
   private readonly aliasingSubscription$: Subscription;
   private aliasing = true;
 
-  constructor(private http: HttpClient, private store: Store<State>) {
+  constructor() {
     proj4.defs('EPSG:3035', '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs');
     proj4.defs('ESRI:54034', '+proj=cea +lat_ts=-12 +lon_0=12 +x_0=0 +y_0=0 +datum=WGS84 +units=m' +
       ' +no_defs');

@@ -4,8 +4,6 @@ import { GeoJSON } from 'ol/format';
 import VectorLayer from 'ol/layer/Vector';
 import { Feature } from 'ol';
 import { BandChange } from '@data/metadata/metadata.interfaces';
-import { Store } from '@ngrx/store';
-import { State } from '@src/app/app-reducer';
 import { AreaStyle } from '@src/app/map-view/map/layers/area-layer';
 import { ChangesProperty, Scenario } from '@data/scenario/scenario.interfaces';
 import { Fill, Stroke, Style } from 'ol/style';
@@ -14,7 +12,7 @@ import { Coordinate } from 'ol/coordinate';
 import { environment } from '@src/environments/environment';
 import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
 import { ScenarioService } from '@data/scenario/scenario.service';
-import { MultiPolygon, Polygon, SimpleGeometry } from "ol/geom";
+import { MultiPolygon, Polygon, SimpleGeometry, Geometry } from "ol/geom";
 
 // Move to environment?
 export enum ChangeState {
@@ -36,15 +34,16 @@ const SCENARIO_BOUNDARY_STYLE = new Style({
 const THE_EMPTY_STYLE = new Style({}); // This style will cause the feature to not be visible
 
 @Directive()
-export class ScenarioLayer extends VectorLayer<Feature> {
+export class ScenarioLayer extends VectorLayer<VectorSource<Feature>> {
 
   private boundaryFeature?: Feature;
   private readonly format: GeoJSON;
 
   constructor(
-    private scenarioService: ScenarioService,
-    featureProjection: string,
-    private store: Store<State>
+    /* eslint-disable @angular-eslint/prefer-inject */
+    private readonly scenarioService: ScenarioService,
+    /* eslint-enable */
+    featureProjection: string
   ) {
     super({
       source: new VectorSource({
@@ -55,7 +54,6 @@ export class ScenarioLayer extends VectorLayer<Feature> {
       style: new AreaStyle(false)
     });
     this.format = this.getSource()?.getFormat() as GeoJSON;
-
     this.set('name', 'Scenario Layer'); // for debugging only
 
     this.scenarioService.setScenarioLayer(this);
@@ -67,7 +65,7 @@ export class ScenarioLayer extends VectorLayer<Feature> {
 
     // TODO remove whole scenario layer when exiting scenario and create new one upon entering -- immutable
     scenario.areas.forEach(a => {
-      const feature = this.format.readFeature(a.feature),
+      const feature = this.format.readFeature(a.feature) as Feature<Geometry>,
             featurePoly = feature.getGeometry() as SimpleGeometry,
             isSingle = featurePoly.getType() === 'Polygon';
       if(!poly) {

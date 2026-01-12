@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatMap, map } from 'rxjs/operators';
 import { v4 as uuid } from 'uuid';
@@ -12,7 +12,7 @@ import { ScenarioActions } from "@data/scenario";
 
 @Injectable()
 export class MessageEffects {
-  constructor(private actions$: Actions) {}
+  private readonly actions$ = inject(Actions);
 
   catchRequestFailure$ = createEffect(() => this.actions$.pipe(
     ofType(

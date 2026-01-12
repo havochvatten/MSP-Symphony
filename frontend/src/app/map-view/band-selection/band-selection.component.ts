@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, inject } from '@angular/core';
 import { BandGroup, Band, BandType_Alt, bandTypesMap, BandType } from '@data/metadata/metadata.interfaces';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
@@ -43,17 +43,18 @@ function filterCheckBoxGroups(groups: BandGroup[], search: string): BandGroup[] 
 @Component({
   selector: 'app-band-selection',
   templateUrl: './band-selection.component.html',
-  styleUrls: ['./band-selection.component.scss']
+  styleUrls: ['./band-selection.component.scss'],
+  standalone: false
 })
 export class BandSelectionComponent implements OnInit, OnChanges {
+  private store = inject<Store<State>>(Store);
+
   @Input() title?: string;
   @Input() bandGroups: BandGroup[] = [];
   @Input() bandType: BandType_Alt = 'ecoComponents';
   search = '';
   filteredGroups: BandGroup[] = [];
   scenarioDisplayNames?: Observable<ScenarioDisplayMeta>;
-
-  constructor(private store: Store<State>) {}
 
   ngOnInit() {
     this.scenarioDisplayNames = this.store.select(ScenarioSelectors.selectActiveScenarioDisplayMeta);
@@ -66,10 +67,8 @@ export class BandSelectionComponent implements OnInit, OnChanges {
   }
 
   onSearch = (value: string) => {
-    if (typeof value === 'string') {
-      this.search = value;
-      this.filteredGroups = filterCheckBoxGroups(this.bandGroups, this.search);
-    }
+    this.search = value;
+    this.filteredGroups = filterCheckBoxGroups(this.bandGroups, this.search);
   };
 
   onChange = (value: boolean|undefined, band: Band) => {

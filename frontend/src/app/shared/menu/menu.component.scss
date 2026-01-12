@@ -1,5 +1,5 @@
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
 
 nav {
   display: flex;
@@ -12,7 +12,7 @@ nav {
     padding: 0;
 
     li {
-      background-color: $hav-lightturquoise;
+      background-color: colors.$hav-lightturquoise;
       list-style-type: none;
       display: flex;
       flex: 1 1 0%;
@@ -29,22 +29,22 @@ nav {
         display: flex;
         height: 4.4rem;
         outline-offset: -2px;
-        padding-left: $xs-margin;
-        padding-right: $xs-margin;
+        padding-left: margins.$xs-margin;
+        padding-right: margins.$xs-margin;
         text-decoration: none;
 
         fa-icon {
-          padding-right: $xs-margin;
+          padding-right: margins.$xs-margin;
           color: white;
         }
       }
 
       &:not(:last-child) {
-        border-bottom: 1px solid $hav-coldgrey;
+        border-bottom: 1px solid colors.$hav-coldgrey;
       }
 
       &:hover {
-        background-color: $primary-hover-bg-blue;
+        background-color: colors.$primary-hover-bg-blue;
       }
     }
   }

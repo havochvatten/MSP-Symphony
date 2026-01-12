@@ -1,4 +1,4 @@
-@import 'hav-colors';
+@use 'hav-colors' as colors;
 
 .list-item {
   position: relative;
@@ -10,7 +10,7 @@
   &:hover, &.scenario:hover, &.calculation:hover {
 
     &.interactive {
-      background-color: $hav-coldgrey;
+      background-color: colors.$hav-coldgrey;
       cursor: pointer;
     }
 
@@ -55,11 +55,11 @@
       &[icontype='copy'], &[icontype='report'],
       &[icontype='eye'], &[icontype='eye-slash'],
       &[icontype='edit'] {
-        color: $hav-turquoise;
+        color: colors.$hav-turquoise;
       }
 
       &[icontype='delete'] {
-        color: $red;
+        color: colors.$red;
       }
 
       &:hover {

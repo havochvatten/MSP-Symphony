@@ -4,7 +4,8 @@ import { IconType } from "@shared/icon/icon.component";
 @Component({
   selector: 'app-multi-action-button',
   templateUrl: './multi-action-button.component.html',
-  styleUrls: ['./multi-action-button.component.scss']
+  styleUrls: ['./multi-action-button.component.scss'],
+  standalone: false
 })
 export class MultiActionButtonComponent {
   @Input() multiActionLabel!: string

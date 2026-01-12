@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 
 import { MapComponent } from './map.component';
@@ -13,12 +13,13 @@ import { initialState as area } from '@data/area/area.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { ChangeState, ScenarioLayer } from "@src/app/map-view/map/layers/scenario-layer";
 import { BandChange } from "@data/metadata/metadata.interfaces";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('MapComponent', () => {
   let fixture: ComponentFixture<MapComponent>,
       component: MapComponent;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
@@ -32,20 +33,23 @@ describe('MapComponent', () => {
         ToolbarZoomButtonsComponent,
         ToolbarButtonComponent
       ],
-      providers: [provideMockStore({
-        initialState: {
-          metadata: metadata,
-          area: area,
-          scenario: scenario,
-          user: { baseline: undefined }
-        }
-      })]
+      providers: [
+        provideMockStore({
+          initialState: {
+            metadata: metadata,
+            area: area,
+            scenario: scenario,
+            user: { baseline: undefined }
+          }
+        }),
+        provideZonelessChangeDetection()
+      ]
     }).compileComponents();
     fixture = TestBed.createComponent(MapComponent);
     component = fixture.componentInstance;
     component.mapCenter = [0,0];
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

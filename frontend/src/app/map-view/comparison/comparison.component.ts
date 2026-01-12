@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, NgModuleRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, NgModuleRef, ViewChild, inject } from '@angular/core';
 import { Store } from "@ngrx/store";
 import { State } from '@src/app/app-reducer';
 import { Observable } from 'rxjs';
@@ -14,15 +14,24 @@ import { MatSelect } from "@angular/material/select";
 import { MatOption } from "@angular/material/core";
 import { MatRadioChange } from "@angular/material/radio";
 import { MatCheckboxChange } from "@angular/material/checkbox";
+import { MapViewModule } from "@src/app/map-view/map-view.module";
 
 enum ComparisonScaleOptions { CONSTANT, DYNAMIC }
 
 @Component({
   selector: 'app-comparison',
   templateUrl: './comparison.component.html',
-  styleUrls: ['./comparison.component.scss']
+  styleUrls: ['./comparison.component.scss'],
+  standalone: false
 })
 export class ComparisonComponent implements AfterViewInit {
+  private readonly store = inject<Store<State>>(Store);
+  private readonly dialogService = inject(DialogService);
+  private readonly calcService = inject(CalculationService);
+  private readonly translate = inject(TranslateService);
+  private readonly builder = inject(FormBuilder);
+  private readonly moduleRef = inject(NgModuleRef<MapViewModule>)
+
   calculations$?: Observable<CalculationSlice[]>;
   candidates$?: Observable<CalculationSlice[]>;
   compareForm = this.builder.group({
@@ -38,14 +47,7 @@ export class ComparisonComponent implements AfterViewInit {
   includeUnchanged = false;
   reverseComparison = false;
 
-  constructor(
-    private store: Store<State>,
-    private dialogService: DialogService,
-    private calcService: CalculationService,
-    private translate: TranslateService,
-    private builder: FormBuilder,
-    private moduleRef: NgModuleRef<never>
-  ) {
+  constructor() {
     this.calculations$ = this.store.select(CalculationSelectors.selectCalculations);
     this.candidates$ = this.store.select(CalculationSelectors.selectChangedCalculations);
   }

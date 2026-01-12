@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Observable } from "rxjs";
 import { take } from "rxjs/operators";
 import { DialogRef } from "@shared/dialog/dialog-ref";
@@ -18,9 +18,14 @@ interface BandShim {
 @Component({
   selector: 'app-changes-overview',
   templateUrl: './changes-overview.component.html',
-  styleUrls: ['./changes-overview.component.scss']
+  styleUrls: ['./changes-overview.component.scss'],
+  standalone: false
 })
 export class ChangesOverviewComponent implements OnInit {
+  dialog = inject(DialogRef);
+  private config = inject(DialogConfig);
+  private store = inject<Store<State>>(Store);
+
 
   scenario: Scenario;
   bands: Observable<Record<string, BandGroup[]>>;
@@ -49,11 +54,7 @@ export class ChangesOverviewComponent implements OnInit {
     return this.bandTypeDict.get(bandType)!;
   }
 
-  constructor(
-    public dialog: DialogRef,
-    private config: DialogConfig,
-    private store: Store<State>
-  ) {
+  constructor() {
       this.scenario = this.config.data.scenario;
       this.bands = this.store.select(MetadataSelectors.selectMetadata)
 
@@ -89,18 +90,20 @@ export class ChangesOverviewComponent implements OnInit {
       this.bothTypes = this.ecoChanges && this.pressureChanges;
   }
 
-  async ngOnInit(): Promise<void> {
-    const bandMeta = await (this.bands).pipe(take(1)).toPromise();
-    for(const bandType in bandMeta) { // ecocomponents, pressures
-      for(const bandGroup of bandMeta[bandType]) {
-        for(const band of bandGroup.bands) {
-          if(this.allChangedBands.get(this.getBandType(bandType))!.has(band.bandNumber)) {
-            this.setGroupedChangeToDisplay(bandType, bandGroup.symphonyThemeName,
-              { number: band.bandNumber, name: band.title })
+  ngOnInit() {
+    (this.bands).pipe(
+      take(1)).subscribe(bandMeta => {
+      for (const bandType in bandMeta) { // ecocomponents, pressures
+        for (const bandGroup of bandMeta[bandType]) {
+          for (const band of bandGroup.bands) {
+            if (this.allChangedBands.get(this.getBandType(bandType))!.has(band.bandNumber)) {
+              this.setGroupedChangeToDisplay(bandType, bandGroup.symphonyThemeName,
+                { number: band.bandNumber, name: band.title })
+            }
           }
         }
       }
-    }
+    });
   }
 
   getChange(bandType: string, areaIndex: number, id: number): BandChange {
@@ -159,4 +162,7 @@ export class ChangesOverviewComponent implements OnInit {
       }
     }
   }
+
+  protected readonly Number = Number;
+  protected readonly Object = Object;
 }

@@ -7,6 +7,7 @@ import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { CopyScenarioComponent } from './copy-scenario.component';
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('CopyScenarioComponent', () => {
   let component: CopyScenarioComponent;
@@ -32,8 +33,8 @@ describe('CopyScenarioComponent', () => {
               }
             }
           }
-        }
-
+        },
+        provideZonelessChangeDetection()
       ],
       declarations: [ CopyScenarioComponent ]
     })

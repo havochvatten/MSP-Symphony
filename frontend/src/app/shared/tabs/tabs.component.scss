@@ -1,5 +1,5 @@
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
 
 nav {
   display: flex;
@@ -16,7 +16,7 @@ nav {
     box-sizing: border-box;
     height: 7rem;
     max-width: 12rem;
-    padding: $xxs-margin $xs-margin;
+    padding: margins.$xxs-margin margins.$xs-margin;
     color: #004371;
     font-size: 1.4rem;
     text-decoration: none;

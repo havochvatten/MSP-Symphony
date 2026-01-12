@@ -62,7 +62,8 @@ export const colors: PressureColor[] = [
 @Component({
   selector: 'app-pressure-color-scale',
   templateUrl: './pressure-color-scale.component.html',
-  styleUrls: ['./pressure-color-scale.component.scss']
+  styleUrls: ['./pressure-color-scale.component.scss'],
+  standalone: false
 })
 export class PressureColorScaleComponent {
   colors = colors;

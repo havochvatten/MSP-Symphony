@@ -4,7 +4,8 @@ import { VisibleReliability } from "@data/metadata/metadata.interfaces";
 @Component({
   selector: 'app-reliability-legend',
   templateUrl: './reliability-legend.component.html',
-  styleUrl: './reliability-legend.component.scss'
+  styleUrl: './reliability-legend.component.scss',
+  standalone: false
 })
 export class ReliabilityLegendComponent {
   @Input() reliability: VisibleReliability | null = null;

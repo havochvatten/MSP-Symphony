@@ -1,14 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DialogRef } from '@shared/dialog/dialog-ref';
 
 @Component({
   selector: 'app-create-user-area-modal',
   templateUrl: './create-user-area-modal.component.html',
-  styleUrls: ['./create-user-area-modal.component.scss']
+  styleUrls: ['./create-user-area-modal.component.scss'],
+  standalone: false
 })
 export class CreateUserAreaModalComponent {
+  private readonly dialog = inject(DialogRef);
+
   areaName = '';
-  constructor(private dialog: DialogRef) {}
 
   onChange(value: string) {
     this.areaName = value;

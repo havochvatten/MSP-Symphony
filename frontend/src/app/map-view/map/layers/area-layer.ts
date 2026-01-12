@@ -18,6 +18,7 @@ import { Geometry } from "ol/geom";
 import { DrawEvent } from "ol/interaction/Draw";
 import { simpleHash, statePathContains } from "@shared/common.util";
 import { AreaSelect } from "@src/app/map-view/map/layers/area-select";
+import FeatureFormat from "ol/format/Feature";
 
 function unique<T>(value: T, index: number, self: T[]) {
   return self.indexOf(value) === index;
@@ -51,7 +52,7 @@ class DrawAreaInteraction extends Draw {
   constructor(
     map: OLMap,
     source: VectorSource,
-    drawCondition: (event: MapBrowserEvent<UIEvent>) => boolean,
+    drawCondition: (event: MapBrowserEvent) => boolean,
     onDrawEnd: (polygon: Polygon) => Polygon | void
   ) {
     super({
@@ -86,28 +87,28 @@ class DrawAreaInteraction extends Draw {
   }
 }
 
-class AreaLayer extends VectorLayer<Feature> {
+class AreaLayer extends VectorLayer<VectorSource<Feature>> {
   private readonly drawAreaInteraction: DrawAreaInteraction;
-  private readonly boundaryLayer: VectorLayer<Feature>;
+  private readonly boundaryLayer: VectorLayer<VectorSource>;
   private readonly areaSelect: AreaSelect;
   private drawInteractionActive = false;
   private boundaries?: FeatureLike[];
   private optionsMenuActive = false;
-  private featureMap = new Map<string, Feature<Geometry>>();
-  private selectedStyle = new AreaStyle(true);
+  private readonly featureMap = new Map<string, Feature<Geometry>>();
+  private readonly selectedStyle = new AreaStyle(true);
 
   constructor(
-    private map: OLMap,
+    private readonly map: OLMap,
     public readonly setSelection: (statePath: StatePath | undefined, expand: boolean) => void,
     private readonly zoomToExtent: (extent: Extent, duration: number) => void,
-    private onDrawEnd: (polygon: Polygon)=> void,
-    private onDrawInvalid: () => void,
-    private onDownloadClick: (path: string) => void,
+    private readonly onDrawEnd: (polygon: Polygon)=> void,
+    private readonly onDrawInvalid: () => void,
+    private readonly onDownloadClick: (path: string) => void,
     onSplitClick: (feature: Feature, prevFeature: Feature) => void,
     onMergeClick: (lastFeature: Feature) => void,
     public scenarioLayer: ScenarioLayer,
-    private translateService: TranslateService,
-    private geoJson: GeoJSON
+    private readonly translateService: TranslateService,
+    private readonly geoJson: GeoJSON
   ) {
     super({
       source: new VectorSource({ format: new GeoJSON() }),
@@ -158,7 +159,7 @@ class AreaLayer extends VectorLayer<Feature> {
     return getFeaturesByStatePaths(this.getSource()!, statePaths);
   }
 
-  private async addHoverInteraction(map: OLMap, areaLayer: VectorLayer<Feature>) {
+  private addHoverInteraction(map: OLMap, areaLayer: VectorLayer<VectorSource<Feature>>) {
     const container = document.getElementById('popup') as HTMLElement;
     const content = document.getElementById('popup-title') as HTMLElement;
     const body = document.getElementById('popup-body') as HTMLElement;
@@ -169,13 +170,9 @@ class AreaLayer extends VectorLayer<Feature> {
       autoPan: false
     });
     map.addOverlay(overlay);
+    const clickArea = this.translateService.instant('map.click-area'),
+          pointWithinScenario = this.translateService.instant('map.location-within-scenario');
 
-    const {
-      'map.click-area': clickArea,
-      'map.location-within-scenario': pointWithinScenario
-    } = await this.translateService
-      .get(['map.click-area', 'map.location-within-scenario'])
-      .toPromise();
     map.on('pointermove', event => {
       if(this.optionsMenuActive) return;
 
@@ -193,12 +190,13 @@ class AreaLayer extends VectorLayer<Feature> {
 
         const hoveredFeature = (detectedFeatures[0] as Feature);
 
-        if (!this.scenarioLayer.hasActiveScenario()) body.innerText = clickArea;
-        else {
-          if (this.scenarioLayer.isPointInsideScenario(event.coordinate) ||
-              intersects(this.scenarioLayer.getBoundaryFeature()!, hoveredFeature))
-            body.innerText = pointWithinScenario;
-          else body.innerText = clickArea;
+        if (!this.scenarioLayer.hasActiveScenario()) {
+          body.innerText = clickArea;
+        } else if (this.scenarioLayer.isPointInsideScenario(event.coordinate) ||
+          intersects(this.scenarioLayer.getBoundaryFeature()!, hoveredFeature)) {
+          body.innerText = pointWithinScenario;
+        } else {
+          body.innerText = clickArea;
         }
 
         const extent = hoveredFeature.getGeometry()?.getExtent();
@@ -269,7 +267,7 @@ class AreaLayer extends VectorLayer<Feature> {
     });
   }
 
-  private appendCoordinates = (event: MapBrowserEvent<UIEvent>) => {
+  private appendCoordinates = (event: MapBrowserEvent) => {
     this.drawAreaInteraction.addCoordinate(event.coordinate);
     return true;
   };
@@ -281,7 +279,7 @@ class AreaLayer extends VectorLayer<Feature> {
     }).readFeature(polygon);
 
     if(boundaries.some(boundary => {
-        return intersects(testFeature, boundary as Feature<Geometry>)
+        return intersects(testFeature as Feature<Geometry>, boundary as Feature<Geometry>)
     })) {
       this.onDrawEnd(polygon);
     } else {
@@ -310,7 +308,7 @@ class AreaLayer extends VectorLayer<Feature> {
   mapAreaFeatures(featureCollections: FeatureCollection[]) {
     for(const featureCollection of featureCollections) {
       for(const feature of featureCollection.features) {
-        const gFeature = this.geoJson.readFeature(feature);
+        const gFeature = this.geoJson.readFeature(feature) as Feature<Geometry>;
         this.featureMap.set(simpleHash(gFeature.get('statePath')), gFeature);
       }
     }
@@ -340,11 +338,11 @@ class AreaLayer extends VectorLayer<Feature> {
     }
 
     const newSource = new VectorSource({
-      format: source.getFormat(),
+      format: source.getFormat() as FeatureFormat<Feature<Geometry>>,
       features: geo
     });
 
-    return this.zoomToExtent(newSource.getExtent(), 1000), true;
+    return this.zoomToExtent(newSource.getExtent(), 1000);
   }
 
   toggleDrawInteraction(): boolean {
@@ -366,7 +364,7 @@ class AreaLayer extends VectorLayer<Feature> {
   }
 }
 
-class BoundaryLayer extends VectorLayer<Feature> {
+class BoundaryLayer extends VectorLayer<VectorSource<Feature>> {
   constructor() {
     super({
       source: new VectorSource({ format: new GeoJSON() }),

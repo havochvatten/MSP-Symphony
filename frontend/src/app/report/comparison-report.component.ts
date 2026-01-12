@@ -1,9 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { formatPercent } from "@angular/common";
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { TranslateService } from '@ngx-translate/core';
 import { State } from '../app-reducer';
 import { MetadataActions } from '@data/metadata';
 import { ComparisonReport, Legend } from '@data/calculation/calculation.interfaces';
@@ -11,15 +10,17 @@ import { environment as env } from "@src/environments/environment";
 import { ReportService } from "@src/app/report/report.service";
 import { CalculationService } from "@data/calculation/calculation.service";
 import { relativeDifference } from "@src/app/report/report.util";
-import { AbstractReport } from "@src/app/report/abstract-report.directive";
+import { AbstractReport } from "@src/app/report/abstract-report.component";
 
 @Component({
   selector: 'app-calculation-report',
   templateUrl: './comparison-report.component.html',
   styleUrls: ['./report.component.scss'],
+  standalone: false
 })
-export class ComparisonReportComponent extends AbstractReport {
-  report?: ComparisonReport;
+export class ComparisonReportComponent extends AbstractReport<ComparisonReport> {
+  private readonly store: Store<State>;
+
   area?: number;
 
   now = new Date();
@@ -33,20 +34,16 @@ export class ComparisonReportComponent extends AbstractReport {
 
   legend:Observable<Legend>;
 
-  constructor(
-    translate: TranslateService,
-    private store: Store<State>,
-    route: ActivatedRoute,
-    reportService: ReportService,
-    calcService: CalculationService
-  ) {
-    super(
-      translate,
-      store
-    );
+  constructor() {
+    const store = inject<Store<State>>(Store);
+    const route = inject(ActivatedRoute);
+    const reportService = inject(ReportService);
+    const calcService = inject(CalculationService);
 
-    const that = this,
-          paramMap = route.snapshot.paramMap,
+    super();
+    this.store = store;
+
+    const paramMap = route.snapshot.paramMap,
           aId = paramMap.get('aId')!, bId = paramMap.get('bId');
 
     this.maxValue = +(paramMap.get('maxValue') || 0);
@@ -61,21 +58,21 @@ export class ComparisonReportComponent extends AbstractReport {
             `${env.apiBaseUrl}/calculation/diff/${aId}?max=${this.maxValue}${this.reverse ? '&reverse=true' : ''}`;
 
     reportService.getComparisonReport(aId, bId, this.reverse).subscribe({
-      next(report) {
-        that.report = report;
-        that.report.a = report.a;
-        that.report.b = report.b;
-        that.area = reportService.calculateArea(report.a);
-        that.loadingReport = false;
+      next: (report) => {
+        this.reportSignal.set(report);
+        this.report().a = report.a;
+        this.report().b = report.b;
+        this.area = reportService.calculateArea(report.a);
+        this.loadingReport = false;
 
-        that.store.dispatch(MetadataActions.fetchMetadataForBaseline({ baselineName: report.a.baselineName }));
-        that.areaDictA = reportService.setAreaDict(report.a);
-        that.areaDictB = reportService.setAreaDict(report.b);
+        this.store.dispatch(MetadataActions.fetchMetadataForBaseline({ baselineName: report.a.baselineName }));
+        this.areaDictA = reportService.setAreaDict(report.a);
+        this.areaDictB = reportService.setAreaDict(report.b);
 
-        that.chartWeightThresholdPercentage = formatPercent(report.a.chartWeightThreshold, that.locale);
+        this.chartWeightThresholdPercentage = formatPercent(report.a.chartWeightThreshold, this.locale);
       },
-      error() {
-        that.loadingReport = false;
+      error: () => {
+        this.loadingReport = false;
       }
     });
   }

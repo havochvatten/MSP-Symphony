@@ -1,6 +1,6 @@
-@import 'src/styles/constants';
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
+@use 'src/styles/constants' as cns;
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
 
 :host {
   .controls {
@@ -52,7 +52,7 @@
 
         &[data-active='true'] {
           app-icon {
-            color: $hav-turquoise;
+            color: colors.$hav-turquoise;
           }
         }
 
@@ -63,7 +63,7 @@
 
       .toggle-visibility-icon {
         &[data-visible='true'] {
-          color: $hav-turquoise;
+          color: colors.$hav-turquoise;
         }
 
         cursor: pointer;
@@ -88,7 +88,7 @@
 
         &.mdc-checkbox--disabled {
           label.mdc-label {
-            color: $hav-black;
+            color: colors.$hav-black;
           }
 
           .mdc-form-field .mdc-checkbox {

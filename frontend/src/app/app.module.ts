@@ -1,11 +1,11 @@
 import { CoreModule } from './core/core.module';
 import { SharedModule } from '@shared/shared.module';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, provideZonelessChangeDetection } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
@@ -31,7 +31,6 @@ import { MatRadioModule } from "@angular/material/radio";
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule,
     BrowserAnimationsModule,
     MatCheckboxModule,
     MatButtonModule,
@@ -61,7 +60,10 @@ import { MatRadioModule } from "@angular/material/radio";
     CalculationReportModule,
     LoginModule
   ],
-  providers: [],
+  providers: [
+    provideHttpClient(),
+    provideZonelessChangeDetection()
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

@@ -1,45 +1,52 @@
-<ng-container *ngIf="hasChanges() else noChanges">
+@if (hasChanges()) {
   <div id="areas-list">
     <app-accordion-box #changesAccordion
-                       [open]="changesCount() === 1"
-                       [ngClass]="changesCount() === 1 ? 'single-change' : ''">
-      <app-accordion-box-header *ngIf="changesCount() > 1">
-        <div class="area-title"
+      [open]="changesCount() === 1"
+      [ngClass]="changesCount() === 1 ? 'single-change' : ''">
+      @if (changesCount() > 1) {
+        <app-accordion-box-header>
+          <div class="area-title"
              [innerHTML]="changesAccordion.open ?
                     ( 'map.editor.changes.collapse' | translate ) :
                     ( 'map.editor.changes.collapsed-count' | translate:{ count: changesCount() } )">
-        </div>
-      </app-accordion-box-header>
+          </div>
+        </app-accordion-box-header>
+      }
       <app-accordion-box-content>
-        <div *ngFor="let change of getChanges()" class="change">
+        @for (change of getChanges(); track $index) {
+          <div class="change">
             <div class="band-name">{{ bandDictionary![change[0].type][change[1]] }}</div>
             <div class="spec">
-              <span *ngIf="change[0].multiplier" class="multiplier">
-                {{ change[0].multiplier - 1 > 0 ? '+' : '' }}{{
-                convertMultiplierToPercent(change[0].multiplier) | percent: '.0' }}
-              </span>
-              <span *ngIf="change[0].offset" class="offset">
-                    {{ change[0].offset > 0 ? '+' : '' }}{{ change[0].offset | number: '.0' }}
-              </span>
+              @if (change[0].multiplier) {
+                <span class="multiplier">
+                  {{ change[0].multiplier - 1 > 0 ? '+' : '' }}{{
+                  convertMultiplierToPercent(change[0].multiplier) | percent: '.0' }}
+                </span>
+              }
+              @if (change[0].offset) {
+                <span class="offset">
+                  {{ change[0].offset > 0 ? '+' : '' }}{{ change[0].offset | number: '.0' }}
+                </span>
+              }
             </div>
             <div class="icons">
               <app-icon class="delete-change-icon" iconType="times"
-                        [title]="'map.editor.changes.clear-change' | translate"
-                        (click)="deleteChange(change[0].type, +change[1], bandDictionary![change[0].type][change[1]] )">
+                [title]="'map.editor.changes.clear-change' | translate"
+                (click)="deleteChange(change[0].type, +change[1], bandDictionary![change[0].type][change[1]] )">
               </app-icon>
             </div>
-        </div>
+          </div>
+        }
       </app-accordion-box-content>
     </app-accordion-box>
   </div>
-</ng-container>
-<ng-template #noChanges>
+} @else {
   <div id="no-changes">
-          <span style="font-style: italic">
-            <app-icon iconType="info-circle"></app-icon>
-            {{ 'map.editor.changes.no-changes' | translate }}
-          </span>
+    <span style="font-style: italic">
+      <app-icon iconType="info-circle"></app-icon>
+      {{ 'map.editor.changes.no-changes' | translate }}
+    </span>
     <!-- Todo links to jump to respective tabs? -->
     <p>{{ 'map.editor.changes.make-changes-hint' | translate }}</p>
   </div>
-</ng-template>
+}

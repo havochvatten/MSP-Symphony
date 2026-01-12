@@ -1,4 +1,4 @@
-@import 'src/styles/constants';
+@use 'src/styles/constants' as cns;
 
 :host {
   display: flex;
@@ -18,7 +18,7 @@
       bottom: 0;
       left: 0;
       margin-top: 0;
-      max-height: calc(100% - #{$header-height});
+      max-height: calc(100% - #{cns.$header-height});
       right: 0;
     }
   }
@@ -32,6 +32,6 @@
 
   app-header ~ .main-content,
   app-header ~ .overlay-content {
-    margin-top: $header-height;
+    margin-top: cns.$header-height;
   }
 }

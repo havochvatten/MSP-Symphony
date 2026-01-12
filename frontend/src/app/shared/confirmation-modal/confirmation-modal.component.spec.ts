@@ -5,6 +5,7 @@ import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "../dialog/dialog-config";
 import { TranslateModule } from "@ngx-translate/core";
 import { MatButtonModule } from "@angular/material/button";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('ConfirmationModalComponent', () => {
   let component: ConfirmationModalComponent;
@@ -16,7 +17,8 @@ describe('ConfirmationModalComponent', () => {
         MatButtonModule,
         TranslateModule.forRoot()
       ],
-      providers: [ DialogRef,
+      providers: [
+        DialogRef,
         {
           provide: DialogConfig,
           useValue: {
@@ -24,7 +26,8 @@ describe('ConfirmationModalComponent', () => {
               header: ''
             }
           }
-        }
+        },
+        provideZonelessChangeDetection()
     ],
       declarations: [ ConfirmationModalComponent ],
     })

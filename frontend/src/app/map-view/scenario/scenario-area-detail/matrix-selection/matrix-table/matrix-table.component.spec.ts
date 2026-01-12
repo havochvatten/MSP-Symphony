@@ -1,22 +1,26 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DialogRef } from '@shared/dialog/dialog-ref';
 import { DialogConfig } from '@shared/dialog/dialog-config';
 
 import { MatrixTableComponent } from './matrix-table.component';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { provideMockStore } from '@ngrx/store/testing';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { IconComponent } from "@shared/icon/icon.component";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('MatrixTableComponent', () => {
   let fixture: ComponentFixture<MatrixTableComponent>,
       component: MatrixTableComponent;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [MatrixTableComponent, IconComponent],
-      imports: [HttpClientModule, TranslationSetupModule],
+      imports: [
+        TranslationSetupModule
+      ],
       providers: [
+        provideHttpClient(),
         {
           provide: DialogRef,
           useValue: {}
@@ -32,12 +36,13 @@ describe('MatrixTableComponent', () => {
             }
           }
         },
-        provideMockStore({ initialState: { user: { baseline: undefined } } })
+        provideMockStore({ initialState: { user: { baseline: undefined } } }),
+        provideZonelessChangeDetection()
       ]
     }).compileComponents();
     fixture = TestBed.createComponent(MatrixTableComponent);
     component = fixture.componentInstance;
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

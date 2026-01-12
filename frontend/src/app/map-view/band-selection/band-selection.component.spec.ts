@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BandSelectionComponent } from './band-selection.component';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
@@ -8,12 +8,13 @@ import { initialState as area } from '@data/area/area.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { SelectionLayoutComponent } from '../selection-layout/selection-layout.component';
 import { StoreModule } from "@ngrx/store";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('BandSelectionComponent', () => {
   let fixture: ComponentFixture<BandSelectionComponent>,
       component: BandSelectionComponent;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [BandSelectionComponent, SelectionLayoutComponent],
       imports: [
@@ -21,15 +22,18 @@ describe('BandSelectionComponent', () => {
         TranslationSetupModule,
         StoreModule.forRoot({}, {}),
       ],
-      providers: [provideMockStore({
-        initialState: {
-          area: area,
-          scenario: scenario,
-          user: {}
-        }
-      })]
+      providers: [
+        provideMockStore({
+          initialState: {
+            area: area,
+            scenario: scenario,
+            user: {}
+          }
+        }),
+        provideZonelessChangeDetection()
+      ]
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(BandSelectionComponent)

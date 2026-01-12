@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment, @typescript-eslint/no-explicit-any */
 
-import { AfterViewInit, Component, Input } from '@angular/core';
+import { AfterViewInit, Component, Input, inject } from '@angular/core';
 import * as d3 from 'd3';
 import * as d3Sankey from 'd3-sankey';
 import { DecimalPipe } from '@angular/common';
@@ -27,15 +27,16 @@ export interface ChartData {
 @Component({
   selector: 'app-pressure-chart',
   templateUrl: './pressure-chart.component.html',
-  styleUrls: ['./pressure-chart.component.scss']
+  styleUrls: ['./pressure-chart.component.scss'],
+  standalone: false
 })
 export class PressureChartComponent implements AfterViewInit {
+  private readonly numberPipe = inject(DecimalPipe);
+
   @Input() data!: ChartData;
   @Input() locale = 'en';
   @Input() diagramId = '';
   @Input() chartWeightThreshold = '';
-
-  constructor(private numberPipe: DecimalPipe) {}
 
   ngAfterViewInit() {
       this.DrawChart();

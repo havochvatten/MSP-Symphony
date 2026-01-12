@@ -1,6 +1,6 @@
-@import 'src/styles/constants';
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
+@use 'src/styles/constants' as cns;
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
 
 footer {
   box-sizing: border-box;

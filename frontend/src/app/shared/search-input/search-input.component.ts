@@ -4,7 +4,8 @@ import { IconType } from '@shared/icon/icon.component';
 @Component({
   selector: 'app-search-input',
   templateUrl: './search-input.component.html',
-  styleUrls: ['./search-input.component.scss']
+  styleUrls: ['./search-input.component.scss'],
+  standalone: false
 })
 export class SearchInputComponent {
   icon: IconType = 'search';

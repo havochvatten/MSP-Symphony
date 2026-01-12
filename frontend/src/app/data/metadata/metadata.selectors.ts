@@ -1,8 +1,7 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { State as AppState } from '@src/app/app-reducer';
 import { Band, BandGroup, Groups, State, ReliabilityMap, ReliabilityMapping } from './metadata.interfaces';
 
-export const selectMetadataState = createFeatureSelector<AppState, State>('metadata');
+export const selectMetadataState = createFeatureSelector<State>('metadata');
 
 export const getBandPath = (band: Band) =>
   [band.symphonyCategory, band.meta.symphonytheme, 'bands', band.bandNumber];

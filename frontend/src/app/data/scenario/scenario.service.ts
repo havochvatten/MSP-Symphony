@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment as env } from '@src/environments/environment';
 import {
@@ -19,10 +19,10 @@ import { AreaMatrixData } from "@src/app/map-view/scenario/scenario-area-detail/
   providedIn: 'root'
 })
 export class ScenarioService {
-  private scenarioLayer?: ScenarioLayer;
-  private scenarioApiBaseUrl = `${env.apiBaseUrl}/scenario`;
+  private readonly http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private scenarioLayer?: ScenarioLayer;
+  private readonly scenarioApiBaseUrl = `${env.apiBaseUrl}/scenario`;
 
   // The below is not so nice, would be nicer if we could inject this or something
   setScenarioLayer(layer: ScenarioLayer) {

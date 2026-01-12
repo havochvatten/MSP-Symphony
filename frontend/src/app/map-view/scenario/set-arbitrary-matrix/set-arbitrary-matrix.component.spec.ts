@@ -8,6 +8,8 @@ import { TranslateModule } from "@ngx-translate/core";
 import { provideMockStore } from '@ngrx/store/testing';
 import { initialState as area } from "@data/area/area.reducers";
 import { MatSelectModule } from "@angular/material/select";
+import { provideZonelessChangeDetection } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 
 describe('SetArbitraryMatrixComponent', () => {
   let component: SetArbitraryMatrixComponent;
@@ -18,6 +20,7 @@ describe('SetArbitraryMatrixComponent', () => {
       imports: [
         NoopAnimationsModule,
         MatSelectModule,
+        FormsModule,
         TranslateModule.forRoot()
       ],
       providers: [
@@ -36,7 +39,8 @@ describe('SetArbitraryMatrixComponent', () => {
           initialState: {
             area
           }
-        })
+        }),
+        provideZonelessChangeDetection()
       ],
       declarations: [SetArbitraryMatrixComponent]
     });

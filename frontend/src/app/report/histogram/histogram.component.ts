@@ -4,7 +4,8 @@ import { Report } from "@data/calculation/calculation.interfaces";
 @Component({
   selector: 'app-histogram',
   templateUrl: './histogram.component.html',
-  styleUrls: ['./histogram.component.scss']
+  styleUrls: ['./histogram.component.scss'],
+  standalone: false
 })
 
 export class HistogramComponent  {

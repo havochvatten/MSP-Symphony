@@ -6,6 +6,7 @@ import { MatrixRef } from "@src/app/map-view/scenario/scenario-area-detail/matri
 import { turfIntersects as intersects } from "@shared/turf-helper/turf-helper";
 import { olFeatureEquals } from "@shared/common.util";
 import Feature from "ol/Feature";
+import { Geometry } from "ol/geom";
 import { GeoJSON } from "ol/format";
 
 export const initialState: AreaInterfaces.State = {
@@ -40,15 +41,15 @@ export const areaReducer = createReducer(
     for (const slcStatePath of currentSelection) {
       const feature = getIn(state, [...slcStatePath, 'feature', 'geometry'], null);
       if (feature) {
-        const olFeature = geoJson.readFeature(feature);
+        const olFeature = geoJson.readFeature(feature) as Feature<Geometry>;
         olFeature.set('statePath', slcStatePath);
         selectedFeatures.push(olFeature);
       }
     }
 
     if (index === -1) {
-      const areaFeature = statePath ?
-        geoJson.readFeature(statePath ? getIn(state, [...statePath, 'feature', 'geometry']) : null) : null;
+      const areaFeature = (statePath ?
+        geoJson.readFeature(statePath ? getIn(state, [...statePath, 'feature', 'geometry']) : null) : null) as Feature<Geometry> | null;
       if (areaFeature) areaFeature.set('statePath', statePath);
       return {
         ...state,

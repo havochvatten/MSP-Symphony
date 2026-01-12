@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { of } from 'rxjs';
-import { filter, switchMap,tap } from 'rxjs/operators';
+import { filter, switchMap, tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { State } from '../app-reducer';
@@ -12,31 +12,31 @@ import { Report } from '@data/calculation/calculation.interfaces';
 import { environment as env } from "@src/environments/environment";
 import { NormalizationType } from "@data/calculation/calculation.service";
 import { ReportService } from "@src/app/report/report.service";
-import { AbstractReport } from "@src/app/report/abstract-report.directive";
+import { AbstractReport } from "@src/app/report/abstract-report.component";
 
 @Component({
   selector: 'app-calculation-report',
   templateUrl: './calculation-report.component.html',
-  styleUrls: ['./report.component.scss']
+  styleUrls: ['./report.component.scss'],
+  standalone: false
 })
-export class CalculationReportComponent extends AbstractReport {
+export class CalculationReportComponent extends AbstractReport<Report> {
+  private readonly translate = inject(TranslateService)
+  private readonly store = inject(Store<State>);
+  private readonly route = inject(ActivatedRoute);
+  private readonly reportService = inject(ReportService);
 
-  report?: Report;
+
   area?: number;
   areaDict: Map<number, string> = new Map<number, string>();
   isDomainNormalization = false;
 
-  constructor(
-    private translate: TranslateService,
-    private store: Store<State>,
-    private route: ActivatedRoute,
-    private reportService: ReportService
-  ) {
-    super(
-      translate,
-      store
-    );
-    const that = this;
+  constructor() {
+
+    super();
+    const route = this.route;
+    const reportService = this.reportService;
+
     route.paramMap
       .pipe(
         switchMap((paramMap: ParamMap) => of(paramMap.get('calcId'))),
@@ -44,17 +44,17 @@ export class CalculationReportComponent extends AbstractReport {
         tap(calcId => {
           this.imageUrl = `${env.apiBaseUrl}/calculation/${calcId}/image`;
           reportService.getReport(calcId as string).subscribe({
-            next: function (report) {
-              that.report = report;
-              that.area = reportService.calculateArea(report);
-              that.loadingReport = false;
-              that.store.dispatch(MetadataActions.fetchMetadataForBaseline({baselineName: report.baselineName}));
+            next: report => {
+              this.reportSignal.set(report);
+              this.area = reportService.calculateArea(report);
+              this.loadingReport = false;
+              this.store.dispatch(MetadataActions.fetchMetadataForBaseline({baselineName: report.baselineName}));
               window.parent.postMessage({type: 'calcReportLoaded', calcId: +calcId!}, window.origin);
-              that.areaDict = reportService.setAreaDict(report);
-              that.isDomainNormalization = report.normalization.type === NormalizationType.DOMAIN;
+              this.areaDict = reportService.setAreaDict(report);
+              this.isDomainNormalization = report.normalization.type === NormalizationType.DOMAIN;
             },
-            error() {
-              that.loadingReport = false;
+            error: () => {
+              this.loadingReport = false;
             }
           });
         })
@@ -69,22 +69,23 @@ export class CalculationReportComponent extends AbstractReport {
   }
 
   getGroupedMatrixMap(): Map<string, string[]> {
-    const matrixMap = new Map<string, string[]>();
+    const matrixMap = new Map<string, string[]>(), report = this.reportSignal();
     let mxName: string | undefined
 
-    for (const mxEntry of this.report!.areaMatrices) {
-      mxName = mxEntry.matrix;
-      if (matrixMap.get(mxName)) {
-        matrixMap.get(mxName)?.push(mxEntry.areaName);
-      } else {
-        matrixMap.set(mxName, [mxEntry.areaName]);
+    if (report !== null) {
+      for (const mxEntry of report.areaMatrices) {
+        mxName = mxEntry.matrix;
+        if (matrixMap.get(mxName)) {
+          matrixMap.get(mxName)?.push(mxEntry.areaName);
+        } else {
+          matrixMap.set(mxName, [mxEntry.areaName]);
+        }
+      }
+
+      if (matrixMap.size === 1 && report.areaMatrices.length > 1) {
+        matrixMap.set(mxName!, [this.translate.instant('report.sensitivity-matrices.all-areas')]);
       }
     }
-
-    if(matrixMap.size === 1 && this.report!.areaMatrices.length > 1) {
-      matrixMap.set(mxName!, [this.translate.instant('report.sensitivity-matrices.all-areas')]);
-    }
-
     return matrixMap;
   }
 }

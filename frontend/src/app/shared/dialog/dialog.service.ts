@@ -8,18 +8,19 @@ import {
   EmbeddedViewRef,
   Type,
   NgModuleRef,
-  ComponentFactoryResolver
+  ComponentFactoryResolver,
+  inject,
+  NgModule
 } from '@angular/core';
 import { DialogConfig } from './dialog-config';
 import { DialogComponent } from './dialog.component';
 
 @Injectable({ providedIn: 'root' })
 export class DialogService {
+  private readonly appRef = inject(ApplicationRef);
+  private readonly componentFactoryResolver = inject(ComponentFactoryResolver);
+
   dialogRefs = new Map<DialogRef, ComponentRef<DialogComponent>>;
-  constructor(
-    private appRef: ApplicationRef,
-    private componentFactoryResolver: ComponentFactoryResolver
-  ) {}
 
   private appendDialogComponentToBody = (injector: Injector, config?: DialogConfig) => {
     const map = new WeakMap();
@@ -62,7 +63,7 @@ export class DialogService {
     }
   };
 
-  public open<T>(componentType: Type<unknown>, moduleRef: NgModuleRef<never>, config?: DialogConfig) {
+  public open<T, M extends NgModule>(componentType: Type<unknown>, moduleRef: NgModuleRef<M>, config?: DialogConfig) {
     const injector = moduleRef.injector;
     const dialogRef = this.appendDialogComponentToBody(injector, config);
     if (this.dialogRefs.get(dialogRef)) {

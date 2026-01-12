@@ -1,6 +1,6 @@
-@import 'src/styles/constants';
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
+@use 'src/styles/constants' as cns;
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
 
 :host {
   .switch {
@@ -29,11 +29,11 @@
       }
 
       &:checked + .slider:before {
-        background-color: $hav-turquoise;
+        background-color: colors.$hav-turquoise;
       }
 
       &:not(:checked):hover + .slider:before {
-        border: 2px solid $hav-turquoise;
+        border: 2px solid colors.$hav-turquoise;
         left: calc(-0.4rem - 2px);
         top: calc(-0.4rem - 2px);
       }

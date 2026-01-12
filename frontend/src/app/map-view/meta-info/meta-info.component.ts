@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject } from '@angular/core';
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { Band } from "@data/metadata/metadata.interfaces";
@@ -8,9 +8,14 @@ import { environment as env } from '@src/environments/environment';
 @Component({
   selector: 'app-meta-info',
   templateUrl: './meta-info.component.html',
-  styleUrls: ['./meta-info.component.scss']
+  styleUrls: ['./meta-info.component.scss'],
+  standalone: false
 })
 export class MetaInfoComponent implements AfterViewInit {
+  private dialog = inject(DialogRef);
+  private config = inject(DialogConfig);
+  private container = inject(ElementRef);
+
 
   private band: Band;
   public bandMetadata: Map<string, string[]> = new Map<string, string[]>();
@@ -18,8 +23,9 @@ export class MetaInfoComponent implements AfterViewInit {
   public category: string;
   public title: string;
 
-  constructor(private dialog: DialogRef, private config: DialogConfig,
-              private container: ElementRef) {
+  constructor() {
+    const config = this.config;
+
     this.band = config.data.band;
 
     for (const metaField of env.meta.visible_fields) {

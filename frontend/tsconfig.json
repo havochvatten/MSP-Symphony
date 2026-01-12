@@ -1,30 +1,38 @@
 {
     "compileOnSave": false,
     "compilerOptions": {
-        "baseUrl": "./",
-        "downlevelIteration": true,
-        "outDir": "./dist/out-tsc",
-        "sourceMap": true,
-        "declaration": false,
-        "module": "es2020",
-        "moduleResolution": "node",
-        "experimentalDecorators": true,
-        "importHelpers": true,
-        "allowSyntheticDefaultImports": true,
-        "strict": true,
-        "noImplicitReturns": true,
-        "skipLibCheck": true,
-        "target": "ES2022",
-        "useDefineForClassFields": false, // Actions injection in Effects classes breaks when true,
-                                          // could refactorise to use default setting
-        "typeRoots": ["node_modules/@types"],
-        "lib": ["es2019", "dom", "es6", "dom.iterable"],
-        "paths": {
-            "@data/*": ["src/app/data/*"],
-            "@src/*": ["src/*"],
-            "@shared/*": ["src/app/shared/*"],
-            "@assets/*": ["src/assets/*"]
-        }
+      "baseUrl": "./",
+      "downlevelIteration": true,
+      "outDir": "./dist/out-tsc",
+      "sourceMap": true,
+      "declaration": false,
+      "module": "es2020",
+      "moduleResolution": "bundler",
+      "experimentalDecorators": true,
+      "importHelpers": true,
+      "allowSyntheticDefaultImports": true,
+      "strict": true,
+      "noImplicitReturns": true,
+      "skipLibCheck": true,
+      "target": "ES2022",
+      "useDefineForClassFields": false,
+      "typeRoots": [
+        "node_modules/@types"
+      ],
+      "paths": {
+        "@data/*": [
+          "src/app/data/*"
+        ],
+        "@src/*": [
+          "src/*"
+        ],
+        "@shared/*": [
+          "src/app/shared/*"
+        ],
+        "@assets/*": [
+          "src/assets/*"
+        ]
+      }
     },
     "angularCompilerOptions": {
         "strictTemplates": false, // We want this to true in the future

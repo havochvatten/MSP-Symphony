@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AreaSelectionComponent } from './area-selection.component';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
@@ -7,11 +7,13 @@ import { provideMockStore } from '@ngrx/store/testing';
 import { SelectionLayoutComponent } from '../selection-layout/selection-layout.component';
 import { AreaGroupComponent } from './area-group/area-group.component';
 import { initialState as area } from "@data/area/area.reducers";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('AreaSelectionComponent', () => {
   let fixture: ComponentFixture<AreaSelectionComponent>,
       component: AreaSelectionComponent;
-  beforeEach(waitForAsync(() => {
+
+  beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [
         AreaSelectionComponent,
@@ -19,17 +21,20 @@ describe('AreaSelectionComponent', () => {
         AreaGroupComponent
       ],
       imports: [SharedModule, TranslationSetupModule],
-      providers: [provideMockStore({
-        initialState: {
-          area : area,
-          user : {}
-        }
-      })]
+      providers: [
+        provideMockStore({
+          initialState: {
+            area : area,
+            user : {}
+          }
+        }),
+        provideZonelessChangeDetection()
+      ]
     }).compileComponents();
     fixture = TestBed.createComponent(AreaSelectionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

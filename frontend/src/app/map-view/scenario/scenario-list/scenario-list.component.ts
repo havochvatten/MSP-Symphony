@@ -1,4 +1,4 @@
-import { Component, NgModuleRef, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
@@ -17,13 +17,19 @@ import { CopyScenarioComponent } from "@src/app/map-view/scenario/copy-scenario/
 import { ListItemsSort } from "@data/common/sorting.interfaces";
 import { CalculationService } from "@data/calculation/calculation.service";
 import { MultiModeListable } from "@shared/multi-tools/multi-mode-listable";
+import { ScenarioEditorModule } from "@src/app/map-view/scenario/scenario-editor.module";
 
 @Component({
     selector: 'app-scenario-list',
     templateUrl: './scenario-list.component.html',
-    styleUrls: ['./scenario-list.component.scss']
+    styleUrls: ['./scenario-list.component.scss'],
+    standalone: false
 })
 export class ScenarioListComponent extends MultiModeListable implements OnDestroy {
+  protected store = inject<Store<State>>(Store);
+  private readonly translateService = inject(TranslateService);
+  private readonly calculationService = inject(CalculationService);
+  protected dialogService: DialogService = inject(DialogService);
 
   scenario$ = this.store.select(ScenarioSelectors.selectScenarios);
 
@@ -31,18 +37,13 @@ export class ScenarioListComponent extends MultiModeListable implements OnDestro
   ABUNDANT_AREA_COUNT = 4;
   MAX_AREAS = 9;
 
-  private areaSubscription$: Subscription;
-  private autoBatchSubscription$: Subscription;
+  private readonly areaSubscription$: Subscription;
+  private readonly autoBatchSubscription$: Subscription;
   public selectionOverlap: Observable<boolean>;
 
-  constructor(
-    protected store: Store<State>,
-    private translateService: TranslateService,
-    private calculationService: CalculationService,
-    protected dialogService: DialogService,
-    protected moduleRef: NgModuleRef<never>
-  ) {
-    super(moduleRef, dialogService);
+  constructor() {
+    super();
+
     this.areaSubscription$ = this.store
       .select(AreaSelectors.selectSelectedAreaData)
       .subscribe(area => (this.selectedAreas = area as Area[]));
@@ -114,7 +115,7 @@ export class ScenarioListComponent extends MultiModeListable implements OnDestro
   }
 
   async copyScenario(scenario: Scenario) {
-    const copyOptions = await this.dialogService.open<ScenarioCopyOptions>(
+    const copyOptions = await this.dialogService.open<ScenarioCopyOptions, ScenarioEditorModule>(
       CopyScenarioComponent,
       this.moduleRef,
       {data: { scenario }}

@@ -1,4 +1,4 @@
-import { Component, Input, NgModuleRef, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, NgModuleRef, OnDestroy, OnInit, inject } from '@angular/core';
 import { Band, BandChange, bandEquals, BandType, VisibleReliability } from '@data/metadata/metadata.interfaces';
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
@@ -12,13 +12,19 @@ import { isEmpty } from "@shared/common.util";
 import { MatCheckboxChange } from "@angular/material/checkbox";
 import { environment as env } from "@src/environments/environment";
 import { MetadataSelectors } from "@data/metadata";
+import { MapViewModule } from "@src/app/map-view/map-view.module";
 
 @Component({
   selector: 'app-slider-controls',
   templateUrl: './slider-controls.component.html',
-  styleUrls: ['./slider-controls.component.scss']
+  styleUrls: ['./slider-controls.component.scss'],
+  standalone: false
 })
 export class SliderControlsComponent implements OnDestroy, OnInit {
+  private readonly store = inject<Store<State>>(Store);
+  private readonly dialogService = inject(DialogService);
+  private readonly moduleRef = inject(NgModuleRef<MapViewModule>);
+
   open = false;
 
   scenario?: Scenario;
@@ -48,11 +54,7 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
 
   isEmpty = isEmpty;
 
-  constructor(
-    private store: Store<State>,
-    private dialogService: DialogService,
-    private moduleRef: NgModuleRef<never>
-  ) {
+  constructor() {
     this.scenarioSubscription$ = this.store.select(selectActiveScenario)
       .subscribe(s => {
         if (s === undefined)

@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReliabilityLegendComponent } from './reliability-legend.component';
 import { provideMockStore } from "@ngrx/store/testing";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('ReliabilityLegendComponent', () => {
   let component: ReliabilityLegendComponent;
@@ -15,7 +16,9 @@ describe('ReliabilityLegendComponent', () => {
         TranslateService,
         provideMockStore({
           initialState : { user: {} }
-        })],
+        }),
+        provideZonelessChangeDetection()
+      ],
       declarations: [ReliabilityLegendComponent]
     })
     .compileComponents();

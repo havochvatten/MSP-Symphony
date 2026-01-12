@@ -1,12 +1,12 @@
-@import 'src/styles/margins';
-@import 'src/styles/hav-colors';
-@import 'src/styles/constants';
+@use 'src/styles/margins' as margins;
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/constants' as cns;
 
 :host {
   align-items: center;
   display: flex;
   flex-direction: column;
-  background-color: $hav-coldgrey;
+  background-color: colors.$hav-coldgrey;
   min-height: 100vh;
 
   img,
@@ -17,7 +17,7 @@
   }
 
   img {
-    margin: $l-margin 0 $l-margin 0;
+    margin: margins.$l-margin 0 margins.$l-margin 0;
     width: 18.5rem;
 
     &.duck {
@@ -106,7 +106,7 @@
     }
 
     button.mdc-button.mat-mdc-unelevated-button {
-      margin-top: calc(#{$s-margin} + #{$xs-margin});
+      margin-top: calc(#{margins.$s-margin} + #{margins.$xs-margin});
       margin-right: 4rem;
       font-weight: 500;
     }
@@ -117,10 +117,10 @@
       right: -3rem;
       top: 4rem;
       cursor: pointer;
-      color: $hav-darkergrey;
+      color: colors.$hav-darkergrey;
 
       &.peek {
-        color: $hav-turquoise;
+        color: colors.$hav-turquoise;
       }
 
       &:hover {
@@ -133,7 +133,7 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    margin-top: $l-margin;
+    margin-top: margins.$l-margin;
 
     nav {
       display: flex;
@@ -146,7 +146,7 @@
       a {
         align-items: center;
         text-decoration: none;
-        color: $hav-turquoise;
+        color: colors.$hav-turquoise;
         font-weight: bold;
       }
     }
@@ -180,7 +180,7 @@
   }
 
   p.error {
-    color: $hav-warning;
+    color: colors.$hav-warning;
     font-size: 1.6rem;
     line-height: 2.4rem;
     max-width: 200px;

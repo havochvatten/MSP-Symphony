@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { ScenarioSplitDialogResult, ScenarioSplitOptions } from "@data/scenario/scenario.interfaces";
@@ -7,18 +7,20 @@ import { ScenarioSplitDialogResult, ScenarioSplitOptions } from "@data/scenario/
 @Component({
   selector: 'app-split-scenario-settings',
   templateUrl: './split-scenario-settings.component.html',
-  styleUrls: ['./split-scenario-settings.component.scss']
+  styleUrls: ['./split-scenario-settings.component.scss'],
+  standalone: false
 })
 export class SplitScenarioSettingsComponent {
+  dialog = inject(DialogRef);
+  private config = inject(DialogConfig);
+
 
   @ViewChild('batchName') scenarioNameInput!: ElementRef<HTMLInputElement>;
 
   options: ScenarioSplitOptions;
   noAreaChanges: boolean;
 
-  constructor(
-    public dialog: DialogRef,
-    private config: DialogConfig) {
+  constructor() {
     this.options = {
       batchName: this.config.data.scenarioName,
       applyAreaChanges: false,

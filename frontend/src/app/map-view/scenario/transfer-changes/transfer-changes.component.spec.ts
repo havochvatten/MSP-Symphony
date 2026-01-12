@@ -13,6 +13,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { FormsModule } from "@angular/forms";
 import { initialState as scenario } from '@data/scenario/scenario.reducers'
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('TransferChangesComponent', () => {
   let component: TransferChangesComponent;
@@ -47,7 +48,8 @@ describe('TransferChangesComponent', () => {
           initialState: {
             scenario
           }
-        })
+        }),
+        provideZonelessChangeDetection()
       ],
       declarations: [ TransferChangesComponent ]
     })

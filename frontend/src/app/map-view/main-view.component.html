@@ -1,11 +1,11 @@
 <div class="result-info-panel"></div>
 <!--TODO Migrate to use routerLinks instead-->
 <app-slide-view position="left"
-                [open]="leftSidebarIsOpen"
-                [compoundComparisonCount$]="compoundComparisonCount$"
-                (toggle)="toggleLeftSidebar()"
-                (navigate)="onNavigate($event)"
-                (openCCList)="onOpenCCList()">
+  [open]="leftSidebarIsOpen"
+  [compoundComparisonCount$]="compoundComparisonCount$"
+  (toggleTab)="toggleLeftSidebar()"
+  (navigate)="onNavigate($event)"
+  (openCCList)="onOpenCCList()">
   <app-slide-view-tab [id]="'areas'" [title]="'map.areas' | translate" icon="globe">
     <app-area-selection
       [areas]="areas | async"
@@ -38,79 +38,95 @@
     <app-history></app-history>
   </app-slide-view-tab>
   <div id="map-overlay">
-    <app-active-scenario-display *ngIf="activeScenario$ | async"
-                                 [scenario]="activeScenario$ | async"
-                                 [calculating]="calculating$ | async"
-                                 [area]="activeScenarioArea$ | async"
-                                 (exit)="exitScenario()">
-    </app-active-scenario-display>
-    <div
-      *ngIf="
-        ((legends$ | async).result && this.getVisibleImpact()) ||
-         (cmpLegends$ | async)?.length > 0 && this.getVisibleComparison() ||
-         (legends$ | async).ecosystem ||
-         (legends$ | async).pressure ||
-         (visibleReliability$ | async) !== null
-      "
-      class="color-scale-container"
-    >
-      <app-result-color-scale
-        class="legend-section"
-        *ngIf="(legends$ | async).result && this.getVisibleImpact()"
-        [title]="'map.color-scale.result' | translate"
-        [colors]="(legends$ | async).result.colorMap"
-        [unit]="(legends$ | async).result.unit"
-      ></app-result-color-scale>
-      <app-comparison-color-scale
-        class="legend-section"
-        *ngIf="this.getVisibleComparison()"
-        [legends]="(cmpLegends$ | async)"
-      ></app-comparison-color-scale>
-      <app-result-color-scale
-        class="legend-section"
-        *ngIf="(legends$ | async).ecosystem"
-        [title]="'map.color-scale.ecosystem' | translate"
-        [colors]="(legends$ | async).ecosystem.colorMap"
-        [unit]="(legends$ | async).ecosystem.unit"
-      ></app-result-color-scale>
-      <app-result-color-scale
-        class="legend-section"
-        *ngIf="(legends$ | async).pressure"
-        [title]="'map.color-scale.pressure' | translate"
-        [colors]="(legends$ | async).pressure.colorMap"
-        [unit]="(legends$ | async).pressure.unit"
-      ></app-result-color-scale>
-      <app-reliability-legend
-        class="legend-section reliability-legend"
-        *ngIf="(visibleReliability$ | async) !== null"
-        [reliability]="(visibleReliability$ | async)"
-      ></app-reliability-legend>
-    </div>
+    @if (activeScenario$ | async) {
+      <app-active-scenario-display
+        [scenario]="activeScenario$ | async"
+        [calculating]="calculating$ | async"
+        [area]="activeScenarioArea$ | async"
+        (exit)="exitScenario()">
+      </app-active-scenario-display>
+    }
+    @if (
+      ((legends$ | async).result && this.getVisibleImpact()) ||
+      (cmpLegends$ | async)?.length > 0 && this.getVisibleComparison() ||
+      (legends$ | async).ecosystem ||
+      (legends$ | async).pressure ||
+      (visibleReliability$ | async) !== null
+      ) {
+      <div
+        class="color-scale-container"
+        >
+        @if ((legends$ | async).result && this.getVisibleImpact()) {
+          <app-result-color-scale
+            class="legend-section"
+            [title]="'map.color-scale.result' | translate"
+            [colors]="(legends$ | async).result.colorMap"
+            [unit]="(legends$ | async).result.unit"
+          ></app-result-color-scale>
+        }
+        @if (this.getVisibleComparison()) {
+          <app-comparison-color-scale
+            class="legend-section"
+            [legends]="(cmpLegends$ | async)"
+          ></app-comparison-color-scale>
+        }
+        @if ((legends$ | async).ecosystem) {
+          <app-result-color-scale
+            class="legend-section"
+            [title]="'map.color-scale.ecosystem' | translate"
+            [colors]="(legends$ | async).ecosystem.colorMap"
+            [unit]="(legends$ | async).ecosystem.unit"
+          ></app-result-color-scale>
+        }
+        @if ((legends$ | async).pressure) {
+          <app-result-color-scale
+            class="legend-section"
+            [title]="'map.color-scale.pressure' | translate"
+            [colors]="(legends$ | async).pressure.colorMap"
+            [unit]="(legends$ | async).pressure.unit"
+          ></app-result-color-scale>
+        }
+        @if ((visibleReliability$ | async) !== null) {
+          <app-reliability-legend
+            class="legend-section reliability-legend"
+            [reliability]="(visibleReliability$ | async)"
+          ></app-reliability-legend>
+        }
+      </div>
+    }
     <div id="scale-container"></div>
   </div>
 </app-slide-view>
 <app-map [mapCenter]="center"
-         (resultLayerGroupChange)="setVisibleImpact($event)"
-         (resultLayerGroupChangeCmp)="setVisibleComparison($event)">
+  (resultLayerGroupChange)="setVisibleImpact($event)"
+  (resultLayerGroupChangeCmp)="setVisibleComparison($event)">
 </app-map>
-<div id="scenario-area-selection-hint" class="mouse-interface-hint" *ngIf="scenarioAreaSelection && ((activeScenarioArea$ | async) === undefined)">
-      <span>
-        <strong>{{ 'map.area-selection-hint.emphasis' | translate}}</strong>
-        {{ 'map.area-selection-hint.detail' | translate : { ctrlButton: isMacOS ? '⌘' : 'Ctrl' } }}
-      </span>
-</div>
-<div id="special-actions-hint"
+@if (scenarioAreaSelection && ((activeScenarioArea$ | async) === undefined)) {
+  <div id="scenario-area-selection-hint" class="mouse-interface-hint">
+    <span>
+      <strong>{{ 'map.area-selection-hint.emphasis' | translate}}</strong>
+      {{ 'map.area-selection-hint.detail' | translate : { ctrlButton: isMacOS ? '⌘' : 'Ctrl' } }}
+    </span>
+  </div>
+}
+@if (singleSelection || multiSelection) {
+  <div id="special-actions-hint"
      [ngClass]="{'mouse-interface-hint' : true,
                  'two-hints' : scenarioAreaSelection && ((activeScenarioArea$ | async) === undefined) }"
-     *ngIf="singleSelection || multiSelection">
-      <span *ngIf="singleSelection">
+    >
+    @if (singleSelection) {
+      <span>
         <strong>{{ 'map.special-actions-hint.emphasis' | translate }}</strong>
         {{ 'map.special-actions-hint.detail' | translate : { altButton: isMacOS ? '⌥' : 'Alt' } }}
       </span>
-      <span *ngIf="multiSelection">
+    }
+    @if (multiSelection) {
+      <span>
         <strong>{{ 'map.merge-areas-hint.emphasis' | translate }}</strong>
-    {{ 'map.merge-areas-hint.detail' | translate : { altButton: isMacOS ? '⌥' : 'Alt' } }}
+        {{ 'map.merge-areas-hint.detail' | translate : { altButton: isMacOS ? '⌥' : 'Alt' } }}
       </span>
-</div>
+    }
+  </div>
+}
 <app-batch-progress-display>
 </app-batch-progress-display>

@@ -1,10 +1,9 @@
 import { State, LegendState, CompoundComparisonItem } from './calculation.interfaces';
-import { State as AppState } from '@src/app/app-reducer';
 import { createSelector, createFeatureSelector } from '@ngrx/store';
 import { MetadataSelectors } from '@data/metadata';
 import { sortFuncMap } from "@data/common/sorting.interfaces";
 
-export const selectCalculationState = createFeatureSelector<AppState, State>('calculation');
+export const selectCalculationState = createFeatureSelector<State>('calculation');
 
 export const selectLoadingReport = createSelector(
   selectCalculationState,

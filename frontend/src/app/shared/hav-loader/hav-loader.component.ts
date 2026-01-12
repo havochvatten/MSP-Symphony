@@ -51,6 +51,7 @@ import { Component } from '@angular/core';
         animation-timing-function: cubic-bezier(0, 0, 1, 1);
       }
     `
-  ]
+  ],
+  standalone: false
 })
 export class HavLoaderComponent {}

@@ -1,18 +1,20 @@
-import { Component, AfterContentInit, ContentChildren, QueryList, Input, EventEmitter } from '@angular/core';
+import { Component, AfterContentInit, ContentChildren, QueryList, Input, EventEmitter, inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TabComponent } from './tab/tab.component';
 
 @Component({
   selector: 'app-tabs',
   templateUrl: './tabs.component.html',
-  styleUrls: ['./tabs.component.scss']
+  styleUrls: ['./tabs.component.scss'],
+  standalone: false
 })
 export class TabsComponent implements AfterContentInit {
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
   @ContentChildren(TabComponent) tabs!: QueryList<TabComponent>;
   @Input() routeTabIdIsAvailable = false;
   tabSelected = new EventEmitter<string>();
-
-  constructor(private router: Router, private route: ActivatedRoute) {}
 
   ngAfterContentInit() {
     const tabId = this.getRouteTabId();

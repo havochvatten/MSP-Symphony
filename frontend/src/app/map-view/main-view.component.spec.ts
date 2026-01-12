@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from "@angular/forms";
 
 import { MainViewComponent } from './main-view.component';
@@ -34,6 +33,10 @@ import { MatRadioModule } from "@angular/material/radio";
 import { AreaGroupComponent } from "@src/app/map-view/area-selection/area-group/area-group.component";
 import { ScenarioListComponent } from "@src/app/map-view/scenario/scenario-list/scenario-list.component";
 import { BatchProgressComponent } from './batch-progress-display/batch-progress.component';
+import { RouterModule } from "@angular/router";
+import { provideZonelessChangeDetection } from "@angular/core";
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenario-areas/add-scenario-areas.component";
 describe('MainViewComponent', () => {
   let fixture: ComponentFixture<MainViewComponent>,
       component: MainViewComponent;
@@ -44,9 +47,10 @@ describe('MainViewComponent', () => {
         SharedModule,
         CoreModule,
         TranslationSetupModule,
-        RouterTestingModule,
+        RouterModule.forRoot([]),
         MatSelectModule,
         MatRadioModule,
+        MatCheckboxModule,
         FormsModule,
         StoreModule.forRoot({},{}),
       ],
@@ -68,7 +72,8 @@ describe('MainViewComponent', () => {
         SelectionLayoutComponent,
         CalculationHistoryComponent,
         ComparisonComponent,
-        BatchProgressComponent
+        BatchProgressComponent,
+        AddScenarioAreasComponent
       ],
       providers: [
         FormBuilder,
@@ -79,7 +84,9 @@ describe('MainViewComponent', () => {
             calculation: calculation,
             area: area,
             scenario: scenario
-        }})]
+        }}),
+        provideZonelessChangeDetection()
+      ]
     }).compileComponents();
     fixture = TestBed.createComponent(MainViewComponent);
     component = fixture.componentInstance;

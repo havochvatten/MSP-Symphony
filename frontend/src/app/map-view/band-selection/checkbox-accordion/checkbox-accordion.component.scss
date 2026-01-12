@@ -1,10 +1,10 @@
-@import 'src/styles/hav-colors';
+@use 'src/styles/hav-colors' as colors;
 
 :host {
   app-accordion-box-header {
     ::ng-deep mat-checkbox.mdc-checkbox--disabled {
       label.mdc-label {
-        color: $hav-black;
+        color: colors.$hav-black;
       }
 
       .mdc-form-field .mdc-checkbox {

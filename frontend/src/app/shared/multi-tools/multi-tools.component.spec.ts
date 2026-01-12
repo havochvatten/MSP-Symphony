@@ -2,8 +2,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 
 import { MultiToolsComponent } from './multi-tools.component';
-import { signal } from "@angular/core";
+import { provideZonelessChangeDetection, signal } from "@angular/core";
 import { provideMockStore } from "@ngrx/store/testing";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { IconButtonComponent } from "@shared/icon-button/icon-button.component";
+import { IconComponent } from "@shared/icon/icon.component";
 
 describe('MultiToolsComponent', () => {
   let component: MultiToolsComponent;
@@ -11,9 +14,19 @@ describe('MultiToolsComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslationSetupModule],
-      declarations: [MultiToolsComponent],
-      providers: [provideMockStore({ initialState : { user: {} } })]
+      imports: [
+        TranslationSetupModule,
+        MatFormFieldModule
+      ],
+      declarations: [
+        MultiToolsComponent,
+        IconComponent,
+        IconButtonComponent
+      ],
+      providers: [
+        provideZonelessChangeDetection(),
+        provideMockStore({ initialState : { user: {} } })
+      ]
     });
     fixture = TestBed.createComponent(MultiToolsComponent);
     component = fixture.componentInstance;

@@ -5,25 +5,28 @@
   [onSearch]="onSearch"
   [searchPlaceholder]="'map.area.search.placeholder' | translate"
   [areaTab]="true"
->
-  <div *ngIf="search.length > 0">
-    <div class="search-header">
-      <h3>{{ 'map.area.search.label' | translate }} ({{ matchingResults }})</h3>
-      <button (click)="onSearch('')">{{ 'map.area.search.clear' | translate }}</button>
+  >
+  @if (search.length > 0) {
+    <div>
+      <div class="search-header">
+        <h3>{{ 'map.area.search.label' | translate }} ({{ matchingResults }})</h3>
+        <button (click)="onSearch('')">{{ 'map.area.search.clear' | translate }}</button>
+      </div>
+      <div class="divider"></div>
     </div>
-    <div class="divider"></div>
-  </div>
-  <app-area-group
-    *ngFor="let nationalArea of filteredNationalAreas"
-    [areas]="nationalArea.groups"
-    [title]="nationalArea.displayName"
-    [searching]="search.length > 0"
-    [selectedAreas]="selectedAreas$ | async"
-    [toggleVisible]="toggleVisibleAreaGroup"
-    [toggleExpanded]="toggleExpandedAreaGroup"
-    [selectArea]="selectArea"
-    (highlight)="highlight($event)"
-  ></app-area-group>
+  }
+  @for (nationalArea of filteredNationalAreas; track $index) {
+    <app-area-group
+      [areas]="nationalArea.groups"
+      [title]="nationalArea.displayName"
+      [searching]="search.length > 0"
+      [selectedAreas]="selectedAreas$ | async"
+      [toggleVisible]="toggleVisibleAreaGroup"
+      [toggleExpanded]="toggleExpandedAreaGroup"
+      [selectArea]="selectArea"
+      (highlight)="highlight($event)"
+    ></app-area-group>
+  }
   <app-area-group
     [areas]="filteredUserAreas"
     [title]="'map.area.user-created' | translate"

@@ -1,4 +1,4 @@
-@import 'src/styles/margins';
+@use 'src/styles/margins' as margins;
 
 :host {
   background: rgba(0, 0, 0, 0.5);

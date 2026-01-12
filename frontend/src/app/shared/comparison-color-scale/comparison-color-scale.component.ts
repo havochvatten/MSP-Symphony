@@ -4,7 +4,8 @@ import { ComparisonLegendState } from "@data/calculation/calculation.interfaces"
 @Component({
   selector: 'app-comparison-color-scale',
   templateUrl: './comparison-color-scale.component.html',
-  styleUrls: ['./comparison-color-scale.component.scss']
+  styleUrls: ['./comparison-color-scale.component.scss'],
+  standalone: false
 })
 export class ComparisonColorScaleComponent {
 

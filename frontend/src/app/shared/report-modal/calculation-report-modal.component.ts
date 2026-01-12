@@ -1,24 +1,19 @@
-import { Component } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { DialogRef } from '../dialog/dialog-ref';
-import { DialogConfig } from '../dialog/dialog-config';
+import { Component, inject } from '@angular/core';
 import { ReportModalComponent } from "@shared/report-modal/report-modal.component";
+import { DialogConfig } from '../dialog/dialog-config';
 
 @Component({
   selector: 'app-calculation-report-modal',
   templateUrl: './report-modal.component.html',
-  styleUrls: ['./report-modal.component.scss']
+  styleUrls: ['./report-modal.component.scss'],
+  standalone: false
 })
 export class CalculationReportModalComponent extends ReportModalComponent {
 
-  constructor(
-    dialog: DialogRef,
-    config: DialogConfig,
-    dom: DomSanitizer
-  ) {
-    super(dialog, dom,
-      window.location.origin+'/report/'+ config.data.id,
-      `/report/${config.data.id}`, null,
-      'report.calculation.title');
+  constructor() {
+    const config = inject(DialogConfig);
+
+    super(window.location.origin+'/report/'+ config.data.id,
+      `/report/${config.data.id}`,'report.calculation.title');
   }
 }

@@ -1,6 +1,6 @@
-@import 'src/styles/constants';
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
+@use 'src/styles/constants' as cns;
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
 
 @mixin flex-row-spaced {
   display: flex;
@@ -71,7 +71,7 @@
   }
 
   .override-wrapper {
-    background-color: $light-bluegray;
+    background-color: colors.$light-bluegray;
     padding: 0.7rem 1rem;
   }
 }

@@ -4,7 +4,7 @@
     {{ title }}
   </h1>
   <img class="flag" src="assets/Sweden-SwAM-white-horizontal-no-borders.svg"
-       alt="{{ 'branding.SI-Sweden' | translate }} : {{ 'branding.SwAM' | translate }}"/>
+    alt="{{ 'branding.SI-Sweden' | translate }} : {{ 'branding.SwAM' | translate }}"/>
   <app-user-menu-toggle [user]="user$ | async" (click)="toggleOpenMenu('USER')"></app-user-menu-toggle>
 </div>
 <div
@@ -17,14 +17,15 @@
       ? 'flex-end'
       : 'flex-start'
   "
->
-  <app-menu
-    *ngIf="openState === 'USER'"
-    @openCloseMenu
-    (@openCloseMenu.start)="onAnimationStateChange('user')"
-    (@openCloseMenu.done)="onAnimationStateChange('user')"
-    (navigate)="onMenuNavigation()"
-    [menuItems]="userMenuItems"
-    menuLabel="Användarmeny"
-  ></app-menu>
+  >
+  @if (openState === 'USER') {
+    <app-menu
+      @openCloseMenu
+      (@openCloseMenu.start)="onAnimationStateChange('user')"
+      (@openCloseMenu.done)="onAnimationStateChange('user')"
+      (navigate)="onMenuNavigation()"
+      [menuItems]="userMenuItems"
+      menuLabel="Användarmeny"
+    ></app-menu>
+  }
 </div>

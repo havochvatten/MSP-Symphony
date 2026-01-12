@@ -1,4 +1,4 @@
-@import 'src/styles/hav-colors';
+@use 'src/styles/hav-colors' as colors;
 
 hav-accordion-panel {
   hav-accordion-panel-header {

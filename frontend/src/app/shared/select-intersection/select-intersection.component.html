@@ -2,27 +2,35 @@
 <p [innerHTML]=" messageTextKey | translate"></p>
 <mat-radio-group name="selected-area" (change)="select($event.value)">
   <ul>
-      <li *ngFor="let fragment of areas; index as ix">
+    @for (fragment of areas; track $index; let ix = $index) {
+      <li>
         <div class="intersection-alt" (click)="multi ? selectMulti(ix) : select(ix)"
-             tabindex="0">
+          tabindex="0">
           <div appInlineMap
-               class="inline-map"
-               [polygon]="fragment.polygon"
-               [maxZoom]="9"
-               [projectionId]="this.projection"></div>
+            class="inline-map"
+            [polygon]="fragment.polygon"
+            [maxZoom]="9"
+          [projectionId]="this.projection"></div>
           <span class="area-measure">{{ squareKm(fragment.polygon) }} km<sup>2</sup></span>
-          <mat-radio-button *ngIf="!multi" [value]="ix" [checked]="ix === this.selected"></mat-radio-button>
-          <mat-checkbox *ngIf="multi && areas.length > 1" [checked]="multiselect[ix]"></mat-checkbox>
-          <div *ngIf="metaDescriptionTextKey !== null" class="meta-cpl-label"><strong>{{ metaDescriptionTextKey | translate }}</strong>{{ fragment.metaDescription }}</div>
+          @if (!multi) {
+            <mat-radio-button [value]="ix" [checked]="ix === this.selected"></mat-radio-button>
+          }
+          @if (multi && areas.length > 1) {
+            <mat-checkbox [checked]="multiselect[ix]"></mat-checkbox>
+          }
+          @if (metaDescriptionTextKey !== null) {
+            <div class="meta-cpl-label"><strong>{{ metaDescriptionTextKey | translate }}</strong>{{ fragment.metaDescription }}</div>
+          }
         </div>
       </li>
+    }
   </ul>
 </mat-radio-group>
 <div class="button-pane">
   <button mat-flat-button [ngClass]="'secondary'" (click)="close()">{{
     cancelTextKey | translate
-    }}</button>
+  }}</button>
   <button mat-flat-button [disabled]="checkDisabled()" (click)="confirm()">{{
     confirmTextKey | translate
-    }}</button>
+  }}</button>
 </div>

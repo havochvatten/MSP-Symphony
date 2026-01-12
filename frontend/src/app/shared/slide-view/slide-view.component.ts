@@ -12,8 +12,11 @@ const DEFAULT_TAB = 0;
 @Component({
   selector: 'app-slide-view-tab',
   template: `
-    <ng-content *ngIf="active"></ng-content>
-  `
+    @if (active) {
+      <ng-content></ng-content>
+    }
+    `,
+  standalone: false
 })
 export class SlideViewTabComponent {
   @Input() title?: string;
@@ -35,13 +38,14 @@ type ViewOrientation = 'right' | 'left';
       transition('closed => open', [animate('0.3s cubic-bezier(0.0, 0.0, 0.2, 0.1)')]),
       transition('open => closed', [animate('0.25s cubic-bezier(0.4, 0.0, 1, 1)')])
     ])
-  ]
+  ],
+  standalone: false
 })
 export class SlideViewComponent implements OnChanges, AfterViewInit {
   @Input() open = false;
   @Input() position: ViewOrientation = 'right';
   @Input() compoundComparisonCount$!: Observable<number>;
-  @Output() toggle = new EventEmitter<void>();
+  @Output() toggleTab = new EventEmitter<void>();
   @Output() navigate = new EventEmitter<string>();
   @Output() openCCList = new EventEmitter<void>();
   @ContentChildren(SlideViewTabComponent) tabs!: QueryList<SlideViewTabComponent>;
@@ -75,7 +79,7 @@ export class SlideViewComponent implements OnChanges, AfterViewInit {
   }
 
   onClick() {
-    this.toggle.emit();
+    this.toggleTab.emit();
   }
 
   openCompoundComparisonList() {

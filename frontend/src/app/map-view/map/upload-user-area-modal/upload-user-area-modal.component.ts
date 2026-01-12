@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DialogRef } from '@shared/dialog/dialog-ref';
 import AreaService from "@data/area/area.service";
 import { DialogConfig } from "@shared/dialog/dialog-config";
@@ -13,9 +13,15 @@ import { ServerError } from "@data/message/message.interfaces";
 @Component({
   selector: 'app-upload-user-area-modal',
   templateUrl: './upload-user-area-modal.component.html',
-  styleUrls: ['./upload-user-area-modal.component.scss']
+  styleUrls: ['./upload-user-area-modal.component.scss'],
+  standalone: false
 })
 export class UploadUserAreaModalComponent {
+  private areaService = inject(AreaService);
+  private store = inject<Store<State>>(Store);
+  private dialog = inject(DialogRef);
+  private config = inject(DialogConfig);
+
   readonly requiredFileType: string;
   errorIcon = faExclamationCircle;
 
@@ -25,11 +31,9 @@ export class UploadUserAreaModalComponent {
   firstFeatureId?: string;
   inspectionError?: ServerError;
 
-  constructor(private areaService: AreaService,
-              private store: Store<State>,
-              private dialog: DialogRef,
-              private config: DialogConfig,
-  ) {
+  constructor() {
+    const config = this.config;
+
     this.requiredFileType = config.data.mimeType;
   }
 
@@ -46,16 +50,17 @@ export class UploadUserAreaModalComponent {
 
       this.areaService.uploadUserArea(formdata).pipe(
         finalize(() => this.loading = false)
-      ).subscribe(inspectionResults => {
+      ).subscribe({
+        next: (inspectionResults) => {
           this.uploadedArea = inspectionResults
           if (inspectionResults.featureIdentifiers.length > 0)
             this.firstFeatureId = inspectionResults.featureIdentifiers[0]
         },
-        ({ status, error }) => {
+        error: err => {
           // TODO: Show in dialog instead of new modal
-          this.inspectionError = error;
+          this.inspectionError = err;
           // this.store.dispatch(AreaActions.inspectUserUploadedAreaFailure({ error: { status, message } }));
-        }
+        }}
       );
     }
   }
@@ -70,13 +75,13 @@ export class UploadUserAreaModalComponent {
 
   confirmImport() {
     this.areaService.confirmUserAreaImport(this.uploadedArea!.key)
-      .subscribe(
-      importedArea => this.dialog.close(importedArea),
-      ({ status, error: message }) => {
-        this.store.dispatch(AreaActions.createUserDefinedAreaFailure({ error: { status, message} }));
-        this.dialog.close();
-      }     // TODO: Show some message?
-    );
+      .subscribe({
+        next: (importedArea) =>  this.dialog.close(importedArea),
+        error: ({ status, error }) => {
+          this.store.dispatch(AreaActions.createUserDefinedAreaFailure({ error: { status, message: error } }));
+          this.dialog.close();
+        }     // TODO: Show some message?
+      });
   }
 
   cancel = () => {

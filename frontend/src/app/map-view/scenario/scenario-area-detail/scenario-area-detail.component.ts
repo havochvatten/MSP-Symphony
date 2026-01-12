@@ -1,8 +1,8 @@
-import { Component, Input, NgModuleRef, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, inject, NgModuleRef } from '@angular/core';
 import { ChangesProperty, Scenario, ScenarioArea } from "@data/scenario/scenario.interfaces";
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
-import { CalcOperation, CalculationService, NormalizationType } from "@data/calculation/calculation.service";
+import { CalcOperation, NormalizationType } from "@data/calculation/calculation.service";
 import { DialogService } from "@shared/dialog/dialog.service";
 import { TranslateService } from "@ngx-translate/core";
 import {
@@ -15,12 +15,12 @@ import { environment } from "@src/environments/environment";
 import { ScenarioActions, ScenarioSelectors, } from "@data/scenario";
 import { Observable, Subscription } from "rxjs";
 import { CalculationSelectors } from "@data/calculation";
-import { ScenarioService } from "@data/scenario/scenario.service";
 import { OperationParams } from "@data/calculation/calculation.interfaces";
 import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
 import { transferChanges } from "@src/app/map-view/scenario/scenario-common";
 import { MetadataSelectors } from "@data/metadata";
 import { BandChange, BandType } from "@data/metadata/metadata.interfaces";
+import { ScenarioEditorModule } from "@src/app/map-view/scenario/scenario-editor.module";
 
 const availableOperationsByValue: Map<CalcOperation, string> = new Map<CalcOperation, string>(
   [ [CalcOperation.Cumulative, 'CumulativeImpact' ] ,
@@ -30,9 +30,15 @@ const availableOperationsByValue: Map<CalcOperation, string> = new Map<CalcOpera
   selector: 'app-scenario-area-detail',
   templateUrl: './scenario-area-detail.component.html',
   styleUrls: ['../scenario-detail/scenario-detail.component.scss',
-              './scenario-area-detail.component.scss']
+              './scenario-area-detail.component.scss'],
+  standalone: false
 })
 export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
+  private readonly store = inject<Store<State>>(Store);
+  private readonly dialogService = inject(DialogService);
+  private readonly translateService = inject(TranslateService);
+  private readonly moduleRef = inject(NgModuleRef<ScenarioEditorModule>);
+
   env = environment;
 
   @Input() scenario!: Scenario;
@@ -54,14 +60,7 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
   private matrixDataSubscription$: Subscription;
   bandDictionary$: Observable<{[t: string]: { [p: string]: string } }>;
 
-  constructor(
-    private store: Store<State>,
-    private calcService: CalculationService,
-    private scenarioService: ScenarioService,
-    private dialogService: DialogService,
-    private translateService: TranslateService,
-    private moduleRef: NgModuleRef<never>
-  ) {
+  constructor() {
     const that = this;
     this.calculating$ = this.store.select(CalculationSelectors.selectCalculating);
     this.percentileValue$ = this.store.select(CalculationSelectors.selectPercentileValue);

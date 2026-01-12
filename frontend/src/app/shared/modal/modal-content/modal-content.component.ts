@@ -5,6 +5,7 @@ import { Component } from '@angular/core';
   template: `
     <ng-content></ng-content>
   `,
-  styleUrls: ['./modal-content.component.scss']
+  styleUrls: ['./modal-content.component.scss'],
+  standalone: false
 })
 export class ModalContentComponent {}

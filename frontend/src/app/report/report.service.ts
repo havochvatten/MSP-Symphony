@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { ComparisonReport, Report } from "@data/calculation/calculation.interfaces";
 import { environment as env } from "@src/environments/environment";
@@ -9,10 +9,10 @@ import { TranslateService } from "@ngx-translate/core";
 })
 export class
 ReportService {
-  private langParam = `?lang=${this.translate.currentLang}`;
+  private readonly http = inject(HttpClient);
+  private readonly translate = inject(TranslateService);
 
-  constructor(private http: HttpClient,
-              private translate: TranslateService) {}
+  private langParam = `?lang=${this.translate.currentLang}`;
 
   public getReport(id: string) {
     return this.http.get<Report>(`${env.apiBaseUrl}/report/${id}${this.langParam}`);
