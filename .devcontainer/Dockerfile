@@ -6,6 +6,9 @@ ENV MAVEN_VERSION=3.9.9 \
     POSTGRES_DRIVER_VERSION=42.5.1 \
     PATH="/workspace/.devcontainer/scripts:${PATH}" 
 
+# Remove Yarn apt repo (fails due to expired key) - npm is enough
+RUN rm -f /etc/apt/sources.list.d/yarn.list 
+
 RUN apt-get update \
     && apt-get install -y curl wget unzip gnupg iputils-ping ca-certificates \
     && rm -rf /var/lib/apt/lists/*
