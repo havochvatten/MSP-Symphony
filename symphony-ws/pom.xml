@@ -151,6 +151,17 @@
             <version>${version.geotools}</version>
         </dependency>
         <dependency>
+            <groupId>it.geosolutions.jaiext.stats</groupId>
+            <artifactId>jt-stats</artifactId>
+            <version>1.1.31</version>
+        </dependency>
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.51.2.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.locationtech.jts.io</groupId>
             <artifactId>jts-io-common</artifactId>
             <version>${version.jts}</version>
@@ -208,6 +219,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${version.java.lang3}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.21.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
