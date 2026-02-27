@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd
+              https://dependency-check.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+        <suppress>
+            <notes><![CDATA[
+            CVE-2025-30220 suppression
+            ::::
+            JARs:
+            ( Multiple packages in GeoTools 29.6 )
+            gt-xml-29.6.jar
+            gt-cql-29.6.jar
+            gt-http-29.6.jar
+            gt-jdbc-29.6.jar
+            gt-geojson-core-29.6.jar
+            gt-geopkg-29.6.jar
+            gt-main-29.6.jar
+
+            net.opengis.fes-29.6.jar
+            net.opengis.ows-29.6.jar
+            org.w3.xlink-29.6.jar
+
+            Justification:
+            The vulnerability as described is not considered applicable to this implementation (MSP-Symphony v1.24.0 2026-02-27)
+            https://nvd.nist.gov/vuln/detail/CVE-2025-30220
+            ]]></notes>
+            <cve>CVE-2025-30220</cve>
+        </suppress>
+</suppressions>

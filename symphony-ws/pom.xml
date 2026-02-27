@@ -428,6 +428,7 @@
                     <configuration>
                         <failBuildOnCVSS>8</failBuildOnCVSS>
                         <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                        <suppressionFile>${project.basedir}/owasp-suppressions.xml</suppressionFile>
                     </configuration>
                 </plugin>
             </plugins>
