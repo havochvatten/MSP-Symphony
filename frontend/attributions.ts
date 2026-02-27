@@ -1,6 +1,6 @@
 // This file would ideally be generated from NPM package deps and Maven's POM
 export default [
-  ['Angular', "https://angular.io/", "21.0.6"],
+  ['Angular', "https://angular.io/", "21.1.5"],
   ['OpenLayers', "https://openlayers.org", "10.7.0"],
   ['D3.js', "https://d3js.org/", "7.9.0"],
   ['Immutable.js', 'https://immutable-js.com/', '4.3.6'],
