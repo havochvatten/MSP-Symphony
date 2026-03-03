@@ -4,7 +4,7 @@ export type StatePath = Array<string | number>;
 
 export interface Polygon { // Really a GeoJSON geometry
   type: string;
-  coordinates: number[] | number[][] | number[][][] | number[][][][];
+  coordinates: number[] | number[][] | number[][][] | number[][][][]; //hanterar punkter, linjer och polygoner, samt multipolygoner
 }
 // export type Polygon = GeoJSONPolygon;
 
