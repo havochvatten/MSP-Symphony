@@ -26,6 +26,7 @@ export interface Area extends SelectableArea {
 export interface UserArea extends SelectableArea {
   id?: number;
   description: string;
+  categoryId: number;
 }
 
 export interface AreaImport {
@@ -141,4 +142,9 @@ export interface State {
   selectionOverlap: boolean;
   selectionMatrices?: AreaMatrixData;
   calibratedCalculationAreas: CalculationAreaSlice[];
+}
+
+export interface UserDefinedAreaCategory{
+  id: number;
+  name: string;
 }

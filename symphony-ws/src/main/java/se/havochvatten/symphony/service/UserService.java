@@ -17,9 +17,11 @@ import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteException;
 import se.havochvatten.symphony.dto.AreaImportResponse;
 import se.havochvatten.symphony.dto.UploadedUserDefinedAreaDto;
+import se.havochvatten.symphony.dto.UserDefinedAreaCategoryDto;
 import se.havochvatten.symphony.dto.UserDefinedAreaDto;
 import se.havochvatten.symphony.dto.UserDto;
 import se.havochvatten.symphony.entity.UserDefinedArea;
+import se.havochvatten.symphony.entity.UserDefinedAreaCategory;
 import se.havochvatten.symphony.entity.UserSettings;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
@@ -64,12 +66,18 @@ public class UserService {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.POLYGON_ARRAY_FORBIDDEN);
         }
 
-		UserDefinedArea userDefinedArea = UserDefinedAreaDtoMapper.mapToEntity(userDefinedAreaDto, principal.getName());
+		UserDefinedArea userDefinedArea = UserDefinedAreaDtoMapper.mapToEntity(userDefinedAreaDto, principal.getName(), this);
 		if (userDefinedArea.getId() != null && !userDefinedArea.getId().equals(0) ){
 			 throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_ID_ERROR);
 		}
 
 		userDefinedArea.setId(null);
+
+        if (userDefinedAreaDto.getCategoryId() != null) {
+        var category = em.find(UserDefinedAreaCategory.class, userDefinedAreaDto.getCategoryId());
+        userDefinedArea.setCategory(category);
+        }
+
 		em.persist(userDefinedArea);
 		return UserDefinedAreaDtoMapper.mapToDto(userDefinedArea);
 	}
@@ -89,14 +97,19 @@ public class UserService {
         }
 
         UserDefinedArea userDefinedArea = UserDefinedAreaDtoMapper.mapToEntity(userDefinedAreaDto,
-				principal.getName());
+				principal.getName(), this);
         UserDefinedArea userDefinedAreaToUpdate = getUserDefinedAreaByById(userDefinedArea.getId());
+        if (userDefinedAreaDto.getCategoryId() != null) {
+            var category = em.find(UserDefinedAreaCategory.class, userDefinedAreaDto.getCategoryId());
+            userDefinedArea.setCategory(category);
+        }
         if (principal.getName() == null || (userDefinedAreaToUpdate != null && !principal.getName().equals(userDefinedAreaToUpdate.getOwner()))) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_NOT_OWNED_BY_USER);
         }
         if (userDefinedAreaToUpdate == null) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_NOT_FOUND);
         }
+        
         return UserDefinedAreaDtoMapper.mapToDto(em.merge(userDefinedArea));
     }
 
@@ -268,5 +281,36 @@ public class UserService {
         }
 
         em.persist(userSettings);
+    }
+
+    public List<UserDefinedAreaCategoryDto> findCategoriesByOwner(Principal principal) {
+    return em.createNamedQuery("UserDefinedAreaCategory.findAllByOwner", UserDefinedAreaCategory.class)
+        .setParameter("owner", principal.getName())
+        .getResultList()
+        .stream()
+        .map(c -> { 
+            var dto = new UserDefinedAreaCategoryDto();
+            dto.setId(c.getId());
+            dto.setName(c.getName());
+            return dto;
+        })
+        .toList();
+}
+
+    public UserDefinedAreaCategoryDto createCategory(Principal principal, UserDefinedAreaCategoryDto dto) {
+        var category = new UserDefinedAreaCategory();
+        category.setName(dto.getName());
+        category.setOwner(principal.getName());
+        em.persist(category);
+        dto.setId(category.getId());
+        return dto;
+    }
+
+    public UserDefinedAreaCategory getUDACategoryById(Integer id) throws SymphonyStandardAppException {
+        try {
+            return em.find(UserDefinedAreaCategory.class, id);
+        } catch (Exception e) {
+            throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_CAT_BY_ID_ERROR);
+        }
     }
 }

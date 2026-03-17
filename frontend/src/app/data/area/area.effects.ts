@@ -105,8 +105,8 @@ export class AreaEffects {
 
   createUserDefinedArea$ = createEffect(() => this.actions$.pipe(
     ofType(AreaActions.createUserDefinedArea),
-    mergeMap(({ name, description, polygon }) =>
-      this.areaService.createUserArea({ name, description, polygon }).pipe(
+    mergeMap(({ name, description, polygon, categoryId }) =>
+      this.areaService.createUserArea({ name, description, polygon, categoryId }).pipe(
         map(userAreaResponse =>
           AreaActions.createUserDefinedAreaSuccess({
             userArea: {
@@ -140,8 +140,8 @@ export class AreaEffects {
 
   updateUserDefinedArea$ = createEffect(() => this.actions$.pipe(
     ofType(AreaActions.updateUserDefinedArea),
-    mergeMap(({ id, name, description, polygon }) =>
-      this.areaService.updateUserArea({ id, name, description, polygon }).pipe(
+    mergeMap(({ id, name, description, polygon, categoryId }) =>
+      this.areaService.updateUserArea({ id, name, description, polygon, categoryId }).pipe(
         map(userAreaResponse =>
           AreaActions.updateUserDefinedAreaSuccess({
             userArea: {

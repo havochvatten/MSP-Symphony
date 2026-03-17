@@ -6,6 +6,7 @@ import se.havochvatten.symphony.dto.UserDefinedAreaDto;
 import se.havochvatten.symphony.entity.UserDefinedArea;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
+import se.havochvatten.symphony.service.UserService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,12 +14,13 @@ import java.util.List;
 
 public class UserDefinedAreaDtoMapper {
 
-    public static UserDefinedArea mapToEntity(UserDefinedAreaDto dto, String owner) throws SymphonyStandardAppException {
+    public static UserDefinedArea mapToEntity(UserDefinedAreaDto dto, String owner, UserService service) throws SymphonyStandardAppException {
         UserDefinedArea userDefinedArea = new UserDefinedArea();
         userDefinedArea.setId(dto.getId());
         userDefinedArea.setName(dto.getName());
         userDefinedArea.setDescription(dto.getDescription());
         userDefinedArea.setOwner(owner);
+        userDefinedArea.setCategory(service.getUDACategoryById(dto.getCategoryId()));
         ObjectMapper obj = new ObjectMapper();
         String jsonStr = "";
         try {

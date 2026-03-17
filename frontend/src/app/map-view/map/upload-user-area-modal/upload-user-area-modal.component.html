@@ -1,9 +1,28 @@
 <h3>{{ 'map.user-area.upload.modal.title' | translate}}</h3>
 <p [innerHTML]="'map.user-area.upload.modal.fileformat-note' | translate"></p>
 
+
+<div [formGroup]="categoryForm">
+<select formControlName="categoryId">
+    <option value="" disabled>Välj kategori...</option>
+    <option *ngFor="let cat of categories" [value]="cat.id">
+      {{ cat.name }}
+    </option>
+    <option value="__new__">+ Skapa ny kategori</option>
+  </select>
+
+  <div *ngIf="isCreatingNew">
+    <input
+      type="text"
+      formControlName="newCategoryName"
+      placeholder="Namn på ny kategori"
+    />
+    <button type="button" (click)="createCategory()">Skapa</button>
+    <button type="button" (click)="cancelNewCategory()">Avbryt</button>
+  </div>
+ </div>
 <!--FIXME replace with custom "polygon" icon -->
 <input type="file" [accept]="requiredFileType" (change)="onFileSelect($event)" #fileUpload/>
-
 <div class="loading" *ngIf="loading">
   <mat-spinner></mat-spinner>
 </div>

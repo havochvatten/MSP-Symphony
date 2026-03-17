@@ -1,10 +1,13 @@
 package se.havochvatten.symphony.dto;
 
+import se.havochvatten.symphony.entity.UserDefinedAreaCategory;
+
 public class UserDefinedAreaDto {
     private Integer id;
     private String name;
     private String description;
     private Object polygon;
+    private Integer categoryId;
 
     public Integer getId() {
         return id;
@@ -36,5 +39,13 @@ public class UserDefinedAreaDto {
 
     public void setPolygon(Object polygon) {
         this.polygon = polygon;
+    }
+
+    public Integer getCategoryId(){
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId){
+        this.categoryId = categoryId;
     }
 }

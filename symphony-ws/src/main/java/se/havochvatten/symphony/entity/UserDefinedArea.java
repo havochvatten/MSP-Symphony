@@ -41,6 +41,10 @@ public class UserDefinedArea implements Serializable {
     @Column(name = "uda_owner")
     private String owner;
 
+    @ManyToOne
+    @JoinColumn(name = "uda_category_id")
+    private UserDefinedAreaCategory category;
+
     public UserDefinedArea() {}
 
     public Integer getId() {
@@ -81,6 +85,14 @@ public class UserDefinedArea implements Serializable {
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    public UserDefinedAreaCategory getCategory(){
+        return category;
+    }
+
+    public void setCategory(UserDefinedAreaCategory category){
+        this.category = category;
     }
 
     @Override

@@ -7,6 +7,7 @@ import org.geotools.geopkg.GeoPackage;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import se.havochvatten.symphony.dto.AreaImportResponse;
+import se.havochvatten.symphony.dto.UserDefinedAreaCategoryDto;
 import se.havochvatten.symphony.dto.UserDefinedAreaDto;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
@@ -226,5 +227,20 @@ public class UserREST {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
     }
+    @GET
+    @Path("/area/category")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response getCategories(@Context HttpServletRequest req) {
+        return Response.ok(userService.findCategoriesByOwner(req.getUserPrincipal())).build();
+    }
 
+    @POST
+    @Path("/area/category")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response createCategory(@Context HttpServletRequest req, UserDefinedAreaCategoryDto dto) {
+        return Response.ok(userService.createCategory(req.getUserPrincipal(), dto)).build();
+    }
 }

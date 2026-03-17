@@ -315,6 +315,19 @@ EXECUTE FORMAT ('GRANT DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UP
 CREATE INDEX IF NOT EXISTS sensm_bver_fk_inx
     ON sensitivitymatrix (sensm_bver_id);
 
+CREATE TABLE IF NOT EXISTS userdefarea_category
+(
+    uda_cat_id     integer GENERATED ALWAYS AS IDENTITY (START WITH 1)
+        CONSTRAINT uda_cat_pk
+            PRIMARY KEY,
+    uda_cat_name   text NOT NULL
+        CONSTRAINT uda_cat_name_uq
+            UNIQUE,
+    uda_cat_owner   text NOT NULL
+)
+EXECUTE FORMAT ('ALTER TABLE userdefarea_category OWNER TO %s', pgAppAgent);
+EXECUTE FORMAT ('GRANT DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE ON userdefarea_category TO  %s', pgAppAgent);
+
 CREATE TABLE IF NOT EXISTS userdefarea
 (
     uda_id          integer GENERATED ALWAYS AS IDENTITY (START WITH 2280)
@@ -323,7 +336,11 @@ CREATE TABLE IF NOT EXISTS userdefarea
     uda_name        text NOT NULL,
     uda_description text,
     uda_polygon     text NOT NULL,
-    uda_owner       text NOT NULL
+    uda_owner       text NOT NULL,
+    uda_category_id integer
+        CONSTRAINT uda_cat_fk
+            REFERENCES userdefarea_category
+                ON DELETE SET NULL
 );
 
 EXECUTE FORMAT ('ALTER TABLE userdefarea OWNER TO %s', pgAppAgent);

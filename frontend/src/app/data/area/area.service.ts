@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment as env } from '@src/environments/environment';
 import { AreaInterfaces } from './';
-import { UserArea, NationalArea } from './area.interfaces';
+import { UserArea, NationalArea, UserDefinedAreaCategory } from './area.interfaces';
 
 const BASE_URL = env.apiBaseUrl;
 
@@ -57,5 +57,13 @@ export default class AreaService {
 
   getCalibratedCalculationAreas(baselineName: string) {
     return this.http.get<AreaInterfaces.CalculationAreaSlice[]>(`${BASE_URL}/calculationarea/calibrated/${baselineName}`)
+  }
+
+  getCategories() {
+    return this.http.get<AreaInterfaces.UserDefinedAreaCategory[]>(`${BASE_URL}/user/area/category`);
+  }
+
+  createCategory(name: string) {
+    return this.http.post<AreaInterfaces.UserDefinedAreaCategory>(`${BASE_URL}/user/area/category`, { name });
   }
 }

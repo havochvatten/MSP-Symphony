@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DialogRef } from '@shared/dialog/dialog-ref';
 import AreaService from "@data/area/area.service";
 import { DialogConfig } from "@shared/dialog/dialog-config";
@@ -9,28 +9,57 @@ import { AreaActions } from "@data/area";
 import { finalize } from "rxjs/operators";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { ServerError } from "@data/message/message.interfaces";
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { CategoryService } from './category.service';
 
 @Component({
   selector: 'app-upload-user-area-modal',
   templateUrl: './upload-user-area-modal.component.html',
   styleUrls: ['./upload-user-area-modal.component.scss']
 })
-export class UploadUserAreaModalComponent {
+export class UploadUserAreaModalComponent implements OnInit {
   readonly requiredFileType: string;
   errorIcon = faExclamationCircle;
+
 
   // Component state variables
   loading = false;
   uploadedArea?: UploadedUserDefinedArea;
   firstFeatureId?: string;
   inspectionError?: ServerError;
+  categories: { id: number; name: string }[] = [];
+  isCreatingNew = false;
+
+  categoryForm = new FormGroup({
+    categoryId: new FormControl('', Validators.required),
+    newCategoryName: new FormControl('')
+  });
+
 
   constructor(private areaService: AreaService,
               private store: Store<State>,
               private dialog: DialogRef,
               private config: DialogConfig,
+              private categoryService: CategoryService
   ) {
     this.requiredFileType = config.data.mimeType;
+  }
+
+  ngOnInit(): void {
+    this.categoryService.getCategories().subscribe(data => {
+      this.categories = data;
+    });
+
+    this.categoryForm.get('categoryId')!.valueChanges.subscribe(value => {
+  if (value === '__new__') {
+    this.isCreatingNew = true;
+    this.categoryForm.get('newCategoryName')!.setValidators(Validators.required);
+  } else {
+    this.isCreatingNew = false;
+    this.categoryForm.get('newCategoryName')!.clearValidators();
+  }
+  this.categoryForm.get('newCategoryName')!.updateValueAndValidity();
+});
   }
 
   onFileSelect(event: Event) {
@@ -69,8 +98,10 @@ export class UploadUserAreaModalComponent {
   }
 
   confirmImport() {
+    if (this.categoryForm.invalid) return;
+    const categoryId = this.categoryForm.get('categoryId')!.value;
     this.areaService.confirmUserAreaImport(this.uploadedArea!.key)
-      .subscribe(
+    .subscribe(
       importedArea => this.dialog.close(importedArea),
       ({ status, error: message }) => {
         this.store.dispatch(AreaActions.createUserDefinedAreaFailure({ error: { status, message} }));
