@@ -7,6 +7,7 @@ public enum SymphonyModelErrorCode implements SymphonyErrorCode {
     LDAP_SEARCH_ERROR("LDAP_SEARCH_ERROR", "Error when fetching LDAP user info."),
     LOGIN_FAILED_ERROR("LOGIN_FAILED_ERROR", "Login failed."),
     USER_DEF_AREA_BY_ID_ERROR("USER_DEF_AREA_BY_ID_ERROR", "Error searching UserDefinedAreaById."),
+    USER_DEF_AREA_CAT_BY_ID_ERROR("USER_DEF_AREA_CAT_BY_ID_ERROR", "Error searching UserDefinedAreaCategoryById."),
     USER_DEF_AREA_ID_ERROR("USER_DEF_AREA_ID_ERROR", "Id can not be set when creating a UserDefinedArea."),
     USER_DEF_AREA_NOT_FOUND("USER_DEF_AREA_NOT_FOUND", "UserDefinedArea not found."),
     USER_DEF_AREA_POLYGON_MAPPING_ERROR("USER_DEF_AREA_POLYGON_MAPPING_ERROR", "Error when mapping polygon for UserDefinedArea"),

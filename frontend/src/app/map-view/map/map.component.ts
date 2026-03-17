@@ -356,7 +356,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       const newArea = {
         name: areaName,
         polygon,
-        description: ''
+        description: '',
+        categoryId: 0
       };
       this.store.dispatch(AreaActions.createUserDefinedArea(newArea));
     }
@@ -387,7 +388,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           this.store.dispatch(AreaActions.createUserDefinedArea({
             name: areaSliceName(prevFeature.get('name'), ix),
             polygon: MapComponent.convertToSave(areaConf[ix].polygon),
-            description: ''
+            description: '',
+            categoryId: 0
           }));
         }
       });
@@ -429,7 +431,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           name: areaIndexToSave === -1 ?
             names[0] + ' extension' : names[areaIndexToSave],
           polygon: MapComponent.convertToSave(merged!),
-          description: ['"', names[0], '" extended by "', names[1], '"' ].join('')
+          description: ['"', names[0], '" extended by "', names[1], '"' ].join(''),
+          categoryId: 0
         }
 
         if (areaIndexToSave === -1) {
