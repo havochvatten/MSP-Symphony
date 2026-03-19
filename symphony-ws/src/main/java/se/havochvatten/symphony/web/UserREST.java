@@ -125,15 +125,16 @@ public class UserREST {
     @RolesAllowed("GRP_SYMPHONY")
     public Response actuallyImportUserDefinedArea(@Context HttpServletRequest req,
                                                   @Context UriInfo uriInfo,
-                                                  @PathParam("key") String key)
+                                                  @PathParam("key") String key,
+                                                  @QueryParam("categoryId") Integer categoryId)
         throws SymphonyStandardAppException {
         var pkgFile = (java.io.File) req.getSession(false).getAttribute(key);
 
         AreaImportResponse response;
         try (var pkg = new GeoPackage(pkgFile)) {
             LOG.log(Level.INFO,
-                () -> String.format("Importing uploaded GeoPackage %s for user %s", pkgFile ,req.getUserPrincipal().getName()));
-            response = userService.importUserDefinedAreaFromPackage(req.getUserPrincipal(), pkg);
+                () -> String.format("Importing uploaded GeoPackage %s for user %s", pkgFile ,req.getUserPrincipal().getName(), categoryId));
+            response = userService.importUserDefinedAreaFromPackage(req.getUserPrincipal(), pkg, categoryId);
         } catch (IOException e) {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.GEOPACKAGE_READ_FEATURE_FAILURE);
         }

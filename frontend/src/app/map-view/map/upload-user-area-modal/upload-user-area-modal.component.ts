@@ -10,7 +10,7 @@ import { finalize } from "rxjs/operators";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { ServerError } from "@data/message/message.interfaces";
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CategoryService } from './category.service';
+
 
 @Component({
   selector: 'app-upload-user-area-modal',
@@ -40,13 +40,12 @@ export class UploadUserAreaModalComponent implements OnInit {
               private store: Store<State>,
               private dialog: DialogRef,
               private config: DialogConfig,
-              private categoryService: CategoryService
   ) {
     this.requiredFileType = config.data.mimeType;
   }
 
   ngOnInit(): void {
-    this.categoryService.getCategories().subscribe(data => {
+    this.areaService.getCategories().subscribe(data => {
       this.categories = data;
     });
 
@@ -98,17 +97,29 @@ export class UploadUserAreaModalComponent implements OnInit {
   }
 
   confirmImport() {
+
     if (this.categoryForm.invalid) return;
-    const categoryId = this.categoryForm.get('categoryId')!.value;
-    this.areaService.confirmUserAreaImport(this.uploadedArea!.key)
+    const categoryIdValue = this.categoryForm.get('categoryId')!.value;
+
+    if (categoryIdValue === '__new__'){
+      const newName = this.categoryForm.get('newCategoryName')!.value!;
+      this.areaService.createCategory(newName).subscribe(createdCategory =>{
+        this.doImport(createdCategory.id);
+      });
+    } else {
+      this.doImport(Number(categoryIdValue));
+    }
+  }
+  private doImport(categoryId?: number) {
+  this.areaService.confirmUserAreaImport(this.uploadedArea!.key, categoryId)
     .subscribe(
       importedArea => this.dialog.close(importedArea),
       ({ status, error: message }) => {
-        this.store.dispatch(AreaActions.createUserDefinedAreaFailure({ error: { status, message} }));
+        this.store.dispatch(AreaActions.createUserDefinedAreaFailure({ error: { status, message } }));
         this.dialog.close();
-      }     // TODO: Show some message?
+      }
     );
-  }
+}
 
   cancel = () => {
     this.dialog.close();

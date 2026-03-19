@@ -1,3 +1,4 @@
+/*
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -8,7 +9,7 @@ const BASE_URL = env.apiBaseUrl;
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  private apiUrl = `${BASE_URL}/categories`;
+  private apiUrl = `${BASE_URL}//user/area/category`;
 
   constructor(private http: HttpClient) {}
 
@@ -20,3 +21,4 @@ export class CategoryService {
     return this.http.post<{ id: number; name: string }>(this.apiUrl, { name });
   }
 }
+*/

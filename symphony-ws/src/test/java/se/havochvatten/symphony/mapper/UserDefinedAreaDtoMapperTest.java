@@ -4,19 +4,27 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+
 import se.havochvatten.symphony.dto.UserDefinedAreaDto;
 import se.havochvatten.symphony.entity.UserDefinedArea;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
+import se.havochvatten.symphony.service.UserService;
 
 import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+
+
 public class UserDefinedAreaDtoMapperTest {
     UserDefinedAreaDto userDefinedAreaDto;
     UserDefinedArea userDefinedArea;
     String principalUserName = "symphony";
+
+    @Mock
+    UserService userService;
 
     @Before
     public void setUp() throws IOException {
@@ -35,7 +43,7 @@ public class UserDefinedAreaDtoMapperTest {
 
     @Test
     public void testMapToEntity() throws SymphonyStandardAppException {
-        UserDefinedArea uda = UserDefinedAreaDtoMapper.mapToEntity(userDefinedAreaDto, principalUserName);
+        UserDefinedArea uda = UserDefinedAreaDtoMapper.mapToEntity(userDefinedAreaDto, principalUserName, userService);
         assertThat(uda.getId(), is(userDefinedArea.getId()));
         assertThat(uda.getName(), is(userDefinedArea.getName()));
         assertThat(uda.getDescription(), is(userDefinedArea.getDescription()));

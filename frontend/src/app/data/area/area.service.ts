@@ -33,8 +33,8 @@ export default class AreaService {
       formData);
   }
 
-  confirmUserAreaImport(key: string) {
-    return this.http.put<AreaInterfaces.AreaImport>(`${BASE_URL}/user/area/import/${key}`, null);
+  confirmUserAreaImport(key: string, categoryId?: number) {
+    return this.http.put<AreaInterfaces.AreaImport>(`${BASE_URL}/user/area/import/${key}?categoryId=${categoryId ?? ''}`, null);
   }
 
   updateUserArea(userArea: Partial<UserArea>) {

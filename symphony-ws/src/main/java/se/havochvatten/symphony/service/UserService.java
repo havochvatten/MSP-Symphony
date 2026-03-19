@@ -154,7 +154,7 @@ public class UserService {
     /**
      * Import a user-supplied GeoPackage as a user-defined area
      */
-    public AreaImportResponse importUserDefinedAreaFromPackage(Principal principal, GeoPackage pkg)
+    public AreaImportResponse importUserDefinedAreaFromPackage(Principal principal, GeoPackage pkg, Integer categoryId)
         throws SymphonyStandardAppException {
 
         try {
@@ -195,6 +195,10 @@ public class UserService {
                     areaToImport.setOwner(principal.getName());
                     areaToImport.setName(tmpEntry.getIdentifier());
                     areaToImport.setDescription(tmpEntry.getDescription());
+                    if (categoryId != null) {
+                        var category = em.find(UserDefinedAreaCategory.class, categoryId);
+                        areaToImport.setCategory(category);
+            }
                     em.persist(areaToImport);
                 } else {
                     throw new SymphonyStandardAppException(SymphonyModelErrorCode.GEOPACKAGE_MISSING_GEOMETRY);
