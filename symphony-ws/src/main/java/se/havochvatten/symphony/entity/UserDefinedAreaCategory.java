@@ -5,13 +5,15 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "userdefarea_category")
 @XmlRootElement
 @NamedQuery(name = "UserDefinedAreaCategory.findAll", query = "SELECT u FROM UserDefinedAreaCategory u")
 @NamedQuery(name = "UserDefinedAreaCategory.findAllByOwner",
-        query = "SELECT u FROM UserDefinedAreaCategory u WHERE u.owner = :owner")
+        query = "SELECT u FROM UserDefinedAreaCategory u WHERE u.owner = :owner AND u.category IS NULL")
 public class UserDefinedAreaCategory implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -30,6 +32,13 @@ public class UserDefinedAreaCategory implements Serializable {
     @NotNull
     @Column(name = "uda_owner")
     private String owner;
+
+    @OneToMany(mappedBy = "category", fetch = FetchType.EAGER)
+    private List<UserDefinedArea> areas = new ArrayList<>();
+
+    public List<UserDefinedArea> getAreas() {
+        return areas;
+    }
 
     public Integer getId() {
         return id;
@@ -54,4 +63,6 @@ public class UserDefinedAreaCategory implements Serializable {
     public void setOwner(String owner) {
         this.owner = owner;
     }
+
+    
 }    

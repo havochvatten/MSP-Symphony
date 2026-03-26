@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 
 import AreaService from './area.service';
 import { AreaActions } from './';
-import { Area, Areas, Feature, NationalArea, NationalAreaState, Polygon, StatePath } from './area.interfaces';
+import { Area, Areas, Feature, NationalArea, NationalAreaState, Polygon, StatePath, UserAreasState } from './area.interfaces';
 import { ServerError } from "../message/message.interfaces";
 import { TranslateService } from '@ngx-translate/core';
 import { Store } from "@ngrx/store";
@@ -58,16 +58,25 @@ export class AreaEffects {
   fetchUserDefinedArea$ = createEffect(() => this.actions$.pipe(
     ofType(AreaActions.fetchUserDefinedAreas),
     mergeMap(() =>
-      this.areaService.getUserAreas().pipe(
-        map(userAreas =>
+      this.areaService.getCategories().pipe(
+        map(categories =>
           AreaActions.fetchUserDefinedAreasSuccess({
-            userAreas: userAreas.reduce(
-              (userAreaState, userArea) => ({
-                ...userAreaState,
-                [userArea.id as number]: {
-                  ...userArea,
-                  displayName: userArea.name,
-                  statePath: ['userArea', userArea.id],
+            userAreas: {
+              categories: categories.reduce(
+              (categoryState, category) => ({
+                ...categoryState,
+                [category.id ?? 'uncategorized']: {
+                  ...category,
+                  visible: true,
+                  expanded: false,
+                  statePath: ['userArea', category.id],
+                  areas: category.areas.reduce(
+                  (areaState, userArea) => ({
+                    ...areaState,
+                    [userArea.id as number]: {
+                      ...userArea,
+                      displayName: userArea.name,
+                      statePath: ['userArea', category.id, 'areas', userArea.id],
                   feature: createFeature(
                     userArea.name,
                     userArea.name,
@@ -75,10 +84,17 @@ export class AreaEffects {
                     ['userArea', userArea.id as number],
                     userArea.polygon
                   )
+                  }
+                  }),
+                  {}
+                  )
                 }
+
               }),
+
               {}
             )
+        } as UserAreasState
           })
         ),
         catchError(({ status, error: message }) =>

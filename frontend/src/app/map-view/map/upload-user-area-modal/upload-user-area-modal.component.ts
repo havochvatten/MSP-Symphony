@@ -28,7 +28,7 @@ export class UploadUserAreaModalComponent implements OnInit {
   firstFeatureId?: string;
   inspectionError?: ServerError;
   categories: { id: number; name: string }[] = [];
-  isCreatingNew = false;
+  isCreatingNew = false; 
 
   categoryForm = new FormGroup({
     categoryId: new FormControl('', Validators.required),
@@ -99,6 +99,7 @@ export class UploadUserAreaModalComponent implements OnInit {
   confirmImport() {
 
     if (this.categoryForm.invalid) return;
+
     const categoryIdValue = this.categoryForm.get('categoryId')!.value;
 
     if (categoryIdValue === '__new__'){
@@ -110,16 +111,17 @@ export class UploadUserAreaModalComponent implements OnInit {
       this.doImport(Number(categoryIdValue));
     }
   }
+
   private doImport(categoryId?: number) {
-  this.areaService.confirmUserAreaImport(this.uploadedArea!.key, categoryId)
-    .subscribe(
-      importedArea => this.dialog.close(importedArea),
-      ({ status, error: message }) => {
-        this.store.dispatch(AreaActions.createUserDefinedAreaFailure({ error: { status, message } }));
-        this.dialog.close();
-      }
-    );
-}
+    this.areaService.confirmUserAreaImport(this.uploadedArea!.key, categoryId)
+      .subscribe(
+        importedArea => this.dialog.close(importedArea),
+        ({ status, error: message }) => {
+          this.store.dispatch(AreaActions.createUserDefinedAreaFailure({ error: { status, message } }));
+          this.dialog.close();
+        }
+      );
+  }
 
   cancel = () => {
     this.dialog.close();

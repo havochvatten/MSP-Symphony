@@ -43,6 +43,8 @@ export interface AreaGroup {
   [lang: string]: unknown;
 }
 
+
+
 export interface NationalArea {
   type: string;
   en: string;
@@ -107,6 +109,7 @@ export interface AreaGroupState {
   };
 }
 
+
 export interface NationalAreaState {
   type: string;
   en: string;
@@ -117,13 +120,16 @@ export interface NationalAreaState {
 }
 
 export interface UserAreasState {
-  [key: number]: UserArea;
+  categories: {
+    [key: number]: UserArea;
+  };
 }
 
 export interface UploadedUserDefinedArea {
   srid: number;
   featureIdentifiers: string[];
   key: string;
+  categoryId: number;
 }
 
 export interface CalculationAreaSlice {
@@ -144,7 +150,30 @@ export interface State {
   calibratedCalculationAreas: CalculationAreaSlice[];
 }
 
-export interface UserDefinedAreaCategory{
+export interface UserCategory{
   id: number;
+  en: string;
   name: string;
+}
+
+export interface UserAreaCategory {
+  id: number;
+  en: string;
+  name: string;
+  visible: boolean;
+  statePath: StatePath;
+  expanded: boolean;
+  areas: UserArea[];
+}
+
+export interface UserAreaCategoryState {
+  id: number;
+  en: string;
+  name: string;
+  visible: boolean;
+  statePath: StatePath;
+  expanded: boolean;
+  areas: {
+    [key: number]: UserArea;
+  };
 }

@@ -288,7 +288,8 @@ public class UserService {
     }
 
     public List<UserDefinedAreaCategoryDto> findCategoriesByOwner(Principal principal) {
-    return em.createNamedQuery("UserDefinedAreaCategory.findAllByOwner", UserDefinedAreaCategory.class)
+        List<UserDefinedAreaCategoryDto> result = new ArrayList<>(
+        em.createNamedQuery("UserDefinedAreaCategory.findAllByOwner", UserDefinedAreaCategory.class)
         .setParameter("owner", principal.getName())
         .getResultList()
         .stream()
@@ -296,9 +297,44 @@ public class UserService {
             var dto = new UserDefinedAreaCategoryDto();
             dto.setId(c.getId());
             dto.setName(c.getName());
+            dto.setAreas(c.getAreas().stream()
+                .map(a -> {
+                var areaDto = new UserDefinedAreaDto();
+                areaDto.setId(a.getId());
+                areaDto.setName(a.getName());
+                areaDto.setDescription(a.getDescription());
+                areaDto.setPolygon(a.getPolygon());
+                areaDto.setCategoryId(c.getId());
+            return areaDto;
+        })
+        .toList());;
             return dto;
         })
-        .toList();
+        .toList()
+        );
+        List<UserDefinedAreaDto> uncategorized = em.createNamedQuery(
+                "UserDefinedArea.findAllByOwnerWithoutCategory", UserDefinedArea.class)
+            .setParameter("owner", principal.getName())
+            .getResultList()
+            .stream()
+            .map(a -> {
+                var dto = new UserDefinedAreaDto();
+                dto.setId(a.getId());
+                dto.setName(a.getName());
+                dto.setDescription(a.getDescription());
+                dto.setPolygon(a.getPolygon());
+                dto.setCategoryId(a.getCategory() != null ? a.getCategory().getId() : null);
+                return dto;
+            })
+            .toList();   
+        if (!uncategorized.isEmpty()) {
+            var defaultCategory = new UserDefinedAreaCategoryDto();
+            defaultCategory.setId(null);
+            defaultCategory.setName("Uncategorized");
+            defaultCategory.setAreas(uncategorized);
+            result.add(defaultCategory);
+        } 
+    return result;
 }
 
     public UserDefinedAreaCategoryDto createCategory(Principal principal, UserDefinedAreaCategoryDto dto) {

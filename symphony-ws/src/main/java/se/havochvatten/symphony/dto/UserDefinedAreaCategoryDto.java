@@ -1,8 +1,10 @@
 package se.havochvatten.symphony.dto;
+import java.util.List;
 
 public class UserDefinedAreaCategoryDto {
     private Integer id;
     private String name;
+    private List<UserDefinedAreaDto> areas;
     
     public Integer getId() {
         return id;
@@ -18,5 +20,13 @@ public class UserDefinedAreaCategoryDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<UserDefinedAreaDto> getAreas(){
+        return areas;
+    }
+
+    public void setAreas(List<UserDefinedAreaDto> areas) {
+        this.areas = areas;
     }
 }

@@ -12,6 +12,7 @@ import {
   Boundary
 } from './area.interfaces';
 import { getIn } from 'immutable';
+import { area } from 'd3';
 
 export const selectAreaState = createFeatureSelector<AppState, State>('area');
 
@@ -41,9 +42,10 @@ export const selectNationalAreas = createSelector(selectAreaState, (state: State
     }));
 });
 
-export const selectUserAreas = createSelector(selectAreaState, (state: State) =>
-  Object.values(state.userArea)
-);
+export const selectUserAreas = createSelector(selectAreaState, (state: State) => {
+  return Object.values(state.userArea.categories);
+});
+
 
 export const selectAreaFeatures = createSelector(
   selectNationalAreas,

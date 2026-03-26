@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment as env } from '@src/environments/environment';
 import { AreaInterfaces } from './';
-import { UserArea, NationalArea, UserDefinedAreaCategory } from './area.interfaces';
+import { UserArea, NationalArea, UserAreaCategory } from './area.interfaces';
 
 const BASE_URL = env.apiBaseUrl;
 
@@ -60,10 +60,11 @@ export default class AreaService {
   }
 
   getCategories() {
-    return this.http.get<AreaInterfaces.UserDefinedAreaCategory[]>(`${BASE_URL}/user/area/category`);
+    return this.http.get<AreaInterfaces.UserAreaCategory[]>(`${BASE_URL}/user/area/category`);
   }
 
   createCategory(name: string) {
-    return this.http.post<AreaInterfaces.UserDefinedAreaCategory>(`${BASE_URL}/user/area/category`, { name });
+    return this.http.post<AreaInterfaces.UserAreaCategory>(`${BASE_URL}/user/area/category`, { name });
   }
+
 }
