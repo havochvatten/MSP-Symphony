@@ -5,7 +5,8 @@ import {
   StatePath,
   UserArea,
   AreaGroup,
-  Area, AreaImport
+  Area, AreaImport,
+  UserAreaCategoryState
 } from '@data/area/area.interfaces';
 import { filterNationalAreas, filterUserAreas } from './area-selection.util';
 import { Store } from '@ngrx/store';
@@ -33,9 +34,9 @@ export class AreaSelectionComponent implements OnChanges {
   matchingResults = 0;
   selectedAreas$?: Observable<StatePath[] | undefined>
   private nationalAreas: NationalArea[] = [];
-  private userAreas: UserArea[] = [];
+  private userAreas: UserAreaCategoryState[] = [];
   filteredNationalAreas: NationalArea[] = [];
-  filteredUserAreas: UserArea[] = [];
+  filteredUserAreas: UserAreaCategoryState[] = [];
   @Input() drawUserArea!: () => void;
   @Input() zoomToArea!: (statePaths: StatePath[]) => void;
   @Input() highlight!: (highlightEvent: [StatePath, boolean]) => void;

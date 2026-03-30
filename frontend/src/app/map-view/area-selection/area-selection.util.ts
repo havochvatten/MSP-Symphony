@@ -1,4 +1,4 @@
-import { UserArea, AreaGroup, NationalArea } from '@data/area/area.interfaces';
+import { UserAreaCategoryState, AreaGroup, NationalArea } from '@data/area/area.interfaces';
 
 function searchTrim(search: string) {
   return search.trim().toLowerCase();
@@ -47,15 +47,17 @@ function filterAreas(areaGroups: AreaGroup[], search: string): AreaGroup[] {
   }, []);
 }
 
-export function filterUserAreas(userAreas: UserArea[], search: string): UserArea[] {
+export function filterUserAreas(userAreas: UserAreaCategoryState[], search: string): UserAreaCategoryState[] {
   if (search === '') {
     return userAreas;
   }
   search = searchTrim(search);
-  return userAreas.filter(userArea =>
-    userArea.name
-      .trim()
-      .toLowerCase()
-      .includes(search)
-  );
+  return userAreas.map(category => ({
+    ...category,
+    areas: Object.fromEntries(
+      Object.entries(category.areas).filter(([_, userArea]) =>
+        userArea.name.trim().toLowerCase().includes(search)
+      )
+    )
+  }));
 }

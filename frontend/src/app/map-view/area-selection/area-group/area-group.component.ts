@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, NgModuleRef, Output } from '@angular/core';
-import { StatePath, AreaGroup, UserArea, Area } from '@data/area/area.interfaces';
+import { StatePath, AreaGroup, UserArea, Area, UserAreaCategoryState } from '@data/area/area.interfaces';
 import { DialogService } from "@shared/dialog/dialog.service";
 import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
 import { statePathContains } from "@shared/common.util";
@@ -15,7 +15,7 @@ import { TranslateService } from "@ngx-translate/core";
 })
 export class AreaGroupComponent extends MultiModeListable {
   @Input() title?: string;
-  @Input() areas: AreaGroup[] | UserArea[] = [];
+  @Input() areas: AreaGroup[] | UserAreaCategoryState[] = [];
   @Input() searching = false;
   @Input() selectedAreas?: StatePath[];
   @Input() userArea = false;

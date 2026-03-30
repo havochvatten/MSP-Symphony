@@ -13,7 +13,7 @@ import java.util.List;
 @XmlRootElement
 @NamedQuery(name = "UserDefinedAreaCategory.findAll", query = "SELECT u FROM UserDefinedAreaCategory u")
 @NamedQuery(name = "UserDefinedAreaCategory.findAllByOwner",
-        query = "SELECT u FROM UserDefinedAreaCategory u WHERE u.owner = :owner AND u.category IS NULL")
+        query = "SELECT u FROM UserDefinedAreaCategory u WHERE u.owner = :owner")
 public class UserDefinedAreaCategory implements Serializable {
     private static final long serialVersionUID = 1L;
 

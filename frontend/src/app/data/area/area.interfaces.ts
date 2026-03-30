@@ -60,7 +60,7 @@ export interface Boundary {
 
 export interface AllAreas {
   nationalAreas: NationalArea[];
-  userArea: UserArea[];
+  userArea: UserAreaCategoryState[];
 }
 
 export interface CRSProperties {
@@ -121,7 +121,7 @@ export interface NationalAreaState {
 
 export interface UserAreasState {
   categories: {
-    [key: number]: UserArea;
+    [key: number]: UserAreaCategoryState;
   };
 }
 

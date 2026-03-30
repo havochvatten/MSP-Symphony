@@ -11,7 +11,7 @@ import { GeoJSON } from "ol/format";
 export const initialState: AreaInterfaces.State = {
   areaTypes: [],
   area: {},
-  userArea: {},
+  userArea: { categories:{} },
   boundaries: [],
   currentSelection: [],
   selectionOverlap: false,
@@ -72,20 +72,44 @@ export const areaReducer = createReducer(
     ...state,
     userArea: userAreas
   })),
-  on(AreaActions.createUserDefinedAreaSuccess, (state, { userArea }) => ({
-    ...state,
-    userArea: {
-      ...state.userArea,
-      [userArea.id as number]: userArea
-    }
-  })),
-  on(AreaActions.updateUserDefinedAreaSuccess, (state, { userArea }) => ({
-    ...state,
-    userArea: {
-      ...state.userArea,
-      [userArea.id as number]: userArea
-    }
-  })),
+  on(AreaActions.createUserDefinedAreaSuccess, (state, { userArea }) => {
+    const category = state.userArea.categories[userArea.categoryId];
+    return {
+      ...state,
+      userArea: {
+        categories: {
+          ...state.userArea.categories,
+          [userArea.categoryId]: {
+            ...category,
+            areas: {
+              ...category.areas,
+              [userArea.id as number]: userArea
+            }
+          }
+        }
+      }
+    };
+  }),
+  on(AreaActions.updateUserDefinedAreaSuccess, (state, { userArea }) => {
+    const category = state.userArea.categories[userArea.categoryId];
+    return {
+      ...state,
+      userArea: {
+        categories: {
+          ...state.userArea.categories,
+          [userArea.categoryId]: {
+            ...category,
+            areas: {
+              ...category.areas,
+              [userArea.id as number]: userArea
+            }
+          }
+        }
+      }
+    };
+  }),
+
+
   on(AreaActions.deleteUserDefinedAreaSuccess, (state, { userAreaId }) => ({
     ...state,
     userArea: Object.values(state.userArea)

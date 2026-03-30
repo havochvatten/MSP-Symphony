@@ -9,7 +9,8 @@ import {
   NationalArea,
   AreaGroup,
   StatePath,
-  Boundary
+  Boundary,
+  UserAreaCategoryState
 } from './area.interfaces';
 import { getIn } from 'immutable';
 import { area } from 'd3';
@@ -50,7 +51,7 @@ export const selectUserAreas = createSelector(selectAreaState, (state: State) =>
 export const selectAreaFeatures = createSelector(
   selectNationalAreas,
   selectUserAreas,
-  (nationalAreas: NationalArea[], userAreas: UserArea[]): FeatureCollection[] =>
+  (nationalAreas: NationalArea[], userAreas: UserAreaCategoryState[]): FeatureCollection[] =>
     [...getNationalAreaFeatures(nationalAreas), ...getUserAreasFeatures(userAreas)]
   );
 
@@ -58,7 +59,7 @@ export const selectVisibleAreas = createSelector(
   selectNationalAreas,
   selectUserAreas,
   selectSelectedArea,
-  (nationalAreas: NationalArea[], userAreas: UserArea[], currentSelection: StatePath[]) => {
+  (nationalAreas: NationalArea[], userAreas: UserAreaCategoryState[], currentSelection: StatePath[]) => {
     const visibleGroups = nationalAreas.reduce(
       (groups: AreaGroup[], nationalArea) => [
         ...groups,
@@ -95,7 +96,7 @@ export const selectCalibratedCalculationAreas = createSelector(
 export const selectAll = createSelector(
   selectNationalAreas,
   selectUserAreas,
-  (nationalAreas: NationalArea[], userArea: UserArea[]) => ({
+  (nationalAreas: NationalArea[], userArea: UserAreaCategoryState[]) => ({
     nationalAreas,
     userArea
   })
@@ -108,7 +109,7 @@ export const selectSelectedFeatureCollections = createSelector(
   selectSelectedArea,
   (
     nationalAreas: NationalArea[],
-    userAreas: UserArea[],
+    userAreas: UserAreaCategoryState[],
     boundaries: Boundary[],
     selected?: StatePath[]
   ): {
@@ -145,8 +146,9 @@ function getFeatures(areas: SelectableArea[]) {
   return areas.map(area => area.feature);
 }
 
-function getUserAreasFeatures(userAreas: UserArea[]) {
-  const features = getFeatures(userAreas);
+function getUserAreasFeatures(userAreas: UserAreaCategoryState[]) {
+  const allAreas = userAreas.flatMap(category => Object.values(category.areas));
+  const features = getFeatures(allAreas);
   return features.length > 0 ? createFeatureCollection(features) : [];
 }
 
