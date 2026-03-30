@@ -43,8 +43,21 @@ export const selectNationalAreas = createSelector(selectAreaState, (state: State
     }));
 });
 
+//måste konvertera objekt->array
+/*export const selectUserAreas = createSelector(selectAreaState, (state: State) => {
+  return Object.values(state.userArea.categories).map(category => ({
+    ...category,
+    areas: Object.values(category.areas)
+  }));
+});*/
+//för att felsöka via konsolen
 export const selectUserAreas = createSelector(selectAreaState, (state: State) => {
-  return Object.values(state.userArea.categories);
+  const result = Object.values(state.userArea.categories).map(category => ({
+    ...category,
+    areas: Object.values(category.areas)
+  }));
+  console.log('selectUserAreas result:', JSON.stringify(result, null, 2));
+  return result;
 });
 
 
@@ -191,3 +204,4 @@ function createBoundaryFeature(boundaries: Boundary[]): FeatureCollection {
     }))
   };
 }
+

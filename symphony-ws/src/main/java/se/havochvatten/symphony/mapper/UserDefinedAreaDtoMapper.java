@@ -37,6 +37,7 @@ public class UserDefinedAreaDtoMapper {
         dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setDescription(entity.getDescription());
+        dto.setCategoryId(entity.getCategory() != null ? entity.getCategory().getId() :null);
         ObjectMapper ob = new ObjectMapper();
 
         try {

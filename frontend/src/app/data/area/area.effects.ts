@@ -70,20 +70,22 @@ export class AreaEffects {
                   visible: true,
                   expanded: false,
                   statePath: ['userArea', category.id],
-                  areas: category.areas.reduce(
+                  areas: (category.areas ??[]).reduce(
                   (areaState, userArea) => ({
                     ...areaState,
                     [userArea.id as number]: {
                       ...userArea,
                       displayName: userArea.name,
-                      statePath: ['userArea', category.id, 'areas', userArea.id],
-                  feature: createFeature(
-                    userArea.name,
-                    userArea.name,
-                    userArea.name,
-                    ['userArea', userArea.id as number],
-                    userArea.polygon
-                  )
+                      statePath: ['userArea', 'categories', category.id ?? 'uncategorized', 'areas', userArea.id],
+                  feature: userArea.polygon
+                  ? createFeature(
+                      userArea.name,
+                      userArea.id!,
+                      userArea.name,
+                      ['userArea', 'categories', category.id ?? 'uncategorized', 'areas', userArea.id!],
+                      userArea.polygon as unknown as Polygon
+                    )
+                  : null
                   }
                   }),
                   {}
@@ -103,6 +105,7 @@ export class AreaEffects {
       )
     )
   ));
+
 
   fetchCalibratedCalculationAreas$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.fetchBaselineSuccess),

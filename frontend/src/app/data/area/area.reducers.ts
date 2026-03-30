@@ -109,19 +109,23 @@ export const areaReducer = createReducer(
     };
   }),
 
-
   on(AreaActions.deleteUserDefinedAreaSuccess, (state, { userAreaId }) => ({
     ...state,
-    userArea: Object.values(state.userArea)
-      .filter(({ id }) => id !== userAreaId)
-      .reduce(
-        (userAreas, userArea) => ({
-          ...userAreas,
-          [userArea.id]: userArea
-        }),
-        {}
+    userArea: {
+      categories: Object.fromEntries(
+        Object.entries(state.userArea.categories).map(([catId, category]) => [
+          catId, {
+            ...category,
+            areas: Object.fromEntries(
+              Object.entries(category.areas).filter(([id]) => Number(id) !==userAreaId)
+            )
+          }
+        ]
       )
+      )
+    }
   })),
+
   on(AreaActions.fetchCalibratedCalculationAreasSuccess, (state, { calibratedAreas }) => ({
     ...state,
     calibratedCalculationAreas: calibratedAreas

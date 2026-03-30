@@ -12,6 +12,9 @@ import java.io.Serializable;
 @NamedQuery(name = "UserDefinedArea.findAll", query = "SELECT u FROM UserDefinedArea u")
 @NamedQuery(name = "UserDefinedArea.findAllByOwner",
         query = "SELECT u FROM UserDefinedArea u WHERE u.owner = :owner")
+@NamedQuery(name = "UserDefinedArea.findAllByOwnerWithoutCategory",
+        query = "SELECT u FROM UserDefinedArea u WHERE u.owner = :owner AND u.category IS NULL")
+
 public class UserDefinedArea implements Serializable {
     private static final long serialVersionUID = 1L;
 
