@@ -44,21 +44,12 @@ export const selectNationalAreas = createSelector(selectAreaState, (state: State
 });
 
 //måste konvertera objekt->array
-/*export const selectUserAreas = createSelector(selectAreaState, (state: State) => {
+export const selectUserAreas = createSelector(selectAreaState, (state: State) => {
   return Object.values(state.userArea.categories).map(category => ({
     ...category,
     areas: Object.values(category.areas)
   }));
-});*/
-//för att felsöka via konsolen
-export const selectUserAreas = createSelector(selectAreaState, (state: State) => {
-  const result = Object.values(state.userArea.categories).map(category => ({
-    ...category,
-    areas: Object.values(category.areas)
-  }));
-  console.log('selectUserAreas result:', JSON.stringify(result, null, 2));
-  return result;
-});
+})
 
 
 export const selectAreaFeatures = createSelector(
@@ -161,7 +152,7 @@ function getFeatures(areas: SelectableArea[]) {
 
 function getUserAreasFeatures(userAreas: UserAreaCategoryState[]) {
   const allAreas = userAreas.flatMap(category => Object.values(category.areas));
-  const features = getFeatures(allAreas);
+  const features = getFeatures(allAreas).filter(f => f !== null);
   return features.length > 0 ? createFeatureCollection(features) : [];
 }
 

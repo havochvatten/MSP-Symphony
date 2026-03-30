@@ -18,6 +18,7 @@ import { Geometry } from "ol/geom";
 import { DrawEvent } from "ol/interaction/Draw";
 import { simpleHash, statePathContains } from "@shared/common.util";
 import { AreaSelect } from "@src/app/map-view/map/layers/area-select";
+import { blurImage } from 'd3';
 
 function unique<T>(value: T, index: number, self: T[]) {
   return self.indexOf(value) === index;
@@ -89,6 +90,7 @@ class DrawAreaInteraction extends Draw {
 class AreaLayer extends VectorLayer<Feature> {
   private readonly drawAreaInteraction: DrawAreaInteraction;
   private readonly boundaryLayer: VectorLayer<Feature>;
+  private readonly lineLayer: VectorLayer<Feature>;
   private readonly areaSelect: AreaSelect;
   private drawInteractionActive = false;
   private boundaries?: FeatureLike[];
@@ -113,6 +115,16 @@ class AreaLayer extends VectorLayer<Feature> {
       source: new VectorSource({ format: new GeoJSON() }),
       style: new AreaStyle(false)
     });
+    this.lineLayer = new VectorLayer({
+      source: new VectorSource({ format: new GeoJSON() }),
+      style: new Style({
+        stroke: new Stroke({
+          color: 'blue',
+          width: 2
+        })
+      })
+    });
+    map.addLayer(this.lineLayer)
     this.set('name', 'Area Layer');
 
     this.setSelection = setSelection;
@@ -310,8 +322,19 @@ class AreaLayer extends VectorLayer<Feature> {
   mapAreaFeatures(featureCollections: FeatureCollection[]) {
     for(const featureCollection of featureCollections) {
       for(const feature of featureCollection.features) {
-        const gFeature = this.geoJson.readFeature(feature);
-        this.featureMap.set(simpleHash(gFeature.get('statePath')), gFeature);
+        const geometryType = feature.geometry?.type;
+        
+        if (!geometryType) continue;
+
+        if (['LineString', 'MultiLineString'].includes(geometryType)){
+          const gFeature = this.geoJson.readFeature(feature);
+          this.lineLayer.getSource()?.addFeature(gFeature);
+          this.featureMap.set(simpleHash(gFeature.get('statePath')), gFeature);
+
+        } else {
+          const gFeature = this.geoJson.readFeature(feature);
+          this.featureMap.set(simpleHash(gFeature.get('statePath')), gFeature);
+        }
       }
     }
   }
