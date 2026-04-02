@@ -40,6 +40,13 @@ export class AreaGroupComponent extends MultiModeListable {
     super(moduleRef, dialogService);
   }
 
+  getAreas(group: any): UserArea[] {
+  console.log('group name:', group.name, 'statePath:', group.statePath);
+  return Array.isArray(group.areas)
+    ? group.areas
+    : Object.values(group.areas);
+  }
+
   onRenameUserArea = (userArea: UserArea) => () => {
     if (typeof this.renameUserArea === 'function') {
       this.renameUserArea(userArea);
@@ -151,3 +158,4 @@ export class EditAreaComponent {
     }
   }
 }
+

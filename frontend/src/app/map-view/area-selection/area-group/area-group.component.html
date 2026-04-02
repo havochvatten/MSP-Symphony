@@ -53,20 +53,22 @@
           class="visible"></app-icon>
         {{ group.name }}
       </span>
-      <app-icon
-        *ngIf="!userArea && !searching"
-        [iconType]="group.expanded ? 'chevron-up' : 'chevron-down'"
-        (click)="toggleExpanded(group.statePath)"
-        class="expand"></app-icon>
+
       <app-edit-area
         *ngIf="drawUserArea"
         [renameUserArea]="onRenameUserArea(group)"
         [deleteUserArea]="onDeleteUserArea(group.id, group.name)"
       ></app-edit-area>
+      <app-icon
+        *ngIf="!searching"
+        [iconType]="group.expanded ? 'chevron-up' : 'chevron-down'"
+        (click)="toggleExpanded(group.statePath)"
+        class="expand"></app-icon>
+
     </div>
     <ul *ngIf="searching || group.expanded" class="area-list">
       <li
-        *ngFor="let area of group.areas"
+        *ngFor="let area of getAreas(group)"
         [attr.data-selected]="isSelected(area.statePath)"
         (click)="onSelectArea(area, group, $event); $event.stopPropagation()"
         (mouseover)="highlightArea(area.statePath)"

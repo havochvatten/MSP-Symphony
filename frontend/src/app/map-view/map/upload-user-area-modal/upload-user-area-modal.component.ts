@@ -46,8 +46,10 @@ export class UploadUserAreaModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.areaService.getCategories().subscribe(data => {
+      console.log('kategorier från backend:', data);
       this.categories = data;
     });
+
 
     this.categoryForm.get('categoryId')!.valueChanges.subscribe(value => {
   if (value === '__new__') {
