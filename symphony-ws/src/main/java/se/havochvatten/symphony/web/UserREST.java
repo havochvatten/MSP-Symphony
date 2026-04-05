@@ -244,4 +244,15 @@ public class UserREST {
     public Response createCategory(@Context HttpServletRequest req, UserDefinedAreaCategoryDto dto) {
         return Response.ok(userService.createCategory(req.getUserPrincipal(), dto)).build();
     }
+
+    @DELETE
+    @Path("/area/category/{id}")
+    @Operation(summary = "Delete user area category")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response deleteCategory(@Context HttpServletRequest req, @PathParam("id") Integer id) 
+        throws SymphonyStandardAppException {
+        userService.deleteCategory(req.getUserPrincipal(), id);
+        return Response.noContent().build();
+    }
 }

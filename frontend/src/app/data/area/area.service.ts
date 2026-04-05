@@ -67,4 +67,8 @@ export default class AreaService {
     return this.http.post<AreaInterfaces.UserAreaCategory>(`${BASE_URL}/user/area/category`, { name });
   }
 
+  deleteCategory(categoryId: number) {
+  return this.http.delete(`${BASE_URL}/user/area/category/${categoryId}`);
+  }
+
 }

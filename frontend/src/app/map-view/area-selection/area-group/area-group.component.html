@@ -58,7 +58,9 @@
         *ngIf="drawUserArea"
         [renameUserArea]="onRenameUserArea(group)"
         [deleteUserArea]="onDeleteUserArea(group.id, group.name)"
+        [deleteCategory]="onDeleteUserAreaCategory(group.id)"
       ></app-edit-area>
+
       <app-icon
         *ngIf="!searching"
         [iconType]="group.expanded ? 'chevron-up' : 'chevron-down'"

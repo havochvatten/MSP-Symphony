@@ -496,6 +496,9 @@
                     "message-multiple": "Bekräfta borttagning av <strong>{{ count }}</strong> områden."
                 }
             },
+            "delete-category": {
+                "label": "Radera kategori"
+                },
             "share": {
                 "label": "Dela"
             },

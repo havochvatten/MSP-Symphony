@@ -126,6 +126,16 @@ export const areaReducer = createReducer(
     }
   })),
 
+  on(AreaActions.deleteUserAreaCategorySuccess, (state, { categoryId }) => ({
+  ...state,
+  userArea: {
+    categories: Object.fromEntries(
+      Object.entries(state.userArea.categories)
+        .filter(([id]) => Number(id) !== categoryId)
+    )
+  }
+  })),
+
   on(AreaActions.fetchCalibratedCalculationAreasSuccess, (state, { calibratedAreas }) => ({
     ...state,
     calibratedCalculationAreas: calibratedAreas

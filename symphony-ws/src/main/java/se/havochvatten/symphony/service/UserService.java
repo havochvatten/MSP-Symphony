@@ -353,4 +353,25 @@ public class UserService {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_CAT_BY_ID_ERROR);
         }
     }
+    //delete a category
+    public void deleteCategory(Principal principal, Integer id) throws SymphonyStandardAppException {
+    UserDefinedAreaCategory category = em.find(UserDefinedAreaCategory.class, id);
+    if (category == null) {
+        throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_NOT_FOUND);
+    }
+    if (!principal.getName().equals(category.getOwner())) {
+        throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_NOT_OWNED_BY_USER);
+    }
+    for (UserDefinedArea area : category.getAreas()) {
+        area.setCategory(null);
+        em.merge(area);
+    }
+    em.createQuery("UPDATE UserDefinedArea u SET u.category = null WHERE u.category.id = :categoryId")
+      .setParameter("categoryId", id)
+      .executeUpdate();
+    em.flush();
+    em.refresh(category);
+    em.remove(category);
+}
+
 }

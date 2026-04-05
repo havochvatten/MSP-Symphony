@@ -149,6 +149,9 @@ export class AreaSelectionComponent implements OnChanges {
     // toggle visibily of area?
   }
 
+  deleteUserAreaCategory = (categoryId: number) => {
+  this.store.dispatch(AreaActions.deleteUserAreaCategory({ categoryId }));
+  };
 
   private filterAreas() {
     this.filteredNationalAreas = filterNationalAreas(this.nationalAreas, this.search);

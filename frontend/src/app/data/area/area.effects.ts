@@ -224,6 +224,18 @@ export class AreaEffects {
     )
   ));
 
+  deleteUserAreaCategory$ = createEffect(() => this.actions$.pipe(
+    ofType(AreaActions.deleteUserAreaCategory),
+    mergeMap(({ categoryId }) =>
+      this.areaService.deleteCategory(categoryId).pipe(
+        map(() => AreaActions.deleteUserAreaCategorySuccess({ categoryId })),
+        catchError(({ status, error: message }) =>
+          of(AreaActions.deleteUserAreaCategoryFailure({ error: { status, message } }))
+        )
+      )
+    )
+  ));
+
   // @Effect()
   // uploadPolygons$ = this.actions$.pipe(
   //   ofType(AreaActions.uploadUserDefinedArea),
@@ -281,6 +293,7 @@ function flattenAreas(areas: Area[], parentPath: StatePath): Areas {
     };
   }, {});
 }
+
 
 export function createFeature(
   name: string,

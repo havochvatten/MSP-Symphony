@@ -134,6 +134,21 @@ export const fetchBoundariesFailure = createAction(
   props<{ error: ErrorMessage }>()
 );
 
+export const deleteUserAreaCategory = createAction(
+  '[Area] Delete user area category',
+  props<{ categoryId: number }>()
+);
+
+export const deleteUserAreaCategorySuccess = createAction(
+  '[Area] Delete user area category success',
+  props<{ categoryId: number }>()
+);
+
+export const deleteUserAreaCategoryFailure = createAction (
+  '[Area] Delete user area category failure',
+  props<{ error: ErrorMessage }>()
+);
+
 // export const uploadUserDefinedArea = createAction(
 //   '[Area] Upload user defined area',
 //   props<{ formdata: FormData }>()

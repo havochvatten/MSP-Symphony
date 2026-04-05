@@ -28,6 +28,7 @@ export class AreaGroupComponent extends MultiModeListable {
   @Input() toggleVisible!: (statePath: StatePath) => void;
   @Input() toggleExpanded?: (statePath: StatePath) => void;
   @Input() importArea?: () => void;
+  @Input() deleteUserAreaCategory?: (categoryId: number) => void;
   faCloudUpload = faCloudUploadAlt;
 
   @Output() highlight: EventEmitter<[StatePath, boolean]> = new EventEmitter();
@@ -104,6 +105,12 @@ export class AreaGroupComponent extends MultiModeListable {
     this.selectedIds = [];
   }
 
+  onDeleteUserAreaCategory = (categoryId: number) => () => {
+    if (typeof this.deleteUserAreaCategory === 'function') {
+      this.deleteUserAreaCategory(categoryId);
+    }
+  };
+
   protected readonly area = area;
 }
 
@@ -120,10 +127,14 @@ export class AreaGroupComponent extends MultiModeListable {
       ></app-icon-button>
       <ul *ngIf="open" class="edit-options">
         <li (click)="onRenameUserArea($event)"
-            tabindex="0">{{ 'map.user-area.rename.label' | translate }}</li>
+            tabindex="0">{{ 'map.user-area.rename.label' | translate }}
+        </li>
         <li class="delete" (click)="onDeleteUserArea($event)"
             tabindex="0">
           {{ 'map.user-area.delete.label' | translate }}
+        </li>
+        <li class="delete" (click)="onDeleteCategory($event)" *ngIf="deleteCategory" tabindex="0">
+          {{ 'map.user-area.delete-category.label' | translate }}
         </li>
       </ul>
     </div>
@@ -133,6 +144,7 @@ export class AreaGroupComponent extends MultiModeListable {
 export class EditAreaComponent {
   @Input() deleteUserArea?: () => void;
   @Input() renameUserArea?: () => void;
+  @Input() deleteCategory?: () => void;
   open = false;
 
   private onClick(event: Event) {
@@ -157,5 +169,14 @@ export class EditAreaComponent {
       this.renameUserArea();
     }
   }
+
+  onDeleteCategory(event: Event) {
+    this.onClick(event);
+    if (typeof this.deleteCategory === 'function') {
+      this.deleteCategory();
+    }
+  }
+
+
 }
 
