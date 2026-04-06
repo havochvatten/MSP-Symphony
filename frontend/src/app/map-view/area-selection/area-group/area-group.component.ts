@@ -29,6 +29,7 @@ export class AreaGroupComponent extends MultiModeListable {
   @Input() toggleExpanded?: (statePath: StatePath) => void;
   @Input() importArea?: () => void;
   @Input() deleteUserAreaCategory?: (categoryId: number) => void;
+  //@Input() renameCategory?: (categoryId: number) => void;
   faCloudUpload = faCloudUploadAlt;
 
   @Output() highlight: EventEmitter<[StatePath, boolean]> = new EventEmitter();
@@ -126,10 +127,10 @@ export class AreaGroupComponent extends MultiModeListable {
         (iconClick)="toggleOpen()"
       ></app-icon-button>
       <ul *ngIf="open" class="edit-options">
-        <li (click)="onRenameUserArea($event)"
+        <li (click)="onRenameUserArea($event)" *ngIf="renameUserArea"
             tabindex="0">{{ 'map.user-area.rename.label' | translate }}
         </li>
-        <li class="delete" (click)="onDeleteUserArea($event)"
+        <li class="delete" (click)="onDeleteUserArea($event)" *ngIf="deleteUserArea"
             tabindex="0">
           {{ 'map.user-area.delete.label' | translate }}
         </li>
@@ -169,6 +170,13 @@ export class EditAreaComponent {
       this.renameUserArea();
     }
   }
+
+  /*onRenameCategory(event: Event) {
+    this.onClick(event);
+    if (typeof this.renameCategory === 'function') {
+      this.renameCategory();
+    }
+  }*/
 
   onDeleteCategory(event: Event) {
     this.onClick(event);

@@ -324,7 +324,7 @@ CREATE TABLE IF NOT EXISTS userdefarea_category
         CONSTRAINT uda_cat_name_uq
             UNIQUE,
     uda_owner   text NOT NULL
-)
+);
 EXECUTE FORMAT ('ALTER TABLE userdefarea_category OWNER TO %s', pgAppAgent);
 EXECUTE FORMAT ('GRANT DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE ON userdefarea_category TO  %s', pgAppAgent);
 

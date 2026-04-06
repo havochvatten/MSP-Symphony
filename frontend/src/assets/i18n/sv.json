@@ -497,7 +497,13 @@
                 }
             },
             "delete-category": {
-                "label": "Radera kategori"
+                "label": "Radera kategori",
+                "modal": {
+                    "header": "Radera kategori",
+                    "message": "Är du säker på att du vill radera kategorin<br>&laquo;&nbsp;{{ userAreaName }}&nbsp;&raquo;&nbsp;?",
+                    "header-multiple": "Radera valda områden",
+                    "message-multiple": "Bekräfta borttagning av <strong>{{ count }}</strong> områden."
+                }
                 },
             "share": {
                 "label": "Dela"

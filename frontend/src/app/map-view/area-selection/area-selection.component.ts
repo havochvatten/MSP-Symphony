@@ -97,7 +97,25 @@ export class AreaSelectionComponent implements OnChanges {
       this.store.dispatch(AreaActions.updateUserDefinedArea(updatedArea));
     }
   };
-
+/*
+  renameCategory = async (categoryId: number) => {
+    const categoryName = await this.dialogService.open(RenameItemModalComponent, this.moduleRef, {
+      data: {
+        headerText: this.translateService.instant('map.user-area.rename.header'),
+        itemName: userArea.name
+      }
+    });
+    if (typeof categoryName === 'string' && categoryName !== userArea.name) {
+      const updatedArea = {
+        id: userArea.id as number,
+        name: categoryName,
+        polygon: userArea.polygon,
+        description: ''
+      };
+      this.store.dispatch(AreaActions.updateUserDefinedArea(updatedArea));
+    }
+  };
+*/
   deleteUserArea = async (userAreaId: number, userAreaName: string) => {
 
     const deleteArea = await this.dialogService.open<boolean>(

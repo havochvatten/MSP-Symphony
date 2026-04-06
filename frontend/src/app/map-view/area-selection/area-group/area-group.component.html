@@ -54,10 +54,9 @@
         {{ group.name }}
       </span>
 
+      <!--[renameCategory]="onRenameCategory(group)"-->
       <app-edit-area
-        *ngIf="drawUserArea"
-        [renameUserArea]="onRenameUserArea(group)"
-        [deleteUserArea]="onDeleteUserArea(group.id, group.name)"
+        *ngIf="userArea"
         [deleteCategory]="onDeleteUserAreaCategory(group.id)"
       ></app-edit-area>
 
@@ -79,7 +78,12 @@
         (blur)="clearHighlight(area.statePath)"
         tabindex="0"
       >
+
         {{ area.displayName }}
+      <app-edit-area
+        [renameUserArea]="onRenameUserArea(area)"
+        [deleteUserArea]="onDeleteUserArea(area.id, area.name)"
+      ></app-edit-area>
       </li>
     </ul>
   </li>
