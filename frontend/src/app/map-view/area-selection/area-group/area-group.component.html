@@ -82,6 +82,7 @@
 
         {{ area.displayName }}
       <app-edit-area
+        *ngIf="userArea"
         class="edit-area"
         [renameUserArea]="onRenameUserArea(area)"
         [deleteUserArea]="onDeleteUserArea(area.id, area.name)"
