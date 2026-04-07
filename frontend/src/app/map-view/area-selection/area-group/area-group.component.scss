@@ -138,7 +138,7 @@
 
   .edit-options {
     position: absolute;
-    right: 6.5rem;
+    right: 3rem;
     bottom: 0;
     background-color: white;
     width: 16rem;
@@ -158,5 +158,11 @@
         }
       }
     }
+  }
+  .edit-category ::ng-deep .edit-options{
+    right: 3.5rem;
+  }
+  .edit-area ::ng-deep .edit-options{
+    right: 6.5rem;
   }
 }

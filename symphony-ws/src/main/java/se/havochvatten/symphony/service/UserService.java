@@ -330,7 +330,7 @@ public class UserService {
         if (!uncategorized.isEmpty()) {
             var defaultCategory = new UserDefinedAreaCategoryDto();
             defaultCategory.setId(null);
-            defaultCategory.setName("Uncategorized");
+            defaultCategory.setName("Okategoriserade");
             defaultCategory.setAreas(uncategorized);
             result.add(defaultCategory);
         } 

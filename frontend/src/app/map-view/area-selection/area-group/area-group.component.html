@@ -57,6 +57,7 @@
       <!--[renameCategory]="onRenameCategory(group)"-->
       <app-edit-area
         *ngIf="userArea"
+        class="edit-category"
         [deleteCategory]="onDeleteUserAreaCategory(group.id)"
       ></app-edit-area>
 
@@ -81,6 +82,7 @@
 
         {{ area.displayName }}
       <app-edit-area
+        class="edit-area"
         [renameUserArea]="onRenameUserArea(area)"
         [deleteUserArea]="onDeleteUserArea(area.id, area.name)"
       ></app-edit-area>
