@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, NgModuleRef } from '@angular/core';
+import { Component, Input, OnChanges, OnInit,  NgModuleRef } from '@angular/core';
 import {
   AllAreas,
   NationalArea,
@@ -28,7 +28,11 @@ import { TranslateService } from "@ngx-translate/core";
   templateUrl: './area-selection.component.html',
   styleUrls: ['./area-selection.component.scss']
 })
-export class AreaSelectionComponent implements OnChanges {
+export class AreaSelectionComponent implements OnChanges, OnInit {
+  ngOnInit() {
+    console.log('dispatching fetchUserDefinedAreas');
+    this.store.dispatch(AreaActions.fetchUserDefinedAreas());
+  }
   @Input() areas?: AllAreas;
   search = '';
   matchingResults = 0;

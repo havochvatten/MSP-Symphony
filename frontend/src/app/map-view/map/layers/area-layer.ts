@@ -302,6 +302,8 @@ class AreaLayer extends VectorLayer<Feature> {
   }
 
   setVisibleAreas(visible: StatePath[], selected: StatePath[] | undefined) {
+    console.log('featureMap user keys:', [...this.featureMap.keys()].filter(k => k.includes('userArea')));
+    console.log('featureMap keys sample:', [...this.featureMap?.keys()].slice(0, 5));
     const source = this.getSource();
     if (!source || !visible) {
       return;
@@ -320,10 +322,19 @@ class AreaLayer extends VectorLayer<Feature> {
   }
 
   mapAreaFeatures(featureCollections: FeatureCollection[]) {
+    console.log('featureCollections count:', featureCollections.length);
+
     for(const featureCollection of featureCollections) {
+
       for(const feature of featureCollection.features) {
+        if (!feature || !feature.geometry){
+          console.log('skipping null feature');
+
+           continue;
+        }
+
         const geometryType = feature.geometry?.type;
-        
+
         if (!geometryType) continue;
 
         if (['LineString', 'MultiLineString'].includes(geometryType)){

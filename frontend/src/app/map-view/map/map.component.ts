@@ -221,9 +221,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.areaLayer.setBoundaries(boundaries);
 
     this.areaSubscription = this.store.select(AreaSelectors.selectAreaFeatures)
-      .pipe(skipWhile(value => !value || value.length === 0))
       .subscribe((features) =>
         {
+          console.log('area features:', features);
           this.areaLayer.mapAreaFeatures(features);
           this.areaHighlightLayer.mapAreaLayers(features);
         }
@@ -231,7 +231,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     this.store.select(
       AreaSelectors.selectVisibleAreas).subscribe((paths) => {
-      this.areaLayer.setVisibleAreas(paths.visible, paths.selected);
+      this.areaLayer.setVisibleAreas(paths.visible as StatePath[], paths.selected);
     });
 
     this.reliabilitySubject$ = this.store.select(MetadataSelectors.selectReliabilityMap).pipe(

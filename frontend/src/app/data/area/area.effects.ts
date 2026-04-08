@@ -11,7 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
 import { UserActions } from "@data/user";
-
+import { tap } from 'rxjs/operators';
 @Injectable()
 export class AreaEffects {
   constructor(
@@ -55,10 +55,13 @@ export class AreaEffects {
     )
   ));
 
+
   fetchUserDefinedArea$ = createEffect(() => this.actions$.pipe(
     ofType(AreaActions.fetchUserDefinedAreas),
-    mergeMap(() =>
-      this.areaService.getCategories().pipe(
+    mergeMap(() =>{
+    console.log('fetching categories from backend');
+    return this.areaService.getCategories().pipe(
+        tap(categories => console.log('tap categories:', categories)),
         map(categories =>
           AreaActions.fetchUserDefinedAreasSuccess({
             userAreas: {
@@ -77,15 +80,15 @@ export class AreaEffects {
                       ...userArea,
                       displayName: userArea.name,
                       statePath: ['userArea', 'categories', category.id ?? 'uncategorized', 'areas', userArea.id],
-                  feature: userArea.polygon
-                  ? createFeature(
+                  feature: createFeature(
                       userArea.name,
                       userArea.id!,
                       userArea.name,
                       ['userArea', 'categories', category.id ?? 'uncategorized', 'areas', userArea.id!],
-                      userArea.polygon as unknown as Polygon
+                      (typeof userArea.polygon === 'string'
+                        ? JSON.parse(userArea.polygon)
+                        : userArea.polygon) as unknown as Polygon
                     )
-                  : null
                   }
                   }),
                   {}
@@ -103,7 +106,8 @@ export class AreaEffects {
           of(AreaActions.fetchUserDefinedAreasFailure({ error: { status, message } }))
         )
       )
-    )
+})
+
   ));
 
 

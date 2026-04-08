@@ -51,12 +51,12 @@ export const selectUserAreas = createSelector(selectAreaState, (state: State) =>
   }));
 })
 
-
 export const selectAreaFeatures = createSelector(
   selectNationalAreas,
   selectUserAreas,
-  (nationalAreas: NationalArea[], userAreas: UserAreaCategoryState[]): FeatureCollection[] =>
-    [...getNationalAreaFeatures(nationalAreas), ...getUserAreasFeatures(userAreas)]
+  (nationalAreas: NationalArea[], userAreas: UserAreaCategoryState[]): FeatureCollection[] => {
+    return [...getNationalAreaFeatures(nationalAreas), ...getUserAreasFeatures(userAreas)]
+  }
   );
 
 export const selectVisibleAreas = createSelector(
@@ -75,10 +75,18 @@ export const selectVisibleAreas = createSelector(
       (group_areas: SelectableArea[], group) => [...group_areas, ...group.areas],
       []
     );
+    const visibleUserAreas = userAreas
+      .filter(category => category.visible)
+      .flatMap(category => Object.values(category.areas))
+      .filter(area => area.statePath !== undefined);
+      console.log('visibleUserAreas statePaths:', visibleUserAreas.map(a => a.statePath))
+
 
     return {
-      visible: [...areas, ...userAreas.filter(area => area.visible)]
-        .map(area => area.statePath),
+      visible: [
+        ...areas.map(area => area.statePath),
+        ...visibleUserAreas.map(area => area.statePath)
+      ].filter((path): path is StatePath => path !== undefined),
       selected: currentSelection
     }
   }
@@ -152,7 +160,11 @@ function getFeatures(areas: SelectableArea[]) {
 
 function getUserAreasFeatures(userAreas: UserAreaCategoryState[]) {
   const allAreas = userAreas.flatMap(category => Object.values(category.areas));
+  console.log('getUserAreasFeatures allAreas count:', allAreas.length);
+  console.log('first area feature:', allAreas[0]?.feature);
+
   const features = getFeatures(allAreas).filter(f => f !== null);
+  console.log('features after filter:', features.length);
   return features.length > 0 ? createFeatureCollection(features) : [];
 }
 
