@@ -119,7 +119,7 @@ class AreaLayer extends VectorLayer<Feature> {
       source: new VectorSource({ format: new GeoJSON() }),
       style: new Style({
         stroke: new Stroke({
-          color: 'blue',
+          color: 'black',
           width: 2
         })
       })
@@ -302,13 +302,12 @@ class AreaLayer extends VectorLayer<Feature> {
   }
 
   setVisibleAreas(visible: StatePath[], selected: StatePath[] | undefined) {
-    console.log('featureMap user keys:', [...this.featureMap.keys()].filter(k => k.includes('userArea')));
-    console.log('featureMap keys sample:', [...this.featureMap?.keys()].slice(0, 5));
     const source = this.getSource();
     if (!source || !visible) {
       return;
     }
     source.clear();
+    this.lineLayer.getSource()?.clear();
 
     for(const statePath of visible) {
       const feature = this.featureMap.get(simpleHash(statePath));
@@ -316,14 +315,17 @@ class AreaLayer extends VectorLayer<Feature> {
         if (selected && statePathContains(statePath, selected)) {
           feature.setStyle(this.selectedStyle);
         }
-        source.addFeature(feature);
+        const geometryType = feature.getGeometry()?.getType();
+        if (geometryType && ['LineString', 'MultiLineString'].includes(geometryType)){
+          this.lineLayer.getSource()?.addFeature(feature);
+        } else{
+          source.addFeature(feature);
+        }
       }
     }
   }
 
   mapAreaFeatures(featureCollections: FeatureCollection[]) {
-    console.log('featureCollections count:', featureCollections.length);
-
     for(const featureCollection of featureCollections) {
 
       for(const feature of featureCollection.features) {

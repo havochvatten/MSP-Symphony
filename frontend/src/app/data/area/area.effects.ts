@@ -70,7 +70,7 @@ export class AreaEffects {
                 ...categoryState,
                 [category.id ?? 'uncategorized']: {
                   ...category,
-                  visible: true,
+                  visible: false,
                   expanded: false,
                   statePath: ['userArea', 'categories', category.id ?? 'uncategorized'],
                   areas: (category.areas ??[]).reduce(
