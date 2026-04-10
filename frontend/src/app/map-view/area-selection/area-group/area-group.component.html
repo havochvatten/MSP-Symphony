@@ -54,11 +54,12 @@
         {{ group.name }}
       </span>
 
-      <!--[renameCategory]="onRenameCategory(group)"-->
+
       <app-edit-area
         *ngIf="userArea"
         class="edit-category"
         [deleteCategory]="onDeleteUserAreaCategory(group.id)"
+        [renameCategory]="onRenameUserAreaCategory(group.id, group.name)"
       ></app-edit-area>
 
       <app-icon
@@ -87,6 +88,7 @@
         [renameUserArea]="onRenameUserArea(area)"
         [deleteUserArea]="onDeleteUserArea(area.id, area.name)"
       ></app-edit-area>
+
       </li>
     </ul>
   </li>

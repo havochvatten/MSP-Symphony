@@ -29,7 +29,8 @@ export class AreaGroupComponent extends MultiModeListable {
   @Input() toggleExpanded?: (statePath: StatePath) => void;
   @Input() importArea?: () => void;
   @Input() deleteUserAreaCategory?: (categoryId: number) => void;
-  //@Input() renameCategory?: (categoryId: number) => void;
+  @Input() renameUserAreaCategory?: (categoryId: number, currentName: string) => void;
+  @Input() renameCategory?: (categoryId: number) => void;
   faCloudUpload = faCloudUploadAlt;
 
   @Output() highlight: EventEmitter<[StatePath, boolean]> = new EventEmitter();
@@ -60,6 +61,14 @@ export class AreaGroupComponent extends MultiModeListable {
       this.deleteUserArea(areaId, areaName);
     }
   };
+
+  onRenameUserAreaCategory = (categoryId: number, currentName: string) => () => {
+    if (typeof this.renameUserAreaCategory === 'function') {
+      this.renameUserAreaCategory(categoryId, currentName);
+    }
+  };
+
+
 
   deleteSelectedUserAreas = async () => {
     const multi = this.selectedIds.length > 1,
@@ -130,6 +139,9 @@ export class AreaGroupComponent extends MultiModeListable {
         <li (click)="onRenameUserArea($event)" *ngIf="renameUserArea"
             tabindex="0">{{ 'map.user-area.rename.label' | translate }}
         </li>
+        <li (click)="onRenameCategory($event)" *ngIf="renameCategory" tabindex="0">
+          {{ 'map.user-area.rename-category.label' | translate }}
+        </li>
         <li class="delete" (click)="onDeleteUserArea($event)" *ngIf="deleteUserArea"
             tabindex="0">
           {{ 'map.user-area.delete.label' | translate }}
@@ -146,6 +158,7 @@ export class EditAreaComponent {
   @Input() deleteUserArea?: () => void;
   @Input() renameUserArea?: () => void;
   @Input() deleteCategory?: () => void;
+  @Input() renameCategory?: () => void;
   open = false;
 
   private onClick(event: Event) {
@@ -171,12 +184,12 @@ export class EditAreaComponent {
     }
   }
 
-  /*onRenameCategory(event: Event) {
+  onRenameCategory(event: Event) {
     this.onClick(event);
     if (typeof this.renameCategory === 'function') {
       this.renameCategory();
     }
-  }*/
+  }
 
   onDeleteCategory(event: Event) {
     this.onClick(event);
@@ -184,7 +197,6 @@ export class EditAreaComponent {
       this.deleteCategory();
     }
   }
-
 
 }
 

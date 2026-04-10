@@ -240,6 +240,18 @@ export class AreaEffects {
     )
   ));
 
+  updateUserAreaCategory$ = createEffect(() => this.actions$.pipe(
+    ofType(AreaActions.updateUserAreaCategory),
+    mergeMap(({ categoryId, name }) =>
+      this.areaService.updateCategory(categoryId, name).pipe(
+        map(() => AreaActions.updateUserAreaCategorySuccess({ categoryId, name })),
+        catchError(({ status, error: message }) =>
+          of(AreaActions.updateUserAreaCategoryFailure({ error: { status, message } }))
+        )
+      )
+    )
+  ));
+
   // @Effect()
   // uploadPolygons$ = this.actions$.pipe(
   //   ofType(AreaActions.uploadUserDefinedArea),

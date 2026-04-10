@@ -372,6 +372,21 @@ public class UserService {
     em.flush();
     em.refresh(category);
     em.remove(category);
-}
+    }
+
+    public UserDefinedAreaCategoryDto updateCategory(Principal principal, UserDefinedAreaCategoryDto dto) 
+    throws SymphonyStandardAppException {
+    UserDefinedAreaCategory category = em.find(UserDefinedAreaCategory.class, dto.getId());
+    if (category == null) {
+        throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_NOT_FOUND);
+    }
+    if (!principal.getName().equals(category.getOwner())) {
+        throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_NOT_OWNED_BY_USER);
+    }
+    category.setName(dto.getName());
+    em.merge(category);
+    dto.setId(category.getId());
+    return dto;
+    }
 
 }

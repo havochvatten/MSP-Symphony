@@ -149,6 +149,19 @@ export const deleteUserAreaCategoryFailure = createAction (
   props<{ error: ErrorMessage }>()
 );
 
+export const updateUserAreaCategory = createAction(
+  '[Area] Update user area category',
+  props<{ categoryId: number, name: string }>()
+);
+export const updateUserAreaCategorySuccess = createAction(
+  '[Area] Update user area category success',
+  props<{ categoryId: number, name: string }>()
+);
+export const updateUserAreaCategoryFailure = createAction(
+  '[Area] Update user area category failure',
+  props<{ error: ErrorMessage }>()
+);
+
 // export const uploadUserDefinedArea = createAction(
 //   '[Area] Upload user defined area',
 //   props<{ formdata: FormData }>()

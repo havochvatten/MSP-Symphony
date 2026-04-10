@@ -504,7 +504,11 @@
                     "header-multiple": "Radera valda områden",
                     "message-multiple": "Bekräfta borttagning av <strong>{{ count }}</strong> områden."
                 }
-                },
+            },
+            "rename-category": {
+                "label": "Ändra namn",
+                "header": "Ändra namn på din kategori"
+            },
             "share": {
                 "label": "Dela"
             },

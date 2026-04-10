@@ -255,4 +255,18 @@ public class UserREST {
         userService.deleteCategory(req.getUserPrincipal(), id);
         return Response.noContent().build();
     }
+
+    @PUT
+    @Path("/area/category/{id}")
+    @Operation(summary = "Update user area category")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response updateCategory(@Context HttpServletRequest req, 
+                                    @PathParam("id") Integer id,
+                                    UserDefinedAreaCategoryDto dto) 
+        throws SymphonyStandardAppException {
+        dto.setId(id);
+        return Response.ok(userService.updateCategory(req.getUserPrincipal(), dto)).build();
+    }
 }
