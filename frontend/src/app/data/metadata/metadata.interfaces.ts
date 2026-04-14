@@ -87,6 +87,7 @@ export interface State {
   ECOSYSTEM: Groups;
   PRESSURE: Groups;
   visibleReliability: VisibleReliability | null;
+  loading: boolean;
 }
 
 export function bandEquals(a: Band, b: Band): boolean {

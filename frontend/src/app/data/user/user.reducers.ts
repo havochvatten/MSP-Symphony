@@ -4,6 +4,7 @@ import { createReducer, on } from '@ngrx/store';
 export const initialState: UserInterfaces.State = {
   isLoggedIn: false,
   loading: false,
+  loadingBaseline: false,
   redirectUrl: '/map',
   aliasing: true
 };
@@ -59,5 +60,19 @@ export const userReducer = createReducer(
   on(UserActions.updateRedirectUrl, (state, { url }) => ({
     ...state,
     redirectUrl: url
-  }))
+  })),
+  // Indicate loading state
+  on(UserActions.fetchBaseline, state => ({
+    ...state,
+    loadingBaseline: true
+  })),
+  // Reset loading state on success/failure
+  on(
+    UserActions.fetchBaselineSuccess,
+    UserActions.fetchBaselineFailure,
+    state => ({
+      ...state,
+      loadingBaseline: false
+    })
+  )
 );

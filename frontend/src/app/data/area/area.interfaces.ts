@@ -141,4 +141,5 @@ export interface State {
   selectionOverlap: boolean;
   selectionMatrices?: AreaMatrixData;
   calibratedCalculationAreas: CalculationAreaSlice[];
+  loading: boolean;
 }

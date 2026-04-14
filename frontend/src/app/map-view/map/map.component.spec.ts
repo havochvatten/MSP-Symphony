@@ -48,6 +48,12 @@ describe('MapComponent', () => {
     fixture = TestBed.createComponent(MapComponent);
     component = fixture.componentInstance;
     component.mapCenter = [0,0];
+    const mockMenuElement = document.createElement('div');
+    Object.defineProperty(component, 'areaOptionsMenu', {
+      value: { nativeElement: mockMenuElement },
+      writable: true,
+    });
+
     fixture.detectChanges();
   });
 

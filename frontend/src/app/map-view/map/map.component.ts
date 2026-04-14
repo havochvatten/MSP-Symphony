@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, EventEmitter, HostListener, Input,
   NgModuleRef, OnDestroy,
-  Output, inject,
+  Output, inject, ElementRef, ViewChild
 } from '@angular/core';
 import { Coordinate } from 'ol/coordinate';
 import { firstValueFrom, Observable, skipWhile, Subscription } from 'rxjs';
@@ -69,11 +69,13 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   @Output() resultLayerGroupChangeCmp: EventEmitter<number> = new EventEmitter<number>();
   drawIsActive = false;
 
+  @ViewChild('areaOptionsMenu') areaOptionsMenu!: ElementRef<HTMLElement>;
+
   private map?: OLMap;
   private readonly storeSubscription?: Subscription;
   private readonly resultSubscription?: Subscription;
   private readonly resultDeletedSubscription?: Subscription;
-  private readonly userSubscription?: Subscription;
+  private userSubscription?: Subscription;
   private readonly aliasingSubscription: Subscription;
   private readonly selectedAreasSubscription: Subscription;
   private areaSubscription?: Subscription;
@@ -107,15 +109,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private aliasing = true;
 
   constructor() {
-    const dataLayerService = this.dataLayerService;
-
-    this.userSubscription = this.store        /* TOOD: Just get from static environment?*/
-      .select(UserSelectors.selectBaseline).pipe(isNotNullOrUndefined())
-      .subscribe((baseline) => {
-        this.baselineName = baseline.name;
-        this.bandLayer = new BandLayer(baseline.name, dataLayerService, this.store, this.aliasing);
-        this.map!.getLayers().insertAt(1, this.bandLayer); // on top of background layer
-      });
 
     this.storeSubscription = this.store
       .select(MetadataSelectors.selectVisibleBands)
@@ -221,8 +214,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.areaLayer = new AreaLayer(
         this.map, this.dispatchSelectionUpdate, this.zoomToExtent,
         this.onDrawEnd, this.onDrawInvalid, this.onDownloadClick, this.onSplitClick, this.onMergeClick,
-        this.scenarioLayer, this.translateService, this.geoJson); // Will add itself to the map
-
+        this.scenarioLayer, this.translateService, this.geoJson, this.areaOptionsMenu.nativeElement); // Will add itself to the map
+    this.areaLayer.initialize();
     this.areaHighlightLayer = new AreaHighlightLayer(this.geoJson);
 
     this.areaLayer.setBoundaries(boundaries);
@@ -279,6 +272,15 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.map!.addLayer(this.areaLayer);
     this.map!.addLayer(this.scenarioLayer);
     this.map!.addLayer(this.areaHighlightLayer);
+
+    this.userSubscription = this.store        /* TOOD: Just get from static environment?*/
+      .select(UserSelectors.selectBaseline).pipe(isNotNullOrUndefined())
+      .pipe(isNotNullOrUndefined())
+      .subscribe((baseline) => {
+        this.baselineName = baseline.name;
+        this.bandLayer = new BandLayer(baseline.name, this.dataLayerService, this.store, this.aliasing);
+        this.map!.getLayers().insertAt(1, this.bandLayer); // on top of background layer
+      });
   }
 
   public clearResult() {

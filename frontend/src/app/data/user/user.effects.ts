@@ -3,10 +3,10 @@ import { Router } from '@angular/router';
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { mergeMap, map, catchError, tap, concatMap, withLatestFrom } from 'rxjs/operators';
+import { mergeMap, map, catchError, tap, concatMap, withLatestFrom, filter, take, debounceTime } from 'rxjs/operators';
 import { State } from '@src/app/app-reducer';
 import UserService from './user.service';
-import { UserActions } from './';
+import { UserActions, UserSelectors } from './';
 import { AreaActions } from '@data/area';
 import { MetadataActions } from '@data/metadata';
 import { CalculationActions } from '@data/calculation';
@@ -27,17 +27,13 @@ export class UserEffects {
     withLatestFrom(this.store$),
     mergeMap(([{ username, password }, state]) =>
       this.userService.login(username, password).pipe(
-        map(user => [
-          UserActions.loginUserSuccess({ user }),
-          UserActions.navigateTo({ url: state.user.redirectUrl })
-        ]),
-        concatMap(actions => actions),
+        map(user => UserActions.loginUserSuccess({ user })),
         catchError(error =>
           of(
             UserActions.loginUserFailure({
               error: {
                 status: error.status,
-                message: error.error.errorMessage
+                message: error.error?.errorMessage ?? error.message
               }
             })
           )
@@ -146,5 +142,21 @@ export class UserEffects {
   fetchedMetadata$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.fetchBaselineSuccess),
     map(props => MetadataActions.fetchMetadataForBaseline({ baselineName: props.baseline.name }))
+  ));
+
+  // Navigate after login has occurred and all relevant resources are fully loaded
+  navigateAfterInitialLoad$ = createEffect(() => this.actions$.pipe(
+    ofType(UserActions.loginUserSuccess),
+    concatMap(() =>
+      this.store$.select(UserSelectors.selectIsInitialLoading).pipe(
+        debounceTime(800),           // wait until loading is stable and false
+        filter(isLoading => !isLoading),
+        take(1)
+      )
+    ),
+    withLatestFrom(this.store$),
+    map(([, state]) =>
+      UserActions.navigateTo({ url: state.user.redirectUrl || '/map' })
+    )
   ));
 }
