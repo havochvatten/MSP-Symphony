@@ -1,9 +1,9 @@
 // This file would ideally be generated from NPM package deps and Maven's POM
 export default [
-  ['Angular', "https://angular.io/", "21.1.5"],
+  ['Angular', "https://angular.io/", "21.2.8"],
   ['OpenLayers', "https://openlayers.org", "10.7.0"],
   ['D3.js', "https://d3js.org/", "7.9.0"],
-  ['Immutable.js', 'https://immutable-js.com/', '4.3.6'],
+  ['Immutable.js', 'https://immutable-js.com/', '4.3.8'],
   ['Proj4js', 'https://github.com/proj4js/proj4js#readme', '2.11.0'],
   ['core-js', 'https://github.com/zloirock/core-js#readme', '3.37.1'],
   ['tslib', 'https://www.typescriptlang.org/', '2.8.1'],
