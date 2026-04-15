@@ -481,6 +481,10 @@
                 "label": "Ändra namn",
                 "header": "Ändra namn på ditt område"
             },
+            "move": {
+                "label": "Ändra kategori",
+                "header": "Ändra kategori för ditt område"
+            },
             "edit": {
                 "label": "Redigera område"
             },

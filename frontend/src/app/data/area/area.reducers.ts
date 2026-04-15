@@ -90,24 +90,10 @@ export const areaReducer = createReducer(
       }
     };
   }),
-  on(AreaActions.updateUserDefinedAreaSuccess, (state, { userArea }) => {
-    const category = state.userArea.categories[userArea.categoryId];
-    return {
-      ...state,
-      userArea: {
-        categories: {
-          ...state.userArea.categories,
-          [userArea.categoryId]: {
-            ...category,
-            areas: {
-              ...category.areas,
-              [userArea.id as number]: userArea
-            }
-          }
-        }
-      }
-    };
-  }),
+  
+  on(AreaActions.updateUserDefinedAreaSuccess, (state) => ({
+    ...state
+  })),
 
   on(AreaActions.deleteUserDefinedAreaSuccess, (state, { userAreaId }) => ({
     ...state,

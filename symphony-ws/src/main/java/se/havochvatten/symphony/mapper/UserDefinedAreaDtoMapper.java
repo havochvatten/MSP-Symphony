@@ -20,7 +20,9 @@ public class UserDefinedAreaDtoMapper {
         userDefinedArea.setName(dto.getName());
         userDefinedArea.setDescription(dto.getDescription());
         userDefinedArea.setOwner(owner);
-        userDefinedArea.setCategory(service.getUDACategoryById(dto.getCategoryId()));
+        if (dto.getCategoryId() != null) {
+            userDefinedArea.setCategory(service.getUDACategoryById(dto.getCategoryId()));
+        }
         ObjectMapper obj = new ObjectMapper();
         String jsonStr = "";
         try {

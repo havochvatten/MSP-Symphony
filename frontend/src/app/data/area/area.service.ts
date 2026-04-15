@@ -38,8 +38,14 @@ export default class AreaService {
   }
 
   updateUserArea(userArea: Partial<UserArea>) {
-    return this.http.put<AreaInterfaces.UserArea>(`${BASE_URL}/user/area/${userArea.id}`, userArea
-    );
+    const payload = {
+      id: userArea.id,
+      name: userArea.name,
+      description: userArea.description,
+      polygon: userArea.polygon,
+      categoryId: userArea.categoryId
+    };
+    return this.http.put<AreaInterfaces.UserArea>(`${BASE_URL}/user/area/${userArea.id}`, payload);
   }
 
   deleteUserArea(userAreaId: number) {

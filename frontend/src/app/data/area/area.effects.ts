@@ -165,23 +165,7 @@ export class AreaEffects {
     ofType(AreaActions.updateUserDefinedArea),
     mergeMap(({ id, name, description, polygon, categoryId }) =>
       this.areaService.updateUserArea({ id, name, description, polygon, categoryId }).pipe(
-        map(userAreaResponse =>
-          AreaActions.updateUserDefinedAreaSuccess({
-            userArea: {
-              ...userAreaResponse,
-              visible: true,
-              displayName: userAreaResponse.name,
-              statePath: ['userArea', userAreaResponse.id as number],
-              feature: createFeature(
-                userAreaResponse.name,
-                userAreaResponse.name,
-                userAreaResponse.name,
-                ['userArea', userAreaResponse.id as number],
-                userAreaResponse.polygon
-              )
-            }
-          })
-        ),
+        map(() => AreaActions.fetchUserDefinedAreas()),
         catchError(({ status, error: message }) =>
           of(AreaActions.updateUserDefinedAreaFailure({ error: { status, message } }))
         )

@@ -85,6 +85,7 @@
       <app-edit-area
         *ngIf="userArea"
         class="edit-area"
+        [moveArea]="onMoveUserArea(area)"
         [renameUserArea]="onRenameUserArea(area)"
         [deleteUserArea]="onDeleteUserArea(area.id, area.name)"
       ></app-edit-area>

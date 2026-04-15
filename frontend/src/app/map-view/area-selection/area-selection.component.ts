@@ -6,7 +6,8 @@ import {
   UserArea,
   AreaGroup,
   Area, AreaImport,
-  UserAreaCategoryState
+  UserAreaCategoryState,
+  Polygon
 } from '@data/area/area.interfaces';
 import { filterNationalAreas, filterUserAreas } from './area-selection.util';
 import { Store } from '@ngrx/store';
@@ -22,6 +23,7 @@ import {
 import { MessageActions } from "@data/message";
 import  { v4 as uuid } from "uuid";
 import { TranslateService } from "@ngx-translate/core";
+import { MoveAreaModalComponent } from '../move-area-modal/move-area-modal.component';
 
 @Component({
   selector: 'app-area-selection',
@@ -85,6 +87,11 @@ export class AreaSelectionComponent implements OnChanges, OnInit {
   }
 
   renameUserArea = async (userArea: UserArea) => {
+    console.log('id:', userArea.id);
+  console.log('name:', userArea.name);
+  console.log('description:', userArea.description);
+  console.log('polygon type:', typeof userArea.polygon);
+  console.log('polygon truthy:', !!userArea.polygon);
     const areaName = await this.dialogService.open(RenameItemModalComponent, this.moduleRef, {
       data: {
         headerText: this.translateService.instant('map.user-area.rename.header'),
@@ -95,9 +102,13 @@ export class AreaSelectionComponent implements OnChanges, OnInit {
       const updatedArea = {
         id: userArea.id as number,
         name: areaName,
-        polygon: userArea.polygon,
-        description: ''
+        polygon: (typeof userArea.polygon === 'string'
+          ? userArea.polygon
+          : JSON.stringify(userArea.polygon)) as unknown as Polygon,
+        description: userArea.description ?? '',
+        categoryId: userArea.categoryId
       };
+
       this.store.dispatch(AreaActions.updateUserDefinedArea(updatedArea));
     }
   };
@@ -196,4 +207,32 @@ export class AreaSelectionComponent implements OnChanges, OnInit {
         .reduce((areas: Area[], group) => [...areas, ...group.areas], []).length +
       this.filteredUserAreas.length;
   }
+
+  moveUserArea = async (userArea: UserArea) => {
+  const categories = this.userAreas
+    .filter(c => c.id !== null)
+    .map(c => ({ id: c.id, name: c.name }));
+
+  const newCategoryId = await this.dialogService.open(MoveAreaModalComponent, this.moduleRef, {
+    data: {
+      categories,
+      currentCategoryId: userArea.categoryId
+    }
+  });
+
+  if (newCategoryId !== undefined) {
+    const updatedArea = {
+      id: userArea.id as number,
+      name: userArea.name,
+      polygon: (typeof userArea.polygon === 'string'
+        ? userArea.polygon
+        : JSON.stringify(userArea.polygon)) as unknown as Polygon,
+      description: userArea.description ?? '',
+      categoryId: newCategoryId as number
+    };
+    this.store.dispatch(AreaActions.updateUserDefinedArea(updatedArea));
+  }
+};
+
 }
+

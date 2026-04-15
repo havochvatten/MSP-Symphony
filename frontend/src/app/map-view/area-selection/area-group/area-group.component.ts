@@ -31,6 +31,7 @@ export class AreaGroupComponent extends MultiModeListable {
   @Input() deleteUserAreaCategory?: (categoryId: number) => void;
   @Input() renameUserAreaCategory?: (categoryId: number, currentName: string) => void;
   @Input() renameCategory?: (categoryId: number) => void;
+  @Input() moveUserArea?: (userArea: UserArea) => void;
   faCloudUpload = faCloudUploadAlt;
 
   @Output() highlight: EventEmitter<[StatePath, boolean]> = new EventEmitter();
@@ -44,10 +45,11 @@ export class AreaGroupComponent extends MultiModeListable {
   }
 
   getAreas(group: any): UserArea[] {
-  console.log('group name:', group.name, 'statePath:', group.statePath);
-  return Array.isArray(group.areas)
-    ? group.areas
-    : Object.values(group.areas);
+    const areas = Array.isArray(group.areas)
+      ? group.areas
+      : Object.values(group.areas);
+    console.log('first area polygon:', areas[0]?.polygon);
+    return areas;
   }
 
   onRenameUserArea = (userArea: UserArea) => () => {
@@ -121,6 +123,12 @@ export class AreaGroupComponent extends MultiModeListable {
     }
   };
 
+  onMoveUserArea = (userArea: UserArea) => () => {
+    if (typeof this.moveUserArea === 'function') {
+      this.moveUserArea(userArea);
+    }
+  };
+
   protected readonly area = area;
 }
 
@@ -136,6 +144,9 @@ export class AreaGroupComponent extends MultiModeListable {
         (iconClick)="toggleOpen()"
       ></app-icon-button>
       <ul *ngIf="open" class="edit-options">
+        <li (click)="onMoveArea($event)" *ngIf="moveArea" tabindex="0">
+          {{ 'map.user-area.move.label' | translate }}
+        </li>
         <li (click)="onRenameUserArea($event)" *ngIf="renameUserArea"
             tabindex="0">{{ 'map.user-area.rename.label' | translate }}
         </li>
@@ -159,6 +170,7 @@ export class EditAreaComponent {
   @Input() renameUserArea?: () => void;
   @Input() deleteCategory?: () => void;
   @Input() renameCategory?: () => void;
+  @Input() moveArea?: () => void;
   open = false;
 
   private onClick(event: Event) {
@@ -198,5 +210,11 @@ export class EditAreaComponent {
     }
   }
 
+  onMoveArea(event: Event) {
+    this.onClick(event);
+    if (typeof this.moveArea === 'function') {
+      this.moveArea();
+    }
+  }
 }
 

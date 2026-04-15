@@ -41,6 +41,7 @@ import { ConfirmGenerateComparisonComponent } from './calculation-history/confir
 import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component';
 import { DownloadCompoundComparisonDialogComponent } from './compound-comparison-list-dialog/download-compound-comparison-dialog/download-compound-comparison-dialog.component';
 import { ReliabilityLegendComponent } from "@src/app/map-view/reliability-legend/reliability-legend.component";
+import { MoveAreaModalComponent } from './move-area-modal/move-area-modal.component';
 
 @NgModule({
   declarations: [
@@ -71,8 +72,10 @@ import { ReliabilityLegendComponent } from "@src/app/map-view/reliability-legend
     ConfirmGenerateComparisonComponent,
     CompoundComparisonListDialogComponent,
     DownloadCompoundComparisonDialogComponent,
-    ReliabilityLegendComponent
+    ReliabilityLegendComponent,
+    MoveAreaModalComponent
   ],
+
   imports: [
     SharedModule,
     CoreModule,
