@@ -161,7 +161,7 @@ function getFeatures(areas: SelectableArea[]) {
 function getUserAreasFeatures(userAreas: UserAreaCategoryState[]) {
   const allAreas = userAreas.flatMap(category => Object.values(category.areas));
   console.log('getUserAreasFeatures allAreas count:', allAreas.length);
-  console.log('first area feature:', allAreas[0]?.feature);
+  console.log('first feature:', allAreas[0]?.feature);
 
   const features = getFeatures(allAreas).filter(f => f !== null);
   console.log('features after filter:', features.length);

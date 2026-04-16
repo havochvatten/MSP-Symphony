@@ -141,8 +141,10 @@ export class AreaEffects {
                 userAreaResponse.name,
                 userAreaResponse.name,
                 userAreaResponse.name,
-                ['userArea', userAreaResponse.id as number],
-                userAreaResponse.polygon
+                ['userArea', 'categories', userAreaResponse.categoryId ?? 'uncategorized', 'areas', userAreaResponse.id!],
+                (typeof userAreaResponse.polygon === 'string'
+                  ? JSON.parse(userAreaResponse.polygon)
+                  : userAreaResponse.polygon) as unknown as Polygon
               )
             }
           })

@@ -87,11 +87,6 @@ export class AreaSelectionComponent implements OnChanges, OnInit {
   }
 
   renameUserArea = async (userArea: UserArea) => {
-    console.log('id:', userArea.id);
-  console.log('name:', userArea.name);
-  console.log('description:', userArea.description);
-  console.log('polygon type:', typeof userArea.polygon);
-  console.log('polygon truthy:', !!userArea.polygon);
     const areaName = await this.dialogService.open(RenameItemModalComponent, this.moduleRef, {
       data: {
         headerText: this.translateService.instant('map.user-area.rename.header'),
@@ -102,9 +97,7 @@ export class AreaSelectionComponent implements OnChanges, OnInit {
       const updatedArea = {
         id: userArea.id as number,
         name: areaName,
-        polygon: (typeof userArea.polygon === 'string'
-          ? userArea.polygon
-          : JSON.stringify(userArea.polygon)) as unknown as Polygon,
+        polygon: userArea.polygon as unknown as Polygon,
         description: userArea.description ?? '',
         categoryId: userArea.categoryId
       };
@@ -224,9 +217,7 @@ export class AreaSelectionComponent implements OnChanges, OnInit {
     const updatedArea = {
       id: userArea.id as number,
       name: userArea.name,
-      polygon: (typeof userArea.polygon === 'string'
-        ? userArea.polygon
-        : JSON.stringify(userArea.polygon)) as unknown as Polygon,
+      polygon: userArea.polygon as unknown as Polygon,
       description: userArea.description ?? '',
       categoryId: newCategoryId as number
     };
