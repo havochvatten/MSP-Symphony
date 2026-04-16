@@ -3,22 +3,23 @@
 
 
 <div [formGroup]="categoryForm">
-<select formControlName="categoryId">
-    <option value="" disabled>Välj kategori...</option>
-    <option *ngFor="let cat of categories" [value]="cat.id">
-      {{ cat.name }}
-    </option>
-    <option value="__new__">+ Skapa ny kategori</option>
-  </select>
+ <label style="margin-right: 1rem; font-size: 1.3rem;" >{{ 'map.user-area.upload.modal.category' | translate }}</label>
+  <select formControlName="categoryId">
+      <option value="">Okategoriserad </option>
+      <option *ngFor="let cat of categories" [value]="cat.id">
+        {{ cat.name }}
+      </option>
+      <option value="__new__">+ Skapa ny kategori</option>
+    </select>
 
-  <div *ngIf="isCreatingNew">
-    <input
-      type="text"
-      formControlName="newCategoryName"
-      placeholder="Namn på ny kategori"
-    />
+    <div *ngIf="isCreatingNew">
+      <input
+        type="text"
+        formControlName="newCategoryName"
+        placeholder="Namn på ny kategori"
+      />
+    </div>
   </div>
- </div>
 <!--FIXME replace with custom "polygon" icon -->
 <input type="file" [accept]="requiredFileType" (change)="onFileSelect($event)" #fileUpload/>
 <div class="loading" *ngIf="loading">

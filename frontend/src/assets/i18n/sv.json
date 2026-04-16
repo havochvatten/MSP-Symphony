@@ -461,8 +461,10 @@
             },
             "upload": {
                 "label": "Importera områdespolygon",
+                "category": "Kategori",
                 "modal": {
                     "title": "Importera område",
+                    "category": "Kategori",
                     "fileformat-note": "Filer i <a href='https://www.geopackage.org/' target='_blank'>OGC GeoPackage</a>-format stöds.",
                     "notice": {
                         "WGS84-reprojection": "Importerade koordinater kommer att projiceras om till <em>EPSG:4326 (WGS 84)",
@@ -513,6 +515,7 @@
                 "label": "Ändra namn",
                 "header": "Ändra namn på din kategori"
             },
+
             "share": {
                 "label": "Dela"
             },

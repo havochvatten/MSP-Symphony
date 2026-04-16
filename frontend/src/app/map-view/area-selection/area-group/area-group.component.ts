@@ -59,6 +59,7 @@ export class AreaGroupComponent extends MultiModeListable {
   };
 
   onDeleteUserArea = (areaId: number, areaName: string) => () => {
+   // if (categoryId === null || categoryId === undefined) return;
     if (typeof this.deleteUserArea === 'function') {
       this.deleteUserArea(areaId, areaName);
     }

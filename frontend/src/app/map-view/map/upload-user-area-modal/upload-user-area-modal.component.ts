@@ -31,7 +31,7 @@ export class UploadUserAreaModalComponent implements OnInit {
   isCreatingNew = false;
 
   categoryForm = new FormGroup({
-    categoryId: new FormControl('', Validators.required),
+    categoryId: new FormControl(''),
     newCategoryName: new FormControl('')
   });
 
@@ -46,7 +46,6 @@ export class UploadUserAreaModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.areaService.getCategories().subscribe(data => {
-      console.log('kategorier från backend:', data);
       this.categories = data;
     });
 
@@ -109,11 +108,11 @@ export class UploadUserAreaModalComponent implements OnInit {
       this.areaService.createCategory(newName).subscribe(createdCategory =>{
         this.doImport(createdCategory.id);
       });
-    } else if (!categoryIdValue) {
-        this.doImport(undefined);
-    } else {
+    } else if (categoryIdValue && categoryIdValue !== '') {
         this.doImport(Number(categoryIdValue));
-    }
+      } else {
+        this.doImport(undefined);
+      }
   }
 
   private doImport(categoryId?: number) {
