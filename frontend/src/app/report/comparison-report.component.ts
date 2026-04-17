@@ -11,14 +11,16 @@ import { ReportService } from "@src/app/report/report.service";
 import { CalculationService } from "@data/calculation/calculation.service";
 import { relativeDifference } from "@src/app/report/report.util";
 import { AbstractReport } from "@src/app/report/abstract-report.component";
+import { BrandingService } from '@src/app/core/branding/branding.service';
 
 @Component({
   selector: 'app-calculation-report',
   templateUrl: './comparison-report.component.html',
   styleUrls: ['./report.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class ComparisonReportComponent extends AbstractReport<ComparisonReport> {
+  public brandingService = inject(BrandingService);
   private readonly store: Store<State>;
 
   area?: number;
@@ -32,7 +34,7 @@ export class ComparisonReportComponent extends AbstractReport<ComparisonReport> 
 
   chartWeightThresholdPercentage = '1%';
 
-  legend:Observable<Legend>;
+  legend: Observable<Legend>;
 
   constructor() {
     const store = inject<Store<State>>(Store);
@@ -44,18 +46,20 @@ export class ComparisonReportComponent extends AbstractReport<ComparisonReport> 
     this.store = store;
 
     const paramMap = route.snapshot.paramMap,
-          aId = paramMap.get('aId')!, bId = paramMap.get('bId');
+      aId = paramMap.get('aId')!,
+      bId = paramMap.get('bId');
 
     this.maxValue = +(paramMap.get('maxValue') || 0);
 
-    this.reverse = Object.keys(route.snapshot.queryParams).includes('reverse') &&
-                   route.snapshot.queryParams.reverse !== "false";
+    this.reverse =
+      Object.keys(route.snapshot.queryParams).includes('reverse') &&
+      route.snapshot.queryParams.reverse !== 'false';
 
-    this.legend = calcService.getComparisonLegend(this.maxValue / 100)
+    this.legend = calcService.getComparisonLegend(this.maxValue / 100);
 
-    this.imageUrl =
-      bId ? `${env.apiBaseUrl}/calculation/diff/${aId}/${bId}?max=${this.maxValue}` :
-            `${env.apiBaseUrl}/calculation/diff/${aId}?max=${this.maxValue}${this.reverse ? '&reverse=true' : ''}`;
+    this.imageUrl = bId
+      ? `${env.apiBaseUrl}/calculation/diff/${aId}/${bId}?max=${this.maxValue}`
+      : `${env.apiBaseUrl}/calculation/diff/${aId}?max=${this.maxValue}${this.reverse ? '&reverse=true' : ''}`;
 
     reportService.getComparisonReport(aId, bId, this.reverse).subscribe({
       next: (report) => {
@@ -65,15 +69,20 @@ export class ComparisonReportComponent extends AbstractReport<ComparisonReport> 
         this.area = reportService.calculateArea(report.a);
         this.loadingReport = false;
 
-        this.store.dispatch(MetadataActions.fetchMetadataForBaseline({ baselineName: report.a.baselineName }));
+        this.store.dispatch(
+          MetadataActions.fetchMetadataForBaseline({ baselineName: report.a.baselineName }),
+        );
         this.areaDictA = reportService.setAreaDict(report.a);
         this.areaDictB = reportService.setAreaDict(report.b);
 
-        this.chartWeightThresholdPercentage = formatPercent(report.a.chartWeightThreshold, this.locale);
+        this.chartWeightThresholdPercentage = formatPercent(
+          report.a.chartWeightThreshold,
+          this.locale,
+        );
       },
       error: () => {
         this.loadingReport = false;
-      }
+      },
     });
   }
 
@@ -86,11 +95,10 @@ export class ComparisonReportComponent extends AbstractReport<ComparisonReport> 
     // Would be nicer written as an Immutable.js map operation
     const diffs: Record<string, number> = {};
     const unionOfBandKeys = new Set([...Object.keys(components[0]), ...Object.keys(components[1])]);
-    unionOfBandKeys.forEach(band => {
-      const [a, b] = components.map((item) => item[band])
+    unionOfBandKeys.forEach((band) => {
+      const [a, b] = components.map((item) => item[band]);
       diffs[band] = relativeDifference(a, b);
-      }
-    );
+    });
     return diffs;
   }
 }

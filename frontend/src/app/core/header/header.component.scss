@@ -36,7 +36,7 @@
       justify-content: space-between;
       font-size: 2rem;
       line-height: 2.3rem;
-      margin: 0 0 0 margins.$xs-margin;
+      margin: 0 auto 0 margins.$xs-margin;
       color: inherit;
     }
 
@@ -70,7 +70,6 @@
   .flag {
     width: auto;
     height: 100%;
-    margin-left: auto;
   }
 
   .duck {

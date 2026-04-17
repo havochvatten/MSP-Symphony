@@ -3,8 +3,12 @@
   <h1>
     {{ title }}
   </h1>
-  <img class="flag" src="assets/Sweden-SwAM-white-horizontal-no-borders.svg"
-    alt="{{ 'branding.SI-Sweden' | translate }} : {{ 'branding.SwAM' | translate }}"/>
+  @if (brandingService.configData.showLogos && brandingService.configData.flagSrc) {
+    <img
+      class="flag"
+      [src]="brandingService.configData.flagSrc"
+      [alt]="brandingService.configData.flagAlt" />
+  }
   <app-user-menu-toggle [user]="user$ | async" (click)="toggleOpenMenu('USER')"></app-user-menu-toggle>
 </div>
 <div
