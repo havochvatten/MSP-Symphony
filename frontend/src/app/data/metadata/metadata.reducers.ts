@@ -8,7 +8,8 @@ import { getBandPath } from "@data/metadata/metadata.selectors";
 export const initialState: MetadataInterfaces.State = {
   ECOSYSTEM: {},
   PRESSURE: {},
-  visibleReliability: null
+  visibleReliability: null,
+  loading: false
 };
 
 export const metadataReducer = createReducer(
@@ -74,6 +75,16 @@ export const metadataReducer = createReducer(
     ...state,
     changeMap: {}
   })),
+  // Indicate loading state
+  on(MetadataActions.fetchMetadataForBaseline, state => ({
+    ...state,
+    loading: true
+  })),
+  // Reset loading state on success/failure
+  on(MetadataActions.fetchMetadataSuccess, state => ({
+    ...state,
+    loading: false
+  }))
 );
 
 function setLayerAttribute(state: State, band: Band, attribute: string, value: unknown): State {

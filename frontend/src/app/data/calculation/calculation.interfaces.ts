@@ -12,6 +12,7 @@ export interface State {
   loadingCalculations: boolean;
   calculating: boolean;
   legends: LegendState;
+  loadingLegends: boolean;
   percentileValue: number;
   sortCalculations: ListItemsSort;
   batchProcesses: { [key: number]: BatchCalculationProcessEntry };

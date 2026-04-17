@@ -108,7 +108,8 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
     onMergeClick: (lastFeature: Feature) => void,
     public scenarioLayer: ScenarioLayer,
     private readonly translateService: TranslateService,
-    private readonly geoJson: GeoJSON
+    private readonly geoJson: GeoJSON,
+    private readonly areaOptionsMenuElement: HTMLElement
   ) {
     super({
       source: new VectorSource({ format: new GeoJSON() }),
@@ -118,8 +119,6 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
 
     this.setSelection = setSelection;
     this.zoomToExtent = zoomToExtent;
-    this.addHoverInteraction(map, this);
-    this.addRightClickInteraction(map);
     this.boundaryLayer = new BoundaryLayer();
     this.drawAreaInteraction = new DrawAreaInteraction(
       map,
@@ -153,6 +152,11 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
       this.setSelection(event.selected[0]?.get('statePath') || undefined,
                          event.mapBrowserEvent.originalEvent.ctrlKey);
     });
+  }
+
+  public initialize() {
+    this.addHoverInteraction(this.map, this);
+    this.addRightClickInteraction(this.map, this.areaOptionsMenuElement);
   }
 
   public getFeaturesByStatePaths(statePaths: StatePath[]): Feature[] | null {
@@ -224,10 +228,9 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
     map.addInteraction(areaHover);
   }
 
-  private addRightClickInteraction(map: OLMap) {
+  private addRightClickInteraction(map: OLMap, optionsMenuElement: HTMLElement) {
     let path = '';
     const
-      optionsMenuElement = document.getElementById('area-options-menu')!,
       removeOptionsMenu = () => {
         this.optionsMenuActive = false;
         map.getOverlayById('areaOptionsMenu')?.setPosition(undefined);
@@ -260,7 +263,7 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
     optionsMenuElement.addEventListener('mouseleave', removeOptionsMenu);
 
     optionsMenuElement.addEventListener('click', (event) => {
-      if(path !== '') {
+      if (path !== '') {
         this.onDownloadClick(path);
       }
       removeOptionsMenu();

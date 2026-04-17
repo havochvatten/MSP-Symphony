@@ -6,6 +6,10 @@ import { UserActions, UserSelectors } from '@data/user';
 import { Subscription, Observable } from 'rxjs';
 import { environment } from '@src/environments/environment.prod';
 import buildInfo from '@src/build-info';
+import {
+  debounceTime,
+  distinctUntilChanged,
+} from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -44,7 +48,12 @@ export class LoginComponent implements OnInit, OnDestroy {
             : 'login.error.system-unavailable';
       }
     });
-    this.loading = this.store.select(UserSelectors.selectIsLoading);
+
+    // Only shows the spinner, no navigation here
+    this.loading = this.store.select(UserSelectors.selectIsInitialLoading).pipe(
+      debounceTime(0),
+      distinctUntilChanged()
+    );
   }
 
   ngOnDestroy() {

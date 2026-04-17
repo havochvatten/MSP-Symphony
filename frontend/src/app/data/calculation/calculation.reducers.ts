@@ -16,6 +16,7 @@ export const initialState: CalculationInterfaces.State = {
     pressure: undefined,
     comparison: {}
   },
+  loadingLegends: false,
   sortCalculations: ListItemsSort.None,
   batchProcesses: [],
   visibleResults: [],
@@ -139,7 +140,21 @@ export const calculationReducer = createReducer(
   on(CalculationActions.setCompoundComparisonSortType, (state, { sortType }) => ({
     ...state,
     sortCompoundComparisons: sortType
-  }))
+  })),
+  // Indicate loading state
+  on(CalculationActions.fetchLegend, state => ({
+    ...state,
+    loadingLegends: true
+  })),
+  // Reset loading state on success/failure
+  on(
+    CalculationActions.fetchLegendSuccess,
+    CalculationActions.fetchLegendFailure,
+    state => ({
+      ...state,
+      loadingLegends: false
+    })
+  ),
 );
 
 function updateComparisonLegend(state: CalculationInterfaces.State, maxValueKey:string, comparisonTitles: string[], legend: Legend): CalculationInterfaces.State {

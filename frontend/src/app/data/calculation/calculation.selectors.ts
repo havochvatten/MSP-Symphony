@@ -10,6 +10,16 @@ export const selectLoadingReport = createSelector(
   state => state.loadingReport
 );
 
+export const selectLoadingCompoundComparisons = createSelector(
+  selectCalculationState,
+  state => state.loadingCompoundComparisons
+);
+
+export const selectLoadingLegends = createSelector(
+  selectCalculationState,
+  state => state.loadingLegends
+);
+
 export const selectCalculations = createSelector(
   selectCalculationState,
   state => {

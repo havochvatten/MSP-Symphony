@@ -17,6 +17,7 @@ export const initialState: AreaInterfaces.State = {
   currentSelection: [],
   selectionOverlap: false,
   calibratedCalculationAreas: [],
+  loading: false,
 };
 
 export const areaReducer = createReducer(
@@ -115,7 +116,28 @@ export const areaReducer = createReducer(
     userDefinedMatrices: updateIn(state, ['selectionMatrices', 'defaultArea', 'userDefinedMatrices'],
       oldMatrices => [...(oldMatrices as MatrixRef[]), matrix])
     })
-  )
+  ),
+  // Indicate loading state
+  on(AreaActions.fetchNationalAreas, state => ({ ...state, loading: true })),
+  on(AreaActions.fetchUserDefinedAreas, state => ({ ...state, loading: true })),
+  on(AreaActions.fetchBoundaries, state => ({ ...state, loading: true })),
+  // Reset loading state on success
+  on(
+    AreaActions.fetchNationalAreaTypesSuccess,
+    AreaActions.fetchNationalAreaSuccess,
+    AreaActions.fetchUserDefinedAreasSuccess,
+    AreaActions.fetchBoundariesSuccess,
+    AreaActions.fetchCalibratedCalculationAreasSuccess,
+    state => ({ ...state, loading: false })
+  ),
+  // Reset loading state on failure
+  on(
+    AreaActions.fetchNationalAreaTypesFailure,
+    AreaActions.fetchUserDefinedAreasFailure,
+    AreaActions.fetchBoundariesFailure,
+    AreaActions.fetchCalibratedCalculationAreasFailure,
+    state => ({ ...state, loading: false })
+  ),
 );
 
 function featureOverlap(features: Feature[]): boolean {

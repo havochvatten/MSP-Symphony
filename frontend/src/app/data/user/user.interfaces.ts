@@ -14,6 +14,7 @@ export interface State {
   user?: User;
   isLoggedIn: boolean;
   loading: boolean;
+  loadingBaseline: boolean;
   redirectUrl: string;
   baseline?: Baseline;
   error?: { login?: ErrorMessage };
