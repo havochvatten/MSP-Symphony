@@ -82,4 +82,12 @@ export default class AreaService {
     `${BASE_URL}/user/area/category/${categoryId}`, { name });
   }
 
+  deleteAreasByCategory(categoryId: number) {
+    return this.http.delete(`${BASE_URL}/user/area/category/${categoryId}/areas`);
+  }
+
+  deleteUncategorizedAreas() {
+    return this.http.delete(`${BASE_URL}/user/areas/uncategorized`);
+  }
+
 }

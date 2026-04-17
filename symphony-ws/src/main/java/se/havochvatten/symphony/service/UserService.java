@@ -374,6 +374,23 @@ public class UserService {
     em.remove(category);
     }
 
+    public void deleteAreasByCategory(Principal principal, Integer categoryId) 
+        throws SymphonyStandardAppException {
+        UserDefinedAreaCategory category = em.find(UserDefinedAreaCategory.class, categoryId);
+        if (!principal.getName().equals(category.getOwner())) {
+            throw new SymphonyStandardAppException(SymphonyModelErrorCode.USER_DEF_AREA_NOT_OWNED_BY_USER);
+        }
+        em.createQuery("DELETE FROM UserDefinedArea u WHERE u.category.id = :categoryId")
+        .setParameter("categoryId", categoryId)
+        .executeUpdate();
+    }
+
+    public void deleteUncategorizedAreas(Principal principal) {
+        em.createQuery("DELETE FROM UserDefinedArea u WHERE u.category IS NULL AND u.owner = :owner")
+        .setParameter("owner", principal.getName())
+        .executeUpdate();
+    }
+
     public UserDefinedAreaCategoryDto updateCategory(Principal principal, UserDefinedAreaCategoryDto dto) 
     throws SymphonyStandardAppException {
     UserDefinedAreaCategory category = em.find(UserDefinedAreaCategory.class, dto.getId());

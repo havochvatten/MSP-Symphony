@@ -238,6 +238,30 @@ export class AreaEffects {
     )
   ));
 
+  deleteAreasByCategory$ = createEffect(() => this.actions$.pipe(
+    ofType(AreaActions.deleteAreasByCategory),
+    mergeMap(({ categoryId }) =>
+      this.areaService.deleteAreasByCategory(categoryId).pipe(
+        map(() => AreaActions.fetchUserDefinedAreas()),
+        catchError(({ status, error: message }) =>
+          of(AreaActions.deleteAreasByCategoryFailure({ error: { status, message } }))
+        )
+      )
+    )
+  ));
+
+  deleteUncategorizedAreas$ = createEffect(() => this.actions$.pipe(
+    ofType(AreaActions.deleteUncategorizedAreas),
+    mergeMap(() =>
+      this.areaService.deleteUncategorizedAreas().pipe(
+        map(() => AreaActions.fetchUserDefinedAreas()),
+        catchError(({ status, error: message }) =>
+          of(AreaActions.deleteUncategorizedAreasFailure({ error: { status, message } }))
+        )
+      )
+    )
+  ));
+
   // @Effect()
   // uploadPolygons$ = this.actions$.pipe(
   //   ofType(AreaActions.uploadUserDefinedArea),

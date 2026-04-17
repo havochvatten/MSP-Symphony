@@ -90,7 +90,7 @@ export const areaReducer = createReducer(
       }
     };
   }),
-  
+
   on(AreaActions.updateUserDefinedAreaSuccess, (state) => ({
     ...state
   })),
@@ -130,6 +130,19 @@ export const areaReducer = createReducer(
         [categoryId]: {
           ...state.userArea.categories[categoryId],
           name
+        }
+      }
+    }
+  })),
+
+  on(AreaActions.deleteAreasByCategorySuccess, (state, { categoryId }) => ({
+    ...state,
+    userArea: {
+      categories: {
+        ...state.userArea.categories,
+        [categoryId]: {
+          ...state.userArea.categories[categoryId],
+          areas: {}  // töm areas för kategorin
         }
       }
     }

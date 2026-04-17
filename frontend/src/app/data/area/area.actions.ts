@@ -161,6 +161,27 @@ export const updateUserAreaCategoryFailure = createAction(
   '[Area] Update user area category failure',
   props<{ error: ErrorMessage }>()
 );
+export const deleteAreasByCategory = createAction(
+  '[Area] Delete areas by category',
+  props<{ categoryId: number }>()
+);
+export const deleteAreasByCategorySuccess = createAction(
+  '[Area] Delete areas by category success',
+  props<{ categoryId: number }>()
+);
+export const deleteAreasByCategoryFailure = createAction(
+  '[Area] Delete areas by category failure',
+  props<{ error: ErrorMessage }>()
+);
+
+export const deleteUncategorizedAreas = createAction(
+  '[Area] Delete  uncategorized areas',
+);
+
+export const deleteUncategorizedAreasFailure = createAction(
+  '[Area] Delete uncategorized failure',
+  props<{ error: ErrorMessage }>()
+);
 
 // export const uploadUserDefinedArea = createAction(
 //   '[Area] Upload user defined area',

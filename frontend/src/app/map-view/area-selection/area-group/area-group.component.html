@@ -56,10 +56,17 @@
 
 
       <app-edit-area
-        *ngIf="userArea"
+        *ngIf="userArea && group.id !== null"
         class="edit-category"
         [deleteCategory]="onDeleteUserAreaCategory(group.id)"
         [renameCategory]="onRenameUserAreaCategory(group.id, group.name)"
+        [deleteAreasByCategory]="onDeleteAreasByCategory(group.id)"
+      ></app-edit-area>
+
+      <app-edit-area
+        *ngIf="userArea && group.id === null"
+        class="edit-category"
+        [deleteAreasByCategory]="onDeleteAreasByCategory(group.id)"
       ></app-edit-area>
 
       <app-icon

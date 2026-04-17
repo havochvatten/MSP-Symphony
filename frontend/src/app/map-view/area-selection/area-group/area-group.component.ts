@@ -32,6 +32,7 @@ export class AreaGroupComponent extends MultiModeListable {
   @Input() renameUserAreaCategory?: (categoryId: number, currentName: string) => void;
   @Input() renameCategory?: (categoryId: number) => void;
   @Input() moveUserArea?: (userArea: UserArea) => void;
+  @Input() deleteAreasByCategory?: (categoryId: number) => void;
   faCloudUpload = faCloudUploadAlt;
 
   @Output() highlight: EventEmitter<[StatePath, boolean]> = new EventEmitter();
@@ -70,7 +71,6 @@ export class AreaGroupComponent extends MultiModeListable {
       this.renameUserAreaCategory(categoryId, currentName);
     }
   };
-
 
 
   deleteSelectedUserAreas = async () => {
@@ -130,6 +130,12 @@ export class AreaGroupComponent extends MultiModeListable {
     }
   };
 
+  onDeleteAreasByCategory = (categoryId: number) => () => {
+  if (typeof this.deleteAreasByCategory === 'function') {
+    this.deleteAreasByCategory(categoryId);
+  }
+};
+
   protected readonly area = area;
 }
 
@@ -161,6 +167,9 @@ export class AreaGroupComponent extends MultiModeListable {
         <li class="delete" (click)="onDeleteCategory($event)" *ngIf="deleteCategory" tabindex="0">
           {{ 'map.user-area.delete-category.label' | translate }}
         </li>
+        <li class="delete" (click)="onDeleteAreasByCategory($event)" *ngIf="deleteAreasByCategory" tabindex="0">
+          {{ 'map.user-area.delete-areas-by-category.label' | translate }}
+        </li>
       </ul>
     </div>
   `,
@@ -172,6 +181,8 @@ export class EditAreaComponent {
   @Input() deleteCategory?: () => void;
   @Input() renameCategory?: () => void;
   @Input() moveArea?: () => void;
+  @Input() deleteAreasByCategory?: () => void;
+
   open = false;
 
   private onClick(event: Event) {
@@ -217,5 +228,11 @@ export class EditAreaComponent {
       this.moveArea();
     }
   }
+  onDeleteAreasByCategory(event: Event) {
+    this.onClick(event);
+    if (typeof this.deleteAreasByCategory === 'function') {
+      this.deleteAreasByCategory();
+    }
+}
 }
 

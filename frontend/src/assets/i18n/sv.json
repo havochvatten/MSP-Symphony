@@ -511,6 +511,14 @@
                     "message-multiple": "Bekräfta borttagning av <strong>{{ count }}</strong> områden."
                 }
             },
+            "delete-areas-by-category": {
+                "label": "Radera alla filer",
+                "modal": {
+                    "header": "Radera alla filer",
+                    "message": "Är du säker på att du vill radera alla filer i denna kategori?"
+                }
+            },
+
             "rename-category": {
                 "label": "Ändra namn",
                 "header": "Ändra namn på din kategori"

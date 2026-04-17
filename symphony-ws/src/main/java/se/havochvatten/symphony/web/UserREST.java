@@ -269,4 +269,25 @@ public class UserREST {
         dto.setId(id);
         return Response.ok(userService.updateCategory(req.getUserPrincipal(), dto)).build();
     }
+
+    @DELETE
+    @Path("/area/category/{id}/areas")
+    @Operation(summary = "Delete all areas in category")
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response deleteAreasByCategory(@Context HttpServletRequest req, 
+                                        @PathParam("id") Integer id)
+        throws SymphonyStandardAppException {
+        userService.deleteAreasByCategory(req.getUserPrincipal(), id);
+        return Response.noContent().build();
+    }
+
+    @DELETE
+    @Path("/areas/uncategorized")
+    @Operation(summary = "Delete all uncategorized areas")
+    @RolesAllowed("GRP_SYMPHONY")
+    public Response deleteUncategorizedAreas(@Context HttpServletRequest req) 
+        throws SymphonyStandardAppException {
+        userService.deleteUncategorizedAreas(req.getUserPrincipal());
+        return Response.noContent().build();
+    }
 }
