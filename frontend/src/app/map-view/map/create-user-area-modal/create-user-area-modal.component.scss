@@ -27,6 +27,22 @@
     border: 1px solid $hav-darkwarmgrey;
   }
 
+  select {
+  outline: none;
+  font-size: 1.6rem;
+  padding: 1rem 1.2rem;
+  margin-bottom: 2rem;
+  border-radius: 4px;
+  border: 1px solid $hav-darkwarmgrey;
+  width: 100%;
+  }
+
+  div.category-form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+  }
+
   div {
     display: flex;
     justify-content: flex-end;

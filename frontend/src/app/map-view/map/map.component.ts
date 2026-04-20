@@ -350,14 +350,15 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   onDrawEnd = async (polygon: Polygon) => {
-    const areaName = await this.dialogService.open(CreateUserAreaModalComponent, this.moduleRef);
-    if (typeof areaName === 'string') {
+    const result = await this.dialogService.open(CreateUserAreaModalComponent, this.moduleRef);
+    if (result && typeof result === 'object') {
       this.toggleDrawInteraction();
+      const { name, categoryId } = result as { name: string, categoryId: number | null };
       const newArea = {
-        name: areaName,
+        name,
         polygon,
         description: '',
-        categoryId: 0
+        categoryId: categoryId ?? undefined
       };
       this.store.dispatch(AreaActions.createUserDefinedArea(newArea));
     }

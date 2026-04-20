@@ -1,9 +1,32 @@
-  <script src="@src/app/data/area/area.service.ts"></script><h3>{{ 'map.user-area.create.modal.title' | translate }}</h3>
+  <script src="@src/app/data/area/area.service.ts"></script>
+  <h3>{{ 'map.user-area.create.modal.title' | translate }}</h3>
   <input
     [value]="areaName"
     (input)="onChange($event.target.value)"
     [placeholder]="'map.user-area.create.modal.placeholder' | translate"
   />
+  <div [formGroup]="categoryForm" class="category-form">
+    <div style="display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2rem; width: 100%;">
+      <label style="font-size: 1.6rem; white-space: nowrap; min-width: fit-content;">
+        {{ 'map.user-area.upload.modal.category' | translate }}
+      </label>
+      <select formControlName="categoryId" style="flex: 1; font-size: 1.6rem; padding: 1rem 1.2rem; border-radius: 4px; border: 1px solid #ccc;">
+        <option value="">Okategoriserad</option>
+        <option *ngFor="let cat of categories" [value]="cat.id">
+          {{ cat.name }}
+        </option>
+        <option value="__new__">+ Skapa ny kategori</option>
+      </select>
+    </div>
+    <div *ngIf="isCreatingNew">
+      <input
+        type="text"
+        formControlName="newCategoryName"
+        placeholder="Namn på ny kategori"
+        style="width: 100%; display: block;"
+      />
+    </div>
+  </div>
   <div>
     <button mat-flat-button color="warn" (click)="close()">{{
       'map.user-area.create.modal.close' | translate
@@ -12,3 +35,6 @@
       'map.user-area.create.modal.save' | translate
     }}</button>
   </div>
+
+
+
