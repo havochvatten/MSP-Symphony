@@ -521,6 +521,13 @@
                     "message": "Är du säker på att du vill radera alla filer i denna kategori?"
                 }
             },
+            "delete-user-category": {
+                "label": "Radera kategori",
+                "modal": {
+                    "header": "Radera kategori",
+                    "message": "Är du säker på att du vill radera kategorin? Areas i kategorin kommer att bli okategoriserade."
+                }
+            },
 
             "rename-category": {
                 "label": "Ändra namn",

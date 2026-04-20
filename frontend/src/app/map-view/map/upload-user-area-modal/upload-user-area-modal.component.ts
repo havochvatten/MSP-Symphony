@@ -117,7 +117,6 @@ export class UploadUserAreaModalComponent implements OnInit {
   }
 
   private doImport(categoryId?: number) {
-    console.log('customAreaName:', this.customAreaName);
     this.areaService.confirmUserAreaImport(this.uploadedArea!.key, categoryId)
       .subscribe(
       importedArea => {

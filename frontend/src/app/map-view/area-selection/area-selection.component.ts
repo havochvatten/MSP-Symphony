@@ -158,25 +158,6 @@ export class AreaSelectionComponent implements OnChanges, OnInit {
   deleteMultipleUserAreas = (userAreaIds: number[]) => {
     this.store.dispatch(AreaActions.deleteMultipleUserDefinedAreas({ userAreaIds }));
   };
-  //behövs dehär previs ovanför??
-
-  /*deleteAreasByCategory = async (categoryId: number) => {
-    const confirm = await this.dialogService.open<boolean>(
-      ConfirmationModalComponent, this.moduleRef, {
-        data: {
-          header: this.translateService.instant('map.user-area.delete-areas-by-category.modal.header'),
-          message: this.translateService.instant('map.user-area.delete-areas-by-category.modal.message'),
-          confirmText: this.translateService.instant('controls.delete'),
-          confirmColor: 'warn',
-          cancelClass: 'primary',
-          dialogClass: 'center'
-        }
-      });
-
-    if (confirm) {
-      this.store.dispatch(AreaActions.deleteAreasByCategory({ categoryId }));
-    }
-  };*/
 
   deleteAreasByCategory = async (categoryId: number) => {
     const confirm = await this.dialogService.open<boolean>(
@@ -226,8 +207,22 @@ export class AreaSelectionComponent implements OnChanges, OnInit {
     // toggle visibily of area?
   }
 
-  deleteUserAreaCategory = (categoryId: number) => {
-  this.store.dispatch(AreaActions.deleteUserAreaCategory({ categoryId }));
+  deleteUserAreaCategory = async (categoryId: number) => {
+    const confirm = await this.dialogService.open<boolean>(
+    ConfirmationModalComponent, this.moduleRef, {
+      data: {
+        header: this.translateService.instant('map.user-area.delete-user-category.modal.header'),
+        message: this.translateService.instant('map.user-area.delete-user-category.modal.message'),
+        confirmText: this.translateService.instant('controls.delete'),
+        confirmColor: 'warn',
+        cancelClass: 'primary',
+        dialogClass: 'center'
+      }
+    });
+
+    if (confirm) {
+      this.store.dispatch(AreaActions.deleteUserAreaCategory({ categoryId }));
+    }
   };
 
   private filterAreas() {
