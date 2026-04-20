@@ -1,4 +1,4 @@
-import { ErrorMessage } from "@data/message/message.interfaces";
+import { ErrorMessage } from '@data/message/message.interfaces';
 
 export interface UserSettings {
   locale?: string | undefined;

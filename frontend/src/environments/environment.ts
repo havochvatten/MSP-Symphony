@@ -4,6 +4,9 @@
 
 export const environment = {
   production: false,
+  // Change this line to switch branding file
+  brandingFile: 'branding.json',          // ← generic by default
+  //brandingFile: 'branding_swam.json',  // ← uncomment for SwAM
   showBaseCalculations: false,
   showIncludeCoastCheckbox: true,
   apiBaseUrl: "/symphony-ws/service",

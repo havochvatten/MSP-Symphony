@@ -1,6 +1,15 @@
-import { AfterViewInit, Component, EventEmitter, HostListener, Input,
-  NgModuleRef, OnDestroy,
-  Output, inject, ElementRef, ViewChild
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  inject,
+  Input,
+  NgModuleRef,
+  OnDestroy,
+  Output,
+  ViewChild
 } from '@angular/core';
 import { Coordinate } from 'ol/coordinate';
 import { firstValueFrom, Observable, skipWhile, Subscription } from 'rxjs';
@@ -11,8 +20,8 @@ import { MetadataSelectors } from '@data/metadata';
 import { AreaActions, AreaSelectors } from '@data/area';
 import { UserSelectors } from '@data/user';
 import { ScenarioSelectors } from '@data/scenario';
-import { MessageActions } from "@data/message";
-import { CalculationActions } from "@data/calculation";
+import { MessageActions } from '@data/message';
+import { CalculationActions } from '@data/calculation';
 import { Polygon, StatePath } from '@data/area/area.interfaces';
 import { CalculationService } from '@data/calculation/calculation.service';
 import { StaticImageOptions } from '@data/calculation/calculation.interfaces';
@@ -33,22 +42,19 @@ import { ScenarioLayer } from '@src/app/map-view/map/layers/scenario-layer';
 import AreaLayer from '@src/app/map-view/map/layers/area-layer';
 import { Extent } from 'ol/extent';
 import { DataLayerService } from '@src/app/map-view/map/layers/data-layer.service';
-import { isEqual } from "@shared/common.util";
-import { dieCutPolygons, turfMergeAll } from "@shared/turf-helper/turf-helper";
-import { SelectIntersectionComponent } from "@shared/select-intersection/select-intersection.component";
-import { MultiPolygon, Polygon as OLPolygon } from "ol/geom";
-import GeoJSON from "ol/format/GeoJSON";
-import { Geometry } from "geojson";
-import { MergeAreasModalComponent } from "@src/app/map-view/map/merge-areas-modal/merge-areas-modal.component";
-import { AreaSelectionConfig } from "@shared/select-intersection/select-intersection.interfaces";
-import { AreaHighlightLayer } from "@src/app/map-view/map/layers/area-highlight-layer";
-import { ReliabilityLayer } from "@src/app/map-view/map/layers/reliability-layer";
-import {
-  BandType,
-  ReliabilityMap,
-} from "@data/metadata/metadata.interfaces";
-import { MapViewModule } from "@src/app/map-view/map-view.module";
-import { ScenarioService } from "@data/scenario/scenario.service";
+import { isEqual } from '@shared/common.util';
+import { dieCutPolygons, turfMergeAll } from '@shared/turf-helper/turf-helper';
+import { SelectIntersectionComponent } from '@shared/select-intersection/select-intersection.component';
+import { MultiPolygon, Polygon as OLPolygon } from 'ol/geom';
+import GeoJSON from 'ol/format/GeoJSON';
+import { Geometry } from 'geojson';
+import { MergeAreasModalComponent } from '@src/app/map-view/map/merge-areas-modal/merge-areas-modal.component';
+import { AreaSelectionConfig } from '@shared/select-intersection/select-intersection.interfaces';
+import { AreaHighlightLayer } from '@src/app/map-view/map/layers/area-highlight-layer';
+import { ReliabilityLayer } from '@src/app/map-view/map/layers/reliability-layer';
+import { BandType, ReliabilityMap } from '@data/metadata/metadata.interfaces';
+import { MapViewModule } from '@src/app/map-view/map-view.module';
+import { ScenarioService } from '@data/scenario/scenario.service';
 
 @Component({
   selector: 'app-map',
@@ -85,7 +91,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   private readonly moduleRef = inject(NgModuleRef<MapViewModule>);
 
-  private reliabilitySubject$?: Observable<ReliabilityMap | null>
+  private reliabilitySubject$?: Observable<ReliabilityMap | null>;
   private reliabilitySubscription$?: Subscription;
 
   // layers
@@ -109,65 +115,81 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private aliasing = true;
 
   constructor() {
-
     this.storeSubscription = this.store
       .select(MetadataSelectors.selectVisibleBands)
-      .subscribe(components => { // FIXME
+      .subscribe((components) => {
+        // FIXME
         this.bandLayer?.setVisibleBands('ECOSYSTEM', components.ecoComponent);
         this.bandLayer?.setVisibleBands('PRESSURE', components.pressureComponent);
       });
 
     this.activeScenario$ = this.store.select(ScenarioSelectors.selectActiveScenario);
 
-    this.scenarioSubscription = this.activeScenario$.pipe(
-      distinctUntilChanged(
-        (prev: Scenario|undefined, curr: Scenario|undefined) => prev?.id === curr?.id &&
-          isEqual(prev?.areas.map(a => a.id), curr?.areas.map(a => a.id))),
-      isNotNullOrUndefined(),
-    ).subscribe((scenario: Scenario) => {
-      this.areaLayer.deselectAreas();
+    this.scenarioSubscription = this.activeScenario$
+      .pipe(
+        distinctUntilChanged(
+          (prev: Scenario | undefined, curr: Scenario | undefined) =>
+            prev?.id === curr?.id &&
+            isEqual(
+              prev?.areas.map((a) => a.id),
+              curr?.areas.map((a) => a.id)
+            )
+        ),
+        isNotNullOrUndefined()
+      )
+      .subscribe((scenario: Scenario) => {
+        this.areaLayer.deselectAreas();
 
-      this.scenarioLayer.clearLayers();
+        this.scenarioLayer.clearLayers();
 
-      this.scenarioLayer.setScenarioBoundary(scenario);
+        this.scenarioLayer.setScenarioBoundary(scenario);
 
-      this.zoomToExtent(this.scenarioLayer.getBoundaryFeature()!.getGeometry()!.getExtent(),
-        500);
-    });
+        this.zoomToExtent(this.scenarioLayer.getBoundaryFeature()!.getGeometry()!.getExtent(), 500);
+      });
 
-    this.scenarioCloseSubscription = this.activeScenario$.pipe(
-      skip(1), // undefined as always emitted on start, which does indicate a scenario close
-      filter(s => s === undefined)
-    ).subscribe(() => {  // A scenario was closed
-      // TODO: Remove result layer if loadResultLayerOnOpen is true
-      this.scenarioLayer.clearLayers();
+    this.scenarioCloseSubscription = this.activeScenario$
+      .pipe(
+        skip(1), // undefined as always emitted on start, which does indicate a scenario close
+        filter((s) => s === undefined)
+      )
+      .subscribe(() => {
+        // A scenario was closed
+        // TODO: Remove result layer if loadResultLayerOnOpen is true
+        this.scenarioLayer.clearLayers();
 
-      this.setZoom(env.map.initialZoom); // visual cue that scenario has been exited
-    });
+        this.setZoom(env.map.initialZoom); // visual cue that scenario has been exited
+      });
 
     // Use store instead?
-    this.resultSubscription = this.calcService.resultReady$.subscribe((result: StaticImageOptions) => {
-      this.resultLayerGroup.addResult(result);
-    });
+    this.resultSubscription = this.calcService.resultReady$.subscribe(
+      (result: StaticImageOptions) => {
+        this.resultLayerGroup.addResult(result);
+      }
+    );
 
-    this.resultDeletedSubscription = this.calcService.resultRemoved$.subscribe((removedId: number) => {
-      this.resultLayerGroup.removeResult(removedId);
-    });
+    this.resultDeletedSubscription = this.calcService.resultRemoved$.subscribe(
+      (removedId: number) => {
+        this.resultLayerGroup.removeResult(removedId);
+      }
+    );
 
-    this.aliasingSubscription = this.store.select(UserSelectors.selectAliasing).subscribe((aliasing: boolean) => {
-      this.resultLayerGroup?.toggleImageSmoothing(aliasing);
-      this.bandLayer?.toggleImageSmoothing(aliasing);
-      this.aliasing = aliasing;
-    });
+    this.aliasingSubscription = this.store
+      .select(UserSelectors.selectAliasing)
+      .subscribe((aliasing: boolean) => {
+        this.resultLayerGroup?.toggleImageSmoothing(aliasing);
+        this.bandLayer?.toggleImageSmoothing(aliasing);
+        this.aliasing = aliasing;
+      });
 
-    this.selectedAreasSubscription = this.store.select(AreaSelectors.selectSelectedArea).subscribe((selectedArea) => {
-      this.selectedAreas = selectedArea;
-    });
+    this.selectedAreasSubscription = this.store
+      .select(AreaSelectors.selectSelectedArea)
+      .subscribe((selectedArea) => {
+        this.selectedAreas = selectedArea;
+      });
   }
 
   async ngAfterViewInit() {
-    if (!env.map.disableBackgroundMap)
-      this.background = new BackgroundLayer('OpenSeaMap');
+    if (!env.map.disableBackgroundMap) this.background = new BackgroundLayer('OpenSeaMap');
 
     // TODO useGeographic function in the ‘ol/proj’?
     this.map = new OLMap({
@@ -191,7 +213,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         center: proj.fromLonLat(this.mapCenter!),
         zoom: env.map.initialZoom,
         maxZoom: env.map.maxZoom,
-        minZoom: env.map.minZoom,
+        minZoom: env.map.minZoom
         // Web Mercator is Open Layers default (like OSM). Use EPSG:4326 instead?
         // projection: proj.get(AppSettings.MAP_PROJECTION),
       }),
@@ -199,9 +221,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     });
 
     this.store.select(AreaSelectors.selectAreaFeatures);
-    const boundaries = await firstValueFrom(this.store.select(AreaSelectors.selectBoundaryFeatures).pipe(
-      skipWhile(value => !value || value.features.length === 0)
-    ));
+    const boundaries = await firstValueFrom(
+      this.store
+        .select(AreaSelectors.selectBoundaryFeatures)
+        .pipe(skipWhile((value) => !value || value.features.length === 0))
+    );
 
     this.resultLayerGroup = new ResultLayerGroup(this);
     this.map.addLayer(this.resultLayerGroup);
@@ -209,83 +233,102 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       featureProjection: this.map.getView().getProjection()
     });
 
-    this.scenarioLayer = new ScenarioLayer(this.scenarioService, this.map.getView().getProjection().getCode());
+    this.scenarioLayer = new ScenarioLayer(
+      this.scenarioService,
+      this.map.getView().getProjection().getCode()
+    );
 
     this.areaLayer = new AreaLayer(
-        this.map, this.dispatchSelectionUpdate, this.zoomToExtent,
-        this.onDrawEnd, this.onDrawInvalid, this.onDownloadClick, this.onSplitClick, this.onMergeClick,
-        this.scenarioLayer, this.translateService, this.geoJson, this.areaOptionsMenu.nativeElement); // Will add itself to the map
+      this.map,
+      this.dispatchSelectionUpdate,
+      this.zoomToExtent,
+      this.onDrawEnd,
+      this.onDrawInvalid,
+      this.onDownloadClick,
+      this.onSplitClick,
+      this.onMergeClick,
+      this.scenarioLayer,
+      this.translateService,
+      this.geoJson,
+      this.areaOptionsMenu.nativeElement
+    ); // Will add itself to the map
     this.areaLayer.initialize();
     this.areaHighlightLayer = new AreaHighlightLayer(this.geoJson);
 
     this.areaLayer.setBoundaries(boundaries);
 
-    this.areaSubscription = this.store.select(AreaSelectors.selectAreaFeatures)
-      .pipe(skipWhile(value => !value || value.length === 0))
-      .subscribe((features) =>
-        {
-          this.areaLayer.mapAreaFeatures(features);
-          this.areaHighlightLayer.mapAreaLayers(features);
-        }
-      );
+    this.areaSubscription = this.store
+      .select(AreaSelectors.selectAreaFeatures)
+      .pipe(skipWhile((value) => !value || value.length === 0))
+      .subscribe((features) => {
+        this.areaLayer.mapAreaFeatures(features);
+        this.areaHighlightLayer.mapAreaLayers(features);
+      });
 
-    this.store.select(
-      AreaSelectors.selectVisibleAreas).subscribe((paths) => {
+    this.store.select(AreaSelectors.selectVisibleAreas).subscribe((paths) => {
       this.areaLayer.setVisibleAreas(paths.visible, paths.selected);
     });
 
-    this.reliabilitySubject$ = this.store.select(MetadataSelectors.selectReliabilityMap).pipe(
-      skipWhile(reliabilityMap => reliabilityMap === null)
-    );
+    this.reliabilitySubject$ = this.store
+      .select(MetadataSelectors.selectReliabilityMap)
+      .pipe(skipWhile((reliabilityMap) => reliabilityMap === null));
 
-    this.reliabilitySubscription$ = this.reliabilitySubject$.pipe(
-      take(1)
-      ).subscribe((reliabilityMap ) => {
+    this.reliabilitySubscription$ = this.reliabilitySubject$
+      .pipe(take(1))
+      .subscribe((reliabilityMap) => {
+        this.reliabilityLayers = {
+          ECOSYSTEM: new ReliabilityLayer(reliabilityMap!.ECOSYSTEM, true, this.geoJson!),
+          PRESSURE: new ReliabilityLayer(reliabilityMap!.PRESSURE, true, this.geoJson!),
+          ECOSYSTEM_OL: new ReliabilityLayer(reliabilityMap!.ECOSYSTEM, false, this.geoJson!),
+          PRESSURE_OL: new ReliabilityLayer(reliabilityMap!.PRESSURE, false, this.geoJson!)
+        };
 
-      this.reliabilityLayers = {
-        ECOSYSTEM: new ReliabilityLayer(reliabilityMap!.ECOSYSTEM, true, this.geoJson!),
-        PRESSURE: new ReliabilityLayer(reliabilityMap!.PRESSURE, true, this.geoJson!),
-        ECOSYSTEM_OL: new ReliabilityLayer(reliabilityMap!.ECOSYSTEM, false, this.geoJson!),
-        PRESSURE_OL: new ReliabilityLayer(reliabilityMap!.PRESSURE, false, this.geoJson!)
-      };
+        this.map!.getLayers().insertAt(1, this.reliabilityLayers.ECOSYSTEM);
+        this.map!.getLayers().insertAt(1, this.reliabilityLayers.PRESSURE);
+        this.map!.addLayer(this.reliabilityLayers.ECOSYSTEM_OL);
+        this.map!.addLayer(this.reliabilityLayers.PRESSURE_OL);
 
-      this.map!.getLayers().insertAt(1, this.reliabilityLayers.ECOSYSTEM);
-      this.map!.getLayers().insertAt(1, this.reliabilityLayers.PRESSURE);
-      this.map!.addLayer(this.reliabilityLayers.ECOSYSTEM_OL);
-      this.map!.addLayer(this.reliabilityLayers.PRESSURE_OL);
+        this.store
+          .select(MetadataSelectors.selectVisibleReliability)
+          .subscribe((visibleReliability) => {
+            this.reliabilityLayers.ECOSYSTEM.clear();
+            this.reliabilityLayers.PRESSURE.clear();
+            this.reliabilityLayers.ECOSYSTEM_OL.clear();
+            this.reliabilityLayers.PRESSURE_OL.clear();
 
-      this.store.select(MetadataSelectors.selectVisibleReliability).subscribe( (visibleReliability) => {
-        this.reliabilityLayers.ECOSYSTEM.clear();
-        this.reliabilityLayers.PRESSURE.clear();
-        this.reliabilityLayers.ECOSYSTEM_OL.clear();
-        this.reliabilityLayers.PRESSURE_OL.clear();
-
-        if (visibleReliability !== null) {
-          this.showReliability(
-            visibleReliability.band.symphonyCategory,
-            visibleReliability.band.bandNumber,
-            visibleReliability.opaque);
-        }
+            if (visibleReliability !== null) {
+              this.showReliability(
+                visibleReliability.band.symphonyCategory,
+                visibleReliability.band.bandNumber,
+                visibleReliability.opaque
+              );
+            }
+          });
       });
-    });
 
     this.map!.addLayer(this.areaLayer);
     this.map!.addLayer(this.scenarioLayer);
     this.map!.addLayer(this.areaHighlightLayer);
 
-    this.userSubscription = this.store        /* TOOD: Just get from static environment?*/
-      .select(UserSelectors.selectBaseline).pipe(isNotNullOrUndefined())
+    this.userSubscription = this.store /* TOOD: Just get from static environment?*/
+      .select(UserSelectors.selectBaseline)
+      .pipe(isNotNullOrUndefined())
       .pipe(isNotNullOrUndefined())
       .subscribe((baseline) => {
         this.baselineName = baseline.name;
-        this.bandLayer = new BandLayer(baseline.name, this.dataLayerService, this.store, this.aliasing);
+        this.bandLayer = new BandLayer(
+          baseline.name,
+          this.dataLayerService,
+          this.store,
+          this.aliasing
+        );
         this.map!.getLayers().insertAt(1, this.bandLayer); // on top of background layer
       });
   }
 
   public clearResult() {
     this.resultLayerGroup.clearResult();
-    this.store.dispatch(CalculationActions.resetComparisonLegend())
+    this.store.dispatch(CalculationActions.resetComparisonLegend());
   }
 
   public highlightArea = (statePath: StatePath, highlight: boolean) => {
@@ -296,14 +339,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         this.areaHighlightLayer.clearHighlight(statePath);
       }
     }
-  }
+  };
 
   public showReliability = (bandType: BandType, bandNumber: number, opaqueLayer: boolean) => {
-    const layerKey = bandType + (opaqueLayer ? '' : '_OL') as keyof typeof this.reliabilityLayers;
+    const layerKey = (bandType + (opaqueLayer ? '' : '_OL')) as keyof typeof this.reliabilityLayers;
     this.reliabilityLayers[layerKey].highlightReliability(bandNumber);
-  }
+  };
 
-  public emitLayerChange(resultIds: number[], cmpCount: number):void {
+  public emitLayerChange(resultIds: number[], cmpCount: number): void {
     this.resultLayerGroupChange.emit(resultIds.length);
     this.resultLayerGroupChangeCmp.emit(cmpCount);
     this.store.dispatch(CalculationActions.setVisibleResultLayers({ visibleResults: resultIds }));
@@ -350,15 +393,17 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   };
 
   onDrawInvalid = async () => {
-    this.store.dispatch(MessageActions.addPopupMessage({
-      message: {
-        type: 'WARNING',
-        title: this.translateService.instant('map.user-area.create.invalid-area.title'),
-        message: this.translateService.instant('map.user-area.create.invalid-area.message'),
-        uuid: uuid()
-      }
-    }));
-  }
+    this.store.dispatch(
+      MessageActions.addPopupMessage({
+        message: {
+          type: 'WARNING',
+          title: this.translateService.instant('map.user-area.create.invalid-area.title'),
+          message: this.translateService.instant('map.user-area.create.invalid-area.message'),
+          uuid: uuid()
+        }
+      })
+    );
+  };
 
   onDrawEnd = async (polygon: Polygon) => {
     const areaName = await this.dialogService.open(CreateUserAreaModalComponent, this.moduleRef);
@@ -375,39 +420,51 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   // Alt key + select area interaction
   onSplitClick = async (feature: Feature, prevFeature: Feature) => {
-    const diff = dieCutPolygons(feature, prevFeature), prevName = prevFeature.get('name');
+    const diff = dieCutPolygons(feature, prevFeature),
+      prevName = prevFeature.get('name');
     if (diff.length > 0) {
-      const areaConf = diff.map( (p, ix) =>
-        this.reprojectAsFragment(p, ['«', areaSliceName(prevName, ix),'»'].join(' ')) ),
-
-        polygonsToSave = await this.dialogService.open(SelectIntersectionComponent, this.moduleRef, {
-          data: {
-            areas: areaConf,
-            multi: true,
-            projection: 'EPSG:4326',
-            reprojection: 'EPSG:3857',
-            headerTextKey: 'map.split-area.modal.header',
-            messageTextKey: diff.length > 1 ? 'map.split-area.modal.message' : 'map.split-area.modal.message-single',
-            confirmTextKey: diff.length > 1 ? 'map.split-area.modal.confirm' : 'map.split-area.modal.confirm-single',
-            metaDescriptionTextKey: 'map.split-area.modal.meta-description'
+      const areaConf = diff.map((p, ix) =>
+          this.reprojectAsFragment(p, ['«', areaSliceName(prevName, ix), '»'].join(' '))
+        ),
+        polygonsToSave = (await this.dialogService.open(
+          SelectIntersectionComponent,
+          this.moduleRef,
+          {
+            data: {
+              areas: areaConf,
+              multi: true,
+              projection: 'EPSG:4326',
+              reprojection: 'EPSG:3857',
+              headerTextKey: 'map.split-area.modal.header',
+              messageTextKey:
+                diff.length > 1
+                  ? 'map.split-area.modal.message'
+                  : 'map.split-area.modal.message-single',
+              confirmTextKey:
+                diff.length > 1
+                  ? 'map.split-area.modal.confirm'
+                  : 'map.split-area.modal.confirm-single',
+              metaDescriptionTextKey: 'map.split-area.modal.meta-description'
+            }
           }
-        }) as boolean[];
+        )) as boolean[];
 
       polygonsToSave.forEach((p, ix) => {
-        if(p) {
-          this.store.dispatch(AreaActions.createUserDefinedArea({
-            name: areaSliceName(prevFeature.get('name'), ix),
-            polygon: MapComponent.convertToSave(areaConf[ix].polygon),
-            description: ''
-          }));
+        if (p) {
+          this.store.dispatch(
+            AreaActions.createUserDefinedArea({
+              name: areaSliceName(prevFeature.get('name'), ix),
+              polygon: MapComponent.convertToSave(areaConf[ix].polygon),
+              description: ''
+            })
+          );
         }
       });
     }
-  }
+  };
 
   // (Alt + Shift) keys + select area interaction
   onMergeClick = async (lastFeature: Feature) => {
-
     // Some readability have been sacrificed for the convenience of
     // utilizing existing component logic (and versatility of integers).
     // The MergeAreasModal component will return either:
@@ -418,30 +475,31 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     // To access the input arrays we, however arbitrarily, subtract 1
     // from the return value and treat -1 as the special case to indicate
     // new area creation.
-    const selectedFeatures =
-      [...(this.areaLayer.getFeaturesByStatePaths(this.selectedAreas) || []), lastFeature],
-      names = selectedFeatures.map(f => f.get('name')),
-      paths = selectedFeatures.map(f => f.get('statePath')),
+    const selectedFeatures = [
+        ...(this.areaLayer.getFeaturesByStatePaths(this.selectedAreas) || []),
+        lastFeature
+      ],
+      names = selectedFeatures.map((f) => f.get('name')),
+      paths = selectedFeatures.map((f) => f.get('statePath')),
       merged = turfMergeAll(selectedFeatures);
 
-    if(merged !== null) {
-      const areaIndexToSave = await this.dialogService.open(MergeAreasModalComponent, this.moduleRef, {
-        data : {
-          areas: [this.reprojectAsFragment(merged, '')],
-          paths,
-          names
-        }
-      }) as number - 1;
+    if (merged !== null) {
+      const areaIndexToSave =
+        ((await this.dialogService.open(MergeAreasModalComponent, this.moduleRef, {
+          data: {
+            areas: [this.reprojectAsFragment(merged, '')],
+            paths,
+            names
+          }
+        })) as number) - 1;
 
       if (areaIndexToSave >= -1) {
-
         const areaToSave = {
           id: areaIndexToSave === -1 ? 0 : paths[areaIndexToSave][1],
-          name: areaIndexToSave === -1 ?
-            names[0] + ' extension' : names[areaIndexToSave],
+          name: areaIndexToSave === -1 ? names[0] + ' extension' : names[areaIndexToSave],
           polygon: MapComponent.convertToSave(merged!),
-          description: ['"', names[0], '" extended by "', names[1], '"' ].join('')
-        }
+          description: ['"', names[0], '" extended by "', names[1], '"'].join('')
+        };
 
         if (areaIndexToSave === -1) {
           this.store.dispatch(AreaActions.createUserDefinedArea(areaToSave));
@@ -450,35 +508,39 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         }
       }
     }
-  }
+  };
 
   onDownloadClick = async (path: string) => {
     document.location.href = env.apiBaseUrl + '/areas/download?path=' + path;
-  }
+  };
 
   // The virtual transform methods on OpenLayers Geometry subclasses
   // apparently does not support the EPSG:6326 projection used by turfjs
   convert6326(polygon: Polygon): Geometry {
     return this.geoJson!.writeGeometryObject(
-      this.geoJson!.readGeometry(polygon, { featureProjection: 'EPSG:4326', dataProjection: 'EPSG:6326'}),
-      { featureProjection: 'EPSG:4326'})
+      this.geoJson!.readGeometry(polygon, {
+        featureProjection: 'EPSG:4326',
+        dataProjection: 'EPSG:6326'
+      }),
+      { featureProjection: 'EPSG:4326' }
+    );
   }
 
-  reprojectAsFragment(p: Polygon, description: string) : AreaSelectionConfig {
+  reprojectAsFragment(p: Polygon, description: string): AreaSelectionConfig {
     return {
       polygon: this.convert6326(p),
       metaDescription: description
     };
   }
 
-  static convertToSave(polygon : unknown): Polygon {
-     const transformed = (polygon as Polygon).type === 'MultiPolygon' ?
-        new MultiPolygon((polygon as GeoJSON.MultiPolygon).coordinates) :
-        new OLPolygon((polygon as GeoJSON.Polygon).coordinates);
+  static convertToSave(polygon: unknown): Polygon {
+    const transformed =
+      (polygon as Polygon).type === 'MultiPolygon'
+        ? new MultiPolygon((polygon as GeoJSON.MultiPolygon).coordinates)
+        : new OLPolygon((polygon as GeoJSON.Polygon).coordinates);
     transformed.transform('EPSG:3857', 'EPSG:4326');
 
-    return {  type:        transformed.getType().toString(),
-              coordinates: transformed.getCoordinates() };
+    return { type: transformed.getType().toString(), coordinates: transformed.getCoordinates() };
   }
 
   public center() {
@@ -504,7 +566,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   public zoomToExtent(extent: Extent, duration: number) {
     const padding = env.map.zoomPadding;
     this.map!.getView().fit(extent, {
-      padding: [padding, padding, padding, /*40 rem=*/400], // TODO: set last element to width of left side panel, if
+      padding: [padding, padding, padding, /*40 rem=*/ 400], // TODO: set last element to width of left side panel, if
       // open
       // TODO observe state of sidebar toggle
       duration
@@ -514,8 +576,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   public setMapOpacity(opacity: number) {
     // The event object is sometimes emitted when using this function
     // in an input event, which makes the opacity reset to 1
-    if (this.background)
-      this.background.setOpacity(opacity);
+    if (this.background) this.background.setOpacity(opacity);
   }
 }
 

@@ -1,0 +1,17 @@
+{
+    "logoSrc": "assets/branding/swam/hav-logo-blue.svg",
+    "logoAlt": "Havs och Vattenmyndigheten",
+    "orgName": "Havs och Vattenmyndigheten",
+    "appTitle": "Symphony – Havs- och vattenmyndigheten",
+    "footerText": "© Havs och Vattenmyndigheten",
+    "showLogos": true,
+    "loginLogoSrc": "assets/long-tailed-duck.svg",
+    "loginLogoAlt": "Alfågel",
+    "flagSrc": "assets/branding/swam/Sweden-SwAM-white-horizontal-no-borders.svg",
+    "flagAlt": "Sverige : Havs och Vattenmyndigheten",
+    "reportLogoSrc": "assets/branding/swam/hav-logo-black.svg",
+    "reportLogoAlt": "Havs och Vattenmyndigheten",
+    "reportCountryLogoSrc": "assets/branding/swam/sweden-logotype-english-nomargin.svg",
+    "reportCountryLogoAlt": "Sweden",
+    "showReportClosingMatter": true
+}

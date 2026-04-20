@@ -1,28 +1,36 @@
 <script src="calculation-report.component.ts"></script>
 @if (reportSignal()) {
   <tbody>
-    <header class="title">
-      <h3>{{ report().name }}</h3>
-    </header>
-    <div class="logo">
-      <img src="../../assets/sweden-logotype-english-nomargin.svg" class="sweden"
-        alt="{{ 'branding.SI-Sweden' | translate }}"/>
-      <img src="../../assets/hav-logo-black.svg"
-        alt="{{ 'branding.SwAM' | translate }}"/>
-    </div>
-    <app-calculation-image [imageURL]="imageUrl"></app-calculation-image>
+  <header class="title">
+    <h3>{{ report().name }}</h3>
+  </header>
+  <div class="logo">
+    @if (brandingService.configData.showLogos && brandingService.configData.reportLogoSrc) {
+      @if (brandingService.configData.reportCountryLogoSrc) {
+        <img
+          [src]="brandingService.configData.reportCountryLogoSrc"
+          class="report-country-logo"
+          [alt]="brandingService.configData.reportCountryLogoAlt"/>
+      }
+      <img
+        [src]="brandingService.configData.reportLogoSrc"
+        class="report-logo"
+        [alt]="brandingService.configData.reportLogoAlt"/>
+    }
+  </div>
+  <app-calculation-image [imageURL]="imageUrl"></app-calculation-image>
     @if ((metadata$ | async); as metadata) {
       <app-cumulative-effect-etc [reports]="[report()]"
-        [area]="area"
-        [normalization]="report().normalization"
-        [percentileValue]="metadata.percentileValue"
-        [bandDict]="metadata.bandDictionary"
-        [normalized]="isDomainNormalization"
-        [locale]="locale"
+                                 [area]="area"
+                                 [normalization]="report().normalization"
+                                 [percentileValue]="metadata.percentileValue"
+                                 [bandDict]="metadata.bandDictionary"
+                                 [normalized]="isDomainNormalization"
+                                 [locale]="locale"
       ></app-cumulative-effect-etc>
       <ng-container>
         <div id="matrix-selection">
-          <h4>{{'report.sensitivity-matrices.title' | translate}}</h4>
+          <h4>{{ 'report.sensitivity-matrices.title' | translate }}</h4>
           <table>
             @for (matrixMap of getGroupedMatrixMap() | keyvalue; track $index) {
               <tr>
@@ -37,75 +45,77 @@
           <!--          <tr *ngFor="let areaType of matrix.areaTypes | keyvalue">-->
           <!--            <th>{{ areaType.key | titlecase }}:</th>-->
           <!--            <td>{{ areaType.value.join() }}</td>-->
-        <!--          </tr>-->
-      <!--        </table>-->
-    <!--      </ng-container>-->
-  </div>
-</ng-container>
-<app-highest-impacts
-  class="pressure-impacts"
-  [title]="'report.highest-impact.pressure' | translate"
-  [bandGroups]="metadata.metadata.pressureComponent"
-  [impacts]="report().impactPerPressure"
-  [total]="report().total"
-  [locale]="locale"
-></app-highest-impacts>
-@if (report().impactPerEcoComponent) {
-  <app-highest-impacts
-    class="ecocomponent-impacts"
-    [title]="'report.highest-impact.ecocomponent' | translate"
-    [bandGroups]="metadata.metadata.ecoComponent"
-    [impacts]="report().impactPerEcoComponent"
-    [total]="report().total"
-    [locale]="locale"
-  ></app-highest-impacts>
-}
-<app-result-color-scale [locale]="locale" class="calc-report-legend"></app-result-color-scale>
-<app-pressure-chart [id]="'sankey-single'" [diagramId]="'sankey-single'"
-  [chartWeightThreshold]="formatPercent(report().chartWeightThreshold, this.locale)"
-  [data]="formatChartData(report().chartData, metadata.bandDictionary)"
-  [locale]="locale"
-></app-pressure-chart>
-<app-scenario-changes
-  [scenarioChanges]="report().scenarioChanges"
-  [bandDict]="metadata.bandDictionary"
-  [areaDict]="areaDict"
-></app-scenario-changes>
-<!--TODO Localize names -->
-<app-impact-table class="pressure-impacts"
-  [title]="'report.impact-table.pressure' | translate"
-  [bandGroups]="metadata.metadata.pressureComponent"
-  [scenarioImpacts]="[report().impactPerPressure, calculatePercentOfTotal(report().impactPerPressure, report().total)]"
-  [names]="['report.impact-table.cumulative' | translate, 'report.impact-table.percentage-of-total' | translate]"
-  [locale]="locale"
-></app-impact-table>
-<app-impact-table class="ecocomponent-impacts"
-  [title]="'report.impact-table.ecoComponent' | translate"
-  [bandGroups]="metadata.metadata.ecoComponent"
-  [scenarioImpacts]="[report().impactPerEcoComponent, calculatePercentOfTotal(report().impactPerEcoComponent, report().total)]"
-  [names]="['report.impact-table.cumulative' | translate, 'report.impact-table.percentage-of-total' | translate]"
-  [locale]="locale"
-></app-impact-table>
-}
-<app-histogram
+          <!--          </tr>-->
+          <!--        </table>-->
+          <!--      </ng-container>-->
+        </div>
+      </ng-container>
+      <app-highest-impacts
+        class="pressure-impacts"
+        [title]="'report.highest-impact.pressure' | translate"
+        [bandGroups]="metadata.metadata.pressureComponent"
+        [impacts]="report().impactPerPressure"
+        [total]="report().total"
+        [locale]="locale"
+      ></app-highest-impacts>
+      @if (report().impactPerEcoComponent) {
+        <app-highest-impacts
+          class="ecocomponent-impacts"
+          [title]="'report.highest-impact.ecocomponent' | translate"
+          [bandGroups]="metadata.metadata.ecoComponent"
+          [impacts]="report().impactPerEcoComponent"
+          [total]="report().total"
+          [locale]="locale"
+        ></app-highest-impacts>
+      }
+      <app-result-color-scale [locale]="locale" class="calc-report-legend"></app-result-color-scale>
+      <app-pressure-chart [id]="'sankey-single'" [diagramId]="'sankey-single'"
+                          [chartWeightThreshold]="formatPercent(report().chartWeightThreshold, this.locale)"
+                          [data]="formatChartData(report().chartData, metadata.bandDictionary)"
+                          [locale]="locale"
+      ></app-pressure-chart>
+      <app-scenario-changes
+        [scenarioChanges]="report().scenarioChanges"
+        [bandDict]="metadata.bandDictionary"
+        [areaDict]="areaDict"
+      ></app-scenario-changes>
+      <!--TODO Localize names -->
+      <app-impact-table class="pressure-impacts"
+                        [title]="'report.impact-table.pressure' | translate"
+                        [bandGroups]="metadata.metadata.pressureComponent"
+                        [scenarioImpacts]="[report().impactPerPressure, calculatePercentOfTotal(report().impactPerPressure, report().total)]"
+                        [names]="['report.impact-table.cumulative' | translate, 'report.impact-table.percentage-of-total' | translate]"
+                        [locale]="locale"
+      ></app-impact-table>
+      <app-impact-table class="ecocomponent-impacts"
+                        [title]="'report.impact-table.ecoComponent' | translate"
+                        [bandGroups]="metadata.metadata.ecoComponent"
+                        [scenarioImpacts]="[report().impactPerEcoComponent, calculatePercentOfTotal(report().impactPerEcoComponent, report().total)]"
+                        [names]="['report.impact-table.cumulative' | translate, 'report.impact-table.percentage-of-total' | translate]"
+                        [locale]="locale"
+      ></app-impact-table>
+    }
+  <app-histogram
     [title]="('report.histogram.caption'| translate) +
         ' (' + ('map.editor.operation.'+ (report().operationName) + '.title' | translate | lowercase) +')'"
-  [report]="report()"
-  [locale]="locale"
+    [report]="report()"
+    [locale]="locale"
   >
-</app-histogram>
-<p class="closing-matter">
-  {{ 'report.description' | translate }}<br/>
-  {{ 'report.more-info' | translate }}
-  <a [href]="'report.link' | translate" target="_blank" rel="noreferrer">
-    www.havochvatten.se
-  </a>.
-</p>
-<p class="closing-matter-smaller">
-  Symphony version {{ symphonyVersion }}<br/>
-  {{ report().timestamp | date: 'yyyy-MM-dd HH:mm' }}
-</p>
-</tbody>
+  </app-histogram>
+    @if (brandingService.configData.showReportClosingMatter) {
+      <p class="closing-matter">
+        {{ 'report.description' | translate }}<br/>
+        {{ 'report.more-info' | translate }}
+        <a [href]="'report.link' | translate" target="_blank" rel="noreferrer">
+          www.havochvatten.se
+        </a>.
+      </p>
+    }
+  <p class="closing-matter-smaller">
+    Symphony version {{ symphonyVersion }}<br/>
+    {{ report().timestamp | date: 'yyyy-MM-dd HH:mm' }}
+  </p>
+  </tbody>
 }
 
 @if (loadingReport) {
@@ -121,6 +131,6 @@
     <h3>
       {{ 'report.error-message' | translate }}
     </h3>
-    <img src="assets\ill_giftutslapp.png" alt="" />
+    <img src="assets\ill_giftutslapp.png" alt=""/>
   </article>
 }

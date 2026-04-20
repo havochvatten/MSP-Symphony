@@ -1,15 +1,13 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { State } from '@src/app/app-reducer';
+import { Observable, Subscription } from 'rxjs';
 import { UserActions, UserSelectors } from '@data/user';
-import { Subscription, Observable } from 'rxjs';
 import { environment } from '@src/environments/environment.prod';
+import { State } from '@src/app/app-reducer';
+import { BrandingService } from '../core/branding/branding.service';
 import buildInfo from '@src/build-info';
-import {
-  debounceTime,
-  distinctUntilChanged,
-} from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -20,6 +18,7 @@ import {
 export class LoginComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly store = inject<Store<State>>(Store);
+  public brandingService = inject(BrandingService);
 
   loginForm = this.fb.nonNullable.group({
     username: ['', Validators.required],
@@ -40,20 +39,21 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.storeSubscription = this.store.select(UserSelectors.selectLoginError).subscribe(value => {
-      if (value) {
-        this.errorMessage =
-          value.status === 401
-            ? 'login.error.invalid-credentials'
-            : 'login.error.system-unavailable';
-      }
-    });
+    this.storeSubscription = this.store
+      .select(UserSelectors.selectLoginError)
+      .subscribe((value) => {
+        if (value) {
+          this.errorMessage =
+            value.status === 401
+              ? 'login.error.invalid-credentials'
+              : 'login.error.system-unavailable';
+        }
+      });
 
     // Only shows the spinner, no navigation here
-    this.loading = this.store.select(UserSelectors.selectIsInitialLoading).pipe(
-      debounceTime(0),
-      distinctUntilChanged()
-    );
+    this.loading = this.store
+      .select(UserSelectors.selectIsInitialLoading)
+      .pipe(debounceTime(0), distinctUntilChanged());
   }
 
   ngOnDestroy() {

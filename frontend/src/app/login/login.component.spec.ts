@@ -20,15 +20,15 @@ describe('LoginComponent', () => {
         SharedModule,
         TranslationSetupModule,
         MatFormFieldModule,
-        MatInputModule,
+        MatInputModule
       ],
       declarations: [LoginComponent],
       providers: [
         provideMockStore({
           initialState: { user: { baseline: undefined } },
-          selectors: [{ selector: UserSelectors.selectIsInitialLoading, value: false }],
-        }),
-      ],
+          selectors: [{ selector: UserSelectors.selectIsInitialLoading, value: false }]
+        })
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginComponent);

@@ -19,7 +19,7 @@ import { ModalContentComponent } from './modal/modal-content/modal-content.compo
 import { ModalFooterComponent } from './modal/modal-footer/modal-footer.component';
 import { SearchInputComponent } from './search-input/search-input.component';
 import { IconComponent } from './icon/icon.component';
-import { HavLoaderComponent } from './hav-loader/hav-loader.component';
+import { LoaderComponent } from './loader/loader.component';
 import { ToggleComponent } from './toggle/toggle.component';
 import { AccordionBoxComponent, AccordionBoxHeaderComponent, AccordionBoxContentComponent } from './accordion-box/accordion-box.component';
 import { SelectComponent } from './select/select.component';
@@ -65,7 +65,7 @@ import { ChangeLanguageDialogComponent } from './change-language-dialog/change-l
     ModalFooterComponent,
     SearchInputComponent,
     IconComponent,
-    HavLoaderComponent,
+    LoaderComponent,
     ToggleComponent,
     AccordionBoxComponent,
     AccordionBoxHeaderComponent,
@@ -127,7 +127,7 @@ import { ChangeLanguageDialogComponent } from './change-language-dialog/change-l
     ModalContentComponent,
     ModalFooterComponent,
     IconComponent,
-    HavLoaderComponent,
+    LoaderComponent,
     ResultColorScaleComponent,
     PopupMessageComponent,
     StatusIconComponent,
