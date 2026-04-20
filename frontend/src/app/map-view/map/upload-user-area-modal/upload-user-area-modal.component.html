@@ -3,7 +3,7 @@
 
 
 <div [formGroup]="categoryForm">
- <label style="margin-right: 1rem; font-size: 1.3rem;" >{{ 'map.user-area.upload.modal.category' | translate }}</label>
+ <label style="margin-right: 1rem; font-size: 1.5rem;" >{{ 'map.user-area.upload.modal.category' | translate }}</label>
   <select formControlName="categoryId">
       <option value="">Okategoriserad </option>
       <option *ngFor="let cat of categories" [value]="cat.id">
@@ -17,14 +17,23 @@
         type="text"
         formControlName="newCategoryName"
         placeholder="Namn på ny kategori"
+        style= "margin-top: 0.1rem;"
       />
     </div>
   </div>
-<!--FIXME replace with custom "polygon" icon -->
-<input type="file" [accept]="requiredFileType" (change)="onFileSelect($event)" #fileUpload/>
-<div class="loading" *ngIf="loading">
-  <mat-spinner></mat-spinner>
-</div>
+
+  <input type="file" [accept]="requiredFileType" (change)="onFileSelect($event)" #fileUpload/>
+
+  <div *ngIf="uploadedArea" style="margin-top: 0.5rem;">
+    <label style="font-size: 1.5rem; display: block; margin-bottom: 0.1rem;">
+      {{ 'map.user-area.upload.modal.name-placeholder' | translate }}</label>
+    <input
+      type="text"
+      [(ngModel)]="customAreaName"
+      [placeholder]="'map.user-area.upload.modal.new-name-area' | translate"
+      style="width: 94%; margin-top: 0.1rem; font-size: 1.6rem; padding: 1rem 1.2rem; border-radius: 4px; border: 1px solid #ccc;"
+    />
+  </div>
 
 <ng-container>
   <div *ngIf="hasWGS84SRID" class="notice">

@@ -29,6 +29,7 @@ export class UploadUserAreaModalComponent implements OnInit {
   inspectionError?: ServerError;
   categories: { id: number; name: string }[] = [];
   isCreatingNew = false;
+  customAreaName = '';
 
   categoryForm = new FormGroup({
     categoryId: new FormControl(''),
@@ -116,9 +117,19 @@ export class UploadUserAreaModalComponent implements OnInit {
   }
 
   private doImport(categoryId?: number) {
+    console.log('customAreaName:', this.customAreaName);
     this.areaService.confirmUserAreaImport(this.uploadedArea!.key, categoryId)
       .subscribe(
-        importedArea => this.dialog.close(importedArea),
+      importedArea => {
+        if (this.customAreaName && this.customAreaName.length > 0) {
+          this.dialog.close({
+            ...importedArea,
+            areaNames: [this.customAreaName]
+          });
+        } else {
+          this.dialog.close(importedArea);
+        }
+      },
         ({ status, error: message }) => {
           this.store.dispatch(AreaActions.createUserDefinedAreaFailure({ error: { status, message } }));
           this.dialog.close();

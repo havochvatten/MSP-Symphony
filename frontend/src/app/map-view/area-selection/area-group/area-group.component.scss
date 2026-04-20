@@ -43,6 +43,9 @@
     padding: 0;
 
     li {
+      app-edit-area {
+        margin-left: auto;
+      }
       user-select: none;
       position: relative;
       .group-title {
@@ -99,6 +102,9 @@
         padding-left: 3rem;
 
         li {
+          app-edit-area {
+            margin-left: auto;
+          }
           display: flex;
           flex-wrap: nowrap;
           align-items: center;
@@ -162,7 +168,8 @@
   .edit-category ::ng-deep .edit-options{
     right: 3.5rem;
   }
-  .edit-area ::ng-deep .edit-options{
-    right: 6.5rem;
+  .edit-area ::ng-deep .edit-options {
+    right: 3rem;
+    bottom: 0;
   }
 }
