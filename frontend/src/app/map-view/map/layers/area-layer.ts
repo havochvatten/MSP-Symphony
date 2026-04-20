@@ -13,12 +13,12 @@ import * as condition from 'ol/events/condition';
 import { getFeaturesByStatePaths } from '@src/util/ol';
 import { ScenarioLayer } from '@src/app/map-view/map/layers/scenario-layer';
 import { TranslateService } from '@ngx-translate/core';
-import { turfIntersects as intersects } from "@shared/turf-helper/turf-helper";
-import { Geometry } from "ol/geom";
-import { DrawEvent } from "ol/interaction/Draw";
-import { simpleHash, statePathContains } from "@shared/common.util";
-import { AreaSelect } from "@src/app/map-view/map/layers/area-select";
-import FeatureFormat from "ol/format/Feature";
+import { turfIntersects as intersects } from '@shared/turf-helper/turf-helper';
+import { Geometry } from 'ol/geom';
+import { DrawEvent } from 'ol/interaction/Draw';
+import { simpleHash, statePathContains } from '@shared/common.util';
+import { AreaSelect } from '@src/app/map-view/map/layers/area-select';
+import FeatureFormat from 'ol/format/Feature';
 
 function unique<T>(value: T, index: number, self: T[]) {
   return self.indexOf(value) === index;
@@ -59,8 +59,8 @@ class DrawAreaInteraction extends Draw {
       source: source,
       // GeometryType.POLYGON is no longer exported ... https://github.com/openlayers/openlayers/issues/5241
       type: 'Polygon',
-      condition: drawCondition, // used only for applying side effect accessing internal
-                                // coordinate group, condition itself always return true
+      condition: drawCondition // used only for applying side effect accessing internal
+      // coordinate group, condition itself always return true
     });
     const snap = new Snap({
       source: source
@@ -101,7 +101,7 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
     private readonly map: OLMap,
     public readonly setSelection: (statePath: StatePath | undefined, expand: boolean) => void,
     private readonly zoomToExtent: (extent: Extent, duration: number) => void,
-    private readonly onDrawEnd: (polygon: Polygon)=> void,
+    private readonly onDrawEnd: (polygon: Polygon) => void,
     private readonly onDrawInvalid: () => void,
     private readonly onDownloadClick: (path: string) => void,
     onSplitClick: (feature: Feature, prevFeature: Feature) => void,
@@ -125,8 +125,11 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
       new VectorSource({ format: new GeoJSON() }),
       this.appendCoordinates,
       (polygon) => {
-        if(this.boundaries) { this.checkPolygon(polygon, this.boundaries) }
-        else { this.onDrawEnd(polygon); }
+        if (this.boundaries) {
+          this.checkPolygon(polygon, this.boundaries);
+        } else {
+          this.onDrawEnd(polygon);
+        }
       }
     );
     this.areaSelect = new AreaSelect(this);
@@ -134,7 +137,6 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
     this.map.addInteraction(this.areaSelect);
 
     this.areaSelect.on('select', (event) => {
-
       const feature = event.selected[0];
 
       if (feature !== undefined) {
@@ -149,8 +151,10 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
       }
 
       // Ctrl + click expands selection
-      this.setSelection(event.selected[0]?.get('statePath') || undefined,
-                         event.mapBrowserEvent.originalEvent.ctrlKey);
+      this.setSelection(
+        event.selected[0]?.get('statePath') || undefined,
+        event.mapBrowserEvent.originalEvent.ctrlKey
+      );
     });
   }
 
@@ -175,10 +179,10 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
     });
     map.addOverlay(overlay);
     const clickArea = this.translateService.instant('map.click-area'),
-          pointWithinScenario = this.translateService.instant('map.location-within-scenario');
+      pointWithinScenario = this.translateService.instant('map.location-within-scenario');
 
-    map.on('pointermove', event => {
-      if(this.optionsMenuActive) return;
+    map.on('pointermove', (event) => {
+      if (this.optionsMenuActive) return;
 
       const detectedFeatures = map.getFeaturesAtPixel(event.pixel);
       const hit = detectedFeatures.length > 0;
@@ -187,17 +191,19 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
         map.getTargetElement().style.cursor = 'pointer';
 
         content.innerHTML = detectedFeatures
-          .map(f => f.get('displayName') ?? f.get('title'))
-          .filter(name => name !== undefined)
+          .map((f) => f.get('displayName') ?? f.get('title'))
+          .filter((name) => name !== undefined)
           .filter(unique) // scenario layer can contain duplicated feature
           .join(', ');
 
-        const hoveredFeature = (detectedFeatures[0] as Feature);
+        const hoveredFeature = detectedFeatures[0] as Feature;
 
         if (!this.scenarioLayer.hasActiveScenario()) {
           body.innerText = clickArea;
-        } else if (this.scenarioLayer.isPointInsideScenario(event.coordinate) ||
-          intersects(this.scenarioLayer.getBoundaryFeature()!, hoveredFeature)) {
+        } else if (
+          this.scenarioLayer.isPointInsideScenario(event.coordinate) ||
+          intersects(this.scenarioLayer.getBoundaryFeature()!, hoveredFeature)
+        ) {
           body.innerText = pointWithinScenario;
         } else {
           body.innerText = clickArea;
@@ -230,8 +236,7 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
 
   private addRightClickInteraction(map: OLMap, optionsMenuElement: HTMLElement) {
     let path = '';
-    const
-      removeOptionsMenu = () => {
+    const removeOptionsMenu = () => {
         this.optionsMenuActive = false;
         map.getOverlayById('areaOptionsMenu')?.setPosition(undefined);
         path = '';
@@ -281,9 +286,11 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
       featureProjection: this.map.getView().getProjection()
     }).readFeature(polygon);
 
-    if(boundaries.some(boundary => {
-        return intersects(testFeature as Feature<Geometry>, boundary as Feature<Geometry>)
-    })) {
+    if (
+      boundaries.some((boundary) => {
+        return intersects(testFeature as Feature<Geometry>, boundary as Feature<Geometry>);
+      })
+    ) {
       this.onDrawEnd(polygon);
     } else {
       this.onDrawInvalid();
@@ -297,9 +304,9 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
     }
     source.clear();
 
-    for(const statePath of visible) {
+    for (const statePath of visible) {
       const feature = this.featureMap.get(simpleHash(statePath));
-      if(feature) {
+      if (feature) {
         if (selected && statePathContains(statePath, selected)) {
           feature.setStyle(this.selectedStyle);
         }
@@ -309,8 +316,8 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
   }
 
   mapAreaFeatures(featureCollections: FeatureCollection[]) {
-    for(const featureCollection of featureCollections) {
-      for(const feature of featureCollection.features) {
+    for (const featureCollection of featureCollections) {
+      for (const feature of featureCollection.features) {
         const gFeature = this.geoJson.readFeature(feature) as Feature<Geometry>;
         this.featureMap.set(simpleHash(gFeature.get('statePath')), gFeature);
       }
@@ -336,7 +343,7 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
 
     const geo = getFeaturesByStatePaths(source, statePath);
 
-    if(!geo) {
+    if (!geo) {
       return;
     }
 

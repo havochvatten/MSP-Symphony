@@ -1,8 +1,9 @@
-import { AreaMatrixData } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
+import { AreaMatrixData } from '@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces';
 
 export type StatePath = Array<string | number>;
 
-export interface Polygon { // Really a GeoJSON geometry
+export interface Polygon {
+  // Really a GeoJSON geometry
   type: string;
   coordinates: number[] | number[][] | number[][][] | number[][][][];
 }
@@ -47,7 +48,7 @@ export interface NationalArea {
   en: string;
   displayName: string;
   groups: AreaGroup[];
-  [lang: string]: string|AreaGroup[];
+  [lang: string]: string | AreaGroup[];
 }
 
 export interface Boundary {

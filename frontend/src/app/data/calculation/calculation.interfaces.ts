@@ -1,9 +1,9 @@
 import { ChartData } from '@src/app/report/pressure-chart/pressure-chart.component';
 import { Extent } from 'ol/extent';
-import { ProjectionLike } from "ol/proj";
-import { NormalizationOptions } from "@data/calculation/calculation.service";
+import { ProjectionLike } from 'ol/proj';
+import { NormalizationOptions } from '@data/calculation/calculation.service';
 import { ChangesProperty } from '@data/scenario/scenario.interfaces';
-import { ListItemsSort, SortableListItem } from "@data/common/sorting.interfaces";
+import { ListItemsSort, SortableListItem } from '@data/common/sorting.interfaces';
 
 // TODO Move calculation element to Scenario state
 export interface State {
@@ -52,11 +52,11 @@ export interface Report {
 
 export interface ReportChanges {
   baseChanges: {
-    [key: string] : ChangesProperty;
+    [key: string]: ChangesProperty;
   };
   areaChanges: {
     [key: number]: {
-      [key: string] : ChangesProperty;
+      [key: string]: ChangesProperty;
     };
   };
 }
@@ -102,11 +102,11 @@ export interface PercentileResponse {
 export interface BatchCalculationProcessEntry {
   id: number;
   cancelled: boolean;
-  currentEntity: number|null;
+  currentEntity: number | null;
   entities: number[];
   calculated: number[];
   failed: number[];
-  reports: number|null[];
+  reports: number | null[];
   isAreaCalculation: boolean;
   entityNames: { [key: number]: string };
 }
@@ -120,7 +120,7 @@ export interface LegendState {
   result: Legend | undefined;
   ecosystem: Legend | undefined;
   pressure: Legend | undefined;
-  comparison: { [value: string] : ComparisonLegendState };
+  comparison: { [value: string]: ComparisonLegendState };
 }
 
 export interface ComparisonResult {
@@ -174,7 +174,9 @@ export class CompoundComparisonItem implements CompoundComparisonSlice {
   public calcNamesList(moreLabel: string): string {
     const more = `(${this.calculationNames.length - CompoundComparisonItem.maxCalcNames} ${moreLabel}) ...`;
 
-    return  `${this.calculationNames.slice(0, CompoundComparisonItem.maxCalcNames).join(', ')} `+
-            `${this.calculationNames.length > CompoundComparisonItem.maxCalcNames ? more : ''}`;
+    return (
+      `${this.calculationNames.slice(0, CompoundComparisonItem.maxCalcNames).join(', ')} ` +
+      `${this.calculationNames.length > CompoundComparisonItem.maxCalcNames ? more : ''}`
+    );
   }
 }

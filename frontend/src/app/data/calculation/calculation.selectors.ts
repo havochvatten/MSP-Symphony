@@ -1,79 +1,68 @@
-import { State, LegendState, CompoundComparisonItem } from './calculation.interfaces';
-import { createSelector, createFeatureSelector } from '@ngrx/store';
+import { CompoundComparisonItem, LegendState, State } from './calculation.interfaces';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { MetadataSelectors } from '@data/metadata';
-import { sortFuncMap } from "@data/common/sorting.interfaces";
+import { sortFuncMap } from '@data/common/sorting.interfaces';
 
 export const selectCalculationState = createFeatureSelector<State>('calculation');
 
 export const selectLoadingReport = createSelector(
   selectCalculationState,
-  state => state.loadingReport
+  (state) => state.loadingReport
 );
 
 export const selectLoadingCompoundComparisons = createSelector(
   selectCalculationState,
-  state => state.loadingCompoundComparisons
+  (state) => state.loadingCompoundComparisons
 );
 
 export const selectLoadingLegends = createSelector(
   selectCalculationState,
-  state => state.loadingLegends
+  (state) => state.loadingLegends
 );
 
-export const selectCalculations = createSelector(
-  selectCalculationState,
-  state => {
-    return [...state.calculations].sort(sortFuncMap[state.sortCalculations]);
-  }
-);
+export const selectCalculations = createSelector(selectCalculationState, (state) => {
+  return [...state.calculations].sort(sortFuncMap[state.sortCalculations]);
+});
 
-export const selectChangedCalculations = createSelector(
-  selectCalculationState,
-  state => state.calculations.filter(c => c.hasChanges)
+export const selectChangedCalculations = createSelector(selectCalculationState, (state) =>
+  state.calculations.filter((c) => c.hasChanges)
 );
 
 export const selectComparedCalculations = createSelector(
   selectCalculationState,
-  state => state.generatingComparisonsFor
+  (state) => state.generatingComparisonsFor
 );
 
 export const selectLoadingCalculations = createSelector(
   selectCalculationState,
-  state => state.loadingCalculations
+  (state) => state.loadingCalculations
 );
 
 export const selectCalculating = createSelector(
   selectCalculationState,
-  state => state.calculating
+  (state) => state.calculating
 );
 
-export const selectLegends = createSelector(
-  selectCalculationState,
-  state => state.legends
-);
+export const selectLegends = createSelector(selectCalculationState, (state) => state.legends);
 
-export const selectComparisonLegend = createSelector(
-  selectCalculationState,
-  state => [...Object.values(state.legends.comparison)]
-);
+export const selectComparisonLegend = createSelector(selectCalculationState, (state) => [
+  ...Object.values(state.legends.comparison)
+]);
 
 export const selectPercentileValue = createSelector(
   selectCalculationState,
-  state => state.percentileValue
+  (state) => state.percentileValue
 );
 
 export const selectVisibleResults = createSelector(
   selectCalculationState,
-  state => state.visibleResults
+  (state) => state.visibleResults
 );
 
-export const selectCalculationLoadingState = createSelector(
-  selectCalculationState,
-  state => ({
-    loadingResults: state.loadingResults,
-    loadingReports: state.loadingReports
-    })
-);
+export const selectCalculationLoadingState = createSelector(selectCalculationState, (state) => ({
+  loadingResults: state.loadingResults,
+  loadingReports: state.loadingReports
+}));
 
 export const selectVisibleLegends = createSelector(
   selectLegends,
@@ -86,22 +75,22 @@ export const selectVisibleLegends = createSelector(
   })
 );
 
-export const selectBatchProcesses = createSelector(
-  selectCalculationState,
-  state => [...Object.values(state.batchProcesses)].filter(p => p !== undefined)
+export const selectBatchProcesses = createSelector(selectCalculationState, (state) =>
+  [...Object.values(state.batchProcesses)].filter((p) => p !== undefined)
 );
 
-export const selectCompoundComparisons = createSelector(
-  selectCalculationState,
-  state => [...state.compoundComparisons].sort(sortFuncMap[state.sortCompoundComparisons]).map(c => new CompoundComparisonItem(c))
+export const selectCompoundComparisons = createSelector(selectCalculationState, (state) =>
+  [...state.compoundComparisons]
+    .sort(sortFuncMap[state.sortCompoundComparisons])
+    .map((c) => new CompoundComparisonItem(c))
 );
 
 export const selectCompoundComparisonCount = createSelector(
   selectCompoundComparisons,
-  compoundComparisons => compoundComparisons.length
+  (compoundComparisons) => compoundComparisons.length
 );
 
 export const selectCompoundComparisonSuccessCount = createSelector(
   selectCalculationState,
-  state => state.compoundComparisonSuccessCount
+  (state) => state.compoundComparisonSuccessCount
 );

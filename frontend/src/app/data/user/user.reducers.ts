@@ -11,15 +11,14 @@ export const initialState: UserInterfaces.State = {
 
 export const userReducer = createReducer(
   initialState,
-  on(UserActions.loginUser, state => ({
+  on(UserActions.loginUser, (state) => ({
     ...state,
     loading: true
   })),
   on(UserActions.loginUserSuccess, UserActions.fetchUserSuccess, (state, { user }) => ({
     ...state,
     user,
-    aliasing: user.settings?.aliasing === undefined ?
-        state.aliasing : user.settings.aliasing,
+    aliasing: user.settings?.aliasing === undefined ? state.aliasing : user.settings.aliasing,
     loading: false,
     isLoggedIn: true,
     error: undefined
@@ -33,16 +32,14 @@ export const userReducer = createReducer(
       login: error
     }
   })),
-  on(UserActions.fetchUser, state => ({
+  on(UserActions.fetchUser, (state) => ({
     ...state,
     loading: true
   })),
   on(UserActions.fetchUserSettingsSuccess, (state, { user }) => ({
     ...state,
     user,
-    aliasing: user.settings?.aliasing === undefined ?
-      state.aliasing : user.settings.aliasing,
-
+    aliasing: user.settings?.aliasing === undefined ? state.aliasing : user.settings.aliasing
   })),
   on(UserActions.fetchUserFailure, (state, { error }) => ({
     ...state,
@@ -62,17 +59,13 @@ export const userReducer = createReducer(
     redirectUrl: url
   })),
   // Indicate loading state
-  on(UserActions.fetchBaseline, state => ({
+  on(UserActions.fetchBaseline, (state) => ({
     ...state,
     loadingBaseline: true
   })),
   // Reset loading state on success/failure
-  on(
-    UserActions.fetchBaselineSuccess,
-    UserActions.fetchBaselineFailure,
-    state => ({
-      ...state,
-      loadingBaseline: false
-    })
-  )
+  on(UserActions.fetchBaselineSuccess, UserActions.fetchBaselineFailure, (state) => ({
+    ...state,
+    loadingBaseline: false
+  }))
 );

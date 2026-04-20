@@ -2,7 +2,7 @@
   <img
     class="duck"
     [src]="brandingService.configData.loginLogoSrc"
-    [alt]="brandingService.configData.loginLogoAlt" />
+    [alt]="brandingService.configData.loginLogoAlt"/>
 }
 
 <div class="title-container">
@@ -15,7 +15,7 @@
     <input matInput
            type="text"
            formControlName="username"
-           autocomplete="on" />
+           autocomplete="on"/>
     <mat-label>{{ 'login.username' | translate }}</mat-label>
   </mat-form-field>
   <mat-form-field class="password-field">
@@ -38,7 +38,8 @@
   }
   <button type="submit" mat-flat-button (click)="login()" [disabled]="!loginForm.valid">{{
       'login.login' | translate
-    }}</button>
+    }}
+  </button>
 </form>
 
 <div class="login-options">
@@ -62,7 +63,7 @@
   <img
     class="logo"
     [src]="brandingService.configData.logoSrc"
-    [alt]="brandingService.configData.logoAlt" />
+    [alt]="brandingService.configData.logoAlt"/>
 }
 
 <div class="topography" data-position="bottom-left"></div>
