@@ -8,6 +8,11 @@ import { getBandPath } from "@data/metadata/metadata.selectors";
 export const initialState: MetadataInterfaces.State = {
   ECOSYSTEM: {},
   PRESSURE: {},
+  heatmapModels: {
+    ECOSYSTEM: 'none',
+    PRESSURE: 'none'
+  },
+  heatmapLoading: {},
   visibleReliability: null,
   loading: false
 };
@@ -17,14 +22,14 @@ export const metadataReducer = createReducer(
   on(MetadataActions.fetchMetadataSuccess, (state, { metadata }) => ({
     ...state,
     ECOSYSTEM: metadata.ecoComponent,
-    PRESSURE: metadata.pressureComponent
+    PRESSURE: metadata.pressureComponent,
   })),
   on(MetadataActions.fetchSparseMetadataSuccess, (state, { metadata }) => {
     return {
       ...state,
       ECOSYSTEM: mapSelectedToState(state, metadata.ecoComponent).ECOSYSTEM,
-      PRESSURE: mapSelectedToState(state, metadata.pressureComponent).PRESSURE
-    }
+      PRESSURE: mapSelectedToState(state, metadata.pressureComponent).PRESSURE,
+    };
   }),
   on(MetadataActions.selectBand, (state, { band, value }) => {
     return setLayerAttribute(state, band, 'selected', value);
@@ -36,7 +41,7 @@ export const metadataReducer = createReducer(
       } else if (value) {
         state = {
           ...state,
-          visibleReliability: null
+          visibleReliability: null,
         };
       }
     }
@@ -53,9 +58,26 @@ export const metadataReducer = createReducer(
   on(MetadataActions.setLoadedState, (state, { band, value }) => {
     return setLayerAttribute(state, band, 'loaded', value);
   }),
+  on(MetadataActions.setHeatmapModel, (state, { bandType, model }) => ({
+    ...state,
+    heatmapModels: {
+      ...state.heatmapModels,
+      [bandType]: model,
+    },
+  })),
+  on(MetadataActions.setHeatmapLoading, (state, { bandType, loading }) => ({
+    ...state,
+    heatmapLoading: {
+      ...state.heatmapLoading,
+      [bandType]: loading,
+    },
+  })),
   on(MetadataActions.showReliability, (state, { band }) => {
     const opaque: boolean = !getLayerAttribute(state, band, 'visible');
-    for (const groups of [...Object.values(state['ECOSYSTEM']), ...Object.values(state['PRESSURE'])]) {
+    for (const groups of [
+      ...Object.values(state['ECOSYSTEM']),
+      ...Object.values(state['PRESSURE']),
+    ]) {
       for (const gband of Object.values(groups.bands)) {
         if (!bandEquals(gband, band)) {
           state = setLayerAttribute(state, gband, 'visible', false);
@@ -64,27 +86,27 @@ export const metadataReducer = createReducer(
     }
     return {
       ...state,
-      visibleReliability: { band, opaque }
-    }
+      visibleReliability: { band, opaque },
+    };
   }),
   on(MetadataActions.hideReliability, (state) => ({
     ...state,
-    visibleReliability: null
+    visibleReliability: null,
   })),
   on(ScenarioActions.closeActiveScenario, (state) => ({
     ...state,
-    changeMap: {}
+    changeMap: {},
   })),
   // Indicate loading state
-  on(MetadataActions.fetchMetadataForBaseline, state => ({
+  on(MetadataActions.fetchMetadataForBaseline, (state) => ({
     ...state,
-    loading: true
+    loading: true,
   })),
   // Reset loading state on success/failure
-  on(MetadataActions.fetchMetadataSuccess, state => ({
+  on(MetadataActions.fetchMetadataSuccess, (state) => ({
     ...state,
-    loading: false
-  }))
+    loading: false,
+  })),
 );
 
 function setLayerAttribute(state: State, band: Band, attribute: string, value: unknown): State {

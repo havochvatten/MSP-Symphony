@@ -1,5 +1,5 @@
 import { Layer } from 'ol/layer';
-import { Band, BandType } from '@data/metadata/metadata.interfaces';
+import { Band, BandType, HeatmapModel } from '@data/metadata/metadata.interfaces';
 import ImageLayer from 'ol/layer/Image';
 import { ImageStatic } from 'ol/source';
 import { AppSettings } from '@src/app/app.settings';
@@ -32,6 +32,16 @@ class BandLayer extends SymphonyLayerGroup {
     pressures: new Set<number>()
   };
 
+  private loadedHeatmaps = {
+    ECOSYSTEM: new Map<Exclude<HeatmapModel, 'none'>, Layer>(),
+    PRESSURE: new Map<Exclude<HeatmapModel, 'none'>, Layer>()
+  };
+
+  private visibleHeatmaps = {
+    ECOSYSTEM: 'none' as HeatmapModel,
+    PRESSURE: 'none' as HeatmapModel
+  };
+
   constructor(private baseline: string,
               private dataLayerService: DataLayerService,
               private store: Store<State>,
@@ -41,6 +51,88 @@ class BandLayer extends SymphonyLayerGroup {
   }
 
   protected renderHandler = (evt: RenderEvent) => (evt.context! as CanvasRenderingContext2D).imageSmoothingEnabled = this.antialias;
+
+  public setVisibleHeatmap(bandType: BandType, model: HeatmapModel) {
+    const loadedByType = this.loadedHeatmaps[bandType];
+    const previousModel = this.visibleHeatmaps[bandType];
+
+    console.info(`[Heatmap] setVisibleHeatmap - bandType: ${bandType}, model: ${model}, previous: ${previousModel}`);
+
+    // Remove previous layer if needed
+    if (previousModel !== 'none' && loadedByType.has(previousModel)) {
+      const previousLayer = loadedByType.get(previousModel)!;
+      if (this.getLayers().getArray().includes(previousLayer)) {
+        this.getLayers().remove(previousLayer);
+      }
+    }
+
+    this.visibleHeatmaps[bandType] = model;
+
+    if (model === 'none') {
+      console.info(`[Heatmap] Switching to 'none' - turning off loading`);
+      this.store.dispatch(MetadataActions.setHeatmapLoading({ bandType, loading: false }));
+      return;
+    }
+
+    // === Cached model (already loaded) ===
+    if (loadedByType.has(model)) {
+      console.info(`[Heatmap] Using cached model "${model}" - turning off loading`);
+      const layer = loadedByType.get(model)!;
+      if (!this.getLayers().getArray().includes(layer)) {
+        this.getLayers().push(layer);
+      }
+      this.store.dispatch(MetadataActions.setHeatmapLoading({ bandType, loading: false }));
+      return;
+    }
+
+    // === New model – start loading ===
+    console.info(`[Heatmap] Loading new model "${model}" from backend`);
+    this.store.dispatch(MetadataActions.setHeatmapLoading({ bandType, loading: true }));
+
+    this.dataLayerService.getHeatmapLayer(this.baseline, bandType, model).subscribe({
+      next: (response) => {
+        console.info(`[Heatmap] HTTP response received for "${model}"`);
+
+        const extentHeader = response.headers.get('SYM-Image-Extent');
+        if (!extentHeader) {
+          console.error("Heatmap image does not have any extent header, ignoring.");
+          this.store.dispatch(MetadataActions.setHeatmapLoading({ bandType, loading: false }));
+          return;
+        }
+
+        if (!response.body) {
+          console.warn(`No body in heatmap response for "${model}"`);
+          this.store.dispatch(MetadataActions.setHeatmapLoading({ bandType, loading: false }));
+          return;
+        }
+
+        const imageOpts = {
+          url: URL.createObjectURL(response.body),
+          imageExtent: JSON.parse(extentHeader),
+          calculationId: NaN,
+          projection: AppSettings.MAP_PROJECTION,
+          attributions: '',
+          interpolate: this.antialias
+        };
+
+        const layer = new DataLayer(imageOpts);
+        loadedByType.set(model, layer);
+        layer.on('prerender', this.renderHandler);
+
+        if (this.visibleHeatmaps[bandType] === model) {
+          this.getLayers().push(layer);
+        }
+
+        // === SUCCESS: turn off spinner ===
+        console.info(`[Heatmap] Successfully loaded "${model}" - turning off loading`);
+        this.store.dispatch(MetadataActions.setHeatmapLoading({ bandType, loading: false }));
+      },
+      error: (err) => {
+        console.error(`[Heatmap] Failed to load heatmap "${model}":`, err);
+        this.store.dispatch(MetadataActions.setHeatmapLoading({ bandType, loading: false }));
+      }
+    });
+  }
 
   public setVisibleBands(bandType: BandType, bands: Band[]) {
     const ecoType = bandType === 'ECOSYSTEM',

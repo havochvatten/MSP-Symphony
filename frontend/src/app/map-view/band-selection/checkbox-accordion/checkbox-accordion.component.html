@@ -1,19 +1,21 @@
 <!-- FIXME open if child bands has changes -->
-<app-accordion-box [open]="open || (searching && bands.length > 0)" [toggle]="toggle">
+<app-accordion-box
+  [open]="open || (searching && bands.length > 0)"
+  [toggle]="toggle">
+
   <app-accordion-box-header>
-    @if (title) {
-      <mat-checkbox
-        [checked]="allBoxesAreChecked"
-        [indeterminate]="someBoxesAreChecked"
-        [disabled]="!scenarioActive"
-        (change)="updateAll()"
-        checkboxSize="small"
-      >{{ title }}</mat-checkbox>
-    }
+    <mat-checkbox
+      [checked]="allBoxesAreChecked"
+      [indeterminate]="someBoxesAreChecked"
+      [disabled]="!scenarioActive"
+      (change)="updateAll()"
+      checkboxSize="small"
+    >{{ title }}</mat-checkbox>
   </app-accordion-box-header>
+
   <app-accordion-box-content>
     <ul>
-      @for (band of bands; track bandNumber($index, band)) {
+      @for (band of bands; track band.bandNumber) {
         <li class="list-item">
           <app-slider-controls
             [band]="band"

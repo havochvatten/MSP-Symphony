@@ -27,6 +27,8 @@ export class ConfirmResetComponent implements OnInit {
     this.store.dispatch(
       MetadataActions.fetchMetadata()
     );
+    this.store.dispatch(MetadataActions.setHeatmapModel({ bandType: 'ECOSYSTEM', model: 'none' }));
+    this.store.dispatch(MetadataActions.setHeatmapModel({ bandType: 'PRESSURE', model: 'none' }));
 
     if(this.activeScenario) {
       if (typeof this.activeArea !== 'number') {

@@ -1,0 +1,80 @@
+{
+  "outputStep": "pressure_total",
+  "steps": [
+    {
+      "name": "fishing",
+      "operation": "MEAN",
+      "order": 10,
+      "bands": [0, 3, 4, 5, 66]
+    },
+    {
+      "name": "shipping",
+      "operation": "MEAN",
+      "order": 20,
+      "bands": [22, 24, 57, 68]
+    },
+    {
+      "name": "recreation",
+      "operation": "MEAN",
+      "order": 30,
+      "bands": [2, 25, 60]
+    },
+    {
+      "name": "energy",
+      "operation": "MEAN",
+      "order": 40,
+      "bands": [6, 7, 23]
+    },
+    {
+      "name": "coastal-development",
+      "operation": "MEAN",
+      "order": 50,
+      "bands": [10, 11, 12, 13, 14]
+    },
+    {
+      "name": "pollution-other",
+      "operation": "MEAN",
+      "order": 60,
+      "bands": [1, 15, 16, 17, 18, 19, 20, 21, 56, 58, 59, 61, 62, 63, 64, 65, 67]
+    },
+    {
+      "name": "climate-change",
+      "operation": "MEAN",
+      "order": 70,
+      "bands": [26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55]
+    },
+    {
+      "name": "defence",
+      "operation": "MEAN",
+      "order": 80,
+      "bands": [8, 9, 57]
+    },
+    {
+      "name": "sand-extraction",
+      "operation": "MEAN",
+      "order": 90,
+      "bands": [15, 67]
+    },
+    {
+      "name": "pressure_total",
+      "operation": "MEAN",
+      "order": 100,
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      },
+      "inputs": [
+        "fishing",
+        "shipping",
+        "recreation",
+        "energy",
+        "coastal-development",
+        "pollution-other",
+        "climate-change",
+        "defence",
+        "sand-extraction"
+      ]
+    }
+  ]
+}

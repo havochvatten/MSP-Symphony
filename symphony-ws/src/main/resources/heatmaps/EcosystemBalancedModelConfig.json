@@ -1,0 +1,168 @@
+{
+  "outputStep": "ecosystem_total",
+  "steps": [
+    {
+      "name": "bird_total",
+      "operation": "MEAN",
+      "order": 10,
+      "bands": [2, 24, 25],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "name": "seal_total",
+      "operation": "MEAN",
+      "order": 20,
+      "bands": [7, 9, 19],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "name": "porpoise_reproduction",
+      "operation": "MAX",
+      "order": 30,
+      "bands": [16, 17, 18]
+    },
+    {
+      "name": "porpoise_occurrence",
+      "operation": "MAX",
+      "order": 40,
+      "bands": [16, 17, 18]
+    },
+    {
+      "name": "porpoise_total",
+      "operation": "MEAN",
+      "order": 50,
+      "inputs": ["porpoise_reproduction", "porpoise_occurrence"],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "name": "mammal_total",
+      "operation": "MEAN",
+      "order": 60,
+      "inputs": ["seal_total", "porpoise_total"],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "name": "fish_occurrence",
+      "operation": "MEAN",
+      "order": 70,
+      "bands": [3, 13, 30, 34],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "name": "fish_functions",
+      "operation": "MAX",
+      "order": 80,
+      "bands": [6, 5, 20],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "name": "fish_total",
+      "operation": "MEAN",
+      "order": 90,
+      "inputs": ["fish_occurrence", "fish_functions"],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "name": "reef_hardbottom_presence",
+      "operation": "MAX",
+      "order": 100,
+      "bands": [1, 14, 8, 4]
+    },
+    {
+      "name": "hardbottom_abiotic",
+      "operation": "MEAN",
+      "order": 110,
+      "bands": [10, 11, 12]
+    },
+    {
+      "name": "reef_environment_presence",
+      "operation": "MEAN",
+      "order": 120,
+      "inputs": ["reef_hardbottom_presence", "hardbottom_abiotic"]
+    },
+    {
+      "name": "extra_valuable_reef",
+      "operation": "MAX",
+      "order": 130,
+      "bands": [14, 8, 4]
+    },
+    {
+      "name": "reef_total",
+      "operation": "MEAN",
+      "order": 140,
+      "inputs": ["reef_environment_presence", "extra_valuable_reef"],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "name": "angiosperm_shoreline",
+      "operation": "MAX",
+      "order": 150,
+      "bands": [0, 26]
+    },
+    {
+      "name": "abiotic_total",
+      "operation": "SUM",
+      "order": 160,
+      "bands": [27, 28, 29, 10, 11, 12, 31, 32, 33],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "name": "benthic_total",
+      "operation": "MEAN",
+      "order": 170,
+      "inputs": ["reef_total", "angiosperm_shoreline", "abiotic_total"],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "name": "ecosystem_total",
+      "operation": "MEAN",
+      "order": 180,
+      "inputs": ["bird_total", "mammal_total", "fish_total", "benthic_total"],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    }
+  ]
+}

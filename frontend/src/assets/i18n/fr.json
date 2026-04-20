@@ -34,6 +34,17 @@
             "select-all": "Tout sélectionner",
             "deselect-all": "Tout désélectionner"
         },
+        "summary-model": {
+            "label": "Modèle de carte",
+            "none": "Aucun",
+            "overview": "Aperçu",
+            "simple": "Modèle simple",
+            "simpleEcosystemDescription": "Moyenne de toutes les couches d'écosystème, ce qui signifie que le groupe d'écosystème ayant le plus de couches reçoit automatiquement le plus de poids. La moyenne est linéairement transformée en une valeur entre 0 et 100.",
+            "simplePressureDescription": "Moyenne de toutes les couches de pression, ce qui signifie que le groupe de pression ayant le plus de couches reçoit automatiquement le plus de poids. La moyenne est linéairement transformée en une valeur entre 0 et 100.",
+            "balanced": "Modèle équilibré",
+            "balancedEcosystemDescription": "Toutes les couches d'écosystème ont été divisées en quatre groupes : oiseau, mammifère, poisson, benthique. Au sein de chaque groupe, différentes pondérations ont été appliquées afin que les thèmes identifiés au sein des groupes aient le même poids. Enfin, les quatre couches résultantes ont été combinées par une moyenne. La moyenne est linéairement transformée en une valeur entre 0 et 100.",
+            "balancedPressureDescription": "Toutes les couches de pression ont été divisées en neuf groupes : pêche, navigation maritime, récréation, énergie, développement côtier, autres pollutions, changement climatique, défense et extraction de sable. Chaque groupe calcule la moyenne de ses couches. Enfin, les neuf couches résultantes ont été combinées par une moyenne. La moyenne est linéairement transformée en une valeur entre 0 et 100."
+        },
         "confirm-reset": {
             "modal": {
                 "header": "Confirmer la réinitialisation",

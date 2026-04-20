@@ -34,6 +34,15 @@
             "select-all": "Select all",
             "deselect-all": "Deselect all"
         },
+        "summary-model": {
+            "overview": "Overview",
+            "simple": "Simple model",
+            "simpleEcosystemDescription": "Average of all ecosystem layers, which means that the ecosystem group with the most layers automatically gets the highest weight. The average is linearly transformed to a value between 0-100.",
+            "simplePressureDescription": "Average of all pressure layers, which means that the pressure group with the most layers automatically gets the highest weight. The average is linearly transformed to a value between 0-100.",
+            "balanced": "Balanced model",
+            "balancedEcosystemDescription": "All ecosystem layers were divided into four groups: bird, mammal, fish, benthic. Within each group, different weightings were applied so that the themes identified within the groups weigh equally. Finally, the four resulting layers were combined using an average. The average is linearly transformed to a value between 0-100.",
+            "balancedPressureDescription": "All pressure layers were divided into nine groups: fishing, shipping, recreation, energy, coastal development, pollution other, climate change, defence and sand extraction. Each group computes the average of its layers. Finally, the nine resulting layers were combined using an average. The average is linearly transformed to a value between 0-100."
+        },
         "confirm-reset": {
             "modal": {
                 "header": "Confirm reset",

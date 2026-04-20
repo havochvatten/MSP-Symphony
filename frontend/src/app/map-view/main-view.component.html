@@ -18,6 +18,7 @@
     <app-scenario-editor></app-scenario-editor>
   </app-slide-view-tab>
   <app-slide-view-tab [title]="'map.intensity.ecosystems' | translate" icon="fish">
+
     <app-band-selection
       bandType="ecoComponents"
       [title]="'map.intensity.ecosystems' | translate"
@@ -25,6 +26,10 @@
     ></app-band-selection>
   </app-slide-view-tab>
   <app-slide-view-tab [title]="'map.intensity.pressures' | translate" icon="human">
+    <app-summary-model-selection
+      bandType="pressures"
+      [scenarioActive]="!!(activeScenario$ | async)"
+    ></app-summary-model-selection>
     <app-band-selection
       bandType="pressures"
       [title]="'map.intensity.pressures' | translate"
@@ -51,6 +56,8 @@
       (cmpLegends$ | async)?.length > 0 && this.getVisibleComparison() ||
       (legends$ | async).ecosystem ||
       (legends$ | async).pressure ||
+      (visibleHeatmaps$ | async)?.ECOSYSTEM !== 'none' ||
+      (visibleHeatmaps$ | async)?.PRESSURE !== 'none' ||
       (visibleReliability$ | async) !== null
       ) {
       <div
@@ -77,6 +84,14 @@
             [colors]="(legends$ | async).ecosystem.colorMap"
             [unit]="(legends$ | async).ecosystem.unit"
           ></app-result-color-scale>
+        } @else if ((visibleHeatmaps$ | async)?.ECOSYSTEM !== 'none') {
+          <app-result-color-scale
+            class="legend-section"
+            [title]="'map.color-scale.ecosystem' | translate"
+            [colors]="heatmapEcosystemColors"
+            [unit]="''"
+            [decimals]="false"
+          ></app-result-color-scale>
         }
         @if ((legends$ | async).pressure) {
           <app-result-color-scale
@@ -84,6 +99,14 @@
             [title]="'map.color-scale.pressure' | translate"
             [colors]="(legends$ | async).pressure.colorMap"
             [unit]="(legends$ | async).pressure.unit"
+          ></app-result-color-scale>
+        } @else if ((visibleHeatmaps$ | async)?.PRESSURE !== 'none') {
+          <app-result-color-scale
+            class="legend-section"
+            [title]="'map.color-scale.pressure' | translate"
+            [colors]="heatmapPressureColors"
+            [unit]="''"
+            [decimals]="false"
           ></app-result-color-scale>
         }
         @if ((visibleReliability$ | async) !== null) {

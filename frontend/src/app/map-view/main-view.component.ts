@@ -8,7 +8,8 @@ import { MetadataSelectors } from '@data/metadata';
 import { AreaSelectors } from '@data/area';
 import { AllAreas, StatePath } from '@data/area/area.interfaces';
 import { BandGroup, VisibleReliability } from '@data/metadata/metadata.interfaces';
-import { ComparisonLegendState, LegendState } from '@data/calculation/calculation.interfaces';
+import { HeatmapModel } from '@data/metadata/metadata.interfaces';
+import { ComparisonLegendState, LegendColor, LegendState } from '@data/calculation/calculation.interfaces';
 import { CalculationSelectors } from '@data/calculation';
 import { environment } from "@src/environments/environment";
 import { ScenarioActions, ScenarioSelectors } from "@data/scenario";
@@ -50,6 +51,32 @@ export class MainViewComponent implements OnInit, AfterViewInit {
   multiSelection = false
   isMacOS = isMacOS();
   visibleReliability$: Observable<VisibleReliability | null>;
+  visibleHeatmaps$?: Observable<{ ECOSYSTEM: HeatmapModel; PRESSURE: HeatmapModel }>;
+  heatmapEcosystemColors: LegendColor[] = [
+    { color: '#1c6ff8', quantity: 1, opacity: 1 },
+    { color: '#2295ec', quantity: 5, opacity: 1 },
+    { color: '#27bbe0', quantity: 10, opacity: 1 },
+    { color: '#2ccbb9', quantity: 15, opacity: 1 },
+    { color: '#31db92', quantity: 20, opacity: 1 },
+    { color: '#26e655', quantity: 25, opacity: 1 },
+    { color: '#1bf118', quantity: 30, opacity: 1 },
+    { color: '#5bf61e', quantity: 35, opacity: 1 },
+    { color: '#9bfa24', quantity: 70, opacity: 1 },
+    { color: '#cdf922', quantity: 90, opacity: 1 },
+    { color: '#fef720', quantity: 100, opacity: 1 }
+  ];
+  heatmapPressureColors: LegendColor[] = [
+    { color: '#0072fc', quantity: 1, opacity: 1 },
+    { color: '#03c4ff', quantity: 10, opacity: 1 },
+    { color: '#00ffc4', quantity: 15, opacity: 1 },
+    { color: '#53ff02', quantity: 20, opacity: 1 },
+    { color: '#a9ff02', quantity: 25, opacity: 1 },
+    { color: '#feff00', quantity: 30, opacity: 1 },
+    { color: '#fdaa05', quantity: 35, opacity: 1 },
+    { color: '#fe8201', quantity: 70, opacity: 1 },
+    { color: '#fe4f00', quantity: 90, opacity: 1 },
+    { color: '#f50002', quantity: 100, opacity: 1 }
+  ];
 
   protected activeScenario$: Observable<Scenario | undefined>
     = this.store.select(ScenarioSelectors.selectActiveScenario);
@@ -73,6 +100,7 @@ export class MainViewComponent implements OnInit, AfterViewInit {
     this.areas = this.store.select(AreaSelectors.selectAll);
     this.legends$ = this.store.select(CalculationSelectors.selectVisibleLegends);
     this.cmpLegends$ = this.store.select(CalculationSelectors.selectComparisonLegend);
+    this.visibleHeatmaps$ = this.store.select(MetadataSelectors.selectVisibleHeatmaps);
     this.selectedAreas$ = this.store.select(AreaSelectors.selectSelectedAreaData).subscribe((areas) => {
       this.singleSelection = areas.length === 1;
       this.multiSelection = areas.length > 1;

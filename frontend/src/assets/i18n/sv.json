@@ -34,6 +34,17 @@
             "select-all": "Markera samtliga",
             "deselect-all": "Avmarkera samtliga"
         },
+        "summary-model": {
+            "label": "Kartmodell",
+            "none": "Ingen",
+            "overview": "Överblick",
+            "simple": "Enkel modell",
+            "simpleEcosystemDescription": "Medelvärde av alla ekosystemlager, vilket innebär att den ekosystemgrupp som har flest lager får mest vikt per automatik. Medelvärdet är linjärt transformerat till ett värde mellan 0-100.",
+            "simplePressureDescription": "Medelvärde av alla belastningslager, vilket innebär att den belastningsgrupp som har flest lager får mest vikt per automatik. Medelvärdet är linjärt transformerat till ett värde mellan 0-100.",
+            "balanced": "Balanserad modell",
+            "balancedEcosystemDescription": "Alla ekosystemlager delades in i fyra grupper: fågel, däggdjur, fisk, bentisk. Inom varje grupp har olika viktningar gjorts för att de teman som identifieras inom grupperna ska väga lika. Slutligen vägdes de fyra resulterande lagren samman med ett medelvärde. Medelvärdet är linjärt transformerat till ett värde mellan 0-100.",
+            "balancedPressureDescription": "Alla belastningslager delades in i nio grupper: fiske, sjöfart, rekreation, energi, kustutveckling, annan förorening, klimatförändring, försvar och sandutvinning. Varje grupp beräknar medelvärdet av sina lager. Slutligen vägdes de nio resulterande lagren samman med ett medelvärde. Medelvärdet är linjärt transformerat till ett värde mellan 0-100."
+        },
         "confirm-reset": {
             "modal": {
                 "header": "Bekräfta återställning",
@@ -85,7 +96,7 @@
             "areas": {
                 "title": "Scenarioområden",
                 "remove": {
-                    "button" : "Avlägsna område",
+                    "button": "Avlägsna område",
                     "label": "Tag bort området från aktuellt scenario",
                     "modal": {
                         "title": "Ta bort område från scenario",
@@ -208,7 +219,7 @@
                     "confirm": "Rensa"
                 }
             },
-            "changes-overview" : {
+            "changes-overview": {
                 "title": "Översikt förekomständringar",
                 "show-overview": "Öppna översiktsvyn för ändringar",
                 "global-changes": "Generella ändringar",
@@ -223,7 +234,7 @@
             "area-changes": {
                 "title": "Områdesspecifika förekomständringar"
             },
-            "transfer-changes" : {
+            "transfer-changes": {
                 "title": "Överför ändringar",
                 "tooltip": "Hämta ändringar från ett befintligt scenario eller scenarioområde",
                 "use-scenario-wide": "Använd det valda scenariots generella ändringar",
@@ -398,15 +409,15 @@
             "show-report": "Öppna rapport “{{ calculationName }}”",
             "delete": "Radera sparad beräkning “{{ calculationName }}”",
             "filter-hint": "Filtrera beräkningsrapport per namn",
-            "show-result" : "Rendera detta resultat i kartbilden",
-            "hide-result" :  "Tag bort detta resultat från kartbilden",
-            "visible-result" : "Resultatet är synligt i kartbilden",
+            "show-result": "Rendera detta resultat i kartbilden",
+            "hide-result": "Tag bort detta resultat från kartbilden",
+            "visible-result": "Resultatet är synligt i kartbilden",
             "purged-result": "Data för detta resultat har rensats bort.\nDå resultatet måste beräknas om tar det lite längre tid att ladda.",
             "edit-name": {
                 "label": "Ändra namn",
                 "header": "Ange ett nytt namn för beräkningen"
             },
-            "delete-modal" : {
+            "delete-modal": {
                 "header": "Radera sparad beräkning",
                 "message": "Bekräfta borttagning av tidigare sparad beräkning: <em>“{{ calculationName }}”</em>",
                 "header-multiple": "Radera markerade beräkningar",
@@ -454,7 +465,7 @@
                     "save": "Spara",
                     "close": "Avbryt"
                 },
-                "invalid-area" : {
+                "invalid-area": {
                     "title": "Felaktigt område",
                     "message": "Nya områden måste överlappa minst ett område med standardmatriskoppling"
                 }
@@ -521,7 +532,7 @@
             "emphasis": "Dela eller sammanfoga område",
             "detail": "{{ altButton }} + klick i kartbilden delar överlappande, {{ altButton }} + Shift + klick sammanfogar"
         },
-        "merge-areas-hint" : {
+        "merge-areas-hint": {
             "emphasis": "Sammanfoga områden",
             "detail": "{{ altButton }} + Shift + klick i kartbilden på 'sista' området för att sammanfoga."
         },

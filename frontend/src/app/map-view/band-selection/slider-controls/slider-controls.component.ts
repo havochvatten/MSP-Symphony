@@ -1,5 +1,11 @@
 import { Component, Input, NgModuleRef, OnDestroy, OnInit, inject } from '@angular/core';
-import { Band, BandChange, bandEquals, BandType, VisibleReliability } from '@data/metadata/metadata.interfaces';
+import {
+  Band,
+  BandChange,
+  bandEquals,
+  BandType,
+  VisibleReliability,
+} from '@data/metadata/metadata.interfaces';
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
 import { ScenarioSelectors } from "@data/scenario";
@@ -98,9 +104,11 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    this.hasPublicMeta = env.meta.visible_fields.some(
-      visible_field => !!this.band?.meta && !!this.band.meta[visible_field]
-    )
+    if (this.band) {
+      this.hasPublicMeta = env.meta.visible_fields.some(
+        visible_field => !!this.band?.meta && !!this.band.meta[visible_field]
+      );
+    }
   }
 
   toggleOpen() {
@@ -113,7 +121,8 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
   }
 
   showMetaDialog() {
-    this.dialogService.open(MetaInfoComponent, this.moduleRef, { data: { band: this.band } });
+    const data = { band: this.band };
+    this.dialogService.open(MetaInfoComponent, this.moduleRef, { data });
   }
 
   getGroupSetting() {

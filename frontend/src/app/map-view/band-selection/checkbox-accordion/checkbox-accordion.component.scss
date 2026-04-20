@@ -1,7 +1,8 @@
 @use 'src/styles/hav-colors' as colors;
 
 :host {
-  app-accordion-box-header {
+  app-accordion-box-header,
+  app-accordion-box-content .list-item {
     ::ng-deep mat-checkbox.mdc-checkbox--disabled {
       label.mdc-label {
         color: colors.$hav-black;

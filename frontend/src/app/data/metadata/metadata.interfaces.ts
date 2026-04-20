@@ -4,6 +4,7 @@ export type ComponentKey = keyof Pick<APILayerData, 'ecoComponent' | 'pressureCo
 
 export type BandType = 'ECOSYSTEM' | 'PRESSURE';
 export type BandType_Alt = 'ecoComponents' | 'pressures';
+export type HeatmapModel = 'none' | 'simple' | 'balanced';
 
 export const BandTypes = ['ECOSYSTEM', 'PRESSURE'] as const;
 
@@ -86,6 +87,11 @@ export interface VisibleReliability {
 export interface State {
   ECOSYSTEM: Groups;
   PRESSURE: Groups;
+  heatmapModels: {
+    ECOSYSTEM: HeatmapModel;
+    PRESSURE: HeatmapModel;
+  };
+  heatmapLoading: { [key in 'ECOSYSTEM' | 'PRESSURE']?: boolean };
   visibleReliability: VisibleReliability | null;
   loading: boolean;
 }

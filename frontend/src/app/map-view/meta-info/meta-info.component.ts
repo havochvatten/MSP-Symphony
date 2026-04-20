@@ -25,16 +25,24 @@ export class MetaInfoComponent implements AfterViewInit {
 
   constructor() {
     const config = this.config;
-
     this.band = config.data.band;
 
-    for (const metaField of env.meta.visible_fields) {
-      let sep: string;
-      if (this.band.meta[metaField]) {
-        const listType = env.meta.list_fields.includes(metaField);
-        sep = (listType) ? ';' : '\\n';
-        (listType ? this.bandMetadataLists : this.bandMetadata)
-          .set(metaField, this.band.meta[metaField].split(sep));
+    // === SPECIAL HANDLING FOR HEATMAP MODELS ===
+    if (this.band.meta?.metaData) {
+      // Heatmap metaData is a simple text string (not a list)
+      this.bandMetadata.set(this.band.meta.metaHeader, [this.band.meta.metaData]);
+    } else {
+      // === Normal band handling ===
+      for (const metaField of env.meta.visible_fields) {
+        let sep: string;
+        if (this.band.meta[metaField]) {
+          const listType = env.meta.list_fields.includes(metaField);
+          sep = listType ? ';' : '\\n';
+          (listType ? this.bandMetadataLists : this.bandMetadata).set(
+            'map.metadata.properties.' + metaField,
+            this.band.meta[metaField].split(sep),
+          );
+        }
       }
     }
 

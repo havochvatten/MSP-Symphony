@@ -5,7 +5,8 @@
     [disabled]="disabled"
     (change)="onSelect($event, band)"
     checkboxSize="small"
-  >{{ band.title }}</mat-checkbox>
+  >{{ band.title }}
+  </mat-checkbox>
   @if (!(band.visible && !band.loaded)) {
     <div
       class="editing list-actions">
@@ -14,7 +15,7 @@
           (click)="showMetaDialog()"
           [title]="'map.metadata.label' | translate"
           data-active="true"
-          >
+        >
           <app-icon iconType="info-circle-large"></app-icon>
         </button>
       }
@@ -22,12 +23,12 @@
         <button
           (click)="toggleOpen()"
           [attr.data-active]="open"
-      [attr.aria-label]="(
-        open ?
-          'map.editor.band-pressures.hide-intensity' :
-          'map.editor.band-pressures.show-intensity') | translate"
+          [attr.aria-label]="(
+      open ?
+        'map.editor.band-pressures.hide-intensity' :
+        'map.editor.band-pressures.show-intensity') | translate"
           [title]="!scenario ?( 'map.editor.band-pressures.no-scenario-selected' | translate) : ''"
-          >
+        >
           <app-icon iconType="sliders"></app-icon>
         </button>
       }
@@ -35,11 +36,11 @@
         <button
           class="reliability"
           [attr.data-active]="reliabilityVisible"
-      [title]="(reliabilityVisible ?
-        'map.editor.band-pressures.hide-reliability' :
-        'map.editor.band-pressures.show-reliability') | translate"
+          [title]="(reliabilityVisible ?
+      'map.editor.band-pressures.hide-reliability' :
+      'map.editor.band-pressures.show-reliability') | translate"
           (click)="showReliability()"
-          >
+        >
           <app-icon iconType="data-reliability"
           ></app-icon>
         </button>
@@ -64,7 +65,7 @@
     [band]="band"
     [multiplier]="getMultiplier()"
     [offset]="getOffset()"
-    [overridden] = "!isEmpty(overriddenChange)"
+    [overridden]="!isEmpty(overriddenChange)"
     [disabled]="disabled"
     [areaIsVisible]="band.visible"
     [groupSetting]="getGroupSetting()"

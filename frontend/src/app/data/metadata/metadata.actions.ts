@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Band, BandType, Groups } from './metadata.interfaces';
+import { Band, BandType, Groups, HeatmapModel } from './metadata.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
 import { Scenario } from "@data/scenario/scenario.interfaces";
 
@@ -57,6 +57,11 @@ export const setLoadedState = createAction(
   props<{ band: Band, value: boolean }>()
 );
 
+export const setHeatmapModel = createAction(
+  '[Metadata] Set heatmap model visibility',
+  props<{ bandType: BandType, model: HeatmapModel }>()
+);
+
 export const showReliability = createAction(
   '[Metadata] Show reliability',
   props<{ band: Band  }>()
@@ -74,4 +79,9 @@ export const updateMultiplier = createAction(
 export const setSelectionFromScenario = createAction(
   '[Metadata] Set selection from scenario',
   props<{ scenario: Scenario }>()
+);
+
+export const setHeatmapLoading = createAction(
+  '[Metadata] Set Heatmap Loading',
+  props<{ bandType: BandType, loading: boolean }>()
 );

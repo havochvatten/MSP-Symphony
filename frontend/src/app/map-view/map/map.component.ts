@@ -73,6 +73,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   private map?: OLMap;
   private readonly storeSubscription?: Subscription;
+  private readonly heatmapSubscription?: Subscription;
   private readonly resultSubscription?: Subscription;
   private readonly resultDeletedSubscription?: Subscription;
   private userSubscription?: Subscription;
@@ -115,6 +116,13 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       .subscribe(components => { // FIXME
         this.bandLayer?.setVisibleBands('ECOSYSTEM', components.ecoComponent);
         this.bandLayer?.setVisibleBands('PRESSURE', components.pressureComponent);
+      });
+
+    this.heatmapSubscription = this.store
+      .select(MetadataSelectors.selectVisibleHeatmaps)
+      .subscribe(models => {
+        this.bandLayer?.setVisibleHeatmap('ECOSYSTEM', models.ECOSYSTEM);
+        this.bandLayer?.setVisibleHeatmap('PRESSURE', models.PRESSURE);
       });
 
     this.activeScenario$ = this.store.select(ScenarioSelectors.selectActiveScenario);
@@ -323,6 +331,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy() {
     if (this.storeSubscription) {
       this.storeSubscription.unsubscribe();
+    }
+    if (this.heatmapSubscription) {
+      this.heatmapSubscription.unsubscribe();
     }
     if (this.areaSubscription) {
       this.areaSubscription.unsubscribe();

@@ -41,6 +41,9 @@ import { ConfirmGenerateComparisonComponent } from './calculation-history/confir
 import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component';
 import { DownloadCompoundComparisonDialogComponent } from './compound-comparison-list-dialog/download-compound-comparison-dialog/download-compound-comparison-dialog.component';
 import { ReliabilityLegendComponent } from "@src/app/map-view/reliability-legend/reliability-legend.component";
+import { SummaryModelSelectionComponent } from './band-selection/summary-model-selection/summary-model-selection.component';
+import { SummaryModelAccordionComponent } from './band-selection/summary-model-selection/summary-model-accordion/summary-model-accordion.component';
+import { SummaryModelControlsComponent } from './band-selection/summary-model-selection/summary-model-controls/summary-model-controls.component';
 
 @NgModule({
   declarations: [
@@ -71,7 +74,10 @@ import { ReliabilityLegendComponent } from "@src/app/map-view/reliability-legend
     ConfirmGenerateComparisonComponent,
     CompoundComparisonListDialogComponent,
     DownloadCompoundComparisonDialogComponent,
-    ReliabilityLegendComponent
+    ReliabilityLegendComponent,
+    SummaryModelSelectionComponent,
+    SummaryModelAccordionComponent,
+    SummaryModelControlsComponent
   ],
   imports: [
     SharedModule,

@@ -1,5 +1,13 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { Band, BandGroup, Groups, State, ReliabilityMap, ReliabilityMapping } from './metadata.interfaces';
+import {
+  Band,
+  BandGroup,
+  Groups,
+  State,
+  ReliabilityMap,
+  ReliabilityMapping,
+  BandType,
+} from './metadata.interfaces';
 
 export const selectMetadataState = createFeatureSelector<State>('metadata');
 
@@ -7,6 +15,12 @@ export const selectIsLoading = createSelector(
   selectMetadataState,
   state => state.loading
 );
+
+export const selectHeatmapLoading = (bandType: BandType) =>
+  createSelector(
+    selectMetadataState,
+    (state: State) => state.heatmapLoading[bandType] ?? false
+  );
 
 export const getBandPath = (band: Band) =>
   [band.symphonyCategory, band.meta.symphonytheme, 'bands', band.bandNumber];
@@ -97,6 +111,11 @@ export const selectVisibleBands = createSelector(
     ecoComponent: filterVisibleBand(flattenBands(selectGroups(ecoComponents))),
     pressureComponent: filterVisibleBand(flattenBands(selectGroups(pressureComponents)))
   })
+);
+
+export const selectVisibleHeatmaps = createSelector(
+  selectMetadataState,
+  (state: State) => state.heatmapModels
 );
 
 export const selectBandNumbers = createSelector(

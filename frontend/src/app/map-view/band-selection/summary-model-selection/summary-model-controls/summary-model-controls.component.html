@@ -1,0 +1,30 @@
+<div class="controls">
+  <mat-checkbox
+    [checked]="isHeatmapSelected(heatmapModel)"
+    [disabled]="true"
+    (change)="toggleHeatmap(heatmapModel)"
+    checkboxSize="small"
+  >{{ heatMapLabelKey | translate }}
+  </mat-checkbox>
+
+  @if (isHeatmapSelected(heatmapModel) && !isHeatmapModelLoaded(heatmapModel)) {
+    <mat-spinner [diameter]="18" [strokeWidth]="2"></mat-spinner>
+  } @else {
+    <div class="editing list-actions">
+      <button
+        (click)="showMetaDialog()"
+        [title]="'map.metadata.label' | translate"
+        data-active="true"
+      >
+        <app-icon iconType="info-circle-large"></app-icon>
+      </button>
+
+      <app-icon
+        class="toggle-visibility-icon"
+        [attr.data-visible]="isHeatmapSelected(heatmapModel)"
+        [iconType]="isHeatmapSelected(heatmapModel) ? 'eye' : 'eye-slash'"
+        (click)="toggleHeatmap(heatmapModel); $event.stopImmediatePropagation()"
+      ></app-icon>
+    </div>
+  }
+</div>

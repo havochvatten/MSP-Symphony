@@ -37,6 +37,9 @@ import { RouterModule } from "@angular/router";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenario-areas/add-scenario-areas.component";
+import { SummaryModelSelectionComponent } from './band-selection/summary-model-selection/summary-model-selection.component';
+import { SummaryModelAccordionComponent } from './band-selection/summary-model-selection/summary-model-accordion/summary-model-accordion.component';
+import { SummaryModelControlsComponent } from './band-selection/summary-model-selection/summary-model-controls/summary-model-controls.component';
 describe('MainViewComponent', () => {
   let fixture: ComponentFixture<MainViewComponent>,
       component: MainViewComponent;
@@ -68,6 +71,9 @@ describe('MainViewComponent', () => {
         EcoSliderComponent,
         AreaGroupComponent,
         AreaSelectionComponent,
+        SummaryModelSelectionComponent,
+        SummaryModelAccordionComponent,
+        SummaryModelControlsComponent,
         BandSelectionComponent,
         SelectionLayoutComponent,
         CalculationHistoryComponent,
