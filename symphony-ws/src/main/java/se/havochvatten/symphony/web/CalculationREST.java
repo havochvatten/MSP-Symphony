@@ -319,7 +319,7 @@ public class CalculationREST {
         baos.flush();
 
         calculationResult.setImagePNG(
-            addMetaData(cimage, cimage.getColorModel(), cimage.getSampleModel(), "extent", extent)
+            addMetaData(cimage, "extent", extent)
         );
 
         calcService.updateCalculation(calculationResult);
