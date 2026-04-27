@@ -36,21 +36,21 @@ The application loads this file automatically on startup.
 
 ### 3. All configurable fields
 
-| Field                        | Description                                                                                             | Generic default                  |
-|------------------------------|---------------------------------------------------------------------------------------------------------|----------------------------------|
-| `flagAlt`                    | Alternative text for the header flag / country logo                                                     | `null`                           |
-| `flagSrc`                    | Path to the header flag / country logo image                                                            | `null`                           |
-| `footerTextTranslationKey`   | Translation key for the footer text.                                                                    | `null`                           |
-| `loginLogoAlt`               | Alternative text for the login page logo                                                                | `null`                           |
-| `loginLogoSrc`               | Logo used on the login page (always shown, even when `showLogos` is `false`)                            | `"assets/long-tailed-duck.svg"`  |
-| `logoAlt`                    | Alternative text for the main header logo                                                               | `"Symphony"`                     |
-| `logoSrc`                    | Path to the main organization logo                                                                      | `null`                           |
-| `reportCountryLogoAlt`       | Alternative text for the country logo in reports                                                        | `null`                           |
-| `reportCountryLogoSrc`       | Path to the country logo used in reports                                                                | `null`                           |
-| `reportLogoAlt`              | Alternative text for the report logo                                                                    | `"Symphony"`                     |
-| `reportLogoSrc`              | Path to the logo used in reports                                                                        | `null`                           |
-| `showLogos`                  | Determines whether to show any of the logos listed here (except the login logo, which is always shown)  | `false`                          |
-| `showReportClosingMatter`    | Determines whether to show the closing paragraph (with link) in reports                                 | `false`                          |
+| Field                        | Description                                                                                            | Generic default                  |
+|------------------------------|--------------------------------------------------------------------------------------------------------|----------------------------------|
+| `flagAlt`                    | Alternative text for the header flag / country logo                                                    | `undefined`                      |
+| `flagSrc`                    | Path to the header flag / country logo image                                                           | `undefined`                      |
+| `footerTextTranslationKey`   | Translation key for the footer text.                                                                   | `undefined`                      |
+| `loginLogoAlt`               | Alternative text for the login page logo                                                               | `undefined`                      |
+| `loginLogoSrc`               | Logo used on the login page (always shown, even when `showLogos` is `false`)                           | `"assets/long-tailed-duck.svg"`  |
+| `logoAlt`                    | Alternative text for the main header logo                                                              | `"Symphony"`                     |
+| `logoSrc`                    | Path to the main organization logo                                                                     | `undefined`                      |
+| `reportCountryLogoAlt`       | Alternative text for the country logo in reports                                                       | `undefined`                      |
+| `reportCountryLogoSrc`       | Path to the country logo used in reports                                                               | `undefined`                      |
+| `reportLogoAlt`              | Alternative text for the report logo                                                                   | `undefined`                      |
+| `reportLogoSrc`              | Path to the logo used in reports                                                                       | `undefined`                      |
+| `showLogos`                  | Determines whether to show any of the logos listed here (except the login logo, which is always shown) | `false`                          |
+| `showReportClosingMatter`    | Determines whether to show the closing paragraph (with link) in reports                                | `false`                          |
 
 ### 4. Easy switch between versions
 
