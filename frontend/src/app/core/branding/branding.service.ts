@@ -4,19 +4,17 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '@src/environments/environment';
 
 export interface BrandingConfig {
-  appTitle: string;
-  flagAlt: string;
-  flagSrc: string;
-  footerText: string;
-  loginLogoAlt: string;
-  loginLogoSrc: string;
-  logoAlt: string;
-  logoSrc: string;
-  orgName: string;
-  reportCountryLogoAlt: string;
-  reportCountryLogoSrc: string;
-  reportLogoAlt: string;
-  reportLogoSrc: string;
+  flagAlt: string | null;
+  flagSrc: string | null;
+  footerTextTranslationKey: string | null;
+  loginLogoAlt: string | null;
+  loginLogoSrc: string | null;
+  logoAlt: string | null;
+  logoSrc: string | null;
+  reportCountryLogoAlt: string | null;
+  reportCountryLogoSrc: string | null;
+  reportLogoAlt: string | null;
+  reportLogoSrc: string | null;
   showLogos: boolean;
   showReportClosingMatter: boolean;
 }
@@ -26,19 +24,17 @@ export class BrandingService {
   private http = inject(HttpClient);
 
   private config: BrandingConfig = {
-    appTitle: 'Symphony – Ecosystem-based Marine Spatial Planning',
-    flagAlt: '',
-    flagSrc: '',
-    footerText: 'Powered by Symphony',
+    flagAlt: null,
+    flagSrc: null,
+    footerTextTranslationKey: null,
     loginLogoAlt: 'Symphony',
-    loginLogoSrc: '',
+    loginLogoSrc: null,
     logoAlt: 'Symphony',
-    logoSrc: '',
-    orgName: 'Symphony',
-    reportCountryLogoAlt: '',
-    reportCountryLogoSrc: '',
+    logoSrc: null,
+    reportCountryLogoAlt: null,
+    reportCountryLogoSrc: null,
     reportLogoAlt: 'Symphony',
-    reportLogoSrc: '',
+    reportLogoSrc: null,
     showLogos: false,
     showReportClosingMatter: false,
   };

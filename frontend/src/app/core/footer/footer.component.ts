@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { BrandingService } from '@src/app/core/branding/branding.service';
 
 @Component({
   selector: 'app-footer',
@@ -6,4 +7,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./footer.component.scss'],
   standalone: false
 })
-export class FooterComponent {}
+export class FooterComponent {
+  public brandingService = inject(BrandingService);
+}

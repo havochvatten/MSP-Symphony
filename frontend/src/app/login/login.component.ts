@@ -5,7 +5,7 @@ import { Observable, Subscription } from 'rxjs';
 import { UserActions, UserSelectors } from '@data/user';
 import { environment } from '@src/environments/environment.prod';
 import { State } from '@src/app/app-reducer';
-import { BrandingService } from '../core/branding/branding.service';
+import { BrandingService } from '@src/app/core/branding/branding.service';
 import buildInfo from '@src/build-info';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 

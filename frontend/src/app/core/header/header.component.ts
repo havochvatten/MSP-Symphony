@@ -17,7 +17,7 @@ import { AboutDialogComponent } from "@src/app/core/about/about-dialog.component
 import { User } from "@data/user/user.interfaces";
 import { ChangeLanguageDialogComponent } from "@shared/change-language-dialog/change-language-dialog.component";
 import { CoreModule } from "@src/app/core/core.module";
-import { BrandingService } from '../branding/branding.service';
+import { BrandingService } from '@src/app/core/branding/branding.service';
 
 type MenuId = 'main' | 'user';
 type OpenState = 'MAIN' | 'USER' | 'NONE';
