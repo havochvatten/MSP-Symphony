@@ -6,6 +6,7 @@ import { DialogRef } from "@shared/dialog/dialog-ref";
 import { MetadataActions } from "@data/metadata";
 import { ScenarioActions, ScenarioSelectors } from "@data/scenario";
 import { Scenario } from "@data/scenario/scenario.interfaces";
+import { CalculationActions } from '@data/calculation';
 
 @Component({
   selector: 'app-confirm-reset',
@@ -27,6 +28,8 @@ export class ConfirmResetComponent implements OnInit {
     this.store.dispatch(
       MetadataActions.fetchMetadata()
     );
+    this.store.dispatch(CalculationActions.setSummaryModel({ category: 'ECOSYSTEM', model: 'none' }));
+    this.store.dispatch(CalculationActions.setSummaryModel({ category: 'PRESSURE', model: 'none' }));
 
     if(this.activeScenario) {
       if (typeof this.activeArea !== 'number') {

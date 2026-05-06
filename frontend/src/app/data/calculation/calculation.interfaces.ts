@@ -5,6 +5,9 @@ import { NormalizationOptions } from '@data/calculation/calculation.service';
 import { ChangesProperty } from '@data/scenario/scenario.interfaces';
 import { ListItemsSort, SortableListItem } from '@data/common/sorting.interfaces';
 
+export type SummaryModelCategory = 'ECOSYSTEM' | 'PRESSURE';
+export type SummaryModel = 'none' | string;
+
 // TODO Move calculation element to Scenario state
 export interface State {
   loadingReport: boolean;
@@ -24,6 +27,15 @@ export interface State {
   compoundComparisons: CompoundComparisonSlice[];
   compoundComparisonSuccessCount: number;
   sortCompoundComparisons: ListItemsSort;
+  availableSummaryModels: {
+    [key in SummaryModelCategory]: string[];
+  };
+  summaryModels: {
+    [key in SummaryModelCategory]: SummaryModel;
+  };
+  summaryModelLoading: {
+    [key in SummaryModelCategory]: boolean;
+  };
 }
 
 export interface Report {

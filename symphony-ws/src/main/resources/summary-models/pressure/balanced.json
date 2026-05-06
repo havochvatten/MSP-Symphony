@@ -1,0 +1,91 @@
+{
+  "titleTranslationKey": "map.summary-model.balancedPressureTitle",
+  "outputStep": "pressure_total",
+  "steps": [
+    {
+      "name": "fishing",
+      "translationKey": "map.summary-model.step.fishing",
+      "operation": "MEAN",
+      "order": 10,
+      "bands": [0, 3, 4, 5, 66],
+      "normalization": { "type": "linear", "min": 0, "max": 100 }
+    },
+    {
+      "name": "shipping",
+      "translationKey": "map.summary-model.step.shipping",
+      "operation": "MEAN",
+      "order": 20,
+      "bands": [22, 24, 57, 68],
+      "normalization": { "type": "linear", "min": 0, "max": 100 }
+    },
+    {
+      "name": "recreation",
+      "translationKey": "map.summary-model.step.recreation",
+      "operation": "MEAN",
+      "order": 30,
+      "bands": [2, 25, 60],
+      "normalization": { "type": "linear", "min": 0, "max": 100 }
+    },
+    {
+      "name": "energy",
+      "translationKey": "map.summary-model.step.energy",
+      "operation": "MEAN",
+      "order": 40,
+      "bands": [6, 7, 23],
+      "normalization": { "type": "linear", "min": 0, "max": 100 }
+    },
+    {
+      "name": "coastal-development",
+      "translationKey": "map.summary-model.step.coastalDevelopment",
+      "operation": "MEAN",
+      "order": 50,
+      "bands": [10, 11, 12, 13, 14],
+      "normalization": { "type": "linear", "min": 0, "max": 100 }
+    },
+    {
+      "name": "pollution-other",
+      "translationKey": "map.summary-model.step.pollutionOther",
+      "operation": "MEAN",
+      "order": 60,
+      "bands": [1, 16, 19, 20, 21, 56, 58, 59, 61, 62, 63, 64, 65],
+      "normalization": { "type": "linear", "min": 0, "max": 100 }
+    },
+    {
+      "name": "defence",
+      "translationKey": "map.summary-model.step.defence",
+      "operation": "MEAN",
+      "order": 80,
+      "bands": [8, 9],
+      "normalization": { "type": "linear", "min": 0, "max": 100 }
+    },
+    {
+      "name": "sand-extraction",
+      "translationKey": "map.summary-model.step.sandExtraction",
+      "operation": "MEAN",
+      "order": 90,
+      "bands": [15, 67],
+      "normalization": { "type": "linear", "min": 0, "max": 100 }
+    },
+    {
+      "name": "pressure_total",
+      "translationKey": "map.summary-model.step.pressureTotal",
+      "operation": "MEAN",
+      "order": 100,
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      },
+      "inputs": [
+        "fishing",
+        "shipping",
+        "recreation",
+        "energy",
+        "coastal-development",
+        "pollution-other",
+        "defence",
+        "sand-extraction"
+      ]
+    }
+  ]
+}

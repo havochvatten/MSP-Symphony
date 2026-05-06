@@ -1,22 +1,25 @@
 package se.havochvatten.symphony.service;
 
-import se.havochvatten.symphony.dto.*;
-import se.havochvatten.symphony.entity.Metadata;
-import se.havochvatten.symphony.entity.SymphonyBand;
-import se.havochvatten.symphony.entity.BaselineVersion;
-import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
-import se.havochvatten.symphony.exception.SymphonyStandardAppException;
-
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
+import se.havochvatten.symphony.dto.*;
+import se.havochvatten.symphony.entity.BaselineVersion;
+import se.havochvatten.symphony.entity.Metadata;
+import se.havochvatten.symphony.entity.SymphonyBand;
+import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
+import se.havochvatten.symphony.exception.SymphonyStandardAppException;
+
 import java.util.*;
+import java.util.logging.Logger;
 
 @Stateless
 public class MetaDataService {
+    private static final Logger logger = Logger.getLogger(MetaDataService.class.getName());
+
     @PersistenceContext(unitName = "symphonyPU")
     public EntityManager em;
 
@@ -25,32 +28,32 @@ public class MetaDataService {
 
     // explicit fetch to load lazy-loaded collection
     public static final String fullBandQuery = "SELECT b FROM SymphonyBand b " +
-            "LEFT JOIN FETCH b.reliabilityPartitions WHERE b.baseline.id = :baselineVersionId " +
-            "AND b.category = :category";
+        "LEFT JOIN FETCH b.reliabilityPartitions WHERE b.baseline.id = :baselineVersionId " +
+        "AND b.category = :category";
 
     public static final String sparseBandQuery = "SELECT b FROM SymphonyBand b " +
-            "WHERE b.baseline.id = :baselineVersionId " +
-            "AND b.category = :category ";
+        "WHERE b.baseline.id = :baselineVersionId " +
+        "AND b.category = :category ";
 
     public static final String fullMetaQuery = "SELECT m FROM Metadata m " +
-            "WHERE m.band IN :bandsList " +
-            "AND (m.language = :language " +
-            "OR (m.language = m.band.baseline.locale " +
-            "AND m.metaField NOT IN " +
-            "(SELECT m2.metaField FROM Metadata m2 " +
-            "WHERE m2.band IN :bandsList " +
-            "AND m2.language = :language)))";
+        "WHERE m.band IN :bandsList " +
+        "AND (m.language = :language " +
+        "OR (m.language = m.band.baseline.locale " +
+        "AND m.metaField NOT IN " +
+        "(SELECT m2.metaField FROM Metadata m2 " +
+        "WHERE m2.band IN :bandsList " +
+        "AND m2.language = :language)))";
 
     public static final String sparseMetaQuery = "SELECT m FROM Metadata m " +
-            "WHERE m.band IN :bandsList " +
-            "AND (m.language = :language " +
-            "OR (m.language = m.band.baseline.locale " +
-            "AND m.metaField IN ('title', 'symphonytheme')" +
-            "AND m.metaField NOT IN " +
-            "(SELECT m2.metaField FROM Metadata m2 " +
-            "WHERE m2.band IN :bandsList " +
-            "AND m2.metaField IN ('title', 'symphonytheme')" +
-            "AND m2.language = :language)))";
+        "WHERE m.band IN :bandsList " +
+        "AND (m.language = :language " +
+        "OR (m.language = m.band.baseline.locale " +
+        "AND m.metaField IN ('title', 'symphonytheme')" +
+        "AND m.metaField NOT IN " +
+        "(SELECT m2.metaField FROM Metadata m2 " +
+        "WHERE m2.band IN :bandsList " +
+        "AND m2.metaField IN ('title', 'symphonytheme')" +
+        "AND m2.language = :language)))";
 
     public MetadataDto findMetadata
         (String baselineName, String preferredLanguage, boolean sparse) throws SymphonyStandardAppException {
@@ -96,7 +99,7 @@ public class MetaDataService {
         // Select all Metadata for the given SymphonyBands and the given language.
         // If a translation for a field is not found, fall back to baseline default language.
         List<Metadata> metadataList =
-                em.createQuery(sparse ? sparseMetaQuery : fullMetaQuery, Metadata.class)
+            em.createQuery(sparse ? sparseMetaQuery : fullMetaQuery, Metadata.class)
                 .setParameter("bandsList", bandsList)
                 .setParameter("language", language)
                 .getResultList();
@@ -114,7 +117,7 @@ public class MetaDataService {
                 symphonyThemeDto.setBands(new ArrayList<>());
                 metadataList.stream()
                     .filter(m2 -> m2.getMetaField().equals("symphonytheme")
-                               && m2.getMetaValue().equals(t))
+                        && m2.getMetaValue().equals(t))
                     .map(m2 -> {
                         SymphonyBandDto propertyDto = new SymphonyBandDto(m2.getBand(), !sparse);
                         m2.getBand().getMetaValues().stream()
@@ -141,5 +144,46 @@ public class MetaDataService {
             throw new SymphonyStandardAppException(SymphonyModelErrorCode.METADATA_NOT_FOUND_FOR_ID);
         }
         return band;
+    }
+
+    /**
+     * Returns localized band title for dynamic model descriptions.
+     * Uses preferred language (sv/en/fr) and falls back to the baseline default locale.
+     */
+    public String getBandTitle(int baselineVersionId, String category, int bandNumber, String preferredLanguage) {
+        // Normalize category to match database (Ecosystem / Pressure)
+        String dbCategory = "ECOSYSTEM".equalsIgnoreCase(category) ? "Ecosystem" : "Pressure";
+
+        String lang = (preferredLanguage != null && preferredLanguage.startsWith("sv")) ? "sv" :
+            (preferredLanguage != null && preferredLanguage.startsWith("fr")) ? "fr" : "en";
+
+        TypedQuery<String> q = em.createQuery("""
+            SELECT mv.metaValue
+            FROM Metadata mv
+            JOIN mv.band b
+            WHERE b.baseline.id = :bverId
+              AND b.category = :category
+              AND b.bandnumber = :bandNumber
+              AND mv.metaField = 'title'
+              AND (mv.language = :lang
+                   OR (mv.language = b.baseline.locale
+                       AND NOT EXISTS (
+                           SELECT 1 FROM Metadata mv2
+                           WHERE mv2.band = b
+                             AND mv2.metaField = 'title'
+                             AND mv2.language = :lang)))
+            """, String.class);
+
+        q.setParameter("bverId", baselineVersionId);
+        q.setParameter("category", dbCategory);
+        q.setParameter("bandNumber", bandNumber);
+        q.setParameter("lang", lang);
+
+        try {
+            return q.getSingleResult();
+        } catch (Exception e) {
+            logger.warning("No title found for band " + bandNumber + " in category " + dbCategory);
+            return "Band " + bandNumber;
+        }
     }
 }

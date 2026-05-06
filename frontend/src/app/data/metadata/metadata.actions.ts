@@ -1,11 +1,11 @@
 import { createAction, props } from '@ngrx/store';
 import { Band, BandType, Groups } from './metadata.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
-import { Scenario } from "@data/scenario/scenario.interfaces";
+import { Scenario } from '@data/scenario/scenario.interfaces';
+import { SummaryModelCategory } from '@data/calculation/calculation.interfaces';
+import { ModelDescriptionDialogData } from '@src/app/map-view/band-selection/summary-model-selection/summary-model-dialog/summary-model-dialog.component';
 
-export const fetchMetadata = createAction(
-  '[Metadata] Fetch Metadata'
-);
+export const fetchMetadata = createAction('[Metadata] Fetch Metadata');
 
 export const fetchMetadataForBaseline = createAction(
   '[Metadata] Fetch Metadata by named baseline',
@@ -39,39 +39,47 @@ export const fetchMetadataFailure = createAction(
 
 export const selectBandsByType = createAction(
   '[Metadata] Select bands for inclusion',
-  props<{ bandType: BandType, value: boolean}>()
+  props<{ bandType: BandType; value: boolean }>()
 );
 
 export const selectBand = createAction(
   '[Metadata] Select band for inclusion',
-  props<{ band: Band, value: boolean|undefined }>()
+  props<{ band: Band; value: boolean | undefined }>()
 );
 
-export const setVisibility  = createAction(
+export const setVisibility = createAction(
   '[Metadata] Set band visibility',
-  props<{ band: Band, value: boolean }>()
+  props<{ band: Band; value: boolean }>()
 );
 
 export const setLoadedState = createAction(
   '[Metadata] Set loaded state (visualisation)',
-  props<{ band: Band, value: boolean }>()
+  props<{ band: Band; value: boolean }>()
 );
 
-export const showReliability = createAction(
-  '[Metadata] Show reliability',
-  props<{ band: Band  }>()
-);
+export const showReliability = createAction('[Metadata] Show reliability', props<{ band: Band }>());
 
-export const hideReliability = createAction(
-  '[Metadata] Hide reliability'
-);
+export const hideReliability = createAction('[Metadata] Hide reliability');
 
 export const updateMultiplier = createAction(
   '[Metadata] Update intensity multiplier',
-  props<{ band: Band, value: number }>()
+  props<{ band: Band; value: number }>()
 );
 
 export const setSelectionFromScenario = createAction(
   '[Metadata] Set selection from scenario',
   props<{ scenario: Scenario }>()
+);
+
+export const fetchSummaryModelDescriptionsSuccess = createAction(
+  '[Calculation] Fetch Summary Model Descriptions Success',
+  props<{
+    category: SummaryModelCategory;
+    descriptions: { [model: string]: ModelDescriptionDialogData };
+  }>()
+);
+
+export const fetchSummaryModelDescriptionsFailure = createAction(
+  '[Calculation] Fetch Summary Model Descriptions Failure',
+  props<{ category: SummaryModelCategory, error: string }>()
 );

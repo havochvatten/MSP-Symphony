@@ -34,6 +34,49 @@
             "select-all": "Tout sélectionner",
             "deselect-all": "Tout désélectionner"
         },
+        "summary-model": {
+            "balanced": "Modèle équilibré",
+            "balancedEcosystemTitle": "Modèle équilibré - Composants de l'écosystème",
+            "balancedPressureTitle": "Modèle équilibré - Pressions",
+            "dependsOn": "Dépend de",
+            "linearNormalization": "Normalisation linéaire",
+            "operation": {
+                "mean": "MOYENNE",
+                "max": "MAX",
+                "sum": "SOMME"
+            },
+            "output": "Sortie",
+            "overview": "Aperçu",
+            "simple": "Modèle simple",
+            "simpleEcosystemTitle": "Modèle simple - Composants de l'écosystème",
+            "simplePressureTitle": "Modèle simple - Pressions",
+            "step": {
+                "birdTotal": "Oiseaux total",
+                "sealTotal": "Phoques total",
+                "porpoiseTotal": "Marsouin total",
+                "mammalTotal": "Mammifères marins total",
+                "fishOccurrence": "Présence de poissons",
+                "fishFunctions": "Fonctions des poissons",
+                "fishTotal": "Poissons total",
+                "reefHardbottomPresence": "Présence de récifs / fonds durs",
+                "hardbottomAbiotic": "Fonds durs abiotiques",
+                "reefEnvironmentPresence": "Présence de l'environnement récifal",
+                "extraValuableReef": "Récifs de grande valeur",
+                "reefTotal": "Récifs total",
+                "angiospermShoreline": "Angiospermes et littoral",
+                "benthicTotal": "Benthique total",
+                "ecosystemTotal": "Valeur écosystémique totale",
+                "fishing": "Pêche",
+                "shipping": "Navigation",
+                "recreation": "Loisirs",
+                "energy": "Énergie",
+                "coastalDevelopment": "Développement côtier",
+                "pollutionOther": "Autres pollutions",
+                "defence": "Défense",
+                "sandExtraction": "Extraction de sable",
+                "pressureTotal": "Valeur totale des pressions"
+            }
+        },
         "confirm-reset": {
             "modal": {
                 "header": "Confirmer la réinitialisation",
@@ -208,7 +251,7 @@
                     "confirm": "Effacer"
                 }
             },
-            "changes-overview" : {
+            "changes-overview": {
                 "title": "Vue d'ensemble des modifications de scénario",
                 "show-overview": "Afficher une vue d'ensemble de tous les changements",
                 "global-changes": "Modifications générales",
@@ -454,7 +497,7 @@
                     "save": "Sauvegarder",
                     "close": "Fermer"
                 },
-                "invalid-area" : {
+                "invalid-area": {
                     "title": "Zone invalide",
                     "message": "Les zones définies par l'utilisateur doivent chevaucher au moins une autre zone ayant un couplage de matrice par défaut"
                 }
@@ -638,7 +681,7 @@
             "title": "Rapport de comparaison",
             "vs": "vs."
         },
-        "common" : {
+        "common": {
             "not-measurable": "(non mesurable)"
         },
         "cumulative-effect-etc": {
@@ -735,12 +778,12 @@
             }
         }
     },
-    "list-sorting-options" : {
-        "indicate-order" : "Indiquer la commande comme {{ orderHint }}",
-        "AlphaAsc" : "alphabétique croissant (A-Z)",
-        "AlphaDesc" : "alphabétique décroissant (Z-A)",
-        "DateAsc" : "croissant par date (les plus anciens en premier)",
-        "DateDesc" : "décroissant par date (les plus récents en premier)",
-        "None" : "non trié"
+    "list-sorting-options": {
+        "indicate-order": "Indiquer la commande comme {{ orderHint }}",
+        "AlphaAsc": "alphabétique croissant (A-Z)",
+        "AlphaDesc": "alphabétique décroissant (Z-A)",
+        "DateAsc": "croissant par date (les plus anciens en premier)",
+        "DateDesc": "décroissant par date (les plus récents en premier)",
+        "None": "non trié"
     }
 }

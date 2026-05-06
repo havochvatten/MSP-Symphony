@@ -1,0 +1,161 @@
+{
+  "titleTranslationKey": "map.summary-model.balancedEcosystemTitle",
+  "outputStep": "ecosystem_total",
+  "steps": [
+    {
+      "name": "bird_total",
+      "translationKey": "map.summary-model.step.birdTotal",
+      "operation": "MEAN",
+      "order": 10,
+      "bands": [2, 24, 25],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "name": "seal_total",
+      "translationKey": "map.summary-model.step.sealTotal",
+      "operation": "MEAN",
+      "order": 20,
+      "bands": [7, 9, 19],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "name": "porpoise_total",
+      "translationKey": "map.summary-model.step.porpoiseTotal",
+      "operation": "MAX",
+      "order": 50,
+      "bands": [16, 17, 18],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "name": "mammal_total",
+      "translationKey": "map.summary-model.step.mammalTotal",
+      "operation": "MEAN",
+      "order": 60,
+      "inputs": ["seal_total", "porpoise_total"],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "name": "fish_occurrence",
+      "translationKey": "map.summary-model.step.fishOccurrence",
+      "operation": "MEAN",
+      "order": 70,
+      "bands": [3, 13, 30, 34],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "name": "fish_functions",
+      "translationKey": "map.summary-model.step.fishFunctions",
+      "operation": "MAX",
+      "order": 80,
+      "bands": [6, 5, 20],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "name": "fish_total",
+      "translationKey": "map.summary-model.step.fishTotal",
+      "operation": "MEAN",
+      "order": 90,
+      "inputs": ["fish_occurrence", "fish_functions"],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "name": "reef_hardbottom_presence",
+      "translationKey": "map.summary-model.step.reefHardbottomPresence",
+      "operation": "MAX",
+      "order": 100,
+      "bands": [1, 14, 8, 4]
+    },
+    {
+      "name": "hardbottom_abiotic",
+      "translationKey": "map.summary-model.step.hardbottomAbiotic",
+      "operation": "MAX",
+      "order": 110,
+      "bands": [10, 11, 12]
+    },
+    {
+      "name": "reef_environment_presence",
+      "translationKey": "map.summary-model.step.reefEnvironmentPresence",
+      "operation": "MEAN",
+      "order": 120,
+      "inputs": ["reef_hardbottom_presence", "hardbottom_abiotic"]
+    },
+    {
+      "name": "extra_valuable_reef",
+      "translationKey": "map.summary-model.step.extraValuableReef",
+      "operation": "MAX",
+      "order": 130,
+      "bands": [14, 8, 4]
+    },
+    {
+      "name": "reef_total",
+      "translationKey": "map.summary-model.step.reefTotal",
+      "operation": "MEAN",
+      "order": 140,
+      "inputs": ["reef_environment_presence", "extra_valuable_reef"],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "name": "angiosperm_shoreline",
+      "translationKey": "map.summary-model.step.angiospermShoreline",
+      "operation": "MAX",
+      "order": 150,
+      "bands": [0, 26]
+    },
+    {
+      "name": "benthic_total",
+      "translationKey": "map.summary-model.step.benthicTotal",
+      "operation": "MEAN",
+      "order": 160,
+      "inputs": ["reef_total", "angiosperm_shoreline"],
+      "normalization": {
+        "type": "linear",
+        "min": 25,
+        "max": 100
+      }
+    },
+    {
+      "name": "ecosystem_total",
+      "translationKey": "map.summary-model.step.ecosystemTotal",
+      "operation": "MEAN",
+      "order": 170,
+      "inputs": ["bird_total", "mammal_total", "fish_total", "benthic_total"],
+      "normalization": {
+        "type": "linear",
+        "min": 0,
+        "max": 100
+      }
+    }
+  ]
+}

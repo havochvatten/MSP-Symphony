@@ -1,0 +1,83 @@
+@use 'src/styles/hav-colors' as colors;
+
+:host {
+  .controls {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+
+    .editing {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: flex-end;
+      align-items: center;
+
+      button {
+        height: 24px;
+        width: 24px;
+        background: none;
+        border: none;
+        padding: 0;
+        outline: none;
+        margin-right: 0.4rem;
+        cursor: pointer;
+
+        app-icon {
+          font-size: 2.4rem;
+          color: rgba(0,0,0,0.87);
+
+          &[icontype='info-circle-large'] {
+            margin: -0.2rem 0.4rem 0 0;
+          }
+        }
+
+        &[data-active='true'] {
+          app-icon {
+            color: colors.$hav-turquoise;
+          }
+        }
+      }
+
+      .toggle-visibility-icon {
+        &[data-visible='true'] {
+          color: colors.$hav-turquoise;
+        }
+
+        cursor: pointer;
+      }
+    }
+
+    mat-spinner {
+      margin-right: 1rem;
+    }
+
+    ::ng-deep mat-checkbox {
+      &.mat-mdc-checkbox {
+        .mdc-form-field .mdc-checkbox {
+          margin-left: 0.8rem;
+        }
+
+        &.mdc-checkbox--disabled {
+          label.mdc-label {
+            color: colors.$hav-black;
+          }
+
+          .mdc-form-field .mdc-checkbox {
+            display: none;
+            margin-left: 0;
+          }
+        }
+
+        .mat-checkbox-layout {
+          .mat-checkbox-label {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-width: 216px;
+            line-height: 16px;
+          }
+        }
+      }
+    }
+  }
+}

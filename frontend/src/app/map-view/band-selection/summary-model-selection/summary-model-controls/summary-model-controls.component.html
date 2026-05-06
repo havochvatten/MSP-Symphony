@@ -1,0 +1,30 @@
+<div class="controls">
+  <mat-checkbox
+    [checked]="isSummaryModelSelected(summaryModel)"
+    [disabled]="true"
+    (change)="toggleSummaryModel(summaryModel)"
+    checkboxSize="small"
+  >{{ summaryModelLabelKey | translate }}
+  </mat-checkbox>
+
+  @if (isSummaryModelSelected(summaryModel) && !isSummaryModelLoaded(summaryModel)) {
+    <mat-spinner [diameter]="18" [strokeWidth]="2"></mat-spinner>
+  } @else {
+    <div class="editing list-actions">
+      <button
+        (click)="showMetaDialog()"
+        [title]="'map.metadata.label' | translate"
+        data-active="true"
+      >
+        <app-icon iconType="info-circle-large"></app-icon>
+      </button>
+
+      <app-icon
+        class="toggle-visibility-icon"
+        [attr.data-visible]="isSummaryModelSelected(summaryModel)"
+        [iconType]="isSummaryModelSelected(summaryModel) ? 'eye' : 'eye-slash'"
+        (click)="toggleSummaryModel(summaryModel); $event.stopImmediatePropagation()"
+      ></app-icon>
+    </div>
+  }
+</div>

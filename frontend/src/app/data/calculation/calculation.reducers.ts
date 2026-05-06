@@ -27,7 +27,19 @@ export const initialState: CalculationInterfaces.State = {
   loadingCompoundComparisons: false,
   compoundComparisons: [],
   compoundComparisonSuccessCount: 0,
-  sortCompoundComparisons: ListItemsSort.None
+  sortCompoundComparisons: ListItemsSort.None,
+  availableSummaryModels: {
+    ECOSYSTEM: [],
+    PRESSURE: []
+  },
+  summaryModels: {
+    ECOSYSTEM: 'none',
+    PRESSURE: 'none'
+  },
+  summaryModelLoading: {
+    ECOSYSTEM: false,
+    PRESSURE: false
+  }
 };
 
 export const calculationReducer = createReducer(
@@ -179,6 +191,34 @@ export const calculationReducer = createReducer(
     ...state,
     loadingLegends: false
   })),
+  on(CalculationActions.setSummaryModel, (state, { category, model }) => ({
+    ...state,
+    summaryModels: {
+      ...state.summaryModels,
+      [category]: model
+    }
+  })),
+  on(CalculationActions.setSummaryModelLoading, (state, { category, loading }) => ({
+    ...state,
+    summaryModelLoading: {
+      ...state.summaryModelLoading,
+      [category]: loading
+    }
+  })),
+  on(CalculationActions.fetchSummaryModels, (state, { category }) => ({
+    ...state,
+    availableSummaryModels: {
+      ...state.availableSummaryModels,
+      [category]: []
+    }
+  })),
+  on(CalculationActions.fetchSummaryModelsSuccess, (state, { category, models }) => ({
+    ...state,
+    availableSummaryModels: {
+      ...state.availableSummaryModels,
+      [category]: models
+    }
+  })),
   on(UserActions.activeBaselineChanged, (state) => ({
     ...state,
     calculations: [],
@@ -188,7 +228,9 @@ export const calculationReducer = createReducer(
     loadingResults: [],
     loadingReports: [],
     generatingComparisonsFor: [],
-    compoundComparisonSuccessCount: 0
+    compoundComparisonSuccessCount: 0,
+    summaryModels: { ECOSYSTEM: 'none', PRESSURE: 'none' },
+    summaryModelLoading: { ECOSYSTEM: false, PRESSURE: false }
   }))
 );
 

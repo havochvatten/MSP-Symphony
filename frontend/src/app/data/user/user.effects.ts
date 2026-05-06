@@ -160,6 +160,16 @@ export class UserEffects {
     )
   );
 
+  baselineLoaded$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.fetchBaselineSuccess),
+      concatMap(({ baseline }) => [
+        CalculationActions.fetchSummaryModels({ baselineName: baseline.name, category: 'ECOSYSTEM' }),
+        CalculationActions.fetchSummaryModels({ baselineName: baseline.name, category: 'PRESSURE' })
+      ])
+    )
+  );
+
   updateUserSettings$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.updateUserSettings),

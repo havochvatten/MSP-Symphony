@@ -1,0 +1,27 @@
+<app-accordion-box [open]="open" [toggle]="toggle">
+  <app-accordion-box-header>
+    <mat-checkbox
+      [checked]="false"
+      [indeterminate]="false"
+      [disabled]="true"
+      checkboxSize="small"
+    >{{ title }}</mat-checkbox>
+  </app-accordion-box-header>
+
+  <app-accordion-box-content>
+    <ul>
+      @for (row of rows; track row.model) {
+        <li class="list-item">
+          <app-summary-model-controls
+            [modelCategory]="modelCategory"
+            [summaryModel]="row.model"
+            [isSummaryModelSelected]="isSummaryModelSelected"
+            [toggleSummaryModel]="toggleSummaryModel"
+            [isSummaryModelLoaded]="isSummaryModelLoaded"
+            [summaryModelLabelKey]="row.labelKey"
+          ></app-summary-model-controls>
+        </li>
+      }
+    </ul>
+  </app-accordion-box-content>
+</app-accordion-box>

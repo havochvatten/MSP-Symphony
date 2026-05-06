@@ -1,4 +1,9 @@
-import { CompoundComparisonItem, LegendState, State } from './calculation.interfaces';
+import {
+  CompoundComparisonItem,
+  LegendState,
+  State,
+  SummaryModelCategory
+} from './calculation.interfaces';
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { MetadataSelectors } from '@data/metadata';
 import { sortFuncMap } from '@data/common/sorting.interfaces';
@@ -19,6 +24,12 @@ export const selectLoadingLegends = createSelector(
   selectCalculationState,
   (state) => state.loadingLegends
 );
+
+export const selectSummaryModelLoading = (category: SummaryModelCategory) =>
+  createSelector(selectCalculationState, (state: State) => state.summaryModelLoading[category]);
+
+export const selectAvailableSummaryModels = (category: SummaryModelCategory) =>
+  createSelector(selectCalculationState, (state) => state.availableSummaryModels[category]);
 
 export const selectCalculations = createSelector(selectCalculationState, (state) => {
   return [...state.calculations].sort(sortFuncMap[state.sortCalculations]);
@@ -64,14 +75,26 @@ export const selectCalculationLoadingState = createSelector(selectCalculationSta
   loadingReports: state.loadingReports
 }));
 
+export const selectVisibleSummaryModels = createSelector(
+  selectCalculationState,
+  (state: State) => state.summaryModels
+);
+
 export const selectVisibleLegends = createSelector(
   selectLegends,
   MetadataSelectors.selectVisibleBands,
-  (legends, visibleBands): LegendState => ({
+  selectVisibleSummaryModels,
+  (legends, visibleBands, selectedSummaryModel): LegendState => ({
     result: legends.result,
     comparison: legends.comparison,
-    ecosystem: visibleBands.ecoComponent.length > 0 ? legends.ecosystem : undefined,
-    pressure: visibleBands.pressureComponent.length > 0 ? legends.pressure : undefined
+    ecosystem:
+      visibleBands.ecoComponent.length > 0 || selectedSummaryModel.ECOSYSTEM !== 'none'
+        ? legends.ecosystem
+        : undefined,
+    pressure:
+      visibleBands.pressureComponent.length > 0 || selectedSummaryModel.PRESSURE !== 'none'
+        ? legends.pressure
+        : undefined
   })
 );
 
