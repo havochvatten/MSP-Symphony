@@ -15,6 +15,7 @@ import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
 
 
 
@@ -58,6 +59,35 @@ public class UserDefinedAreaDtoMapperTest {
         assertThat(dto.getName(), is(userDefinedAreaDto.getName()));
         assertThat(dto.getDescription(), is(userDefinedAreaDto.getDescription()));
         assertThat(dto.getPolygon(), is(getPolygonObj()));
+    }
+
+    @Test
+    public void testMapToDtoWithCategory() throws SymphonyStandardAppException {
+        se.havochvatten.symphony.entity.UserDefinedAreaCategory category = 
+            new se.havochvatten.symphony.entity.UserDefinedAreaCategory();
+        category.setId(42);
+        category.setName("TestCategory");
+        userDefinedArea.setCategory(category);
+
+        UserDefinedAreaDto dto = UserDefinedAreaDtoMapper.mapToDto(userDefinedArea);
+        assertThat(dto.getCategoryId(), is(42));
+    }
+
+    @Test
+    public void testMapToDtoWithoutCategory() throws SymphonyStandardAppException {
+        userDefinedArea.setCategory(null);
+
+        UserDefinedAreaDto dto = UserDefinedAreaDtoMapper.mapToDto(userDefinedArea);
+        assertNull(dto.getCategoryId());
+    }
+
+    @Test
+    public void testMapToEntityWithoutCategory() throws SymphonyStandardAppException {
+        userDefinedAreaDto.setCategoryId(null);
+
+        UserDefinedArea uda = UserDefinedAreaDtoMapper.mapToEntity(
+            userDefinedAreaDto, principalUserName, userService);
+        assertNull(uda.getCategory());
     }
 
     private String getPolygon() {

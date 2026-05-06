@@ -5,6 +5,8 @@ import { DialogConfig } from '@shared/dialog/dialog-config';
 
 import { CreateUserAreaModalComponent } from './create-user-area-modal.component';
 import { provideMockStore } from "@ngrx/store/testing";
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 describe('CreateUserAreaModalComponent', () => {
   let fixture: ComponentFixture<CreateUserAreaModalComponent>,
@@ -12,12 +14,18 @@ describe('CreateUserAreaModalComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CreateUserAreaModalComponent],
-      imports: [TranslationSetupModule],
+      declarations: [CreateUserAreaModalComponent
+      ],
+      imports: [
+        TranslationSetupModule,
+        HttpClientTestingModule,
+        ReactiveFormsModule,
+        FormsModule
+      ],
       providers: [
         {
           provide: DialogRef,
-          useValue: {}
+          useValue: {close: () => {} }
         },
         {
           provide: DialogConfig,

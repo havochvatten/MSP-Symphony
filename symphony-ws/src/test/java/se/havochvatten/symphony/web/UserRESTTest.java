@@ -17,7 +17,6 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 public class UserRESTTest extends RESTTest {
     private static String areaName = "UserRESTTest";
@@ -267,4 +266,205 @@ public class UserRESTTest extends RESTTest {
         deleteUserDefinedAreaByName("epsg3006");
         deleteUserDefinedAreaByName("espg4326");
 	}
+
+    @Test
+    public void testCreateCategory() {
+        String name = "TestCategory_" + System.currentTimeMillis();
+        Response response = given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .header("Content-Type", "application/json")
+            .body("{\"name\": \"" + name + "\"}")
+            .post(endpoint("/user/area/category"));
+        assertThat(response.getStatusCode(), is(200));
+        int categoryId = response.jsonPath().getInt("id");
+        assertTrue(categoryId > 0);
+        deleteTestCategory(categoryId);
+    }
+
+    @Test
+    public void testGetCategories() {
+        Response response = given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .get(endpoint("/user/area/category"));
+        assertThat(response.getStatusCode(), is(200));
+    }
+
+    @Test
+    public void testUpdateCategory() {
+        String name = "TestCategoryUpdate_" + System.currentTimeMillis();
+        Response createResponse = given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .header("Content-Type", "application/json")
+            .body("{\"name\": \"" + name + "\"}")
+            .post(endpoint("/user/area/category"));
+        assertThat(createResponse.getStatusCode(), is(200));
+        int categoryId = createResponse.jsonPath().getInt("id");
+
+        Response updateResponse = given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .header("Content-Type", "application/json")
+            .body("{\"name\": \"" + name + "_updated\"}")
+            .put(endpoint("/user/area/category/" + categoryId));
+        assertThat(updateResponse.getStatusCode(), is(200));
+        assertThat(updateResponse.jsonPath().getString("name"), is(name + "_updated"));
+
+        deleteTestCategory(categoryId);
+    }
+
+    @Test
+    public void testDeleteCategory() {
+        String name = "TestCategoryDelete_" + System.currentTimeMillis();
+        Response createResponse = given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .header("Content-Type", "application/json")
+            .body("{\"name\": \"" + name + "\"}")
+            .post(endpoint("/user/area/category"));
+        assertThat(createResponse.getStatusCode(), is(200));
+        int categoryId = createResponse.jsonPath().getInt("id");
+
+        Response deleteResponse = given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .delete(endpoint("/user/area/category/" + categoryId));
+        assertThat(deleteResponse.getStatusCode(), is(204));
+    }
+
+    @Test
+    public void testDeleteCategoryAreasBecomesUncategorized() {
+        String name = "TempCategory_" + System.currentTimeMillis();
+        Response catResponse = given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .header("Content-Type", "application/json")
+            .body("{\"name\": \"" + name + "\"}")
+            .post(endpoint("/user/area/category"));
+        assertThat(catResponse.getStatusCode(), is(200));
+        int categoryId = catResponse.jsonPath().getInt("id");
+
+        UserDefinedAreaDto dto = createUserDefinedAreaDto();
+        dto.setCategoryId(categoryId);
+        Response areaResponse = given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .header("Content-Type", "application/json")
+            .body(dto)
+            .post(endpoint("/user/area"));
+        assertThat(areaResponse.getStatusCode(), is(201));
+        int areaId = areaResponse.jsonPath().getInt("id");
+
+        deleteTestCategory(categoryId);
+
+        Response getResponse = given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .get(endpoint("/user/area/all"));
+        List<UserDefinedAreaDto> areas = getResponse.jsonPath().getList("", UserDefinedAreaDto.class);
+        UserDefinedAreaDto area = areas.stream()
+            .filter(a -> a.getId().equals(areaId))
+            .findFirst().orElse(null);
+        assertNotNull(area);
+        assertNull(area.getCategoryId());
+
+        deleteUserDefinedArea(areaId);
+    }
+
+    @Test
+    public void testDeleteAreasByCategory() {
+        String name = "TempCategory2_" + System.currentTimeMillis();
+        Response catResponse = given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .header("Content-Type", "application/json")
+            .body("{\"name\": \"" + name + "\"}")
+            .post(endpoint("/user/area/category"));
+        assertThat(catResponse.getStatusCode(), is(200));
+        int categoryId = catResponse.jsonPath().getInt("id");
+
+        UserDefinedAreaDto dto = createUserDefinedAreaDto();
+        dto.setCategoryId(categoryId);
+        given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .header("Content-Type", "application/json")
+            .body(dto)
+            .post(endpoint("/user/area"));
+
+        Response deleteResponse = given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .delete(endpoint("/user/area/category/" + categoryId + "/areas"));
+        assertThat(deleteResponse.getStatusCode(), is(204));
+
+        deleteTestCategory(categoryId);
+    }
+
+    @Test
+    public void testCreateAreaWithCategory() {
+        String name = "TestCategoryForArea_" + System.currentTimeMillis();
+        Response catResponse = given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .header("Content-Type", "application/json")
+            .body("{\"name\": \"" + name + "\"}")
+            .post(endpoint("/user/area/category"));
+        assertThat(catResponse.getStatusCode(), is(200));
+        int categoryId = catResponse.jsonPath().getInt("id");
+
+        UserDefinedAreaDto dto = createUserDefinedAreaDto();
+        dto.setCategoryId(categoryId);
+        Response areaResponse = given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .header("Content-Type", "application/json")
+            .body(dto)
+            .post(endpoint("/user/area"));
+        assertThat(areaResponse.getStatusCode(), is(201));
+        assertThat(areaResponse.jsonPath().getInt("categoryId"), is(categoryId));
+
+        deleteUserDefinedArea(areaResponse.jsonPath().getInt("id"));
+        deleteTestCategory(categoryId);
+    }
+
+    @Test
+    public void testMoveAreaToAnotherCategory() {
+        String name1 = "CategoryA_" + System.currentTimeMillis();
+        String name2 = "CategoryB_" + System.currentTimeMillis();
+
+        int categoryId1 = given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .header("Content-Type", "application/json")
+            .body("{\"name\": \"" + name1 + "\"}")
+            .post(endpoint("/user/area/category"))
+            .jsonPath().getInt("id");
+
+        int categoryId2 = given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .header("Content-Type", "application/json")
+            .body("{\"name\": \"" + name2 + "\"}")
+            .post(endpoint("/user/area/category"))
+            .jsonPath().getInt("id");
+
+        UserDefinedAreaDto dto = createUserDefinedAreaDto();
+        dto.setCategoryId(categoryId1);
+        Response areaResponse = given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .header("Content-Type", "application/json")
+            .body(dto)
+            .post(endpoint("/user/area"));
+        assertThat(areaResponse.getStatusCode(), is(201));
+        int areaId = areaResponse.jsonPath().getInt("id");
+
+        dto.setId(areaId);
+        dto.setCategoryId(categoryId2);
+        Response updateResponse = given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .header("Content-Type", "application/json")
+            .body(dto)
+            .put(endpoint("/user/area/" + areaId));
+        assertThat(updateResponse.getStatusCode(), is(200));
+        assertThat(updateResponse.jsonPath().getInt("categoryId"), is(categoryId2));
+
+        deleteUserDefinedArea(areaId);
+        deleteTestCategory(categoryId1);
+        deleteTestCategory(categoryId2);
+    }
+
+    private void deleteTestCategory(int categoryId) {
+        given()
+            .auth().preemptive().basic(getUsername(), getPassword())
+            .delete(endpoint("/user/area/category/" + categoryId));
+    }
+
 }
+
