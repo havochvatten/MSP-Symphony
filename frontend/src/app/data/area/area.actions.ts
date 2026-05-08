@@ -6,6 +6,16 @@ import { MatrixRef } from "@src/app/map-view/scenario/scenario-area-detail/matri
 
 export const fetchNationalAreas = createAction('[Area] Fetch national areas');
 
+export const fetchNationalAreasForBootstrap = createAction('[Area] Fetch national areas for bootstrap');
+
+export const fetchNationalAreasForBootstrapSuccess = createAction(
+  '[Area] Fetch national areas for bootstrap success'
+);
+
+export const fetchNationalAreasForBootstrapFailure = createAction(
+  '[Area] Fetch national areas for bootstrap failure'
+);
+
 export const fetchNationalAreaTypesSuccess = createAction(
   '[Area] Fetch national area types success',
   props<{ areaTypes: string[] }>()
@@ -46,6 +56,18 @@ export const fetchCalibratedCalculationAreasFailure = createAction(
 );
 
 export const fetchUserDefinedAreas = createAction('[Area] Fetch all user defined areas');
+
+export const fetchUserDefinedAreasForBootstrap = createAction(
+  '[Area] Fetch all user defined areas for bootstrap'
+);
+
+export const fetchUserDefinedAreasForBootstrapSuccess = createAction(
+  '[Area] Fetch all user defined areas for bootstrap success'
+);
+
+export const fetchUserDefinedAreasForBootstrapFailure = createAction(
+  '[Area] Fetch all user defined areas for bootstrap failure'
+);
 
 export const fetchUserDefinedAreasSuccess = createAction(
   '[Area] Fetch all user defined areas success',
@@ -123,6 +145,16 @@ export const toggleAreaGroupState = createAction(
 );
 
 export const fetchBoundaries = createAction('[Area] Fetch boundaries');
+
+export const fetchBoundariesForBootstrap = createAction('[Area] Fetch boundaries for bootstrap');
+
+export const fetchBoundariesForBootstrapSuccess = createAction(
+  '[Area] Fetch boundaries for bootstrap success'
+);
+
+export const fetchBoundariesForBootstrapFailure = createAction(
+  '[Area] Fetch boundaries for bootstrap failure'
+);
 
 export const fetchBoundariesSuccess = createAction(
   '[Area] Fetch boundaries success',

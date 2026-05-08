@@ -84,13 +84,21 @@ export class UserEffects {
 
   fetchUser$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(UserActions.fetchUser, UserActions.fetchUserSettings),
+      ofType(
+        UserActions.fetchUserForBootstrap,
+        UserActions.fetchUserForRefresh,
+        UserActions.fetchUserSettings
+      ),
       mergeMap((action) =>
         this.userService.fetchUser().pipe(
           map((user) => {
-            return action.type === UserActions.fetchUserSettings.type
-              ? UserActions.fetchUserSettingsSuccess({ user })
-              : UserActions.fetchUserSuccess({ user });
+            if (action.type === UserActions.fetchUserSettings.type) {
+              return UserActions.fetchUserSettingsSuccess({ user });
+            } else if (action.type === UserActions.fetchUserForBootstrap.type) {
+              return UserActions.fetchUserForBootstrapSuccess({ user });
+            } else {
+              return UserActions.fetchUserSuccess({ user });
+            }
           }),
           catchError((error) =>
             of(
@@ -125,14 +133,14 @@ export class UserEffects {
 
   userIsLoggedIn$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(UserActions.fetchUserSuccess, UserActions.loginUserSuccess),
+      ofType(UserActions.fetchUserForBootstrapSuccess, UserActions.loginUserSuccess),
       concatMap(() => [
-        AreaActions.fetchNationalAreas(),
-        AreaActions.fetchUserDefinedAreas(),
-        AreaActions.fetchBoundaries(),
+        AreaActions.fetchNationalAreasForBootstrap(),
+        AreaActions.fetchUserDefinedAreasForBootstrap(),
+        AreaActions.fetchBoundariesForBootstrap(),
         UserActions.fetchBaseline(),
-        CalculationActions.fetchCompoundComparisons(),
-        ...legendTypes.map((legendType) => CalculationActions.fetchLegend({ legendType }))
+        CalculationActions.fetchCompoundComparisonsForBootstrap(),
+        ...legendTypes.map((legendType) => CalculationActions.fetchLegendForBootstrap({ legendType }))
       ])
     )
   );
@@ -164,7 +172,11 @@ export class UserEffects {
       mergeMap(({ aliasing, locale }) =>
         this.userService
           .updateSettings({ aliasing, locale } as UserSettings)
-          .pipe(map(() => (locale ? UserActions.fetchUser() : UserActions.fetchUserSettings())))
+          .pipe(
+            map(() =>
+              locale ? UserActions.fetchUserForRefresh() : UserActions.fetchUserSettings()
+            )
+          )
       )
     )
   );
@@ -178,12 +190,28 @@ export class UserEffects {
     )
   );
 
+  completeBootstrapLoad$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.loginUserSuccess, UserActions.fetchUserForBootstrapSuccess),
+      withLatestFrom(this.store$.select(UserSelectors.selectBootstrapLoadContextActive)),
+      filter(([, bootstrapLoadContextActive]) => bootstrapLoadContextActive),
+      concatMap(() =>
+        this.store$.select(UserSelectors.selectIsInitialLoading).pipe(
+          debounceTime(800), // wait until loading is stable and false
+          filter((isLoading) => !isLoading),
+          take(1),
+          map(() => UserActions.completeBootstrapLoad())
+        )
+      )
+    )
+  );
+
   // Navigate after login has occurred and all relevant resources are fully loaded
   navigateAfterInitialLoad$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.loginUserSuccess),
       concatMap(() =>
-        this.store$.select(UserSelectors.selectIsInitialLoading).pipe(
+        this.store$.select(UserSelectors.selectIsAppBootstrapLoading).pipe(
           debounceTime(800), // wait until loading is stable and false
           filter((isLoading) => !isLoading),
           take(1)

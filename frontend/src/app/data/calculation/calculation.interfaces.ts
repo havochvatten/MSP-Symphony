@@ -13,6 +13,7 @@ export interface State {
   calculating: boolean;
   legends: LegendState;
   loadingLegends: boolean;
+  loadingLegendsBootstrapCounter: number;
   percentileValue: number;
   sortCalculations: ListItemsSort;
   batchProcesses: { [key: number]: BatchCalculationProcessEntry };
@@ -21,6 +22,7 @@ export interface State {
   loadingReports: number[];
   generatingComparisonsFor: number[];
   loadingCompoundComparisons: boolean;
+  loadingCompoundComparisonsBootstrap: boolean;
   compoundComparisons: CompoundComparisonSlice[];
   compoundComparisonSuccessCount: number;
   sortCompoundComparisons: ListItemsSort;

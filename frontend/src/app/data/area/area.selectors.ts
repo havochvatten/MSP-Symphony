@@ -17,6 +17,11 @@ export const selectAreaState = createFeatureSelector<AppState, State>('area');
 
 export const selectIsLoading = createSelector(selectAreaState, (state) => state.loading);
 
+export const selectIsBootstrapLoading = createSelector(
+  selectAreaState,
+  (state) => state.bootstrapLoadingCounter > 0
+);
+
 export const selectSelectedArea = createSelector(
   selectAreaState,
   (area: State) => area.currentSelection

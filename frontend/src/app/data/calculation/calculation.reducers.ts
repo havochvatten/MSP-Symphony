@@ -17,6 +17,7 @@ export const initialState: CalculationInterfaces.State = {
     comparison: {}
   },
   loadingLegends: false,
+  loadingLegendsBootstrapCounter: 0,
   sortCalculations: ListItemsSort.None,
   batchProcesses: [],
   visibleResults: [],
@@ -24,6 +25,7 @@ export const initialState: CalculationInterfaces.State = {
   loadingReports: [],
   generatingComparisonsFor: [],
   loadingCompoundComparisons: false,
+  loadingCompoundComparisonsBootstrap: false,
   compoundComparisons: [],
   compoundComparisonSuccessCount: 0,
   sortCompoundComparisons: ListItemsSort.None
@@ -169,7 +171,7 @@ export const calculationReducer = createReducer(
     sortCompoundComparisons: sortType
   })),
   // Indicate loading state
-  on(CalculationActions.fetchLegend, (state) => ({
+  on(CalculationActions.fetchLegend, CalculationActions.fetchLegendForBootstrap, (state) => ({
     ...state,
     loadingLegends: true
   })),
@@ -177,7 +179,31 @@ export const calculationReducer = createReducer(
   on(CalculationActions.fetchLegendSuccess, CalculationActions.fetchLegendFailure, (state) => ({
     ...state,
     loadingLegends: false
-  }))
+  })),
+  on(CalculationActions.fetchLegendForBootstrap, (state) => ({
+    ...state,
+    loadingLegendsBootstrapCounter: state.loadingLegendsBootstrapCounter + 1
+  })),
+  on(
+    CalculationActions.fetchLegendForBootstrapSuccess,
+    CalculationActions.fetchLegendForBootstrapFailure,
+    (state) => ({
+      ...state,
+      loadingLegendsBootstrapCounter: Math.max(0, state.loadingLegendsBootstrapCounter - 1)
+    })
+  ),
+  on(CalculationActions.fetchCompoundComparisonsForBootstrap, (state) => ({
+    ...state,
+    loadingCompoundComparisonsBootstrap: true
+  })),
+  on(
+    CalculationActions.fetchCompoundComparisonsForBootstrapSuccess,
+    CalculationActions.fetchCompoundComparisonsFailure,
+    (state) => ({
+      ...state,
+      loadingCompoundComparisonsBootstrap: false
+    })
+  ),
 );
 
 function updateComparisonLegend(

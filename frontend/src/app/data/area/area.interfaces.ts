@@ -143,4 +143,5 @@ export interface State {
   selectionMatrices?: AreaMatrixData;
   calibratedCalculationAreas: CalculationAreaSlice[];
   loading: boolean;
+  bootstrapLoadingCounter: number;
 }

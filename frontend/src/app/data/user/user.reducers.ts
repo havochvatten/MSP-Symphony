@@ -5,6 +5,7 @@ export const initialState: UserInterfaces.State = {
   isLoggedIn: false,
   loading: false,
   loadingBaseline: false,
+  bootstrapLoadContextActive: false,
   redirectUrl: '/map',
   aliasing: true
 };
@@ -13,9 +14,10 @@ export const userReducer = createReducer(
   initialState,
   on(UserActions.loginUser, (state) => ({
     ...state,
+    bootstrapLoadContextActive: true,
     loading: true
   })),
-  on(UserActions.loginUserSuccess, UserActions.fetchUserSuccess, (state, { user }) => ({
+  on(UserActions.fetchUserForBootstrapSuccess, UserActions.loginUserSuccess, UserActions.fetchUserSuccess, (state, { user }) => ({
     ...state,
     user,
     aliasing: user.settings?.aliasing === undefined ? state.aliasing : user.settings.aliasing,
@@ -25,6 +27,7 @@ export const userReducer = createReducer(
   })),
   on(UserActions.loginUserFailure, (state, { error }) => ({
     ...state,
+    bootstrapLoadContextActive: false,
     loading: false,
     isLoggedIn: false,
     error: {
@@ -32,7 +35,12 @@ export const userReducer = createReducer(
       login: error
     }
   })),
-  on(UserActions.fetchUser, (state) => ({
+  on(UserActions.fetchUserForBootstrap, (state) => ({
+    ...state,
+    bootstrapLoadContextActive: true,
+    loading: true
+  })),
+  on(UserActions.fetchUserForRefresh, (state) => ({
     ...state,
     loading: true
   })),
@@ -43,12 +51,21 @@ export const userReducer = createReducer(
   })),
   on(UserActions.fetchUserFailure, (state, { error }) => ({
     ...state,
+    bootstrapLoadContextActive: false,
     loading: false,
     isLoggedIn: false,
     error: {
       ...state.error,
       fetch: error
     }
+  })),
+  on(UserActions.completeBootstrapLoad, (state) => ({
+    ...state,
+    bootstrapLoadContextActive: false
+  })),
+  on(UserActions.logoutUserSuccess, (state) => ({
+    ...state,
+    bootstrapLoadContextActive: false
   })),
   on(UserActions.fetchBaselineSuccess, (state, { baseline }) => ({
     ...state,

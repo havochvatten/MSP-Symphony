@@ -1,39 +1,40 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
 import { provideMockStore } from '@ngrx/store/testing';
 
+import { LoginComponent } from './login.component';
+import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
 import { TranslationSetupModule } from '../app-translation-setup.module';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { LoginComponent } from './login.component';
-import { UserSelectors } from '@data/user';
+import { RouterModule } from '@angular/router';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('LoginComponent', () => {
-  let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
+  let component: LoginComponent;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        ReactiveFormsModule,
         SharedModule,
+        ReactiveFormsModule,
         TranslationSetupModule,
+        RouterModule.forRoot([]),
         MatFormFieldModule,
         MatInputModule
       ],
       declarations: [LoginComponent],
       providers: [
+        provideZonelessChangeDetection(),
         provideMockStore({
-          initialState: { user: { baseline: undefined } },
-          selectors: [{ selector: UserSelectors.selectIsInitialLoading, value: false }]
+          initialState: { user: { baseline: undefined } }
         })
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
-
     fixture.detectChanges();
   });
 
@@ -46,9 +47,5 @@ describe('LoginComponent', () => {
     expect(component.loginForm.get('username')).toBeTruthy();
     expect(component.loginForm.get('password')).toBeTruthy();
     expect(component.loginForm.valid).toBeFalse();
-  });
-
-  it('should set loading observable to selectIsInitialLoading', () => {
-    expect(component.loading).toBeTruthy();
   });
 });

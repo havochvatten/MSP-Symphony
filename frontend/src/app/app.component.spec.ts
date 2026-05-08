@@ -4,22 +4,36 @@ import { CoreModule } from './core/core.module';
 import { TranslationSetupModule } from './app-translation-setup.module';
 import { SharedModule } from '@shared/shared.module';
 import { provideMockStore } from '@ngrx/store/testing';
-import { RouterModule } from "@angular/router";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { RouterModule } from '@angular/router';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('AppComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        SharedModule,
-        RouterModule.forRoot([]),
-        CoreModule,
-        TranslationSetupModule
-      ],
+      imports: [SharedModule, RouterModule.forRoot([]), CoreModule, TranslationSetupModule],
       declarations: [AppComponent],
       providers: [
-        provideMockStore({ initialState: { user: {} } }),
         provideZonelessChangeDetection(),
+        provideMockStore({
+          initialState: {
+            user: {
+              loading: false,
+              loadingBaseline: false,
+              redirectUrl: '/map'
+            },
+            area: {
+              loading: false,
+              bootstrapLoadingCounter: 0
+            },
+            calculation: {
+              loadingCompoundComparisons: false,
+              loadingCompoundComparisonsBootstrap: false,
+              loadingLegends: false,
+              loadingLegendsBootstrapCounter: 0
+            },
+            metadata: { loading: false }
+          }
+        })
       ]
     }).compileComponents();
   });

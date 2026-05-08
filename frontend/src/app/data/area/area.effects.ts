@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, concatMap, map, mergeMap } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 
 import AreaService from './area.service';
 import { AreaActions } from './';
@@ -38,6 +38,41 @@ export class AreaEffects {
     )
   ));
 
+  fetchNationalAreasForBootstrap$ = createEffect(() => this.actions$.pipe(
+    ofType(AreaActions.fetchNationalAreasForBootstrap),
+    mergeMap(() =>
+      this.areaService.getNationalAreaTypes().pipe(
+        mergeMap((areaTypes: string[]) => {
+          const areaRequests$ = areaTypes.length > 0
+            ? forkJoin(areaTypes.map((areaType) => this.areaService.getNationalAreasData(areaType)))
+            : of([] as NationalArea[]);
+
+          return areaRequests$.pipe(
+            mergeMap((areas: NationalArea[]) => {
+              const language = this.translateService.currentLang;
+
+              return [
+                AreaActions.fetchNationalAreaTypesSuccess({ areaTypes }),
+                ...areas.map((area) =>
+                  AreaActions.fetchNationalAreaSuccess({
+                    nationalArea: { [area.type]: flattenAreaGroups(area, language) }
+                  })
+                ),
+                AreaActions.fetchNationalAreasForBootstrapSuccess()
+              ];
+            })
+          );
+        }),
+        catchError(({ status, error: message }) =>
+          of(
+            AreaActions.fetchNationalAreaTypesFailure({ error: { status, message } }),
+            AreaActions.fetchNationalAreasForBootstrapFailure()
+          )
+        )
+      )
+    )
+  ));
+
   fetchNationalArea$ = createEffect(() => this.actions$.pipe(
     ofType(AreaActions.fetchNationalArea),
     mergeMap(({ areaType }) =>
@@ -54,11 +89,11 @@ export class AreaEffects {
   ));
 
   fetchUserDefinedArea$ = createEffect(() => this.actions$.pipe(
-    ofType(AreaActions.fetchUserDefinedAreas),
-    mergeMap(() =>
+    ofType(AreaActions.fetchUserDefinedAreas, AreaActions.fetchUserDefinedAreasForBootstrap),
+    mergeMap((action) =>
       this.areaService.getUserAreas().pipe(
-        map(userAreas =>
-          AreaActions.fetchUserDefinedAreasSuccess({
+        mergeMap((userAreas) => {
+          const successAction = AreaActions.fetchUserDefinedAreasSuccess({
             userAreas: userAreas.reduce(
               (userAreaState, userArea) => ({
                 ...userAreaState,
@@ -77,10 +112,19 @@ export class AreaEffects {
               }),
               {}
             )
-          })
-        ),
+          });
+
+          return action.type === AreaActions.fetchUserDefinedAreasForBootstrap.type
+            ? [successAction, AreaActions.fetchUserDefinedAreasForBootstrapSuccess()]
+            : [successAction];
+        }),
         catchError(({ status, error: message }) =>
-          of(AreaActions.fetchUserDefinedAreasFailure({ error: { status, message } }))
+          action.type === AreaActions.fetchUserDefinedAreasForBootstrap.type
+            ? of(
+                AreaActions.fetchUserDefinedAreasFailure({ error: { status, message } }),
+                AreaActions.fetchUserDefinedAreasForBootstrapFailure()
+              )
+            : of(AreaActions.fetchUserDefinedAreasFailure({ error: { status, message } }))
         )
       )
     )
@@ -189,15 +233,24 @@ export class AreaEffects {
   ));
 
   fetchBoundaries$ = createEffect(() => this.actions$.pipe(
-    ofType(AreaActions.fetchBoundaries),
-    mergeMap(() =>
+    ofType(AreaActions.fetchBoundaries, AreaActions.fetchBoundariesForBootstrap),
+    mergeMap((action) =>
       this.areaService
         .getBoundaries()
         .pipe(
-          map(
-            ({areas: boundaries}) => AreaActions.fetchBoundariesSuccess({boundaries})),
+          mergeMap(({areas: boundaries}) => {
+            const successAction = AreaActions.fetchBoundariesSuccess({boundaries});
+            return action.type === AreaActions.fetchBoundariesForBootstrap.type
+              ? [successAction, AreaActions.fetchBoundariesForBootstrapSuccess()]
+              : [successAction];
+          }),
           catchError(({status, error: message}) =>
-            of(AreaActions.fetchBoundariesFailure({error: {status, message}}))
+            action.type === AreaActions.fetchBoundariesForBootstrap.type
+              ? of(
+                  AreaActions.fetchBoundariesFailure({error: {status, message}}),
+                  AreaActions.fetchBoundariesForBootstrapFailure()
+                )
+              : of(AreaActions.fetchBoundariesFailure({error: {status, message}}))
           )
         )
     )

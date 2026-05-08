@@ -20,6 +20,11 @@ export const selectLoadingLegends = createSelector(
   (state) => state.loadingLegends
 );
 
+export const selectLoadingLegendsBootstrap = createSelector(
+  selectCalculationState,
+  (state) => state.loadingLegendsBootstrapCounter > 0
+);
+
 export const selectCalculations = createSelector(selectCalculationState, (state) => {
   return [...state.calculations].sort(sortFuncMap[state.sortCalculations]);
 });
@@ -93,4 +98,9 @@ export const selectCompoundComparisonCount = createSelector(
 export const selectCompoundComparisonSuccessCount = createSelector(
   selectCalculationState,
   (state) => state.compoundComparisonSuccessCount
+);
+
+export const selectLoadingCompoundComparisonsBootstrap = createSelector(
+  selectCalculationState,
+  (state) => state.loadingCompoundComparisonsBootstrap
 );

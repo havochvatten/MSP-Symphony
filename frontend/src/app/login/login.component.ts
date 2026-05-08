@@ -1,13 +1,12 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { UserActions, UserSelectors } from '@data/user';
 import { environment } from '@src/environments/environment.prod';
 import { State } from '@src/app/app-reducer';
 import { BrandingService } from '@src/app/core/branding/branding.service';
 import buildInfo from '@src/build-info';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -26,7 +25,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     standalone: false
   });
   errorMessage?: string;
-  loading?: Observable<boolean>;
   env = environment;
   symphonyVersion = buildInfo.version;
   passwordPeekEnabled: boolean;
@@ -49,11 +47,6 @@ export class LoginComponent implements OnInit, OnDestroy {
               : 'login.error.system-unavailable';
         }
       });
-
-    // Only shows the spinner, no navigation here
-    this.loading = this.store
-      .select(UserSelectors.selectIsInitialLoading)
-      .pipe(debounceTime(0), distinctUntilChanged());
   }
 
   ngOnDestroy() {

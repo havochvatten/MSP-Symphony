@@ -25,6 +25,22 @@ describe('UserReducer', () => {
     expect(_state.error).toEqual(undefined);
     expect(_state.user).toEqual(testUser);
   });
+
+  it('should activate bootstrap load context on fetchUserForBootstrap', () => {
+    expect(initialState.bootstrapLoadContextActive).toEqual(false);
+    const _state = userReducer(initialState, UserActions.fetchUserForBootstrap());
+    expect(_state.bootstrapLoadContextActive).toEqual(true);
+  });
+
+  it('should complete bootstrap load context on completeBootstrapLoad', () => {
+    const loadingState = {
+      ...initialState,
+      bootstrapLoadContextActive: true
+    };
+
+    const _state = userReducer(loadingState, UserActions.completeBootstrapLoad());
+    expect(_state.bootstrapLoadContextActive).toEqual(false);
+  });
 });
 
 describe('UserSelectors', () => {
@@ -46,5 +62,23 @@ describe('UserSelectors', () => {
         user
       })
     ).toEqual(user);
+  });
+
+  it('should return app bootstrap loading only when bootstrap context is active', () => {
+    expect(
+      UserSelectors.selectIsAppBootstrapLoading.projector(true, true)
+    ).toEqual(true);
+    expect(
+      UserSelectors.selectIsAppBootstrapLoading.projector(false, true)
+    ).toEqual(false);
+  });
+
+  it('should return initial loading when one of bootstrap-related resources is loading', () => {
+    expect(
+      UserSelectors.selectIsInitialLoading.projector(false, false, false, false, false, false)
+    ).toEqual(false);
+    expect(
+      UserSelectors.selectIsInitialLoading.projector(false, false, false, true, false, false)
+    ).toEqual(true);
   });
 });

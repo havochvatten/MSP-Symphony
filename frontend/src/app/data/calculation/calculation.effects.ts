@@ -77,6 +77,26 @@ export class CalculationEffects {
     )
   ));
 
+  fetchLegendForBootstrap$ = createEffect(() => this.actions$.pipe(
+    ofType(CalculationActions.fetchLegendForBootstrap),
+    mergeMap(({ legendType }) =>
+      this.calcService.getLegend(legendType).pipe(
+        mergeMap((legend) => [
+          CalculationActions.fetchLegendSuccess({ legend, legendType }),
+          CalculationActions.fetchLegendForBootstrapSuccess()
+        ]),
+        catchError(({ status, error: message }) =>
+          of(
+            CalculationActions.fetchLegendFailure({
+              error: { status, message }
+            }),
+            CalculationActions.fetchLegendForBootstrapFailure()
+          )
+        )
+      )
+    )
+  ));
+
   fetchDynamicComparisonLegend$ = createEffect(() => this.actions$.pipe(
     ofType(CalculationActions.fetchComparisonLegend),
     mergeMap(({ maxValue, comparisonTitle }) =>
@@ -194,6 +214,25 @@ export class CalculationEffects {
     mergeMap(() =>
       this.calcService.getAllCompoundComparisons().pipe(
         map(compoundComparisons => CalculationActions.fetchCompoundComparisonsSuccess({ compoundComparisons })),
+        catchError(({ status, message }) =>
+          of(
+            CalculationActions.fetchCompoundComparisonsFailure({
+              error: { status, message }
+            })
+          )
+        )
+      )
+    )
+  ));
+
+  fetchCompoundComparisonsForBootstrap$ = createEffect(() => this.actions$.pipe(
+    ofType(CalculationActions.fetchCompoundComparisonsForBootstrap),
+    mergeMap(() =>
+      this.calcService.getAllCompoundComparisons().pipe(
+        mergeMap(compoundComparisons => [
+          CalculationActions.fetchCompoundComparisonsSuccess({ compoundComparisons }),
+          CalculationActions.fetchCompoundComparisonsForBootstrapSuccess()
+        ]),
         catchError(({ status, message }) =>
           of(
             CalculationActions.fetchCompoundComparisonsFailure({

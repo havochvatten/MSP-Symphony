@@ -17,7 +17,7 @@ export class AuthenticationGuard  {
     return this.store.select(UserSelectors.selectIsLoggedIn).pipe(
       tap((isLoggedIn: boolean) => {
         if (!isLoggedIn) {
-          this.store.dispatch(UserActions.fetchUser());
+          this.store.dispatch(UserActions.fetchUserForBootstrap());
         }
       }),
       take(1)

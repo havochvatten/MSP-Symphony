@@ -40,6 +40,11 @@ export const fetchLegend = createAction(
   props<{ legendType: LegendType }>()
 );
 
+export const fetchLegendForBootstrap = createAction(
+  '[Calculation] Fetch legend for bootstrap',
+  props<{ legendType: LegendType }>()
+);
+
 createAction(
   '[Calculation] Fetch comparison legend',
   props<{ comparisonTitle: string }>()
@@ -67,6 +72,14 @@ export const resetComparisonLegend = createAction(
 export const fetchLegendFailure = createAction(
   '[Calculation] Fetch legend failure',
   props<{ error: ErrorMessage }>()
+);
+
+export const fetchLegendForBootstrapSuccess = createAction(
+  '[Calculation] Fetch legend for bootstrap success'
+);
+
+export const fetchLegendForBootstrapFailure = createAction(
+  '[Calculation] Fetch legend for bootstrap failure'
 );
 
 export const fetchPercentile = createAction(
@@ -218,4 +231,12 @@ export const deleteCompoundComparisonFailure = createAction(
 export const setCompoundComparisonSortType = createAction(
   '[Calculation] Set compound comparison sort type',
   props<SortActionProps>()
+);
+
+export const fetchCompoundComparisonsForBootstrap = createAction(
+  '[Calculation] Fetch compound comparisons for bootstrap'
+);
+
+export const fetchCompoundComparisonsForBootstrapSuccess = createAction(
+  '[Calculation] Fetch compound comparisons for bootstrap success'
 );

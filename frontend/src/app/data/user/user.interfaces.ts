@@ -15,6 +15,7 @@ export interface State {
   isLoggedIn: boolean;
   loading: boolean;
   loadingBaseline: boolean;
+  bootstrapLoadContextActive: boolean;
   redirectUrl: string;
   baseline?: Baseline;
   error?: { login?: ErrorMessage };

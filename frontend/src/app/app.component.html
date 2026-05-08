@@ -1,3 +1,9 @@
+@if (isInitialLoading$ | async) {
+  <div class="loading-overlay">
+    <app-loader></app-loader>
+  </div>
+}
+
 @if (headerTitle !== '') {
   <app-header [title]="headerTitle"></app-header>
 }

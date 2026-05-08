@@ -2,12 +2,21 @@ import { createAction, props } from '@ngrx/store';
 import { Baseline, User } from './user.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
 
-export const fetchUser = createAction('[User] Fetch user');
+export const fetchUserForBootstrap = createAction('[User] Fetch user for bootstrap');
+
+export const fetchUserForRefresh = createAction('[User] Fetch user for refresh');
 
 export const fetchUserSettings = createAction('[User] Fetch user settings');
 
+export const completeBootstrapLoad = createAction('[User] Complete bootstrap load');
+
 export const fetchUserSuccess = createAction(
   '[User] Fetch metadata success',
+  props<{ user: User }>()
+);
+
+export const fetchUserForBootstrapSuccess = createAction(
+  '[User] Fetch user for bootstrap success',
   props<{ user: User }>()
 );
 
