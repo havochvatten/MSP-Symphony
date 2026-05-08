@@ -46,6 +46,7 @@ export class ComparisonComponent implements AfterViewInit {
   useImplicit = true;
   includeUnchanged = false;
   reverseComparison = false;
+  computingComparisonResult = false;
 
   constructor() {
     this.calculations$ = this.store.select(CalculationSelectors.selectCalculations);
@@ -57,16 +58,17 @@ export class ComparisonComponent implements AfterViewInit {
   }
 
   submit() {
+    this.computingComparisonResult = true;
     const a = this.useImplicit ? null : this.aSelect.value;
     const that = this,
-          b = this.compareForm.value.b as string,
-          aTitle = this.useImplicit ?
-            this.translate.instant('map.compare.implicit-baseline') :
-            (this.aSelect.selected as MatOption).viewValue,
-          comparisonTitle = aTitle + ' ~ ' + (this.bSelect.selected as MatOption).viewValue,
-          dynamic = this.selectedScale === ComparisonScaleOptions.DYNAMIC,
-          constantVal = this.constant,
-          reverse = this.reverseComparison
+      b = this.compareForm.value.b as string,
+      aTitle = this.useImplicit ?
+        this.translate.instant('map.compare.implicit-baseline') :
+        (this.aSelect.selected as MatOption).viewValue,
+      comparisonTitle = aTitle + ' ~ ' + (this.bSelect.selected as MatOption).viewValue,
+      dynamic = this.selectedScale === ComparisonScaleOptions.DYNAMIC,
+      constantVal = this.constant,
+      reverse = this.reverseComparison
     this.calcService.addComparisonResult(a, b, dynamic, constantVal, reverse).then(
       (dynamicMax: number | null) => {
         const max = dynamicMax !== null ? Math.ceil(dynamicMax * 100) : this.constant;
@@ -74,13 +76,16 @@ export class ComparisonComponent implements AfterViewInit {
           data: { a, b, max, reverse }
         });
         if(dynamic) {
-            that.store.dispatch(CalculationActions.fetchComparisonLegend({ maxValue: dynamicMax || 0, comparisonTitle }));
+          that.store.dispatch(CalculationActions.fetchComparisonLegend({ maxValue: dynamicMax || 0, comparisonTitle }));
         } else {
-            that.store.dispatch(CalculationActions.fetchComparisonLegend({ maxValue: that.constant / 100, comparisonTitle }));
+          that.store.dispatch(CalculationActions.fetchComparisonLegend({ maxValue: that.constant / 100, comparisonTitle }));
         }
       }
     )
-      .catch(e => console.warn(e));
+      .catch(e => console.warn(e))
+      .finally(() => {
+        that.computingComparisonResult = false;
+      });
   }
 
   async changeBase(id: number) {
