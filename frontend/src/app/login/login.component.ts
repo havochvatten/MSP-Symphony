@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     // Only shows the spinner, no navigation here
     this.loading = this.store
       .select(UserSelectors.selectIsInitialLoading)
-      .pipe(debounceTime(0), distinctUntilChanged());
+      .pipe(debounceTime(1000), distinctUntilChanged());
   }
 
   ngOnDestroy() {
