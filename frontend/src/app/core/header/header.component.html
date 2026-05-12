@@ -7,9 +7,13 @@
     <img
       class="flag"
       [src]="brandingService.configData.flagSrc"
-      [alt]="brandingService.configData.flagAlt"/>
+      [alt]="brandingService.configData.flagAlt"
+    />
   }
-  <app-user-menu-toggle [user]="user$ | async" (click)="toggleOpenMenu('USER')"></app-user-menu-toggle>
+  <app-user-menu-toggle
+    [user]="user$ | async"
+    (click)="toggleOpenMenu('USER')"
+  ></app-user-menu-toggle>
 </div>
 <div
   class="header-menu-container"
@@ -18,8 +22,8 @@
     bothAnimationsAreInProgress
       ? 'space-between'
       : animationState.get('user') || openState === 'USER'
-      ? 'flex-end'
-      : 'flex-start'
+        ? 'flex-end'
+        : 'flex-start'
   "
 >
   @if (openState === 'USER') {
@@ -28,7 +32,7 @@
       (@openCloseMenu.start)="onAnimationStateChange('user')"
       (@openCloseMenu.done)="onAnimationStateChange('user')"
       (navigate)="onMenuNavigation()"
-      [menuItems]="userMenuItems"
+      [menuItems]="(isLoggedIn$ | async) ? logOutUserMenu : logInUserMenu"
       menuLabel="Användarmeny"
     ></app-menu>
   }
