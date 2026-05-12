@@ -95,8 +95,26 @@
 
 <!--TODO: show some calculation metadata?-->
 <div class="toolbar">
-  <button mat-flat-button id="compare" (click)="submit()" [disabled]="compareForm.invalid">
-    {{ 'map.compare.compare' | translate }}
+  <button
+    mat-flat-button
+    id="compare"
+    (click)="submit()"
+    [disabled]="computingComparisonResult || compareForm.invalid"
+    class="compare-button"
+  >
+    <span
+      class="button-text"
+      [class.hidden]="computingComparisonResult"
+    >
+      {{ 'map.compare.compare' | translate }}
+    </span>
+
+    @if (computingComparisonResult) {
+      <mat-spinner
+        class="button-spinner"
+        [diameter]="20">
+      </mat-spinner>
+    }
   </button>
 </div>
 
