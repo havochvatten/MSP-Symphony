@@ -67,5 +67,23 @@ export const userReducer = createReducer(
   on(UserActions.fetchBaselineSuccess, UserActions.fetchBaselineFailure, (state) => ({
     ...state,
     loadingBaseline: false
+  })),
+  on(UserActions.createPublicUser, (state) => ({
+    ...state,
+    user: { username: 'public', settings: { locale: 'sv', aliasing: false }, public: true },
+    aliasing: false,
+    loading: false,
+    isLoggedIn: false,
+    error: undefined
+  })),
+  on(UserActions.updatePublicUserLanguage, (state, { locale }) => ({
+    ...state,
+    user: {
+      ...state.user!,
+      settings: {
+        ...state.user?.settings,
+        locale
+      }
+    }
   }))
 );

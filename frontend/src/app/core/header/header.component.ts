@@ -6,7 +6,7 @@ import {
   IconDefinition,
   faDoorOpen
 } from '@fortawesome/free-solid-svg-icons';
-import { Observable } from 'rxjs';
+import { filter, map, Observable, take } from 'rxjs';
 import { trigger, style, transition, animate, keyframes } from '@angular/animations';
 
 import { environment } from '@src/environments/environment';
@@ -79,7 +79,7 @@ export class HeaderComponent implements OnInit {
   }
 
   buildUserMenus() {
-    const logOutUserMenuItems = [
+    const baseMenuItems = [
       {
         name: 'user-menu.change-language',
         icon: gmGlobe,
@@ -89,7 +89,10 @@ export class HeaderComponent implements OnInit {
         name: 'user-menu.about',
         icon: faInfoCircle,
         click: this.about
-      },
+      }
+    ];
+
+    const logOutUserMenuItem = [
       {
         name: 'user-menu.logout',
         icon: faDoorClosed,
@@ -105,8 +108,8 @@ export class HeaderComponent implements OnInit {
       }
     ];
 
-    this.logInUserMenu = [...logInUserMenuItem];
-    this.logOutUserMenu = [...logOutUserMenuItems];
+    this.logInUserMenu = [...baseMenuItems, ...logInUserMenuItem];
+    this.logOutUserMenu = [...baseMenuItems, ...logOutUserMenuItem];
 
     if (environment.externManual) {
       this.logOutUserMenu.splice(0, 0, {
@@ -137,10 +140,23 @@ export class HeaderComponent implements OnInit {
       this.moduleRef,
       {}
     );
-    if (locale) {
-      this.store.dispatch(UserActions.updateUserSettings({ locale: locale }));
-      this.toggleOpenMenu('NONE');
-    }
+
+    this.user$
+      .pipe(
+        take(1),
+        map((user) => {
+          if (locale && !user?.public) {
+            this.store.dispatch(UserActions.updateUserSettings({ locale: locale }));
+            this.toggleOpenMenu('NONE');
+          }
+
+          if (locale && user?.public) {
+            this.store.dispatch(UserActions.updatePublicUserLanguage({ locale: locale }));
+            this.toggleOpenMenu('NONE');
+          }
+        })
+      )
+      .subscribe();
   }
 
   about = () => {

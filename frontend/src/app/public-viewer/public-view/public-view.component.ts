@@ -17,6 +17,7 @@ import { AreaSelectors } from '@data/area';
 import { ScenarioSelectors, ScenarioActions } from '@data/scenario';
 import { Scenario } from '@data/scenario/scenario.interfaces';
 import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component';
+import { UserActions } from '@data/user';
 
 @Component({
   selector: 'app-public-view',
@@ -63,6 +64,7 @@ export class PublicView {
   private selectedAreas$?: Subscription;
 
   constructor() {
+    this.store.dispatch(UserActions.createPublicUser());
     this.compoundComparisonSuccess$
       .pipe(distinctUntilChanged(), skip(1))
       .subscribe(() => this.onOpenCCList());
