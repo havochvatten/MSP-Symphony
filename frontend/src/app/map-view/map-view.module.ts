@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { EcoSliderComponent } from './band-selection/eco-slider/eco-slider.component';
 import { SharedModule } from '@shared/shared.module';
-import { MatSelectModule } from "@angular/material/select";
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { MatButtonModule } from "@angular/material/button";
+import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
 import { MainViewComponent } from './main-view.component';
 import { MapComponent } from './map/map.component';
 import { SliderControlsComponent } from './band-selection/slider-controls/slider-controls.component';
@@ -18,29 +18,31 @@ import { CoreModule } from '../core/core.module';
 import { AreaSelectionComponent } from './area-selection/area-selection.component';
 import { BandSelectionComponent } from './band-selection/band-selection.component';
 import { SelectionLayoutComponent } from './selection-layout/selection-layout.component';
-import { AreaGroupComponent, EditAreaComponent } from './area-selection/area-group/area-group.component';
+import {
+  AreaGroupComponent,
+  EditAreaComponent
+} from './area-selection/area-group/area-group.component';
 import { CalculationHistoryComponent } from './calculation-history/calculation-history.component';
 import { ComparisonComponent } from './comparison/comparison.component';
 import { CreateUserAreaModalComponent } from './map/create-user-area-modal/create-user-area-modal.component';
 import { CheckboxAccordionComponent } from './band-selection/checkbox-accordion/checkbox-accordion.component';
-import {
-  MatrixTableComponent
-} from './scenario/scenario-area-detail/matrix-selection/matrix-table/matrix-table.component';
-import { FormsModule } from "@angular/forms";
-import { UploadUserAreaModalComponent } from "@src/app/map-view/map/upload-user-area-modal/upload-user-area-modal.component";
-import { ScenarioEditorModule } from "@src/app/map-view/scenario/scenario-editor.module";
+import { MatrixTableComponent } from './scenario/scenario-area-detail/matrix-selection/matrix-table/matrix-table.component';
+import { FormsModule } from '@angular/forms';
+import { UploadUserAreaModalComponent } from '@src/app/map-view/map/upload-user-area-modal/upload-user-area-modal.component';
+import { ScenarioEditorModule } from '@src/app/map-view/scenario/scenario-editor.module';
 import { ConfirmResetComponent } from './confirm-reset/confirm-reset.component';
 import { MetaInfoComponent } from './meta-info/meta-info.component';
-import { AnchorPipe } from "@shared/anchor.pipe";
-import { DialogService } from "@shared/dialog/dialog.service";
+import { AnchorPipe } from '@shared/anchor.pipe';
+import { DialogService } from '@shared/dialog/dialog.service';
 import { MergeAreasModalComponent } from './map/merge-areas-modal/merge-areas-modal.component';
-import { MatRadioModule } from "@angular/material/radio";
+import { MatRadioModule } from '@angular/material/radio';
 import { ActiveScenarioDisplayComponent } from './active-scenario-display/active-scenario-display.component';
 import { BatchProgressComponent } from './batch-progress-display/batch-progress.component';
 import { ConfirmGenerateComparisonComponent } from './calculation-history/confirm-generate-comparison/confirm-generate-comparison.component';
 import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component';
 import { DownloadCompoundComparisonDialogComponent } from './compound-comparison-list-dialog/download-compound-comparison-dialog/download-compound-comparison-dialog.component';
-import { ReliabilityLegendComponent } from "@src/app/map-view/reliability-legend/reliability-legend.component";
+import { ReliabilityLegendComponent } from '@src/app/map-view/reliability-legend/reliability-legend.component';
+import { ScenarioEditorComponent } from './scenario/scenario-editor.component';
 
 @NgModule({
   declarations: [
@@ -85,6 +87,14 @@ import { ReliabilityLegendComponent } from "@src/app/map-view/reliability-legend
     MatRadioModule
   ],
   providers: [AnchorPipe, DialogService],
-  exports: [MainViewComponent, ComparisonComponent]
+  exports: [
+    MainViewComponent,
+    ComparisonComponent,
+    BandSelectionComponent,
+    MapToolbarComponent,
+    AreaSelectionComponent,
+    ScenarioEditorComponent,
+    CalculationHistoryComponent
+  ]
 })
 export class MapViewModule {}

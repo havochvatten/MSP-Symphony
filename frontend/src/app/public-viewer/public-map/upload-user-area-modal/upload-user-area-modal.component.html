@@ -1,0 +1,49 @@
+<h3>{{ 'map.user-area.upload.modal.title' | translate}}</h3>
+<p [innerHTML]="'map.user-area.upload.modal.fileformat-note' | translate"></p>
+
+<!--FIXME replace with custom "polygon" icon -->
+<input type="file" [accept]="requiredFileType" (change)="onFileSelect($event)" #fileUpload/>
+
+@if (loading) {
+  <div class="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+}
+
+<ng-container>
+  @if (hasWGS84SRID) {
+    <div class="notice">
+      <app-icon iconType="info-circle"></app-icon>
+      <p [innerHTML]="'map.user-area.upload.modal.notice.WGS84-reprojection' | translate"></p>
+    </div>
+  }
+
+  @if (packageHasMultipleFeatures) {
+    <div class="notice">
+      <app-icon iconType="info-circle"></app-icon>
+      <p [innerHTML]="'map.user-area.upload.modal.notice.multi-layer-pre' | translate"></p>
+    </div>
+    <ul class="layer-list">
+      @for (layerName of uploadedArea.featureIdentifiers; track layerName) {
+        <li>{{ layerName }}</li>
+      }
+    </ul>
+    <p class="import-all" [innerHTML]="'map.user-area.upload.modal.notice.multi-layer-all' | translate"></p>
+  }
+
+  @if (inspectionError) {
+    <div class="notice error">
+      <app-icon iconType="info-circle"></app-icon>
+      <p>{{ 'map.user-area.upload.error.'+inspectionError.errorCode | translate }}</p>
+    </div>
+  }
+</ng-container>
+
+<div class="button-pane">
+  <button mat-flat-button [ngClass]="'secondary'" (click)="cancel()">{{
+    'map.user-area.upload.modal.cancel' | translate
+  }}</button>
+  <button mat-flat-button (click)="confirmImport()" [disabled]="!uploadedArea">{{
+    'map.user-area.upload.modal.import' | translate
+  }}</button>
+</div>

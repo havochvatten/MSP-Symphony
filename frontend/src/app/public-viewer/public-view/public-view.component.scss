@@ -1,0 +1,74 @@
+@use 'src/styles/hav-colors' as colors;
+
+hav-accordion-panel {
+  hav-accordion-panel-header {
+    white-space: nowrap;
+  }
+}
+
+:host {
+  height: calc(100vh - 6rem);
+  position: relative;
+  width: 100vw;
+  display: grid;
+  grid-template-columns: min-content 1fr;
+  grid-template-areas: 'sidebar-left map';
+
+  app-slide-view {
+    grid-area: sidebar-left;
+    z-index: 99999;
+  }
+
+  app-public-map {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
+
+  #map-overlay {
+    position: absolute;
+    right: -31rem;
+    bottom: 0;
+    width: 300px;
+
+    .color-scale-container {
+      background-color: #ffffffee;
+      padding: 1rem;
+      border-radius: 2px;
+      max-height: 85.2vh;
+      overflow: auto;
+
+      .legend-section ~ .reliability-legend {
+        display: inline-block;
+        width: 100%;
+        margin-top: 1rem;
+      }
+    }
+
+    #scale-container {
+      height: 50px;
+    }
+  }
+
+  .mouse-interface-hint {
+    position: absolute;
+    top: 1rem;
+    left: 40%;
+    background-color: #ffffff;
+    background-image: url('~src/assets/info-icon-black.svg');
+    background-size: 1.3rem;
+    background-repeat: no-repeat;
+    background-position: 1rem 1.1rem;
+    font-size: 1.3rem;
+    text-align: center;
+    padding: 1rem 1.6rem 1rem 3rem;
+    border-radius: 2px;
+    box-shadow: 2px 2px 20px #00000029;
+
+    &#special-actions-hint.two-hints {
+      top: 5rem;
+    }
+  }
+}

@@ -1,0 +1,114 @@
+<div class="result-info-panel"></div>
+<!--TODO Migrate to use routerLinks instead-->
+<app-slide-view
+  position="left"
+  [open]="leftSidebarIsOpen"
+  [compoundComparisonCount$]="compoundComparisonCount$"
+  (toggleTab)="toggleLeftSidebar()"
+  (navigate)="onNavigate($event)"
+  (openCCList)="onOpenCCList()"
+>
+  <app-slide-view-tab [title]="'map.intensity.ecosystems' | translate" icon="fish">
+    <app-band-selection
+      bandType="ecoComponents"
+      [title]="'map.intensity.ecosystems' | translate"
+      [bandGroups]="$any(metadata | async).ecoComponent"
+    ></app-band-selection>
+  </app-slide-view-tab>
+  <app-slide-view-tab [title]="'map.intensity.pressures' | translate" icon="human">
+    <app-band-selection
+      bandType="pressures"
+      [title]="'map.intensity.pressures' | translate"
+      [bandGroups]="$any(metadata | async).pressureComponent"
+    ></app-band-selection>
+  </app-slide-view-tab>
+
+  <div id="map-overlay">
+    @if (activeScenario$ | async) {
+      <app-active-scenario-display
+        [scenario]="activeScenario$ | async"
+        [calculating]="calculating$ | async"
+        [area]="activeScenarioArea$ | async"
+        (exit)="exitScenario()"
+      >
+      </app-active-scenario-display>
+    }
+    @if (
+      ((legends$ | async).result && this.getVisibleImpact()) ||
+      ((cmpLegends$ | async)?.length > 0 && this.getVisibleComparison()) ||
+      (legends$ | async).ecosystem ||
+      (legends$ | async).pressure ||
+      (visibleReliability$ | async) !== null
+    ) {
+      <div class="color-scale-container">
+        @if ((legends$ | async).result && this.getVisibleImpact()) {
+          <app-result-color-scale
+            class="legend-section"
+            [title]="'map.color-scale.result' | translate"
+            [colors]="(legends$ | async).result.colorMap"
+            [unit]="(legends$ | async).result.unit"
+          ></app-result-color-scale>
+        }
+        @if (this.getVisibleComparison()) {
+          <app-comparison-color-scale
+            class="legend-section"
+            [legends]="cmpLegends$ | async"
+          ></app-comparison-color-scale>
+        }
+        @if ((legends$ | async).ecosystem) {
+          <app-result-color-scale
+            class="legend-section"
+            [title]="'map.color-scale.ecosystem' | translate"
+            [colors]="(legends$ | async).ecosystem.colorMap"
+            [unit]="(legends$ | async).ecosystem.unit"
+          ></app-result-color-scale>
+        }
+        @if ((legends$ | async).pressure) {
+          <app-result-color-scale
+            class="legend-section"
+            [title]="'map.color-scale.pressure' | translate"
+            [colors]="(legends$ | async).pressure.colorMap"
+            [unit]="(legends$ | async).pressure.unit"
+          ></app-result-color-scale>
+        }
+      </div>
+    }
+    <div id="scale-container"></div>
+  </div>
+</app-slide-view>
+<app-public-map
+  [mapCenter]="center"
+  (resultLayerGroupChange)="setVisibleImpact($event)"
+  (resultLayerGroupChangeCmp)="setVisibleComparison($event)"
+>
+</app-public-map>
+@if (scenarioAreaSelection && (activeScenarioArea$ | async) === undefined) {
+  <div id="scenario-area-selection-hint" class="mouse-interface-hint">
+    <span>
+      <strong>{{ 'map.area-selection-hint.emphasis' | translate }}</strong>
+      {{ 'map.area-selection-hint.detail' | translate: { ctrlButton: isMacOS ? '⌘' : 'Ctrl' } }}
+    </span>
+  </div>
+}
+@if (singleSelection || multiSelection) {
+  <div
+    id="special-actions-hint"
+    [ngClass]="{
+      'mouse-interface-hint': true,
+      'two-hints': scenarioAreaSelection && (activeScenarioArea$ | async) === undefined
+    }"
+  >
+    @if (singleSelection) {
+      <span>
+        <strong>{{ 'map.special-actions-hint.emphasis' | translate }}</strong>
+        {{ 'map.special-actions-hint.detail' | translate: { altButton: isMacOS ? '⌥' : 'Alt' } }}
+      </span>
+    }
+    @if (multiSelection) {
+      <span>
+        <strong>{{ 'map.merge-areas-hint.emphasis' | translate }}</strong>
+        {{ 'map.merge-areas-hint.detail' | translate: { altButton: isMacOS ? '⌥' : 'Alt' } }}
+      </span>
+    }
+  </div>
+}

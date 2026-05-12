@@ -1,0 +1,74 @@
+@use 'src/styles/constants' as cns;
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 4px;
+  padding: 2rem;
+  width: 45rem;
+
+  h3 {
+    color: colors.$hav-black;
+    font-size: 2rem;
+    font-weight: 500;
+    margin: 0;
+    margin-bottom: 1rem;
+  }
+
+  input {
+    outline: none;
+    font-size: 1.6rem;
+    padding: 1rem 1.2rem;
+    margin: 2rem 0;
+    border-radius: 4px;
+    border: 1px solid colors.$hav-darkwarmgrey;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 1rem 0;
+
+    mat-spinner {
+      margin: 0 auto;
+    }
+  }
+
+  p {
+    margin: 0.5rem 0;
+  }
+
+  .notice {
+    display: flex;
+    align-items: center;
+    hyphens: manual;
+
+    &>app-icon {
+      color: colors.$hav-turquoise;
+      font-size: 5rem;
+    }
+  }
+
+  ul.layer-list {
+    font-size: 1.3rem;
+    line-height: 1.7rem;
+    margin: 0 0 0.8rem;
+    overflow-y: scroll;
+    max-height: calc(100vh - 440px);
+  }
+
+  p.import-all {
+    font-size: 1.3rem;
+    padding-left: 2.2rem;
+  }
+
+  .error {
+    justify-content: center;
+
+    &>app-icon {
+      color: colors.$hav-ext-scarlet-red;
+    }
+  }
+}

@@ -1,0 +1,11 @@
+<div id="map" class="map" #map></div>
+<app-map-toolbar
+  [editingControls]="false"
+  (zoomIn)="zoomIn()"
+  (zoomOut)="zoomOut()"
+  (setMapOpacity)="setMapOpacity($event)"
+></app-map-toolbar>
+<app-footer></app-footer>
+<div #areaOptionsMenu id="area-options-menu">
+  <button>{{ 'map.area-options.get-shapefile' | translate }}</button>
+</div>

@@ -24,9 +24,10 @@ import { CalculationEffects } from '@data/calculation/calculation.effects';
 import { ScenarioEffects } from '@data/scenario/scenario.effects';
 import { CalculationReportModule } from './report/calculation-report.module';
 import { LoginModule } from './login/login.module';
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { MatButtonModule } from "@angular/material/button";
-import { MatRadioModule } from "@angular/material/radio";
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { MatRadioModule } from '@angular/material/radio';
+import { PublicViewModule } from './public-viewer/public-viewer.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -40,14 +41,15 @@ import { MatRadioModule } from "@angular/material/radio";
     SharedModule,
     CoreModule,
     MapViewModule,
+    PublicViewModule,
     StoreModule.forRoot(reducers, {
       metaReducers,
       runtimeChecks: {
         strictStateImmutability: true,
         strictActionImmutability: true,
         strictStateSerializability: true,
-        strictActionSerializability: true,
-      },
+        strictActionSerializability: true
+      }
     }),
     EffectsModule.forRoot([
       MetadataEffects,
@@ -55,12 +57,12 @@ import { MatRadioModule } from "@angular/material/radio";
       AreaEffects,
       MessageEffects,
       CalculationEffects,
-      ScenarioEffects,
+      ScenarioEffects
     ]),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
     TranslationSetupModule,
     CalculationReportModule,
-    LoginModule,
+    LoginModule
   ],
   providers: [
     provideHttpClient(),
@@ -69,8 +71,8 @@ import { MatRadioModule } from "@angular/material/radio";
     provideAppInitializer(() => {
       const brandingService = inject(BrandingService);
       return brandingService.loadConfig();
-    }),
+    })
   ],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}
