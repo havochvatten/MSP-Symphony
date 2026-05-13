@@ -1,30 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld
-http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd" version="1.1.0">
-  <NamedLayer>
-	<Name></Name>
-	<UserStyle>
-	  <Title>Symphony ecosystem services style</Title>
-	  <FeatureTypeStyle>
-		<Rule>
-		  <RasterSymbolizer>
-			<ColorMap type="intervals">
-			  <ColorMapEntry color="#000000" quantity="0" opacity="0"/>
-			  <ColorMapEntry color="#1c6ff8" quantity="1"/>
-			  <ColorMapEntry color="#2295ec" quantity="5"/>
-			  <ColorMapEntry color="#27bbe0" quantity="10"/>
-			  <ColorMapEntry color="#2ccbb9" quantity="15"/>
-			  <ColorMapEntry color="#31db92" quantity="20"/>
-			  <ColorMapEntry color="#26e655" quantity="25"/>
-			  <ColorMapEntry color="#1bf118" quantity="30"/>
-			  <ColorMapEntry color="#5bf61e" quantity="35"/>
-			  <ColorMapEntry color="#9bfa24" quantity="70"/>
-			  <ColorMapEntry color="#cdf922" quantity="90"/>
-			  <ColorMapEntry color="#fef720" quantity="100"/>
-			</ColorMap>
-		  </RasterSymbolizer>
-		</Rule>
-	  </FeatureTypeStyle>
-	</UserStyle>
-  </NamedLayer>
+<StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd" version="1.1.0">
+    <NamedLayer>
+        <Name></Name>
+        <UserStyle>
+            <Title>Symphony ecosystem style</Title>
+            <FeatureTypeStyle>
+                <Rule>
+                    <RasterSymbolizer>
+                        <ColorMap type="ramp">
+                            <ColorMapEntry color="#000000" quantity="0"  opacity="0"/>
+                            <ColorMapEntry color="#0a1a6e" quantity="1"/>
+                            <ColorMapEntry color="#0055bb" quantity="5"/>
+                            <ColorMapEntry color="#0080bb" quantity="10"/>
+                            <ColorMapEntry color="#00a8bb" quantity="15"/>
+                            <ColorMapEntry color="#00cc99" quantity="20"/>
+                            <ColorMapEntry color="#44ee66" quantity="25"/>
+                            <ColorMapEntry color="#aaff00" quantity="30"/>
+                            <ColorMapEntry color="#77cc00" quantity="40"/>
+                            <ColorMapEntry color="#449922" quantity="50"/>
+                            <ColorMapEntry color="#227733" quantity="60"/>
+                            <ColorMapEntry color="#0a5522" quantity="70"/>
+                            <ColorMapEntry color="#083d18" quantity="80"/>
+                            <ColorMapEntry color="#052810" quantity="100"/>
+                        </ColorMap>
+                    </RasterSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
 </StyledLayerDescriptor>
