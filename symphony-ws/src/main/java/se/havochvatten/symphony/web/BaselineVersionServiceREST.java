@@ -2,6 +2,7 @@ package se.havochvatten.symphony.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.security.PermitAll;
 import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.mapper.BaselineVersionDtoMapper;
@@ -20,7 +21,6 @@ import java.util.List;
 @Stateless
 @Tag(name = "/baselineversion")
 @Path("baselineversion")
-@RolesAllowed("GRP_SYMPHONY")
 public class BaselineVersionServiceREST {
     @EJB
     BaselineVersionService baselineVersionService;
@@ -28,6 +28,7 @@ public class BaselineVersionServiceREST {
     @GET
     @Operation(summary = "List all BaselineVersion")
     @Produces({MediaType.APPLICATION_JSON})
+    @RolesAllowed("GRP_SYMPHONY")
     public Response findAll() {
         List<BaselineVersion> baselineVersions = baselineVersionService.findAll();
         return Response.ok(BaselineVersionDtoMapper.mapEntitiesToDtos(baselineVersions)).build();
@@ -37,6 +38,7 @@ public class BaselineVersionServiceREST {
     @Operation(summary = "Get BaselineVersion by name")
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/name/{name}")
+    @RolesAllowed("GRP_SYMPHONY")
     public Response getByName(@PathParam("name") String name) throws SymphonyStandardAppException {
         BaselineVersion baselineVersion = baselineVersionService.getVersionByName(name);
         return Response.ok(BaselineVersionDtoMapper.mapEntityToDto(baselineVersion)).build();
@@ -47,6 +49,7 @@ public class BaselineVersionServiceREST {
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     @Path("/date/{date}")
+    @RolesAllowed("GRP_SYMPHONY")
     public Response getByDate(@PathParam("date") long date) throws SymphonyStandardAppException {
         BaselineVersion baselineVersion = baselineVersionService.getBaselineVersionByDate(new Date(date));
         return Response.ok(BaselineVersionDtoMapper.mapEntityToDto(baselineVersion)).build();
@@ -57,6 +60,7 @@ public class BaselineVersionServiceREST {
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     @Path("/current")
+    @PermitAll
     public Response getCurrent() throws SymphonyStandardAppException {
         BaselineVersion baselineVersion = baselineVersionService.getBaselineVersionByDate(new Date());
 

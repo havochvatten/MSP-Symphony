@@ -2,6 +2,7 @@ package se.havochvatten.symphony.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.security.PermitAll;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.MetadataDto;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
@@ -18,7 +19,7 @@ import jakarta.ws.rs.core.MediaType;
 @Stateless
 @Tag(name ="/metadata")
 @Path("metadata")
-@RolesAllowed("GRP_SYMPHONY")
+@PermitAll
 public class MetaDataREST {
     @EJB
     MetaDataService metaDataService;

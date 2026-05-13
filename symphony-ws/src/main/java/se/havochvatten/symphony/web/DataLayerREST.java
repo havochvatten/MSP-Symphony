@@ -2,6 +2,7 @@ package se.havochvatten.symphony.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.security.PermitAll;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.geometry.jts.JTS;
@@ -59,7 +60,7 @@ public class DataLayerREST {
     @GET
     @Path("/{type}/{id}/{baselineName}")
     @Produces({"image/png"}) // make JPEG and/or WebP available?
-    @RolesAllowed("GRP_SYMPHONY")
+    @PermitAll
     @Operation(summary = "Returns calculation result image")
     public Response getLayerData(@PathParam("type") String type,
                                  @PathParam("id") int bandNo,
