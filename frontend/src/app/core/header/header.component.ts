@@ -79,12 +79,15 @@ export class HeaderComponent implements OnInit {
   }
 
   buildUserMenus() {
-    const baseMenuItems = [
+    const changeLanguageMenuItem = [
       {
         name: 'user-menu.change-language',
         icon: gmGlobe,
         click: () => this.changeLanguage()
-      },
+      }
+    ];
+
+    const aboutMenuItems = [
       {
         name: 'user-menu.about',
         icon: faInfoCircle,
@@ -108,8 +111,8 @@ export class HeaderComponent implements OnInit {
       }
     ];
 
-    this.logInUserMenu = [...baseMenuItems, ...logInUserMenuItem];
-    this.logOutUserMenu = [...baseMenuItems, ...logOutUserMenuItem];
+    this.logInUserMenu = [...changeLanguageMenuItem, ...logInUserMenuItem];
+    this.logOutUserMenu = [...changeLanguageMenuItem, ...aboutMenuItems, ...logOutUserMenuItem];
 
     if (environment.externManual) {
       this.logOutUserMenu.splice(0, 0, {
