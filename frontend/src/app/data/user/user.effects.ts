@@ -193,4 +193,16 @@ export class UserEffects {
       map(([, state]) => UserActions.navigateTo({ url: state.user.redirectUrl || '/map' }))
     )
   );
+
+  userIsPublic$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.createPublicUser),
+      concatMap(() => [
+        UserActions.fetchBaseline(),
+        AreaActions.fetchBoundaries(),
+        MetadataActions.fetchMetadata(),
+        ...legendTypes.map((legendType) => CalculationActions.fetchPublicLegend({ legendType }))
+      ])
+    )
+  );
 }
