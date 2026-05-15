@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
+import static se.havochvatten.symphony.dto.LegendDto.Type.*;
+
 @Path("/legend")
 @Stateless
 @Tag(name ="/legend")
@@ -74,7 +76,7 @@ public class LegendREST {
 
     private boolean isPublicType(LegendDto.Type reqLegendType) {
         System.out.println("in isPublicType: " + reqLegendType.name());
-        return LegendDto.Type.ECOSYSTEM.equals(reqLegendType) || LegendDto.Type.PRESSURE.equals(reqLegendType);
+        return ECOSYSTEM.equals(reqLegendType) || PRESSURE.equals(reqLegendType) || RESULT.equals(reqLegendType);
     }
 
     private Response getResponse(String maxParam, LegendDto.Type type) throws ParserConfigurationException, SAXException, IOException {
