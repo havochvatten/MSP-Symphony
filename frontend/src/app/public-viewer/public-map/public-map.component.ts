@@ -137,11 +137,8 @@ export class PublicMapComponent implements AfterViewInit, OnDestroy {
       )
       .subscribe((scenario: Scenario) => {
         this.areaLayer.deselectAreas();
-
         this.scenarioLayer.clearLayers();
-
         this.scenarioLayer.setScenarioBoundary(scenario);
-
         this.zoomToExtent(this.scenarioLayer.getBoundaryFeature()!.getGeometry()!.getExtent(), 500);
       });
 
@@ -224,7 +221,8 @@ export class PublicMapComponent implements AfterViewInit, OnDestroy {
         .select(AreaSelectors.selectBoundaryFeatures)
         .pipe(skipWhile((value) => !value || value.features.length === 0))
     );
-    //    this.resultLayerGroup = new ResultLayerGroup(this);
+
+    this.resultLayerGroup = new ResultLayerGroup(this);
     this.map.addLayer(this.resultLayerGroup);
     this.geoJson = new GeoJSON({
       featureProjection: this.map.getView().getProjection()
@@ -235,6 +233,20 @@ export class PublicMapComponent implements AfterViewInit, OnDestroy {
       this.map.getView().getProjection().getCode()
     );
 
+    this.areaLayer = new AreaLayer(
+      this.map,
+      this.dispatchSelectionUpdate,
+      this.zoomToExtent,
+      () => {},
+      this.onDrawInvalid,
+      this.onDownloadClick,
+      this.onSplitClick,
+      this.onMergeClick,
+      this.scenarioLayer,
+      this.translateService,
+      this.geoJson,
+      document.createElement('div')
+    ); // Will add itself to the map
     this.areaLayer.initialize();
     this.areaHighlightLayer = new AreaHighlightLayer(this.geoJson);
 
@@ -293,14 +305,13 @@ export class PublicMapComponent implements AfterViewInit, OnDestroy {
     this.map!.addLayer(this.scenarioLayer);
     this.map!.addLayer(this.areaHighlightLayer);
 
-    this.userSubscription = this.store /* TOOD: Just get from static environment?*/
+    this.userSubscription = this.store /* TODO: Just get from static environment?*/
       .select(UserSelectors.selectBaseline)
       .pipe(isNotNullOrUndefined())
-      .pipe(isNotNullOrUndefined())
       .subscribe((baseline) => {
-        this.baselineName = baseline.name;
+        this.baselineName = baseline!.name;
         this.bandLayer = new BandLayer(
-          baseline.name,
+          baseline!.name,
           this.dataLayerService,
           this.store,
           this.aliasing
