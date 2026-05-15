@@ -2,6 +2,7 @@ package se.havochvatten.symphony.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.security.PermitAll;
 import se.havochvatten.symphony.entity.NationalArea;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.service.AreasService;
@@ -74,7 +75,7 @@ public class AreasREST {
     @Path("/boundary")
     @Operation(summary = "JSON polygons for country that user created areas must keep within (not cross)")
     @Produces({MediaType.APPLICATION_JSON})
-    @RolesAllowed("GRP_SYMPHONY")
+    @PermitAll
     public Response getBoundaries() throws SymphonyStandardAppException {
         String countryCode = props.getProperty(COUNTRYCODE_PROPERTY);
         if (countryCode == null) {
