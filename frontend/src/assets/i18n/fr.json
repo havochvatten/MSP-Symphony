@@ -596,6 +596,7 @@
         "support": "Mode d'emploi",
         "profile": "Mon profil",
         "change-language": "Changer de langue",
+        "change-baseline": "Changer la base de référence",
         "logout": "Se déconnecter"
     },
     "about-dialog": {
@@ -622,6 +623,12 @@
             "sv": "Suédois",
             "fr": "Français"
         }
+    },
+    "change-baseline-modal": {
+        "header": "Changer la base de référence",
+        "notice": "Changer la base de référence effacera vos couches sélectionnées, filtres et calculs temporaires.",
+        "apply": "Appliquer",
+        "error": "Impossible de changer la base de référence. Veuillez réessayer."
     },
     "report": {
         "calculation": {

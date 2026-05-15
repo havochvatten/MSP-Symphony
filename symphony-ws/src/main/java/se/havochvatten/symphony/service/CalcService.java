@@ -99,6 +99,8 @@ public class CalcService {
     Operations operations;
     @EJB
     ScenarioService scenarioService;
+    @EJB
+    UserService userService;
 
     @Inject
     private CalculationAreaService calculationAreaService;
@@ -129,8 +131,14 @@ public class CalcService {
                 getResultList();
     }
 
-    public List<CalculationResultSlice> findAllByUser(Principal user) {
-        return findAllByUsername(user.getName());
+    public List<CalculationResultSlice> findAllByUser(Principal user) throws SymphonyStandardAppException, IOException {
+        int baselineId = baselineVersionService
+                .getActiveBaselineVersionForUser(userService.getUser(user))
+                .getId();
+        return em.createNamedQuery("CalculationResultSlice.findAllByOwnerAndBaseline", CalculationResultSlice.class).
+                setParameter("owner", user.getName()).
+                setParameter("baselineId", baselineId).
+                getResultList();
     }
 
     private List<CalculationResultSlice> findAllByUsername(String username) {
@@ -139,10 +147,11 @@ public class CalcService {
                 getResultList();
     }
 
-    public List<CalculationResultSliceDto> findAllCmpByUser(Principal user, int operation) {
-        return em.createNamedQuery("CalculationResult.findCmpByOwner", CalculationResultSliceDto.class).
+    public List<CalculationResultSliceDto> findAllCmpByUser(Principal user, int operation, int baselineId) {
+        return em.createNamedQuery("CalculationResult.findCmpByOwnerAndBaseline", CalculationResultSliceDto.class).
                 setParameter("username", user.getName()).
                 setParameter("operation", operationName(operation)).
+                setParameter("baselineId", baselineId).
                 getResultList();
     }
 
@@ -156,7 +165,7 @@ public class CalcService {
         int operation = base.getOperationName().equals("CumulativeImpact") ?
                 OPERATION_CUMULATIVE : OPERATION_RARITYADJUSTED;
 
-        var candidates = findAllCmpByUser(user, operation);
+        var candidates = findAllCmpByUser(user, operation, base.getBaselineVersion().getId());
         List<Integer> ecoList       = Arrays.stream(base.getScenarioSnapshot().getEcosystemsToInclude()).boxed().toList(),
                       pressureList  = Arrays.stream(base.getScenarioSnapshot().getPressuresToInclude()).boxed().toList();
 
@@ -861,9 +870,13 @@ public class CalcService {
         return (GridCoverage2D) operations.divide(difference, floatbase);
     }
 
-    public List<CompoundComparisonSlice> getCompoundComparisons(Principal user) {
-        return em.createNamedQuery("CompoundComparison.findByOwner", CompoundComparisonSlice.class).
+    public List<CompoundComparisonSlice> getCompoundComparisons(Principal user) throws SymphonyStandardAppException, IOException {
+        int baselineId = baselineVersionService
+                .getActiveBaselineVersionForUser(userService.getUser(user))
+                .getId();
+        return em.createNamedQuery("CompoundComparison.findByOwnerAndBaseline", CompoundComparisonSlice.class).
                 setParameter("username", user.getName()).
+                setParameter("baselineId", baselineId).
                 getResultList();
     }
 

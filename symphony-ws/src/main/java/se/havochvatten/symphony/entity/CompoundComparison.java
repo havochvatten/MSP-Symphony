@@ -41,6 +41,15 @@ import java.util.Map;
                 "GROUP BY c.id, c.cmp_name, c.cmp_timestamp " +
                 "ORDER BY c.id DESC",
     resultSetMapping = "CompoundCmpSliceMapping" )
+
+@NamedNativeQuery(name = "CompoundComparison.findByOwnerAndBaseline",
+    query = "SELECT c.id, c.cmp_name, c.cmp_timestamp, " +
+                "array_agg(value->>'calculationName') calculationNames " +
+                "FROM compoundcomparison c, json_each(c.cmp_result) " +
+                "WHERE c.cmp_owner = :username AND c.baseline_id = :baselineId " +
+                "GROUP BY c.id, c.cmp_name, c.cmp_timestamp " +
+                "ORDER BY c.id DESC",
+    resultSetMapping = "CompoundCmpSliceMapping" )
 public class CompoundComparison {
 
     @Id

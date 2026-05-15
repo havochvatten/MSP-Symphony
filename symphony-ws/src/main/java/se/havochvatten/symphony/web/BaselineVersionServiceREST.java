@@ -2,18 +2,23 @@ package se.havochvatten.symphony.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import se.havochvatten.symphony.dto.UserDto;
 import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.mapper.BaselineVersionDtoMapper;
 import se.havochvatten.symphony.service.BaselineVersionService;
+import se.havochvatten.symphony.service.UserService;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.CacheControl;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -25,12 +30,33 @@ public class BaselineVersionServiceREST {
     @EJB
     BaselineVersionService baselineVersionService;
 
+    @EJB
+    UserService userService;
+
+    @Context
+    HttpServletRequest req;
+
     @GET
     @Operation(summary = "List all BaselineVersion")
     @Produces({MediaType.APPLICATION_JSON})
     public Response findAll() {
         List<BaselineVersion> baselineVersions = baselineVersionService.findAll();
         return Response.ok(BaselineVersionDtoMapper.mapEntitiesToDtos(baselineVersions)).build();
+    }
+
+    @GET
+    @Operation(summary = "Get active baseline for the current user")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/active")
+    public Response getActive() throws SymphonyStandardAppException, IOException {
+        UserDto user = userService.getUser(req.getUserPrincipal());
+        BaselineVersion baselineVersion = baselineVersionService.getActiveBaselineVersionForUser(user);
+
+        CacheControl cc = new CacheControl();
+        cc.setNoStore(true);
+        return Response.ok(BaselineVersionDtoMapper.mapEntityToDto(baselineVersion))
+                .cacheControl(cc)
+                .build();
     }
 
     @GET
@@ -67,4 +93,5 @@ public class BaselineVersionServiceREST {
                 cacheControl(cc).
                 build();
     }
+
 }

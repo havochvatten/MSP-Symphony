@@ -25,6 +25,7 @@ import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.mapper.UserDefinedAreaDtoMapper;
 
+import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -42,6 +43,9 @@ public class UserService {
     @PersistenceContext(unitName = "symphonyPU")
     private EntityManager em;
     private static final ObjectMapper mapper = new ObjectMapper();
+
+    @EJB
+    private BaselineVersionService baselineVersionService;
 
     /**
      * Find all user defined areas
@@ -256,6 +260,17 @@ public class UserService {
     }
 
     public void updateUserSettings(Principal userPrincipal, Map<String, Object> settings) throws SymphonyStandardAppException {
+        Object rawBaselineId = settings.get("activeBaselineId");
+        if (rawBaselineId != null) {
+            if (!(rawBaselineId instanceof Number)) {
+                throw new SymphonyStandardAppException(SymphonyModelErrorCode.OTHER_ERROR);
+            }
+            int id = ((Number) rawBaselineId).intValue();
+            if (baselineVersionService.getBaselineVersionById(id) == null) {
+                throw new SymphonyStandardAppException(SymphonyModelErrorCode.BASELINE_VERSION_NOT_FOUND);
+            }
+        }
+
         UserSettings userSettings = em.find(UserSettings.class, userPrincipal.getName());
         if (userSettings == null) {
             userSettings = new UserSettings();

@@ -596,6 +596,7 @@
         "support": "Support",
         "profile": "My profile",
         "change-language": "Change language",
+        "change-baseline": "Change baseline",
         "logout": "Log out"
     },
     "about-dialog": {
@@ -622,6 +623,12 @@
             "sv": "Swedish",
             "fr": "French"
         }
+    },
+    "change-baseline-modal": {
+        "header": "Change baseline",
+        "notice": "Changing the baseline will clear your selected layers, filters, and temporary calculations.",
+        "apply": "Apply",
+        "error": "Failed to change baseline. Please try again."
     },
     "report": {
         "calculation": {

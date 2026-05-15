@@ -27,7 +27,11 @@ export default class UserService {
   fetchBaseline() {
     return this.http.get<UserInterfaces.Baseline>(env.baseline
       ? `${BASE_URL}/baselineversion/name/${env.baseline}`
-      : `${BASE_URL}/baselineversion/current`);
+      : `${BASE_URL}/baselineversion/active`);
+  }
+
+  fetchBaselines() {
+    return this.http.get<UserInterfaces.Baseline[]>(`${BASE_URL}/baselineversion`);
   }
 
   updateSettings(param: UserSettings) {

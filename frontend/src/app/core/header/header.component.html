@@ -9,24 +9,18 @@
       [src]="brandingService.configData.flagSrc"
       [alt]="brandingService.configData.flagAlt"/>
   }
+  @if (baseline$ | async; as baseline) {
+    <span class="baseline-badge">{{ baseline.name }}</span>
+  }
   <app-user-menu-toggle [user]="user$ | async" (click)="toggleOpenMenu('USER')"></app-user-menu-toggle>
 </div>
 <div
   class="header-menu-container"
   [class.is-open]="openState !== 'NONE'"
-  [style.justifyContent]="
-    bothAnimationsAreInProgress
-      ? 'space-between'
-      : animationState.get('user') || openState === 'USER'
-      ? 'flex-end'
-      : 'flex-start'
-  "
 >
   @if (openState === 'USER') {
     <app-menu
       @openCloseMenu
-      (@openCloseMenu.start)="onAnimationStateChange('user')"
-      (@openCloseMenu.done)="onAnimationStateChange('user')"
       (navigate)="onMenuNavigation()"
       [menuItems]="userMenuItems"
       menuLabel="Användarmeny"

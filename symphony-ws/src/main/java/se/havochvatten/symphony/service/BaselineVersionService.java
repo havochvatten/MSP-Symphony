@@ -1,5 +1,6 @@
 package se.havochvatten.symphony.service;
 
+import se.havochvatten.symphony.dto.UserDto;
 import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
@@ -53,6 +54,17 @@ public class BaselineVersionService {
 
     public BaselineVersion getBaselineVersionById(Integer id) {
         return em.find(BaselineVersion.class, id);
+    }
+
+    /**
+     * Resolve the effective baseline for a user: their explicit `activeBaselineId`
+     * setting if set and still valid, otherwise the baseline valid today.
+     */
+    public BaselineVersion getActiveBaselineVersionForUser(UserDto user) throws SymphonyStandardAppException {
+        Object raw = user.getSettings().get("activeBaselineId");
+        Integer activeId = raw instanceof Number n ? n.intValue() : null;
+        BaselineVersion baselineVersion = activeId != null ? getBaselineVersionById(activeId) : null;
+        return baselineVersion != null ? baselineVersion : getBaselineVersionByDate(new Date());
     }
 
     /**
