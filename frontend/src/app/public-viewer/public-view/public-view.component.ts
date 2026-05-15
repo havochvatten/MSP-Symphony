@@ -10,7 +10,6 @@ import { environment } from '@src/environments/environment';
 import { isMacOS } from '@src/util/agent';
 import { State } from '@src/app/app-reducer';
 import { distinctUntilChanged, Observable, skip, Subscription, take } from 'rxjs';
-import { SharedModule } from '@src/app/shared/shared.module';
 import { LegendState, ComparisonLegendState } from '@data/calculation/calculation.interfaces';
 import { CalculationSelectors } from '@data/calculation';
 import { AreaSelectors } from '@data/area';
