@@ -177,6 +177,14 @@ export const calculationReducer = createReducer(
   on(CalculationActions.fetchLegendSuccess, CalculationActions.fetchLegendFailure, (state) => ({
     ...state,
     loadingLegends: false
+  })),
+  on(CalculationActions.fetchPublicLegend, (state) => ({
+    ...state,
+    loadingLegends: true
+  })),
+  on(CalculationActions.fetchPublicLegendSuccess, (state, { legend, legendType }) => ({
+    ...state,
+    legends: setIn(state.legends, [legendType], legend)
   }))
 );
 

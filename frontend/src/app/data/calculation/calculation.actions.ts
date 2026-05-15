@@ -4,26 +4,27 @@ import {
   LegendType,
   Legend,
   PercentileResponse,
-  BatchCalculationProcessEntry, CompoundComparison
+  BatchCalculationProcessEntry,
+  CompoundComparison
 } from './calculation.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
-import { SortActionProps } from "@data/common/sorting.interfaces";
-import { Scenario } from "@data/scenario/scenario.interfaces";
+import { SortActionProps } from '@data/common/sorting.interfaces';
+import { Scenario } from '@data/scenario/scenario.interfaces';
 
 export const startCalculation = createAction('[Calculation] Add calculation');
 
 export const calculateActiveScenario = createAction(
-  '[Calculation] Calculate and update active scenario',
+  '[Calculation] Calculate and update active scenario'
 );
 
 export const calculationSucceeded = createAction(
   '[Calculation] Calculation succeeded',
-  props<{ calculation: CalculationSlice, savedScenario: Scenario }>()
+  props<{ calculation: CalculationSlice; savedScenario: Scenario }>()
 );
 
-export const calculationFailed = createAction('[Calculation] Calculation failed',);
+export const calculationFailed = createAction('[Calculation] Calculation failed');
 
-export const fetchCalculations = createAction('[Calculation] Fetch previous calculations',);
+export const fetchCalculations = createAction('[Calculation] Fetch previous calculations');
 
 export const fetchCalculationsSuccess = createAction(
   '[Calculation] Fetch calculations success',
@@ -40,29 +41,24 @@ export const fetchLegend = createAction(
   props<{ legendType: LegendType }>()
 );
 
-createAction(
-  '[Calculation] Fetch comparison legend',
-  props<{ comparisonTitle: string }>()
-);
+createAction('[Calculation] Fetch comparison legend', props<{ comparisonTitle: string }>());
 
 export const fetchComparisonLegend = createAction(
   '[Calculation] Fetch dynamic comparison legend',
-  props<{ maxValue: number, comparisonTitle: string }>()
+  props<{ maxValue: number; comparisonTitle: string }>()
 );
 
 export const fetchLegendSuccess = createAction(
   '[Calculation] Fetch legend success',
-  props<{ legend: Legend, legendType: LegendType }>()
+  props<{ legend: Legend; legendType: LegendType }>()
 );
 
 export const fetchComparisonLegendSuccess = createAction(
   '[Calculation] Fetch comparison legend success',
-  props<{ legend: Legend, comparisonTitle: string, maxValue: number }>()
+  props<{ legend: Legend; comparisonTitle: string; maxValue: number }>()
 );
 
-export const resetComparisonLegend = createAction(
-    '[Calculation] Reset comparison legend'
-);
+export const resetComparisonLegend = createAction('[Calculation] Reset comparison legend');
 
 export const fetchLegendFailure = createAction(
   '[Calculation] Fetch legend failure',
@@ -96,11 +92,9 @@ export const loadCalculationResultSuccess = createAction(
 export const deleteCalculation = createAction(
   '[Calculation] Delete calculation',
   props<{ calculationToBeDeleted: CalculationSlice }>()
-)
-
-export const deleteCalculationSuccess = createAction(
-  '[Calculation] Delete calculation success'
 );
+
+export const deleteCalculationSuccess = createAction('[Calculation] Delete calculation success');
 
 export const deleteCalculationFailure = createAction(
   '[Calculation] Delete calculation failure',
@@ -114,12 +108,12 @@ export const deleteMultipleCalculations = createAction(
 
 export const renameCalculation = createAction(
   '[Calculation] Rename calculation',
-  props<{ calculationId: number, newName: string }>()
+  props<{ calculationId: number; newName: string }>()
 );
 
 export const renameCalculationSuccess = createAction(
   '[Calculation] Rename calculation success',
-  props<{ calculationId: number, newName: string }>()
+  props<{ calculationId: number; newName: string }>()
 );
 
 export const renameCalculationFailure = createAction(
@@ -134,7 +128,7 @@ export const setCalculationSortType = createAction(
 
 export const updateBatchProcess = createAction(
   '[Calculation] Update batch process',
-  props<{ id: number, process: BatchCalculationProcessEntry }>()
+  props<{ id: number; process: BatchCalculationProcessEntry }>()
 );
 
 export const cancelBatchProcess = createAction(
@@ -143,8 +137,8 @@ export const cancelBatchProcess = createAction(
 );
 
 export const cancelBatchProcessSuccess = createAction(
-    '[Calculation] Cancel batch process success',
-    props<{ id: number }>()
+  '[Calculation] Cancel batch process success',
+  props<{ id: number }>()
 );
 
 export const removeFinishedBatchProcess = createAction(
@@ -169,26 +163,24 @@ export const setVisibleResultLayers = createAction(
 
 export const setReportLoadingState = createAction(
   '[Calculation] Set loading state for report',
-  props<{ calculationId: number, loadingState: boolean }>()
+  props<{ calculationId: number; loadingState: boolean }>()
 );
 
 export const generateCompoundComparison = createAction(
-    '[Calculation] Generate new compound comparison',
-    props<{ comparisonName: string, calculationIds: number[] }>()
+  '[Calculation] Generate new compound comparison',
+  props<{ comparisonName: string; calculationIds: number[] }>()
 );
 export const generateCompoundComparisonSuccess = createAction(
-    '[Calculation] Generate new compound comparison success',
-    props<{ comparisonId: number }>()
+  '[Calculation] Generate new compound comparison success',
+  props<{ comparisonId: number }>()
 );
 
 export const generateCompoundComparisonFailure = createAction(
-    '[Calculation] Generate new compound comparison failed',
-    props<{ error: ErrorMessage }>()
+  '[Calculation] Generate new compound comparison failed',
+  props<{ error: ErrorMessage }>()
 );
 
-export const fetchCompoundComparisons = createAction(
-  '[Calculation] Fetch compound comparisons'
-);
+export const fetchCompoundComparisons = createAction('[Calculation] Fetch compound comparisons');
 
 export const fetchCompoundComparisonsSuccess = createAction(
   '[Calculation] Fetch compound comparisons success',
@@ -218,4 +210,14 @@ export const deleteCompoundComparisonFailure = createAction(
 export const setCompoundComparisonSortType = createAction(
   '[Calculation] Set compound comparison sort type',
   props<SortActionProps>()
+);
+
+export const fetchPublicLegend = createAction(
+  '[Calculation] Fetch public legend',
+  props<{ legendType: LegendType }>()
+);
+
+export const fetchPublicLegendSuccess = createAction(
+  '[Calculation] Fetch public legend success',
+  props<{ legend: Legend; legendType: LegendType }>()
 );

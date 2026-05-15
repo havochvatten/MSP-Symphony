@@ -19,8 +19,8 @@ import { AppSettings } from '@src/app/app.settings';
 import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 import { Scenario, ScenarioSplitOptions } from '@data/scenario/scenario.interfaces';
-import { UserSelectors } from "@data/user";
-import { Baseline } from "@data/user/user.interfaces";
+import { UserSelectors } from '@data/user';
+import { Baseline } from '@data/user/user.interfaces';
 
 export enum NormalizationType {
   AREA = 'AREA',
@@ -31,7 +31,8 @@ export enum NormalizationType {
 }
 
 export enum CalcOperation {
-  Cumulative, RarityAdjusted,
+  Cumulative,
+  RarityAdjusted
 }
 
 export interface NormalizationOptions {
@@ -56,31 +57,38 @@ export class CalculationService implements OnDestroy {
   private aliasing = true;
 
   constructor() {
-    proj4.defs('EPSG:3035', '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs');
-    proj4.defs('ESRI:54034', '+proj=cea +lat_ts=-12 +lon_0=12 +x_0=0 +y_0=0 +datum=WGS84 +units=m' +
-      ' +no_defs');
+    proj4.defs(
+      'EPSG:3035',
+      '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs'
+    );
+    proj4.defs(
+      'ESRI:54034',
+      '+proj=cea +lat_ts=-12 +lon_0=12 +x_0=0 +y_0=0 +datum=WGS84 +units=m' + ' +no_defs'
+    );
     register(proj4);
 
     this.bandNumbersSubscription$ = this.store
       .select(MetadataSelectors.selectBandNumbers)
-      .subscribe(data => {
+      .subscribe((data) => {
         this.ecoBands = data.ecoComponent;
         this.pressureBands = data.pressureComponent;
       });
 
-    this.aliasingSubscription$ = this.store.select(UserSelectors.selectAliasing).subscribe((aliasing: boolean) => {
-      this.aliasing = aliasing;
-    });
+    this.aliasingSubscription$ = this.store
+      .select(UserSelectors.selectAliasing)
+      .subscribe((aliasing: boolean) => {
+        this.aliasing = aliasing;
+      });
   }
 
   public calculate(scenario: Scenario) {
-    return this.http.post<CalculationSlice>(env.apiBaseUrl+'/calculation/sum', scenario.id);
+    return this.http.post<CalculationSlice>(env.apiBaseUrl + '/calculation/sum', scenario.id);
   }
 
-  public getStaticImage(url:string) {
-    const params = AppSettings.CLIENT_SIDE_PROJECTION ?
-      undefined :
-      new HttpParams().set('crs', encodeURIComponent(AppSettings.MAP_PROJECTION));
+  public getStaticImage(url: string) {
+    const params = AppSettings.CLIENT_SIDE_PROJECTION
+      ? undefined
+      : new HttpParams().set('crs', encodeURIComponent(AppSettings.MAP_PROJECTION));
     return this.http.get(url, {
       responseType: 'blob',
       observe: 'response',
@@ -88,9 +96,15 @@ export class CalculationService implements OnDestroy {
     });
   }
 
-  public addComparisonResult(idA: string | null, idB: string, dynamic: boolean, max: number, reverse = false){
+  public addComparisonResult(
+    idA: string | null,
+    idB: string,
+    dynamic: boolean,
+    max: number,
+    reverse = false
+  ) {
     const endpoint = idA === null ? `diff/${idB}` : `diff/${idA}/${idB}`,
-          params = new URLSearchParams();
+      params = new URLSearchParams();
 
     if (dynamic) {
       params.append('dynamic', 'true');
@@ -114,75 +128,74 @@ export class CalculationService implements OnDestroy {
     );
   }
 
-  cmpId(a:number, b:number): number {
+  cmpId(a: number, b: number): number {
     return (a * Math.pow(2, 26) + (b & 0x3ffffff)) * -1;
   }
 
-  public addResult(id: number){
+  public addResult(id: number) {
     return this.addResultImage(id, `${id}/image`);
   }
 
   private addResultImage(id: number, epFragment: string) {
-    return firstValueFrom(this.getStaticImage(`${env.apiBaseUrl}/calculation/` + epFragment)).then(response => {
-      const extentHeader = response.headers.get('SYM-Image-Extent'),
-            dynamicMaxHeader = response.headers.get('SYM-Dynamic-Max');
-      if (extentHeader) {
-        this.resultReady$.emit({
-          url: URL.createObjectURL(response.body!),
-          calculationId: id,
-          imageExtent: JSON.parse(extentHeader),
-          projection: AppSettings.CLIENT_SIDE_PROJECTION ?
-                        AppSettings.DATALAYER_RASTER_CRS :
-                        AppSettings.MAP_PROJECTION,
-          interpolate: this.aliasing
-        });
-        return dynamicMaxHeader ? +dynamicMaxHeader : null;
+    return firstValueFrom(this.getStaticImage(`${env.apiBaseUrl}/calculation/` + epFragment))
+      .then((response) => {
+        const extentHeader = response.headers.get('SYM-Image-Extent'),
+          dynamicMaxHeader = response.headers.get('SYM-Dynamic-Max');
+        if (extentHeader) {
+          this.resultReady$.emit({
+            url: URL.createObjectURL(response.body!),
+            calculationId: id,
+            imageExtent: JSON.parse(extentHeader),
+            projection: AppSettings.CLIENT_SIDE_PROJECTION
+              ? AppSettings.DATALAYER_RASTER_CRS
+              : AppSettings.MAP_PROJECTION,
+            interpolate: this.aliasing
+          });
+          return dynamicMaxHeader ? +dynamicMaxHeader : null;
         } else {
           console.error(
             'Result image for calculation ' + id + ' does not have any extent header, ignoring.'
           );
           return null;
         }
-      }).catch((err: HttpErrorResponse) => {
+      })
+      .catch((err: HttpErrorResponse) => {
         this.store.dispatch(CalculationActions.calculationFailed());
-        throw new Error('Error fetching result image at ' +err.url);
-      }
-    )
-  }
-
-  public deleteResults(ids: number[]){
-    const that = this;
-    return new Promise<void>((resolve, reject) => {
-        this.delete(ids).subscribe({
-          next() {
-            ids.forEach((id) => {
-              that.resultRemoved$.emit(id);
-            });
-            resolve();
-          },
-          error() {
-            reject('Server error');
-          }});
+        throw new Error('Error fetching result image at ' + err.url);
       });
   }
 
+  public deleteResults(ids: number[]) {
+    const that = this;
+    return new Promise<void>((resolve, reject) => {
+      this.delete(ids).subscribe({
+        next() {
+          ids.forEach((id) => {
+            that.resultRemoved$.emit(id);
+          });
+          resolve();
+        },
+        error() {
+          reject('Server error');
+        }
+      });
+    });
+  }
+
   public queueBatchCalculation(scenarioIds: number[], splitOptions?: ScenarioSplitOptions) {
-    if(scenarioIds.length === 0)
-      return;
+    if (scenarioIds.length === 0) return;
 
-    const batchProcess = splitOptions ?
-      this.queueBatchAreaCalculation(scenarioIds[0], splitOptions) :
-      this.queueBatchScenarioCalculation(scenarioIds);
+    const batchProcess = splitOptions
+      ? this.queueBatchAreaCalculation(scenarioIds[0], splitOptions)
+      : this.queueBatchScenarioCalculation(scenarioIds);
 
-    batchProcess.pipe()
-      .subscribe({
-        next: (qbr) => {
-          if(qbr) {
-            this.store.dispatch(CalculationActions.updateBatchProcess({ id: qbr.id, process: qbr }));
-          }
+    batchProcess.pipe().subscribe({
+      next: (qbr) => {
+        if (qbr) {
+          this.store.dispatch(CalculationActions.updateBatchProcess({ id: qbr.id, process: qbr }));
         }
       }
-    );
+    });
   }
 
   public removeResultPixels(id: number) {
@@ -202,11 +215,10 @@ export class CalculationService implements OnDestroy {
   }
 
   public updateName(id: number, newName: string) {
-    return this.http.post<CalculationSlice>(`${env.apiBaseUrl}/calculation/${id}`,
-      newName,
-      {
-        headers: new HttpHeaders({ 'Content-Type': 'text/plain' }),
-        params: new HttpParams({ fromObject: { action: "update-name"}})});
+    return this.http.post<CalculationSlice>(`${env.apiBaseUrl}/calculation/${id}`, newName, {
+      headers: new HttpHeaders({ 'Content-Type': 'text/plain' }),
+      params: new HttpParams({ fromObject: { action: 'update-name' } })
+    });
   }
 
   public getLegend(type: LegendType) {
@@ -221,12 +233,19 @@ export class CalculationService implements OnDestroy {
     return this.http.get<PercentileResponse>(`${env.apiBaseUrl}/calibration/percentile-value`);
   }
 
-  public generateCompoundComparison(comparisonName: string, calculationIds: number[], baseline?: Baseline) {
-    if(baseline) {
-      return this.http.post<number>(`${env.apiBaseUrl}/calculation/multi-comparison/${baseline.name}`, {
-        ids: calculationIds,
-        name: comparisonName
-      });
+  public generateCompoundComparison(
+    comparisonName: string,
+    calculationIds: number[],
+    baseline?: Baseline
+  ) {
+    if (baseline) {
+      return this.http.post<number>(
+        `${env.apiBaseUrl}/calculation/multi-comparison/${baseline.name}`,
+        {
+          ids: calculationIds,
+          name: comparisonName
+        }
+      );
     }
     throw new Error('No baseline selected');
   }
@@ -240,12 +259,20 @@ export class CalculationService implements OnDestroy {
   }
 
   private queueBatchScenarioCalculation(scenarioIds: number[]) {
-    return this.http.post<BatchCalculationProcessEntry>(`${env.apiBaseUrl}/calculation/batch`, scenarioIds.join(), {
-      headers: new HttpHeaders({ 'Content-Type': 'text/plain' })});
+    return this.http.post<BatchCalculationProcessEntry>(
+      `${env.apiBaseUrl}/calculation/batch`,
+      scenarioIds.join(),
+      {
+        headers: new HttpHeaders({ 'Content-Type': 'text/plain' })
+      }
+    );
   }
 
   private queueBatchAreaCalculation(scenarioId: number, splitOptions: ScenarioSplitOptions) {
-    return this.http.post<BatchCalculationProcessEntry>(`${env.apiBaseUrl}/calculation/batch/areas/${scenarioId}`, splitOptions);
+    return this.http.post<BatchCalculationProcessEntry>(
+      `${env.apiBaseUrl}/calculation/batch/areas/${scenarioId}`,
+      splitOptions
+    );
   }
 
   delete(ids: number[]) {
@@ -270,6 +297,12 @@ export class CalculationService implements OnDestroy {
   }
 
   getAllCompoundComparisons() {
-    return this.http.get<CompoundComparison[]>(`${env.apiBaseUrl}/calculation/multi-comparison/all`);
+    return this.http.get<CompoundComparison[]>(
+      `${env.apiBaseUrl}/calculation/multi-comparison/all`
+    );
+  }
+
+  public getPublicLegend(type: LegendType) {
+    return this.http.get<Legend>(`${env.apiBaseUrl}/legend/public/${type}`);
   }
 }
