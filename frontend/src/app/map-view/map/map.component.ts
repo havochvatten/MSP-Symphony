@@ -139,11 +139,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       )
       .subscribe((scenario: Scenario) => {
         this.areaLayer.deselectAreas();
-
         this.scenarioLayer.clearLayers();
-
         this.scenarioLayer.setScenarioBoundary(scenario);
-
         this.zoomToExtent(this.scenarioLayer.getBoundaryFeature()!.getGeometry()!.getExtent(), 500);
       });
 
@@ -312,7 +309,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     this.userSubscription = this.store /* TOOD: Just get from static environment?*/
       .select(UserSelectors.selectBaseline)
-      .pipe(isNotNullOrUndefined())
       .pipe(isNotNullOrUndefined())
       .subscribe((baseline) => {
         this.baselineName = baseline.name;
