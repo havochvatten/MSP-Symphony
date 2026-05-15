@@ -6,6 +6,7 @@ import { MainViewComponent } from './map-view/main-view.component';
 import { PublicView } from './public-viewer/public-view/public-view.component';
 import { ComparisonReportComponent } from './report/comparison-report.component';
 import { CalculationReportComponent } from './report/calculation-report.component';
+import { PublicGuard } from './login/public.guard';
 
 const routes: Routes = [
   {
@@ -22,6 +23,7 @@ const routes: Routes = [
   {
     path: 'public',
     component: PublicView,
+    canActivate: [PublicGuard],
     data: { headerTitle: 'Symphony' }
   },
   {

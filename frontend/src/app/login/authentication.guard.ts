@@ -9,9 +9,8 @@ import { tap, take, switchMap, catchError } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthenticationGuard  {
+export class AuthenticationGuard {
   private readonly store = inject<Store<State>>(Store);
-
 
   getFromStoreOrAPI(): Observable<unknown> {
     return this.store.select(UserSelectors.selectIsLoggedIn).pipe(
