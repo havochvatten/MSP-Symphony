@@ -13,6 +13,7 @@ import { initialState as user } from '@data/user/user.reducers';
 import { MatRadioModule } from "@angular/material/radio";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { provideZonelessChangeDetection } from "@angular/core";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 describe('ComparisonComponent', () => {
   let fixture: ComponentFixture<ComparisonComponent>,
@@ -24,6 +25,7 @@ describe('ComparisonComponent', () => {
         MatSelectModule,
         MatRadioModule,
         MatCheckboxModule,
+        MatProgressSpinnerModule,
         StoreModule.forRoot({},{}),
         TranslateModule.forRoot()
       ],

@@ -5,7 +5,7 @@ import { Observable, Subscription } from 'rxjs';
 import { UserActions, UserSelectors } from '@data/user';
 import { environment } from '@src/environments/environment.prod';
 import { State } from '@src/app/app-reducer';
-import { BrandingService } from '../core/branding/branding.service';
+import { BrandingService } from '@src/app/core/branding/branding.service';
 import buildInfo from '@src/build-info';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     // Only shows the spinner, no navigation here
     this.loading = this.store
       .select(UserSelectors.selectIsInitialLoading)
-      .pipe(debounceTime(0), distinctUntilChanged());
+      .pipe(debounceTime(1000), distinctUntilChanged());
   }
 
   ngOnDestroy() {

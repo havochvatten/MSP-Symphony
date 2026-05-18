@@ -4,19 +4,17 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '@src/environments/environment';
 
 export interface BrandingConfig {
-  appTitle: string;
-  flagAlt: string;
-  flagSrc: string;
-  footerText: string;
-  loginLogoAlt: string;
-  loginLogoSrc: string;
-  logoAlt: string;
-  logoSrc: string;
-  orgName: string;
-  reportCountryLogoAlt: string;
-  reportCountryLogoSrc: string;
-  reportLogoAlt: string;
-  reportLogoSrc: string;
+  flagAlt?: string;
+  flagSrc?: string;
+  footerTextTranslationKey?: string;
+  loginLogoAlt?: string;
+  loginLogoSrc?: string;
+  logoAlt?: string;
+  logoSrc?: string;
+  reportCountryLogoAlt?: string;
+  reportCountryLogoSrc?: string;
+  reportLogoAlt?: string;
+  reportLogoSrc?: string;
   showLogos: boolean;
   showReportClosingMatter: boolean;
 }
@@ -26,19 +24,17 @@ export class BrandingService {
   private http = inject(HttpClient);
 
   private config: BrandingConfig = {
-    appTitle: 'Symphony – Ecosystem-based Marine Spatial Planning',
-    flagAlt: '',
-    flagSrc: '',
-    footerText: 'Powered by Symphony',
-    loginLogoAlt: 'Symphony',
-    loginLogoSrc: '',
+    flagAlt: undefined,
+    flagSrc: undefined,
+    footerTextTranslationKey: undefined,
+    loginLogoAlt: undefined,
+    loginLogoSrc: 'assets/long-tailed-duck.svg',
     logoAlt: 'Symphony',
-    logoSrc: '',
-    orgName: 'Symphony',
-    reportCountryLogoAlt: '',
-    reportCountryLogoSrc: '',
-    reportLogoAlt: 'Symphony',
-    reportLogoSrc: '',
+    logoSrc: undefined,
+    reportCountryLogoAlt: undefined,
+    reportCountryLogoSrc: undefined,
+    reportLogoAlt: undefined,
+    reportLogoSrc: undefined,
     showLogos: false,
     showReportClosingMatter: false,
   };

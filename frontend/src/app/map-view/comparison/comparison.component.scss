@@ -93,9 +93,22 @@
   .toolbar {
     padding-top: 1rem;
     display: flex;
-    flex-direction: row;
     justify-content: center;
     border-top: 1px solid #dfe0e4;
+  }
+
+  .compare-button {
+    position: relative;
+  }
+
+  .button-text.hidden {
+    visibility: hidden;
+  }
+
+  .button-spinner {
+    position: absolute;
+    inset: 0;
+    margin: auto;
   }
 }
 

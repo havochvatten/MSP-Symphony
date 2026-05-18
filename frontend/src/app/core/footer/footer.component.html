@@ -1,3 +1,5 @@
-<footer>
-  {{ 'branding.SwAM' | translate }}
-</footer>
+@if (brandingService.configData.footerTextTranslationKey) {
+  <footer>
+    {{ brandingService.configData.footerTextTranslationKey | translate }}
+  </footer>
+}

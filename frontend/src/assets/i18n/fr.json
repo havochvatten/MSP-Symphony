@@ -717,8 +717,7 @@
         "error-message": "Une erreur est survenue. Aucun rapport n'a pu être produit. Veuillez vérifier les paramètres et réessayer."
     },
     "branding": {
-        "SwAM": "Agence Suédoise pour la Gestion de l'Eau et des Zones Maritimes (Havs och Vattenmyndigheten)",
-        "SI-Sweden": "Suède"
+        "SwAM": "Agence Suédoise pour la Gestion de l'Eau et des Zones Maritimes (Havs och Vattenmyndigheten)"
     },
     "api-messages": {
         "areas": {
