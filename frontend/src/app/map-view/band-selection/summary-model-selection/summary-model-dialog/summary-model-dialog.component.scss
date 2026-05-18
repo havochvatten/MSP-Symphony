@@ -1,3 +1,5 @@
+@use 'src/styles/hav-colors' as colors;
+
 :host {
   display: flex;
   flex-direction: column;
@@ -11,7 +13,7 @@
     font-size: 2.8rem;
 
     &:hover {
-      background: #e0e0e0;
+      background: colors.$hav-darkcoldgrey;
     }
   }
 }
@@ -21,8 +23,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem 1.5rem 1rem;
-  border-bottom: 1px solid #e0e0e0;
-  background: #f8f9fa;
+  border-bottom: 1px solid colors.$hav-darkcoldgrey;
+  background: colors.$lighter-gray;
   border-radius: 8px 8px 0 0;
 }
 
@@ -36,10 +38,10 @@
   flex: 1;
   max-height: unset;
   padding: 1.5rem;
-  background: #ffffff;
+  background: colors.$hav-map-white;
   border-radius: 0 0 8px 8px;
   overflow-y: auto;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(colors.$hav-map-black, 0.08);
   display: block;
 }
 
@@ -51,23 +53,23 @@
 .step {
   margin-bottom: 1.25rem;
   padding: 1.1rem 1.25rem;
-  background: #f8f9fa;
-  border: 1px solid #000000;
+  background: colors.$lighter-gray;
+  border: 1px solid colors.$hav-map-black;
   max-width: 100%;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 5px rgba(colors.$hav-map-black, 0.06);
   transition: background-color 400ms ease, box-shadow 400ms ease, transform 200ms ease;
 }
 
 .step.part-of-output {
-  border-left: 6px solid #005f88;
+  border-left: 6px solid colors.$hav-turquoise;
 }
 
 .step.output {
-  background: #185FA5;
+  background: colors.$dark-blue;
 }
 
 .step.highlight {
-  background-color: rgb(217 237 255);
+  background-color: colors.$hav-lightblue;
   transform: scale(1.01);
 }
 
@@ -81,27 +83,27 @@
 .step-number {
   display: inline-block;
   font-weight: 600;
-  color: #005f88;
+  color: colors.$hav-turquoise;
   font-size: 1.5rem;
   margin-right: 0.5rem;
 }
 
 .step.output .formula {
-  color: #ffffff;
+  color: colors.$hav-map-white;
 }
 
 .step.output .formula-badge {
-  background: rgba(255, 255, 255, 0.15);
-  color: #e3f2fd;
+  background: rgba(colors.$hav-map-white, 0.15);
+  color: colors.$hav-lightblue;
 }
 
 .step.output .formula-link:hover .formula-badge {
-  background: rgba(255, 255, 255, 0.28);
+  background: rgba(colors.$hav-map-white, 0.28);
 }
 
 .step.output .normalization {
-  background: rgba(255, 255, 255, 0.12);
-  color: #e3f2fd;
+  background: rgba(colors.$hav-map-white, 0.12);
+  color: colors.$hav-lightblue;
 }
 
 .formula {
@@ -127,7 +129,7 @@
   font: inherit;
 
   &:hover .formula-badge {
-    background: #B5D4F4;
+    background: colors.$hav-lightblue;
   }
 }
 
@@ -137,8 +139,8 @@
   justify-content: center;
   width: 18px;
   height: 18px;
-  background: #e3f2fd;
-  color: #0C447C;
+  background: colors.$hav-lightblue;
+  color: colors.$hav-blue;
   border-radius: 50%;
   font-size: 1.4rem;
   font-weight: 500;
@@ -147,9 +149,9 @@
 
 .normalization {
   font-size: 1.3rem;
-  color: #2b2b2b;
+  color: colors.$hav-black;
   font-style: italic;
-  background: #e3f2fd;
+  background: colors.$hav-lightblue;
   padding: 3px 10px;
   border-radius: 4px;
   display: inline-block;

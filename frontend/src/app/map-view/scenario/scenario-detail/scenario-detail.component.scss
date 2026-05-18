@@ -44,7 +44,7 @@ $buttons-row-gap: 1rem;
         font-size: 2.6rem;
         font-weight: normal;
         line-height: 3.2rem;
-        color: rgba(0, 0, 0, 0.87);
+        color: colors.$hav-text-primary;
 
         position: relative;
         /* Compensate for padding (and border?) */
