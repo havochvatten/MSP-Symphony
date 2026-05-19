@@ -3,12 +3,12 @@ import { provideMockStore } from '@ngrx/store/testing';
 
 import { PublicMapComponent } from './public-map.component';
 import { MapToolbarComponent } from '@src/app/map-view/map/map-toolbar/map-toolbar.component';
-import { MapOpacitySliderComponent } from './map-opacity-slider/map-opacity-slider.component';
+import { MapOpacitySliderComponent } from '@src/app/map-view/map/map-opacity-slider/map-opacity-slider.component';
 import { CoreModule } from '@src/app/core/core.module';
 import {
   ToolbarButtonComponent,
   ToolbarZoomButtonsComponent
-} from './toolbar-button/toolbar-button.component';
+} from '@src/app/map-view/map/toolbar-button/toolbar-button.component';
 import { SharedModule } from '@shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
@@ -17,6 +17,7 @@ import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { ChangeState, ScenarioLayer } from '@src/app/map-view/map/layers/scenario-layer';
 import { BandChange } from '@data/metadata/metadata.interfaces';
 import { provideZonelessChangeDetection } from '@angular/core';
+import { from } from 'rxjs';
 
 describe('PublicMapComponent', () => {
   let fixture: ComponentFixture<PublicMapComponent>, component: PublicMapComponent;
