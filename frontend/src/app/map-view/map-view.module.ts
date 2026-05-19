@@ -94,7 +94,9 @@ import { ScenarioEditorComponent } from './scenario/scenario-editor.component';
     MapToolbarComponent,
     AreaSelectionComponent,
     ScenarioEditorComponent,
-    CalculationHistoryComponent
+    CalculationHistoryComponent,
+    MapOpacitySliderComponent,
+    ToolbarButtonComponent
   ]
 })
 export class MapViewModule {}
