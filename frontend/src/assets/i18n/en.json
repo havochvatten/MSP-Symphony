@@ -596,7 +596,7 @@
         "support": "Support",
         "profile": "My profile",
         "change-language": "Change language",
-        "change-baseline": "Change baseline",
+        "change-baseline": "Switch baseline",
         "logout": "Log out"
     },
     "about-dialog": {
@@ -625,10 +625,10 @@
         }
     },
     "change-baseline-modal": {
-        "header": "Change baseline",
-        "notice": "Changing the baseline will clear your selected layers, filters, and temporary calculations.",
+        "header": "Switch baseline",
+        "notice": "Switching the baseline will clear your selected layers and filter settings. Your saved scenarios and calculation results are linked to the current baseline.",
         "apply": "Apply",
-        "error": "Failed to change baseline. Please try again."
+        "error": "An error occurred while trying to switch the baseline"
     },
     "report": {
         "calculation": {

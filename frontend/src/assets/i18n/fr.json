@@ -626,9 +626,9 @@
     },
     "change-baseline-modal": {
         "header": "Changer la base de référence",
-        "notice": "Changer la base de référence effacera vos couches sélectionnées, filtres et calculs temporaires.",
+        "notice": "Changer la base de référence effacera vos couches sélectionnées et vos paramètres de filtres. Vos scénarios enregistrés et résultats de calcul sont liés à la base de référence actuelle.",
         "apply": "Appliquer",
-        "error": "Impossible de changer la base de référence. Veuillez réessayer."
+        "error": "Une erreur s'est produite lors de la tentative de changer la base de référence"
     },
     "report": {
         "calculation": {

@@ -596,7 +596,7 @@
         "support": "Support",
         "profile": "Min profil",
         "change-language": "Ändra språk",
-        "change-baseline": "Ändra basvärde",
+        "change-baseline": "Byt baseline",
         "logout": "Logga ut"
     },
     "about-dialog": {
@@ -625,10 +625,10 @@
         }
     },
     "change-baseline-modal": {
-        "header": "Ändra basvärde",
-        "notice": "Att ändra basvärde rensar dina valda lager, filter och tillfälliga beräkningar.",
+        "header": "Byt baseline",
+        "notice": "Att byta baseline rensar dina valda lager och filter-inställningar. Dina sparade scenarier och beräkningsresultat är knutna till aktuell baseline.",
         "apply": "Verkställ",
-        "error": "Det gick inte att ändra basvärde. Försök igen."
+        "error": "Ett fel inträffade vid försöket att byta baseline"
     },
     "report": {
         "calculation": {
