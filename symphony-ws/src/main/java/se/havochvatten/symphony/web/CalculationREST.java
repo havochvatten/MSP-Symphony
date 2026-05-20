@@ -42,6 +42,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -218,7 +219,8 @@ public class CalculationREST {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Gets all previous computations for the user")
     @RolesAllowed("GRP_SYMPHONY")
-    public List<CalculationResultSlice> getAllCalculations(@Context HttpServletRequest req) {
+    public List<CalculationResultSlice> getAllCalculations(@Context HttpServletRequest req)
+            throws SymphonyStandardAppException, IOException {
         if (req.getUserPrincipal() == null)
             throw new NotAuthorizedException(noPrincipalStr);
         else
@@ -585,7 +587,7 @@ public class CalculationREST {
         try {
             List<CompoundComparisonSlice> comparisons = calcService.getCompoundComparisons(principal);
             return ok(comparisons).build();
-        } catch (SymphonyStandardSystemException sx) {
+        } catch (SymphonyStandardSystemException | SymphonyStandardAppException | IOException sx) {
             return status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }

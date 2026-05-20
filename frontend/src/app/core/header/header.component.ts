@@ -1,8 +1,11 @@
-import { Component, Input, OnInit, NgModuleRef, inject } from '@angular/core';
+import { Component, DestroyRef, Input, OnInit, NgModuleRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Store } from '@ngrx/store';
 import {
   faInfoCircle,
-  faDoorClosed, IconDefinition
+  faDoorClosed,
+  faLayerGroup,
+  IconDefinition
 } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 import { trigger, style, transition, animate, keyframes } from '@angular/animations';
@@ -14,12 +17,12 @@ import { MenuItem } from '@shared/menu/menu.component';
 import { IconType } from '@shared/icon/icon.component';
 import { DialogService } from "@shared/dialog/dialog.service";
 import { AboutDialogComponent } from "@src/app/core/about/about-dialog.component";
-import { User } from "@data/user/user.interfaces";
+import { Baseline, User } from "@data/user/user.interfaces";
 import { ChangeLanguageDialogComponent } from "@shared/change-language-dialog/change-language-dialog.component";
+import { ChangeBaselineDialogComponent } from "@shared/change-baseline-dialog/change-baseline-dialog.component";
 import { CoreModule } from "@src/app/core/core.module";
 import { BrandingService } from '@src/app/core/branding/branding.service';
 
-type MenuId = 'main' | 'user';
 type OpenState = 'MAIN' | 'USER' | 'NONE';
 
 @Component({
@@ -50,66 +53,55 @@ export class HeaderComponent implements OnInit {
   private readonly store = inject<Store<State>>(Store);
   private readonly dialogService = inject(DialogService);
   private readonly moduleRef = inject(NgModuleRef<CoreModule>);
+  private readonly destroyRef = inject(DestroyRef);
 
   @Input() title: string | undefined;
   menuIcon: IconType = 'menu';
   openState: OpenState = 'NONE';
   userMenuItems?: MenuItem[];
-  bothAnimationsAreInProgress = false;
-  animationState: Map<MenuId, boolean> = new Map<MenuId, boolean>([
-    ['main', false],
-    ['user', false],
-  ]);
   user$: Observable<User | undefined>;
+  baseline$: Observable<Baseline | undefined>;
 
   constructor() {
     this.user$ = this.store.select(UserSelectors.selectUser);
+    this.baseline$ = this.store.select(UserSelectors.selectBaseline);
   }
 
   ngOnInit() {
     if (this.title === undefined) {
       throw new Error('Input property `title` is required.');
     }
-    this.userMenuItems = [
-      {
-        name: 'user-menu.change-language',
-        icon: gmGlobe,
-        click: () => this.changeLanguage(),
-      },
-      {
-        name: 'user-menu.about',
-        icon: faInfoCircle,
-        click: this.about,
-      },
-      {
-        name: 'user-menu.logout',
-        icon: faDoorClosed,
-        click: this.logout,
-      },
-    ];
+    this.store.select(UserSelectors.selectAvailableBaselines).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(baselines => this.buildUserMenu(baselines));
+  }
 
+  private buildUserMenu(baselines: Baseline[]) {
+    const items: MenuItem[] = [];
     if (environment.externManual) {
-      this.userMenuItems.splice(0, 0, {
-        name: 'user-menu.support',
-        icon: gmHelpCircle,
-        click: this.openManual,
-      });
+      items.push({ name: 'user-menu.support', icon: gmHelpCircle, click: this.openManual });
     }
+    items.push({ name: 'user-menu.change-language', icon: gmGlobe, click: () => this.changeLanguage() });
+    if (baselines.length > 1) {
+      items.push({ name: 'user-menu.change-baseline', icon: faLayerGroup, click: () => this.changeBaseline() });
+    }
+    items.push({ name: 'user-menu.about', icon: faInfoCircle, click: this.about });
+    items.push({ name: 'user-menu.logout', icon: faDoorClosed, click: this.logout });
+    this.userMenuItems = items;
   }
 
   toggleOpenMenu = (newState: OpenState) => {
     this.openState = newState !== this.openState ? newState : 'NONE';
   };
 
-  onAnimationStateChange = (menuId: MenuId) => {
-    this.animationState.set(menuId, !this.animationState.get(menuId));
-    this.bothAnimationsAreInProgress =
-      !!this.animationState.get('user') && !!this.animationState.get('main');
-  };
-
   onMenuNavigation = () => {
     this.openState = 'NONE';
   };
+
+  async changeBaseline() {
+    await this.dialogService.open(ChangeBaselineDialogComponent, this.moduleRef, {});
+    setTimeout(() => this.toggleOpenMenu('NONE'));
+  }
 
   async changeLanguage() {
     const locale: string | undefined = await this.dialogService.open(
@@ -119,8 +111,8 @@ export class HeaderComponent implements OnInit {
     );
     if (locale) {
       this.store.dispatch(UserActions.updateUserSettings({ locale: locale }));
-      this.toggleOpenMenu('NONE');
     }
+    setTimeout(() => this.toggleOpenMenu('NONE'));
   }
 
   about = () => {

@@ -17,7 +17,7 @@ describe('HeaderComponent', () => {
       imports: [SharedModule, StoreModule.forRoot({}, {}), TranslateModule.forRoot()],
       declarations: [HeaderComponent, UserMenuToggleComponent],
       providers: [provideMockStore({
-        initialState : { user: { baseline: undefined } }
+        initialState : { user: { baseline: undefined, availableBaselines: [] } }
         }),
         TranslateService,
         provideZonelessChangeDetection()

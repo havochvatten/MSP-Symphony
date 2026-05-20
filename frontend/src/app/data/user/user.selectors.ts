@@ -28,6 +28,11 @@ export const selectLoginError = createSelector(selectErrorMessage, (error) =>
 
 export const selectBaseline = createSelector(selectUserState, (state: State) => state.baseline);
 
+export const selectAvailableBaselines = createSelector(
+  selectUserState,
+  (state: State) => state.availableBaselines ?? []
+);
+
 export const selectAliasing = createSelector(selectUserState, (state: State) => state.aliasing);
 
 export const selectIsInitialLoading = createSelector(

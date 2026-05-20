@@ -596,6 +596,7 @@
         "support": "Support",
         "profile": "Min profil",
         "change-language": "Ändra språk",
+        "change-baseline": "Byt baseline",
         "logout": "Logga ut"
     },
     "about-dialog": {
@@ -622,6 +623,12 @@
             "sv": "Svenska",
             "fr": "Franska"
         }
+    },
+    "change-baseline-modal": {
+        "header": "Byt baseline",
+        "notice": "Att byta baseline rensar dina valda lager och filter-inställningar. Dina sparade scenarier och beräkningsresultat är knutna till aktuell baseline.",
+        "apply": "Verkställ",
+        "error": "Ett fel inträffade vid försöket att byta baseline"
     },
     "report": {
         "calculation": {

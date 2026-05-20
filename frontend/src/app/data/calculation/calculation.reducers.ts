@@ -1,6 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import { setIn } from 'immutable';
 import { CalculationActions, CalculationInterfaces } from './';
+import { UserActions } from '@data/user';
 import { Legend } from '@data/calculation/calculation.interfaces';
 import { ListItemsSort } from '@data/common/sorting.interfaces';
 
@@ -177,6 +178,17 @@ export const calculationReducer = createReducer(
   on(CalculationActions.fetchLegendSuccess, CalculationActions.fetchLegendFailure, (state) => ({
     ...state,
     loadingLegends: false
+  })),
+  on(UserActions.activeBaselineChanged, (state) => ({
+    ...state,
+    calculations: [],
+    batchProcesses: [],
+    compoundComparisons: [],
+    visibleResults: [],
+    loadingResults: [],
+    loadingReports: [],
+    generatingComparisonsFor: [],
+    compoundComparisonSuccessCount: 0
   }))
 );
 

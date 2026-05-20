@@ -72,6 +72,12 @@ public class ScenarioService {
     @EJB
     private CalculationAreaService calculationAreaService;
 
+    @EJB
+    private UserService userService;
+
+    @EJB
+    private BaselineVersionService baselineVersionService;
+
     public Scenario findById(int id) {
         return em.find(Scenario.class, id); // null if not found
     }
@@ -82,8 +88,12 @@ public class ScenarioService {
 
     public List<ScenarioDto> findAllByOwner(Principal principal) {
         try {
-            return em.createNamedQuery("Scenario.findAllByOwner", ScenarioDto.class)
+            int baselineId = baselineVersionService
+                    .getActiveBaselineVersionForUser(userService.getUser(principal))
+                    .getId();
+            return em.createNamedQuery("Scenario.findAllByOwnerAndBaseline", ScenarioDto.class)
                 .setParameter("owner", principal.getName())
+                .setParameter("baselineId", baselineId)
                 .getResultList().stream().filter(s -> s.id != null)
                 .sorted(Comparator.<ScenarioDto>comparingInt(s -> s.id).reversed()).toList();
         } catch (Exception e) {

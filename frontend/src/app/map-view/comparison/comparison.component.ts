@@ -1,14 +1,15 @@
-import { AfterViewInit, Component, NgModuleRef, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, NgModuleRef, OnDestroy, ViewChild, inject } from '@angular/core';
 import { Store } from "@ngrx/store";
 import { State } from '@src/app/app-reducer';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { CalculationSlice } from '@data/calculation/calculation.interfaces';
 import { CalculationActions, CalculationSelectors } from '@data/calculation';
+import { UserSelectors } from '@data/user';
 import { FormBuilder, Validators } from '@angular/forms'; //ValidationErrors, ValidatorFn
 import { DialogService } from '@shared/dialog/dialog.service';
 import { ComparisonReportModalComponent } from '@shared/report-modal/comparison-report-modal.component';
 import { CalculationService } from '@data/calculation/calculation.service';
-import { map, tap } from 'rxjs/operators';
+import { map, skip, tap } from 'rxjs/operators';
 import { TranslateService } from "@ngx-translate/core";
 import { MatSelect } from "@angular/material/select";
 import { MatOption } from "@angular/material/core";
@@ -24,7 +25,7 @@ enum ComparisonScaleOptions { CONSTANT, DYNAMIC }
   styleUrls: ['./comparison.component.scss'],
   standalone: false
 })
-export class ComparisonComponent implements AfterViewInit {
+export class ComparisonComponent implements AfterViewInit, OnDestroy {
   private readonly store = inject<Store<State>>(Store);
   private readonly dialogService = inject(DialogService);
   private readonly calcService = inject(CalculationService);
@@ -47,14 +48,38 @@ export class ComparisonComponent implements AfterViewInit {
   includeUnchanged = false;
   reverseComparison = false;
   computingComparisonResult = false;
+  private baselineSubscription?: Subscription;
 
   constructor() {
     this.calculations$ = this.store.select(CalculationSelectors.selectCalculations);
     this.candidates$ = this.store.select(CalculationSelectors.selectChangedCalculations);
+
+    this.baselineSubscription = this.store.select(UserSelectors.selectBaseline)
+      .pipe(skip(1))
+      .subscribe(() => this.resetForBaselineSwitch());
   }
 
   ngAfterViewInit(): void {
     this.bSelect.disabled = !this.useImplicit;
+  }
+
+  ngOnDestroy(): void {
+    this.baselineSubscription?.unsubscribe();
+  }
+
+  private resetForBaselineSwitch() {
+    this.useImplicit = true;
+    this.includeUnchanged = false;
+    this.candidates$ = this.store.select(CalculationSelectors.selectChangedCalculations);
+    this.compareForm.controls.b.reset();
+    if (this.aSelect) {
+      this.aSelect.value = null;
+    }
+    if (this.bSelect) {
+      this.bSelect.value = null;
+      this.bSelect.disabled = false;
+    }
+    this.loadingCandidates = false;
   }
 
   submit() {

@@ -1,0 +1,96 @@
+@use 'src/styles/hav-colors' as colors;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  width: 44rem;
+  padding: 0 2.4rem 2rem;
+  border-radius: 1rem;
+
+  h4 {
+    margin: 3rem 0 1rem;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: colors.$hav-black;
+  }
+
+  .baseline-options {
+    display: flex;
+    flex-direction: column;
+    margin-top: 2rem;
+    gap: 0.8rem;
+    max-height: calc(80vh - 12rem);
+    overflow-y: auto;
+
+    .baseline-option {
+      display: flex;
+      align-items: center;
+      gap: 1.6rem;
+      padding: 1.2rem 1.6rem;
+      border: 1px solid colors.$hav-map-grey;
+      border-radius: 0.6rem;
+      cursor: pointer;
+      transition: border-color 0.15s;
+
+      &.active,
+      &:hover {
+        border-color: colors.$hav-blue;
+      }
+
+      .baseline-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+
+        .baseline-name {
+          font-size: 1.6rem;
+          font-weight: 700;
+          color: colors.$hav-black;
+        }
+
+        .baseline-description {
+          font-size: 1.4rem;
+          color: colors.$hav-darkergrey;
+        }
+      }
+    }
+  }
+
+  .notice {
+    margin-top: 2rem;
+    padding: 1.2rem 1.6rem;
+    background-color: colors.$hav-lightyellow;
+    border-radius: 0.6rem;
+    font-size: 1.4rem;
+    color: colors.$hav-black;
+  }
+
+  .error-banner {
+    margin-top: 1.2rem;
+    padding: 1rem 1.6rem;
+    background-color: colors.$alert-disabled-bg-red;
+    border-radius: 0.6rem;
+    font-size: 1.4rem;
+    color: colors.$red;
+  }
+
+  .button-pane {
+    margin-top: 2.4rem;
+
+    .apply-button {
+      position: relative;
+    }
+
+    .button-text.hidden {
+      visibility: hidden;
+    }
+
+    .button-spinner {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+    }
+  }
+}
