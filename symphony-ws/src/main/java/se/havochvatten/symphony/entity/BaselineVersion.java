@@ -63,6 +63,9 @@ public class BaselineVersion implements Serializable {
     @Column(name = "bver_presfilepath")
     String pressuresFilePath;
 
+    @Column(name = "bver_title", length = Integer.MAX_VALUE)
+    private String title;
+
     public BaselineVersion() {}
 
     public Integer getId() {
@@ -150,5 +153,13 @@ public class BaselineVersion implements Serializable {
 
     public void setLocale(String locale) {
         this.locale = locale;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String bverTitle) {
+        this.title = bverTitle;
     }
 }

@@ -10,7 +10,7 @@
       [alt]="brandingService.configData.flagAlt"/>
   }
   @if (baseline$ | async; as baseline) {
-    <span class="baseline-badge">{{ baseline.name }}</span>
+    <span class="baseline-badge">{{ baseline.title || baseline.name }}</span>
   }
   <app-user-menu-toggle [user]="user$ | async" (click)="toggleOpenMenu('USER')"></app-user-menu-toggle>
 </div>
