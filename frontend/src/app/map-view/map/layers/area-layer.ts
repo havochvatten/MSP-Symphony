@@ -352,7 +352,11 @@ class AreaLayer extends VectorLayer<VectorSource<Feature>> {
       features: geo
     });
 
-    return this.zoomToExtent(newSource.getExtent(), 1000);
+    const newExtent = newSource.getExtent();
+
+    if (newExtent) {
+      this.zoomToExtent(newExtent, 1000);
+    }
   }
 
   toggleDrawInteraction(): boolean {
