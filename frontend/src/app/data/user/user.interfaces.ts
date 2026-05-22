@@ -29,4 +29,5 @@ export interface Baseline {
   description: string;
   locale: string;
   validFrom: number; // datetime
+  title: string | null;
 }

@@ -8,6 +8,7 @@ public class BaselineVersionDto {
     private String description;
     private String locale;
     private Date validFrom;
+    private String title;
 
     public Integer getId() {
         return id;
@@ -47,5 +48,13 @@ public class BaselineVersionDto {
 
     public void setLocale(String locale) {
         this.locale = locale;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

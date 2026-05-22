@@ -15,6 +15,7 @@ public class BaselineVersionDtoMapper {
         dto.setDescription(baselineVersion.getDescription());
         dto.setLocale(baselineVersion.getLocale());
         dto.setValidFrom(baselineVersion.getValidFrom());
+        dto.setTitle(baselineVersion.getTitle());
         return dto;
     }
 

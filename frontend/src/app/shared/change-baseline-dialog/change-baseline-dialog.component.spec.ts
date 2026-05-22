@@ -69,7 +69,7 @@ describe('ChangeBaselineDialogComponent', () => {
     expect(component.loading).toBe(true);
     expect(dispatchSpy).toHaveBeenCalledWith(UserActions.updateUserSettings({ activeBaselineId: 2 }));
 
-    actions$.next(UserActions.activeBaselineChanged({ baseline: { id: 2, name: 'B', description: '', locale: 'sv', validFrom: 0 } }));
+    actions$.next(UserActions.activeBaselineChanged({ baseline: { id: 2, name: 'B', description: '', locale: 'sv', validFrom: 0, title: 'Some baseline' } }));
 
     expect(component.loading).toBe(false);
     expect(dialogRef.close).toHaveBeenCalled();
