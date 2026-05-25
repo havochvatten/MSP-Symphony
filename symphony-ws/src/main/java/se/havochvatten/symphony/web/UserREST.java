@@ -223,6 +223,12 @@ public class UserREST {
             userService.updateUserSettings(req.getUserPrincipal(), settings);
             return Response.ok().build();
         } catch (SymphonyStandardAppException e) {
+            if (e.getErrorCode() == SymphonyModelErrorCode.BASELINE_VERSION_NOT_FOUND) {
+                return Response.status(Response.Status.NOT_FOUND).entity(e).build();
+            }
+            if (e.getErrorCode() == SymphonyModelErrorCode.OTHER_ERROR) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
+            }
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
     }

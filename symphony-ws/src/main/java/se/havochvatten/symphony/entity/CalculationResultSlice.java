@@ -35,6 +35,9 @@ import java.util.Date;
 @NamedQuery(name = "CalculationResultSlice.findAllByOwner",
     query = "SELECT c FROM CalculationResultSlice c WHERE c.owner = :owner " +
             "ORDER BY c.timestamp DESC")
+@NamedQuery(name = "CalculationResultSlice.findAllByOwnerAndBaseline",
+    query = "SELECT c FROM CalculationResultSlice c WHERE c.owner = :owner " +
+            "AND c.baselineversionId = :baselineId ORDER BY c.timestamp DESC")
 @Table(name = "calculationresultslice", schema = "symphony")
 public class CalculationResultSlice {
     @Id

@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Baseline, User } from './user.interfaces';
+import { Baseline, User, UserSettings } from './user.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
 
 export const fetchUser = createAction('[User] Fetch user');
@@ -44,6 +44,18 @@ export const logoutUserFailure = createAction(
 
 export const fetchBaseline = createAction('[User] Fetch baseline');
 
+export const fetchAvailableBaselines = createAction('[User] Fetch available baselines');
+
+export const fetchAvailableBaselinesSuccess = createAction(
+  '[User] Fetch available baselines success',
+  props<{ baselines: Baseline[] }>()
+);
+
+export const fetchAvailableBaselinesFailure = createAction(
+  '[User] Fetch available baselines failure',
+  props<{ error: ErrorMessage }>()
+);
+
 export const fetchBaselineSuccess = createAction(
   '[User] Fetch baseline success',
   props<{ baseline: Baseline }>()
@@ -61,7 +73,12 @@ export const updateRedirectUrl = createAction(
 
 export const updateUserSettings = createAction(
   '[User] Update user settings',
-  props<{ aliasing?: boolean; locale?: string }>()
+  props<Partial<UserSettings>>()
+);
+
+export const activeBaselineChanged = createAction(
+  '[User] Active baseline changed',
+  props<{ baseline: Baseline }>()
 );
 
 export const navigateTo = createAction('[User] Navigate to', props<{ url: string }>());

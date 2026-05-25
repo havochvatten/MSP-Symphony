@@ -41,11 +41,13 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatRadioModule } from "@angular/material/radio";
 import { MatInputModule } from "@angular/material/input";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ListFilterComponent } from './list-filter/list-filter.component';
 import { MultiToolsComponent } from './multi-tools/multi-tools.component';
 import { MultiActionButtonComponent } from '@shared/multi-action-button/multi-action-button.component';
 import { RenameItemModalComponent} from "@shared/rename-item-modal/rename-item-modal.component";
 import { ChangeLanguageDialogComponent } from './change-language-dialog/change-language-dialog.component';
+import { ChangeBaselineDialogComponent } from './change-baseline-dialog/change-baseline-dialog.component';
 
 @NgModule({
   declarations: [
@@ -89,7 +91,8 @@ import { ChangeLanguageDialogComponent } from './change-language-dialog/change-l
     MultiToolsComponent,
     MultiActionButtonComponent,
     RenameItemModalComponent,
-    ChangeLanguageDialogComponent
+    ChangeLanguageDialogComponent,
+    ChangeBaselineDialogComponent
   ],
     imports: [
         CommonModule,
@@ -101,6 +104,7 @@ import { ChangeLanguageDialogComponent } from './change-language-dialog/change-l
         MatCheckboxModule,
         MatRadioModule,
         MatInputModule,
+        MatProgressSpinnerModule,
         FormsModule
     ],
   exports: [

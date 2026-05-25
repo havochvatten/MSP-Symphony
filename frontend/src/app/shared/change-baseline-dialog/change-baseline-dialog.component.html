@@ -1,0 +1,40 @@
+<h4>{{ 'change-baseline-modal.header' | translate }}</h4>
+<div class="baseline-options">
+  @for (baseline of availableBaselines; track baseline.id) {
+    <div
+      class="baseline-option"
+      [ngClass]="{ active: baseline.id === selectedBaselineId }"
+      (click)="selectedBaselineId = baseline.id"
+      tabindex="0"
+    >
+      <div class="baseline-info">
+        <span class="baseline-name">{{ baseline.title || baseline.name }}</span>
+        <span class="baseline-description">{{ baseline.description }}</span>
+      </div>
+      <mat-radio-button
+        [value]="baseline.id"
+        [checked]="baseline.id === selectedBaselineId"
+        (change)="selectedBaselineId = baseline.id">
+      </mat-radio-button>
+    </div>
+  }
+</div>
+<div class="notice">
+  {{ 'change-baseline-modal.notice' | translate }}
+</div>
+@if (error) {
+  <div class="error-banner">{{ error }}</div>
+}
+<div class="button-pane right">
+  <button mat-flat-button [ngClass]="'secondary'" (click)="close()">
+    {{ 'confirmation-modal.cancel' | translate }}
+  </button>
+  <button mat-flat-button (click)="apply()" [disabled]="isApplyDisabled" class="apply-button">
+    <span class="button-text" [class.hidden]="loading">
+      {{ 'change-baseline-modal.apply' | translate }}
+    </span>
+    @if (loading) {
+      <mat-spinner class="button-spinner" [diameter]="20"></mat-spinner>
+    }
+  </button>
+</div>

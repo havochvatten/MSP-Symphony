@@ -33,6 +33,9 @@ import java.util.stream.Collectors;
 @NamedQuery(name = "Scenario.findAllByOwner",
     query = "SELECT NEW se.havochvatten.symphony.dto.ScenarioDto(s) FROM Scenario s" +
             " WHERE s.owner = :owner ORDER BY s.timestamp DESC")
+@NamedQuery(name = "Scenario.findAllByOwnerAndBaseline",
+    query = "SELECT NEW se.havochvatten.symphony.dto.ScenarioDto(s) FROM Scenario s" +
+            " WHERE s.owner = :owner AND s.baselineId = :baselineId ORDER BY s.timestamp DESC")
 @NamedQuery(name = "Scenario.getEcosystemsToInclude",
     query = "SELECT ecosystemsToInclude FROM Scenario WHERE id = :scenarioId")
 @NamedQuery(name = "Scenario.getPressuresToInclude",

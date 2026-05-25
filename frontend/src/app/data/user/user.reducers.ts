@@ -50,9 +50,17 @@ export const userReducer = createReducer(
       fetch: error
     }
   })),
-  on(UserActions.fetchBaselineSuccess, (state, { baseline }) => ({
+  on(UserActions.fetchBaselineSuccess, UserActions.activeBaselineChanged, (state, { baseline }) => ({
     ...state,
     baseline: baseline
+  })),
+  on(UserActions.fetchAvailableBaselinesSuccess, (state, { baselines }) => ({
+    ...state,
+    availableBaselines: baselines
+  })),
+  on(UserActions.fetchAvailableBaselinesFailure, (state) => ({
+    ...state,
+    availableBaselines: []
   })),
   on(UserActions.updateRedirectUrl, (state, { url }) => ({
     ...state,

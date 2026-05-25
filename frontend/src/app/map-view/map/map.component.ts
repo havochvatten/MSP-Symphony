@@ -28,7 +28,7 @@ import { StaticImageOptions } from '@data/calculation/calculation.interfaces';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { CreateUserAreaModalComponent } from './create-user-area-modal/create-user-area-modal.component';
 import { Scenario } from '@data/scenario/scenario.interfaces';
-import { distinctUntilChanged, filter, skip, take } from 'rxjs/operators';
+import { distinctUntilChanged, filter, skip } from 'rxjs/operators';
 import { Feature, Map as OLMap, View } from 'ol';
 import { isNotNullOrUndefined } from '@src/util/rxjs';
 import { TranslateService } from '@ngx-translate/core';
@@ -93,6 +93,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   private reliabilitySubject$?: Observable<ReliabilityMap | null>;
   private reliabilitySubscription$?: Subscription;
+  private visibleReliabilitySubscription?: Subscription;
 
   // layers
   private background?: BackgroundLayer;
@@ -271,8 +272,15 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       .pipe(skipWhile((reliabilityMap) => reliabilityMap === null));
 
     this.reliabilitySubscription$ = this.reliabilitySubject$
-      .pipe(take(1))
       .subscribe((reliabilityMap) => {
+        if (this.reliabilityLayers) {
+          const layers = this.map!.getLayers();
+          layers.remove(this.reliabilityLayers.ECOSYSTEM);
+          layers.remove(this.reliabilityLayers.PRESSURE);
+          layers.remove(this.reliabilityLayers.ECOSYSTEM_OL);
+          layers.remove(this.reliabilityLayers.PRESSURE_OL);
+        }
+
         this.reliabilityLayers = {
           ECOSYSTEM: new ReliabilityLayer(reliabilityMap!.ECOSYSTEM, true, this.geoJson!),
           PRESSURE: new ReliabilityLayer(reliabilityMap!.PRESSURE, true, this.geoJson!),
@@ -285,33 +293,39 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         this.map!.addLayer(this.reliabilityLayers.ECOSYSTEM_OL);
         this.map!.addLayer(this.reliabilityLayers.PRESSURE_OL);
 
-        this.store
-          .select(MetadataSelectors.selectVisibleReliability)
-          .subscribe((visibleReliability) => {
-            this.reliabilityLayers.ECOSYSTEM.clear();
-            this.reliabilityLayers.PRESSURE.clear();
-            this.reliabilityLayers.ECOSYSTEM_OL.clear();
-            this.reliabilityLayers.PRESSURE_OL.clear();
+        if (!this.visibleReliabilitySubscription) {
+          this.visibleReliabilitySubscription = this.store
+            .select(MetadataSelectors.selectVisibleReliability)
+            .subscribe((visibleReliability) => {
+              if (!this.reliabilityLayers) return;
+              this.reliabilityLayers.ECOSYSTEM.clear();
+              this.reliabilityLayers.PRESSURE.clear();
+              this.reliabilityLayers.ECOSYSTEM_OL.clear();
+              this.reliabilityLayers.PRESSURE_OL.clear();
 
-            if (visibleReliability !== null) {
-              this.showReliability(
-                visibleReliability.band.symphonyCategory,
-                visibleReliability.band.bandNumber,
-                visibleReliability.opaque
-              );
-            }
-          });
+              if (visibleReliability !== null) {
+                this.showReliability(
+                  visibleReliability.band.symphonyCategory,
+                  visibleReliability.band.bandNumber,
+                  visibleReliability.opaque
+                );
+              }
+            });
+        }
       });
 
     this.map!.addLayer(this.areaLayer);
     this.map!.addLayer(this.scenarioLayer);
     this.map!.addLayer(this.areaHighlightLayer);
 
-    this.userSubscription = this.store /* TOOD: Just get from static environment?*/
+    this.userSubscription = this.store
       .select(UserSelectors.selectBaseline)
       .pipe(isNotNullOrUndefined())
       .subscribe((baseline) => {
         this.baselineName = baseline.name;
+        if (this.bandLayer) {
+          this.map!.getLayers().remove(this.bandLayer);
+        }
         this.bandLayer = new BandLayer(
           baseline.name,
           this.dataLayerService,
@@ -319,6 +333,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           this.aliasing
         );
         this.map!.getLayers().insertAt(1, this.bandLayer); // on top of background layer
+        this.scenarioLayer.clearLayers();
+        this.areaLayer.deselectAreas();
+        this.clearResult();
       });
   }
 
@@ -377,6 +394,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }
     if (this.aliasingSubscription) {
       this.aliasingSubscription.unsubscribe();
+    }
+    if (this.reliabilitySubscription$) {
+      this.reliabilitySubscription$.unsubscribe();
+    }
+    if (this.visibleReliabilitySubscription) {
+      this.visibleReliabilitySubscription.unsubscribe();
     }
 
     this.selectedAreasSubscription.unsubscribe();

@@ -3,6 +3,7 @@ import { ErrorMessage } from '@data/message/message.interfaces';
 export interface UserSettings {
   locale?: string | undefined;
   aliasing?: boolean | undefined;
+  activeBaselineId?: number | undefined;
 }
 
 export interface User {
@@ -18,6 +19,7 @@ export interface State {
   loadingBaseline: boolean;
   redirectUrl: string;
   baseline?: Baseline;
+  availableBaselines?: Baseline[];
   error?: { login?: ErrorMessage };
   aliasing: boolean;
 }
@@ -28,4 +30,5 @@ export interface Baseline {
   description: string;
   locale: string;
   validFrom: number; // datetime
+  title: string | null;
 }

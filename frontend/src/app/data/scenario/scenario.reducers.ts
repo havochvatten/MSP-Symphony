@@ -2,6 +2,7 @@ import { createReducer, on } from '@ngrx/store';
 import Immutable, { removeIn, setIn, updateIn } from 'immutable';
 
 import { CalculationActions } from '@data/calculation';
+import { UserActions } from '@data/user';
 import { BandChange } from "@data/metadata/metadata.interfaces";
 import {
   fetchAreaMatricesFailure,
@@ -342,5 +343,6 @@ export const scenarioReducer = createReducer(
   on(resetAutoBatch, state => ({
     ...state,
     autoBatch: []
-  }))
+  })),
+  on(UserActions.activeBaselineChanged, () => initialState)
 );

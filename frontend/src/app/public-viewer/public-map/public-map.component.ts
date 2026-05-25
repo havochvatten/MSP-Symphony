@@ -269,8 +269,15 @@ export class PublicMapComponent implements AfterViewInit, OnDestroy {
       .pipe(skipWhile((reliabilityMap) => reliabilityMap === null));
 
     this.reliabilitySubscription$ = this.reliabilitySubject$
-      .pipe(take(1))
       .subscribe((reliabilityMap) => {
+        if (this.reliabilityLayers) {
+          const layers = this.map!.getLayers();
+          layers.remove(this.reliabilityLayers.ECOSYSTEM);
+          layers.remove(this.reliabilityLayers.PRESSURE);
+          layers.remove(this.reliabilityLayers.ECOSYSTEM_OL);
+          layers.remove(this.reliabilityLayers.PRESSURE_OL);
+        }
+
         this.reliabilityLayers = {
           ECOSYSTEM: new ReliabilityLayer(reliabilityMap!.ECOSYSTEM, true, this.geoJson!),
           PRESSURE: new ReliabilityLayer(reliabilityMap!.PRESSURE, true, this.geoJson!),

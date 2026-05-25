@@ -20,6 +20,7 @@ import { UserActions, UserSelectors } from './';
 import { AreaActions } from '@data/area';
 import { MetadataActions } from '@data/metadata';
 import { CalculationActions } from '@data/calculation';
+import { ScenarioActions } from '@data/scenario';
 import { LegendType } from '@data/calculation/calculation.interfaces';
 import { UserSettings } from '@data/user/user.interfaces';
 
@@ -131,6 +132,7 @@ export class UserEffects {
         AreaActions.fetchUserDefinedAreas(),
         AreaActions.fetchBoundaries(),
         UserActions.fetchBaseline(),
+        UserActions.fetchAvailableBaselines(),
         CalculationActions.fetchCompoundComparisons(),
         ...legendTypes.map((legendType) => CalculationActions.fetchLegend({ legendType }))
       ])
@@ -161,11 +163,64 @@ export class UserEffects {
   updateUserSettings$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.updateUserSettings),
-      mergeMap(({ aliasing, locale }) =>
-        this.userService
-          .updateSettings({ aliasing, locale } as UserSettings)
-          .pipe(map(() => (locale ? UserActions.fetchUser() : UserActions.fetchUserSettings())))
+      mergeMap((settings) =>
+        this.userService.updateSettings(settings as UserSettings).pipe(
+          mergeMap(() => {
+            if (settings.activeBaselineId !== undefined) {
+              return this.userService.fetchBaseline().pipe(
+                mergeMap((baseline) => [
+                  UserActions.fetchBaselineSuccess({ baseline }),
+                  UserActions.activeBaselineChanged({ baseline })
+                ])
+              );
+            }
+            return of(
+              settings.locale !== undefined
+                ? UserActions.fetchUser()
+                : UserActions.fetchUserSettings()
+            );
+          }),
+          catchError((error) =>
+            settings.activeBaselineId !== undefined
+              ? of(UserActions.fetchBaselineFailure({
+                  error: { status: error.status, message: error.error?.errorMessage ?? error.message }
+                }))
+              : of(UserActions.fetchUserFailure({
+                  error: { status: error.status, message: error.error?.errorMessage ?? error.message }
+                }))
+          )
+        )
       )
+    )
+  );
+
+  availableBaselinesAreFetched$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.fetchAvailableBaselines),
+      mergeMap(() =>
+        this.userService.fetchBaselines().pipe(
+          map((baselines) => UserActions.fetchAvailableBaselinesSuccess({ baselines })),
+          catchError((error) =>
+            of(UserActions.fetchAvailableBaselinesFailure({ error: { status: error.status, message: error.error } }))
+          )
+        )
+      )
+    )
+  );
+
+  activeBaselineChanged$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.activeBaselineChanged),
+      concatMap(() => [
+        MetadataActions.fetchMetadata(),
+        ScenarioActions.closeActiveScenario(),
+        ScenarioActions.fetchScenarios(),
+        CalculationActions.setVisibleResultLayers({ visibleResults: [] }),
+        CalculationActions.resetComparisonLegend(),
+        CalculationActions.fetchCalculations(),
+        CalculationActions.fetchCompoundComparisons(),
+        AreaActions.fetchBoundaries(),
+      ])
     )
   );
 

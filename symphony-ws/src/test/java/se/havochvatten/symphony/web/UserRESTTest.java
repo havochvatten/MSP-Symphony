@@ -6,12 +6,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import se.havochvatten.symphony.dto.AreaImportResponse;
+import se.havochvatten.symphony.dto.BaselineVersionDto;
 import se.havochvatten.symphony.dto.UploadedUserDefinedAreaDto;
 import se.havochvatten.symphony.dto.UserDefinedAreaDto;
 
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
@@ -267,4 +269,39 @@ public class UserRESTTest extends RESTTest {
         deleteUserDefinedAreaByName("epsg3006");
         deleteUserDefinedAreaByName("espg4326");
 	}
+
+    @Test
+    public void testSetActiveBaselineRoundTripViaUserSettings() {
+        List<BaselineVersionDto> versions = given().
+            auth().preemptive().basic(getUsername(), getPassword()).
+            when().get(endpoint("/baselineversion")).
+            then().extract().body().jsonPath().getList(".", BaselineVersionDto.class);
+
+        BaselineVersionDto target = versions.get(0);
+
+        given().
+            auth().preemptive().basic(getUsername(), getPassword()).
+            contentType("application/json").
+            body(Map.of("activeBaselineId", target.getId())).
+            when().put(endpoint("/user/settings")).
+            then().statusCode(200);
+
+        BaselineVersionDto active = given().
+            auth().preemptive().basic(getUsername(), getPassword()).
+            when().get(endpoint("/baselineversion/active")).
+            then().statusCode(200).
+            extract().body().jsonPath().getObject("", BaselineVersionDto.class);
+
+        assertEquals(target.getId(), active.getId());
+    }
+
+    @Test
+    public void testUserSettingsActiveBaselineUnknownIdReturns404() {
+        given().
+            auth().preemptive().basic(getUsername(), getPassword()).
+            contentType("application/json").
+            body(Map.of("activeBaselineId", Integer.MAX_VALUE)).
+            when().put(endpoint("/user/settings")).
+            then().statusCode(404);
+    }
 }
