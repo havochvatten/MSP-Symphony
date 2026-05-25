@@ -17,6 +17,8 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
+import se.havochvatten.symphony.web.publicfilter.ConditionalPublic;
+
 import java.net.URI;
 import java.util.List;
 
@@ -60,6 +62,7 @@ public class CalculationAreaREST {
     @Operation(summary = "Get all calculation areas for baselineName defined in the system " +
                           "for which a max value has been set")
     @PermitAll
+    @ConditionalPublic(roles={"GRP_SYMPHONY"})
     public Response findCalibratedCalculationAreas(@PathParam("baselineName") String baselineName) {
         List<CalculationArea> resp = calculationAreaService.findCalibratedCalculationAreas(baselineName);
 

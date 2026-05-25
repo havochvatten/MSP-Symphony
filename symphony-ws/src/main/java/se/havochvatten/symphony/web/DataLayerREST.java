@@ -3,6 +3,7 @@ package se.havochvatten.symphony.web;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.security.PermitAll;
+import jakarta.ejb.Stateless;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.geometry.jts.JTS;
@@ -19,12 +20,13 @@ import se.havochvatten.symphony.service.DataLayerService;
 import se.havochvatten.symphony.service.PropertiesService;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
 import jakarta.json.JsonArray;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.CacheControl;
 import jakarta.ws.rs.core.Response;
+import se.havochvatten.symphony.web.publicfilter.ConditionalPublic;
+
 import java.awt.image.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -34,6 +36,7 @@ import java.util.logging.Logger;
 import static jakarta.ws.rs.core.Response.ok;
 import static se.havochvatten.symphony.util.MetaDataUtil.*;
 
+@Stateless
 @Path("/datalayer")
 @Tag(name ="/datalayer")
 public class DataLayerREST {
@@ -61,6 +64,7 @@ public class DataLayerREST {
     @Path("/{type}/{id}/{baselineName}")
     @Produces({"image/png"}) // make JPEG and/or WebP available?
     @PermitAll
+    @ConditionalPublic(roles={"GRP_SYMPHONY"})
     @Operation(summary = "Returns calculation result image")
     public Response getLayerData(@PathParam("type") String type,
                                  @PathParam("id") int bandNo,

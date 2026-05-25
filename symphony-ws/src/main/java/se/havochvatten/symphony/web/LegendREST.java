@@ -3,19 +3,20 @@ package se.havochvatten.symphony.web;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.security.PermitAll;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.xml.sax.SAXException;
 import se.havochvatten.symphony.dto.LegendDto;
 import se.havochvatten.symphony.service.PropertiesService;
 
-import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import se.havochvatten.symphony.web.publicfilter.ConditionalPublic;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
@@ -57,6 +58,7 @@ public class LegendREST {
     @Operation(summary = "Get publicly available legend definition")
     @Produces({MediaType.APPLICATION_JSON})
     @PermitAll
+    @ConditionalPublic(roles={"GRP_SYMPHONY"})
     public Response getPublicType(
         @Parameter(description = "type of public legend")
         @PathParam("type") String legendType, @QueryParam("maxValue") String maxParam) {

@@ -3,6 +3,7 @@ package se.havochvatten.symphony.web;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.security.PermitAll;
+import jakarta.ws.rs.core.*;
 import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.mapper.BaselineVersionDtoMapper;
@@ -12,9 +13,8 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.CacheControl;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+import se.havochvatten.symphony.web.publicfilter.ConditionalPublic;
+
 import java.util.Date;
 import java.util.List;
 
@@ -61,6 +61,7 @@ public class BaselineVersionServiceREST {
     @Consumes({MediaType.APPLICATION_JSON})
     @Path("/current")
     @PermitAll
+    @ConditionalPublic(roles={"GRP_SYMPHONY"})
     public Response getCurrent() throws SymphonyStandardAppException {
         BaselineVersion baselineVersion = baselineVersionService.getBaselineVersionByDate(new Date());
 

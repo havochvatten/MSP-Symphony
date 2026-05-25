@@ -10,16 +10,17 @@ import se.havochvatten.symphony.service.ScenarioService;
 import se.havochvatten.symphony.service.MetaDataService;
 import se.havochvatten.symphony.service.PropertiesService;
 
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import se.havochvatten.symphony.web.publicfilter.ConditionalPublic;
 
 @Stateless
 @Tag(name ="/metadata")
 @Path("metadata")
 @PermitAll
+@ConditionalPublic(roles={"GRP_SYMPHONY"})
 public class MetaDataREST {
     @EJB
     MetaDataService metaDataService;

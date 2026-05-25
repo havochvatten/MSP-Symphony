@@ -16,6 +16,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.CacheControl;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import se.havochvatten.symphony.web.publicfilter.ConditionalPublic;
+
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,6 +78,7 @@ public class AreasREST {
     @Operation(summary = "JSON polygons for country that user created areas must keep within (not cross)")
     @Produces({MediaType.APPLICATION_JSON})
     @PermitAll
+    @ConditionalPublic(roles={"GRP_SYMPHONY"})
     public Response getBoundaries() throws SymphonyStandardAppException {
         String countryCode = props.getProperty(COUNTRYCODE_PROPERTY);
         if (countryCode == null) {
