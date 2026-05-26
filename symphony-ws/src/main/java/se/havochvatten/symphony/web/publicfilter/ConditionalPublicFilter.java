@@ -21,7 +21,7 @@ import java.util.Set;
 public class ConditionalPublicFilter implements ContainerRequestFilter {
 
     @Inject
-    private PropertiesService props; //config;
+    private PropertiesService props;
 
     @Context
     ResourceInfo resourceInfo;
@@ -38,27 +38,17 @@ public class ConditionalPublicFilter implements ContainerRequestFilter {
 
         boolean publicAccessEnabled = props.getPropertyAsBool("symphony.public_access", false);
 
-
-
-        System.out.println("in ConditionalPublic");
-
-        // Public access is set in symphony-global.properties
         if (publicAccessEnabled) {
-            System.out.println("publicAccessEnabled");
             return;
         }
 
-        ConditionalPublic annotation =
-            getConditionalPublicAnnotation();
-
+        ConditionalPublic annotation = getConditionalPublicAnnotation();
         // Safety check
         if (annotation == null) {
-            System.out.println("annotation null");
             return;
         }
 
-        SecurityContext securityContext =
-            requestContext.getSecurityContext();
+        SecurityContext securityContext = requestContext.getSecurityContext();
 
         // Check if user is authenticated AND has an allowed role
         boolean isAuthenticated = securityContext != null && securityContext.getUserPrincipal() != null;
@@ -68,7 +58,6 @@ public class ConditionalPublicFilter implements ContainerRequestFilter {
         // Public mode OFF
         // Require authenticated user
         if (!isAuthenticated || !hasAllowedRole) {
-            System.out.println("user null");
             requestContext.abortWith(
                 Response.status(Response.Status.UNAUTHORIZED)
                     .build()
@@ -81,17 +70,14 @@ public class ConditionalPublicFilter implements ContainerRequestFilter {
     private ConditionalPublic getConditionalPublicAnnotation() {
 
         // Method-level annotation
-        ConditionalPublic annotation =
-            resourceInfo.getResourceMethod()
-                .getAnnotation(ConditionalPublic.class);
+        ConditionalPublic annotation = resourceInfo.getResourceMethod().getAnnotation(ConditionalPublic.class);
 
         if (annotation != null) {
             return annotation;
         }
 
         // Class-level annotation
-        return resourceInfo.getResourceClass()
-            .getAnnotation(ConditionalPublic.class);
+        return resourceInfo.getResourceClass().getAnnotation(ConditionalPublic.class);
     }
 }
 

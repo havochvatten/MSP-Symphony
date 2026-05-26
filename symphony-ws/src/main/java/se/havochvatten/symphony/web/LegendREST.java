@@ -77,7 +77,6 @@ public class LegendREST {
     }
 
     private boolean isPublicType(LegendDto.Type reqLegendType) {
-        System.out.println("in isPublicType: " + reqLegendType.name());
         return ECOSYSTEM.equals(reqLegendType) || PRESSURE.equals(reqLegendType) || RESULT.equals(reqLegendType);
     }
 
