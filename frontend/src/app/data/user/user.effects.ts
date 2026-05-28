@@ -160,6 +160,27 @@ export class UserEffects {
     )
   );
 
+  currentBaselineIsFetched$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.fetchCurrentBaseline),
+      mergeMap(() =>
+        this.userService.fetchCurrentBaseline().pipe(
+          map((baseline) => UserActions.fetchBaselineSuccess({ baseline: baseline })),
+          catchError((error) =>
+            of(
+              UserActions.fetchBaselineFailure({
+                error: {
+                  status: error.status,
+                  message: error.error
+                }
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
   updateUserSettings$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.updateUserSettings),
@@ -167,12 +188,14 @@ export class UserEffects {
         this.userService.updateSettings(settings as UserSettings).pipe(
           mergeMap(() => {
             if (settings.activeBaselineId !== undefined) {
-              return this.userService.fetchBaseline().pipe(
-                mergeMap((baseline) => [
-                  UserActions.fetchBaselineSuccess({ baseline }),
-                  UserActions.activeBaselineChanged({ baseline })
-                ])
-              );
+              return this.userService
+                .fetchBaseline()
+                .pipe(
+                  mergeMap((baseline) => [
+                    UserActions.fetchBaselineSuccess({ baseline }),
+                    UserActions.activeBaselineChanged({ baseline })
+                  ])
+                );
             }
             return of(
               settings.locale !== undefined
@@ -182,12 +205,22 @@ export class UserEffects {
           }),
           catchError((error) =>
             settings.activeBaselineId !== undefined
-              ? of(UserActions.fetchBaselineFailure({
-                  error: { status: error.status, message: error.error?.errorMessage ?? error.message }
-                }))
-              : of(UserActions.fetchUserFailure({
-                  error: { status: error.status, message: error.error?.errorMessage ?? error.message }
-                }))
+              ? of(
+                  UserActions.fetchBaselineFailure({
+                    error: {
+                      status: error.status,
+                      message: error.error?.errorMessage ?? error.message
+                    }
+                  })
+                )
+              : of(
+                  UserActions.fetchUserFailure({
+                    error: {
+                      status: error.status,
+                      message: error.error?.errorMessage ?? error.message
+                    }
+                  })
+                )
           )
         )
       )
@@ -201,7 +234,11 @@ export class UserEffects {
         this.userService.fetchBaselines().pipe(
           map((baselines) => UserActions.fetchAvailableBaselinesSuccess({ baselines })),
           catchError((error) =>
-            of(UserActions.fetchAvailableBaselinesFailure({ error: { status: error.status, message: error.error } }))
+            of(
+              UserActions.fetchAvailableBaselinesFailure({
+                error: { status: error.status, message: error.error }
+              })
+            )
           )
         )
       )
@@ -219,7 +256,7 @@ export class UserEffects {
         CalculationActions.resetComparisonLegend(),
         CalculationActions.fetchCalculations(),
         CalculationActions.fetchCompoundComparisons(),
-        AreaActions.fetchBoundaries(),
+        AreaActions.fetchBoundaries()
       ])
     )
   );
@@ -253,7 +290,8 @@ export class UserEffects {
     this.actions$.pipe(
       ofType(UserActions.createPublicUser),
       concatMap(() => [
-        UserActions.fetchBaseline(),
+        UserActions.fetchAvailableBaselines(),
+        UserActions.fetchCurrentBaseline(),
         AreaActions.fetchBoundaries(),
         MetadataActions.fetchMetadata(),
         ...legendTypes.map((legendType) => CalculationActions.fetchPublicLegend({ legendType }))

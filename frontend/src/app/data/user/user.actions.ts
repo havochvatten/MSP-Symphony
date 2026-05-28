@@ -42,6 +42,8 @@ export const logoutUserFailure = createAction(
   props<{ error: ErrorMessage }>()
 );
 
+export const fetchCurrentBaseline = createAction('[User] Fetch current baseline');
+
 export const fetchBaseline = createAction('[User] Fetch baseline');
 
 export const fetchAvailableBaselines = createAction('[User] Fetch available baselines');

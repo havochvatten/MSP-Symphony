@@ -50,10 +50,14 @@ export const userReducer = createReducer(
       fetch: error
     }
   })),
-  on(UserActions.fetchBaselineSuccess, UserActions.activeBaselineChanged, (state, { baseline }) => ({
-    ...state,
-    baseline: baseline
-  })),
+  on(
+    UserActions.fetchBaselineSuccess,
+    UserActions.activeBaselineChanged,
+    (state, { baseline }) => ({
+      ...state,
+      baseline: baseline
+    })
+  ),
   on(UserActions.fetchAvailableBaselinesSuccess, (state, { baselines }) => ({
     ...state,
     availableBaselines: baselines
@@ -68,6 +72,10 @@ export const userReducer = createReducer(
   })),
   // Indicate loading state
   on(UserActions.fetchBaseline, (state) => ({
+    ...state,
+    loadingBaseline: true
+  })),
+  on(UserActions.fetchCurrentBaseline, (state) => ({
     ...state,
     loadingBaseline: true
   })),
