@@ -14,13 +14,13 @@ import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import se.havochvatten.symphony.web.publicfilter.ConditionalPublic;
+import se.havochvatten.symphony.web.filter.PublicOrRestricted;
 
 @Stateless
 @Tag(name ="/metadata")
 @Path("metadata")
 @PermitAll
-@ConditionalPublic(roles={"GRP_SYMPHONY"})
+@PublicOrRestricted(roles={"GRP_SYMPHONY"})
 public class MetaDataREST {
     @EJB
     MetaDataService metaDataService;

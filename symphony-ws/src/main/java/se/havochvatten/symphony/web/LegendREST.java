@@ -16,7 +16,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import se.havochvatten.symphony.web.publicfilter.ConditionalPublic;
+import se.havochvatten.symphony.web.filter.PublicOrRestricted;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
@@ -58,7 +58,7 @@ public class LegendREST {
     @Operation(summary = "Get publicly available legend definition")
     @Produces({MediaType.APPLICATION_JSON})
     @PermitAll
-    @ConditionalPublic(roles={"GRP_SYMPHONY"})
+    @PublicOrRestricted(roles={"GRP_SYMPHONY"})
     public Response getPublicType(
         @Parameter(description = "type of public legend")
         @PathParam("type") String legendType, @QueryParam("maxValue") String maxParam) {

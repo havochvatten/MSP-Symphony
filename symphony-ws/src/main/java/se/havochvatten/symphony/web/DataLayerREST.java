@@ -25,7 +25,7 @@ import jakarta.json.JsonArray;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.CacheControl;
 import jakarta.ws.rs.core.Response;
-import se.havochvatten.symphony.web.publicfilter.ConditionalPublic;
+import se.havochvatten.symphony.web.filter.PublicOrRestricted;
 
 import java.awt.image.*;
 import java.net.URLDecoder;
@@ -64,7 +64,7 @@ public class DataLayerREST {
     @Path("/{type}/{id}/{baselineName}")
     @Produces({"image/png"}) // make JPEG and/or WebP available?
     @PermitAll
-    @ConditionalPublic(roles={"GRP_SYMPHONY"})
+    @PublicOrRestricted(roles={"GRP_SYMPHONY"})
     @Operation(summary = "Returns calculation result image")
     public Response getLayerData(@PathParam("type") String type,
                                  @PathParam("id") int bandNo,

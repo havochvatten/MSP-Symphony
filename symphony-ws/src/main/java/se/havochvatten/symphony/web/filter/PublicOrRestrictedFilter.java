@@ -1,4 +1,4 @@
-package se.havochvatten.symphony.web.publicfilter;
+package se.havochvatten.symphony.web.filter;
 
 import jakarta.annotation.Priority;
 import jakarta.inject.Inject;
@@ -16,9 +16,9 @@ import java.io.IOException;
 import java.util.Set;
 
 @Provider
-@ConditionalPublic
+@PublicOrRestricted
 @Priority(Priorities.AUTHENTICATION)
-public class ConditionalPublicFilter implements ContainerRequestFilter {
+public class PublicOrRestrictedFilter implements ContainerRequestFilter {
 
     @Inject
     private PropertiesService props;
@@ -42,7 +42,7 @@ public class ConditionalPublicFilter implements ContainerRequestFilter {
             return;
         }
 
-        ConditionalPublic annotation = getConditionalPublicAnnotation();
+        PublicOrRestricted annotation = getConditionalPublicAnnotation();
         // Safety check
         if (annotation == null) {
             return;
@@ -67,17 +67,17 @@ public class ConditionalPublicFilter implements ContainerRequestFilter {
 
     }
 
-    private ConditionalPublic getConditionalPublicAnnotation() {
+    private PublicOrRestricted getConditionalPublicAnnotation() {
 
         // Method-level annotation
-        ConditionalPublic annotation = resourceInfo.getResourceMethod().getAnnotation(ConditionalPublic.class);
+        PublicOrRestricted annotation = resourceInfo.getResourceMethod().getAnnotation(PublicOrRestricted.class);
 
         if (annotation != null) {
             return annotation;
         }
 
         // Class-level annotation
-        return resourceInfo.getResourceClass().getAnnotation(ConditionalPublic.class);
+        return resourceInfo.getResourceClass().getAnnotation(PublicOrRestricted.class);
     }
 }
 

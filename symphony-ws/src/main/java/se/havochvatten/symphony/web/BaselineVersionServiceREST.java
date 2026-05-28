@@ -20,7 +20,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.io.IOException;
-import se.havochvatten.symphony.web.publicfilter.ConditionalPublic;
+import se.havochvatten.symphony.web.filter.PublicOrRestricted;
 
 import java.util.Date;
 import java.util.List;
@@ -43,7 +43,7 @@ public class BaselineVersionServiceREST {
     @Operation(summary = "List all BaselineVersion")
     @Produces({MediaType.APPLICATION_JSON})
     @PermitAll
-    @ConditionalPublic(roles={"GRP_SYMPHONY"})
+    @PublicOrRestricted(roles={"GRP_SYMPHONY"})
     public Response findAll(@Context HttpServletRequest req) throws SymphonyStandardAppException {
         boolean isAuthorized = req.getUserPrincipal() != null && req.isUserInRole("GRP_SYMPHONY");
         List<BaselineVersion> baselineVersions = baselineVersionService.getBaselineVersions(isAuthorized);
@@ -93,7 +93,7 @@ public class BaselineVersionServiceREST {
     @Consumes({MediaType.APPLICATION_JSON})
     @Path("/current")
     @PermitAll
-    @ConditionalPublic(roles={"GRP_SYMPHONY"})
+    @PublicOrRestricted(roles={"GRP_SYMPHONY"})
     public Response getCurrent() throws SymphonyStandardAppException {
         BaselineVersion baselineVersion = baselineVersionService.getBaselineVersionByDate(new Date());
 
