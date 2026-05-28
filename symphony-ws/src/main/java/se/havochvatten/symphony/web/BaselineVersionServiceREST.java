@@ -42,9 +42,11 @@ public class BaselineVersionServiceREST {
     @GET
     @Operation(summary = "List all BaselineVersion")
     @Produces({MediaType.APPLICATION_JSON})
-    @RolesAllowed("GRP_SYMPHONY")
-    public Response findAll() {
-        List<BaselineVersion> baselineVersions = baselineVersionService.findAll();
+    @PermitAll
+    @ConditionalPublic(roles={"GRP_SYMPHONY"})
+    public Response findAll(@Context HttpServletRequest req) throws SymphonyStandardAppException {
+        boolean isAuthorized = req.getUserPrincipal() != null && req.isUserInRole("GRP_SYMPHONY");
+        List<BaselineVersion> baselineVersions = baselineVersionService.getBaselineVersions(isAuthorized);
         return Response.ok(BaselineVersionDtoMapper.mapEntitiesToDtos(baselineVersions)).build();
     }
 
@@ -102,5 +104,4 @@ public class BaselineVersionServiceREST {
                 cacheControl(cc).
                 build();
     }
-
 }
