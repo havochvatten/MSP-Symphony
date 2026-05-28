@@ -23,6 +23,7 @@ import { CalculationActions } from '@data/calculation';
 import { ScenarioActions } from '@data/scenario';
 import { LegendType } from '@data/calculation/calculation.interfaces';
 import { UserSettings } from '@data/user/user.interfaces';
+import { environment } from '@src/environments/environment';
 
 const legendTypes: LegendType[] = ['result', 'ecosystem', 'pressure'];
 
@@ -79,7 +80,11 @@ export class UserEffects {
   logoutUserSuccess$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.logoutUserSuccess),
-      map(() => UserActions.navigateTo({ url: '/login' }))
+      map(() =>
+        environment.PUBLIC_VIEWER_OPEN
+          ? UserActions.navigateTo({ url: '/public' })
+          : UserActions.navigateTo({ url: '/login' })
+      )
     )
   );
 
