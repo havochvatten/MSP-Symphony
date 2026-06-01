@@ -418,48 +418,52 @@ extraction.
 
 ### 8.4 `pressure/balanced.json` — "Röda Kartan, balanserad"
 
-**Status:** first-draft categorization, pending stakeholder review. The PDF
-does not prescribe a pressure aggregation, so the category structure is a
-design choice.
-
-**Structure.** Eight category steps, each `MEAN` over its bands, each
+**Structure.** Eleven category steps, each `MEAN` over its bands, each
 normalized 0-100 to make every category contribute equally to the final
 heatmap regardless of band count. Final `pressure_total` is `MEAN` over the
-eight category outputs, normalized 0-100.
+eleven category outputs, normalized 0-100.
 
-| Category | Bands |
-|----------|-------|
-| `fishing` | 0 Abrasion bottom trawl · 3 Catch bottom trawl · 4 Catch gillnet · 5 Catch pelagic trawl · 66 Turbidity bottom trawl |
-| `shipping` | 22 Noise 125Hz shipping · 24 Noise 2000Hz shipping · 57 Oilspill shipping · 68 Turbidity shipping |
-| `recreation` | 2 Bird hunt · 25 Noise boating · 60 Pollution boating |
-| `energy` | 6 Disturbance wind power · 7 Electromagnetic field · 23 Noise 125Hz wind power |
-| `coastal-development` | 10-14 Habitat loss (coastal exploitation, dumping, fish farm, infrastructure, mussel farm) |
-| `pollution-other` | 1 Anoxia background · 16 Heavy metals background · 19 Heavy metals military area · 20 Heavy metals mine dump · 21 Nitrogen background · 56 Nutrients fish farm · 58 Oilspill wreck · 59 Phosphorous background · 61-64 Synthetic toxins (background, harbor, industry, treatment plant) · 65 Toxic munition dump |
-| `defence` | 8 Explosions peak · 9 Explosions SEL |
-| `sand-extraction` | 15 Habitat loss sand extraction · 67 Turbidity sand extraction |
+The category structure mirrors the *Solgraf belastningar* tab (column `Kategori`)
+in `Komponenter v8.xlsx`. Every present-day pressure band maps to exactly one
+category — no band is shared between categories.
+
+| Category (Excel `Kategori`) | Step name | Bands |
+|-----------------------------|-----------|-------|
+| Energi | `energy` | 6 Disturbance wind power · 7 Electromagnetic field · 23 Noise 125Hz wind power |
+| Fiske | `fishing` | 0 Abrasion bottom trawl · 3 Catch bottom trawl · 4 Catch gillnet · 5 Catch pelagic trawl · 66 Turbidity bottom trawl |
+| Fritid | `recreation` | 2 Bird hunt · 25 Noise boating · 60 Pollution boating |
+| Förorening | `pollution` | 16 Heavy metals background · 20 Heavy metals mine dump · 58 Oilspill wreck · 61 Synthetic toxins background · 65 Toxic munition dump |
+| Försvar | `defence` | 8 Explosions peak · 9 Explosions SEL · 19 Heavy metals military area |
+| Industri | `industry` | 62 Synthetic toxins harbor · 63 Synthetic toxins industry |
+| Kustexploatering | `coastal-development` | 10 Habitat loss coastal exploitation · 11 Habitat loss dumping · 13 Habitat loss infrastructure · 64 Synthetic toxins treatment plant |
+| Mineralutvinning | `mineral-extraction` | 15 Habitat loss sand extraction · 67 Turbidity sand extraction |
+| Sjöfart | `shipping` | 22 Noise 125Hz shipping · 24 Noise 2000Hz shipping · 57 Oilspill shipping · 68 Turbidity shipping |
+| Vattenbruk | `aquaculture` | 12 Habitat loss fish farm · 14 Habitat loss mussel farm · 56 Nutrients fish farm |
+| Övergödning | `eutrophication` | 1 Anoxia background · 21 Nitrogen background · 59 Phosphorous background |
 
 **Bands referenced (37):** identical set to `pressure/simple.json`.
 
 **Excluded bands:** same as `pressure/simple.json` (17, 18, 26-55) — see
-section 8.3 for reasoning.
+section 8.3 for reasoning. Note that bands 17 (fiber bank) and 18 (mercury
+dump), though listed under *Förorening* in the Excel, remain excluded due to
+data-quality issues (scrap data over land regions).
 
 **Design notes:**
 
-1. **No band is referenced by more than one category.** An earlier revision
-   double-counted band 57 (in both `shipping` and `defence`) and bands 15/67
-   (in both `pollution-other` and `sand-extraction`). The current version
-   keeps each band in the single best-fitting category to avoid implicit
+1. **No band is referenced by more than one category.** Each band is assigned
+   to the single best-fitting Excel `Kategori`. This avoids implicit
    re-weighting in the final MEAN.
 
 2. **Per-category 0-100 normalization is applied before the final MEAN.**
-   Categories have very different band counts (2 to 13). Without
-   normalization, categories with high-magnitude pressures dominate the
-   final heatmap regardless of band count. Per-category normalization makes
-   each category contribute equally — closer to the spirit of "balanced".
+   Categories have very different band counts (2 to 5). Without normalization,
+   categories with high-magnitude pressures dominate the final heatmap
+   regardless of band count. Per-category normalization makes each category
+   contribute equally — closer to the spirit of "balanced".
 
-3. **Category structure is provisional.** Whether `recreation`, `defence`,
-   and `sand-extraction` are right at the top level (vs. sub-themes of
-   broader categories) is a stakeholder decision and may change.
+3. **Category structure follows stakeholder input.** The eleven categories
+   mirror the *Solgraf belastningar* tab in `Komponenter v8.xlsx` exactly.
+   Any future re-categorization should be derived from an updated version of
+   that document.
 
 ---
 

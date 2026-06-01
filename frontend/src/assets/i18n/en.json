@@ -71,9 +71,12 @@
                 "recreation": "Recreation",
                 "energy": "Energy",
                 "coastalDevelopment": "Coastal development",
-                "pollutionOther": "Other pollution",
+                "pollution": "Pollution",
                 "defence": "Defence",
-                "sandExtraction": "Sand extraction",
+                "industry": "Industry",
+                "mineralExtraction": "Mineral extraction",
+                "aquaculture": "Aquaculture",
+                "eutrophication": "Eutrophication",
                 "pressureTotal": "Pressure total"
             }
         },

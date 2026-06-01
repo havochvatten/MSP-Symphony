@@ -71,9 +71,12 @@
                 "recreation": "Rekreation",
                 "energy": "Energi",
                 "coastalDevelopment": "Kustutveckling",
-                "pollutionOther": "Övrig förorening",
+                "pollution": "Förorening",
                 "defence": "Försvar",
-                "sandExtraction": "Sandutvinning",
+                "industry": "Industri",
+                "mineralExtraction": "Mineralutvinning",
+                "aquaculture": "Vattenbruk",
+                "eutrophication": "Övergödning",
                 "pressureTotal": "Total belastning"
             }
         },

@@ -3,19 +3,19 @@
   "outputStep": "pressure_total",
   "steps": [
     {
-      "name": "fishing",
-      "translationKey": "map.summary-model.step.fishing",
+      "name": "energy",
+      "translationKey": "map.summary-model.step.energy",
       "operation": "MEAN",
       "order": 10,
-      "bands": [0, 3, 4, 5, 66],
+      "bands": [6, 7, 23],
       "normalization": { "type": "linear", "min": 0, "max": 100 }
     },
     {
-      "name": "shipping",
-      "translationKey": "map.summary-model.step.shipping",
+      "name": "fishing",
+      "translationKey": "map.summary-model.step.fishing",
       "operation": "MEAN",
       "order": 20,
-      "bands": [22, 24, 57, 68],
+      "bands": [0, 3, 4, 5, 66],
       "normalization": { "type": "linear", "min": 0, "max": 100 }
     },
     {
@@ -27,64 +27,91 @@
       "normalization": { "type": "linear", "min": 0, "max": 100 }
     },
     {
-      "name": "energy",
-      "translationKey": "map.summary-model.step.energy",
+      "name": "pollution",
+      "translationKey": "map.summary-model.step.pollution",
       "operation": "MEAN",
       "order": 40,
-      "bands": [6, 7, 23],
-      "normalization": { "type": "linear", "min": 0, "max": 100 }
-    },
-    {
-      "name": "coastal-development",
-      "translationKey": "map.summary-model.step.coastalDevelopment",
-      "operation": "MEAN",
-      "order": 50,
-      "bands": [10, 11, 12, 13, 14],
-      "normalization": { "type": "linear", "min": 0, "max": 100 }
-    },
-    {
-      "name": "pollution-other",
-      "translationKey": "map.summary-model.step.pollutionOther",
-      "operation": "MEAN",
-      "order": 60,
-      "bands": [1, 16, 19, 20, 21, 56, 58, 59, 61, 62, 63, 64, 65],
+      "bands": [16, 20, 58, 61, 65],
       "normalization": { "type": "linear", "min": 0, "max": 100 }
     },
     {
       "name": "defence",
       "translationKey": "map.summary-model.step.defence",
       "operation": "MEAN",
-      "order": 80,
-      "bands": [8, 9],
+      "order": 50,
+      "bands": [8, 9, 19],
       "normalization": { "type": "linear", "min": 0, "max": 100 }
     },
     {
-      "name": "sand-extraction",
-      "translationKey": "map.summary-model.step.sandExtraction",
+      "name": "industry",
+      "translationKey": "map.summary-model.step.industry",
+      "operation": "MEAN",
+      "order": 60,
+      "bands": [62, 63],
+      "normalization": { "type": "linear", "min": 0, "max": 100 }
+    },
+    {
+      "name": "coastal-development",
+      "translationKey": "map.summary-model.step.coastalDevelopment",
+      "operation": "MEAN",
+      "order": 70,
+      "bands": [10, 11, 13, 64],
+      "normalization": { "type": "linear", "min": 0, "max": 100 }
+    },
+    {
+      "name": "mineral-extraction",
+      "translationKey": "map.summary-model.step.mineralExtraction",
+      "operation": "MEAN",
+      "order": 80,
+      "bands": [15, 67],
+      "normalization": { "type": "linear", "min": 0, "max": 100 }
+    },
+    {
+      "name": "shipping",
+      "translationKey": "map.summary-model.step.shipping",
       "operation": "MEAN",
       "order": 90,
-      "bands": [15, 67],
+      "bands": [22, 24, 57, 68],
+      "normalization": { "type": "linear", "min": 0, "max": 100 }
+    },
+    {
+      "name": "aquaculture",
+      "translationKey": "map.summary-model.step.aquaculture",
+      "operation": "MEAN",
+      "order": 100,
+      "bands": [12, 14, 56],
+      "normalization": { "type": "linear", "min": 0, "max": 100 }
+    },
+    {
+      "name": "eutrophication",
+      "translationKey": "map.summary-model.step.eutrophication",
+      "operation": "MEAN",
+      "order": 110,
+      "bands": [1, 21, 59],
       "normalization": { "type": "linear", "min": 0, "max": 100 }
     },
     {
       "name": "pressure_total",
       "translationKey": "map.summary-model.step.pressureTotal",
       "operation": "MEAN",
-      "order": 100,
+      "order": 120,
       "normalization": {
         "type": "linear",
         "min": 0,
         "max": 100
       },
       "inputs": [
-        "fishing",
-        "shipping",
-        "recreation",
         "energy",
-        "coastal-development",
-        "pollution-other",
+        "fishing",
+        "recreation",
+        "pollution",
         "defence",
-        "sand-extraction"
+        "industry",
+        "coastal-development",
+        "mineral-extraction",
+        "shipping",
+        "aquaculture",
+        "eutrophication"
       ]
     }
   ]
