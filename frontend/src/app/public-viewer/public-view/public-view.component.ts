@@ -96,10 +96,6 @@ export class PublicView {
     this.leftSidebarIsOpen = !this.leftSidebarIsOpen;
   }
 
-  toggleDrawArea = () => {
-    this.map?.toggleDrawInteraction();
-  };
-
   zoomToArea = (statePaths: StatePath[]) => {
     this.map?.zoomToArea(statePaths);
   };

@@ -28,6 +28,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
 import { PublicViewModule } from './public-viewer/public-viewer.module';
+import { configReducer } from './data/systemproperties/systemproperties.reducer';
+import { ConfigService } from '@data/systemproperties/systemproperties.service';
+import { lastValueFrom } from 'rxjs';
 
 @NgModule({
   declarations: [AppComponent],
@@ -42,6 +45,7 @@ import { PublicViewModule } from './public-viewer/public-viewer.module';
     CoreModule,
     MapViewModule,
     PublicViewModule,
+    StoreModule.forFeature('config', configReducer),
     StoreModule.forRoot(reducers, {
       metaReducers,
       runtimeChecks: {
@@ -70,7 +74,8 @@ import { PublicViewModule } from './public-viewer/public-viewer.module';
     BrandingService,
     provideAppInitializer(() => {
       const brandingService = inject(BrandingService);
-      return brandingService.loadConfig();
+      const configService = inject(ConfigService);
+      return Promise.all([brandingService.loadConfig(), lastValueFrom(configService.loadConfig())]);
     })
   ],
   bootstrap: [AppComponent]

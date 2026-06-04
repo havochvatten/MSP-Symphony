@@ -1,19 +1,28 @@
 import { environment } from '@src/environments/environment';
 import { inject, Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { CanActivate, Router, UrlTree } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { selectPublicAccess } from '@data/systemproperties/systemproperties.selectors';
+import { map, take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
-export class PublicGuard {
-  router = inject(Router);
+export class PublicGuard implements CanActivate {
+  private store = inject(Store);
+  private router = inject(Router);
 
-  canActivate = (): boolean => {
-    if (environment.PUBLIC_VIEWER_OPEN) {
-      return true;
-    } else {
-      this.router.navigate(['/login']);
-      return false;
-    }
-  };
+  canActivate(): Observable<boolean | UrlTree> {
+    return this.store.select(selectPublicAccess).pipe(
+      take(1),
+      map((publicAccess) => {
+        console.log('publicAccess in canAcativate(): ', publicAccess);
+        if (!publicAccess) {
+          this.router.navigate(['/login']); // Redirect
+        }
+        return publicAccess; // Return boolean (true/false)
+      })
+    );
+  }
 }

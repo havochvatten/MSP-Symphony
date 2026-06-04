@@ -23,7 +23,7 @@ import { CalculationActions } from '@data/calculation';
 import { ScenarioActions } from '@data/scenario';
 import { LegendType } from '@data/calculation/calculation.interfaces';
 import { UserSettings } from '@data/user/user.interfaces';
-import { environment } from '@src/environments/environment';
+import { selectPublicAccess } from '@data/systemproperties/systemproperties.selectors';
 
 const legendTypes: LegendType[] = ['result', 'ecosystem', 'pressure'];
 
@@ -31,6 +31,7 @@ const legendTypes: LegendType[] = ['result', 'ecosystem', 'pressure'];
 export class UserEffects {
   private readonly actions$ = inject(Actions);
   private readonly store$ = inject<Store<State>>(Store);
+  private readonly configStore = inject(Store);
   private readonly userService = inject(UserService);
   private readonly router = inject(Router);
 
@@ -80,8 +81,9 @@ export class UserEffects {
   logoutUserSuccess$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.logoutUserSuccess),
-      map(() =>
-        environment.PUBLIC_VIEWER_OPEN
+      withLatestFrom(this.configStore.select(selectPublicAccess)),
+      map(([, publicAccess]) =>
+        publicAccess
           ? UserActions.navigateTo({ url: '/public' })
           : UserActions.navigateTo({ url: '/login' })
       )
