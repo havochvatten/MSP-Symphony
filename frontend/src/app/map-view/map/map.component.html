@@ -6,7 +6,13 @@
   (clearResult)="clearResult()"
   (toggleDraw)="toggleDrawInteraction()"
   (setMapOpacity)="setMapOpacity($event)"
+  [layerManagerActive]="layerManagerExpanded"
+  (toggleLayerManager)="toggleLayerManager()"
 ></app-map-toolbar>
+<app-layer-manager
+  class="layer-manager-panel"
+  [isExpanded]="layerManagerExpanded">
+</app-layer-manager>
 <app-footer></app-footer>
 @if (!drawIsActive) {
   <div id="popup" class="ol-popup">

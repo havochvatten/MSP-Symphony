@@ -41,6 +41,9 @@ import { ConfirmGenerateComparisonComponent } from './calculation-history/confir
 import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component';
 import { DownloadCompoundComparisonDialogComponent } from './compound-comparison-list-dialog/download-compound-comparison-dialog/download-compound-comparison-dialog.component';
 import { ReliabilityLegendComponent } from "@src/app/map-view/reliability-legend/reliability-legend.component";
+import { LayerManagerComponent } from './layer-manager/layer-manager.component';
+import { AutoSelectDirective } from './layer-manager/auto-select.directive';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -71,7 +74,9 @@ import { ReliabilityLegendComponent } from "@src/app/map-view/reliability-legend
     ConfirmGenerateComparisonComponent,
     CompoundComparisonListDialogComponent,
     DownloadCompoundComparisonDialogComponent,
-    ReliabilityLegendComponent
+    ReliabilityLegendComponent,
+    LayerManagerComponent,
+    AutoSelectDirective
   ],
   imports: [
     SharedModule,
@@ -82,7 +87,8 @@ import { ReliabilityLegendComponent } from "@src/app/map-view/reliability-legend
     MatProgressSpinnerModule,
     MatCheckboxModule,
     MatButtonModule,
-    MatRadioModule
+    MatRadioModule,
+    DragDropModule
   ],
   providers: [AnchorPipe, DialogService],
   exports: [MainViewComponent, ComparisonComponent]

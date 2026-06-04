@@ -15,6 +15,26 @@
         }
     },
     "map": {
+        "layer-manager": {
+            "title": "Lagerhanterare",
+            "info": "Hantera synlighet, ordning och opacitet för kartlager",
+            "sections": {
+            "map-layers": "Kartlager",
+            "active-layers": "Aktiva lager"
+            },
+            "tooltips": {
+            "toggle-visibility": "Växla lagersynlighet",
+            "adjust-opacity": "Justera lageropacitet",
+            "reorder-layer": "Dra för att ändra ordning",
+            "remove-layer": "Ta bort lager från kartan",
+            "rename-layer": "Klicka för att byt namn",
+            "confirm-rename": "Bekräfta namnbyte"
+            },
+            "layer-names": {
+            "background": "Bakgrund",
+            "user-areas": "Användarområden"
+            }
+        },
         "background-transparency": "Bakgrundskartans synlighet",
         "click-area": "Klicka för att markera området.",
         "location-within-scenario": "Området överlappar med det aktiva scenariot.",

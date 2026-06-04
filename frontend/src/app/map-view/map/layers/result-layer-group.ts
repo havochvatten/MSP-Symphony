@@ -7,6 +7,8 @@ import Static from "ol/source/ImageStatic";
 import { SymphonyLayerGroup } from "@src/app/map-view/map/layers/symphony-layer";
 import { MapComponent } from "@src/app/map-view/map/map.component";
 import { AppSettings } from "@src/app/app.settings";
+import { LayerStyleService } from '@src/app/map-view/map/layers/layer-style.service';
+import { ResultLayerService } from '@src/app/map-view/map/layers/result-layer.service';
 
 export class ResultLayerGroup extends SymphonyLayerGroup {
 
@@ -24,7 +26,20 @@ export class ResultLayerGroup extends SymphonyLayerGroup {
     };
   }
 
-  constructor(private map: MapComponent) { super(); }
+  constructor(
+    private map: MapComponent,
+    private layerStyleService: LayerStyleService,
+    private resultLayerService: ResultLayerService
+  ) {
+    super();
+
+    this.layerStyleService.getZIndexChanges().subscribe(zIndexMap => {
+      this.calculationLayers.forEach((layer, calcId) => {
+        const zIndex = zIndexMap.get(`result-${calcId}`);
+        if (zIndex !== undefined) layer.setZIndex(zIndex);
+      });
+    });
+  }
 
   // TODO Clip result to scenario boundaries? Perhaps like so:
   // https://gis.stackexchange.com/questions/185881/clipping-tilelayer-with-georeferenced-polygon-clipping-mask
@@ -44,6 +59,12 @@ export class ResultLayerGroup extends SymphonyLayerGroup {
       this.calculationLayers.set(result.calculationId, cpl);
       imageLayers.push(cpl);
       this.setLayers(imageLayers);
+
+      this.resultLayerService.add({
+        id: result.calculationId,
+        name: `Result ${result.calculationId}`,
+        layer: cpl
+      });
     }
 
     this.layerChange();
@@ -55,12 +76,17 @@ export class ResultLayerGroup extends SymphonyLayerGroup {
     if(cl) {
       imageLayers.remove(cl);
       this.calculationLayers.delete(id);
+      this.resultLayerService.remove(id);
+      this.layerStyleService.clearResultOpacity(id);
     }
     this.setLayers(imageLayers);
     this.layerChange();
   }
 
   public clearResult() {
+    this.resultLayerService.clear();
+    // Clear opacity entries for all tracked results
+    this.calculationLayers.forEach((_, id) => this.layerStyleService.clearResultOpacity(id));
     this.calculationLayers = new Map<number, ImageLayer<Static>>();
     this.setLayers(new Collection<BaseLayer>());
     this.layerChange();
@@ -82,6 +108,14 @@ export class ResultLayerGroup extends SymphonyLayerGroup {
       });
       this.calculationLayers.set(calcId, chgLayer);
       layers.push(chgLayer);
+
+      // Re-register the rebuilt layer instance and restore preserved opacity
+      this.resultLayerService.add({
+        id: calcId,
+        name: `Result ${calcId}`,
+        layer: chgLayer
+      });
+      chgLayer.setOpacity(this.layerStyleService.getResultOpacity(calcId));
     });
     this.setLayers(new Collection(layers));
     this.changed();
