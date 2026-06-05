@@ -37,6 +37,9 @@ import { RouterModule } from "@angular/router";
 import { provideZonelessChangeDetection } from "@angular/core";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenario-areas/add-scenario-areas.component";
+import { LayerManagerComponent } from './layer-manager/layer-manager.component';
+import { AutoSelectDirective } from './layer-manager/auto-select.directive';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 describe('MainViewComponent', () => {
   let fixture: ComponentFixture<MainViewComponent>,
       component: MainViewComponent;
@@ -53,6 +56,7 @@ describe('MainViewComponent', () => {
         MatCheckboxModule,
         FormsModule,
         StoreModule.forRoot({},{}),
+        DragDropModule,
       ],
       declarations: [
         MainViewComponent,
@@ -73,7 +77,9 @@ describe('MainViewComponent', () => {
         CalculationHistoryComponent,
         ComparisonComponent,
         BatchProgressComponent,
-        AddScenarioAreasComponent
+        AddScenarioAreasComponent,
+        LayerManagerComponent,
+        AutoSelectDirective
       ],
       providers: [
         FormBuilder,

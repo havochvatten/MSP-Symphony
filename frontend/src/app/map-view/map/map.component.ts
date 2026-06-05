@@ -42,6 +42,8 @@ import { ScenarioLayer } from '@src/app/map-view/map/layers/scenario-layer';
 import AreaLayer from '@src/app/map-view/map/layers/area-layer';
 import { Extent } from 'ol/extent';
 import { DataLayerService } from '@src/app/map-view/map/layers/data-layer.service';
+import { LayerStyleService } from '@src/app/map-view/map/layers/layer-style.service';
+import { ResultLayerService } from '@src/app/map-view/map/layers/result-layer.service';
 import { isEqual } from '@shared/common.util';
 import { dieCutPolygons, turfMergeAll } from '@shared/turf-helper/turf-helper';
 import { SelectIntersectionComponent } from '@shared/select-intersection/select-intersection.component';
@@ -53,6 +55,7 @@ import { AreaSelectionConfig } from '@shared/select-intersection/select-intersec
 import { AreaHighlightLayer } from '@src/app/map-view/map/layers/area-highlight-layer';
 import { ReliabilityLayer } from '@src/app/map-view/map/layers/reliability-layer';
 import { BandType, ReliabilityMap } from '@data/metadata/metadata.interfaces';
+import { LayerManagerComponent } from '../layer-manager/layer-manager.component';
 import { MapViewModule } from '@src/app/map-view/map-view.module';
 import { ScenarioService } from '@data/scenario/scenario.service';
 
@@ -69,6 +72,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private readonly translateService = inject(TranslateService);
   private readonly dataLayerService = inject(DataLayerService);
   private readonly scenarioService = inject(ScenarioService);
+  private readonly layerStyleService = inject(LayerStyleService);
+  private readonly resultLayerService = inject(ResultLayerService);
 
   @Input() mapCenter?: Coordinate;
   @Output() resultLayerGroupChange: EventEmitter<number> = new EventEmitter<number>();
@@ -76,6 +81,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   drawIsActive = false;
 
   @ViewChild('areaOptionsMenu') areaOptionsMenu!: ElementRef<HTMLElement>;
+  @ViewChild(LayerManagerComponent) layerManager?: LayerManagerComponent;
+  layerManagerExpanded = false; // Start minimized
 
   private map?: OLMap;
   private readonly storeSubscription?: Subscription;
@@ -228,7 +235,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         .pipe(skipWhile((value) => !value || value.features.length === 0))
     );
 
-    this.resultLayerGroup = new ResultLayerGroup(this);
+    this.resultLayerGroup = new ResultLayerGroup(this, this.layerStyleService, this.resultLayerService);
     this.map.addLayer(this.resultLayerGroup);
     this.geoJson = new GeoJSON({
       featureProjection: this.map.getView().getProjection()
@@ -333,6 +340,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           baseline.name,
           this.dataLayerService,
           this.store,
+          this.layerStyleService,
           this.aliasing
         );
         this.map!.getLayers().insertAt(1, this.bandLayer); // on top of background layer
@@ -340,11 +348,22 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         this.areaLayer.deselectAreas();
         this.clearResult();
       });
+
+    setTimeout(() => {
+      this.layerManager?.setPrimaryLayerInstances({
+        background: this.background,
+        userAreas: this.areaLayer
+      });
+    }, 0);
   }
 
   public clearResult() {
     this.resultLayerGroup.clearResult();
     this.store.dispatch(CalculationActions.resetComparisonLegend());
+  }
+
+  public toggleLayerManager() {
+    this.layerManagerExpanded = !this.layerManagerExpanded;
   }
 
   public highlightArea = (statePath: StatePath, highlight: boolean) => {

@@ -1,0 +1,115 @@
+<div class="layer-manager" [class.collapsed]="!isExpanded" cdkDrag>
+
+  <div class="layer-manager-header" cdkDragHandle>
+    <h3>{{ 'map.layer-manager.title' | translate }}</h3>
+    <i
+      class="info-icon"
+      [title]="'map.layer-manager.info' | translate">ℹ️</i>
+  </div>
+
+  <div class="layer-manager-content">
+
+    <div class="layer-section primary-layers">
+      <div class="section-title">{{ 'map.layer-manager.sections.map-layers' | translate }}</div>
+      <div class="layer-list-static">
+        @for (layer of primaryLayers; track layer.id) {
+          <div class="layer-item">
+            <input
+              type="checkbox"
+              [checked]="layer.visible"
+              (change)="toggleVisibility(layer)"
+              [title]="'map.layer-manager.tooltips.toggle-visibility' | translate"
+            />
+
+            <span class="layer-name">{{ layer.name }}</span>
+
+            <input
+              class="opacity-slider"
+              type="range"
+              min="0"
+              max="100"
+              [value]="getOpacity(layer)"
+              (input)="changeOpacity(layer, +$any($event.target).value)"
+              [title]="'map.layer-manager.tooltips.adjust-opacity' | translate"
+            />
+          </div>
+        }
+      </div>
+    </div>
+
+    @if (secondaryLayers.length > 0) {
+      <div class="layer-section secondary-layers">
+        <div class="section-title">{{ 'map.layer-manager.sections.active-layers' | translate }}</div>
+        <div
+          cdkDropList
+          [cdkDropListData]="secondaryLayers"
+          (cdkDropListDropped)="drop($event)"
+          class="layer-list"
+        >
+          @for (item of secondaryLayers; track item.id) {
+            <div
+              class="layer-item"
+              cdkDrag
+              [cdkDragData]="item"
+            >
+              <span
+                class="drag-handle"
+                cdkDragHandle
+                [title]="'map.layer-manager.tooltips.reorder-layer' | translate">☰</span>
+
+              <input
+                type="checkbox"
+                [checked]="item.visible"
+                (change)="toggleVisibility(item)"
+                [title]="'map.layer-manager.tooltips.toggle-visibility' | translate"
+              />
+
+              @if (editingLayerId !== item.id) {
+                <span
+                  class="layer-name"
+                  [class.editable]="isRenamable(item)"
+                  (click)="startEditing(item)"
+                  [title]="isRenamable(item) ? ('map.layer-manager.tooltips.rename-layer' | translate) : ''">
+                  {{ item.name }}
+                </span>
+              } @else {
+                <input
+                  type="text"
+                  class="layer-name-edit"
+                  [(ngModel)]="editingName"
+                  (blur)="saveLayerName(item)"
+                  (keydown)="onEditKeydown($event, item)"
+                  appAutoSelect
+                />
+                <button
+                  class="confirm-btn"
+                  [title]="'map.layer-manager.tooltips.confirm-rename' | translate"
+                  (mousedown.prevent)="saveLayerName(item)"
+                >✓</button>
+              }
+
+              <input
+                class="opacity-slider"
+                type="range"
+                min="0"
+                max="100"
+                [value]="getOpacity(item)"
+                (input)="changeOpacity(item, +$any($event.target).value)"
+                [title]="'map.layer-manager.tooltips.adjust-opacity' | translate"
+              />
+
+              <button
+                class="remove-btn"
+                [title]="'map.layer-manager.tooltips.remove-layer' | translate"
+                (click)="removeLayer(item)"
+              >
+                ✕
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+  </div>
+</div>

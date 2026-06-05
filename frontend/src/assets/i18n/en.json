@@ -15,6 +15,26 @@
         }
     },
     "map": {
+        "layer-manager": {
+            "title": "Layer Manager",
+            "info": "Manage visibility, order, and opacity of map layers",
+            "sections": {
+            "map-layers": "Map Layers",
+            "active-layers": "Active Layers"
+            },
+            "tooltips": {
+            "toggle-visibility": "Toggle layer visibility",
+            "adjust-opacity": "Adjust layer opacity",
+            "reorder-layer": "Drag to reorder layer",
+            "remove-layer": "Remove layer from map",
+            "rename-layer": "Click to rename layer",
+            "confirm-rename": "Confirm rename"
+            },
+            "layer-names": {
+            "background": "Background",
+            "user-areas": "User Areas"
+            }
+        },
         "background-transparency": "Background map transparency",
         "click-area": "Click to select area.",
         "location-within-scenario": "The area overlaps with the active scenario.",
