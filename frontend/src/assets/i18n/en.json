@@ -35,9 +35,6 @@
             "deselect-all": "Deselect all"
         },
         "summary-model": {
-            "balanced": "Balanced model",
-            "balancedEcosystemTitle": "Balanced model - Ecosystem components",
-            "balancedPressureTitle": "Balanced model - Pressures",
             "dependsOn": "Depends on",
             "linearNormalization": "Linear normalization",
             "operation": {
@@ -46,39 +43,7 @@
                 "sum": "SUM"
             },
             "output": "Output",
-            "overview": "Overview",
-            "simple": "Simple model",
-            "simpleEcosystemTitle": "Simple model - Ecosystem components",
-            "simplePressureTitle": "Simple model - Pressures",
-            "step": {
-                "birdTotal": "Bird total",
-                "sealTotal": "Seal total",
-                "porpoiseTotal": "Porpoise total",
-                "mammalTotal": "Mammal total",
-                "fishOccurrence": "Fish occurrence",
-                "fishFunctions": "Fish functions",
-                "fishTotal": "Fish total",
-                "reefHardbottomPresence": "Reef / hardbottom presence",
-                "hardbottomAbiotic": "Hardbottom abiotic",
-                "reefEnvironmentPresence": "Reef environment presence",
-                "extraValuableReef": "Extra valuable reef",
-                "reefTotal": "Reef total",
-                "angiospermShoreline": "Angiosperm & shoreline",
-                "benthicTotal": "Benthic total",
-                "ecosystemTotal": "Ecosystem total",
-                "fishing": "Fishing",
-                "shipping": "Shipping",
-                "recreation": "Recreation",
-                "energy": "Energy",
-                "coastalDevelopment": "Coastal development",
-                "pollution": "Pollution",
-                "defence": "Defence",
-                "industry": "Industry",
-                "mineralExtraction": "Mineral extraction",
-                "aquaculture": "Aquaculture",
-                "eutrophication": "Eutrophication",
-                "pressureTotal": "Pressure total"
-            }
+            "overview": "Overview"
         },
         "confirm-reset": {
             "modal": {

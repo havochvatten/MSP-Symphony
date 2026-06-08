@@ -35,9 +35,6 @@
             "deselect-all": "Tout désélectionner"
         },
         "summary-model": {
-            "balanced": "Modèle équilibré",
-            "balancedEcosystemTitle": "Modèle équilibré - Composants de l'écosystème",
-            "balancedPressureTitle": "Modèle équilibré - Pressions",
             "dependsOn": "Dépend de",
             "linearNormalization": "Normalisation linéaire",
             "operation": {
@@ -46,39 +43,7 @@
                 "sum": "SOMME"
             },
             "output": "Sortie",
-            "overview": "Aperçu",
-            "simple": "Modèle simple",
-            "simpleEcosystemTitle": "Modèle simple - Composants de l'écosystème",
-            "simplePressureTitle": "Modèle simple - Pressions",
-            "step": {
-                "birdTotal": "Oiseaux total",
-                "sealTotal": "Phoques total",
-                "porpoiseTotal": "Marsouin total",
-                "mammalTotal": "Mammifères marins total",
-                "fishOccurrence": "Présence de poissons",
-                "fishFunctions": "Fonctions des poissons",
-                "fishTotal": "Poissons total",
-                "reefHardbottomPresence": "Présence de récifs / fonds durs",
-                "hardbottomAbiotic": "Fonds durs abiotiques",
-                "reefEnvironmentPresence": "Présence de l'environnement récifal",
-                "extraValuableReef": "Récifs de grande valeur",
-                "reefTotal": "Récifs total",
-                "angiospermShoreline": "Angiospermes et littoral",
-                "benthicTotal": "Benthique total",
-                "ecosystemTotal": "Valeur écosystémique totale",
-                "fishing": "Pêche",
-                "shipping": "Navigation",
-                "recreation": "Loisirs",
-                "energy": "Énergie",
-                "coastalDevelopment": "Développement côtier",
-                "pollution": "Pollution",
-                "defence": "Défense",
-                "industry": "Industrie",
-                "mineralExtraction": "Extraction de minéraux",
-                "aquaculture": "Aquaculture",
-                "eutrophication": "Eutrophisation",
-                "pressureTotal": "Valeur totale des pressions"
-            }
+            "overview": "Aperçu"
         },
         "confirm-reset": {
             "modal": {

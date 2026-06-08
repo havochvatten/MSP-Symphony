@@ -130,9 +130,12 @@ public class DataLayerREST {
     @Produces(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
     @RolesAllowed("GRP_SYMPHONY")
     @Operation(summary = "Returns list of available summary model keys for the given type and baseline")
-    public Response getAvailableSummaryModels(@PathParam("baselineName") String baselineName, @PathParam("type") String type) {
+    public Response getAvailableSummaryModels(
+        @PathParam("baselineName") String baselineName,
+        @PathParam("type") String type,
+        @QueryParam("locale") @DefaultValue("sv") String locale) {
         var layerType = LayerType.valueOf(type.toUpperCase());
-        List<String> models = summaryModelConfigService.getAvailableModels(baselineName, layerType);
+        var models = summaryModelConfigService.getAvailableModelSummaries(baselineName, layerType, locale);
         return ok(models).build();
     }
 

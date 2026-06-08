@@ -8,6 +8,7 @@ import jakarta.ejb.Startup;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.Operation;
 import se.havochvatten.symphony.dto.SummaryModelConfig;
+import se.havochvatten.symphony.dto.SummaryModelConfig.ModelSummary;
 import se.havochvatten.symphony.dto.SummaryModelConfig.StepFormula;
 import se.havochvatten.symphony.dto.SummaryModelConfig.SummaryModelDescription;
 
@@ -176,6 +177,16 @@ public class SummaryModelConfigService {
             .collect(Collectors.toList());
     }
 
+    /** Available models with their picker label resolved to the request locale (falls back to the model key). */
+    public List<ModelSummary> getAvailableModelSummaries(String baselineName, LayerType type, String locale) {
+        return getAvailableModels(baselineName, type).stream()
+            .map(key -> {
+                SummaryModelConfig config = getConfig(baselineName, type, key);
+                return new ModelSummary(key, resolveLabel(config.getName(), locale, key));
+            })
+            .collect(Collectors.toList());
+    }
+
     /** Returns all baseline names that have at least one loaded config. */
     public List<String> getAvailableBaselines() {
         return configs.keySet().stream()
@@ -185,13 +196,32 @@ public class SummaryModelConfigService {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Resolves an embedded {@code {en, sv, fr}} label map to a single string for the given
+     * request locale. Prefix-matches the locale (sv/fr, else en) to mirror
+     * {@link MetaDataService#getBandTitle}, falling back to the English entry and finally to the
+     * supplied fallback (model key or step name).
+     */
+    private static String resolveLabel(Map<String, String> labels, String locale, String fallback) {
+        if (labels == null || labels.isEmpty()) {
+            return fallback;
+        }
+        String lang = (locale != null && locale.startsWith("sv")) ? "sv" :
+                      (locale != null && locale.startsWith("fr")) ? "fr" : "en";
+        String value = labels.get(lang);
+        if (value == null) {
+            value = labels.get("en");
+        }
+        return value != null ? value : fallback;
+    }
+
     public SummaryModelDescription getModelDescription(
         String baselineName, LayerType type, String modelKey, int bverId, String locale) {
 
         SummaryModelConfig config = getConfig(baselineName, type, modelKey);
 
-        String title = config.getTitleTranslationKey() != null ? config.getTitleTranslationKey()
-            : type.name().toLowerCase() + ":" + modelKey;
+        String title = resolveLabel(config.getTitle(), locale,
+            type.name().toLowerCase() + ":" + modelKey);
 
         List<StepFormula> formulas = new ArrayList<>();
         Map<String, String> inputReference = new HashMap<>();
@@ -239,18 +269,19 @@ public class SummaryModelConfigService {
             }
 
             Operation operation = step.getOperation() != null ? step.getOperation() : Operation.MEAN;
+            String resolvedLabel = resolveLabel(step.getLabel(), locale, step.getName());
             sf.setName(step.getName());
-            sf.setTranslationKey(step.getTranslationKey());
+            sf.setLabel(resolvedLabel);
             sf.setOperation(operation.name().toLowerCase());
             sf.setNormalization(norm);
             formulas.add(sf);
 
-            inputReference.put(step.getName(), step.getTranslationKey() != null ? step.getTranslationKey() : step.getName());
+            inputReference.put(step.getName(), resolvedLabel);
         }
 
         SummaryModelDescription desc = new SummaryModelDescription();
         desc.setModelKey(modelKey);
-        desc.setTitleTranslationKey(title);
+        desc.setTitle(title);
         desc.setSteps(formulas);
         return desc;
     }

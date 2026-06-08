@@ -6,15 +6,17 @@ import { AppSettings } from '@src/app/app.settings';
 import { ModelDescriptionDialogData } from '@src/app/map-view/band-selection/summary-model-selection/summary-model-dialog/summary-model-dialog.component';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { SummaryModel, SummaryModelCategory } from '@data/calculation/calculation.interfaces';
+import { SummaryModel, SummaryModelCategory, SummaryModelOption } from '@data/calculation/calculation.interfaces';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataLayerService {
   private readonly http = inject(HttpClient);
+  private readonly translate = inject(TranslateService);
 
-  private readonly summaryModelsCache = new Map<string, string[]>();
+  private readonly summaryModelsCache = new Map<string, SummaryModelOption[]>();
 
   public getDataLayer(baseline: string, type: BandType, bandNumber: number) {
     const url = `${env.apiBaseUrl}/datalayer/${type.toLowerCase()}/${bandNumber}/${baseline}`;
@@ -51,24 +53,29 @@ export class DataLayerService {
     model: Exclude<SummaryModel, 'none'>
   ) {
     const url = `${env.apiBaseUrl}/datalayer/${baseline}/${summaryModelCategory.toLowerCase()}/model/${model}/description`;
+    const params = new HttpParams().set('locale', this.translate.currentLang);
 
-    return this.http.get<ModelDescriptionDialogData>(url);
+    return this.http.get<ModelDescriptionDialogData>(url, { params });
   }
 
   public getSummaryModels(
     baseline: string,
     summaryModelCategory: SummaryModelCategory
-  ): Observable<string[]> {
+  ): Observable<SummaryModelOption[]> {
     const category = summaryModelCategory.toLowerCase(); // 'ecosystem' | 'pressure'
-    const cacheKey = `${baseline.toLowerCase()}:${category}`;
+    const locale = this.translate.currentLang;
+    // Locale is part of the cache key: the picker labels are localized, and a language
+    // switch re-runs this fetch — without the locale the cache would serve stale names.
+    const cacheKey = `${baseline.toLowerCase()}:${category}:${locale}`;
 
     if (this.summaryModelsCache.has(cacheKey)) {
       return of(this.summaryModelsCache.get(cacheKey)!);
     }
 
     const url = `${env.apiBaseUrl}/datalayer/${baseline}/${category}/models`;
+    const params = new HttpParams().set('locale', locale);
 
-    return this.http.get<string[]>(url).pipe(
+    return this.http.get<SummaryModelOption[]>(url, { params }).pipe(
       tap((models) => {
         this.summaryModelsCache.set(cacheKey, models);
       })

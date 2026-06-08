@@ -4,10 +4,10 @@ import { DialogRef } from '@shared/dialog/dialog-ref';
 import { TranslateService } from '@ngx-translate/core';
 
 export interface ModelDescriptionDialogData {
-  titleTranslationKey: string;
+  title: string;
   steps: Array<{
     name: string;
-    translationKey: string;
+    label: string;
     formulaInputs: Array<{
       name: string;
       displayName: string;
@@ -26,7 +26,7 @@ type FormulaToken =
 interface RenderedStep {
   number: number;
   name: string;
-  translationKey: string;
+  label: string;
   formulaInputs: Array<{
     name: string;
     displayName: string;
@@ -47,7 +47,7 @@ interface RenderedStep {
 })
 export class SummaryModelDialogComponent {
 
-  titleTranslationKey: string = '';
+  title: string = '';
   steps: RenderedStep[] = [];
   private highlightedStep: number | null = null;
   private highlightTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -58,7 +58,7 @@ export class SummaryModelDialogComponent {
 
   constructor() {
     const payload = this.config.data;
-    this.titleTranslationKey = payload.titleTranslationKey;
+    this.title = payload.title;
 
     const nameToNumber = new Map<string, number>();
     payload.steps.forEach((step, index) => {
@@ -88,7 +88,7 @@ export class SummaryModelDialogComponent {
       return {
         number: index + 1,
         name: step.name,
-        translationKey: step.translationKey,
+        label: step.label,
         formulaInputs: step.formulaInputs,
         normalization: step.normalization,
         operation: step.operation,
@@ -116,7 +116,7 @@ export class SummaryModelDialogComponent {
       if (step.hasStepsAsInput && stepNumber) {
         tokens.push({
           type: 'step',
-          value: this.translate.instant(input.displayName),
+          value: input.displayName,
           stepNumber
         });
       } else {
@@ -136,10 +136,8 @@ export class SummaryModelDialogComponent {
     return tokens;
   }
 
-  private getStepDisplayName(step: { name: string, translationKey: string }): string {
-    return step.translationKey
-      ? this.translate.instant(step.translationKey)
-      : step.name;
+  private getStepDisplayName(step: { name: string, label: string }): string {
+    return step.label || step.name;
   }
 
   scrollToStep(stepNumber: number) {

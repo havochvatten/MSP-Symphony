@@ -12,7 +12,7 @@ import MetadataService from './metadata.service';
 import { ModelDescriptionDialogData } from '@src/app/map-view/band-selection/summary-model-selection/summary-model-dialog/summary-model-dialog.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-const MOCK_DESC: ModelDescriptionDialogData = { titleTranslationKey: 'test', steps: [] };
+const MOCK_DESC: ModelDescriptionDialogData = { title: 'test', steps: [] };
 
 describe('MetadataEffects — fetchSummaryModelDescriptions$', () => {
   let actions$: Subject<Action>;
@@ -56,7 +56,10 @@ describe('MetadataEffects — fetchSummaryModelDescriptions$', () => {
       CalculationActions.fetchSummaryModelsSuccess({
         baselineName: 'BASELINE2019',
         category: 'ECOSYSTEM',
-        models: ['simple', 'balanced']
+        models: [
+          { key: 'simple', name: 'Simple model' },
+          { key: 'balanced', name: 'Balanced model' }
+        ]
       })
     );
 
@@ -87,7 +90,7 @@ describe('MetadataEffects — fetchSummaryModelDescriptions$', () => {
       CalculationActions.fetchSummaryModelsSuccess({
         baselineName: 'BASELINE2019',
         category: 'ECOSYSTEM',
-        models: ['simple']
+        models: [{ key: 'simple', name: 'Simple model' }]
       })
     );
 

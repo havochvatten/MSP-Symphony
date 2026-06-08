@@ -4,7 +4,7 @@
     [disabled]="true"
     (change)="toggleSummaryModel(summaryModel)"
     checkboxSize="small"
-  >{{ summaryModelLabelKey | translate }}
+  >{{ summaryModelLabel }}
   </mat-checkbox>
 
   @if (isSummaryModelSelected(summaryModel) && !isSummaryModelLoaded(summaryModel)) {

@@ -134,13 +134,15 @@ public class DataLayerRESTTest extends RESTTest {
         given()
             .pathParam("baselineName", "BASELINE2019")
             .pathParam("type", "ecosystem")
+            .queryParam("locale", "en")
             .auth().preemptive().basic(getUsername(), getPassword())
             .when()
             .get(endpoint("/datalayer/{baselineName}/{type}/models"))
             .then()
             .statusCode(200)
             .contentType(containsString("application/json"))
-            .body("$", hasItems("simple", "balanced"));
+            .body("key", hasItems("simple", "balanced"))
+            .body("findAll { it.name != null }.size()", greaterThan(0));
     }
 
     @Test
@@ -159,7 +161,7 @@ public class DataLayerRESTTest extends RESTTest {
             .extract().body().as(JsonNode.class);
 
         Assert.assertNotNull(desc.get("modelKey"));
-        Assert.assertNotNull(desc.get("titleTranslationKey"));
+        Assert.assertNotNull(desc.get("title"));
         Assert.assertNotNull(desc.get("steps"));
         Assert.assertTrue(desc.get("steps").isArray());
         Assert.assertFalse(desc.get("steps").isEmpty());

@@ -1,7 +1,6 @@
 import { Component, inject, Input, NgModuleRef } from '@angular/core';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { MapViewModule } from '@src/app/map-view/map-view.module';
-import { TranslateService } from '@ngx-translate/core';
 import { DataLayerService } from '@src/app/map-view/map/layers/data-layer.service';
 import { Store } from '@ngrx/store';
 import { UserSelectors } from '@data/user';
@@ -23,12 +22,11 @@ import { MetadataSelectors } from '@data/metadata';
 export class SummaryModelControlsComponent {
   private readonly dialogService = inject(DialogService);
   private readonly moduleRef = inject(NgModuleRef<MapViewModule>);
-  private readonly translateService = inject(TranslateService);
   private readonly dataLayerService = inject(DataLayerService);
   private readonly store = inject(Store);
 
   @Input() modelCategory!: SummaryModelCategory;
-  @Input() summaryModelLabelKey?: string;
+  @Input() summaryModelLabel?: string;
   @Input() summaryModel!: Exclude<SummaryModel, 'none'>;
   @Input() isSummaryModelSelected!: (model: SummaryModel) => boolean;
   @Input() toggleSummaryModel!: (model: SummaryModel) => void;
@@ -55,9 +53,7 @@ export class SummaryModelControlsComponent {
         }
         this.dialogService.open(SummaryModelDialogComponent, this.moduleRef, {
           data: {
-            titleTranslationKey:
-              desc.titleTranslationKey ||
-              this.translateService.instant('map.summary-model.' + this.summaryModel),
+            title: desc.title || this.summaryModelLabel || this.summaryModel,
             steps: desc.steps.map((step) => ({ ...step, normalization: step.normalization || '' }))
           } as ModelDescriptionDialogData
         });

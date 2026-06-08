@@ -7,7 +7,8 @@ import {
   LegendType,
   PercentileResponse,
   SummaryModel,
-  SummaryModelCategory
+  SummaryModelCategory,
+  SummaryModelOption
 } from './calculation.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
 import { SortActionProps } from '@data/common/sorting.interfaces';
@@ -231,7 +232,7 @@ export const fetchSummaryModels = createAction(
 
 export const fetchSummaryModelsSuccess = createAction(
   '[Calculation] Fetch Summary Models Success',
-  props<{ baselineName: string; category: SummaryModelCategory; models: string[] }>()
+  props<{ baselineName: string; category: SummaryModelCategory; models: SummaryModelOption[] }>()
 );
 
 export const fetchSummaryModelsFailure = createAction(

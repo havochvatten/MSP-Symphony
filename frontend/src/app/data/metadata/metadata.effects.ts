@@ -113,10 +113,10 @@ export class MetadataEffects {
           models.reduce(
             (acc, model) => ({
               ...acc,
-              [model]: this.dataLayerService.getSummaryModelDescription(
+              [model.key]: this.dataLayerService.getSummaryModelDescription(
                 baselineName,
                 category,
-                model
+                model.key
               )
             }),
             {} as { [model: string]: Observable<ModelDescriptionDialogData> }

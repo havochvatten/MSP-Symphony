@@ -3,7 +3,7 @@ import { SummaryModel, SummaryModelCategory } from '@data/calculation/calculatio
 
 interface SummaryModelRow {
   model: Exclude<SummaryModel, 'none'>;
-  labelKey: string;
+  label: string;
 }
 
 @Component({

@@ -35,9 +35,6 @@
             "deselect-all": "Avmarkera samtliga"
         },
         "summary-model": {
-            "balanced": "Balanserad modell",
-            "balancedEcosystemTitle": "Balanserad modell - Naturvärden",
-            "balancedPressureTitle": "Balanserad modell - Belastningar",
             "dependsOn": "Beroende av",
             "linearNormalization": "Linjär normalisering",
             "operation": {
@@ -46,39 +43,7 @@
                 "sum": "SUMMA"
             },
             "output": "Utdata",
-            "overview": "Överblick",
-            "simple": "Enkel modell",
-            "simpleEcosystemTitle": "Enkel modell - Naturvärden",
-            "simplePressureTitle": "Enkel modell - Belastningar",
-            "step":{
-                "birdTotal": "Fågel total",
-                "sealTotal": "Säl total",
-                "porpoiseTotal": "Tumlare total",
-                "mammalTotal": "Däggdjur total",
-                "fishOccurrence": "Fisk förekomst",
-                "fishFunctions": "Fiskfunktioner",
-                "fishTotal": "Fisk total",
-                "reefHardbottomPresence": "Rev/hårdbotten förekomst",
-                "hardbottomAbiotic": "Hårdbotten afotisk",
-                "reefEnvironmentPresence": "Rev miljö förekomst",
-                "extraValuableReef": "Extra värdefulla rev",
-                "reefTotal": "Rev total",
-                "angiospermShoreline": "Växtlighet och kustlinje",
-                "benthicTotal": "Bentisk total",
-                "ecosystemTotal": "Totala naturvärden",
-                "fishing": "Yrkesfiske",
-                "shipping": "Sjöfart",
-                "recreation": "Rekreation",
-                "energy": "Energi",
-                "coastalDevelopment": "Kustutveckling",
-                "pollution": "Förorening",
-                "defence": "Försvar",
-                "industry": "Industri",
-                "mineralExtraction": "Mineralutvinning",
-                "aquaculture": "Vattenbruk",
-                "eutrophication": "Övergödning",
-                "pressureTotal": "Total belastning"
-            }
+            "overview": "Överblick"
         },
         "confirm-reset": {
             "modal": {

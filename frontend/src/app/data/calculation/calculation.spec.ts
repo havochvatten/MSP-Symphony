@@ -21,7 +21,7 @@ describe('CalculationReducer', () => {
       percentileValue: 0.95,
       summaryModels: { ECOSYSTEM: 'simple' as const, PRESSURE: 'balanced' as const },
       summaryModelLoading: { ECOSYSTEM: true, PRESSURE: true },
-      availableSummaryModels: { ECOSYSTEM: ['simple'], PRESSURE: ['balanced'] }
+      availableSummaryModels: { ECOSYSTEM: [{ key: 'simple', name: 'Simple model' }], PRESSURE: [{ key: 'balanced', name: 'Balanced model' }] }
     };
 
     const _state = calculationReducer(populated, UserActions.activeBaselineChanged({ baseline }));
@@ -41,7 +41,7 @@ describe('CalculationReducer', () => {
     expect(_state.summaryModels).toEqual({ ECOSYSTEM: 'none', PRESSURE: 'none' });
     expect(_state.summaryModelLoading).toEqual({ ECOSYSTEM: false, PRESSURE: false });
     // availableSummaryModels preserved — cleared by fetchSummaryModels, not activeBaselineChanged
-    expect(_state.availableSummaryModels).toEqual({ ECOSYSTEM: ['simple'], PRESSURE: ['balanced'] });
+    expect(_state.availableSummaryModels).toEqual({ ECOSYSTEM: [{ key: 'simple', name: 'Simple model' }], PRESSURE: [{ key: 'balanced', name: 'Balanced model' }] });
   });
 });
 
@@ -76,14 +76,14 @@ describe('calculation reducer — summary model actions', () => {
   it('fetchSummaryModels clears availableSummaryModels for the requested category', () => {
     const populated = {
       ...initialState,
-      availableSummaryModels: { ECOSYSTEM: ['simple', 'balanced'], PRESSURE: ['simple'] }
+      availableSummaryModels: { ECOSYSTEM: [{ key: 'simple', name: 'Simple model' }, { key: 'balanced', name: 'Balanced model' }], PRESSURE: [{ key: 'simple', name: 'Simple model' }] }
     };
     const state = calculationReducer(
       populated,
       CalculationActions.fetchSummaryModels({ baselineName: 'B', category: 'ECOSYSTEM' })
     );
     expect(state.availableSummaryModels.ECOSYSTEM).toEqual([]);
-    expect(state.availableSummaryModels.PRESSURE).toEqual(['simple']); // unchanged
+    expect(state.availableSummaryModels.PRESSURE).toEqual([{ key: 'simple', name: 'Simple model' }]); // unchanged
   });
 
   it('fetchSummaryModelsSuccess populates availableSummaryModels', () => {
@@ -92,10 +92,10 @@ describe('calculation reducer — summary model actions', () => {
       CalculationActions.fetchSummaryModelsSuccess({
         baselineName: 'BASELINE2019',
         category: 'ECOSYSTEM',
-        models: ['simple', 'balanced']
+        models: [{ key: 'simple', name: 'Simple model' }, { key: 'balanced', name: 'Balanced model' }]
       })
     );
-    expect(state.availableSummaryModels.ECOSYSTEM).toEqual(['simple', 'balanced']);
+    expect(state.availableSummaryModels.ECOSYSTEM).toEqual([{ key: 'simple', name: 'Simple model' }, { key: 'balanced', name: 'Balanced model' }]);
     expect(state.availableSummaryModels.PRESSURE).toEqual([]); // unchanged
   });
 });
@@ -103,16 +103,16 @@ describe('calculation reducer — summary model actions', () => {
 describe('calculation selectors — summary model', () => {
   const state = {
     ...initialState,
-    availableSummaryModels: { ECOSYSTEM: ['simple', 'balanced'], PRESSURE: ['simple'] },
+    availableSummaryModels: { ECOSYSTEM: [{ key: 'simple', name: 'Simple model' }, { key: 'balanced', name: 'Balanced model' }], PRESSURE: [{ key: 'simple', name: 'Simple model' }] },
     summaryModels: { ECOSYSTEM: 'simple', PRESSURE: 'none' },
     summaryModelLoading: { ECOSYSTEM: true, PRESSURE: false }
   };
 
   it('selectAvailableSummaryModels returns models for category', () => {
     expect(CalculationSelectors.selectAvailableSummaryModels('ECOSYSTEM').projector(state))
-      .toEqual(['simple', 'balanced']);
+      .toEqual([{ key: 'simple', name: 'Simple model' }, { key: 'balanced', name: 'Balanced model' }]);
     expect(CalculationSelectors.selectAvailableSummaryModels('PRESSURE').projector(state))
-      .toEqual(['simple']);
+      .toEqual([{ key: 'simple', name: 'Simple model' }]);
   });
 
   it('selectVisibleSummaryModels returns the summaryModels map', () => {

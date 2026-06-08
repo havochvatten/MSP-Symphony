@@ -34,7 +34,8 @@ public class SummaryModelConfigServiceTest {
     // Minimal valid step JSON (single MEAN step over band 0)
     static final String SIMPLE_JSON = """
         {
-          "titleTranslationKey": "test.title",
+          "title": { "en": "Test title", "sv": "Testtitel", "fr": "Titre test" },
+          "name": { "en": "Simple model", "sv": "Enkel modell", "fr": "Modèle simple" },
           "outputStep": "total",
           "steps": [
             {
@@ -50,19 +51,19 @@ public class SummaryModelConfigServiceTest {
     // Two-step pipeline: A (bands) then B (inputs=[A])
     static final String TWO_STEP_JSON = """
         {
-          "titleTranslationKey": "test.two",
+          "title": { "en": "Two title", "sv": "Två titel", "fr": "Deux titre" },
           "outputStep": "B",
           "steps": [
             {
               "name": "A",
-              "translationKey": "test.stepA",
+              "label": { "en": "Step A", "sv": "Steg A", "fr": "Étape A" },
               "operation": "MEAN",
               "order": 10,
               "bands": [0]
             },
             {
               "name": "B",
-              "translationKey": "test.stepB",
+              "label": { "en": "Step B", "sv": "Steg B", "fr": "Étape B" },
               "operation": "MEAN",
               "order": 20,
               "inputs": ["A"]
@@ -248,6 +249,24 @@ public class SummaryModelConfigServiceTest {
         assertThat(service.getAvailableModels("bl1", LayerType.ECOSYSTEM), is(empty()));
     }
 
+    // ── getAvailableModelSummaries ───────────────────────────────────────────
+
+    @Test
+    public void getAvailableModelSummaries_resolvesNameByLocale_fallsBackToKey() throws Exception {
+        writeJson("bl1", "ecosystem", "simple", SIMPLE_JSON);   // has a name map
+        writeJson("bl1", "ecosystem", "nameless", """
+            { "outputStep": "s", "steps": [{"name":"s","order":10,"operation":"MEAN","bands":[0]}] }
+            """);                                                  // no name map
+        service.init();
+
+        var summaries = service.getAvailableModelSummaries("bl1", LayerType.ECOSYSTEM, "sv");
+
+        var byKey = summaries.stream()
+            .collect(java.util.stream.Collectors.toMap(s -> s.getKey(), s -> s.getName()));
+        assertThat(byKey.get("simple"), is("Enkel modell"));
+        assertThat(byKey.get("nameless"), is("nameless")); // fallback to key
+    }
+
     // ── getModelDescription ──────────────────────────────────────────────────
 
     @Test
@@ -261,7 +280,7 @@ public class SummaryModelConfigServiceTest {
         SummaryModelDescription desc = service.getModelDescription("bl1", LayerType.ECOSYSTEM, "simple", 1, "en");
 
         assertThat(desc.getModelKey(), is("simple"));
-        assertThat(desc.getTitleTranslationKey(), is("test.title"));
+        assertThat(desc.getTitle(), is("Test title"));
         assertThat(desc.getSteps(), hasSize(1));
 
         StepFormula sf = desc.getSteps().get(0);
@@ -280,15 +299,15 @@ public class SummaryModelConfigServiceTest {
 
         SummaryModelDescription desc = service.getModelDescription("bl1", LayerType.ECOSYSTEM, "twostep", 1, "sv");
 
-        // Step B is the inputs-only step
+        // Step B is the inputs-only step (locale "sv" resolves stepB's label to "Steg B")
         StepFormula stepB = desc.getSteps().stream()
-            .filter(sf -> "test.stepB".equals(sf.getTranslationKey()))
+            .filter(sf -> "Steg B".equals(sf.getLabel()))
             .findFirst().orElseThrow();
 
         assertTrue(stepB.isHasStepsAsInput());
         assertThat(stepB.getFormulaInputs(), hasSize(1));
         assertThat(stepB.getFormulaInputs().get(0).getName(), is("A"));
-        assertThat(stepB.getFormulaInputs().get(0).getDisplayName(), is("test.stepA")); // from stepA's translationKey
+        assertThat(stepB.getFormulaInputs().get(0).getDisplayName(), is("Steg A")); // from stepA's resolved sv label
     }
 
     @Test
@@ -310,7 +329,7 @@ public class SummaryModelConfigServiceTest {
     public void getModelDescription_normalizationRendering_linearProducesString() throws Exception {
         String json = """
             {
-              "titleTranslationKey": "t",
+              "title": { "en": "t", "sv": "t", "fr": "t" },
               "outputStep": "s",
               "steps": [{
                 "name": "s",
@@ -344,7 +363,7 @@ public class SummaryModelConfigServiceTest {
     }
 
     @Test
-    public void getModelDescription_nullTitleTranslationKey_fallsBackToTypeAndModelKey() throws Exception {
+    public void getModelDescription_nullTitle_fallsBackToTypeAndModelKey() throws Exception {
         String json = """
             {
               "outputStep": "s",
@@ -358,7 +377,7 @@ public class SummaryModelConfigServiceTest {
             .thenReturn("B");
 
         SummaryModelDescription desc = service.getModelDescription("bl1", LayerType.ECOSYSTEM, "notitle", 1, "en");
-        assertThat(desc.getTitleTranslationKey(), is("ecosystem:notitle"));
+        assertThat(desc.getTitle(), is("ecosystem:notitle"));
     }
 
     // ── helpers ─────────────────────────────────────────────────────────────

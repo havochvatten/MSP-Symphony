@@ -11,11 +11,11 @@ import { DialogConfig } from '@shared/dialog/dialog-config';
 import { DialogRef } from '@shared/dialog/dialog-ref';
 
 const SIMPLE_DATA: ModelDescriptionDialogData = {
-  titleTranslationKey: 'test.title',
+  title: 'Test title',
   steps: [
     {
       name: 'A',
-      translationKey: 'test.stepA',
+      label: 'Step A',
       formulaInputs: [{ name: '', displayName: 'Band A' }],
       normalization: '0-100',
       operation: 'mean',
@@ -24,8 +24,8 @@ const SIMPLE_DATA: ModelDescriptionDialogData = {
     },
     {
       name: 'B',
-      translationKey: 'test.stepB',
-      formulaInputs: [{ name: 'A', displayName: 'test.stepA' }],
+      label: 'Step B',
+      formulaInputs: [{ name: 'A', displayName: 'Step A' }],
       normalization: '',
       operation: 'mean',
       hasStepsAsInput: true,
@@ -63,8 +63,8 @@ describe('SummaryModelDialogComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('titleTranslationKey is set from dialog data', () => {
-    expect(component.titleTranslationKey).toBe('test.title');
+  it('title is set from dialog data', () => {
+    expect(component.title).toBe('Test title');
   });
 
   it('renders one RenderedStep per input step', () => {

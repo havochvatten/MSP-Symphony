@@ -1,18 +1,28 @@
 package se.havochvatten.symphony.dto;
 
 import java.util.List;
+import java.util.Map;
 
 public class SummaryModelConfig {
-    private String titleTranslationKey;
+    private Map<String, String> title;
+    private Map<String, String> name;
     private List<Step> steps;
     private String outputStep;
 
-    public String getTitleTranslationKey() {
-        return titleTranslationKey;
+    public Map<String, String> getTitle() {
+        return title;
     }
 
-    public void setTitleTranslationKey(String titleTranslationKey) {
-        this.titleTranslationKey = titleTranslationKey;
+    public void setTitle(Map<String, String> title) {
+        this.title = title;
+    }
+
+    public Map<String, String> getName() {
+        return name;
+    }
+
+    public void setName(Map<String, String> name) {
+        this.name = name;
     }
 
     public List<Step> getSteps() {
@@ -112,7 +122,7 @@ public class SummaryModelConfig {
 
     public static class Step {
         private String name;
-        private String translationKey;
+        private Map<String, String> label;
         private Operation operation;
         private int order;
         private List<Integer> bands;
@@ -127,12 +137,12 @@ public class SummaryModelConfig {
             this.name = name;
         }
 
-        public String getTranslationKey() {
-            return translationKey;
+        public Map<String, String> getLabel() {
+            return label;
         }
 
-        public void setTranslationKey(String translationKey) {
-            this.translationKey = translationKey;
+        public void setLabel(Map<String, String> label) {
+            this.label = label;
         }
 
         public Operation getOperation() {
@@ -177,9 +187,37 @@ public class SummaryModelConfig {
     }
 
     // === Response classes for frontend ===
+    public static class ModelSummary {
+        private String key;
+        private String name;
+
+        public ModelSummary() {}
+
+        public ModelSummary(String key, String name) {
+            this.key = key;
+            this.name = name;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
     public static class SummaryModelDescription {
         private String modelKey;
-        private String titleTranslationKey;
+        private String title;
         private List<StepFormula> steps;
 
         public String getModelKey() {
@@ -190,12 +228,12 @@ public class SummaryModelConfig {
             this.modelKey = modelKey;
         }
 
-        public String getTitleTranslationKey() {
-            return titleTranslationKey;
+        public String getTitle() {
+            return title;
         }
 
-        public void setTitleTranslationKey(String titleTranslationKey) {
-            this.titleTranslationKey = titleTranslationKey;
+        public void setTitle(String title) {
+            this.title = title;
         }
 
         public List<StepFormula> getSteps() {
@@ -209,7 +247,7 @@ public class SummaryModelConfig {
 
     public static class StepFormula {
         private String name;
-        private String translationKey;
+        private String label;
         private String operation;
         private List<FormulaInput> formulaInputs;
         private String normalization;
@@ -224,12 +262,12 @@ public class SummaryModelConfig {
             this.name = name;
         }
 
-        public String getTranslationKey() {
-            return translationKey;
+        public String getLabel() {
+            return label;
         }
 
-        public void setTranslationKey(String translationKey) {
-            this.translationKey = translationKey;
+        public void setLabel(String label) {
+            this.label = label;
         }
 
         public String getOperation() {

@@ -17,7 +17,7 @@ export class SummaryModelSelectionComponent implements OnInit, OnDestroy {
   private store = inject<Store<State>>(Store);
   private cdr = inject(ChangeDetectorRef);
 
-  summaryModelRows: ReadonlyArray<{ model: string; labelKey: string }> = [];
+  summaryModelRows: ReadonlyArray<{ model: string; label: string }> = [];
 
   @Input() modelCategory: BandType_Alt = 'ecoComponents';
   @Input() scenarioActive = false;
@@ -36,9 +36,9 @@ export class SummaryModelSelectionComponent implements OnInit, OnDestroy {
     this.summaryModelsSubscription = this.store
       .select(CalculationSelectors.selectAvailableSummaryModels(category))
       .subscribe((models) => {
-        this.summaryModelRows = models.map((model) => ({
-          model,
-          labelKey: `map.summary-model.${model}`
+        this.summaryModelRows = models.map((m) => ({
+          model: m.key,
+          label: m.name
         }));
         this.cdr.markForCheck();
       });

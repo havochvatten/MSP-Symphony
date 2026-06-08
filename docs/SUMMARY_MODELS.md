@@ -47,7 +47,11 @@ A summary model config defines a **step pipeline** that transforms one source ra
 
 ```json
 {
-  "titleTranslationKey": "map.summary-model.myModelTitle",
+  "title": {
+    "en": "My model",
+    "sv": "Min modell",
+    "fr": "Mon modèle"
+  },
   "outputStep": "some_step_name",
   "steps": [
     { "name": "...", "operation": "...", "order": 10, "bands": [0, 1] }
@@ -55,9 +59,14 @@ A summary model config defines a **step pipeline** that transforms one source ra
 }
 ```
 
-### `titleTranslationKey` (string, optional)
-- Translation key for the model title shown in the UI dialog header.
-- If omitted, the frontend falls back to a default label derived from the model key.
+### `title` (object, optional)
+- Per-language model title shown in the UI dialog header, e.g. `{ "en": "...", "sv": "...", "fr": "..." }`.
+- The backend resolves it to the request `locale` (prefix-matches `sv`/`fr`, otherwise `en`), falling back to the `en` entry and finally to a default label derived from the type and model key (`<type>:<modelKey>`).
+- Labels live in this file — there are no separate i18n files to keep in sync.
+
+### `name` (object, optional)
+- Per-language **short** label shown in the model picker, e.g. `{ "en": "Simple model", "sv": "Enkel modell", "fr": "Modèle simple" }`. Distinct from `title` (the longer dialog header).
+- Surfaced by `GET /datalayer/{baseline}/{type}/models`, which returns `[{ "key": "<modelKey>", "name": "<resolved label>" }]` with `name` resolved per request `locale` (`?locale=`), falling back to the `en` entry and finally to the model key.
 
 ### `outputStep` (string, recommended)
 - Name of the step that becomes the returned heatmap.
@@ -79,7 +88,11 @@ Each step object supports:
 ```json
 {
   "name": "step_name",
-  "translationKey": "map.summary-model.step.birdTotal",
+  "label": {
+    "en": "Bird total",
+    "sv": "Fågel total",
+    "fr": "Oiseaux total"
+  },
   "operation": "MEAN",
   "order": 10,
   "bands": [0, 1, 2],
@@ -103,9 +116,9 @@ Each step object supports:
 - Referenced by other steps through `inputs`.
 - Must be unique within the file.
 
-### `translationKey` (string, optional)
-- Translation key for the step name in the UI.
-- If omitted, the step `name` is used as-is in the UI.
+### `label` (object, optional)
+- Per-language step name shown in the UI, same shape as `title`.
+- The backend resolves it to the request `locale` (prefix-matches `sv`/`fr`, otherwise `en`), falling back to the `en` entry and finally to the step `name`.
 
 ### `operation` (string, optional but recommended)
 - Supported values: `MEAN`, `MAX`, `SUM`.
@@ -219,12 +232,12 @@ Use this when a model is just one aggregate over many bands.
 
 ```json
 {
-  "titleTranslationKey": "map.summary-model.myTitle",
+  "title": { "en": "My model", "sv": "Min modell", "fr": "Mon modèle" },
   "outputStep": "total",
   "steps": [
     {
       "name": "total",
-      "translationKey": "map.summary-model.step.total",
+      "label": { "en": "Total", "sv": "Total", "fr": "Total" },
       "operation": "MEAN",
       "order": 10,
       "bands": [0, 1, 2],
@@ -245,14 +258,14 @@ Use this when themes/sub-groups are computed first, then merged.
 
 ```json
 {
-  "titleTranslationKey": "map.summary-model.myTitle",
+  "title": { "en": "My model", "sv": "Min modell", "fr": "Mon modèle" },
   "outputStep": "total",
   "steps": [
     { "name": "group_a", "operation": "MEAN", "order": 10, "bands": [0, 1, 2] },
     { "name": "group_b", "operation": "MAX",  "order": 20, "bands": [3, 4] },
     {
       "name": "total",
-      "translationKey": "map.summary-model.step.total",
+      "label": { "en": "Total", "sv": "Total", "fr": "Total" },
       "operation": "MEAN",
       "order": 30,
       "inputs": ["group_a", "group_b"],
@@ -298,7 +311,9 @@ Use this when themes/sub-groups are computed first, then merged.
 
 ## 9. Validation checklist
 
-- [ ] `titleTranslationKey` is set and exists in all supported language files
+- [ ] `title` is set with an entry for each supported language (`en`, `sv`, `fr`)
+- [ ] `name` (short picker label) is set with an entry for each supported language
+- [ ] each step `label`, where present, has an entry for each supported language
 - [ ] `outputStep` is set explicitly and matches a step `name`
 - [ ] all step `name` values are unique within the file
 - [ ] `order` values produce a valid dependency order (inputs always have lower `order` than consumers)
@@ -321,7 +336,7 @@ Use this when themes/sub-groups are computed first, then merged.
 - Omitting `outputStep` and relying on the last-by-order fallback → fragile to future reordering.
 - Putting final normalization somewhere other than the designated output step.
 - Using invalid or out-of-range band indexes.
-- Forgetting to add a new `titleTranslationKey` to all language files → UI shows a raw key instead of a label.
+- Leaving a language out of a `title`/`label` map → the backend falls back to the `en` entry (or the type/model key, or step `name`) for that locale instead of a localized label.
 - Assuming `SUM`/`MAX` on empty finite data produces zero — it produces `NaN`, later written as `0.0` in raster output.
 
 ---

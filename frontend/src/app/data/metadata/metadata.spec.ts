@@ -5,7 +5,7 @@ import { UserActions } from '@data/user';
 import { Baseline } from '@data/user/user.interfaces';
 
 const MOCK_DESC: ModelDescriptionDialogData = {
-  titleTranslationKey: 'test.title',
+  title: 'Test title',
   steps: []
 };
 

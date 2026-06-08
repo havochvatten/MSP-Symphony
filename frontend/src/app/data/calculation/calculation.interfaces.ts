@@ -7,6 +7,10 @@ import { ListItemsSort, SortableListItem } from '@data/common/sorting.interfaces
 
 export type SummaryModelCategory = 'ECOSYSTEM' | 'PRESSURE';
 export type SummaryModel = 'none' | string;
+export interface SummaryModelOption {
+  key: string;
+  name: string;
+}
 
 // TODO Move calculation element to Scenario state
 export interface State {
@@ -28,7 +32,7 @@ export interface State {
   compoundComparisonSuccessCount: number;
   sortCompoundComparisons: ListItemsSort;
   availableSummaryModels: {
-    [key in SummaryModelCategory]: string[];
+    [key in SummaryModelCategory]: SummaryModelOption[];
   };
   summaryModels: {
     [key in SummaryModelCategory]: SummaryModel;
