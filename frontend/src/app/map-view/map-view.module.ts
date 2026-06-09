@@ -43,6 +43,7 @@ import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compoun
 import { DownloadCompoundComparisonDialogComponent } from './compound-comparison-list-dialog/download-compound-comparison-dialog/download-compound-comparison-dialog.component';
 import { ReliabilityLegendComponent } from '@src/app/map-view/reliability-legend/reliability-legend.component';
 import { ScenarioEditorComponent } from './scenario/scenario-editor.component';
+import { SlideViewComponent } from '../shared/slide-view/slide-view.component';
 
 @NgModule({
   declarations: [

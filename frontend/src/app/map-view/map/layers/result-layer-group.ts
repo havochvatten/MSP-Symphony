@@ -7,7 +7,6 @@ import Static from 'ol/source/ImageStatic';
 import { SymphonyLayerGroup } from '@src/app/map-view/map/layers/symphony-layer';
 import { MapComponent } from '@src/app/map-view/map/map.component';
 import { AppSettings } from '@src/app/app.settings';
-import { PublicMapComponent } from '@src/app/public-viewer/public-map/public-map.component';
 
 export class ResultLayerGroup extends SymphonyLayerGroup {
   private calculationLayers = new Map<number, ImageLayer<Static>>();
@@ -24,7 +23,7 @@ export class ResultLayerGroup extends SymphonyLayerGroup {
     };
   }
 
-  constructor(private map: MapComponent | PublicMapComponent) {
+  constructor(private map: MapComponent) {
     super();
   }
 
