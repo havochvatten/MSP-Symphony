@@ -1,4 +1,5 @@
-import { ConfigState, initialState } from './systemproperties.interfaces';
+import { ConfigState } from './systemproperties.interfaces';
+import { initialState } from './systemproperties.reducer';
 import { SystemPropertiesSelectors } from './index';
 
 const state: ConfigState = { ...initialState };
