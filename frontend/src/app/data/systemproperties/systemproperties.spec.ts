@@ -5,7 +5,7 @@ import { SystemPropertiesSelectors } from './index';
 const state: ConfigState = { ...initialState };
 
 describe('SystemPropertiesSelector', () => {
-  it('should return publicAccess', () => {
+  it('initial state should return false publicAccess', () => {
     expect(SystemPropertiesSelectors.selectPublicAccess.projector(state)).toEqual(false);
   });
 });
