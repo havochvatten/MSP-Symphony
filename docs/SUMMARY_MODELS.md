@@ -61,12 +61,13 @@ A summary model config defines a **step pipeline** that transforms one source ra
 
 ### `title` (object, optional)
 - Per-language model title shown in the UI dialog header, e.g. `{ "en": "...", "sv": "...", "fr": "..." }`.
-- The backend resolves it to the request `locale` (prefix-matches `sv`/`fr`, otherwise `en`), falling back to the `en` entry and finally to a default label derived from the type and model key (`<type>:<modelKey>`).
+- Keys are language codes, expected to be ISO-639-1 compliant and to correspond to the languages present in the baseline metadata. ISO-639-1 compliance is enforced by the import tool, not by the application itself. The set of languages is not fixed — the default UI presently supports English (`en`), French (`fr`) and Swedish (`sv`), which makes `{ "en", "fr", "sv" }` an excellent example to follow.
+- The backend resolves the title to the request `locale`: an exact key match wins; otherwise it falls back to the `en` entry, then to the first entry in the map. When the request omits a locale, it defaults to the baseline's configured default locale. If the map is empty or absent, a default label derived from the type and model key (`<type>:<modelKey>`) is used.
 - Labels live in this file — there are no separate i18n files to keep in sync.
 
 ### `name` (object, optional)
 - Per-language **short** label shown in the model picker, e.g. `{ "en": "Simple model", "sv": "Enkel modell", "fr": "Modèle simple" }`. Distinct from `title` (the longer dialog header).
-- Surfaced by `GET /datalayer/{baseline}/{type}/models`, which returns `[{ "key": "<modelKey>", "name": "<resolved label>" }]` with `name` resolved per request `locale` (`?locale=`), falling back to the `en` entry and finally to the model key.
+- Surfaced by `GET /datalayer/{baseline}/{type}/models`, which returns `[{ "key": "<modelKey>", "name": "<resolved label>" }]`. `name` is resolved per request `locale` (`?locale=`) with the same logic as `title`: exact key match, else the `en` entry, else the first entry, and only the model key if no labels are defined. When the request omits a locale, it defaults to the baseline's configured default locale.
 
 ### `outputStep` (string, recommended)
 - Name of the step that becomes the returned heatmap.
@@ -118,7 +119,7 @@ Each step object supports:
 
 ### `label` (object, optional)
 - Per-language step name shown in the UI, same shape as `title`.
-- The backend resolves it to the request `locale` (prefix-matches `sv`/`fr`, otherwise `en`), falling back to the `en` entry and finally to the step `name`.
+- The backend resolves it to the request `locale` with the same logic as `title`: exact key match, else the `en` entry, else the first entry, and only the step `name` if no labels are defined.
 
 ### `operation` (string, optional but recommended)
 - Supported values: `MEAN`, `MAX`, `SUM`.
@@ -311,9 +312,9 @@ Use this when themes/sub-groups are computed first, then merged.
 
 ## 9. Validation checklist
 
-- [ ] `title` is set with an entry for each supported language (`en`, `sv`, `fr`)
-- [ ] `name` (short picker label) is set with an entry for each supported language
-- [ ] each step `label`, where present, has an entry for each supported language
+- [ ] `title` is set with an entry for each language present in the baseline metadata (ISO-639-1 codes; the default UI uses `en`, `fr`, `sv`)
+- [ ] `name` (short picker label) is set with an entry for each of those languages
+- [ ] each step `label`, where present, has an entry for each of those languages
 - [ ] `outputStep` is set explicitly and matches a step `name`
 - [ ] all step `name` values are unique within the file
 - [ ] `order` values produce a valid dependency order (inputs always have lower `order` than consumers)
@@ -336,7 +337,7 @@ Use this when themes/sub-groups are computed first, then merged.
 - Omitting `outputStep` and relying on the last-by-order fallback → fragile to future reordering.
 - Putting final normalization somewhere other than the designated output step.
 - Using invalid or out-of-range band indexes.
-- Leaving a language out of a `title`/`label` map → the backend falls back to the `en` entry (or the type/model key, or step `name`) for that locale instead of a localized label.
+- Leaving a language out of a `title`/`label` map → the backend falls back to the `en` entry, then to the first entry in the map, for that locale instead of the requested localized label (the type/model key or step `name` is used only when the map is empty).
 - Assuming `SUM`/`MAX` on empty finite data produces zero — it produces `NaN`, later written as `0.0` in raster output.
 
 ---

@@ -148,14 +148,12 @@ public class MetaDataService {
 
     /**
      * Returns localized band title for dynamic model descriptions.
-     * Uses preferred language (sv/en/fr) and falls back to the baseline default locale.
+     * Matches the requested language (any ISO-639-1 code) and falls back to the baseline
+     * default locale when no title exists for that language.
      */
-    public String getBandTitle(int baselineVersionId, String category, int bandNumber, String preferredLanguage) {
+    public String getBandTitle(int baselineVersionId, String category, int bandNumber, String lang) {
         // Normalize category to match database (Ecosystem / Pressure)
         String dbCategory = "ECOSYSTEM".equalsIgnoreCase(category) ? "Ecosystem" : "Pressure";
-
-        String lang = (preferredLanguage != null && preferredLanguage.startsWith("sv")) ? "sv" :
-            (preferredLanguage != null && preferredLanguage.startsWith("fr")) ? "fr" : "en";
 
         TypedQuery<String> q = em.createQuery("""
             SELECT mv.metaValue

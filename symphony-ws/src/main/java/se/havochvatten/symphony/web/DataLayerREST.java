@@ -115,10 +115,13 @@ public class DataLayerREST {
         @PathParam("baselineName") String baselineName,
         @PathParam("type") String type,
         @PathParam("model") String model,
-        @QueryParam("locale") @DefaultValue("sv") String locale) throws SymphonyStandardAppException {
+        @QueryParam("locale") String locale) throws SymphonyStandardAppException {
 
         BaselineVersion bv = baselineVersionService.getVersionByName(baselineName);
         var layerType = LayerType.valueOf(type.toUpperCase());
+        if (locale == null) {
+            locale = bv.getLocale();
+        }
 
         SummaryModelDescription desc = summaryModelConfigService.getModelDescription(baselineName, layerType, model, bv.getId(), locale);
 
@@ -133,8 +136,12 @@ public class DataLayerREST {
     public Response getAvailableSummaryModels(
         @PathParam("baselineName") String baselineName,
         @PathParam("type") String type,
-        @QueryParam("locale") @DefaultValue("sv") String locale) {
-        var layerType = LayerType.valueOf(type.toUpperCase());
+        @QueryParam("locale") String locale) throws SymphonyStandardAppException {
+        LayerType layerType = LayerType.valueOf(type.toUpperCase());
+        if (locale == null) {
+            BaselineVersion version = baselineVersionService.getVersionByName(baselineName);
+            locale = version.getLocale();
+        }
         var models = summaryModelConfigService.getAvailableModelSummaries(baselineName, layerType, locale);
         return ok(models).build();
     }

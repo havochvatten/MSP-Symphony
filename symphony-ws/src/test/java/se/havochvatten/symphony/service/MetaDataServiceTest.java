@@ -227,14 +227,16 @@ public class MetaDataServiceTest {
         TypedQuery<String> q = stubStringQuery(svc);
         when(q.getSingleResult()).thenReturn("Morue");
 
-        String result = svc.getBandTitle(2, "ECOSYSTEM", 5, "fr-FR");
+        String result = svc.getBandTitle(2, "ECOSYSTEM", 5, "fr");
 
         assertEquals("Morue", result);
         verify(q).setParameter("lang", "fr");
     }
 
     @Test
-    public void getBandTitle_englishDefault_whenUnknownLanguage() {
+    public void getBandTitle_unknownLanguage_passedVerbatim() {
+        // The requested locale is forwarded to the query as-is; the query itself falls back
+        // to the baseline default locale when no title exists for that language.
         MetaDataService svc = new MetaDataService();
         svc.em = mock(EntityManager.class);
         TypedQuery<String> q = stubStringQuery(svc);
@@ -243,11 +245,12 @@ public class MetaDataServiceTest {
         String result = svc.getBandTitle(1, "ECOSYSTEM", 3, "de");
 
         assertEquals("Cod", result);
-        verify(q).setParameter("lang", "en");
+        verify(q).setParameter("lang", "de");
     }
 
     @Test
-    public void getBandTitle_nullLanguage_defaultsToEnglish() {
+    public void getBandTitle_nullLanguage_passedVerbatim() {
+        // A null locale is forwarded as-is; the query's baseline-locale clause resolves the title.
         MetaDataService svc = new MetaDataService();
         svc.em = mock(EntityManager.class);
         TypedQuery<String> q = stubStringQuery(svc);
@@ -256,7 +259,7 @@ public class MetaDataServiceTest {
         String result = svc.getBandTitle(1, "ECOSYSTEM", 3, null);
 
         assertEquals("Cod", result);
-        verify(q).setParameter("lang", "en");
+        verify(q).setParameter("lang", null);
     }
 
     @Test

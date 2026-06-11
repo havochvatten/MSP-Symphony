@@ -196,23 +196,22 @@ public class SummaryModelConfigService {
             .collect(Collectors.toList());
     }
 
-    /**
-     * Resolves an embedded {@code {en, sv, fr}} label map to a single string for the given
-     * request locale. Prefix-matches the locale (sv/fr, else en) to mirror
-     * {@link MetaDataService#getBandTitle}, falling back to the English entry and finally to the
-     * supplied fallback (model key or step name).
+    /**     
+     * Resolves a label map to a single string for some locale. 
+     * Falling back to the English entry if it exists, next the first available entry and
+     * lastly the key itself only if no labels are defined.
      */
     private static String resolveLabel(Map<String, String> labels, String locale, String fallback) {
         if (labels == null || labels.isEmpty()) {
             return fallback;
         }
-        String lang = (locale != null && locale.startsWith("sv")) ? "sv" :
-                      (locale != null && locale.startsWith("fr")) ? "fr" : "en";
-        String value = labels.get(lang);
-        if (value == null) {
-            value = labels.get("en");
+
+        if (labels.containsKey(locale)) {
+            return labels.get(locale);
         }
-        return value != null ? value : fallback;
+
+        String firstKey = labels.keySet().stream().findFirst().get();
+        return labels.containsKey("en") ? labels.get("en") : labels.get(firstKey);
     }
 
     public SummaryModelDescription getModelDescription(
