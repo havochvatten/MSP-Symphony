@@ -1,0 +1,11 @@
+@if (summaryModelRows.length > 0) {
+  <app-summary-model-accordion
+    [modelCategory]="getSummaryModelCategory(modelCategory)"
+    [title]="'map.summary-model.overview' | translate"
+    [rows]="summaryModelRows"
+    [isSummaryModelSelected]="isSummaryModelSelected"
+    [toggleSummaryModel]="toggleSummaryModel"
+    [isSummaryModelLoaded]="isSummaryModelLoaded"
+    [scenarioActive]="scenarioActive"
+  ></app-summary-model-accordion>
+}

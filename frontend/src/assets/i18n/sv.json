@@ -34,6 +34,17 @@
             "select-all": "Markera samtliga",
             "deselect-all": "Avmarkera samtliga"
         },
+        "summary-model": {
+            "dependsOn": "Beroende av",
+            "linearNormalization": "Linjär normalisering",
+            "operation": {
+                "mean": "MEDEL",
+                "max": "MAX",
+                "sum": "SUMMA"
+            },
+            "output": "Utdata",
+            "overview": "Överblick"
+        },
         "confirm-reset": {
             "modal": {
                 "header": "Bekräfta återställning",
@@ -85,7 +96,7 @@
             "areas": {
                 "title": "Scenarioområden",
                 "remove": {
-                    "button" : "Avlägsna område",
+                    "button": "Avlägsna område",
                     "label": "Tag bort området från aktuellt scenario",
                     "modal": {
                         "title": "Ta bort område från scenario",
@@ -208,7 +219,7 @@
                     "confirm": "Rensa"
                 }
             },
-            "changes-overview" : {
+            "changes-overview": {
                 "title": "Översikt förekomständringar",
                 "show-overview": "Öppna översiktsvyn för ändringar",
                 "global-changes": "Generella ändringar",
@@ -223,7 +234,7 @@
             "area-changes": {
                 "title": "Områdesspecifika förekomständringar"
             },
-            "transfer-changes" : {
+            "transfer-changes": {
                 "title": "Överför ändringar",
                 "tooltip": "Hämta ändringar från ett befintligt scenario eller scenarioområde",
                 "use-scenario-wide": "Använd det valda scenariots generella ändringar",
@@ -398,15 +409,15 @@
             "show-report": "Öppna rapport “{{ calculationName }}”",
             "delete": "Radera sparad beräkning “{{ calculationName }}”",
             "filter-hint": "Filtrera beräkningsrapport per namn",
-            "show-result" : "Rendera detta resultat i kartbilden",
-            "hide-result" :  "Tag bort detta resultat från kartbilden",
-            "visible-result" : "Resultatet är synligt i kartbilden",
+            "show-result": "Rendera detta resultat i kartbilden",
+            "hide-result": "Tag bort detta resultat från kartbilden",
+            "visible-result": "Resultatet är synligt i kartbilden",
             "purged-result": "Data för detta resultat har rensats bort.\nDå resultatet måste beräknas om tar det lite längre tid att ladda.",
             "edit-name": {
                 "label": "Ändra namn",
                 "header": "Ange ett nytt namn för beräkningen"
             },
-            "delete-modal" : {
+            "delete-modal": {
                 "header": "Radera sparad beräkning",
                 "message": "Bekräfta borttagning av tidigare sparad beräkning: <em>“{{ calculationName }}”</em>",
                 "header-multiple": "Radera markerade beräkningar",
@@ -454,7 +465,7 @@
                     "save": "Spara",
                     "close": "Avbryt"
                 },
-                "invalid-area" : {
+                "invalid-area": {
                     "title": "Felaktigt område",
                     "message": "Nya områden måste överlappa minst ett område med standardmatriskoppling"
                 }
@@ -521,7 +532,7 @@
             "emphasis": "Dela eller sammanfoga område",
             "detail": "{{ altButton }} + klick i kartbilden delar överlappande, {{ altButton }} + Shift + klick sammanfogar"
         },
-        "merge-areas-hint" : {
+        "merge-areas-hint": {
             "emphasis": "Sammanfoga områden",
             "detail": "{{ altButton }} + Shift + klick i kartbilden på 'sista' området för att sammanfoga."
         },
@@ -638,7 +649,7 @@
             "title": "Scenariojämförelserapport",
             "vs": "kontra"
         },
-        "common" : {
+        "common": {
             "not-measurable": "(ej mätbar)"
         },
         "cumulative-effect-etc": {
@@ -728,19 +739,19 @@
     },
     "api-messages": {
         "areas": {
-            "import-success" : {
+            "import-success": {
                 "title": "Importen lyckades",
-                "message-single" : "Importerat område: \"{{ topLayerName }}\"",
-                "message-multi" : "Importerade {{ layersCount }} områden."
+                "message-single": "Importerat område: \"{{ topLayerName }}\"",
+                "message-multi": "Importerade {{ layersCount }} områden."
             }
         }
     },
-    "list-sorting-options" : {
-        "indicate-order" : "Ange sorteringsordning som {{ orderHint }}",
-        "AlphaAsc" : "alfabetisk, stigande (A-Ö)",
-        "AlphaDesc" : "alfabetisk, fallande (Ö-A)",
-        "DateAsc" : "datum, stigande (äldst först)",
-        "DateDesc" : "datum, fallande (nyast först)",
-        "None" : "ej ordnad"
+    "list-sorting-options": {
+        "indicate-order": "Ange sorteringsordning som {{ orderHint }}",
+        "AlphaAsc": "alfabetisk, stigande (A-Ö)",
+        "AlphaDesc": "alfabetisk, fallande (Ö-A)",
+        "DateAsc": "datum, stigande (äldst först)",
+        "DateDesc": "datum, fallande (nyast först)",
+        "None": "ej ordnad"
     }
 }

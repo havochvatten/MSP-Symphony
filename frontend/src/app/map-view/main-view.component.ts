@@ -1,25 +1,35 @@
-import { Component, ViewChild, OnInit, AfterViewInit, ChangeDetectorRef, NgModuleRef, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  inject,
+  NgModuleRef,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
-import { distinctUntilChanged, skip, take } from "rxjs/operators";
+import { distinctUntilChanged, skip, take } from 'rxjs/operators';
 
 import { State } from '@src/app/app-reducer';
 import { MetadataSelectors } from '@data/metadata';
 import { AreaSelectors } from '@data/area';
 import { AllAreas, StatePath } from '@data/area/area.interfaces';
 import { BandGroup, VisibleReliability } from '@data/metadata/metadata.interfaces';
-import { ComparisonLegendState, LegendState } from '@data/calculation/calculation.interfaces';
+import {
+  ComparisonLegendState,
+  LegendState,
+  SummaryModel
+} from '@data/calculation/calculation.interfaces';
 import { CalculationSelectors } from '@data/calculation';
-import { environment } from "@src/environments/environment";
-import { ScenarioActions, ScenarioSelectors } from "@data/scenario";
-import { Scenario } from "@data/scenario/scenario.interfaces";
+import { environment } from '@src/environments/environment';
+import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
+import { Scenario } from '@data/scenario/scenario.interfaces';
 import { MapComponent } from './map/map.component';
 import { isMacOS } from '@src/util/agent';
-import {
-  CompoundComparisonListDialogComponent
-} from "@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component";
-import { DialogService } from "@shared/dialog/dialog.service";
-import { MapViewModule } from "@src/app/map-view/map-view.module";
+import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component';
+import { DialogService } from '@shared/dialog/dialog.service';
+import { MapViewModule } from '@src/app/map-view/map-view.module';
 
 @Component({
   selector: 'app-main-view',
@@ -39,31 +49,37 @@ export class MainViewComponent implements OnInit, AfterViewInit {
   areas?: Observable<AllAreas>;
   legends$?: Observable<LegendState>;
   cmpLegends$?: Observable<ComparisonLegendState[]>;
-  compoundComparisonCount$: Observable<number>
-    = this.store.select(CalculationSelectors.selectCompoundComparisonCount);
-  compoundComparisonSuccess$: Observable<number>
-    = this.store.select(CalculationSelectors.selectCompoundComparisonSuccessCount);
+  compoundComparisonCount$: Observable<number> = this.store.select(
+    CalculationSelectors.selectCompoundComparisonCount
+  );
+  compoundComparisonSuccess$: Observable<number> = this.store.select(
+    CalculationSelectors.selectCompoundComparisonSuccessCount
+  );
   center = environment.map.center;
   visibleImpact = false;
   visibleComparison = false;
-  singleSelection = false
-  multiSelection = false
+  singleSelection = false;
+  multiSelection = false;
   isMacOS = isMacOS();
   visibleReliability$: Observable<VisibleReliability | null>;
+  visibleSummaryModels$?: Observable<{ ECOSYSTEM: SummaryModel, PRESSURE: SummaryModel }>;
 
-  protected activeScenario$: Observable<Scenario | undefined>
-    = this.store.select(ScenarioSelectors.selectActiveScenario);
-  protected activeScenarioArea$: Observable<number | undefined>
-    = this.store.select(ScenarioSelectors.selectActiveScenarioArea);
-  protected calculating$: Observable<boolean>
-    = this.store.select(CalculationSelectors.selectCalculating);
-  protected scenarioAreaSelection = false
+  protected activeScenario$: Observable<Scenario | undefined> = this.store.select(
+    ScenarioSelectors.selectActiveScenario
+  );
+  protected activeScenarioArea$: Observable<number | undefined> = this.store.select(
+    ScenarioSelectors.selectActiveScenarioArea
+  );
+  protected calculating$: Observable<boolean> = this.store.select(
+    CalculationSelectors.selectCalculating
+  );
+  protected scenarioAreaSelection = false;
   private selectedAreas$?: Subscription;
 
   constructor() {
-
-    this.compoundComparisonSuccess$.pipe(
-      distinctUntilChanged(), skip(1)).subscribe(() => this.onOpenCCList());
+    this.compoundComparisonSuccess$
+      .pipe(distinctUntilChanged(), skip(1))
+      .subscribe(() => this.onOpenCCList());
 
     this.visibleReliability$ = this.store.select(MetadataSelectors.selectVisibleReliability);
   }
@@ -73,19 +89,22 @@ export class MainViewComponent implements OnInit, AfterViewInit {
     this.areas = this.store.select(AreaSelectors.selectAll);
     this.legends$ = this.store.select(CalculationSelectors.selectVisibleLegends);
     this.cmpLegends$ = this.store.select(CalculationSelectors.selectComparisonLegend);
-    this.selectedAreas$ = this.store.select(AreaSelectors.selectSelectedAreaData).subscribe((areas) => {
-      this.singleSelection = areas.length === 1;
-      this.multiSelection = areas.length > 1;
-    });
+    this.visibleSummaryModels$ = this.store.select(CalculationSelectors.selectVisibleSummaryModels);
+    this.selectedAreas$ = this.store
+      .select(AreaSelectors.selectSelectedAreaData)
+      .subscribe((areas) => {
+        this.singleSelection = areas.length === 1;
+        this.multiSelection = areas.length > 1;
+      });
   }
 
   clearResult = () => {
     this.map?.clearResult();
   };
 
-  highlight = ([statePath, highlight] : [StatePath, boolean]) => {
+  highlight = ([statePath, highlight]: [StatePath, boolean]) => {
     this.map?.highlightArea(statePath, highlight);
-  }
+  };
 
   toggleLeftSidebar() {
     this.leftSidebarIsOpen = !this.leftSidebarIsOpen;
@@ -93,19 +112,19 @@ export class MainViewComponent implements OnInit, AfterViewInit {
 
   toggleDrawArea = () => {
     this.map?.toggleDrawInteraction();
-  }
+  };
 
   zoomToArea = (statePaths: StatePath[]) => {
     this.map?.zoomToArea(statePaths);
-  }
+  };
 
   ngAfterViewInit(): void {
-      this.cd.detectChanges(); // To avoid ExpressionChangedAfterItHasBeenCheckedError
+    this.cd.detectChanges(); // To avoid ExpressionChangedAfterItHasBeenCheckedError
   }
 
   exitScenario() {
     this.activeScenarioArea$.pipe(take(1)).subscribe((areaIndex) => {
-      if(areaIndex !== undefined){
+      if (areaIndex !== undefined) {
         this.store.dispatch(ScenarioActions.closeActiveScenarioArea());
       } else {
         this.store.dispatch(ScenarioActions.closeActiveScenario());

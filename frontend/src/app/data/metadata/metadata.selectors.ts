@@ -7,6 +7,7 @@ import {
   ReliabilityMapping,
   State
 } from './metadata.interfaces';
+import { SummaryModelCategory } from '@data/calculation/calculation.interfaces';
 
 export const selectMetadataState = createFeatureSelector<State>('metadata');
 
@@ -120,6 +121,12 @@ export const selectVisibleReliability = createSelector(
   selectMetadataState,
   (state: State) => state.visibleReliability
 );
+
+export const selectSummaryModelDescription = (category: SummaryModelCategory, model: string) =>
+  createSelector(
+    selectMetadataState,
+    (state: State) => state.availableSummaryModelDescriptions[category]?.[model] ?? null
+  );
 
 function includeAreaSpecificProperties(groups: BandGroup[]): BandGroup[] {
   return groups.map((group) => ({

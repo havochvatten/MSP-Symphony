@@ -157,6 +157,15 @@ The system assumes that all strings related to area polygons are in UTF encoding
 the default native platform encoding. Notably, on Windows that is not UTF and so if running on Windows specifying
 `-Dfile.encoding=UTF-8` may be necessary (that setting is used also when reading data from the datbase).
 
+### 5. Configure summary models
+
+Summary models define a step-based pipeline that transforms multiple source raster bands (ecosystem or pressure) 
+into a single output heatmap. This is done by aggregating bands using operations like `MEAN`, `MAX`, or `SUM`, 
+and optionally applying normalization.
+
+For detailed information on how to create and maintain these configuration files, see the 
+[Summary Model Configuration Guide](docs/SUMMARY_MODELS.md).
+
 ### Frontend
 
 In the interest of efficiency the frontend may be served by a separate frontend server. In the case of Apache 

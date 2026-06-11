@@ -34,6 +34,17 @@
             "select-all": "Select all",
             "deselect-all": "Deselect all"
         },
+        "summary-model": {
+            "dependsOn": "Depends on",
+            "linearNormalization": "Linear normalization",
+            "operation": {
+                "mean": "MEAN",
+                "max": "MAX",
+                "sum": "SUM"
+            },
+            "output": "Output",
+            "overview": "Overview"
+        },
         "confirm-reset": {
             "modal": {
                 "header": "Confirm reset",
@@ -85,7 +96,7 @@
             "areas": {
                 "title": "Scenario areas",
                 "remove": {
-                    "button" : "Remove area",
+                    "button": "Remove area",
                     "label": "Remove this area from the current scenario",
                     "modal": {
                         "title": "Remove area from scenario",
@@ -202,13 +213,13 @@
                 "units": "u.",
                 "collapse": "Hide changes",
                 "collapsed-count": "Show {{ count }} changes",
-                "clear-change-modal" : {
+                "clear-change-modal": {
                     "header": "Clear change",
                     "message": "Confirm removal of change: <em>{{ changeDescription }}</em>",
                     "confirm": "Clear"
                 }
             },
-            "changes-overview" : {
+            "changes-overview": {
                 "title": "Scenario changes overview",
                 "show-overview": "Show an overview of all changes",
                 "global-changes": "Global changes",
@@ -223,7 +234,7 @@
             "area-changes": {
                 "title": "Scenario Area Changes"
             },
-            "transfer-changes" : {
+            "transfer-changes": {
                 "title": "Transfer changes",
                 "tooltip": "Transfer changes from an existing scenario or scenario area",
                 "use-scenario-wide": "Use scenario-wide changes",
@@ -406,7 +417,7 @@
                 "label": "Rename",
                 "header": "Enter a new name for the calculation"
             },
-            "delete-modal" : {
+            "delete-modal": {
                 "header": "Delete calculation",
                 "message": "Confirm deletion of previously saved calculation result: <em>“{{ calculationName }}”</em>",
                 "header-multiple": "Delete calculations",
@@ -454,7 +465,7 @@
                     "save": "Save",
                     "close": "Close"
                 },
-                "invalid-area" : {
+                "invalid-area": {
                     "title": "Invalid area extent",
                     "message": "User defined areas must overlap at least one other area having a default matrix coupling"
                 }
@@ -521,7 +532,7 @@
             "emphasis": "Cut or merge area",
             "detail": "{{ altButton }} + click in the map view splits by intersection, {{ altButton }} + Shift + click merges."
         },
-        "merge-areas-hint" : {
+        "merge-areas-hint": {
             "emphasis": "Merge areas",
             "detail": "{{ altButton }} + Shift + click on final area in the map to merge selected."
         },
@@ -638,7 +649,7 @@
             "title": "Calculation Comparison Report",
             "vs": "and"
         },
-        "common" : {
+        "common": {
             "not-measurable": "(not measurable)"
         },
         "cumulative-effect-etc": {
@@ -728,19 +739,19 @@
     },
     "api-messages": {
         "areas": {
-            "import-success" : {
+            "import-success": {
                 "title": "Import successful",
-                "message-single" : "Imported area: \"{{ topLayerName }}\"",
-                "message-multi" : "Imported {{ layersCount }} areas"
+                "message-single": "Imported area: \"{{ topLayerName }}\"",
+                "message-multi": "Imported {{ layersCount }} areas"
             }
         }
     },
-    "list-sorting-options" : {
-        "indicate-order" : "Indicate ordering as {{ orderHint }}",
-        "AlphaAsc" : "alphabetical, ascending (A-Z)",
-        "AlphaDesc" : "alphabetical, descending (Z-A)",
-        "DateAsc" : "ascending by date (oldest first)",
-        "DateDesc" : "descending by date (newest first)",
-        "None" : "unsorted"
+    "list-sorting-options": {
+        "indicate-order": "Indicate ordering as {{ orderHint }}",
+        "AlphaAsc": "alphabetical, ascending (A-Z)",
+        "AlphaDesc": "alphabetical, descending (Z-A)",
+        "DateAsc": "ascending by date (oldest first)",
+        "DateDesc": "descending by date (newest first)",
+        "None": "unsorted"
     }
 }
