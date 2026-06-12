@@ -47,7 +47,7 @@ const routes: Routes = [
     canActivate: [AuthenticationGuard]
     // data: { headerTitle: 'Symphony' }
   },
-  { path: '', redirectTo: '/map', pathMatch: 'full' }
+  { path: '', canActivate: [PublicGuard], pathMatch: 'full', children: [] }
 ];
 
 @NgModule({
