@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment as env } from '@src/environments/environment';
 import { MetadataInterfaces } from './';
@@ -10,8 +10,8 @@ const BASE_URL = env.apiBaseUrl;
   providedIn: 'root'
 })
 export default class MetadataService {
-  constructor(private http: HttpClient,
-              private translate: TranslateService) {}
+  private readonly http = inject(HttpClient);
+  private readonly translate = inject(TranslateService);
 
   getMetaData(baseline: string, activeScenarioId?: number) {
     if(activeScenarioId) {

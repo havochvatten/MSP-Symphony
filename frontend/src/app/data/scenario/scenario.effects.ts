@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   catchError,
   concatMap,
@@ -27,11 +27,9 @@ import { CalculationActions } from '@data/calculation';
 
 @Injectable()
 export class ScenarioEffects {
-  constructor(
-    private actions$: Actions,
-    private store: Store<State>,
-    private scenarioService: ScenarioService
-  ) {}
+  private readonly actions$ = inject(Actions);
+  private readonly store = inject<Store<State>>(Store);
+  private readonly scenarioService = inject(ScenarioService);
 
   fetchScenarios$ = createEffect(() => this.actions$.pipe(
     ofType(ScenarioActions.fetchScenarios),

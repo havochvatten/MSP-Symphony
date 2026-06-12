@@ -51,7 +51,7 @@ At SwAM the frontend is served separately using Apache, although any web server 
 will do (see [Frontend](#frontend-1) below). The backend has been tested using Wildfly 36.0, PostgreSQL 14 and PostGIS v3.4,
 but more recent versions should be fine (as for Wildfly, at least all versions providing Jakarta EE 10).
 
-The frontend is realized as an Angular application (v 17), built with Node 20.11.1.
+The frontend is realized as an Angular application (v 21), built with Node 22.13.0
 
 ## Getting the source
 
@@ -129,9 +129,13 @@ console, or directly in the configuration file as the below XML fragment:
     </validation>
 </datasource>
 ```
-As for the security domain, it would depend on the needs of your organisation and installation environment. For an 
-example of a simple setup relying only on a separate filesystem user database see for instance
-[this guide](http://www.mastertheboss.com/jbossas/jboss-security/configuring-http-basic-authentication-with-wildfly/).
+As for the security domain, it would depend on the needs of your organisation and installation environment.  
+Note that the web service authenticates API calls based on the exact role names `GRP_SYMPHONY` and `GRP_SYMPHONY_ADMIN`.
+
+Refer to Wildfly's [documentation](https://docs.wildfly.org/39/WildFly_Elytron_Security.html) for details on configuring
+the _Elytron Security_ module. 
+A simple alternative for an authentication setup might be using _Elytron Security_'s"filesystem-based" identity store.
+See [this section](https://docs.wildfly.org/39/WildFly_Elytron_Security.html#configure-authentication-with-a-filesystem-based-identity-store).
 
 #### 2. Populate the database
 

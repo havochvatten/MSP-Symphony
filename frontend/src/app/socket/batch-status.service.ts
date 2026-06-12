@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { environment as env } from '@src/environments/environment';
 import { BatchCalculationProcessEntry } from "@data/calculation/calculation.interfaces";
 import { CalculationActions } from "@data/calculation";
@@ -9,13 +9,11 @@ import { State } from "@src/app/app-reducer";
   providedIn: 'root'
 })
 export class BatchStatusService {
+  private store = inject<Store<State>>(Store);
+
 
   // public statusUpdates: {[id: number]: BehaviorSubject<BatchCalculationProcessEntry|undefined>} = {};
   private sockets: {[id: number]: WebSocket} = {};
-
-  constructor(
-      private store: Store<State>,
-  ) { }
 
   public connect(id: number) {
     if (!this.sockets[id]) {

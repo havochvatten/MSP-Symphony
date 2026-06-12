@@ -1,5 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostBinding,
-         Input, Output, ViewChild, OnInit } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostBinding, Input, Output, ViewChild, OnInit, inject } from '@angular/core';
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
 import { BandChange  } from "@data/metadata/metadata.interfaces";
@@ -9,9 +8,12 @@ import { convertMultiplierToPercent } from "@data/metadata/metadata.selectors";
 @Component({
   selector: 'app-overview-inline-band-change',
   templateUrl: './overview-inline-band-change.component.html',
-  styleUrls: ['./overview-inline-band-change.component.scss']
+  styleUrls: ['./overview-inline-band-change.component.scss'],
+  standalone: false
 })
 export class OverviewInlineBandChangeComponent implements OnInit {
+  private store = inject<Store<State>>(Store);
+
 
   @Input() change!: BandChange;
   @Input() currentValueAsString!: string;
@@ -30,8 +32,6 @@ export class OverviewInlineBandChangeComponent implements OnInit {
   localMultiplier = 1;
   localOffset = 0;
 
-  constructor(private store: Store<State>) {}
-
   editValue() {
     this.editMode = true;
     this.editModeChange.emit(null);
@@ -45,7 +45,7 @@ export class OverviewInlineBandChangeComponent implements OnInit {
   }
 
   checkEmptyValue(): boolean {
-    const change = this.getChange()!;
+    const change = this.getChange();
     return (this.changeType === 'relative' && change.multiplier === 1) ||
            (this.changeType === 'constant' && change.offset === 0);
   }
@@ -54,8 +54,9 @@ export class OverviewInlineBandChangeComponent implements OnInit {
     if(this.checkEmptyValue()) {
       return '-';
     } else {
-      const change = this.getChange()!;
-      return change.multiplier ? parseFloat(Number(convertMultiplierToPercent(change.multiplier!) * 100).toFixed(2)) + '%' :
+      const change = this.getChange();
+      return change.multiplier ?
+        Number.parseFloat(Number(convertMultiplierToPercent(change.multiplier) * 100).toFixed(2)) + '%' :
         (change.offset ? String(change.offset) : '-');
     }
   }
@@ -64,7 +65,7 @@ export class OverviewInlineBandChangeComponent implements OnInit {
   // when returning other value
   getChange(): BandChange {
     const change = { ...this.change };
-    if(this.changeType === 'constant') {
+    if (this.changeType === 'constant') {
       change.multiplier = undefined;
       change.offset = this.localOffset;
       this.localMultiplier = 1;
@@ -86,14 +87,14 @@ export class OverviewInlineBandChangeComponent implements OnInit {
     const change = this.getChange();
     if (this.checkEmptyValue()) {
       this.store.dispatch(ScenarioActions.deleteBandChangeForAreaIndex({
-        componentType: this.change!.type,
+        componentType: change.type,
         areaIndex: this.areaIndex === -1 ? undefined : this.areaIndex,
         band: this.bandNumber
       }));
     } else {
         this.store.dispatch(ScenarioActions.updateBandAttributeForAreaIndex({
             areaIndex: this.areaIndex === -1 ? undefined : this.areaIndex,
-            componentType: this.change!.type,
+            componentType: change.type,
             band: this.bandNumber,
             attribute: this.changeType === 'constant' ? 'offset' : 'multiplier',
             value: this.changeType === 'constant' ? this.localOffset : this.localMultiplier,
@@ -108,7 +109,7 @@ export class OverviewInlineBandChangeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.changeType = this.change?.multiplier !== undefined ? 'relative' : 'constant';
+    this.changeType = this.change?.multiplier === undefined ? 'constant' : 'relative';
     this.localMultiplier = this.change?.multiplier ?? 1;
     this.localOffset = this.change?.offset ?? 0;
   }
@@ -118,11 +119,11 @@ export class OverviewInlineBandChangeComponent implements OnInit {
     let value = +target.value;
 
     if (this.changeType === 'relative') {
-      value = value > 150 ? 150 : value;
+      value = Math.min(value, 150);
       this.localMultiplier = +(value.toFixed(2)) / 100 + 1;
-      this.multiplierInput.nativeElement.value = ((this.localMultiplier - 1) * 100) | 0;
+      this.multiplierInput.nativeElement.value = Math.trunc((this.localMultiplier - 1) * 100);
     } else {
-      this.localOffset = value > 150 ? 150 : value;
+      this.localOffset = Math.min(value, 150);
       this.offsetInput.nativeElement.value = this.localOffset;
     }
   }

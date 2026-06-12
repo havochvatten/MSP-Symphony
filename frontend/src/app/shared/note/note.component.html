@@ -1,4 +1,6 @@
-<aside *ngIf="active">
-  <app-icon [iconType]="icon" (click)="closeNote.emit()"></app-icon>
-  <ng-content></ng-content>
-</aside>
+@if (active) {
+  <aside>
+    <app-icon [iconType]="icon" (click)="closeNote.emit()"></app-icon>
+    <ng-content></ng-content>
+  </aside>
+}

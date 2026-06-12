@@ -1,19 +1,23 @@
-import { Component, EventEmitter, Input, NgModuleRef, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { StatePath, AreaGroup, UserArea, Area } from '@data/area/area.interfaces';
 import { DialogService } from "@shared/dialog/dialog.service";
 import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
 import { statePathContains } from "@shared/common.util";
 import { MultiModeListable } from "@shared/multi-tools/multi-mode-listable";
 import { ListItemsSort } from "@data/common/sorting.interfaces";
-import { area } from "d3";
+import { area as d3Area } from "d3";
 import { TranslateService } from "@ngx-translate/core";
 
 @Component({
   selector: 'app-area-group',
   templateUrl: './area-group.component.html',
-  styleUrls: ['./area-group.component.scss']
+  styleUrls: ['./area-group.component.scss'],
+  standalone: false
 })
 export class AreaGroupComponent extends MultiModeListable {
+  protected dialogService = inject(DialogService);
+  private readonly translateService = inject(TranslateService);
+
   @Input() title?: string;
   @Input() areas: AreaGroup[] | UserArea[] = [];
   @Input() searching = false;
@@ -32,12 +36,8 @@ export class AreaGroupComponent extends MultiModeListable {
 
   @Output() highlight: EventEmitter<[StatePath, boolean]> = new EventEmitter();
 
-  constructor(
-    protected dialogService: DialogService,
-    protected moduleRef: NgModuleRef<never>,
-    private translateService: TranslateService
-  ) {
-    super(moduleRef, dialogService);
+  constructor() {
+    super();
   }
 
   onRenameUserArea = (userArea: UserArea) => () => {
@@ -91,13 +91,15 @@ export class AreaGroupComponent extends MultiModeListable {
     return this.selectedAreas && statePathContains(statePath, this.selectedAreas);
   }
 
-  setSort(sortType: ListItemsSort): void {}
+  setSort(sortType: ListItemsSort): void {
+    return;
+  }
 
   deselectAreas = () => {
     this.selectedIds = [];
   }
 
-  protected readonly area = area;
+  protected readonly area = d3Area;
 }
 
 @Component({
@@ -111,17 +113,20 @@ export class AreaGroupComponent extends MultiModeListable {
         label="{{ 'map.user-area.edit.label' | translate }}"
         (iconClick)="toggleOpen()"
       ></app-icon-button>
-      <ul *ngIf="open" class="edit-options">
-        <li (click)="onRenameUserArea($event)"
-            tabindex="0">{{ 'map.user-area.rename.label' | translate }}</li>
-        <li class="delete" (click)="onDeleteUserArea($event)"
+      @if (open) {
+        <ul class="edit-options">
+          <li (click)="onRenameUserArea($event)"
+          tabindex="0">{{ 'map.user-area.rename.label' | translate }}</li>
+          <li class="delete" (click)="onDeleteUserArea($event)"
             tabindex="0">
-          {{ 'map.user-area.delete.label' | translate }}
-        </li>
-      </ul>
+            {{ 'map.user-area.delete.label' | translate }}
+          </li>
+        </ul>
+      }
     </div>
-  `,
-  styleUrls: ['./area-group.component.scss']
+    `,
+  styleUrls: ['./area-group.component.scss'],
+  standalone: false
 })
 export class EditAreaComponent {
   @Input() deleteUserArea?: () => void;

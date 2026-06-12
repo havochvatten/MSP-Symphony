@@ -1,11 +1,12 @@
 import { Component, Input } from '@angular/core';
-import { Band, BandGroup } from '@data/metadata/metadata.interfaces';
+import { BandGroup } from '@data/metadata/metadata.interfaces';
 import { formatPercentage } from '@src/app/shared/common.util';
 
 @Component({
   selector: 'app-impact-table',
   templateUrl: './impact-table.component.html',
-  styleUrls: ['./impact-table.component.scss']
+  styleUrls: ['./impact-table.component.scss'],
+  standalone: false
 })
 export class ImpactTableComponent {
   @Input() title?: string;

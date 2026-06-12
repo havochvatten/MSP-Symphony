@@ -1,11 +1,13 @@
 import { CoreModule } from './core/core.module';
 import { SharedModule } from '@shared/shared.module';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, provideZonelessChangeDetection } from '@angular/core';
 
+import { provideAppInitializer, inject } from '@angular/core';
+import { BrandingService } from './core/branding/branding.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
@@ -31,7 +33,6 @@ import { MatRadioModule } from "@angular/material/radio";
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule,
     BrowserAnimationsModule,
     MatCheckboxModule,
     MatButtonModule,
@@ -45,8 +46,8 @@ import { MatRadioModule } from "@angular/material/radio";
         strictStateImmutability: true,
         strictActionImmutability: true,
         strictStateSerializability: true,
-        strictActionSerializability: true
-      }
+        strictActionSerializability: true,
+      },
     }),
     EffectsModule.forRoot([
       MetadataEffects,
@@ -54,14 +55,22 @@ import { MatRadioModule } from "@angular/material/radio";
       AreaEffects,
       MessageEffects,
       CalculationEffects,
-      ScenarioEffects
+      ScenarioEffects,
     ]),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
     TranslationSetupModule,
     CalculationReportModule,
-    LoginModule
+    LoginModule,
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [
+    provideHttpClient(),
+    provideZonelessChangeDetection(),
+    BrandingService,
+    provideAppInitializer(() => {
+      const brandingService = inject(BrandingService);
+      return brandingService.loadConfig();
+    }),
+  ],
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -1,6 +1,4 @@
-@import 'src/styles/constants';
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
+@use 'src/styles/hav-colors' as colors;
 
 :host {
   display: flex;
@@ -11,11 +9,10 @@
   width: 50rem;
 
   h2 {
-    color: $hav-black;
+    color: colors.$hav-black;
     font-size: 2rem;
     font-weight: 700;
-    margin: 0;
-    margin-bottom: 2rem;
+    margin: 0 0 2rem;
   }
 
   p {
@@ -35,10 +32,7 @@
   }
 
   .toolbar {
-    //border-top: 1px solid #999;
     padding-top: 1rem;
-    //padding: 0 1.4rem;
-    //box-sizing: border-box;
     display: flex;
     justify-content: center;
 

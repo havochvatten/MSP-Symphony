@@ -5,19 +5,20 @@ import { IconType } from '@shared/icon/icon.component';
   selector: 'app-toolbar-button',
   template: `
     <button
-      [attr.aria-label]="label | translate"
-      [attr.title]="label | translate"
+      [attr.aria-label]="label! | translate"
+      [attr.title]="label! | translate"
       [disabled]="disabled"
       [attr.data-active]="active"
     >
       <app-icon [iconType]="icon"></app-icon>
     </button>
   `,
-  styleUrls: ['./toolbar-button.component.scss']
+  styleUrls: ['./toolbar-button.component.scss'],
+  standalone: false
 })
 export class ToolbarButtonComponent {
   @Input() label?: string;
-  @Input() icon?: IconType = 'plus';
+  @Input() icon: IconType = 'plus';
   @Input() active = false;
   @Input() disabled = false;
 }
@@ -33,7 +34,8 @@ export class ToolbarButtonComponent {
       </app-toolbar-button>
     </div>
   `,
-  styleUrls: ['./toolbar-button.component.scss']
+  styleUrls: ['./toolbar-button.component.scss'],
+  standalone: false
 })
 export class ToolbarZoomButtonsComponent {
   @Output() zoomIn: EventEmitter<void> = new EventEmitter<void>();

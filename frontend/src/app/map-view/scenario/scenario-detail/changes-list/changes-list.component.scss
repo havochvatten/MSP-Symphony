@@ -1,5 +1,5 @@
-@import 'src/styles/constants';
-@import 'src/styles/hav-colors';
+@use 'src/styles/constants';
+@use 'src/styles/hav-colors' as colors;
 
 :host {
   app-accordion-box {
@@ -28,7 +28,7 @@
       .area-title {
         font-weight: 300;
         font-style: oblique;
-        color: $hav-darkergrey;
+        color: colors.$hav-darkergrey;
         flex: 1;
       }
 
@@ -83,11 +83,11 @@
       font-size: 1.4rem;
       letter-spacing: 0;
       font-weight: 400;
-      color: $medium-gray;
+      color: colors.$medium-gray;
       padding-bottom: 1rem;
 
       app-icon {
-        color: $hav-turquoise;
+        color: colors.$hav-turquoise;
         font-size: 3rem;
       }
     }

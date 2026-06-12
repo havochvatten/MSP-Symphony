@@ -1,9 +1,9 @@
-@import 'src/styles/constants';
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
+@use 'src/styles/constants' as cns;
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
 
 :host {
-  height: calc(100vh - #{$header-height} - 3rem);
+  height: calc(100vh - #{cns.$header-height} - 3rem);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -93,24 +93,33 @@
   .toolbar {
     padding-top: 1rem;
     display: flex;
-    flex-direction: row;
     justify-content: center;
     border-top: 1px solid #dfe0e4;
+  }
+
+  .compare-button {
+    position: relative;
+  }
+
+  .button-text.hidden {
+    visibility: hidden;
+  }
+
+  .button-spinner {
+    position: absolute;
+    inset: 0;
+    margin: auto;
   }
 }
 
 ::ng-deep {
-  .ddPanel.cmp {
-    margin-top: 48px;
-  }
-
   .cdk-overlay-container .cdk-overlay-pane .mat-mdc-select-panel.ddPanel.cmp {
     mat-option.purged {
       background: #f7f4f4 url('~/src/assets/cross.svg') no-repeat 98% 50%;
       background-size: 1.6rem;
       font-style: oblique;
       font-weight: 300;
-      color: $hav-map-graphitegrey;
+      color: colors.$hav-map-graphitegrey;
 
       &:hover, &:hover:not(.mdc-list-item--disabled) {
         background: #f1e9e9 url('~/src/assets/cross.svg') no-repeat 98% 50%;

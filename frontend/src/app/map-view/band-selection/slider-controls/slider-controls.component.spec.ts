@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
@@ -8,12 +8,13 @@ import { SharedModule } from '@shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { StoreModule } from "@ngrx/store";
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('SliderControlsComponent', () => {
   let fixture: ComponentFixture<SliderControlsComponent>,
       component: SliderControlsComponent;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
@@ -22,7 +23,9 @@ describe('SliderControlsComponent', () => {
         MatCheckboxModule
       ],
       declarations: [SliderControlsComponent, EcoSliderComponent],
-      providers: [provideMockStore({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideMockStore({
         initialState: {
           metadata: metadata,
           scenario: scenario,
@@ -78,7 +81,7 @@ describe('SliderControlsComponent', () => {
       }
     }
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

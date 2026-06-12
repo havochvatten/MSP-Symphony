@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Observable } from "rxjs";
 import { Store } from "@ngrx/store";
 import { DialogRef } from "@shared/dialog/dialog-ref";
@@ -11,18 +11,22 @@ import { AreaSelectors } from "@data/area";
 @Component({
   selector: 'app-set-arbitrary-matrix',
   templateUrl: './set-arbitrary-matrix.component.html',
-  styleUrls: ['./set-arbitrary-matrix.component.scss']
+  styleUrls: ['./set-arbitrary-matrix.component.scss'],
+  standalone: false
 })
 export class SetArbitraryMatrixComponent {
+  private dialog = inject(DialogRef);
+  private store = inject<Store<State>>(Store);
+
   matrices: MatrixRef[];
   areaName!: string;
   selectedMatrix: MatrixRef | null = null;
   selectedCalculationArea: CalculationAreaSlice | null = null;
   calibratedAreas$: Observable<CalculationAreaSlice[]>;
 
-  constructor( private dialog: DialogRef,
-               private store: Store<State>,
-               conf: DialogConfig ) {
+  constructor() {
+    const conf = inject(DialogConfig);
+
     this.matrices = conf.data.matrices || [];
     this.areaName = conf.data.areaName;
     this.calibratedAreas$ = this.store.select(AreaSelectors.selectCalibratedCalculationAreas);

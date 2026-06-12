@@ -19,7 +19,7 @@ import { ModalContentComponent } from './modal/modal-content/modal-content.compo
 import { ModalFooterComponent } from './modal/modal-footer/modal-footer.component';
 import { SearchInputComponent } from './search-input/search-input.component';
 import { IconComponent } from './icon/icon.component';
-import { HavLoaderComponent } from './hav-loader/hav-loader.component';
+import { LoaderComponent } from './loader/loader.component';
 import { ToggleComponent } from './toggle/toggle.component';
 import { AccordionBoxComponent, AccordionBoxHeaderComponent, AccordionBoxContentComponent } from './accordion-box/accordion-box.component';
 import { SelectComponent } from './select/select.component';
@@ -41,11 +41,13 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatRadioModule } from "@angular/material/radio";
 import { MatInputModule } from "@angular/material/input";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ListFilterComponent } from './list-filter/list-filter.component';
 import { MultiToolsComponent } from './multi-tools/multi-tools.component';
 import { MultiActionButtonComponent } from '@shared/multi-action-button/multi-action-button.component';
 import { RenameItemModalComponent} from "@shared/rename-item-modal/rename-item-modal.component";
 import { ChangeLanguageDialogComponent } from './change-language-dialog/change-language-dialog.component';
+import { ChangeBaselineDialogComponent } from './change-baseline-dialog/change-baseline-dialog.component';
 
 @NgModule({
   declarations: [
@@ -65,7 +67,7 @@ import { ChangeLanguageDialogComponent } from './change-language-dialog/change-l
     ModalFooterComponent,
     SearchInputComponent,
     IconComponent,
-    HavLoaderComponent,
+    LoaderComponent,
     ToggleComponent,
     AccordionBoxComponent,
     AccordionBoxHeaderComponent,
@@ -89,7 +91,8 @@ import { ChangeLanguageDialogComponent } from './change-language-dialog/change-l
     MultiToolsComponent,
     MultiActionButtonComponent,
     RenameItemModalComponent,
-    ChangeLanguageDialogComponent
+    ChangeLanguageDialogComponent,
+    ChangeBaselineDialogComponent
   ],
     imports: [
         CommonModule,
@@ -101,6 +104,7 @@ import { ChangeLanguageDialogComponent } from './change-language-dialog/change-l
         MatCheckboxModule,
         MatRadioModule,
         MatInputModule,
+        MatProgressSpinnerModule,
         FormsModule
     ],
   exports: [
@@ -127,7 +131,7 @@ import { ChangeLanguageDialogComponent } from './change-language-dialog/change-l
     ModalContentComponent,
     ModalFooterComponent,
     IconComponent,
-    HavLoaderComponent,
+    LoaderComponent,
     ResultColorScaleComponent,
     PopupMessageComponent,
     StatusIconComponent,

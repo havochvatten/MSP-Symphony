@@ -1,7 +1,7 @@
-@import 'src/styles/constants';
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
-@import 'src/styles/paddings';
+@use 'src/styles/constants' as cns;
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
+@use 'src/styles/paddings';
 
 :host {
   #applied-group-settings {

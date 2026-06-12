@@ -1,14 +1,15 @@
 import { Directive, Output, EventEmitter, HostBinding, HostListener } from '@angular/core';
 
 @Directive({
-  selector: '[appDragDrop]'
+  selector: '[appDragDrop]',
+  standalone: false
 })
 export class DragDropDirective {
 
   @Output() fileDropped = new EventEmitter<FileList>();
 
-  @HostBinding('style.background-color') private background = '#f5fcff';
-  @HostBinding('style.opacity') private opacity = 1;
+  @HostBinding('style.background-color') background = '#f5fcff';
+  @HostBinding('style.opacity') opacity = 1;
 
   @HostListener('dragover', ['$event']) onDragOver(event: DragEvent) {
     this.handleDrag(event, '#9ecbec', 0.8);

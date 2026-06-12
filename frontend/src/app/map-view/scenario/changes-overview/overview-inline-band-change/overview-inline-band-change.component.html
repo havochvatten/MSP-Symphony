@@ -1,62 +1,66 @@
 <div class="band-change-controls">
-  <span *ngIf="!editMode">{{ displayValue() }}</span>
+  @if (!editMode) {
+    <span>{{ displayValue() }}</span>
+  }
   <input #multiplierInput
-         [ngClass]="{'active' : editMode && changeType === 'relative', 'percentage': true }"
-         type="number"
-         step="1"
-         max="150"
-         min="-100"
-         [value]="(localMultiplier - 1) * 100 | number:'1.0-0'"
-         (change)="setChange($event)"
-         (input)="setChange($event)"
-         [disabled]="!editMode"
-  />
+    [ngClass]="{'active' : editMode && changeType === 'relative', 'percentage': true }"
+    type="number"
+    step="1"
+    max="150"
+    min="-100"
+    [value]="(localMultiplier - 1) * 100 | number:'1.0-0'"
+    (change)="setChange($event)"
+    (input)="setChange($event)"
+    [disabled]="!editMode"
+    />
   <input #offsetInput
-         [ngClass]="{'active' : editMode && changeType === 'constant', 'constant': true}"
-         type="number"
-         value="0"
-         step="1"
-         max="150"
-         min="-100"
-         [value]="localOffset"
-         (change)="setChange($event)"
-         (input)="setChange($event)"
-         [disabled]="!editMode"
-  />
-  <app-icon-button
-    *ngIf="!editMode"
-    [icon]="'edit'"
-    [label]="'map.editor.changes-overview.edit-value' | translate"
-    [className]="'edit-button'"
-    (iconClick)="editValue()">
-  </app-icon-button>
-  <mat-radio-group
-    [name]="'value-type-for-' + change.type "
-    *ngIf="editMode"
-    (change)="setType($event.value)">
-    <mat-radio-button
-      [checked]="(change.multiplier !== undefined)"
-      [value]="'relative'">{{ 'map.editor.changes-overview.relative-label' | translate }}
-    </mat-radio-button>
-    <mat-radio-button
-      [checked]="(change.multiplier === undefined)"
-      [value]="'constant'"
-    >{{ 'map.editor.changes-overview.absolute-label' | translate }}</mat-radio-button>
-  </mat-radio-group>
+    [ngClass]="{'active' : editMode && changeType === 'constant', 'constant': true}"
+    type="number"
+    value="0"
+    step="1"
+    max="150"
+    min="-100"
+    [value]="localOffset"
+    (change)="setChange($event)"
+    (input)="setChange($event)"
+    [disabled]="!editMode"
+    />
+  @if (!editMode) {
+    <app-icon-button
+      [icon]="'edit'"
+      [label]="'map.editor.changes-overview.edit-value' | translate"
+      [className]="'edit-button'"
+      (iconClick)="editValue()">
+    </app-icon-button>
+  }
+  @if (editMode) {
+    <mat-radio-group
+      [name]="'value-type-for-' + change.type "
+      (change)="setType($event.value)">
+      <mat-radio-button
+        [checked]="(change.multiplier !== undefined)"
+        [value]="'relative'">{{ 'map.editor.changes-overview.relative-label' | translate }}
+      </mat-radio-button>
+      <mat-radio-button
+        [checked]="(change.multiplier === undefined)"
+        [value]="'constant'"
+      >{{ 'map.editor.changes-overview.absolute-label' | translate }}</mat-radio-button>
+    </mat-radio-group>
+  }
   <div class="inline-change-confirmation">
-    <app-icon-button
-      *ngIf="editMode"
-      [icon]="'check'"
-      [label]="'map.editor.changes-overview.confirm-change' | translate"
-      [className]="'confirmation-button change'"
-      (iconClick)="confirmChange()">
-    </app-icon-button>
-    <app-icon-button
-      *ngIf="editMode"
-      [className]="'confirmation-button discard'"
-      [icon]="'cross'"
-      [label]="'map.editor.changes-overview.discard-change' | translate"
-      (iconClick)="exitEditMode()">
-    </app-icon-button>
+    @if (editMode) {
+      <app-icon-button
+        [icon]="'check'"
+        [label]="'map.editor.changes-overview.confirm-change' | translate"
+        [className]="'confirmation-button change'"
+        (iconClick)="confirmChange()">
+      </app-icon-button>
+      <app-icon-button
+        [className]="'confirmation-button discard'"
+        [icon]="'cross'"
+        [label]="'map.editor.changes-overview.discard-change' | translate"
+        (iconClick)="exitEditMode()">
+      </app-icon-button>
+    }
   </div>
 </div>

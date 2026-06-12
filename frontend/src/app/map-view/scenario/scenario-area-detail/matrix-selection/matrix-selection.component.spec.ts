@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { SharedModule } from '@shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
@@ -10,12 +10,13 @@ import { MatRadioModule } from "@angular/material/radio";
 import { MatSelectModule } from "@angular/material/select";
 import { NormalizationType } from "@data/calculation/calculation.service";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('MatrixSelectionComponent', () => {
   let component: MatrixSelectionComponent;
   let fixture: ComponentFixture<MatrixSelectionComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
@@ -28,12 +29,15 @@ describe('MatrixSelectionComponent', () => {
       providers: [
         TranslateService,
         provideMockStore(
-        { initialState: {
-          metadata: metadata,
-          area: area,
-          scenario: scenario,
-          user: { baseline: undefined }
-        }})
+          { initialState: {
+              metadata: metadata,
+              area: area,
+              scenario: scenario,
+              user: { baseline: undefined }
+            }
+          }
+        ),
+        provideZonelessChangeDetection()
       ]
     }).compileComponents();
     fixture = TestBed.createComponent(MatrixSelectionComponent);
@@ -62,7 +66,7 @@ describe('MatrixSelectionComponent', () => {
     };
     component.areaIndex = 0;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

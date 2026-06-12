@@ -6,6 +6,7 @@ import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { MatRadioModule } from "@angular/material/radio";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('SelectIntersectionComponent', () => {
   let component: SelectIntersectionComponent;
@@ -28,7 +29,8 @@ describe('SelectIntersectionComponent', () => {
               areas: [],
             }
           }
-        }
+        },
+        provideZonelessChangeDetection()
       ],
       declarations: [ SelectIntersectionComponent ]
     })

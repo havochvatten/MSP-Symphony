@@ -4,7 +4,8 @@ import { Scenario } from "@data/scenario/scenario.interfaces";
 @Component({
   selector: 'app-active-scenario-display',
   templateUrl: './active-scenario-display.component.html',
-  styleUrls: ['./active-scenario-display.component.scss']
+  styleUrls: ['./active-scenario-display.component.scss'],
+  standalone: false
 })
 export class ActiveScenarioDisplayComponent {
 

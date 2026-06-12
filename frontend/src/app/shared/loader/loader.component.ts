@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-hav-loader',
+  selector: 'app-loader',
   template: `
     <svg width="100px" id="el_LeUW1CNn2">
       <defs>
@@ -51,6 +51,7 @@ import { Component } from '@angular/core';
         animation-timing-function: cubic-bezier(0, 0, 1, 1);
       }
     `
-  ]
+  ],
+  standalone: false
 })
-export class HavLoaderComponent {}
+export class LoaderComponent {}

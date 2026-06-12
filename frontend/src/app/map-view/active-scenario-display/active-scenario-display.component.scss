@@ -1,4 +1,4 @@
-@import 'src/styles/hav-colors';
+@use 'src/styles/hav-colors' as colors;
 
 :host {
   display: flex;
@@ -42,13 +42,13 @@
     span {
       font-size: 1.28rem;
       font-weight: 600;
-      color: $hav-turquoise;
+      color: colors.$hav-turquoise;
       cursor: pointer;
     }
 
     &[disabled] {
       span {
-        color: $hav-darkcoldgrey;
+        color: colors.$hav-darkcoldgrey;
         cursor: default;
       }
     }

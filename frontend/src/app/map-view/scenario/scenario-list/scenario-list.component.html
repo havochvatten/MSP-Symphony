@@ -7,27 +7,33 @@
         [enterLabel]="'map.editor.list.batch-tools.enter-batch-mode'"
         [exitLabel]="'map.editor.list.batch-tools.exit-batch-mode'"
         [disabledPredicate]="noneSelected"
-      >
+        >
         <app-multi-action-button
           [multiActionDelegate]="triggerBatchRun"
           [multiActionIcon]="'play-arrow'"
           [multiActionLabel]="'map.editor.list.batch-tools.run-batch'"
           [multiActionLabelDisabled]="'map.editor.list.batch-tools.batch-too-small'"
           [disabledPredicate]="disableBatch"
-          ></app-multi-action-button>
+        ></app-multi-action-button>
         <app-multi-action-button
           [multiActionDelegate]="deleteSelectedScenarios"
           [multiActionIcon]="'delete'"
           [multiActionLabel]="'map.editor.list.delete-selected'"
           [multiActionLabelDisabled]="'map.editor.list.none-selected'"
-          ></app-multi-action-button>
+        ></app-multi-action-button>
       </app-multi-tools>
     </div>
-    <ng-container *ngIf="!((selectionOverlap | async) ?? false)">
-      <p *ngFor="let selectedArea of selectedAreas" class="area-name">{{ selectedArea.displayName }}</p>
-    </ng-container>
-    <p *ngIf="selectedAreas.length === 0" class="area-name">{{ 'map.no-selected-area' | translate }}</p>
-    <p *ngIf="selectionOverlap | async" class="area-name">{{ 'map.editor.list.overlap' | translate }}</p>
+    @if (!((selectionOverlap | async) ?? false)) {
+      @for (selectedArea of selectedAreas; track selectedArea.code) {
+        <p class="area-name">{{ selectedArea.displayName }}</p>
+      }
+    }
+    @if (selectedAreas.length === 0) {
+      <p class="area-name">{{ 'map.no-selected-area' | translate }}</p>
+    }
+    @if (selectionOverlap | async) {
+      <p class="area-name">{{ 'map.editor.list.overlap' | translate }}</p>
+    }
 
     <!--TODO Add more prominent button to create new scenario? -->
     <div class="title-container">
@@ -43,72 +49,94 @@
   </div>
   <div class="list-filter-container">
     <app-list-filter
-            [filterPlaceholder]="'map.editor.list.filter-hint' | translate"
-            (filterChange)="setFilter($event)"
-            (sortChange)="setSort($event)"
-            ></app-list-filter>
+      [filterPlaceholder]="'map.editor.list.filter-hint' | translate"
+      (filterChange)="setFilter($event)"
+      (sortChange)="setSort($event)"
+    ></app-list-filter>
   </div>
 
   <div class="divider"></div>
 
-  <section class="list-section" *ngIf="(scenario$ | async)?.length">
-    <div *ngFor="let scenario of scenario$ | async; index as scenarioIndex"
-         class="scenario-wrap"
-         [ngClass]="{'filtered': filter(scenario.name) }">
-      <div class="scenario list-item interactive"
-           (click)="isMultiMode() ? multiSelect(scenario.id) : open(scenarioIndex)"
-           [title]="scenario.name"
-           tabindex="0">
-        <div class="scenario-info">
-          <div class="name">
-            <h4>{{ scenario.name }}</h4>
-          </div>
-          <span class="timestamp">{{ scenario.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
-        </div>
-        <ul [ngClass]="{'scenario-areas' : true, 'abundant' : scenario.areas.length > ABUNDANT_AREA_COUNT}">
-          <li *ngFor="let area of scenario.areas.slice(0, MAX_AREAS)"
-              [title]="'map.editor.list.scenario-area' | translate: { scenario: scenario.name, 'area-feature': area.feature.properties['name'] }">
-            <span class="feature-name">{{ area.feature.properties['name'] }}</span>
-          </li>
-          <li *ngIf="scenario.areas.length === MAX_AREAS + 1" class="more-areas">
-            <span class="feature-name">{{ 'map.editor.list.more-areas-single' | translate }}</span>
-          </li>
-          <li *ngIf="scenario.areas.length > MAX_AREAS + 1" class="more-areas">
-            <span class="feature-name">{{ 'map.editor.list.more-areas' | translate: { more: scenario.areas.length - MAX_AREAS } }}</span>
-          </li>
-        </ul>
-        <div class="list-actions" *ngIf="!isMultiMode()">
-          <app-icon *ngIf="scenario.latestCalculationId" iconType="report" [title]="'map.editor.list.show-report-label' | translate"
+  @if ((scenario$ | async)?.length) {
+    <section class="list-section">
+      @for (scenario of scenario$ | async; track scenario.id; let scenarioIndex = $index) {
+        <div
+          class="scenario-wrap"
+          [ngClass]="{'filtered': filter(scenario.name) }">
+          <div class="scenario list-item interactive"
+            (click)="isMultiMode() ? multiSelect(scenario.id) : open(scenarioIndex)"
+            [title]="scenario.name"
+            tabindex="0">
+            <div class="scenario-info">
+              <div class="name">
+                <h4>{{ scenario.name }}</h4>
+              </div>
+              <span class="timestamp">{{ scenario.timestamp | date: 'yyyy-MM-dd HH:mm' }}</span>
+            </div>
+            <ul [ngClass]="{'scenario-areas' : true, 'abundant' : scenario.areas.length > ABUNDANT_AREA_COUNT}">
+              @for (area of scenario.areas.slice(0, MAX_AREAS); track area.id) {
+                <li
+                  [title]="'map.editor.list.scenario-area' | translate: { scenario: scenario.name, 'area-feature': area.feature.properties['name'] }">
+                  <span class="feature-name">{{ area.feature.properties['name'] }}</span>
+                </li>
+              }
+              @if (scenario.areas.length === MAX_AREAS + 1) {
+                <li class="more-areas">
+                  <span class="feature-name">{{ 'map.editor.list.more-areas-single' | translate }}</span>
+                </li>
+              }
+              @if (scenario.areas.length > MAX_AREAS + 1) {
+                <li class="more-areas">
+                  <span class="feature-name">{{ 'map.editor.list.more-areas' | translate: { more: scenario.areas.length - MAX_AREAS } }}</span>
+                </li>
+              }
+            </ul>
+            @if (!isMultiMode()) {
+              <div class="list-actions">
+                @if (scenario.latestCalculationId) {
+                  <app-icon iconType="report" [title]="'map.editor.list.show-report-label' | translate"
                     (click)="showReport(scenario.latestCalculationId); $event.stopPropagation()">
-          </app-icon>
-          <app-icon iconType="copy" [title]="'map.editor.copy-scenario.label' | translate"
-                    (click)="copyScenario(scenario); $event.stopPropagation()">
-          </app-icon>
-          <app-icon iconType="delete" [title]="'map.editor.delete.tooltip' | translate"
-                    (click)="deleteScenario(scenario); $event.stopPropagation()">
-          </app-icon>
+                  </app-icon>
+                }
+                <app-icon iconType="copy" [title]="'map.editor.copy-scenario.label' | translate"
+                  (click)="copyScenario(scenario); $event.stopPropagation()">
+                </app-icon>
+                <app-icon iconType="delete" [title]="'map.editor.delete.tooltip' | translate"
+                  (click)="deleteScenario(scenario); $event.stopPropagation()">
+                </app-icon>
+              </div>
+            }
+          </div>
+          @if (isMultiMode()) {
+            <div class="batch-selected-wrap">
+              <mat-checkbox [checked]="selectedIds.includes(scenario.id)"
+                (change)="multiSelect(scenario.id)"
+                (click)="$event.stopPropagation()">
+              </mat-checkbox>
+            </div>
+          }
         </div>
-      </div>
-      <div class="batch-selected-wrap" *ngIf="isMultiMode()">
-        <mat-checkbox [checked]="selectedIds.includes(scenario.id)"
-                      (change)="multiSelect(scenario.id)"
-                      (click)="$event.stopPropagation()">
-        </mat-checkbox>
-      </div>
-    </div>
-  </section>
+      }
+    </section>
+  }
 
-  <div *ngIf="!(scenario$ | async)?.length" id="no-scenarios">
-    <span style="font-style: italic">
-      <app-icon iconType="info-circle"></app-icon>
-      {{ 'map.editor.list.no-scenarios' | translate }}
-    </span>
-    <p *ngIf="selectedAreas.length > 0">
-      {{ 'map.editor.list.add-scenarios-hint' | translate }}
-    </p>
-    <p *ngIf="selectedAreas.length === 0">
-      {{ 'map.editor.list.select-area-first-label' | translate }}
-    </p>
-    <!-- TODO Add animation around plus button? -->
-  </div>
+  @if (!(scenario$ | async)?.length) {
+    <div id="no-scenarios">
+      <span style="font-style: italic">
+        <app-icon iconType="info-circle"></app-icon>
+        {{ 'map.editor.list.no-scenarios' | translate }}
+      </span>
+      @if (selectedAreas.length > 0) {
+        <p>
+          {{ 'map.editor.list.add-scenarios-hint' | translate }}
+        </p>
+      }
+      @if (selectedAreas.length === 0) {
+        <p>
+          {{ 'map.editor.list.select-area-first-label' | translate }}
+        </p>
+      }
+      <!-- TODO Add animation around plus button? -->
+    </div>
+  }
 </section>

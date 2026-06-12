@@ -1,7 +1,20 @@
-<span *ngIf="withLabel; else searchInput">
-  {{ label }}
-  <ng-container *ngTemplateOutlet="searchInput"></ng-container>
-</span>
+@if (withLabel) {
+  <span>
+    {{ label }}
+    <ng-container *ngTemplateOutlet="searchInput"></ng-container>
+  </span>
+} @else {
+  <div>
+    <input
+      type="text"
+      [value]="value"
+      [placeholder]="placeholder"
+      [attr.aria-label]="label"
+      (input)="onChange($event.target.value)"
+      />
+    <app-icon [iconType]="icon"></app-icon>
+  </div>
+}
 
 <ng-template #searchInput>
   <div>
@@ -11,7 +24,7 @@
       [placeholder]="placeholder"
       [attr.aria-label]="label"
       (input)="onChange($event.target.value)"
-    />
+      />
     <app-icon [iconType]="icon"></app-icon>
   </div>
 </ng-template>

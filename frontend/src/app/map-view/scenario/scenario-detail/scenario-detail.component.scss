@@ -1,14 +1,14 @@
-@import 'src/styles/constants';
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
-@import 'src/styles/paddings';
+@use 'src/styles/constants' as cns;
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
+@use 'src/styles/paddings';
 
 $button-height: 6rem;
 $buttons-row-gap: 1rem;
 
 :host {
   display: flex;
-  height: calc(100vh - #{$header-height} - 2rem);
+  height: calc(100vh - #{cns.$header-height} - 2rem);
   flex-direction: column;
   justify-content: space-between;
 
@@ -38,7 +38,7 @@ $buttons-row-gap: 1rem;
 
       input {
         border-radius: 4px;
-        border: 1px solid $hav-darkcoldgrey;
+        border: 1px solid colors.$hav-darkcoldgrey;
         padding: 0.4rem 0.8rem;
 
         font-size: 2.6rem;
@@ -54,7 +54,7 @@ $buttons-row-gap: 1rem;
 
       button {
         margin-left: 1rem;
-        color: $hav-turquoise;
+        color: colors.$hav-turquoise;
         background: none;
         outline: none;
         border: none;
@@ -115,8 +115,8 @@ $buttons-row-gap: 1rem;
 
       .interactive-save-indication {
         display: none;
-        color: $hav-green;
-        background-color: $hav-coldgrey;
+        color: colors.$hav-green;
+        background-color: colors.$hav-coldgrey;
         outline: 1px solid #9ab59b;
         line-height: 1.6rem;
         opacity: 0.6;
@@ -137,7 +137,7 @@ $buttons-row-gap: 1rem;
         h3 {
           font-weight: 400;
           font-size: 1.6rem;
-          color: $hav-darkergrey;
+          color: colors.$hav-darkergrey;
         }
 
         app-add-scenario-areas,
@@ -168,7 +168,7 @@ $buttons-row-gap: 1rem;
           position: relative;
           padding: 1.5rem;
           margin: 1rem 0 0;
-          border: 2px solid $hav-grey;
+          border: 2px solid colors.$hav-grey;
 
           .pendingMatricesOverlay {
             position: absolute;
@@ -213,7 +213,7 @@ $buttons-row-gap: 1rem;
               cursor: pointer;
 
               &:hover {
-                background-color: $lighter-yellow;
+                background-color: colors.$lighter-yellow;
               }
 
               .feature-name {
@@ -237,7 +237,7 @@ $buttons-row-gap: 1rem;
                   cursor: pointer;
 
                   &[icontype='delete'] {
-                    color: $red;
+                    color: colors.$red;
                     opacity: 0.3;
 
                     &:hover {
@@ -251,7 +251,7 @@ $buttons-row-gap: 1rem;
                   }
 
                   &[icontype='not-equal'] {
-                    background-color: $hav-coldgrey;
+                    background-color: colors.$hav-coldgrey;
 
                     ::ng-deep svg {
                       height: 1.15rem;
@@ -359,7 +359,7 @@ $buttons-row-gap: 1rem;
         cursor: pointer;
         margin-left: 0.8rem;
         opacity: 0.4;
-        color: $hav-turquoise;
+        color: colors.$hav-turquoise;
 
         &:hover {
           opacity: 1;

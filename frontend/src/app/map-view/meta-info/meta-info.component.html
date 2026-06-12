@@ -1,25 +1,35 @@
 <h4>{{ 'map.metadata.header' | translate:
   {  layerType: ('map.metadata.' + this.category) | translate,
-          layerName: this.title }
-  }}</h4>
+  layerName: this.title }
+}}</h4>
 <div class="meta-sections">
-  <div *ngFor="let metaSection of bandMetadata | keyvalue : preserveKV" class="meta-content">
-    <h5>{{ 'map.metadata.properties.' + metaSection.key | translate }}</h5>
-    <p *ngIf="!(metaSection.value)" class="no-info">
-      {{ 'map.metadata.no-info' | translate }}
-    </p>
-    <p *ngFor="let meta of metaSection.value" [innerHTML]="meta | anchor"></p>
-  </div>
-  <div *ngFor="let metaList of bandMetadataLists | keyvalue : preserveKV" class="meta-content meta-list">
-    <h5>{{ 'map.metadata.properties.' + metaList.key | translate }}</h5>
-    <ul>
-      <li *ngFor="let mdListEntry of metaList.value" [innerHTML]="mdListEntry | anchor"></li>
-    </ul>
-  </div>
+  @for (metaSection of bandMetadata | keyvalue : preserveKV; track metaSection.key) {
+    <div class="meta-content">
+      <h5>{{ 'map.metadata.properties.' + metaSection.key | translate }}</h5>
+      @if (!(metaSection.value)) {
+        <p class="no-info">
+          {{ 'map.metadata.no-info' | translate }}
+        </p>
+      }
+      @for (meta of metaSection.value; track $index) {
+        <p [innerHTML]="meta | anchor"></p>
+      }
+    </div>
+  }
+  @for (metaList of bandMetadataLists | keyvalue : preserveKV; track metaList.key) {
+    <div class="meta-content meta-list">
+      <h5>{{ 'map.metadata.properties.' + metaList.key | translate }}</h5>
+      <ul>
+        @for (mdListEntry of metaList.value; track $index) {
+          <li [innerHTML]="mdListEntry | anchor"></li>
+        }
+      </ul>
+    </div>
+  }
 </div>
 <div>
   <button mat-flat-button (click)="close()">{{
     'map.metadata.close' | translate
-    }}</button>
+  }}</button>
 </div>
 <app-icon [iconType]="'cross'" (click)="close()" style="top:0px"></app-icon>

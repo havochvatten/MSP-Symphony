@@ -1,4 +1,6 @@
-<app-header *ngIf="headerTitle !== ''" [title]="headerTitle"></app-header>
+@if (headerTitle !== '') {
+  <app-header [title]="headerTitle"></app-header>
+}
 <div class="main-content">
   <router-outlet></router-outlet>
 </div>

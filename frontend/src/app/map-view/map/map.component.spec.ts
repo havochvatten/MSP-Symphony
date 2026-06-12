@@ -1,30 +1,29 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 
 import { MapComponent } from './map.component';
 import { MapToolbarComponent } from './map-toolbar/map-toolbar.component';
 import { MapOpacitySliderComponent } from './map-opacity-slider/map-opacity-slider.component';
 import { CoreModule } from '@src/app/core/core.module';
-import { ToolbarButtonComponent, ToolbarZoomButtonsComponent } from './toolbar-button/toolbar-button.component';
+import {
+  ToolbarButtonComponent,
+  ToolbarZoomButtonsComponent
+} from './toolbar-button/toolbar-button.component';
 import { SharedModule } from '@shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as area } from '@data/area/area.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
-import { ChangeState, ScenarioLayer } from "@src/app/map-view/map/layers/scenario-layer";
-import { BandChange } from "@data/metadata/metadata.interfaces";
+import { ChangeState, ScenarioLayer } from '@src/app/map-view/map/layers/scenario-layer';
+import { BandChange } from '@data/metadata/metadata.interfaces';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('MapComponent', () => {
-  let fixture: ComponentFixture<MapComponent>,
-      component: MapComponent;
+  let fixture: ComponentFixture<MapComponent>, component: MapComponent;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        SharedModule,
-        CoreModule,
-        TranslationSetupModule
-      ],
+      imports: [SharedModule, CoreModule, TranslationSetupModule],
       declarations: [
         MapComponent,
         MapToolbarComponent,
@@ -32,27 +31,40 @@ describe('MapComponent', () => {
         ToolbarZoomButtonsComponent,
         ToolbarButtonComponent
       ],
-      providers: [provideMockStore({
-        initialState: {
-          metadata: metadata,
-          area: area,
-          scenario: scenario,
-          user: { baseline: undefined }
-        }
-      })]
+      providers: [
+        provideMockStore({
+          initialState: {
+            metadata: metadata,
+            area: area,
+            scenario: scenario,
+            user: { baseline: undefined }
+          }
+        }),
+        provideZonelessChangeDetection()
+      ]
     }).compileComponents();
     fixture = TestBed.createComponent(MapComponent);
     component = fixture.componentInstance;
-    component.mapCenter = [0,0];
+    component.mapCenter = [0, 0];
+    const mockMenuElement = document.createElement('div');
+    Object.defineProperty(component, 'areaOptionsMenu', {
+      value: { nativeElement: mockMenuElement },
+      writable: true
+    });
+
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
   it('classifyBandChanges should classify correctly', () => {
-    expect(ScenarioLayer.classifyBandChanges([{ multiplier: 1.2 } as BandChange])).toBe(ChangeState.Red);
-    expect(ScenarioLayer.classifyBandChanges([{ multiplier: -1.2 } as BandChange])).toBe(ChangeState.Green);
-  })
+    expect(ScenarioLayer.classifyBandChanges([{ multiplier: 1.2 } as BandChange])).toBe(
+      ChangeState.Red
+    );
+    expect(ScenarioLayer.classifyBandChanges([{ multiplier: -1.2 } as BandChange])).toBe(
+      ChangeState.Green
+    );
+  });
 });

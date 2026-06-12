@@ -5,6 +5,7 @@ import { ChangesListComponent } from './changes-list.component';
 import { IconComponent } from "@shared/icon/icon.component";
 import { provideMockStore } from "@ngrx/store/testing";
 import { initialState } from "@data/metadata/metadata.reducers";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 
 describe('ChangesListComponent', () => {
@@ -14,10 +15,13 @@ describe('ChangesListComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ TranslateModule.forRoot() ],
-      providers: [TranslateService,
-            provideMockStore({ initialState: {
-              metadata: initialState
-            }})],
+      providers: [
+        TranslateService,
+        provideMockStore({ initialState: {
+          metadata: initialState
+        }}),
+        provideZonelessChangeDetection()
+      ],
       declarations: [ ChangesListComponent, IconComponent ]
     })
     .compileComponents();

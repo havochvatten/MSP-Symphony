@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
-import { signal } from '@angular/core';
+import { provideZonelessChangeDetection, signal } from '@angular/core';
 
 import { MultiActionButtonComponent } from './multi-action-button.component';
 import { SharedModule } from "@shared/shared.module";
@@ -16,6 +16,7 @@ describe('MultiActionButtonComponent', () => {
         TranslateModule.forRoot()
       ],
       providers:[
+        provideZonelessChangeDetection(),
         TranslateService,
       ],
       declarations: [MultiActionButtonComponent]

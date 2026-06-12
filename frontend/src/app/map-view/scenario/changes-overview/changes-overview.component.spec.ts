@@ -9,6 +9,7 @@ import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { provideMockStore } from "@ngrx/store/testing";
 import { initialState as scenario } from "@data/scenario/scenario.reducers";
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('ChangesOverviewComponent', () => {
   let component: ChangesOverviewComponent;
@@ -38,7 +39,8 @@ describe('ChangesOverviewComponent', () => {
             scenario: scenario,
             metadata: metadata
           }
-        })
+        }),
+        provideZonelessChangeDetection()
       ]
     })
     .compileComponents();

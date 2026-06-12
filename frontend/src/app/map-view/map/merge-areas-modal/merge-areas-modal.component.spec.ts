@@ -6,6 +6,7 @@ import { DialogRef } from "@shared/dialog/dialog-ref";
 import { MergeAreasModalComponent } from './merge-areas-modal.component';
 import { InlineMapComponent } from "@shared/inline-map/inline-map.component";
 import { SelectIntersectionComponent } from "@shared/select-intersection/select-intersection.component";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('MergeAreasModalComponent', () => {
   let component: MergeAreasModalComponent;
@@ -41,7 +42,8 @@ describe('MergeAreasModalComponent', () => {
               names: []
              }
           }
-        }
+        },
+        provideZonelessChangeDetection()
       ],
       declarations: [ SelectIntersectionComponent, MergeAreasModalComponent, InlineMapComponent ]
     })

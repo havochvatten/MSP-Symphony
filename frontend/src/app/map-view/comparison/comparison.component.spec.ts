@@ -1,7 +1,7 @@
-import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { ComparisonComponent } from "@src/app/map-view/comparison/comparison.component";
 import { StoreModule } from "@ngrx/store";
-import { HttpClientModule } from "@angular/common/http";
+import { provideHttpClient } from "@angular/common/http";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { FormBuilder } from "@angular/forms";
 import { MatSelectModule } from "@angular/material/select";
@@ -12,24 +12,27 @@ import { initialState as calculation } from '@data/calculation/calculation.reduc
 import { initialState as user } from '@data/user/user.reducers';
 import { MatRadioModule } from "@angular/material/radio";
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { provideZonelessChangeDetection } from "@angular/core";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 describe('ComparisonComponent', () => {
   let fixture: ComponentFixture<ComparisonComponent>,
       component: ComparisonComponent;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         MatSelectModule,
         MatRadioModule,
         MatCheckboxModule,
-        HttpClientModule,
+        MatProgressSpinnerModule,
         StoreModule.forRoot({},{}),
         TranslateModule.forRoot()
       ],
       providers: [
         TranslateService,
         FormBuilder,
+        provideHttpClient(),
         provideMockStore({
           initialState: {
             metadata: metadata,
@@ -37,7 +40,8 @@ describe('ComparisonComponent', () => {
             calculation: calculation,
             user: user
           }
-        })
+        }),
+        provideZonelessChangeDetection()
       ],
       declarations: [
         ComparisonComponent
@@ -45,7 +49,7 @@ describe('ComparisonComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(ComparisonComponent);
     component = fixture.componentInstance;
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

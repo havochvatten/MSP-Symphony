@@ -1,4 +1,4 @@
-@import "src/styles/hav-colors";
+@use "src/styles/hav-colors" as colors;
 
 :host {
   display: grid;
@@ -36,7 +36,7 @@
             right: 14px;
 
             circle {
-              stroke: $hav-cyan;
+              stroke: colors.$hav-cyan;
             }
           }
         }
@@ -79,7 +79,7 @@
     &.locked, &.locked.mat-active {
       font-weight: 700;
       color: dimgray;
-      background-color: $hav-web-lightgrey !important;
+      background-color: colors.$hav-web-lightgrey !important;
 
       .mdc-list-item__primary-text {
         app-icon {

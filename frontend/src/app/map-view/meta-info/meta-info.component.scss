@@ -1,4 +1,4 @@
-@import 'src/styles/hav-colors';
+@use 'src/styles/hav-colors' as colors;
 
 :host {
   display: flex;
@@ -45,7 +45,7 @@
 
           &.no-info {
             font-style: oblique;
-            color: $hav-darkgrey;
+            color: colors.$hav-darkgrey;
           }
         }
 
@@ -73,7 +73,7 @@
     top: 0px;
     margin-top: 1rem;
     opacity: 0.6;
-    color: $hav-turquoise;
+    color: colors.$hav-turquoise;
     cursor: pointer;
 
     &:hover {

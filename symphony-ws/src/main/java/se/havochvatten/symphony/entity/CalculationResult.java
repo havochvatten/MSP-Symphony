@@ -70,6 +70,18 @@ import static se.havochvatten.symphony.util.CalculationUtil.operationName;
             "AND s.owner = :username AND c.cares_op = :operation ORDER BY c.cares_timestamp DESC",
     resultSetMapping = "CalculationCmpMapping" )
 
+@NamedNativeQuery(name = "CalculationResult.findCmpByOwnerAndBaseline",
+    query = "SELECT c.cares_id, c.cares_calculationname, c.cares_timestamp, " +
+                    "cs.haschanges, " +
+                    "s.polygon, s.ecosystems, s.pressures FROM " +
+            "calculationresult c " +
+            "JOIN calculationresultslice cs ON c.cares_id = cs.id " +
+            "JOIN scenariosnapshot s ON c.scenariosnapshot_id = s.id "+
+            "AND s.owner = :username AND c.cares_op = :operation " +
+            "AND c.cares_bver_id = :baselineId " +
+            "ORDER BY c.cares_timestamp DESC",
+    resultSetMapping = "CalculationCmpMapping" )
+
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class CalculationResult implements Serializable {

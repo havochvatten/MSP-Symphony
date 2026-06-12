@@ -1,24 +1,28 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { TranslationSetupModule } from './app-translation-setup.module';
 import { SharedModule } from '@shared/shared.module';
 import { provideMockStore } from '@ngrx/store/testing';
+import { RouterModule } from "@angular/router";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('AppComponent', () => {
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
-        RouterTestingModule,
+        RouterModule.forRoot([]),
         CoreModule,
         TranslationSetupModule
       ],
       declarations: [AppComponent],
-      providers: [provideMockStore({ initialState: { user: {} } })]
+      providers: [
+        provideMockStore({ initialState: { user: {} } }),
+        provideZonelessChangeDetection(),
+      ]
     }).compileComponents();
-  }));
+  });
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(AppComponent);

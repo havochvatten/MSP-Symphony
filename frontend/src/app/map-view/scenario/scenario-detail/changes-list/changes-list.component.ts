@@ -7,7 +7,8 @@ import { BandChange, BandType } from "@data/metadata/metadata.interfaces";
 @Component({
   selector: 'app-changes-list',
   templateUrl: './changes-list.component.html',
-  styleUrls: ['./changes-list.component.scss']
+  styleUrls: ['./changes-list.component.scss'],
+  standalone: false
 })
 export class ChangesListComponent {
 

@@ -1,6 +1,6 @@
-@import 'src/styles/constants';
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
+@use 'src/styles/constants' as cns;
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
 
 :host {
   .search-header {
@@ -17,7 +17,7 @@
       outline: none;
       background: none;
       border: none;
-      color: $hav-turquoise;
+      color: colors.$hav-turquoise;
       font-weight: 600;
 
       &:hover {

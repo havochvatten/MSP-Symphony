@@ -1,4 +1,4 @@
-import { MultiPolygon } from "ol/geom";
+import { MultiPolygon } from 'ol/geom';
 
 export type ComponentKey = keyof Pick<APILayerData, 'ecoComponent' | 'pressureComponent'>;
 
@@ -8,7 +8,7 @@ export type BandType_Alt = 'ecoComponents' | 'pressures';
 export const BandTypes = ['ECOSYSTEM', 'PRESSURE'] as const;
 
 export interface ReliabilityMapping {
-  partitions: { value: number, polygon: MultiPolygon }[];
+  partitions: { value: number; polygon: MultiPolygon }[];
 }
 
 export interface SelectableLayer {
@@ -25,8 +25,7 @@ export interface Band extends SelectableLayer {
   intensityMultiplier?: number; // TODO Rename
   constantIntensity?: number; // TODO rename
   layerOpacity?: number;
-  meta:
-    { [key: string]: string };
+  meta: { [key: string]: string };
 }
 
 export interface BandGroup {
@@ -74,8 +73,8 @@ export interface BandChange {
 }
 
 export interface ReliabilityMap {
-  ECOSYSTEM:  {[key: number]:  ReliabilityMapping };
-  PRESSURE:   {[key: number]:  ReliabilityMapping };
+  ECOSYSTEM: { [key: number]: ReliabilityMapping };
+  PRESSURE: { [key: number]: ReliabilityMapping };
 }
 
 export interface VisibleReliability {
@@ -87,15 +86,15 @@ export interface State {
   ECOSYSTEM: Groups;
   PRESSURE: Groups;
   visibleReliability: VisibleReliability | null;
+  loading: boolean;
 }
 
 export function bandEquals(a: Band, b: Band): boolean {
-  return a.bandNumber === b.bandNumber
-    && a.symphonyCategory === b.symphonyCategory;
+  return a.bandNumber === b.bandNumber && a.symphonyCategory === b.symphonyCategory;
 }
 
 // TODO: Consolidate these everywhere
-export const bandTypesMap: Map<BandType | BandType_Alt, BandType | BandType_Alt>  = new Map([
+export const bandTypesMap: Map<BandType | BandType_Alt, BandType | BandType_Alt> = new Map([
   ['ECOSYSTEM', 'ecoComponents'],
   ['PRESSURE', 'pressures'],
   ['ecoComponents', 'ECOSYSTEM'],

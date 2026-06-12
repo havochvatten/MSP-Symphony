@@ -1,19 +1,21 @@
-import { createSelector, createFeatureSelector } from '@ngrx/store';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { State as AppState } from '@src/app/app-reducer';
 import {
-  State,
-  FeatureCollection,
-  UserArea,
-  SelectableArea,
-  Feature,
-  NationalArea,
   AreaGroup,
+  Boundary,
+  Feature,
+  FeatureCollection,
+  NationalArea,
+  SelectableArea,
+  State,
   StatePath,
-  Boundary
+  UserArea
 } from './area.interfaces';
 import { getIn } from 'immutable';
 
 export const selectAreaState = createFeatureSelector<AppState, State>('area');
+
+export const selectIsLoading = createSelector(selectAreaState, (state) => state.loading);
 
 export const selectSelectedArea = createSelector(
   selectAreaState,
@@ -24,17 +26,17 @@ export const selectSelectedAreaData = createSelector(
   selectAreaState,
   selectSelectedArea,
   (area: State, selectedAreas) =>
-      (selectedAreas ? selectedAreas.map(s_area => getIn(area, s_area, [])) : [])
+    selectedAreas ? selectedAreas.map((s_area) => getIn(area, s_area, [])) : []
 );
 
 export const selectNationalAreas = createSelector(selectAreaState, (state: State) => {
   const { area } = state;
-  const areaTypes = state.areaTypes.filter(areaType => Object.keys(area).includes(areaType));
+  const areaTypes = state.areaTypes.filter((areaType) => Object.keys(area).includes(areaType));
   return areaTypes
-    .map(areaType => area[areaType])
-    .map(nationalArea => ({
+    .map((areaType) => area[areaType])
+    .map((nationalArea) => ({
       ...nationalArea,
-      groups: Object.values(nationalArea.groups).map(group => ({
+      groups: Object.values(nationalArea.groups).map((group) => ({
         ...group,
         areas: Object.values(group.areas)
       }))
@@ -48,46 +50,44 @@ export const selectUserAreas = createSelector(selectAreaState, (state: State) =>
 export const selectAreaFeatures = createSelector(
   selectNationalAreas,
   selectUserAreas,
-  (nationalAreas: NationalArea[], userAreas: UserArea[]): FeatureCollection[] =>
-    [...getNationalAreaFeatures(nationalAreas), ...getUserAreasFeatures(userAreas)]
-  );
+  (nationalAreas: NationalArea[], userAreas: UserArea[]): FeatureCollection[] => [
+    ...getNationalAreaFeatures(nationalAreas),
+    ...getUserAreasFeatures(userAreas)
+  ]
+);
 
 export const selectVisibleAreas = createSelector(
   selectNationalAreas,
   selectUserAreas,
   selectSelectedArea,
   (nationalAreas: NationalArea[], userAreas: UserArea[], currentSelection: StatePath[]) => {
-    const visibleGroups = nationalAreas.reduce(
-      (groups: AreaGroup[], nationalArea) => [
-        ...groups,
-        ...nationalArea.groups
-      ],
-      []
-    ).filter(group => group.visible);
+    const visibleGroups = nationalAreas
+      .reduce((groups: AreaGroup[], nationalArea) => [...groups, ...nationalArea.groups], [])
+      .filter((group) => group.visible);
     const areas = visibleGroups.reduce(
       (group_areas: SelectableArea[], group) => [...group_areas, ...group.areas],
       []
     );
 
     return {
-      visible: [...areas, ...userAreas.filter(area => area.visible)]
-        .map(area => area.statePath),
+      visible: [...areas, ...userAreas.filter((area) => area.visible)].map(
+        (area) => area.statePath
+      ),
       selected: currentSelection
-    }
+    };
   }
 );
 
-export const selectOverlap = createSelector(selectAreaState, state => state.selectionOverlap);
+export const selectOverlap = createSelector(selectAreaState, (state) => state.selectionOverlap);
 
-export const selectBoundaries = createSelector(selectAreaState, state => state.boundaries);
+export const selectBoundaries = createSelector(selectAreaState, (state) => state.boundaries);
 
-export const selectBoundaryFeatures = createSelector(
-  selectBoundaries,
-  (boundaries: Boundary[]) => createBoundaryFeature(boundaries)
+export const selectBoundaryFeatures = createSelector(selectBoundaries, (boundaries: Boundary[]) =>
+  createBoundaryFeature(boundaries)
 );
 export const selectCalibratedCalculationAreas = createSelector(
   selectAreaState,
-  state => state.calibratedCalculationAreas
+  (state) => state.calibratedCalculationAreas
 );
 
 export const selectAll = createSelector(
@@ -126,21 +126,18 @@ export const selectSelectedFeatureCollections = createSelector(
 
 function getNationalAreaFeatures(nationalAreas: NationalArea[]): FeatureCollection[] {
   const areaGroups = nationalAreas.reduce(
-    (groups: AreaGroup[], nationalArea) => [
-      ...groups,
-      ...nationalArea.groups
-    ],
+    (groups: AreaGroup[], nationalArea) => [...groups, ...nationalArea.groups],
     []
   );
   const features = areaGroups.reduce(
-    (areas: Feature[], group) => [...areas, ...group.areas.map(area => area.feature)],
+    (areas: Feature[], group) => [...areas, ...group.areas.map((area) => area.feature)],
     []
   );
   return features.length > 0 ? createFeatureCollection(features) : [];
 }
 
 function getFeatures(areas: SelectableArea[]) {
-  return areas.map(area => area.feature);
+  return areas.map((area) => area.feature);
 }
 
 function getUserAreasFeatures(userAreas: UserArea[]) {

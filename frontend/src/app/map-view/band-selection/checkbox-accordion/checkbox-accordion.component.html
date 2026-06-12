@@ -1,27 +1,30 @@
 <!-- FIXME open if child bands has changes -->
 <app-accordion-box [open]="open || (searching && bands.length > 0)" [toggle]="toggle">
   <app-accordion-box-header>
-    <mat-checkbox
-      *ngIf="title"
-      [checked]="allBoxesAreChecked"
-      [indeterminate]="someBoxesAreChecked"
-      [disabled]="!scenarioActive"
-      (change)="updateAll()"
-      checkboxSize="small"
-    >{{ title }}</mat-checkbox>
+    @if (title) {
+      <mat-checkbox
+        [checked]="allBoxesAreChecked"
+        [indeterminate]="someBoxesAreChecked"
+        [disabled]="!scenarioActive"
+        (change)="updateAll()"
+        checkboxSize="small"
+      >{{ title }}</mat-checkbox>
+    }
   </app-accordion-box-header>
   <app-accordion-box-content>
     <ul>
-      <li *ngFor="let band of bands; trackBy: bandNumber" class="list-item">
-        <app-slider-controls
-          [band]="band"
-          [category]="category"
-          [disabled]="!scenarioActive"
-          [onSelect]="onChange"
-          [onChangeVisible]="onChangeVisible"
-          [onChangeVisibleReliability]="onChangeVisibleReliability"
-        ></app-slider-controls>
-      </li>
+      @for (band of bands; track bandNumber($index, band)) {
+        <li class="list-item">
+          <app-slider-controls
+            [band]="band"
+            [category]="category"
+            [disabled]="!scenarioActive"
+            [onSelect]="onChange"
+            [onChangeVisible]="onChangeVisible"
+            [onChangeVisibleReliability]="onChangeVisibleReliability"
+          ></app-slider-controls>
+        </li>
+      }
     </ul>
   </app-accordion-box-content>
 </app-accordion-box>

@@ -1,7 +1,7 @@
 import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
 import { ScenarioActions } from "@data/scenario";
 import { DialogService } from "@shared/dialog/dialog.service";
-import { NgModuleRef } from "@angular/core";
+import { NgModule, NgModuleRef } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
 import { Store } from "@ngrx/store";
 import { Scenario, ScenarioArea, ScenarioChangesSelection } from "@data/scenario/scenario.interfaces";
@@ -9,8 +9,8 @@ import { State } from "@src/app/app-reducer";
 import { TransferChangesComponent } from "@src/app/map-view/scenario/transfer-changes/transfer-changes.component";
 
 export async function deleteScenario(
-  dialogService:DialogService, translateService: TranslateService, store:Store<State>, moduleRef:NgModuleRef<never>, scenario: Scenario):Promise<void> {
-  const confirmDelete = await dialogService.open<boolean>(
+  dialogService:DialogService, translateService: TranslateService, store:Store<State>, moduleRef:NgModuleRef<NgModule>, scenario: Scenario):Promise<void> {
+  const confirmDelete = await dialogService.open<boolean, NgModule>(
     ConfirmationModalComponent, moduleRef,
     {
       data: {
@@ -33,8 +33,8 @@ function isScenario(target: Scenario | ScenarioArea): target is Scenario {
 }
 
 export async function transferChanges(
-  dialogService:DialogService, translateService: TranslateService, store: Store<State>, moduleRef:NgModuleRef<never>, target: Scenario | ScenarioArea):Promise<boolean> {
-  const selectedChanges = await dialogService.open<ScenarioChangesSelection>(
+  dialogService:DialogService, translateService: TranslateService, store: Store<State>, moduleRef:NgModuleRef<NgModule>, target: Scenario | ScenarioArea):Promise<boolean> {
+  const selectedChanges = await dialogService.open<ScenarioChangesSelection, NgModule>(
     TransferChangesComponent, moduleRef,
     {
       data: {

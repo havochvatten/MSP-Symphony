@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { SelectIntersectionComponent } from "@shared/select-intersection/select-intersection.component";
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
@@ -7,13 +7,17 @@ import { DialogConfig } from "@shared/dialog/dialog-config";
   selector: 'app-merge-areas-modal',
   templateUrl: './merge-areas-modal.component.html',
   styleUrls: ['../../../shared/select-intersection/select-intersection.component.scss',
-              './merge-areas-modal.component.scss']
+              './merge-areas-modal.component.scss'],
+  standalone: false
 })
 export class MergeAreasModalComponent extends SelectIntersectionComponent {
 
   altAreas: { index: number, name: string }[];
 
-  constructor(dialog: DialogRef, conf: DialogConfig) {
+  constructor() {
+    const dialog = inject(DialogRef);
+    const conf = inject(DialogConfig);
+
     conf.data.headerTextKey   = 'map.merge-areas.modal.header';
     conf.data.confirmTextKey  = 'map.merge-areas.modal.confirm';
     conf.data.projection      = 'EPSG:4326';
@@ -31,7 +35,7 @@ export class MergeAreasModalComponent extends SelectIntersectionComponent {
       altAreas.length > 0 ?
         'map.merge-areas.modal.message-alts' :
         'map.merge-areas.modal.message';
-    super(dialog, conf);
+    super();
     this.altAreas = altAreas;
     this.selected = altAreas.length > 0 ? -1 : 0;
   }

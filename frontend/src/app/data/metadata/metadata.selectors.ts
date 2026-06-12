@@ -1,28 +1,37 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { State as AppState } from '@src/app/app-reducer';
-import { Band, BandGroup, Groups, State, ReliabilityMap, ReliabilityMapping } from './metadata.interfaces';
+import {
+  Band,
+  BandGroup,
+  Groups,
+  ReliabilityMap,
+  ReliabilityMapping,
+  State
+} from './metadata.interfaces';
 
-export const selectMetadataState = createFeatureSelector<AppState, State>('metadata');
+export const selectMetadataState = createFeatureSelector<State>('metadata');
 
-export const getBandPath = (band: Band) =>
-  [band.symphonyCategory, band.meta.symphonytheme, 'bands', band.bandNumber];
+export const selectIsLoading = createSelector(selectMetadataState, (state) => state.loading);
 
-export const selectReliabilityMap = createSelector(
-  selectMetadataState,
-  (state: State) =>  {
-    const uncertainties : ReliabilityMap = { ECOSYSTEM: {}, PRESSURE: {} },
-      allBands = flattenBands([...selectGroups(state.ECOSYSTEM), ...selectGroups(state.PRESSURE)]),
-      bandsWithReliability = allBands.filter(band => band.reliability !== null);
+export const getBandPath = (band: Band) => [
+  band.symphonyCategory,
+  band.meta.symphonytheme,
+  'bands',
+  band.bandNumber
+];
 
-    if (allBands.length === 0) return null;
+export const selectReliabilityMap = createSelector(selectMetadataState, (state: State) => {
+  const uncertainties: ReliabilityMap = { ECOSYSTEM: {}, PRESSURE: {} },
+    allBands = flattenBands([...selectGroups(state.ECOSYSTEM), ...selectGroups(state.PRESSURE)]),
+    bandsWithReliability = allBands.filter((band) => band.reliability !== null);
 
-    for (const band of bandsWithReliability) {
-      uncertainties[band.symphonyCategory][band.bandNumber] = band.reliability as ReliabilityMapping;
-    }
+  if (allBands.length === 0) return null;
 
-    return uncertainties;
+  for (const band of bandsWithReliability) {
+    uncertainties[band.symphonyCategory][band.bandNumber] = band.reliability as ReliabilityMapping;
   }
-);
+
+  return uncertainties;
+});
 
 export const selectEcoComponents = createSelector(
   selectMetadataState,
@@ -35,18 +44,18 @@ export const selectPressureComponents = createSelector(
 );
 
 export const selectGroups = (groups: Groups): BandGroup[] =>
-  Object.values(groups).map(group => ({
+  Object.values(groups).map((group) => ({
     ...group,
     bands: Object.values(group.bands)
   }));
 
 export const selectedGroups = (groups: Groups): BandGroup[] =>
   Object.values(groups)
-    .map(group => ({
+    .map((group) => ({
       ...group,
-      bands: Object.values(group.bands).filter(band => band.selected)
+      bands: Object.values(group.bands).filter((band) => band.selected)
     }))
-    .filter(group => group.bands.length > 0);
+    .filter((group) => group.bands.length > 0);
 
 export const selectMetadata = createSelector(
   selectEcoComponents,
@@ -66,16 +75,20 @@ export const selectMetadata = createSelector(
   }
 );
 
-const metaDictReducer = (m:{[key: string]: string}, v: Band ) => { m[v.bandNumber] = v.title; return m; };
+const metaDictReducer = (m: { [key: string]: string }, v: Band) => {
+  m[v.bandNumber] = v.title;
+  return m;
+};
 
 export const selectMetaDisplayDictionary = createSelector(
   selectMetadata,
   ({ ecoComponent, pressureComponent }) => {
     return {
-      "ECOSYSTEM" : flattenBands(ecoComponent).reduce(metaDictReducer, {}),
-      "PRESSURE"  : flattenBands(pressureComponent).reduce(metaDictReducer, {})
+      ECOSYSTEM: flattenBands(ecoComponent).reduce(metaDictReducer, {}),
+      PRESSURE: flattenBands(pressureComponent).reduce(metaDictReducer, {})
     };
-  });
+  }
+);
 
 export const selectSelectedComponents = createSelector(
   selectEcoComponents,
@@ -98,20 +111,20 @@ export const selectVisibleBands = createSelector(
 export const selectBandNumbers = createSelector(
   selectMetadata,
   ({ ecoComponent, pressureComponent }) => ({
-    ecoComponent: flattenBands(ecoComponent).map(band => band.bandNumber),
-    pressureComponent: flattenBands(pressureComponent).map(band => band.bandNumber)
+    ecoComponent: flattenBands(ecoComponent).map((band) => band.bandNumber),
+    pressureComponent: flattenBands(pressureComponent).map((band) => band.bandNumber)
   })
 );
 
 export const selectVisibleReliability = createSelector(
   selectMetadataState,
-  (state: State) =>  state.visibleReliability
+  (state: State) => state.visibleReliability
 );
 
 function includeAreaSpecificProperties(groups: BandGroup[]): BandGroup[] {
-  return groups.map(group => ({
+  return groups.map((group) => ({
     ...group,
-    bands: group.bands.map(component => ({
+    bands: group.bands.map((component) => ({
       ...component,
       selected: component.selected,
       intensityMultiplier: component.intensityMultiplier ?? 1,
@@ -125,11 +138,11 @@ function flattenBands(groups: BandGroup[]): Band[] {
 }
 
 function filterSelectedBand(bands: Band[]) {
-  return bands.filter(band => band.selected);
+  return bands.filter((band) => band.selected);
 }
 
 function filterVisibleBand(bands: Band[]) {
-  return bands.filter(band => band.visible);
+  return bands.filter((band) => band.visible);
 }
 
 function isEmpty(object: Record<string, unknown>): boolean {

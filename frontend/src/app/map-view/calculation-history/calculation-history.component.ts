@@ -1,10 +1,9 @@
-import { Component, NgModuleRef, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { shareReplay, tap } from "rxjs/operators";
 import { select, Store } from '@ngrx/store';
 import { environment } from "@src/environments/environment";
 import { State } from '@src/app/app-reducer';
-import { DialogService } from '@shared/dialog/dialog.service';
 import { ListItemsSort } from "@data/common/sorting.interfaces";
 import { CalculationActions, CalculationSelectors } from '@data/calculation';
 import { CalculationService } from "@data/calculation/calculation.service";
@@ -23,9 +22,14 @@ import { MultiModeListable } from "@shared/multi-tools/multi-mode-listable";
 @Component({
   selector: 'app-history',
   templateUrl: './calculation-history.component.html',
-  styleUrls: ['./calculation-history.component.scss']
+  styleUrls: ['./calculation-history.component.scss'],
+  standalone: false
 })
 export class CalculationHistoryComponent extends MultiModeListable implements OnInit, OnDestroy {
+  private readonly store = inject<Store<State>>(Store);
+  private readonly calcService = inject(CalculationService);
+  private readonly translateService = inject(TranslateService);
+
   calculations$ = this.store.select(CalculationSelectors.selectCalculations);
   comparedCalculations$ = this.store.select(CalculationSelectors.selectComparedCalculations);
   comparedCalculationsRepeat$ = this.comparedCalculations$.pipe(shareReplay(1));
@@ -41,14 +45,9 @@ export class CalculationHistoryComponent extends MultiModeListable implements On
   private calcLoadingState$: Subscription;
   private checkMessageHandler: ((this: Window, ev: MessageEvent<unknown>) => unknown) = () => undefined;
 
-  constructor(
-    private store: Store<State>,
-    private calcService: CalculationService,
-    private translateService: TranslateService,
-    protected dialogService: DialogService,
-    protected moduleRef: NgModuleRef<never>
-  ) {
-    super(moduleRef, dialogService);
+  constructor() {
+    super();
+
     this.store.dispatch(CalculationActions.fetchCalculations());
     this.loading$ = this.store.select(CalculationSelectors.selectLoadingCalculations);
 

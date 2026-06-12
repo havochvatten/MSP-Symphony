@@ -1,6 +1,6 @@
-@import 'src/styles/constants';
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
+@use 'src/styles/constants' as cns;
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
 
 :host {
   section {
@@ -34,25 +34,25 @@
           font-size: 1.4rem;
           letter-spacing: 0;
           font-weight: 400;
-          color: $medium-gray;
+          color: colors.$medium-gray;
           margin-bottom: 0.4rem;
 
           app-icon {
-            color: $hav-turquoise;
+            color: colors.$hav-turquoise;
             font-size: 2.2rem;
           }
 
           &.scenariowide-settings {
-            color: $light-gray
+            color: colors.$light-gray
           }
         }
       }
 
       button {
         background-color: #fff;
-        border: 2px solid $hav-turquoise;
+        border: 2px solid colors.$hav-turquoise;
         border-radius: 2px;
-        color: $hav-turquoise;
+        color: colors.$hav-turquoise;
         height: 32px;
         margin: auto 0 auto 0.4rem;
         font-family: "Roboto", sans-serif;
@@ -83,7 +83,7 @@
       button {
         font-weight: 500;
         font-size: 1.4rem;
-        color: $hav-turquoise;
+        color: colors.$hav-turquoise;
         justify-self: end;
         background: none;
         outline: none;

@@ -5,6 +5,8 @@ import GeoJSON from "ol/format/GeoJSON";
 import { ReliabilityMapping } from "@data/metadata/metadata.interfaces";
 import VectorImageLayer from "ol/layer/VectorImage";
 import VectorSource from "ol/source/Vector";
+import { Feature } from "ol";
+import { Geometry } from "ol/geom";
 
 const u_img_low = new Image(), u_img_mid = new Image();
 u_img_low.src = 'assets/low-reliability.svg';
@@ -51,7 +53,7 @@ export class ReliabilityLayer extends CachedVectorLayers {
         const layer = new VectorImageLayer({
           source: new VectorSource({
             format: this.geoJson,
-            features: [this.geoJson.readFeature(partition.polygon)]
+            features: [this.geoJson.readFeature(partition.polygon) as Feature<Geometry>]
           }),
           style: new ReliabilityStyle(this.opaque, partition.value)
         });

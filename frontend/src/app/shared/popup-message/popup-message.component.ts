@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { MessageSelectors, MessageActions } from '@data/message';
@@ -8,14 +8,15 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-popup-message',
   templateUrl: './popup-message.component.html',
-  styleUrls: ['./popup-message.component.scss']
+  styleUrls: ['./popup-message.component.scss'],
+  standalone: false
 })
 export class PopupMessageComponent implements OnInit, OnDestroy {
+  private readonly store = inject<Store<State>>(Store);
+
   messages: Message[] = [];
   isHtmlRx = /<(?:.|\n)*?>/;
   private messageSubscription$?: Subscription;
-
-  constructor(private store: Store<State>) {}
 
   ngOnInit() {
     this.messageSubscription$ = this.store

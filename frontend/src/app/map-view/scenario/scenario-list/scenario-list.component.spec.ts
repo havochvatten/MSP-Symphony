@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ScenarioListComponent } from './scenario-list.component';
 import { StoreModule } from "@ngrx/store";
-import { HttpClientModule } from "@angular/common/http";
+import { provideHttpClient } from "@angular/common/http";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
@@ -13,29 +13,31 @@ import { IconComponent } from "@shared/icon/icon.component";
 import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenario-areas/add-scenario-areas.component";
 import { SharedModule } from "@shared/shared.module";
 import { ScenarioEditorModule } from "@src/app/map-view/scenario/scenario-editor.module";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('ScenarioListComponent', () => {
   let component: ScenarioListComponent;
   let fixture: ComponentFixture<ScenarioListComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         ScenarioEditorModule,
         SharedModule,
-        HttpClientModule,
         StoreModule.forRoot({},{}),
         TranslateModule.forRoot()
       ],
       providers:[
         TranslateService,
+        provideHttpClient(),
         provideMockStore(
           { initialState: {
             metadata: metadata,
             scenario: scenario,
             area: area,
             user: { baseline: undefined }
-          }})
+          }}),
+        provideZonelessChangeDetection()
       ],
       declarations: [ ScenarioListComponent, AddScenarioAreasComponent, IconButtonComponent, IconComponent]
     })
@@ -43,7 +45,7 @@ describe('ScenarioListComponent', () => {
     fixture = TestBed.createComponent(ScenarioListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

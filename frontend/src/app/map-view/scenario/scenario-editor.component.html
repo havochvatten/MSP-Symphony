@@ -1,23 +1,19 @@
-<ng-container *ngIf="activeScenario !== undefined; then scenario else scenarioList"></ng-container>
-<ng-template #scenarioList>
-  <app-scenario-list></app-scenario-list>
-</ng-template>
-<ng-template #scenario>
-  <ng-container *ngIf="getActiveAreaIndex() !== undefined; then scenarioAreaDetail else scenarioDetail"></ng-container>
-  <ng-template #scenarioDetail>
-    <app-scenario-detail
-      [scenario]="getActiveScenario()"
-      [deleteAreaDelegate]="confirmDeleteArea"
-      [deleteAreaAction]="deleteAreaAction"
-      [confirmDeleteChange]="confirmDeleteChange"
-    ></app-scenario-detail>
-  </ng-template>
-  <ng-template #scenarioAreaDetail>
+@if (activeScenario !== undefined) {
+  @if (getActiveAreaIndex() !== undefined) {
     <app-scenario-area-detail
       [scenario]="getActiveScenario()"
       [areaIndex]="getActiveAreaIndex()"
       [deleteDelegate]="confirmDeleteArea"
       [confirmDeleteChange]="confirmDeleteChange">
     </app-scenario-area-detail>
-  </ng-template>
-</ng-template>
+  } @else {
+    <app-scenario-detail
+      [scenario]="getActiveScenario()"
+      [deleteAreaDelegate]="confirmDeleteArea"
+      [deleteAreaAction]="deleteAreaAction"
+      [confirmDeleteChange]="confirmDeleteChange"
+    ></app-scenario-detail>
+  }
+} @else {
+  <app-scenario-list></app-scenario-list>
+}

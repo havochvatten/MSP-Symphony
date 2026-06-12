@@ -1,6 +1,6 @@
 import { SharedModule } from '@shared/shared.module';
 import { HeaderComponent } from './header/header.component';
-import { NgModule, Optional, SkipSelf } from '@angular/core';
+import { NgModule, inject } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FooterComponent } from './footer/footer.component';
 import { UserMenuToggleComponent } from './header/user-menu-toggle/user-menu-toggle.component';
@@ -13,7 +13,9 @@ import { MatButtonModule } from '@angular/material/button';
   exports: [HeaderComponent, FooterComponent]
 })
 export class CoreModule {
-  constructor(@Optional() @SkipSelf() coreModule: CoreModule) {
+  constructor() {
+    const coreModule = inject(CoreModule, { optional: true, skipSelf: true });
+
     if (coreModule) {
       throw new Error(
         'The CoreModule should only be imported in the AppModule.'

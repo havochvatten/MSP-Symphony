@@ -1,14 +1,18 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { IconButtonComponent } from './icon-button.component';
 import { IconComponent } from '../icon/icon.component';
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('IconButtonComponent', () => {
   let fixture: ComponentFixture<IconButtonComponent>,
       component: IconButtonComponent;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection()
+      ],
       declarations: [IconButtonComponent, IconComponent]
     }).compileComponents();
     fixture = TestBed.createComponent(IconButtonComponent);
@@ -16,7 +20,7 @@ describe('IconButtonComponent', () => {
     component.label = 'test label';
     component.icon = 'plus';
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

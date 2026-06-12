@@ -6,6 +6,9 @@ import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { TranslateModule } from "@ngx-translate/core";
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { provideZonelessChangeDetection } from "@angular/core";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { FormsModule } from "@angular/forms";
 
 describe('SplitScenarioSettingsComponent', () => {
   let component: SplitScenarioSettingsComponent;
@@ -15,6 +18,8 @@ describe('SplitScenarioSettingsComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         MatCheckboxModule,
+        FormsModule,
+        MatFormFieldModule,
         TranslateModule.forRoot()
       ],
       providers: [
@@ -28,7 +33,8 @@ describe('SplitScenarioSettingsComponent', () => {
               noAreaChanges: true
             }
           }
-        }
+        },
+        provideZonelessChangeDetection()
       ],
       declarations: [ SplitScenarioSettingsComponent ]
     })

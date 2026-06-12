@@ -5,6 +5,8 @@ import { Fill, Stroke } from "ol/style";
 import VectorImageLayer from "ol/layer/VectorImage";
 import { simpleHash } from "@shared/common.util";
 import { CachedVectorLayers } from "@src/app/map-view/map/layers/cached-vectorlayers";
+import { Feature } from "ol";
+import { Geometry } from "ol/geom";
 
 export class AreaHighlightLayer extends CachedVectorLayers {
 
@@ -27,11 +29,11 @@ export class AreaHighlightLayer extends CachedVectorLayers {
         const layer = new VectorImageLayer({
           source: new VectorSource({
             format: this.geoJson,
-            features: [this.geoJson.readFeature(validFeature)]
+            features: [this.geoJson.readFeature(validFeature) as Feature<Geometry>]
           }),
           style: this.highlightStyle });
 
-        this.featureMap.set(simpleHash(validFeature.properties.statePath), layer);
+        this.featureMap.set(simpleHash(validFeature.properties.statePath), layer as never);
       }
     }
   }

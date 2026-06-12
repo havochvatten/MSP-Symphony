@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DialogRef } from "@shared/dialog/dialog-ref";
 import { DialogConfig } from "@shared/dialog/dialog-config";
 import { DownloadCompoundComparisonOptions } from '@data/calculation/calculation.interfaces';
@@ -7,9 +7,12 @@ import { MatRadioChange } from "@angular/material/radio";
 @Component({
   selector: 'app-download-compound-comparison-dialog',
   templateUrl: './download-compound-comparison-dialog.component.html',
-  styleUrls: ['./download-compound-comparison-dialog.component.scss']
+  styleUrls: ['./download-compound-comparison-dialog.component.scss'],
+  standalone: false
 })
 export class DownloadCompoundComparisonDialogComponent {
+  private readonly dialog = inject(DialogRef);
+  private readonly config = inject(DialogConfig);
 
   comparisonName = '';
   downloadOptions: DownloadCompoundComparisonOptions = {
@@ -18,8 +21,7 @@ export class DownloadCompoundComparisonDialogComponent {
     includeCombined: false
   };
 
-  constructor(private dialog: DialogRef,
-              private config: DialogConfig) {
+  constructor() {
     this.comparisonName = this.config.data.comparisonName;
   }
 

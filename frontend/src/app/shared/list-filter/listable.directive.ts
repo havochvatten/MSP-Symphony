@@ -4,6 +4,7 @@ import { textFilter } from "@shared/common.util";
 
 @Directive({
   selector: '[appListable]',
+  standalone: false
 })
 export abstract class Listable {
 

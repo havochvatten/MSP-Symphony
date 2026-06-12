@@ -1,49 +1,76 @@
-<img class="duck" src="assets/long-tailed-duck.svg" alt="Alfågel" />
+@if (brandingService.configData.loginLogoSrc) {
+  <img
+    class="duck"
+    [src]="brandingService.configData.loginLogoSrc"
+    [alt]="brandingService.configData.loginLogoAlt"/>
+}
+
 <div class="title-container">
   <h1>Symphony</h1>
   <span class="current-version">{{ symphonyVersion }}</span>
 </div>
+
 <form class="login-form" [formGroup]="loginForm">
   <mat-form-field>
     <input matInput
-      type="text"
-      formControlName="username"
-      autocomplete="on" />
+           type="text"
+           formControlName="username"
+           autocomplete="on"/>
     <mat-label>{{ 'login.username' | translate }}</mat-label>
   </mat-form-field>
   <mat-form-field class="password-field">
     <input matInput
-      [type]="peekPassword ? 'text' : 'password'"
-      formControlName="password"
-      autocomplete="current-password"/>
+           [type]="peekPassword ? 'text' : 'password'"
+           formControlName="password"
+           autocomplete="current-password"/>
     <mat-label>{{ 'login.password' | translate }}</mat-label>
-    <app-icon *ngIf="passwordPeekEnabled"
-      [iconType]="peekPassword ? 'eye' : 'eye-slash'" class="peek-icon"
-      [ngClass]="{ 'peek' : peekPassword }"
-      title="{{ (peekPassword ? 'login.hide-password' : 'login.peek-password') | translate }}"
-      (click)="peekPassword = !peekPassword"
-    ></app-icon>
+    @if (passwordPeekEnabled) {
+      <app-icon
+        [iconType]="peekPassword ? 'eye' : 'eye-slash'" class="peek-icon"
+        [ngClass]="{ 'peek' : peekPassword }"
+        title="{{ (peekPassword ? 'login.hide-password' : 'login.peek-password') | translate }}"
+        (click)="peekPassword = !peekPassword"
+      ></app-icon>
+    }
   </mat-form-field>
-  <p *ngIf="errorMessage" class="error">{{ errorMessage | translate }}</p>
+  @if (errorMessage) {
+    <p class="error">{{ errorMessage | translate }}</p>
+  }
   <button type="submit" mat-flat-button (click)="login()" [disabled]="!loginForm.valid">{{
-    'login.login' | translate
-  }}</button>
+      'login.login' | translate
+    }}
+  </button>
 </form>
+
 <div class="login-options">
   <nav>
-    <p *ngIf="env.login.forgotPasswordUrl">
-      {{ 'login.forgot-password' | translate }}
-      <a [href]="env.login.forgotPasswordUrl">{{ 'login.request-password' | translate }}</a>
-    </p>
-    <p *ngIf="env.login.noAccountUrl">
-      {{ 'login.no-account' | translate }}
-      <a [href]="env.login.noAccountUrl">{{ 'login.request-account' | translate }}</a>
-    </p>
+    @if (env.login.forgotPasswordUrl) {
+      <p>
+        {{ 'login.forgot-password' | translate }}
+        <a [href]="env.login.forgotPasswordUrl">{{ 'login.request-password' | translate }}</a>
+      </p>
+    }
+    @if (env.login.noAccountUrl) {
+      <p>
+        {{ 'login.no-account' | translate }}
+        <a [href]="env.login.noAccountUrl">{{ 'login.request-account' | translate }}</a>
+      </p>
+    }
   </nav>
 </div>
-<img class="logo" src="assets/hav-logo-blue.svg" alt="Havs och Vattenmyndigheten" />
+
+@if (brandingService.configData.showLogos) {
+  <img
+    class="logo"
+    [src]="brandingService.configData.logoSrc"
+    [alt]="brandingService.configData.logoAlt"/>
+}
+
 <div class="topography" data-position="bottom-left"></div>
 <div class="topography" data-position="top-right"></div>
-<div *ngIf="loading | async" class="loading-overlay">
-  <app-hav-loader></app-hav-loader>
-</div>
+
+@if (loading | async) {
+  <div class="loading-overlay">
+    <app-loader></app-loader>
+  </div>
+}

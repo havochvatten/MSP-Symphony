@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, NgModuleRef } from '@angular/core';
+import { Component, Input, OnChanges, NgModuleRef, inject } from '@angular/core';
 import {
   AllAreas,
   NationalArea,
@@ -21,13 +21,20 @@ import {
 import { MessageActions } from "@data/message";
 import  { v4 as uuid } from "uuid";
 import { TranslateService } from "@ngx-translate/core";
+import { MapViewModule } from "@src/app/map-view/map-view.module";
 
 @Component({
   selector: 'app-area-selection',
   templateUrl: './area-selection.component.html',
-  styleUrls: ['./area-selection.component.scss']
+  styleUrls: ['./area-selection.component.scss'],
+  standalone: false
 })
 export class AreaSelectionComponent implements OnChanges {
+  private readonly store = inject<Store<State>>(Store);
+  private readonly dialogService = inject(DialogService);
+  private readonly translateService = inject(TranslateService);
+  private readonly moduleRef = inject(NgModuleRef<MapViewModule>);
+
   @Input() areas?: AllAreas;
   search = '';
   matchingResults = 0;
@@ -40,12 +47,7 @@ export class AreaSelectionComponent implements OnChanges {
   @Input() zoomToArea!: (statePaths: StatePath[]) => void;
   @Input() highlight!: (highlightEvent: [StatePath, boolean]) => void;
 
-  constructor(
-    private store: Store<State>,
-    private dialogService: DialogService,
-    private translateService: TranslateService,
-    private moduleRef: NgModuleRef<never>
-  ) {
+  constructor() {
     this.selectedAreas$ = this.store.select(AreaSelectors.selectSelectedArea);
   }
 
@@ -66,10 +68,8 @@ export class AreaSelectionComponent implements OnChanges {
   }
 
   onSearch = (value: string) => {
-    if (typeof value === 'string') {
-      this.search = value;
-      this.filterAreas();
-    }
+    this.search = value;
+    this.filterAreas();
   };
 
   selectArea = (statePath: StatePath, visible: boolean, groupStatePath: StatePath, expand: boolean) => {
@@ -99,7 +99,7 @@ export class AreaSelectionComponent implements OnChanges {
 
   deleteUserArea = async (userAreaId: number, userAreaName: string) => {
 
-    const deleteArea = await this.dialogService.open<boolean>(
+    const deleteArea = await this.dialogService.open<boolean, MapViewModule>(
       ConfirmationModalComponent, this.moduleRef, {
         data: {
           header: this.translateService.instant('map.user-area.delete.modal.header'),
@@ -143,9 +143,6 @@ export class AreaSelectionComponent implements OnChanges {
       }));
       // TODO Zoom area?
     }
-    else
-      ; // user cancelled modal
-    // toggle visibily of area?
   }
 
 

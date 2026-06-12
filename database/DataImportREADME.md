@@ -1,4 +1,30 @@
-# Instructions for data import
+> [!CAUTION]
+> Regrettably, the instructions provided below are outdated, inaccurate and **will be removed**.  
+> Please be aware that major parts of them are incompatible with changes made to the database schema since this document 
+> was authored.
+> 
+> A more robust method to aid with constructing a _Baseline_ from raw data sources is currently being developed.  
+> Apologies for any inconvenience.
+>
+> The CSV format described for metadata and matrix import is largely the same and files conforming to the description 
+> are conceivably usable, but instead of the steps and commands detailed in the  _"MetadataImport.txt"_ and 
+> _"MatrixImport.txt"_ files, please utilize the supplied SQL scripts:
+> [MetadataImport.sql](scripts/MetadataImport.sql) and [MatrixImport.sql](scripts/MatrixImport.sql).
+> 
+> A key difference in the metadata import format is that most of the columns in the example may be omitted, only the 
+> relevant metadata entries for the raster set should be included.  
+> Since version [1.15](https://github.com/havochvatten/MSP-Symphony/releases/tag/v1.15.0) a metadata CSV can provide 
+> arbitrarily "titled" metadata entries (to be saved as text). The "mandatory" columns to include are  _Bandnumber_, 
+> _Title_, _Metadata Language_ and _Symphony Category_.  
+> _Symphony Theme_ is of particular significance to the default frontend application and should probably be included in
+>  most cases, but it's not strictly required for the script to work.
+>  Notably, the [MetadataImport.sql](scripts/MetadataImport.sql) script provides a way to map any string as column title 
+>  including the mandatory columns.
+>
+> However, the sections starting from [Import raster data](#import-raster-data), regarding preparing the data raster 
+> stack and the calibration procedure, may still be used as reference.
+
+# ~~Instructions for data import~~ _(deprecated)_
 
 The input data is packaged in a so-called _baseline_. A baseline consists of:
 
@@ -27,15 +53,15 @@ The input data is packaged in a so-called _baseline_. A baseline consists of:
   - The _Bandnumber_ column maps to the (zero-based) band number in the GeoTIFF file
   - The _Title_ column should map *exactly* (in an SQL string comparison sense) to the corresponding row or column in matrix table file(s)
   - The _Symphony Category_ column is either _Pressure_ or _Ecosystem_
-  - Layers are grouped by the contents of the _Symphony Theme_ column
-  - The _Symphony Theme (localized)_ and _Title (localized)_ columns can contain localized names which are used 
+  - Layers are grouped by the contents of the _Symphony Theme_ column 
+  - ~~The _Symphony Theme (localized)_ and _Title (localized)_ columns can contain localized names which are used 
     in the UI if the user's browser is set to prefer this language. The actual locale is specified when importing 
-    the baseline (see [below](#create-new-baseline)).
+    the baseline (see [below](#create-new-baseline)).~~
     
-    **N.B:** Not to be confused with the _Metadata Language_ column, 
+    ~~**N.B:** Not to be confused with the _Metadata Language_ column, 
     which specifies the language used for the non-localized text in the metadata, which is assumed to be 
-    English.   
-  - The _Map Acknowledgement_ column will be displayed as an attribution on the map when that data layer is visible
+    English.~~
+  - ~~The _Map Acknowledgement_ column will be displayed as an attribution on the map when that data layer is visible~~
   - The contents of the _Multiband .tif name_ and _Metadata filename_ columns are not used
 
 Fields are separated using semicolon.
@@ -101,8 +127,7 @@ calculation domain(s).
    Make note of the scenario id. (For instance by inspecting the value of of the _id_ property in the response to the 
    request to `/symphony-ws/service/scenario` when creating a scenario.)    
 2. Make a PUT request to `/symphony-ws/service/percentile-normalization-values/<scenario id>/<calculation area 
-   id>` using [Swagger](http://localhost:8080/symphony-ws/swagger/#/calibration/calcPercentileNormalizationValue) or 
-   your REST client of choice. Make sure you are authenticated with a user having the GRP_SYMPHONY_ADMIN role prior 
+   id>` using your REST client of choice. Make sure you are authenticated with a user having the GRP_SYMPHONY_ADMIN role prior 
    to making the request (through a call to `/symphony-ws/service/login`). Example:
 
 ```

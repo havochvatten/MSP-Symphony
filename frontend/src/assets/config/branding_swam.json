@@ -1,0 +1,15 @@
+{
+    "flagAlt": "Sverige : Havs och Vattenmyndigheten",
+    "flagSrc": "assets/branding/swam/Sweden-SwAM-white-horizontal-no-borders.svg",
+    "footerTextTranslationKey": "branding.SwAM",
+    "loginLogoAlt": "Alfågel",
+    "loginLogoSrc": "assets/long-tailed-duck.svg",
+    "logoAlt": "Havs och Vattenmyndigheten",
+    "logoSrc": "assets/branding/swam/hav-logo-blue.svg",
+    "reportCountryLogoAlt": "Sweden",
+    "reportCountryLogoSrc": "assets/branding/swam/sweden-logotype-english-nomargin.svg",
+    "reportLogoAlt": "Havs och Vattenmyndigheten",
+    "reportLogoSrc": "assets/branding/swam/hav-logo-black.svg",
+    "showLogos": true,
+    "showReportClosingMatter": true
+}

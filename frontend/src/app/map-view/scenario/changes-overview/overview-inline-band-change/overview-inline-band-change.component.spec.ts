@@ -5,6 +5,7 @@ import { provideMockStore } from "@ngrx/store/testing";
 import { initialState } from "@data/metadata/metadata.reducers";
 import { TranslationSetupModule } from "@src/app/app-translation-setup.module";
 import { SharedModule } from "@shared/shared.module";
+import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('OverviewInlineBandChangeComponent', () => {
   let component: OverviewInlineBandChangeComponent;
@@ -14,10 +15,13 @@ describe('OverviewInlineBandChangeComponent', () => {
     await TestBed.configureTestingModule({
       imports: [TranslationSetupModule, SharedModule],
       declarations: [ OverviewInlineBandChangeComponent ],
-      providers: [provideMockStore({ initialState: {
+      providers: [
+        provideMockStore({ initialState: {
           metadata: initialState,
           user: {}
-        }})]
+        }}),
+        provideZonelessChangeDetection()
+      ]
     })
     .compileComponents();
 

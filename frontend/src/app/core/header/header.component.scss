@@ -1,6 +1,6 @@
-@import 'src/styles/constants';
-@import 'src/styles/hav-colors';
-@import 'src/styles/margins';
+@use 'src/styles/constants' as cns;
+@use 'src/styles/hav-colors' as colors;
+@use 'src/styles/margins' as margins;
 
 :host {
   display: flex;
@@ -8,11 +8,11 @@
 
   .header-top {
     align-items: center;
-    background-color: $hav-lightturquoise;
+    background-color: colors.$hav-lightturquoise;
     color: white;
     display: flex;
-    height: $header-height;
-    padding: 0 $xs-margin;
+    height: cns.$header-height;
+    padding: 0 margins.$xs-margin;
 
     > :not(.header-overlay) {
       z-index: 1;
@@ -32,14 +32,24 @@
     h1 {
       align-items: center;
       display: flex;
-      flex: 1 1 0%;
+      flex: 0;
       justify-content: space-between;
-      margin: 0;
       font-size: 2rem;
       line-height: 2.3rem;
-      margin-left: $xs-margin;
+      margin: 0 auto 0 margins.$xs-margin;
       color: inherit;
-      flex: 0;
+    }
+
+    .baseline-badge {
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: white;
+      border: 2px solid rgba(255, 255, 255);
+      border-radius: 1rem;
+      padding: 0.2rem 0.8rem;
+      margin-right: 1.2rem;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
     }
 
     ::ng-deep app-icon {
@@ -72,18 +82,13 @@
   .flag {
     width: auto;
     height: 100%;
-    margin-left: auto;
   }
 
   .duck {
     position: absolute;
-    top: $header-height + 2rem;
+    top: cns.$header-height + 2rem;
     left: 6rem;
     width: 12rem;
     height: auto;
-  }
-
-  app-user-menu-toggle {
-    //margin-left: auto;
   }
 }

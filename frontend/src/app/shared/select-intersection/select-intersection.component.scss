@@ -1,4 +1,4 @@
-@import 'src/styles/hav-colors';
+@use 'src/styles/hav-colors' as colors;
 
 :host {
   display: flex;
@@ -25,7 +25,7 @@
 
     li .intersection-alt {
       &:hover {
-        border-color: $hav-grey;
+        border-color: colors.$hav-grey;
       }
     }
   }

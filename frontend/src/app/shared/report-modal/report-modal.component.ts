@@ -1,10 +1,10 @@
-import { ElementRef, ViewChild, Directive, OnDestroy } from '@angular/core';
+import { ElementRef, ViewChild, Directive, OnDestroy, inject } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DialogRef } from '../dialog/dialog-ref';
 import { environment as env } from "@src/environments/environment";
 import * as d3 from "d3";
 
-@Directive()
+@Directive({ standalone: false })
 export abstract class ReportModalComponent implements OnDestroy {
   safeUrl: SafeResourceUrl;
   apiUrl: string;
@@ -12,14 +12,17 @@ export abstract class ReportModalComponent implements OnDestroy {
   param_annex: string;
   @ViewChild('frame') iframe?: ElementRef<HTMLIFrameElement>;
 
-  protected constructor(private dialog: DialogRef,
-                        private dom: DomSanitizer,
-                        private url: string,
+  private readonly dialog = inject(DialogRef);
+  private readonly dom = inject(DomSanitizer);
+  private readonly url: string;
+
+  protected constructor(url: string,
                         pfx: string,
-                        param: URLSearchParams | null,
-                        titleKey: string) {
-    this.param_annex = param && [...param].length > 0 ? '?' + param.toString() : '';
-    this.safeUrl = this.dom.bypassSecurityTrustResourceUrl(this.url + this.param_annex);
+                        titleKey: string,
+                        annex?: string) {
+    this.url = url;
+    this.param_annex = annex || '';
+    this.safeUrl = this.dom.bypassSecurityTrustResourceUrl(url + this.param_annex);
     this.apiUrl = env.apiBaseUrl + pfx;
     this.titleKey = titleKey;
   }

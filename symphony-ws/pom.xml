@@ -5,7 +5,7 @@
 
     <groupId>se.havochvatten.symphony</groupId>
     <artifactId>symphony-ws</artifactId>
-    <version>1.23.0</version>
+    <version>1.25.0</version>
     <packaging>war</packaging>
 
     <name>Symphony webservices</name>
@@ -23,7 +23,7 @@
         <version.jackson>2.19.0</version.jackson>
         <version.slf4j>2.0.17</version.slf4j>
         <version.resteasy-core>6.2.12.Final</version.resteasy-core>
-        <version.java.lang3>3.17.0</version.java.lang3>
+        <version.java.lang3>3.20.0</version.java.lang3>
         <version.jts>1.18.2</version.jts> <!--Sync with GeoTools JTS dependency -->
         <version.jberet>3.1.0.Final</version.jberet>
         <version.jmh>1.37</version.jmh>
@@ -86,7 +86,7 @@
         <dependency>
             <groupId>org.apache.mina</groupId>
             <artifactId>mina-core</artifactId>
-            <version>2.2.4</version>
+            <version>2.2.7</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -151,6 +151,17 @@
             <version>${version.geotools}</version>
         </dependency>
         <dependency>
+            <groupId>it.geosolutions.jaiext.stats</groupId>
+            <artifactId>jt-stats</artifactId>
+            <version>1.1.31</version>
+        </dependency>
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.51.2.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.locationtech.jts.io</groupId>
             <artifactId>jts-io-common</artifactId>
             <version>${version.jts}</version>
@@ -208,7 +219,13 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${version.java.lang3}</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.21.0</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.rest-assured</groupId>
@@ -411,6 +428,7 @@
                     <configuration>
                         <failBuildOnCVSS>8</failBuildOnCVSS>
                         <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                        <suppressionFile>${project.basedir}/owasp-suppressions.xml</suppressionFile>
                     </configuration>
                 </plugin>
             </plugins>

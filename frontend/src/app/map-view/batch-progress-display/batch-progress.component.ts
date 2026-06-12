@@ -1,4 +1,4 @@
-import { Component, NgModuleRef } from '@angular/core';
+import { Component, NgModuleRef, inject } from '@angular/core';
 import { TranslateService } from "@ngx-translate/core";
 import { Store } from '@ngrx/store';
 import { Observable } from "rxjs";
@@ -10,21 +10,24 @@ import { State } from "@src/app/app-reducer";
 import { BatchStatusService } from "@src/app/socket/batch-status.service";
 import { CalculationReportModalComponent } from "@shared/report-modal/calculation-report-modal.component";
 import { DialogService } from "@shared/dialog/dialog.service";
+import { MapViewModule } from "@src/app/map-view/map-view.module";
 
 @Component({
   selector: 'app-batch-progress-display',
   templateUrl: './batch-progress.component.html',
-  styleUrls: ['./batch-progress.component.scss']
+  styleUrls: ['./batch-progress.component.scss'],
+  standalone: false
 })
 export class BatchProgressComponent {
+  private readonly store = inject<Store<State>>(Store);
+  private readonly batchStatusService = inject(BatchStatusService);
+  private readonly dialogService = inject(DialogService);
+  private readonly translateService = inject(TranslateService);
+  private readonly moduleRef = inject(NgModuleRef<MapViewModule>);
 
   processes$: Observable<BatchCalculationProcessEntry[]>;
 
-  constructor(private store : Store<State>,
-              private batchStatusService: BatchStatusService,
-              private dialogService: DialogService,
-              private translateService: TranslateService,
-              private moduleRef: NgModuleRef<never>) {
+  constructor() {
     this.processes$ = this.store.select(CalculationSelectors.selectBatchProcesses);
     this.processes$.subscribe(processes => {
         for(const bcp of processes) {

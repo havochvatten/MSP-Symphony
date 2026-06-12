@@ -8,7 +8,6 @@
     "disableTypeScriptVersionCheck": true
   },
   "files": [
-    "main.ts",
-    "polyfills.ts"
+    "main.ts"
   ]
 }

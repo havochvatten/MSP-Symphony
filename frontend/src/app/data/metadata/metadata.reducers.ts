@@ -1,14 +1,15 @@
 import { createReducer, on } from '@ngrx/store';
 import { setIn } from 'immutable';
-import { State, Band, Groups, bandEquals } from './metadata.interfaces';
+import { Band, bandEquals, Groups, State } from './metadata.interfaces';
 import { MetadataActions, MetadataInterfaces } from './';
-import { ScenarioActions } from "@data/scenario";
-import { getBandPath } from "@data/metadata/metadata.selectors";
+import { ScenarioActions } from '@data/scenario';
+import { getBandPath } from '@data/metadata/metadata.selectors';
 
 export const initialState: MetadataInterfaces.State = {
   ECOSYSTEM: {},
   PRESSURE: {},
-  visibleReliability: null
+  visibleReliability: null,
+  loading: false
 };
 
 export const metadataReducer = createReducer(
@@ -23,7 +24,7 @@ export const metadataReducer = createReducer(
       ...state,
       ECOSYSTEM: mapSelectedToState(state, metadata.ecoComponent).ECOSYSTEM,
       PRESSURE: mapSelectedToState(state, metadata.pressureComponent).PRESSURE
-    }
+    };
   }),
   on(MetadataActions.selectBand, (state, { band, value }) => {
     return setLayerAttribute(state, band, 'selected', value);
@@ -54,7 +55,10 @@ export const metadataReducer = createReducer(
   }),
   on(MetadataActions.showReliability, (state, { band }) => {
     const opaque: boolean = !getLayerAttribute(state, band, 'visible');
-    for (const groups of [...Object.values(state['ECOSYSTEM']), ...Object.values(state['PRESSURE'])]) {
+    for (const groups of [
+      ...Object.values(state['ECOSYSTEM']),
+      ...Object.values(state['PRESSURE'])
+    ]) {
       for (const gband of Object.values(groups.bands)) {
         if (!bandEquals(gband, band)) {
           state = setLayerAttribute(state, gband, 'visible', false);
@@ -64,7 +68,7 @@ export const metadataReducer = createReducer(
     return {
       ...state,
       visibleReliability: { band, opaque }
-    }
+    };
   }),
   on(MetadataActions.hideReliability, (state) => ({
     ...state,
@@ -74,21 +78,33 @@ export const metadataReducer = createReducer(
     ...state,
     changeMap: {}
   })),
+  // Indicate loading state
+  on(MetadataActions.fetchMetadataForBaseline, (state) => ({
+    ...state,
+    loading: true
+  })),
+  // Reset loading state on success/failure
+  on(MetadataActions.fetchMetadataSuccess, (state) => ({
+    ...state,
+    loading: false
+  }))
 );
 
 function setLayerAttribute(state: State, band: Band, attribute: string, value: unknown): State {
   // artificial "path" / hierarchy modeled on the previous implementation
   // TODO: Reimplement
-  return setIn(state, [ ...getBandPath(band), attribute], value);
+  return setIn(state, [...getBandPath(band), attribute], value);
 }
 
 function getLayerAttribute<type>(state: State, band: Band, attribute: string): type {
-  return state[band.symphonyCategory][band.meta.symphonytheme].bands[band.bandNumber][attribute as keyof Band] as type;
+  return state[band.symphonyCategory][band.meta.symphonytheme].bands[band.bandNumber][
+    attribute as keyof Band
+  ] as type;
 }
 
 function mapSelectedToState(state: State, groups: Groups): State {
-  for(const group of Object.values(groups)) {
-    for(const band of Object.values(group.bands)) {
+  for (const group of Object.values(groups)) {
+    for (const band of Object.values(group.bands)) {
       state = setLayerAttribute(state, band, 'selected', band.selected);
     }
   }

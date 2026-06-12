@@ -6,61 +6,67 @@
     (change)="onSelect($event, band)"
     checkboxSize="small"
   >{{ band.title }}</mat-checkbox>
-  <div
-    *ngIf="!(band.visible && !band.loaded)"
-    class="editing list-actions">
-    <button
-      *ngIf="hasPublicMeta"
-      (click)="showMetaDialog()"
-      [title]="'map.metadata.label' | translate"
-      data-active="true"
-    >
-      <app-icon iconType="info-circle-large"></app-icon>
-    </button>
-    <button
-      *ngIf="!(disabled || !scenario)"
-      (click)="toggleOpen()"
-      [attr.data-active]="open"
+  @if (!(band.visible && !band.loaded)) {
+    <div
+      class="editing list-actions">
+      @if (hasPublicMeta) {
+        <button
+          (click)="showMetaDialog()"
+          [title]="'map.metadata.label' | translate"
+          data-active="true"
+          >
+          <app-icon iconType="info-circle-large"></app-icon>
+        </button>
+      }
+      @if (!(disabled || !scenario)) {
+        <button
+          (click)="toggleOpen()"
+          [attr.data-active]="open"
       [attr.aria-label]="(
         open ?
           'map.editor.band-pressures.hide-intensity' :
           'map.editor.band-pressures.show-intensity') | translate"
-      [title]="!scenario ?( 'map.editor.band-pressures.no-scenario-selected' | translate) : ''"
-    >
-      <app-icon iconType="sliders"></app-icon>
-    </button>
-    <button
-      *ngIf="band.reliability !== null"
-      class="reliability"
-      [attr.data-active]="reliabilityVisible"
+          [title]="!scenario ?( 'map.editor.band-pressures.no-scenario-selected' | translate) : ''"
+          >
+          <app-icon iconType="sliders"></app-icon>
+        </button>
+      }
+      @if (band.reliability !== null) {
+        <button
+          class="reliability"
+          [attr.data-active]="reliabilityVisible"
       [title]="(reliabilityVisible ?
         'map.editor.band-pressures.hide-reliability' :
         'map.editor.band-pressures.show-reliability') | translate"
-      (click)="showReliability()"
-    >
-      <app-icon iconType="data-reliability"
+          (click)="showReliability()"
+          >
+          <app-icon iconType="data-reliability"
+          ></app-icon>
+        </button>
+      }
+      <app-icon
+        class="toggle-visibility-icon"
+        [attr.data-visible]="band.visible && band.loaded"
+        [iconType]="band.visible ? 'eye' : 'eye-slash'"
+        (click)="onChangeVisible(!band.visible, band)"
       ></app-icon>
-    </button>
-    <app-icon
-      class="toggle-visibility-icon"
-      [attr.data-visible]="band.visible && band.loaded"
-      [iconType]="band.visible ? 'eye' : 'eye-slash'"
-      (click)="onChangeVisible(!band.visible, band)"
-    ></app-icon>
-  </div>
-  <mat-spinner
-    *ngIf="band.visible && !band.loaded"
-    [diameter]="18"
-    [strokeWidth]="2">
-  </mat-spinner>
+    </div>
+  }
+  @if (band.visible && !band.loaded) {
+    <mat-spinner
+      [diameter]="18"
+      [strokeWidth]="2">
+    </mat-spinner>
+  }
 </div>
-<app-eco-slider
-  *ngIf="open && (!disabled || band.visible)"
-  [band]="band"
-  [multiplier]="getMultiplier()"
-  [offset]="getOffset()"
-  [overridden] = "!isEmpty(overriddenChange)"
-  [disabled]="disabled"
-  [areaIsVisible]="band.visible"
-  [groupSetting]="getGroupSetting()"
-></app-eco-slider>
+@if (open && (!disabled || band.visible)) {
+  <app-eco-slider
+    [band]="band"
+    [multiplier]="getMultiplier()"
+    [offset]="getOffset()"
+    [overridden] = "!isEmpty(overriddenChange)"
+    [disabled]="disabled"
+    [areaIsVisible]="band.visible"
+    [groupSetting]="getGroupSetting()"
+  ></app-eco-slider>
+}

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { CommonModule, DecimalPipe, NgOptimizedImage} from '@angular/common';
 
 import { CalculationReportRoutingModule } from './calculation-report-routing.module';
 import { CalculationReportComponent } from './calculation-report.component';
@@ -15,7 +15,6 @@ import { ComparisonReportComponent } from "@src/app/report/comparison-report.com
 import { OrdinalPipe } from "@shared/ordinal.pipe";
 import { HistogramComponent } from './histogram/histogram.component';
 import { HistogramChartComponent } from './histogram/histogram-chart/histogram-chart.component';
-import { AbstractReport } from './abstract-report.directive';
 
 @NgModule({
   declarations: [
@@ -29,9 +28,14 @@ import { AbstractReport } from './abstract-report.directive';
     ScenarioChangesComponent,
     HistogramComponent,
     HistogramChartComponent,
-    AbstractReport
   ],
-  imports: [CommonModule, SharedModule, CalculationReportRoutingModule, MatProgressSpinnerModule],
-  providers: [DecimalPipe, OrdinalPipe]
+  imports: [
+    CommonModule,
+    SharedModule,
+    CalculationReportRoutingModule,
+    MatProgressSpinnerModule,
+    NgOptimizedImage,
+  ],
+  providers: [DecimalPipe, OrdinalPipe],
 })
 export class CalculationReportModule {}

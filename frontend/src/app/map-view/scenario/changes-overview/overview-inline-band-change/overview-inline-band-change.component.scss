@@ -1,4 +1,4 @@
-@import 'src/styles/hav-colors';
+@use 'src/styles/hav-colors' as colors;
 
 :host {
    display: block;
@@ -65,10 +65,10 @@
 
             .mdc-radio__inner-circle {
               border-width: 7px;
-              width: 0px;
-              height: 0px;
-              top: 3px;
-              left: 4px;
+              width: 16px;
+              height: 16px;
+              top: 2px;
+              left: 3px;
             }
 
             .mat-mdc-radio-touch-target {
@@ -103,11 +103,11 @@
         }
 
         &.change button {
-          color: $hav-success;
+          color: colors.$hav-success;
         }
 
         &.discard button {
-          color: $hav-warning;
+          color: colors.$hav-warning;
         }
       }
     }
