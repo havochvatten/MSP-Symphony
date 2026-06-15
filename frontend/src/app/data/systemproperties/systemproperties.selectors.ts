@@ -9,6 +9,5 @@ export const selectConfig = createSelector(
 );
 
 export const selectPublicAccess = createSelector(selectConfigState, (state: ConfigState) => {
-  console.log('selector state: ', state);
   return state.appConfig.publicAccess;
 });
