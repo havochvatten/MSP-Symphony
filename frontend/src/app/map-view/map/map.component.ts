@@ -13,7 +13,7 @@ import {
   ViewChild
 } from '@angular/core';
 import { Coordinate } from 'ol/coordinate';
-import { firstValueFrom, Observable, skipWhile, Subscription } from 'rxjs';
+import { combineLatest, firstValueFrom, Observable, skipWhile, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { v4 as uuid } from 'uuid';
 import { State } from '@src/app/app-reducer';
@@ -92,7 +92,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   protected activeScenario$: Observable<Scenario | undefined>;
   private readonly scenarioSubscription: Subscription;
   private readonly scenarioCloseSubscription: Subscription;
-  readonly isLoggedIn$: Observable<boolean>;
   readonly isPublic$: Observable<boolean>;
 
   private readonly moduleRef = inject(NgModuleRef<MapViewModule>);
@@ -121,18 +120,13 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   private aliasing = true;
   isPublic = false;
-  isLoggedIn = false;
   destroyRef: DestroyRef | undefined;
 
   constructor() {
-    this.isLoggedIn$ = this.store.select(UserSelectors.selectIsLoggedIn);
     this.isPublic$ = this.configStore.select(selectPublicAccess);
 
     this.isPublic$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
       this.isPublic = value;
-    });
-    this.isLoggedIn$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
-      this.isLoggedIn = value;
     });
 
     this.storeSubscription = this.store
@@ -255,7 +249,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.map.getView().getProjection().getCode()
     );
 
-    if (this.isPublic && !this.isLoggedIn) {
+    if (this.isPublic) {
       this.areaLayer = new AreaLayer(
         this.map,
         this.dispatchSelectionUpdate,

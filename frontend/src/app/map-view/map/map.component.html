@@ -1,5 +1,5 @@
 <div id="map" class="map" #map></div>
-@if ((isPublic$ | async) && (!isLoggedIn$ | async)) {
+@if (isPublic$ | async) {
   <app-map-toolbar
     [editingControls]="false"
     (zoomIn)="zoomIn()"
