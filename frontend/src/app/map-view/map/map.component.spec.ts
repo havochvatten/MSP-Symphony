@@ -63,6 +63,13 @@ describe('MapComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('disposes the OpenLayers map on destroy', () => {
+    const map = (component as unknown as { map: { setTarget: (t?: unknown) => void } }).map;
+    const setTargetSpy = spyOn(map, 'setTarget').and.callThrough();
+    fixture.destroy(); // triggers ngOnDestroy
+    expect(setTargetSpy).toHaveBeenCalledWith(undefined);
+  });
+
   it('classifyBandChanges should classify correctly', () => {
     expect(ScenarioLayer.classifyBandChanges([{ multiplier: 1.2 } as BandChange])).toBe(
       ChangeState.Red

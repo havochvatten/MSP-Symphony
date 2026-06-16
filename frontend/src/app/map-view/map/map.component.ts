@@ -80,6 +80,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   drawIsActive = false;
 
   @ViewChild('areaOptionsMenu') areaOptionsMenu!: ElementRef<HTMLElement>;
+  @ViewChild('map', { static: true }) mapElement!: ElementRef<HTMLElement>;
 
   private map?: OLMap;
   private readonly storeSubscription?: Subscription;
@@ -218,7 +219,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     // TODO useGeographic function in the ‘ol/proj’?
     this.map = new OLMap({
-      target: 'map',
+      target: this.mapElement.nativeElement,
       controls: [
         new ScaleLine({
           units: 'metric',
@@ -451,6 +452,13 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.selectedAreasSubscription.unsubscribe();
     this.scenarioCloseSubscription.unsubscribe();
     this.scenarioSubscription.unsubscribe();
+
+    // Release the OpenLayers map so it detaches from its target element and
+    // disposes its listeners. Without this a lingering map keeps the shared
+    // target bound, leaving the next map view (e.g. logout -> public) gray.
+    this.map?.setTarget(undefined);
+    this.map?.dispose();
+    this.map = undefined;
   }
 
   toggleDrawInteraction = () => {
