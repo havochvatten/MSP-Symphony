@@ -1,31 +1,29 @@
 ﻿# Local Development Setup Guide (Windows + WSL2)
 
-*	[Quick Daily Start (After Initial Setup)](#quick-daily-start-after-initial-setup)
-*	[Initial Setup](#initial-setup)  
-    1\. [Prerequisites](#1-prerequisites)  
-    2. [Install and Configure WSL2 + Ubuntu](#2-install-and-configure-wsl2--ubuntu)  
-    3. [Clone the MSP-Symphony Repository](#3-clone-the-msp-symphony-repository)  
-    4. [PostgreSQL + PostGIS Setup (with Baseline Data)](#4-postgresql--postgis-setup)  
-    - 4.1 [Start and Enable PostgreSQL](#41-start-and-enable-postgresql)
-    - 4.2 [Configure Authentication and connections](#42-configure-authentication-and-connections)
-    - 4.3 [Create Database User, Database and Enable PostGIS](#43-create-database-user-database-and-enable-postgis)
-    - 4.4 [Populate Database](#44-populate-database)
-
-    5\. [Install WildFly 39.0.1.Final](#5-install-wildfly-3901final)  
-    6. [Deploy PostgreSQL JDBC Driver](#6-deploy-postgresql-jdbc-driver)  
-    7. [Configure WildFly (Datasource + Security)](#7-configure-wildfly-datasource--security)  
-    8. [Add Application User for Login](#8-add-application-user-for-login)  
-    9. [Create and Populate Cache, Config and Data Directories](#9-create-and-populate-cache-config-and-data-directories)
-    - 9.1 [Cache directories](#91-cache-directories)
-    - 9.2 [Config directory](#92-config-directory)
-    - 9.3 [Data directory](#93-data-directory)
-
-    10\. [Optimize WildFly JVM Settings](#10-optimize-wildfly-jvm-settings)  
-    11. [Build and Deploy Backend](#11-build-and-deploy-backend)  
-    12. [Frontend Setup](#12-frontend-setup)
-*	[Troubleshooting](#troubleshooting)
-    * [Postgresql / Database](#postgresql--database)
-    * [Wildfly / Backend](#wildfly--backend)
+- [Quick Daily Start (After Initial Setup)](#quick-daily-start-after-initial-setup)
+- [Initial Setup](#initial-setup)
+  - [1. Prerequisites](#1-prerequisites)
+  - [2. Install and Configure WSL2 + Ubuntu](#2-install-and-configure-wsl2--ubuntu)
+  - [3. Clone the MSP-Symphony Repository](#3-clone-the-msp-symphony-repository)
+  - [4. PostgreSQL + PostGIS Setup (with Baseline Data)](#4-postgresql--postgis-setup)
+    - [4.1 Start and Enable PostgreSQL](#41-start-and-enable-postgresql-)
+    - [4.2 Configure Authentication and connections](#42-configure-authentication-and-connections)
+    - [4.3 Create Database User, Database and Enable PostGIS](#43-create-database-user-database-and-enable-postgis)
+    - [4.4 Populate Database](#44-populate-database)
+  - [5. Install WildFly 39.0.1.Final](#5-install-wildfly-3901final)
+  - [6. Deploy PostgreSQL JDBC Driver](#6-deploy-postgresql-jdbc-driver)
+  - [7. Configure WildFly (Datasource + Security)](#7-configure-wildfly-datasource--security)
+  - [8. Add Application User for Login](#8-add-application-user-for-login)
+  - [9. Create and Populate Cache, Config and Data Directories](#9-create-and-populate-cache-config-and-data-directories)
+    - [9.1 Cache directories](#91-cache-directories)
+    - [9.2 Config directory](#92-config-directory)
+    - [9.3 Data directory](#93-data-directory)
+  - [10. Optimize WildFly JVM Settings](#10-optimize-wildfly-jvm-settings)
+  - [11. Build and Deploy Backend](#11-build-and-deploy-backend)
+  - [12. Frontend Setup](#12-frontend-setup)
+- [Troubleshooting](#troubleshooting)
+  - [Postgresql / Database](#postgresql--database)
+  - [Wildfly / Backend](#wildfly--backend)
 
 _Tested on_: Windows 11 + WSL2 (Ubuntu 22.04/24.04)  
 _Target_: WildFly 39 + PostgreSQL 16 + PostGIS + Angular frontend
@@ -41,8 +39,11 @@ sudo service postgresql start
 cd ~/repos/MSP-Symphony/symphony-ws
 mvn clean package -DskipTests
 cp target/*.war $WILDFLY_HOME/standalone/deployments/ 
-$WILDFLY_HOME/bin/standalone.sh -c standalone-full.xml 
+$WILDFLY_HOME/bin/standalone.sh -c standalone-full.xml
+```
+
 Terminal 3 – Frontend
+```
 cd ~/repos/MSP-Symphony/frontend
 ng serve --proxy-config proxy.conf.json --ssl=false
 ```
@@ -100,35 +101,36 @@ sudo nano /etc/postgresql/16/main/pg_hba.conf
 Replace or ensure the file contains the following related to postgres and symphony:
 pg_hba.conf 
 
-#### Database administrative login by Unix domain socket
-`local   all             postgres                                scram-sha-256`
+```
+# Database administrative login by Unix domain socket
+local   all             postgres                                scram-sha-256
 
-#### Specific rule for the symphony application user (local socket)
-`local   symphony        symphony                                scram-sha-256`
+# Specific rule for the symphony application user (local socket)
+local   symphony        symphony                                scram-sha-256
 
-#### "local" is for Unix domain socket connections only
-`local   all             all                                     peer`
+# "local" is for Unix domain socket connections only
+local   all             all                                     peer
 
-#### Allow connections from Windows host (important for WSL)
-`host    all             all             0.0.0.0/0               scram-sha-256`
+# Allow connections from Windows host (important for WSL)
+host    all             all             0.0.0.0/0               scram-sha-256
 
-#### IPv4 local connections
-`host    all             all             127.0.0.1/32            scram-sha-256`
+# IPv4 local connections
+host    all             all             127.0.0.1/32            scram-sha-256
 
-#### IPv6 local connections
-`host    all             all             ::1/128                 scram-sha-256`
+# IPv6 local connections
+host    all             all             ::1/128                 scram-sha-256
 
-#### Replication (default)
-`local   replication     all                                     peer`  
-`host    replication     all             127.0.0.1/32            scram-sha-256`  
-`host    replication     all             ::1/128                 scram-sha-256`
-
+# Replication (default)
+local   replication     all                                     peer 
+host    replication     all             127.0.0.1/32            scram-sha-256
+host    replication     all             ::1/128                 scram-sha-256
+```
 Save and exit, then restart PostgreSQL:
 
 ```sh
 sudo systemctl restart postgresql
 ```
-### 4.3 Create Database User, Database and Enable PostGIS 
+### 4.3 Create Database User, Database and Enable PostGIS
 ```sh
 sudo -u postgres psql << EOF
 CREATE USER symphony WITH PASSWORD 'symphony';
@@ -148,7 +150,7 @@ A "streamlined" instruction to accomplish this will be included here shortly.
 
 _( TODO! Write generic "quickstart" instruction utilizing [symphony-import-tool](https://github.com/havochvatten/symphony-import) )_
 
-### 5. Install WildFly 39.0.1.Final 
+### 5. Install WildFly 39.0.1.Final
 Download and install:
 ```sh
 cd ~
@@ -230,7 +232,7 @@ domain=LDAPAuth)
 ```
 Exit by typing `exit` and hitting enter.
  
-### 8. Add Application User for Login 
+### 8. Add Application User for Login
 ```sh
 $WILDFLY_HOME/bin/add-user.sh
 ```
@@ -381,14 +383,14 @@ else
 fi
 ```
  
-### 11. Build and Deploy Backend 
+### 11. Build and Deploy Backend
 ```sh
 cd ~/repos/MSP-Symphony/symphony-ws
 mvn clean package -DskipTests
 cp target/*.war $WILDFLY_HOME/standalone/deployments/ 
 ```
  
-### 12. Frontend Setup 
+### 12. Frontend Setup
 Install npm and angular first if you don't have it installed already:  
 https://nodejs.org/en/download
 
