@@ -258,7 +258,6 @@ symphony.admin=GRP_SYMPHONY_ADMIN
 areas.countrycode=SWE
 
 # Commonness indices below this value will cause the component to be excluded from the calculation report sheet
-```properties
 calc.rarity_index.threshold=0
 calc.sankey_chart.link_weight_threshold=0.001
 
@@ -267,7 +266,7 @@ calc.sankey_chart.link_weight_threshold=0.001
 # - Deflate (slower, better compression),
 # - PackBits (fast, lower compression)
 # and then there is ZSTD, JPEG, ZLib, etc. (see 
-GeoTiffWriteParams#getCompressionTypes() for exhaustive list)
+# GeoTiffWriteParams#getCompressionTypes() for exhaustive list)
 calc.result.compression.type=LZW
 calc.result.compression.quality=1.00
 
@@ -284,8 +283,7 @@ data.source.crs=EPSG:3035
 # Normally overridden in /app/config/symphony/
 api.base_url = http://localhost:8080
 api.base_path = /symphony-ws/service
-# wss is available if the app server has a valid cert, but since this is used 
-to
+# wss is available if the app server has a valid cert, but since this is used to
 # route the internal client connection, ssl is not necessary for localhost.
 # (note explicit ipv4, avoiding ipv6 resolution)
 socket.base_url = ws://127.0.0.1:8080
