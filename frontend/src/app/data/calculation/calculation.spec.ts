@@ -62,4 +62,25 @@ describe('CalculationReducer', () => {
     );
     expect(done.loadingLegends).toBe(false);
   });
+
+  it('resets loadingCompoundComparisons to false on fetchCompoundComparisonsSuccess', () => {
+    const loading = calculationReducer(initialState, CalculationActions.fetchCompoundComparisons());
+    expect(loading.loadingCompoundComparisons).toBe(true);
+
+    const done = calculationReducer(
+      loading,
+      CalculationActions.fetchCompoundComparisonsSuccess({ compoundComparisons: [] })
+    );
+    expect(done.loadingCompoundComparisons).toBe(false);
+  });
+
+  it('resets loadingCompoundComparisons to false on fetchCompoundComparisonsFailure', () => {
+    const loading = calculationReducer(initialState, CalculationActions.fetchCompoundComparisons());
+
+    const done = calculationReducer(
+      loading,
+      CalculationActions.fetchCompoundComparisonsFailure({ error: { status: 500, message: 'boom' } })
+    );
+    expect(done.loadingCompoundComparisons).toBe(false);
+  });
 });

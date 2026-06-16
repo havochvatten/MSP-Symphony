@@ -83,11 +83,16 @@ export const metadataReducer = createReducer(
     ...state,
     loading: true
   })),
-  // Reset loading state on success/failure
-  on(MetadataActions.fetchMetadataSuccess, (state) => ({
-    ...state,
-    loading: false
-  }))
+  // Reset loading state on success (full or sparse) / failure
+  on(
+    MetadataActions.fetchMetadataSuccess,
+    MetadataActions.fetchSparseMetadataSuccess,
+    MetadataActions.fetchMetadataFailure,
+    (state) => ({
+      ...state,
+      loading: false
+    })
+  )
 );
 
 function setLayerAttribute(state: State, band: Band, attribute: string, value: unknown): State {

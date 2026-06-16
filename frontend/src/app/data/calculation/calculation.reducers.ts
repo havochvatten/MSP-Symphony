@@ -162,9 +162,17 @@ export const calculationReducer = createReducer(
   })),
   on(CalculationActions.fetchCompoundComparisonsSuccess, (state, { compoundComparisons }) => ({
     ...state,
-    compoundComparisons,
-    loadingCompoundComparisons: false
+    compoundComparisons
   })),
+  // Reset loading state on success/failure
+  on(
+    CalculationActions.fetchCompoundComparisonsSuccess,
+    CalculationActions.fetchCompoundComparisonsFailure,
+    (state) => ({
+      ...state,
+      loadingCompoundComparisons: false
+    })
+  ),
   on(CalculationActions.setCompoundComparisonSortType, (state, { sortType }) => ({
     ...state,
     sortCompoundComparisons: sortType
