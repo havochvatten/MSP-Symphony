@@ -8,7 +8,7 @@ public class SystemPropertiesDto {
         this.publicAccess = publicAccess;
     }
 
-    public Boolean isPublicAccess() {
+    public boolean isPublicAccess() {
         return publicAccess;
     }
 }
