@@ -174,11 +174,17 @@ export const calculationReducer = createReducer(
     ...state,
     loadingLegends: true
   })),
-  // Reset loading state on success/failure
-  on(CalculationActions.fetchLegendSuccess, CalculationActions.fetchLegendFailure, (state) => ({
-    ...state,
-    loadingLegends: false
-  })),
+  // Reset loading state on success/failure (regular and public legends)
+  on(
+    CalculationActions.fetchLegendSuccess,
+    CalculationActions.fetchLegendFailure,
+    CalculationActions.fetchPublicLegendSuccess,
+    CalculationActions.fetchPublicLegendFailure,
+    (state) => ({
+      ...state,
+      loadingLegends: false
+    })
+  ),
   on(UserActions.activeBaselineChanged, (state) => ({
     ...state,
     calculations: [],

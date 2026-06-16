@@ -1,5 +1,6 @@
 import { calculationReducer, initialState } from './calculation.reducers';
-import { CalculationSlice, CompoundComparisonSlice } from './calculation.interfaces';
+import { CalculationSlice, CompoundComparisonSlice, Legend } from './calculation.interfaces';
+import { CalculationActions } from '@data/calculation';
 import { UserActions } from '@data/user';
 import { Baseline } from '@data/user/user.interfaces';
 
@@ -33,5 +34,32 @@ describe('CalculationReducer', () => {
     // Preserved by design
     expect(_state.percentileValue).toEqual(0.95);
     expect(_state.sortCalculations).toEqual(populated.sortCalculations);
+  });
+
+  it('resets loadingLegends to false on fetchPublicLegendSuccess', () => {
+    const loading = calculationReducer(
+      initialState,
+      CalculationActions.fetchPublicLegend({ legendType: 'result' })
+    );
+    expect(loading.loadingLegends).toBe(true);
+
+    const done = calculationReducer(
+      loading,
+      CalculationActions.fetchPublicLegendSuccess({ legend: {} as Legend, legendType: 'result' })
+    );
+    expect(done.loadingLegends).toBe(false);
+  });
+
+  it('resets loadingLegends to false on fetchPublicLegendFailure', () => {
+    const loading = calculationReducer(
+      initialState,
+      CalculationActions.fetchPublicLegend({ legendType: 'result' })
+    );
+
+    const done = calculationReducer(
+      loading,
+      CalculationActions.fetchPublicLegendFailure({ error: { status: 500, message: 'boom' } })
+    );
+    expect(done.loadingLegends).toBe(false);
   });
 });

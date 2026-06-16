@@ -105,7 +105,7 @@ export class CalculationEffects {
           map((legend) => CalculationActions.fetchPublicLegendSuccess({ legend, legendType })),
           catchError(({ status, error: message }) =>
             of(
-              CalculationActions.fetchLegendFailure({
+              CalculationActions.fetchPublicLegendFailure({
                 error: { status, message }
               })
             )

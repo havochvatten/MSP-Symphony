@@ -221,3 +221,8 @@ export const fetchPublicLegendSuccess = createAction(
   '[Calculation] Fetch public legend success',
   props<{ legend: Legend; legendType: LegendType }>()
 );
+
+export const fetchPublicLegendFailure = createAction(
+  '[Calculation] Fetch public legend failure',
+  props<{ error: ErrorMessage }>()
+);
