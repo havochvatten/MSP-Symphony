@@ -146,9 +146,6 @@ export class HeaderComponent implements OnInit {
       this.moduleRef,
       {},
     );
-    if (locale) {
-      this.store.dispatch(UserActions.updateUserSettings({ locale: locale }));
-    }
     setTimeout(() => this.toggleOpenMenu('NONE'));
 
     this.user$
