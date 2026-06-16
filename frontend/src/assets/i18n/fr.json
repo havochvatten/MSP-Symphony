@@ -34,6 +34,17 @@
             "select-all": "Tout sélectionner",
             "deselect-all": "Tout désélectionner"
         },
+        "summary-model": {
+            "dependsOn": "Dépend de",
+            "linearNormalization": "Normalisation linéaire",
+            "operation": {
+                "mean": "MOYENNE",
+                "max": "MAX",
+                "sum": "SOMME"
+            },
+            "output": "Sortie",
+            "overview": "Aperçu"
+        },
         "confirm-reset": {
             "modal": {
                 "header": "Confirmer la réinitialisation",
@@ -208,7 +219,7 @@
                     "confirm": "Effacer"
                 }
             },
-            "changes-overview" : {
+            "changes-overview": {
                 "title": "Vue d'ensemble des modifications de scénario",
                 "show-overview": "Afficher une vue d'ensemble de tous les changements",
                 "global-changes": "Modifications générales",
@@ -454,7 +465,7 @@
                     "save": "Sauvegarder",
                     "close": "Fermer"
                 },
-                "invalid-area" : {
+                "invalid-area": {
                     "title": "Zone invalide",
                     "message": "Les zones définies par l'utilisateur doivent chevaucher au moins une autre zone ayant un couplage de matrice par défaut"
                 }
@@ -638,7 +649,7 @@
             "title": "Rapport de comparaison",
             "vs": "vs."
         },
-        "common" : {
+        "common": {
             "not-measurable": "(non mesurable)"
         },
         "cumulative-effect-etc": {
@@ -735,12 +746,12 @@
             }
         }
     },
-    "list-sorting-options" : {
-        "indicate-order" : "Indiquer la commande comme {{ orderHint }}",
-        "AlphaAsc" : "alphabétique croissant (A-Z)",
-        "AlphaDesc" : "alphabétique décroissant (Z-A)",
-        "DateAsc" : "croissant par date (les plus anciens en premier)",
-        "DateDesc" : "décroissant par date (les plus récents en premier)",
-        "None" : "non trié"
+    "list-sorting-options": {
+        "indicate-order": "Indiquer la commande comme {{ orderHint }}",
+        "AlphaAsc": "alphabétique croissant (A-Z)",
+        "AlphaDesc": "alphabétique décroissant (Z-A)",
+        "DateAsc": "croissant par date (les plus anciens en premier)",
+        "DateDesc": "décroissant par date (les plus récents en premier)",
+        "None": "non trié"
     }
 }

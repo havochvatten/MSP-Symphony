@@ -15,6 +15,7 @@ import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as area } from '@data/area/area.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { initialState as config } from '@data/systemproperties/systemproperties.reducer';
+import { initialState as calculation } from '@data/calculation/calculation.reducers';
 import { ChangeState, ScenarioLayer } from '@src/app/map-view/map/layers/scenario-layer';
 import { BandChange } from '@data/metadata/metadata.interfaces';
 import { provideZonelessChangeDetection } from '@angular/core';
@@ -38,6 +39,7 @@ describe('MapComponent', () => {
             metadata: metadata,
             area: area,
             scenario: scenario,
+            calculation: calculation,
             user: { baseline: undefined },
             config: config
           }

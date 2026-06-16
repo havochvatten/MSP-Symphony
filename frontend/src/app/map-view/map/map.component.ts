@@ -22,7 +22,7 @@ import { AreaActions, AreaSelectors } from '@data/area';
 import { UserSelectors } from '@data/user';
 import { ScenarioSelectors } from '@data/scenario';
 import { MessageActions } from '@data/message';
-import { CalculationActions } from '@data/calculation';
+import { CalculationActions, CalculationSelectors } from '@data/calculation';
 import { Polygon, StatePath } from '@data/area/area.interfaces';
 import { CalculationService } from '@data/calculation/calculation.service';
 import { StaticImageOptions } from '@data/calculation/calculation.interfaces';
@@ -83,6 +83,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   private map?: OLMap;
   private readonly storeSubscription?: Subscription;
+  private readonly summaryModelsSubscription?: Subscription;
   private readonly resultSubscription?: Subscription;
   private readonly resultDeletedSubscription?: Subscription;
   private userSubscription?: Subscription;
@@ -141,6 +142,13 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         // FIXME
         this.bandLayer?.setVisibleBands('ECOSYSTEM', components.ecoComponent);
         this.bandLayer?.setVisibleBands('PRESSURE', components.pressureComponent);
+      });
+
+    this.summaryModelsSubscription = this.store
+      .select(CalculationSelectors.selectVisibleSummaryModels)
+      .subscribe((models) => {
+        this.bandLayer?.setVisibleSummaryModel('ECOSYSTEM', models.ECOSYSTEM);
+        this.bandLayer?.setVisibleSummaryModel('PRESSURE', models.PRESSURE);
       });
 
     this.activeScenario$ = this.store.select(ScenarioSelectors.selectActiveScenario);
@@ -414,6 +422,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy() {
     if (this.storeSubscription) {
       this.storeSubscription.unsubscribe();
+    }
+    if (this.summaryModelsSubscription) {
+      this.summaryModelsSubscription.unsubscribe();
     }
     if (this.areaSubscription) {
       this.areaSubscription.unsubscribe();

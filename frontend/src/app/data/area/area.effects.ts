@@ -242,7 +242,7 @@ function flattenAreaGroups(nationalArea: NationalArea, language: string): Nation
 function flattenAreas(areas: Area[], parentPath: StatePath): Areas {
   return areas.reduce((prevAreas, area) => {
     const statePath = [...parentPath, 'areas', area.name];
-    const displayName =  `${area.name} (${area.code})`;
+    const displayName =  area.name + (area.code ? ` (${area.code})` : '');
     return {
       ...prevAreas,
       [area.name]: {
@@ -255,7 +255,7 @@ function flattenAreas(areas: Area[], parentPath: StatePath): Areas {
           displayName,
           statePath,
           area.polygon,
-          area.code
+          area.code || ''
         )
       }
     };

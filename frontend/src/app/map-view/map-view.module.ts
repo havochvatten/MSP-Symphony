@@ -44,6 +44,11 @@ import { DownloadCompoundComparisonDialogComponent } from './compound-comparison
 import { ReliabilityLegendComponent } from '@src/app/map-view/reliability-legend/reliability-legend.component';
 import { ScenarioEditorComponent } from './scenario/scenario-editor.component';
 import { SlideViewComponent } from '../shared/slide-view/slide-view.component';
+import { SummaryModelSelectionComponent } from './band-selection/summary-model-selection/summary-model-selection.component';
+import { SummaryModelAccordionComponent } from './band-selection/summary-model-selection/summary-model-accordion/summary-model-accordion.component';
+import { SummaryModelControlsComponent } from './band-selection/summary-model-selection/summary-model-controls/summary-model-controls.component';
+import { SummaryModelDialogComponent } from './band-selection/summary-model-selection/summary-model-dialog/summary-model-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -74,7 +79,11 @@ import { SlideViewComponent } from '../shared/slide-view/slide-view.component';
     ConfirmGenerateComparisonComponent,
     CompoundComparisonListDialogComponent,
     DownloadCompoundComparisonDialogComponent,
-    ReliabilityLegendComponent
+    ReliabilityLegendComponent,
+    SummaryModelSelectionComponent,
+    SummaryModelAccordionComponent,
+    SummaryModelControlsComponent,
+    SummaryModelDialogComponent
   ],
   imports: [
     SharedModule,
@@ -85,7 +94,8 @@ import { SlideViewComponent } from '../shared/slide-view/slide-view.component';
     MatProgressSpinnerModule,
     MatCheckboxModule,
     MatButtonModule,
-    MatRadioModule
+    MatRadioModule,
+    MatDialogModule
   ],
   providers: [AnchorPipe, DialogService],
   exports: [

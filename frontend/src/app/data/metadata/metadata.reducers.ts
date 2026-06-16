@@ -3,13 +3,18 @@ import { setIn } from 'immutable';
 import { Band, bandEquals, Groups, State } from './metadata.interfaces';
 import { MetadataActions, MetadataInterfaces } from './';
 import { ScenarioActions } from '@data/scenario';
+import { UserActions } from '@data/user';
 import { getBandPath } from '@data/metadata/metadata.selectors';
 
 export const initialState: MetadataInterfaces.State = {
   ECOSYSTEM: {},
   PRESSURE: {},
   visibleReliability: null,
-  loading: false
+  loading: false,
+  availableSummaryModelDescriptions: {
+    ECOSYSTEM: null,
+    PRESSURE: null
+  }
 };
 
 export const metadataReducer = createReducer(
@@ -92,7 +97,18 @@ export const metadataReducer = createReducer(
       ...state,
       loading: false
     })
-  )
+  ),
+  on(MetadataActions.fetchSummaryModelDescriptionsSuccess, (state, { category, descriptions }) => ({
+    ...state,
+    availableSummaryModelDescriptions: {
+      ...state.availableSummaryModelDescriptions,
+      [category]: descriptions
+    }
+  })),
+  on(UserActions.activeBaselineChanged, (state) => ({
+    ...state,
+    availableSummaryModelDescriptions: { ECOSYSTEM: null, PRESSURE: null }
+  }))
 );
 
 function setLayerAttribute(state: State, band: Band, attribute: string, value: unknown): State {

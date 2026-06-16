@@ -8,17 +8,23 @@
   [searchPlaceholder]="placeholder | translate"
   [showResetButton]="true"
   >
-  @if ((scenarioDisplayNames | async)?.scenarioName !== undefined) {
-    <div class="select-all-wrapper">
-      @if (title) {
-        <mat-checkbox
-          [checked]="allBoxesAreChecked"
-          [indeterminate]="someBoxesAreChecked"
-          (change)="updateAll()"
-        >{{ (allBoxesAreChecked? 'map.intensity.deselect-all' : 'map.intensity.select-all') | translate }}</mat-checkbox>
-      }
-    </div>
-  }
+
+  <app-summary-model-selection
+    [modelCategory]=bandType
+    [scenarioActive]="!!(scenarioDisplayNames | async)?.scenarioName"
+  ></app-summary-model-selection>
+
+  <div class="select-all-wrapper">
+    @if ((scenarioDisplayNames | async)?.scenarioName !== undefined && title) {
+      <mat-checkbox
+        class="select-all-checkbox"
+        [checked]="allBoxesAreChecked"
+        [indeterminate]="someBoxesAreChecked"
+        (change)="updateAll()"
+      >{{ (allBoxesAreChecked? 'map.intensity.deselect-all' : 'map.intensity.select-all') | translate }}</mat-checkbox>
+    }
+  </div>
+
   @for (group of filteredGroups; track displayName($index, group)) {
     <app-checkbox-accordion
       [title]="group.symphonyThemeName"

@@ -1,11 +1,14 @@
 import { createAction, props } from '@ngrx/store';
 import {
-  CalculationSlice,
-  LegendType,
-  Legend,
-  PercentileResponse,
   BatchCalculationProcessEntry,
-  CompoundComparison
+  CalculationSlice,
+  CompoundComparison,
+  Legend,
+  LegendType,
+  PercentileResponse,
+  SummaryModel,
+  SummaryModelCategory,
+  SummaryModelOption
 } from './calculation.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
 import { SortActionProps } from '@data/common/sorting.interfaces';
@@ -225,4 +228,29 @@ export const fetchPublicLegendSuccess = createAction(
 export const fetchPublicLegendFailure = createAction(
   '[Calculation] Fetch public legend failure',
   props<{ error: ErrorMessage }>()
+);
+
+export const setSummaryModel = createAction(
+  '[Calculation] Set summary model',
+  props<{ category: SummaryModelCategory; model: SummaryModel }>()
+);
+
+export const setSummaryModelLoading = createAction(
+  '[Calculation] Set summary model loading',
+  props<{ category: SummaryModelCategory; loading: boolean }>()
+);
+
+export const fetchSummaryModels = createAction(
+  '[Calculation] Fetch Summary Models',
+  props<{ baselineName: string; category: SummaryModelCategory }>()
+);
+
+export const fetchSummaryModelsSuccess = createAction(
+  '[Calculation] Fetch Summary Models Success',
+  props<{ baselineName: string; category: SummaryModelCategory; models: SummaryModelOption[] }>()
+);
+
+export const fetchSummaryModelsFailure = createAction(
+  '[Calculation] Fetch Summary Models Failure',
+  props<{ baselineName: string; category: SummaryModelCategory; error: string }>()
 );
