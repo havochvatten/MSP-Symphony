@@ -43,7 +43,7 @@ public class BaselineVersionServiceREST {
     @Operation(summary = "List all BaselineVersion")
     @Produces({MediaType.APPLICATION_JSON})
     @PermitAll
-    @PublicOrRestricted(roles={"GRP_SYMPHONY"})
+    @PublicOrRestricted
     public Response findAll(@Context HttpServletRequest req) throws SymphonyStandardAppException {
         boolean isAuthorized = req.getUserPrincipal() != null && req.isUserInRole("GRP_SYMPHONY");
         List<BaselineVersion> baselineVersions = baselineVersionService.getBaselineVersions(isAuthorized);
@@ -93,7 +93,7 @@ public class BaselineVersionServiceREST {
     @Consumes({MediaType.APPLICATION_JSON})
     @Path("/current")
     @PermitAll
-    @PublicOrRestricted(roles={"GRP_SYMPHONY"})
+    @PublicOrRestricted
     public Response getCurrent() throws SymphonyStandardAppException {
         BaselineVersion baselineVersion = baselineVersionService.getBaselineVersionByDate(new Date());
 

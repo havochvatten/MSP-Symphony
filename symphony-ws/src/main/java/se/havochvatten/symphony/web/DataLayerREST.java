@@ -64,7 +64,7 @@ public class DataLayerREST {
     @Path("/{type}/{id}/{baselineName}")
     @Produces({"image/png"}) // make JPEG and/or WebP available?
     @PermitAll
-    @PublicOrRestricted(roles={"GRP_SYMPHONY"})
+    @PublicOrRestricted
     @Operation(summary = "Returns calculation result image")
     public Response getLayerData(@PathParam("type") String type,
                                  @PathParam("id") int bandNo,
