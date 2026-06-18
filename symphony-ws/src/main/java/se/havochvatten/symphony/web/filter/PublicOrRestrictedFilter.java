@@ -21,12 +21,13 @@ import java.util.Set;
 public class PublicOrRestrictedFilter implements ContainerRequestFilter {
 
     @Inject
-    private PropertiesService props;
+    PropertiesService props;
 
     @Context
     ResourceInfo resourceInfo;
 
-    // Define all roles that should be allowed access
+    // Roles permitted to reach a @PublicOrRestricted endpoint when public access is disabled.
+    // Applied globally to every @PublicOrRestricted resource (the annotation carries no per-endpoint roles).
     private static final Set<String> ALLOWED_ROLES = Set.of(
         "GRP_SYMPHONY",
         "GRP_SYMPHONY_ADMIN"

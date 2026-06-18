@@ -12,7 +12,9 @@ import se.havochvatten.symphony.service.PropertiesService;
 
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import se.havochvatten.symphony.web.filter.PublicOrRestricted;
 
@@ -20,7 +22,7 @@ import se.havochvatten.symphony.web.filter.PublicOrRestricted;
 @Tag(name ="/metadata")
 @Path("metadata")
 @PermitAll
-@PublicOrRestricted(roles={"GRP_SYMPHONY"})
+@PublicOrRestricted
 public class MetaDataREST {
     @EJB
     MetaDataService metaDataService;
@@ -31,6 +33,9 @@ public class MetaDataREST {
     @EJB
     PropertiesService props;
 
+    @Context
+    HttpServletRequest req;
+
     @GET
     @Operation(summary = "List all metadata for ecocomponents and pressures for baseLineVersion")
     @Produces({MediaType.APPLICATION_JSON})
@@ -38,6 +43,11 @@ public class MetaDataREST {
     public MetadataDto findAll(@PathParam("baselineName") String baselineName,
                                @DefaultValue("0") @QueryParam("scenarioId") int activeScenarioId,
                                @DefaultValue("") @QueryParam("lang") String preferredLanguage ) throws SymphonyStandardAppException {
+        // Public (unauthenticated) callers must not be able to read other users' private scenario
+        // band selections, so ignore scenarioId unless the caller is an authenticated user.
+        if (req == null || req.getUserPrincipal() == null) {
+            activeScenarioId = 0;
+        }
         MetadataDto metaData = metaDataService.findMetadata(baselineName,
                 preferredLanguage.isEmpty() ?
                     props.getProperty("meta.default_language") :

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideMockStore } from '@ngrx/store/testing';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormsModule } from '@angular/forms';
 
 import { MainViewComponent } from './main-view.component';
 import { SharedModule } from '@shared/shared.module';
@@ -11,8 +11,8 @@ import { CoreModule } from '../core/core.module';
 import { SliderControlsComponent } from './band-selection/slider-controls/slider-controls.component';
 import { MatrixSelectionComponent } from './scenario/scenario-area-detail/matrix-selection/matrix-selection.component';
 import {
-  ToolbarZoomButtonsComponent,
-  ToolbarButtonComponent
+  ToolbarButtonComponent,
+  ToolbarZoomButtonsComponent
 } from './map/toolbar-button/toolbar-button.component';
 import { EcoSliderComponent } from './band-selection/eco-slider/eco-slider.component';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
@@ -31,7 +31,6 @@ import { ScenarioEditorComponent } from '@src/app/map-view/scenario/scenario-edi
 import { StoreModule } from '@ngrx/store';
 import { CalculationHistoryComponent } from '@src/app/map-view/calculation-history/calculation-history.component';
 import { ComparisonComponent } from '@src/app/map-view/comparison/comparison.component';
-import { FormBuilder } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
 import { AreaGroupComponent } from '@src/app/map-view/area-selection/area-group/area-group.component';
@@ -41,6 +40,9 @@ import { RouterModule } from '@angular/router';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { AddScenarioAreasComponent } from '@src/app/map-view/scenario/add-scenario-areas/add-scenario-areas.component';
+import { SummaryModelSelectionComponent } from './band-selection/summary-model-selection/summary-model-selection.component';
+import { SummaryModelAccordionComponent } from './band-selection/summary-model-selection/summary-model-accordion/summary-model-accordion.component';
+import { SummaryModelControlsComponent } from './band-selection/summary-model-selection/summary-model-controls/summary-model-controls.component';
 
 describe('MainViewComponent', () => {
   let fixture: ComponentFixture<MainViewComponent>, component: MainViewComponent;
@@ -73,6 +75,9 @@ describe('MainViewComponent', () => {
         EcoSliderComponent,
         AreaGroupComponent,
         AreaSelectionComponent,
+        SummaryModelSelectionComponent,
+        SummaryModelAccordionComponent,
+        SummaryModelControlsComponent,
         BandSelectionComponent,
         SelectionLayoutComponent,
         CalculationHistoryComponent,

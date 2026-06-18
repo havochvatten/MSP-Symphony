@@ -27,6 +27,7 @@ import static se.havochvatten.symphony.dto.LegendDto.Type.*;
 
 @Path("/legend")
 @Stateless
+@RolesAllowed("GRP_SYMPHONY")
 @Tag(name ="/legend")
 public class LegendREST {
     private static final Logger logger = Logger.getLogger(LegendREST.class.getName());
@@ -38,7 +39,6 @@ public class LegendREST {
     @Path("{type}")
     @Operation(summary = "Get legend definition")
     @Produces({MediaType.APPLICATION_JSON})
-    @RolesAllowed("GRP_SYMPHONY")
     public Response get(
             @Parameter(description = "type of legend")
             @PathParam("type") String legendType, @QueryParam("maxValue") String maxParam) {
@@ -58,7 +58,7 @@ public class LegendREST {
     @Operation(summary = "Get publicly available legend definition")
     @Produces({MediaType.APPLICATION_JSON})
     @PermitAll
-    @PublicOrRestricted(roles={"GRP_SYMPHONY"})
+    @PublicOrRestricted
     public Response getPublicType(
         @Parameter(description = "type of public legend")
         @PathParam("type") String legendType, @QueryParam("maxValue") String maxParam) {

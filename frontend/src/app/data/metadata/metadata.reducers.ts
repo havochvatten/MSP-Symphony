@@ -3,13 +3,18 @@ import { setIn } from 'immutable';
 import { Band, bandEquals, Groups, State } from './metadata.interfaces';
 import { MetadataActions, MetadataInterfaces } from './';
 import { ScenarioActions } from '@data/scenario';
+import { UserActions } from '@data/user';
 import { getBandPath } from '@data/metadata/metadata.selectors';
 
 export const initialState: MetadataInterfaces.State = {
   ECOSYSTEM: {},
   PRESSURE: {},
   visibleReliability: null,
-  loading: false
+  loading: false,
+  availableSummaryModelDescriptions: {
+    ECOSYSTEM: null,
+    PRESSURE: null
+  }
 };
 
 export const metadataReducer = createReducer(
@@ -83,10 +88,26 @@ export const metadataReducer = createReducer(
     ...state,
     loading: true
   })),
-  // Reset loading state on success/failure
-  on(MetadataActions.fetchMetadataSuccess, (state) => ({
+  // Reset loading state on success (full or sparse) / failure
+  on(
+    MetadataActions.fetchMetadataSuccess,
+    MetadataActions.fetchSparseMetadataSuccess,
+    MetadataActions.fetchMetadataFailure,
+    (state) => ({
+      ...state,
+      loading: false
+    })
+  ),
+  on(MetadataActions.fetchSummaryModelDescriptionsSuccess, (state, { category, descriptions }) => ({
     ...state,
-    loading: false
+    availableSummaryModelDescriptions: {
+      ...state.availableSummaryModelDescriptions,
+      [category]: descriptions
+    }
+  })),
+  on(UserActions.activeBaselineChanged, (state) => ({
+    ...state,
+    availableSummaryModelDescriptions: { ECOSYSTEM: null, PRESSURE: null }
   }))
 );
 

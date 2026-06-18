@@ -19,7 +19,6 @@ export class ConfigService {
   loadConfig(): Observable<AppConfig> {
     this.config$ ??= this.http.get<AppConfig>(this.configUrl).pipe(
       tap((config) => {
-        console.log('Backend response (config):', config); // <-- Add this line
         this.store.dispatch(loadConfigSuccess({ config }));
       }),
       catchError((error) => {

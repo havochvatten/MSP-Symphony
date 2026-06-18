@@ -24,14 +24,12 @@ export class AreaEffects {
     ofType(AreaActions.fetchNationalAreas),
     mergeMap(() =>
       this.areaService.getNationalAreaTypes().pipe(
-        map(
-          (areaTypes: string[]) => [
-            AreaActions.fetchNationalAreaTypesSuccess({ areaTypes }),
-            ...areaTypes.map(areaType => AreaActions.fetchNationalArea({ areaType }))
-          ],
-          catchError(({ status, error: message }) =>
-            of(AreaActions.fetchNationalAreaTypesFailure({ error: { status, message } }))
-          )
+        map((areaTypes: string[]) => [
+          AreaActions.fetchNationalAreaTypesSuccess({ areaTypes }),
+          ...areaTypes.map(areaType => AreaActions.fetchNationalArea({ areaType }))
+        ]),
+        catchError(({ status, error: message }) =>
+          of([AreaActions.fetchNationalAreaTypesFailure({ error: { status, message } })])
         ),
         concatMap(actions => actions)
       )
@@ -48,7 +46,10 @@ export class AreaEffects {
             [area.type]: flattenAreaGroups(area, language)
           };
           return AreaActions.fetchNationalAreaSuccess({ nationalArea });
-        })
+        }),
+        catchError(({ status, error: message }) =>
+          of(AreaActions.fetchNationalAreaFailure({ error: { status, message } }))
+        )
       )
     )
   ));
@@ -241,7 +242,7 @@ function flattenAreaGroups(nationalArea: NationalArea, language: string): Nation
 function flattenAreas(areas: Area[], parentPath: StatePath): Areas {
   return areas.reduce((prevAreas, area) => {
     const statePath = [...parentPath, 'areas', area.name];
-    const displayName =  `${area.name} (${area.code})`;
+    const displayName =  area.name + (area.code ? ` (${area.code})` : '');
     return {
       ...prevAreas,
       [area.name]: {
@@ -254,7 +255,7 @@ function flattenAreas(areas: Area[], parentPath: StatePath): Areas {
           displayName,
           statePath,
           area.polygon,
-          area.code
+          area.code || ''
         )
       }
     };

@@ -1,4 +1,6 @@
 import { MultiPolygon } from 'ol/geom';
+import { SummaryModelCategory } from '@data/calculation/calculation.interfaces';
+import { ModelDescriptionDialogData } from '@src/app/map-view/band-selection/summary-model-selection/summary-model-dialog/summary-model-dialog.component';
 
 export type ComponentKey = keyof Pick<APILayerData, 'ecoComponent' | 'pressureComponent'>;
 
@@ -87,6 +89,9 @@ export interface State {
   PRESSURE: Groups;
   visibleReliability: VisibleReliability | null;
   loading: boolean;
+  availableSummaryModelDescriptions: {
+    [key in SummaryModelCategory]: { [model: string]: ModelDescriptionDialogData } | null;
+  };
 }
 
 export function bandEquals(a: Band, b: Band): boolean {
