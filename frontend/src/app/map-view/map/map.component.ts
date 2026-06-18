@@ -22,7 +22,7 @@ import { AreaActions, AreaSelectors } from '@data/area';
 import { UserSelectors } from '@data/user';
 import { ScenarioSelectors } from '@data/scenario';
 import { MessageActions } from '@data/message';
-import { CalculationActions } from '@data/calculation';
+import { CalculationActions, CalculationSelectors } from '@data/calculation';
 import { Polygon, StatePath } from '@data/area/area.interfaces';
 import { CalculationService } from '@data/calculation/calculation.service';
 import { StaticImageOptions } from '@data/calculation/calculation.interfaces';
@@ -80,9 +80,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   drawIsActive = false;
 
   @ViewChild('areaOptionsMenu') areaOptionsMenu!: ElementRef<HTMLElement>;
+  @ViewChild('map', { static: true }) mapElement!: ElementRef<HTMLElement>;
 
   private map?: OLMap;
   private readonly storeSubscription?: Subscription;
+  private readonly summaryModelsSubscription?: Subscription;
   private readonly resultSubscription?: Subscription;
   private readonly resultDeletedSubscription?: Subscription;
   private userSubscription?: Subscription;
@@ -120,7 +122,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   private aliasing = true;
   isPublic = false;
-  destroyRef: DestroyRef | undefined;
+  isLoggedIn = false;
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
     this.isPublic$ = this.configStore.select(selectPublicAccess);
@@ -135,6 +138,13 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         // FIXME
         this.bandLayer?.setVisibleBands('ECOSYSTEM', components.ecoComponent);
         this.bandLayer?.setVisibleBands('PRESSURE', components.pressureComponent);
+      });
+
+    this.summaryModelsSubscription = this.store
+      .select(CalculationSelectors.selectVisibleSummaryModels)
+      .subscribe((models) => {
+        this.bandLayer?.setVisibleSummaryModel('ECOSYSTEM', models.ECOSYSTEM);
+        this.bandLayer?.setVisibleSummaryModel('PRESSURE', models.PRESSURE);
       });
 
     this.activeScenario$ = this.store.select(ScenarioSelectors.selectActiveScenario);
@@ -204,7 +214,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     // TODO useGeographic function in the ‘ol/proj’?
     this.map = new OLMap({
-      target: 'map',
+      target: this.mapElement.nativeElement,
       controls: [
         new ScaleLine({
           units: 'metric',
@@ -409,6 +419,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     if (this.storeSubscription) {
       this.storeSubscription.unsubscribe();
     }
+    if (this.summaryModelsSubscription) {
+      this.summaryModelsSubscription.unsubscribe();
+    }
     if (this.areaSubscription) {
       this.areaSubscription.unsubscribe();
     }
@@ -434,6 +447,13 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.selectedAreasSubscription.unsubscribe();
     this.scenarioCloseSubscription.unsubscribe();
     this.scenarioSubscription.unsubscribe();
+
+    // Release the OpenLayers map so it detaches from its target element and
+    // disposes its listeners. Without this a lingering map keeps the shared
+    // target bound, leaving the next map view (e.g. logout -> public) gray.
+    this.map?.setTarget(undefined);
+    this.map?.dispose();
+    this.map = undefined;
   }
 
   toggleDrawInteraction = () => {

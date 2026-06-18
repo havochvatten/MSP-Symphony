@@ -1,5 +1,4 @@
 import { ChangeDetectorRef, Component, inject, NgModuleRef, ViewChild } from '@angular/core';
-import { StatePath } from '@data/area/area.interfaces';
 import { MetadataSelectors } from '@data/metadata';
 import { BandGroup, VisibleReliability } from '@data/metadata/metadata.interfaces';
 import { Store } from '@ngrx/store';
@@ -46,21 +45,9 @@ export class PublicView {
     this.legends$ = this.store.select(CalculationSelectors.selectVisibleLegends);
   }
 
-  clearResult = () => {
-    this.map?.clearResult();
-  };
-
-  highlight = ([statePath, highlight]: [StatePath, boolean]) => {
-    this.map?.highlightArea(statePath, highlight);
-  };
-
   toggleLeftSidebar() {
     this.leftSidebarIsOpen = !this.leftSidebarIsOpen;
   }
-
-  zoomToArea = (statePaths: StatePath[]) => {
-    this.map?.zoomToArea(statePaths);
-  };
 
   ngAfterViewInit(): void {
     this.cd.detectChanges(); // To avoid ExpressionChangedAfterItHasBeenCheckedError

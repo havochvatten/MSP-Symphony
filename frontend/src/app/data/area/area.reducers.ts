@@ -149,6 +149,7 @@ export const areaReducer = createReducer(
   // Reset loading state on failure
   on(
     AreaActions.fetchNationalAreaTypesFailure,
+    AreaActions.fetchNationalAreaFailure,
     AreaActions.fetchUserDefinedAreasFailure,
     AreaActions.fetchBoundariesFailure,
     AreaActions.fetchCalibratedCalculationAreasFailure,

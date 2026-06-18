@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { EMPTY, from, of } from 'rxjs';
 import {
@@ -17,12 +17,14 @@ import { UserSelectors } from '@data/user';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { MessageActions } from '@data/message';
+import { DataLayerService } from '@src/app/map-view/map/layers/data-layer.service';
 
 @Injectable()
 export class CalculationEffects {
   private readonly actions$ = inject(Actions);
   private readonly store = inject<Store<State>>(Store);
   private readonly calcService = inject(CalculationService);
+  private readonly dataLayerService = inject(DataLayerService);
 
   fetchCalculations$ = createEffect(() =>
     this.actions$.pipe(
@@ -105,7 +107,7 @@ export class CalculationEffects {
           map((legend) => CalculationActions.fetchPublicLegendSuccess({ legend, legendType })),
           catchError(({ status, error: message }) =>
             of(
-              CalculationActions.fetchLegendFailure({
+              CalculationActions.fetchPublicLegendFailure({
                 error: { status, message }
               })
             )
@@ -145,6 +147,28 @@ export class CalculationEffects {
             of(
               CalculationActions.fetchPercentileFailure({
                 error: { status, message }
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
+  fetchSummaryModels$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(CalculationActions.fetchSummaryModels),
+      mergeMap(({ baselineName, category }) =>
+        this.dataLayerService.getSummaryModels(baselineName, category).pipe(
+          map((models) =>
+            CalculationActions.fetchSummaryModelsSuccess({ baselineName, category, models })
+          ),
+          catchError((err) =>
+            of(
+              CalculationActions.fetchSummaryModelsFailure({
+                baselineName,
+                category,
+                error: err.message
               })
             )
           )

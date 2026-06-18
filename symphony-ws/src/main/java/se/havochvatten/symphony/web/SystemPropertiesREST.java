@@ -3,7 +3,6 @@ package se.havochvatten.symphony.web;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.security.PermitAll;
 import jakarta.ejb.Stateless;
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -23,12 +22,9 @@ public class SystemPropertiesREST {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSystemProperties() throws Exception{
+    public Response getSystemProperties() {
         boolean publicAccess = props.getPropertyAsBool("symphony.public_access", false);
         SystemPropertiesDto properties = new SystemPropertiesDto(publicAccess);
         return Response.ok(properties).build();
     }
-
-
-
 }

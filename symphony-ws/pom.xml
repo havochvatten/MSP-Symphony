@@ -24,6 +24,7 @@
         <version.slf4j>2.0.17</version.slf4j>
         <version.resteasy-core>6.2.12.Final</version.resteasy-core>
         <version.java.lang3>3.20.0</version.java.lang3>
+        <version.jboss-vfs>3.3.2.Final</version.jboss-vfs>
         <version.jts>1.18.2</version.jts> <!--Sync with GeoTools JTS dependency -->
         <version.jberet>3.1.0.Final</version.jberet>
         <version.jmh>1.37</version.jmh>
@@ -213,6 +214,12 @@
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jackson2-provider</artifactId>
             <version>${version.resteasy-core}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss</groupId>
+            <artifactId>jboss-vfs</artifactId>
+            <version>${version.jboss-vfs}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
