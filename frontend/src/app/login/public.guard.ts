@@ -14,8 +14,6 @@ export class PublicGuard implements CanActivate {
   private router = inject(Router);
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> {
-    this.store.dispatch(UserActions.fetchUser());
-
     return this.store.select(selectPublicAccess).pipe(
       take(1),
       map((publicAccess) => {
@@ -31,6 +29,10 @@ export class PublicGuard implements CanActivate {
         if (!publicAccess) {
           return this.router.createUrlTree(['/login']);
         }
+        // Activating the public view: fetch the user so a logged-in visitor gets the
+        // correct (logged-in) header. An anonymous 401 no longer redirects to /login
+        // (handled in fetchUserFailure$).
+        this.store.dispatch(UserActions.fetchUser());
         return publicAccess;
       })
     );

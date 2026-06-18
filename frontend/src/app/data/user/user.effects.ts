@@ -118,6 +118,10 @@ export class UserEffects {
   fetchUserFailure$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.fetchUserFailure),
+      withLatestFrom(this.configStore.select(selectPublicAccess)),
+      // In public-access mode an anonymous /getuser failure is expected; the public guard
+      // already routes to /public, so only redirect to /login when public access is off.
+      filter(([, publicAccess]) => !publicAccess),
       map(() => UserActions.navigateTo({ url: '/login' }))
     )
   );
@@ -313,6 +317,15 @@ export class UserEffects {
         MetadataActions.fetchMetadata(),
         ...legendTypes.map((legendType) => CalculationActions.fetchPublicLegend({ legendType }))
       ])
+    )
+  );
+
+  // The reducer updates the public user's locale before this effect runs, so re-fetching
+  // metadata picks up the new language for backend-provided band/ecosystem names.
+  publicUserLanguageChanged$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.updatePublicUserLanguage),
+      map(() => MetadataActions.fetchMetadata())
     )
   );
 }

@@ -44,8 +44,13 @@ public class PublicOrRestrictedFilter implements ContainerRequestFilter {
         }
 
         PublicOrRestricted annotation = getConditionalPublicAnnotation();
-        // Safety check
+        // Fail closed: a request bound to this filter with no resolvable @PublicOrRestricted
+        // annotation should be denied rather than allowed through.
         if (annotation == null) {
+            requestContext.abortWith(
+                Response.status(Response.Status.UNAUTHORIZED)
+                    .build()
+            );
             return;
         }
 

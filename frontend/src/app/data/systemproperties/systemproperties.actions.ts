@@ -1,7 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { AppConfig } from './systemproperties.interfaces';
 
-export const loadConfig = createAction('[Config] Load Config');
 export const loadConfigSuccess = createAction(
   '[Config] Load Config Success',
   props<{ config: AppConfig }>()

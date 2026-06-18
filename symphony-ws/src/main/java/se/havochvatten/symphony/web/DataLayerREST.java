@@ -71,7 +71,7 @@ public class DataLayerREST {
     @Produces({"image/png"})
     @PermitAll
     @PublicOrRestricted
-    @Operation(summary = "Returns calculation result image")
+    @Operation(summary = "Returns data layer image")
     public Response getLayerData(@PathParam("type") String type, @PathParam("id") int bandNo, @PathParam("baselineName") String baselineName, @QueryParam("crs") String crs) throws Exception {
         logger.log(Level.INFO, () -> String.format("Getting layer data of type %s for bandNo=%d", type, bandNo));
 
