@@ -122,7 +122,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   private aliasing = true;
   isPublic = false;
-  isLoggedIn = false;
   private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
