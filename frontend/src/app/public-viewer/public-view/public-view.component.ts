@@ -12,7 +12,7 @@ import { Observable } from 'rxjs';
 import { LegendState } from '@data/calculation/calculation.interfaces';
 import { CalculationSelectors } from '@data/calculation';
 import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component';
-import { UserActions } from '@data/user';
+import { UserActions, UserSelectors } from '@data/user';
 
 @Component({
   selector: 'app-public-view',
@@ -36,7 +36,11 @@ export class PublicView {
   visibleReliability$: Observable<VisibleReliability | null>;
 
   constructor() {
-    this.store.dispatch(UserActions.createPublicUser());
+    this.store.select(UserSelectors.selectIsLoggedIn).subscribe((isLoggedIn) => {
+      if (!isLoggedIn) {
+        this.store.dispatch(UserActions.createPublicUser());
+      }
+    });
     this.visibleReliability$ = this.store.select(MetadataSelectors.selectVisibleReliability);
   }
 
