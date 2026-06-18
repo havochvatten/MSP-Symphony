@@ -29,7 +29,7 @@ import { StaticImageOptions } from '@data/calculation/calculation.interfaces';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { CreateUserAreaModalComponent } from './create-user-area-modal/create-user-area-modal.component';
 import { Scenario } from '@data/scenario/scenario.interfaces';
-import { distinctUntilChanged, filter, skip } from 'rxjs/operators';
+import { distinctUntilChanged, filter, skip, switchMap } from 'rxjs/operators';
 import { Feature, Map as OLMap, View } from 'ol';
 import { isNotNullOrUndefined } from '@src/util/rxjs';
 import { TranslateService } from '@ngx-translate/core';
@@ -58,6 +58,8 @@ import { MapViewModule } from '@src/app/map-view/map-view.module';
 import { ScenarioService } from '@data/scenario/scenario.service';
 import { selectPublicAccess } from '@data/systemproperties/systemproperties.selectors';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
+import { is } from 'immutable';
 
 @Component({
   selector: 'app-map',
@@ -121,14 +123,17 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private selectedAreas: StatePath[] = [];
 
   private aliasing = true;
-  isPublic = false;
+  private readonly publicRoute = '/public';
+  showPublicVersion = false;
+
   private readonly destroyRef = inject(DestroyRef);
 
-  constructor() {
-    this.isPublic$ = this.configStore.select(selectPublicAccess);
+  constructor(private readonly router: Router) {
+    const currentRoute = this.router.url;
 
-    this.isPublic$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
-      this.isPublic = value;
+    this.isPublic$ = this.configStore.select(selectPublicAccess);
+    this.isPublic$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((isPublic) => {
+      this.showPublicVersion = this.publicRoute === currentRoute && isPublic;
     });
 
     this.storeSubscription = this.store
@@ -258,7 +263,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.map.getView().getProjection().getCode()
     );
 
-    if (this.isPublic) {
+    if (this.showPublicVersion) {
       this.areaLayer = new AreaLayer(
         this.map,
         this.dispatchSelectionUpdate,

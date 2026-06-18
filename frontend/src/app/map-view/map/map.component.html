@@ -1,5 +1,5 @@
 <div id="map" class="map" #map></div>
-@if (isPublic$ | async) {
+@if (showPublicVersion) {
   <app-map-toolbar
     [editingControls]="false"
     (zoomIn)="zoomIn()"
