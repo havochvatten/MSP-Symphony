@@ -4,7 +4,6 @@ import { Store } from '@ngrx/store';
 import { selectPublicAccess } from '@data/systemproperties/systemproperties.selectors';
 import { map, take } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { UserActions } from '@data/user';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +13,6 @@ export class PublicGuard implements CanActivate {
   private router = inject(Router);
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> {
-    this.store.dispatch(UserActions.fetchUser());
-
     return this.store.select(selectPublicAccess).pipe(
       take(1),
       map((publicAccess) => {
