@@ -13,6 +13,7 @@ import { LegendState } from '@data/calculation/calculation.interfaces';
 import { CalculationSelectors } from '@data/calculation';
 import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component';
 import { UserActions, UserSelectors } from '@data/user';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-public-view',
@@ -35,10 +36,14 @@ export class PublicView {
   isMacOS = isMacOS();
   visibleReliability$: Observable<VisibleReliability | null>;
 
-  constructor() {
+  constructor(private router: Router) {
+    this.store.dispatch(UserActions.fetchUser());
     this.store.select(UserSelectors.selectIsLoggedIn).subscribe((isLoggedIn) => {
+      console.log('isLoggedIn: ', isLoggedIn);
       if (!isLoggedIn) {
         this.store.dispatch(UserActions.createPublicUser());
+      } else {
+        this.router.navigate(['map']);
       }
     });
     this.visibleReliability$ = this.store.select(MetadataSelectors.selectVisibleReliability);

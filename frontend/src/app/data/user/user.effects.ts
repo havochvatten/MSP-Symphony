@@ -118,6 +118,7 @@ export class UserEffects {
   fetchUserFailure$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.fetchUserFailure),
+      filter(() => this.router.url !== '/public'),
       map(() => UserActions.navigateTo({ url: '/login' }))
     )
   );
@@ -192,7 +193,10 @@ export class UserEffects {
     this.actions$.pipe(
       ofType(UserActions.fetchBaselineSuccess),
       concatMap(({ baseline }) => [
-        CalculationActions.fetchSummaryModels({ baselineName: baseline.name, category: 'ECOSYSTEM' }),
+        CalculationActions.fetchSummaryModels({
+          baselineName: baseline.name,
+          category: 'ECOSYSTEM'
+        }),
         CalculationActions.fetchSummaryModels({ baselineName: baseline.name, category: 'PRESSURE' })
       ])
     )
