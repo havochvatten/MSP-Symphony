@@ -3,6 +3,7 @@ package se.havochvatten.symphony.web;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import se.havochvatten.symphony.dto.LayerType;
 import se.havochvatten.symphony.dto.MetadataDto;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
@@ -21,8 +22,7 @@ import se.havochvatten.symphony.web.filter.PublicOrRestricted;
 @Stateless
 @Tag(name ="/metadata")
 @Path("metadata")
-@PermitAll
-@PublicOrRestricted
+@RolesAllowed("GRP_SYMPHONY")
 public class MetaDataREST {
     @EJB
     MetaDataService metaDataService;
@@ -37,6 +37,8 @@ public class MetaDataREST {
     HttpServletRequest req;
 
     @GET
+    @PermitAll
+    @PublicOrRestricted
     @Operation(summary = "List all metadata for ecocomponents and pressures for baseLineVersion")
     @Produces({MediaType.APPLICATION_JSON})
     @Path("{baselineName}")

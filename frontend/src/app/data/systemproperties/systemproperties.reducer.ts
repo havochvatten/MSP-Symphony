@@ -10,11 +10,6 @@ export const initialState: ConfigState = {
 
 export const configReducer = createReducer(
   initialState,
-  on(ConfigActions.loadConfig, (state) => ({
-    ...state,
-    loaded: false,
-    error: null
-  })),
   on(ConfigActions.loadConfigSuccess, (state, { config }) => {
     return {
       ...state,

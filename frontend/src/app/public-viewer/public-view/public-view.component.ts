@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, inject, NgModuleRef, ViewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MetadataSelectors } from '@data/metadata';
 import { BandGroup, VisibleReliability } from '@data/metadata/metadata.interfaces';
 import { Store } from '@ngrx/store';
@@ -36,16 +37,15 @@ export class PublicView {
   isMacOS = isMacOS();
   visibleReliability$: Observable<VisibleReliability | null>;
 
-  constructor(private router: Router) {
-    this.store.dispatch(UserActions.fetchUser());
-    this.store.select(UserSelectors.selectIsLoggedIn).subscribe((isLoggedIn) => {
-      console.log('isLoggedIn: ', isLoggedIn);
-      if (!isLoggedIn) {
-        this.store.dispatch(UserActions.createPublicUser());
-      } else {
-        this.router.navigate(['map']);
-      }
-    });
+  constructor() {
+    this.store
+      .select(UserSelectors.selectIsLoggedIn)
+      .pipe(takeUntilDestroyed())
+      .subscribe((isLoggedIn) => {
+        if (!isLoggedIn) {
+          this.store.dispatch(UserActions.createPublicUser());
+        }
+      });
     this.visibleReliability$ = this.store.select(MetadataSelectors.selectVisibleReliability);
   }
 

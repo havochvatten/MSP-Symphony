@@ -35,6 +35,10 @@ public class PublicOrRestrictedFilterTest {
     public void annotatedEndpoint() {
     }
 
+    // Fixture without @PublicOrRestricted, to exercise the fail-closed branch.
+    public void unannotatedEndpoint() {
+    }
+
     @Before
     public void setUp() throws Exception {
         filter = new PublicOrRestrictedFilter();
@@ -92,5 +96,20 @@ public class PublicOrRestrictedFilterTest {
         filter.filter(requestContext);
 
         verify(requestContext, never()).abortWith(any());
+    }
+
+    @Test
+    public void rejectsWhenNoAnnotationResolvedAndPublicAccessDisabled() throws Exception {
+        when(props.getPropertyAsBool(PUBLIC_ACCESS_PROP, false)).thenReturn(false);
+        Method unannotated = PublicOrRestrictedFilterTest.class.getMethod("unannotatedEndpoint");
+        when(resourceInfo.getResourceMethod()).thenReturn(unannotated);
+        // Neither the method nor this (unannotated) class carries @PublicOrRestricted,
+        // so getConditionalPublicAnnotation() returns null and the filter must fail closed.
+        when(resourceInfo.getResourceClass()).thenReturn((Class) PublicOrRestrictedFilterTest.class);
+
+        filter.filter(requestContext);
+
+        verify(requestContext).abortWith(argThat(
+            r -> r.getStatus() == Response.Status.UNAUTHORIZED.getStatusCode()));
     }
 }
