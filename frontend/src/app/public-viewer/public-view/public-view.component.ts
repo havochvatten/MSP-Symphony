@@ -14,7 +14,6 @@ import { LegendState } from '@data/calculation/calculation.interfaces';
 import { CalculationSelectors } from '@data/calculation';
 import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component';
 import { UserActions, UserSelectors } from '@data/user';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-public-view',
