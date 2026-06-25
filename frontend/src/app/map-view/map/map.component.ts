@@ -29,7 +29,7 @@ import { StaticImageOptions } from '@data/calculation/calculation.interfaces';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { CreateUserAreaModalComponent } from './create-user-area-modal/create-user-area-modal.component';
 import { Scenario } from '@data/scenario/scenario.interfaces';
-import { distinctUntilChanged, filter, skip, switchMap } from 'rxjs/operators';
+import { distinctUntilChanged, filter, skip } from 'rxjs/operators';
 import { Feature, Map as OLMap, View } from 'ol';
 import { isNotNullOrUndefined } from '@src/util/rxjs';
 import { TranslateService } from '@ngx-translate/core';
@@ -59,7 +59,6 @@ import { ScenarioService } from '@data/scenario/scenario.service';
 import { selectPublicAccess } from '@data/systemproperties/systemproperties.selectors';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { is } from 'immutable';
 
 @Component({
   selector: 'app-map',

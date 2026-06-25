@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 @Stateless
 @Tag(name = "/areas")
 @Path("areas")
+@RolesAllowed("GRP_SYMPHONY")
 public class AreasREST {
     private static final Logger LOG = Logger.getLogger(AreasREST.class.getName());
 
@@ -42,7 +43,6 @@ public class AreasREST {
     @GET
     @Operation(summary = "JSON array with all types of areas")
     @Produces({MediaType.APPLICATION_JSON})
-    @RolesAllowed("GRP_SYMPHONY")
     public Response getAreaTypes() throws SymphonyStandardAppException {
         String countryCode = props.getProperty(COUNTRYCODE_PROPERTY);
         if (countryCode == null) {
@@ -61,7 +61,6 @@ public class AreasREST {
     @Path("{type}")
     @Operation(summary = "JSON structure of all areas for given type")
     @Produces({MediaType.APPLICATION_JSON})
-    @RolesAllowed("GRP_SYMPHONY")
     public Response getAreas(@PathParam("type") String type) throws SymphonyStandardAppException {
         String countryCode = props.getProperty(COUNTRYCODE_PROPERTY);
 
@@ -98,7 +97,6 @@ public class AreasREST {
     @Path("/download")
     @Operation(summary = "Download areas as a .shp file bundle (.zip archive)")
     @Produces("application/octet-stream")
-    @RolesAllowed("GRP_SYMPHONY")
     public Response downloadAreas(@QueryParam("path") String path) throws SymphonyStandardAppException {
         String countryCode = props.getProperty(COUNTRYCODE_PROPERTY);
         String[] statePaths = path.split(",");

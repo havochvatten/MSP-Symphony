@@ -29,9 +29,10 @@ export class PublicGuard implements CanActivate {
         if (!publicAccess) {
           return this.router.createUrlTree(['/login']);
         }
-        // Activating the public view: fetch the user so a logged-in visitor gets the
-        // correct (logged-in) header. An anonymous 401 no longer redirects to /login
-        // (handled in fetchUserFailure$).
+        // Resolve the current user so PublicView can decide where to send them: a
+        // logged-in visitor is redirected to /map, an anonymous visitor (401) gets the
+        // public user and stays here. The 401 no longer routes to /login here (that is
+        // handled in fetchUserFailure$ only when public access is off).
         this.store.dispatch(UserActions.fetchUser());
         return publicAccess;
       })

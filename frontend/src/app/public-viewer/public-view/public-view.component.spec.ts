@@ -1,7 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideMockStore } from '@ngrx/store/testing';
+import { MockStore, provideMockStore } from '@ngrx/store/testing';
+import { provideMockActions } from '@ngrx/effects/testing';
+import { ReplaySubject } from 'rxjs';
+import { Action } from '@ngrx/store';
+import { Router } from '@angular/router';
 
 import { PublicView } from './public-view.component';
+import { UserActions } from '@data/user';
 import { SharedModule } from '@shared/shared.module';
 import { MapComponent } from '../../map-view/map/map.component';
 import { MapToolbarComponent } from '../../map-view/map/map-toolbar/map-toolbar.component';
@@ -46,8 +51,12 @@ import { SummaryModelControlsComponent } from '../../map-view/band-selection/sum
 describe('PublicView', () => {
   let component: PublicView;
   let fixture: ComponentFixture<PublicView>;
+  let store: MockStore;
+  let actions$: ReplaySubject<Action>;
 
   beforeEach(async () => {
+    actions$ = new ReplaySubject<Action>(1);
+
     await TestBed.configureTestingModule({
       imports: [
         SharedModule,
@@ -95,15 +104,46 @@ describe('PublicView', () => {
             config: config
           }
         }),
+        provideMockActions(() => actions$),
         provideZonelessChangeDetection()
       ]
     }).compileComponents();
-    fixture = TestBed.createComponent(PublicView);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+
+    store = TestBed.inject(MockStore);
   });
 
   it('should create', () => {
+    fixture = TestBed.createComponent(PublicView);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
     expect(component).toBeTruthy();
+  });
+
+  it('redirects a logged-in visitor to /map and does not create a public user', () => {
+    const navigateSpy = spyOn(TestBed.inject(Router), 'navigate');
+    const dispatchSpy = spyOn(store, 'dispatch');
+
+    // PublicGuard's fetchUser() resolves to a logged-in user.
+    actions$.next(UserActions.fetchUserSuccess({ user: { username: 'real-user' } }));
+
+    fixture = TestBed.createComponent(PublicView);
+
+    expect(navigateSpy).toHaveBeenCalledWith(['/map']);
+    expect(dispatchSpy).not.toHaveBeenCalledWith(UserActions.createPublicUser());
+  });
+
+  it('creates a public user for an anonymous visitor and does not redirect', () => {
+    const navigateSpy = spyOn(TestBed.inject(Router), 'navigate');
+    const dispatchSpy = spyOn(store, 'dispatch');
+
+    // PublicGuard's fetchUser() fails (401) for an anonymous visitor.
+    actions$.next(
+      UserActions.fetchUserFailure({ error: { status: 401, message: 'Unauthorized' } })
+    );
+
+    fixture = TestBed.createComponent(PublicView);
+
+    expect(dispatchSpy).toHaveBeenCalledWith(UserActions.createPublicUser());
+    expect(navigateSpy).not.toHaveBeenCalled();
   });
 });

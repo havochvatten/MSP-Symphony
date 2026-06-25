@@ -1,5 +1,7 @@
 import { ChangeDetectorRef, Component, inject, NgModuleRef, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Actions, ofType } from '@ngrx/effects';
+import { Router } from '@angular/router';
 import { MetadataSelectors } from '@data/metadata';
 import { BandGroup, VisibleReliability } from '@data/metadata/metadata.interfaces';
 import { Store } from '@ngrx/store';
@@ -9,11 +11,11 @@ import { DialogService } from '@src/app/shared/dialog/dialog.service';
 import { environment } from '@src/environments/environment';
 import { isMacOS } from '@src/util/agent';
 import { State } from '@src/app/app-reducer';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { LegendState } from '@data/calculation/calculation.interfaces';
 import { CalculationSelectors } from '@data/calculation';
 import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component';
-import { UserActions, UserSelectors } from '@data/user';
+import { UserActions } from '@data/user';
 
 @Component({
   selector: 'app-public-view',
@@ -26,6 +28,8 @@ export class PublicView {
   private readonly cd = inject(ChangeDetectorRef);
   private readonly dialogService = inject(DialogService);
   private readonly moduleRef = inject(NgModuleRef<MapViewModule>);
+  private readonly actions$ = inject(Actions);
+  private readonly router = inject(Router);
 
   @ViewChild(MapComponent) map: MapComponent | undefined;
   leftSidebarIsOpen = true; // TODO create action, or observable??
@@ -37,11 +41,20 @@ export class PublicView {
   visibleReliability$: Observable<VisibleReliability | null>;
 
   constructor() {
-    this.store
-      .select(UserSelectors.selectIsLoggedIn)
-      .pipe(takeUntilDestroyed())
-      .subscribe((isLoggedIn) => {
-        if (!isLoggedIn) {
+    // PublicGuard has already dispatched fetchUser() for this route. Decide once it
+    // resolves: a logged-in visitor goes to the full app, an anonymous visitor gets
+    // the public user. Reacting to the resolved action (not the initial isLoggedIn
+    // emission) avoids transiently spawning a throwaway public user for logged-in users.
+    this.actions$
+      .pipe(
+        ofType(UserActions.fetchUserSuccess, UserActions.fetchUserFailure),
+        take(1),
+        takeUntilDestroyed()
+      )
+      .subscribe((action) => {
+        if (action.type === UserActions.fetchUserSuccess.type) {
+          this.router.navigate(['/map']);
+        } else {
           this.store.dispatch(UserActions.createPublicUser());
         }
       });
