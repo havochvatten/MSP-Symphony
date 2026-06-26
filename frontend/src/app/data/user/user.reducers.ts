@@ -50,10 +50,14 @@ export const userReducer = createReducer(
       fetch: error
     }
   })),
-  on(UserActions.fetchBaselineSuccess, UserActions.activeBaselineChanged, (state, { baseline }) => ({
-    ...state,
-    baseline: baseline
-  })),
+  on(
+    UserActions.fetchBaselineSuccess,
+    UserActions.activeBaselineChanged,
+    (state, { baseline }) => ({
+      ...state,
+      baseline: baseline
+    })
+  ),
   on(UserActions.fetchAvailableBaselinesSuccess, (state, { baselines }) => ({
     ...state,
     availableBaselines: baselines
@@ -71,9 +75,31 @@ export const userReducer = createReducer(
     ...state,
     loadingBaseline: true
   })),
+  on(UserActions.fetchCurrentBaseline, (state) => ({
+    ...state,
+    loadingBaseline: true
+  })),
   // Reset loading state on success/failure
   on(UserActions.fetchBaselineSuccess, UserActions.fetchBaselineFailure, (state) => ({
     ...state,
     loadingBaseline: false
+  })),
+  on(UserActions.createPublicUser, (state) => ({
+    ...state,
+    user: { username: 'public', settings: { locale: 'sv', aliasing: false }, public: true },
+    aliasing: false,
+    loading: false,
+    isLoggedIn: false,
+    error: undefined
+  })),
+  on(UserActions.updatePublicUserLanguage, (state, { locale }) => ({
+    ...state,
+    user: {
+      ...state.user!,
+      settings: {
+        ...state.user?.settings,
+        locale
+      }
+    }
   }))
 );

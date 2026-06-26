@@ -88,11 +88,16 @@ export const metadataReducer = createReducer(
     ...state,
     loading: true
   })),
-  // Reset loading state on success/failure
-  on(MetadataActions.fetchMetadataSuccess, (state) => ({
-    ...state,
-    loading: false
-  })),
+  // Reset loading state on success (full or sparse) / failure
+  on(
+    MetadataActions.fetchMetadataSuccess,
+    MetadataActions.fetchSparseMetadataSuccess,
+    MetadataActions.fetchMetadataFailure,
+    (state) => ({
+      ...state,
+      loading: false
+    })
+  ),
   on(MetadataActions.fetchSummaryModelDescriptionsSuccess, (state, { category, descriptions }) => ({
     ...state,
     availableSummaryModelDescriptions: {

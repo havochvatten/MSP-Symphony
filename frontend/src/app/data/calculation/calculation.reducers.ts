@@ -174,9 +174,17 @@ export const calculationReducer = createReducer(
   })),
   on(CalculationActions.fetchCompoundComparisonsSuccess, (state, { compoundComparisons }) => ({
     ...state,
-    compoundComparisons,
-    loadingCompoundComparisons: false
+    compoundComparisons
   })),
+  // Reset loading state on success/failure
+  on(
+    CalculationActions.fetchCompoundComparisonsSuccess,
+    CalculationActions.fetchCompoundComparisonsFailure,
+    (state) => ({
+      ...state,
+      loadingCompoundComparisons: false
+    })
+  ),
   on(CalculationActions.setCompoundComparisonSortType, (state, { sortType }) => ({
     ...state,
     sortCompoundComparisons: sortType
@@ -186,11 +194,17 @@ export const calculationReducer = createReducer(
     ...state,
     loadingLegends: true
   })),
-  // Reset loading state on success/failure
-  on(CalculationActions.fetchLegendSuccess, CalculationActions.fetchLegendFailure, (state) => ({
-    ...state,
-    loadingLegends: false
-  })),
+  // Reset loading state on success/failure (regular and public legends)
+  on(
+    CalculationActions.fetchLegendSuccess,
+    CalculationActions.fetchLegendFailure,
+    CalculationActions.fetchPublicLegendSuccess,
+    CalculationActions.fetchPublicLegendFailure,
+    (state) => ({
+      ...state,
+      loadingLegends: false
+    })
+  ),
   on(CalculationActions.setSummaryModel, (state, { category, model }) => ({
     ...state,
     summaryModels: {
@@ -231,6 +245,14 @@ export const calculationReducer = createReducer(
     compoundComparisonSuccessCount: 0,
     summaryModels: { ECOSYSTEM: 'none', PRESSURE: 'none' },
     summaryModelLoading: { ECOSYSTEM: false, PRESSURE: false }
+  })),
+  on(CalculationActions.fetchPublicLegend, (state) => ({
+    ...state,
+    loadingLegends: true
+  })),
+  on(CalculationActions.fetchPublicLegendSuccess, (state, { legend, legendType }) => ({
+    ...state,
+    legends: setIn(state.legends, [legendType], legend)
   }))
 );
 

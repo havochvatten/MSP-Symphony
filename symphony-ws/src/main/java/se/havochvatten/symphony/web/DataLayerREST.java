@@ -3,8 +3,9 @@ package se.havochvatten.symphony.web;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.PostConstruct;
-import jakarta.annotation.security.RolesAllowed;
+import jakarta.annotation.security.PermitAll;
 import jakarta.ejb.EJB;
+import jakarta.ejb.Stateless;
 import jakarta.json.JsonArray;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.CacheControl;
@@ -26,6 +27,7 @@ import se.havochvatten.symphony.service.BaselineVersionService;
 import se.havochvatten.symphony.service.DataLayerService;
 import se.havochvatten.symphony.service.SummaryModelConfigService;
 import se.havochvatten.symphony.service.PropertiesService;
+import se.havochvatten.symphony.web.filter.PublicOrRestricted;
 
 import java.awt.image.*;
 import java.net.URLDecoder;
@@ -38,6 +40,7 @@ import static jakarta.ws.rs.core.Response.ok;
 import static se.havochvatten.symphony.util.MetaDataUtil.addMetaData;
 import static se.havochvatten.symphony.util.MetaDataUtil.readMetaData;
 
+@Stateless
 @Path("/datalayer")
 @Tag(name = "/datalayer")
 public class DataLayerREST {
@@ -66,7 +69,8 @@ public class DataLayerREST {
     @GET
     @Path("/{type}/{id}/{baselineName}")
     @Produces({"image/png"})
-    @RolesAllowed("GRP_SYMPHONY")
+    @PermitAll
+    @PublicOrRestricted
     @Operation(summary = "Returns data layer image")
     public Response getLayerData(@PathParam("type") String type, @PathParam("id") int bandNo, @PathParam("baselineName") String baselineName, @QueryParam("crs") String crs) throws Exception {
         logger.log(Level.INFO, () -> String.format("Getting layer data of type %s for bandNo=%d", type, bandNo));
@@ -88,7 +92,8 @@ public class DataLayerREST {
     @GET
     @Path("/{baselineName}/{type}/model/{model}")
     @Produces({"image/png"})
-    @RolesAllowed("GRP_SYMPHONY")
+    @PermitAll
+    @PublicOrRestricted
     @Operation(summary = "Returns summary model image")
     public Response getSummaryModel(@PathParam("baselineName") String baselineName, @PathParam("type") String type, @PathParam("model") String model, @QueryParam("crs") String crs) throws Exception {
         logger.log(Level.INFO, () -> String.format("Getting summary model of type %s for model=%s", type, model));
@@ -109,7 +114,8 @@ public class DataLayerREST {
     @GET
     @Path("/{baselineName}/{type}/model/{model}/description")
     @Produces(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
-    @RolesAllowed("GRP_SYMPHONY")
+    @PermitAll
+    @PublicOrRestricted
     @Operation(summary = "Dynamic mathematical description of summary model (for popup)")
     public Response getModelDescription(
         @PathParam("baselineName") String baselineName,
@@ -131,7 +137,8 @@ public class DataLayerREST {
     @GET
     @Path("/{baselineName}/{type}/models")
     @Produces(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
-    @RolesAllowed("GRP_SYMPHONY")
+    @PermitAll
+    @PublicOrRestricted
     @Operation(summary = "Returns list of available summary model keys for the given type and baseline")
     public Response getAvailableSummaryModels(
         @PathParam("baselineName") String baselineName,

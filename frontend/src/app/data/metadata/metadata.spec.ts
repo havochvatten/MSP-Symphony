@@ -1,13 +1,49 @@
 import { metadataReducer, initialState } from './metadata.reducers';
 import { MetadataActions, MetadataSelectors } from './';
+import { Groups } from './metadata.interfaces';
 import { ModelDescriptionDialogData } from '@src/app/map-view/band-selection/summary-model-selection/summary-model-dialog/summary-model-dialog.component';
 import { UserActions } from '@data/user';
 import { Baseline } from '@data/user/user.interfaces';
+
+const emptyMeta = { ecoComponent: {} as Groups, pressureComponent: {} as Groups };
 
 const MOCK_DESC: ModelDescriptionDialogData = {
   title: 'Test title',
   steps: []
 };
+
+describe('MetadataReducer', () => {
+  const loadingState = () =>
+    metadataReducer(initialState, MetadataActions.fetchMetadataForBaseline({ baselineName: 'B' }));
+
+  it('sets loading true on fetchMetadataForBaseline', () => {
+    expect(loadingState().loading).toBe(true);
+  });
+
+  it('resets loading on fetchMetadataSuccess', () => {
+    const done = metadataReducer(
+      loadingState(),
+      MetadataActions.fetchMetadataSuccess({ metadata: emptyMeta })
+    );
+    expect(done.loading).toBe(false);
+  });
+
+  it('resets loading on fetchSparseMetadataSuccess', () => {
+    const done = metadataReducer(
+      loadingState(),
+      MetadataActions.fetchSparseMetadataSuccess({ metadata: emptyMeta })
+    );
+    expect(done.loading).toBe(false);
+  });
+
+  it('resets loading on fetchMetadataFailure', () => {
+    const done = metadataReducer(
+      loadingState(),
+      MetadataActions.fetchMetadataFailure({ error: { status: 500, message: 'boom' } })
+    );
+    expect(done.loading).toBe(false);
+  });
+});
 
 describe('metadata reducer — summary model descriptions', () => {
   it('fetchSummaryModelDescriptionsSuccess stores descriptions under the correct category', () => {

@@ -99,6 +99,24 @@ export class CalculationEffects {
     )
   );
 
+  fetchPublicLegend$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(CalculationActions.fetchPublicLegend),
+      mergeMap(({ legendType }) =>
+        this.calcService.getPublicLegend(legendType).pipe(
+          map((legend) => CalculationActions.fetchPublicLegendSuccess({ legend, legendType })),
+          catchError(({ status, error: message }) =>
+            of(
+              CalculationActions.fetchPublicLegendFailure({
+                error: { status, message }
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
   fetchDynamicComparisonLegend$ = createEffect(() =>
     this.actions$.pipe(
       ofType(CalculationActions.fetchComparisonLegend),

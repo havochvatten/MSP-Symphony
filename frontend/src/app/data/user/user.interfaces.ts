@@ -9,6 +9,7 @@ export interface UserSettings {
 export interface User {
   username: string;
   settings?: UserSettings | undefined | never;
+  public?: boolean;
 }
 
 export interface State {

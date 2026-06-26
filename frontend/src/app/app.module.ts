@@ -24,9 +24,13 @@ import { CalculationEffects } from '@data/calculation/calculation.effects';
 import { ScenarioEffects } from '@data/scenario/scenario.effects';
 import { CalculationReportModule } from './report/calculation-report.module';
 import { LoginModule } from './login/login.module';
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { MatButtonModule } from "@angular/material/button";
-import { MatRadioModule } from "@angular/material/radio";
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { MatRadioModule } from '@angular/material/radio';
+import { PublicViewModule } from './public-viewer/public-viewer.module';
+import { configReducer } from './data/systemproperties/systemproperties.reducer';
+import { ConfigService } from '@data/systemproperties/systemproperties.service';
+import { lastValueFrom } from 'rxjs';
 
 @NgModule({
   declarations: [AppComponent],
@@ -40,14 +44,16 @@ import { MatRadioModule } from "@angular/material/radio";
     SharedModule,
     CoreModule,
     MapViewModule,
+    PublicViewModule,
+    StoreModule.forFeature('config', configReducer),
     StoreModule.forRoot(reducers, {
       metaReducers,
       runtimeChecks: {
         strictStateImmutability: true,
         strictActionImmutability: true,
         strictStateSerializability: true,
-        strictActionSerializability: true,
-      },
+        strictActionSerializability: true
+      }
     }),
     EffectsModule.forRoot([
       MetadataEffects,
@@ -55,12 +61,12 @@ import { MatRadioModule } from "@angular/material/radio";
       AreaEffects,
       MessageEffects,
       CalculationEffects,
-      ScenarioEffects,
+      ScenarioEffects
     ]),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
     TranslationSetupModule,
     CalculationReportModule,
-    LoginModule,
+    LoginModule
   ],
   providers: [
     provideHttpClient(),
@@ -68,9 +74,10 @@ import { MatRadioModule } from "@angular/material/radio";
     BrandingService,
     provideAppInitializer(() => {
       const brandingService = inject(BrandingService);
-      return brandingService.loadConfig();
-    }),
+      const configService = inject(ConfigService);
+      return Promise.all([brandingService.loadConfig(), lastValueFrom(configService.loadConfig())]);
+    })
   ],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}

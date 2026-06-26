@@ -24,14 +24,12 @@ export class AreaEffects {
     ofType(AreaActions.fetchNationalAreas),
     mergeMap(() =>
       this.areaService.getNationalAreaTypes().pipe(
-        map(
-          (areaTypes: string[]) => [
-            AreaActions.fetchNationalAreaTypesSuccess({ areaTypes }),
-            ...areaTypes.map(areaType => AreaActions.fetchNationalArea({ areaType }))
-          ],
-          catchError(({ status, error: message }) =>
-            of(AreaActions.fetchNationalAreaTypesFailure({ error: { status, message } }))
-          )
+        map((areaTypes: string[]) => [
+          AreaActions.fetchNationalAreaTypesSuccess({ areaTypes }),
+          ...areaTypes.map(areaType => AreaActions.fetchNationalArea({ areaType }))
+        ]),
+        catchError(({ status, error: message }) =>
+          of([AreaActions.fetchNationalAreaTypesFailure({ error: { status, message } })])
         ),
         concatMap(actions => actions)
       )
@@ -48,7 +46,10 @@ export class AreaEffects {
             [area.type]: flattenAreaGroups(area, language)
           };
           return AreaActions.fetchNationalAreaSuccess({ nationalArea });
-        })
+        }),
+        catchError(({ status, error: message }) =>
+          of(AreaActions.fetchNationalAreaFailure({ error: { status, message } }))
+        )
       )
     )
   ));

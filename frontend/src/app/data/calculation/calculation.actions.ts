@@ -215,6 +215,21 @@ export const setCompoundComparisonSortType = createAction(
   props<SortActionProps>()
 );
 
+export const fetchPublicLegend = createAction(
+  '[Calculation] Fetch public legend',
+  props<{ legendType: LegendType }>()
+);
+
+export const fetchPublicLegendSuccess = createAction(
+  '[Calculation] Fetch public legend success',
+  props<{ legend: Legend; legendType: LegendType }>()
+);
+
+export const fetchPublicLegendFailure = createAction(
+  '[Calculation] Fetch public legend failure',
+  props<{ error: ErrorMessage }>()
+);
+
 export const setSummaryModel = createAction(
   '[Calculation] Set summary model',
   props<{ category: SummaryModelCategory; model: SummaryModel }>()

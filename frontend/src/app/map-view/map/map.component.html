@@ -1,21 +1,31 @@
 <div id="map" class="map" #map></div>
-<app-map-toolbar
-  [drawIsActive]="drawIsActive"
-  (zoomIn)="zoomIn()"
-  (zoomOut)="zoomOut()"
-  (clearResult)="clearResult()"
-  (toggleDraw)="toggleDrawInteraction()"
-  (setMapOpacity)="setMapOpacity($event)"
-></app-map-toolbar>
-<app-footer></app-footer>
-@if (!drawIsActive) {
-  <div id="popup" class="ol-popup">
-    <div id="popup-content">
-      <h5 id="popup-title"> </h5>
-      <p id="popup-body">{{ 'map.click-area' | translate }}</p>
+@if (showPublicVersion) {
+  <app-map-toolbar
+    [editingControls]="false"
+    (zoomIn)="zoomIn()"
+    (zoomOut)="zoomOut()"
+    (setMapOpacity)="setMapOpacity($event)"
+  ></app-map-toolbar>
+  <app-footer></app-footer>
+} @else {
+  <app-map-toolbar
+    [drawIsActive]="drawIsActive"
+    (zoomIn)="zoomIn()"
+    (zoomOut)="zoomOut()"
+    (clearResult)="clearResult()"
+    (toggleDraw)="toggleDrawInteraction()"
+    (setMapOpacity)="setMapOpacity($event)"
+  ></app-map-toolbar>
+  <app-footer></app-footer>
+  @if (!drawIsActive) {
+    <div id="popup" class="ol-popup">
+      <div id="popup-content">
+        <h5 id="popup-title"></h5>
+        <p id="popup-body">{{ 'map.click-area' | translate }}</p>
+      </div>
     </div>
+  }
+  <div #areaOptionsMenu id="area-options-menu">
+    <button>{{ 'map.area-options.get-shapefile' | translate }}</button>
   </div>
 }
-<div #areaOptionsMenu id="area-options-menu">
-  <button>{{ 'map.area-options.get-shapefile' | translate }}</button>
-</div>

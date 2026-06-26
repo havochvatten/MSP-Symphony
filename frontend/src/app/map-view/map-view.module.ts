@@ -42,6 +42,8 @@ import { ConfirmGenerateComparisonComponent } from './calculation-history/confir
 import { CompoundComparisonListDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/compound-comparison-list-dialog.component';
 import { DownloadCompoundComparisonDialogComponent } from './compound-comparison-list-dialog/download-compound-comparison-dialog/download-compound-comparison-dialog.component';
 import { ReliabilityLegendComponent } from '@src/app/map-view/reliability-legend/reliability-legend.component';
+import { ScenarioEditorComponent } from './scenario/scenario-editor.component';
+import { SlideViewComponent } from '../shared/slide-view/slide-view.component';
 import { SummaryModelSelectionComponent } from './band-selection/summary-model-selection/summary-model-selection.component';
 import { SummaryModelAccordionComponent } from './band-selection/summary-model-selection/summary-model-accordion/summary-model-accordion.component';
 import { SummaryModelControlsComponent } from './band-selection/summary-model-selection/summary-model-controls/summary-model-controls.component';
@@ -96,6 +98,16 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatDialogModule
   ],
   providers: [AnchorPipe, DialogService],
-  exports: [MainViewComponent, ComparisonComponent]
+  exports: [
+    MainViewComponent,
+    ComparisonComponent,
+    BandSelectionComponent,
+    MapToolbarComponent,
+    AreaSelectionComponent,
+    ScenarioEditorComponent,
+    CalculationHistoryComponent,
+    MapComponent,
+    BatchProgressComponent
+  ]
 })
 export class MapViewModule {}

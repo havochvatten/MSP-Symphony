@@ -23,6 +23,7 @@ import { CalculationActions } from '@data/calculation';
 import { ScenarioActions } from '@data/scenario';
 import { LegendType } from '@data/calculation/calculation.interfaces';
 import { UserSettings } from '@data/user/user.interfaces';
+import { selectPublicAccess } from '@data/systemproperties/systemproperties.selectors';
 
 const legendTypes: LegendType[] = ['result', 'ecosystem', 'pressure'];
 
@@ -30,6 +31,7 @@ const legendTypes: LegendType[] = ['result', 'ecosystem', 'pressure'];
 export class UserEffects {
   private readonly actions$ = inject(Actions);
   private readonly store$ = inject<Store<State>>(Store);
+  private readonly configStore = inject(Store);
   private readonly userService = inject(UserService);
   private readonly router = inject(Router);
 
@@ -79,7 +81,12 @@ export class UserEffects {
   logoutUserSuccess$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.logoutUserSuccess),
-      map(() => UserActions.navigateTo({ url: '/login' }))
+      withLatestFrom(this.configStore.select(selectPublicAccess)),
+      map(([, publicAccess]) =>
+        publicAccess
+          ? UserActions.navigateTo({ url: '/public' })
+          : UserActions.navigateTo({ url: '/login' })
+      )
     )
   );
 
@@ -111,6 +118,10 @@ export class UserEffects {
   fetchUserFailure$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.fetchUserFailure),
+      withLatestFrom(this.configStore.select(selectPublicAccess)),
+      // In public-access mode an anonymous /getuser failure is expected; the public guard
+      // already routes to /public, so only redirect to /login when public access is off.
+      filter(([, publicAccess]) => !publicAccess),
       map(() => UserActions.navigateTo({ url: '/login' }))
     )
   );
@@ -160,11 +171,35 @@ export class UserEffects {
     )
   );
 
+  currentBaselineIsFetched$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.fetchCurrentBaseline),
+      mergeMap(() =>
+        this.userService.fetchCurrentBaseline().pipe(
+          map((baseline) => UserActions.fetchBaselineSuccess({ baseline: baseline })),
+          catchError((error) =>
+            of(
+              UserActions.fetchBaselineFailure({
+                error: {
+                  status: error.status,
+                  message: error.error
+                }
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
   baselineLoaded$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.fetchBaselineSuccess),
       concatMap(({ baseline }) => [
-        CalculationActions.fetchSummaryModels({ baselineName: baseline.name, category: 'ECOSYSTEM' }),
+        CalculationActions.fetchSummaryModels({
+          baselineName: baseline.name,
+          category: 'ECOSYSTEM'
+        }),
         CalculationActions.fetchSummaryModels({ baselineName: baseline.name, category: 'PRESSURE' })
       ])
     )
@@ -177,12 +212,14 @@ export class UserEffects {
         this.userService.updateSettings(settings as UserSettings).pipe(
           mergeMap(() => {
             if (settings.activeBaselineId !== undefined) {
-              return this.userService.fetchBaseline().pipe(
-                mergeMap((baseline) => [
-                  UserActions.fetchBaselineSuccess({ baseline }),
-                  UserActions.activeBaselineChanged({ baseline })
-                ])
-              );
+              return this.userService
+                .fetchBaseline()
+                .pipe(
+                  mergeMap((baseline) => [
+                    UserActions.fetchBaselineSuccess({ baseline }),
+                    UserActions.activeBaselineChanged({ baseline })
+                  ])
+                );
             }
             return of(
               settings.locale !== undefined
@@ -192,12 +229,22 @@ export class UserEffects {
           }),
           catchError((error) =>
             settings.activeBaselineId !== undefined
-              ? of(UserActions.fetchBaselineFailure({
-                  error: { status: error.status, message: error.error?.errorMessage ?? error.message }
-                }))
-              : of(UserActions.fetchUserFailure({
-                  error: { status: error.status, message: error.error?.errorMessage ?? error.message }
-                }))
+              ? of(
+                  UserActions.fetchBaselineFailure({
+                    error: {
+                      status: error.status,
+                      message: error.error?.errorMessage ?? error.message
+                    }
+                  })
+                )
+              : of(
+                  UserActions.fetchUserFailure({
+                    error: {
+                      status: error.status,
+                      message: error.error?.errorMessage ?? error.message
+                    }
+                  })
+                )
           )
         )
       )
@@ -211,7 +258,11 @@ export class UserEffects {
         this.userService.fetchBaselines().pipe(
           map((baselines) => UserActions.fetchAvailableBaselinesSuccess({ baselines })),
           catchError((error) =>
-            of(UserActions.fetchAvailableBaselinesFailure({ error: { status: error.status, message: error.error } }))
+            of(
+              UserActions.fetchAvailableBaselinesFailure({
+                error: { status: error.status, message: error.error }
+              })
+            )
           )
         )
       )
@@ -229,7 +280,7 @@ export class UserEffects {
         CalculationActions.resetComparisonLegend(),
         CalculationActions.fetchCalculations(),
         CalculationActions.fetchCompoundComparisons(),
-        AreaActions.fetchBoundaries(),
+        AreaActions.fetchBoundaries()
       ])
     )
   );
@@ -256,6 +307,28 @@ export class UserEffects {
       ),
       withLatestFrom(this.store$),
       map(([, state]) => UserActions.navigateTo({ url: state.user.redirectUrl || '/map' }))
+    )
+  );
+
+  userIsPublic$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.createPublicUser),
+      concatMap(() => [
+        UserActions.fetchAvailableBaselines(),
+        UserActions.fetchCurrentBaseline(),
+        AreaActions.fetchBoundaries(),
+        MetadataActions.fetchMetadata(),
+        ...legendTypes.map((legendType) => CalculationActions.fetchPublicLegend({ legendType }))
+      ])
+    )
+  );
+
+  // The reducer updates the public user's locale before this effect runs, so re-fetching
+  // metadata picks up the new language for backend-provided band/ecosystem names.
+  publicUserLanguageChanged$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.updatePublicUserLanguage),
+      map(() => MetadataActions.fetchMetadata())
     )
   );
 }

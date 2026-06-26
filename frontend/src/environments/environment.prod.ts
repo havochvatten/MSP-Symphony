@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   // Branding switch (change this line to switch instantly)
-  brandingFile: 'branding.json',          // ← generic by default
+  brandingFile: 'branding.json', // ← generic by default
   // brandingFile: 'branding_swam.json',  // ← uncomment for SwAM
   showBaseCalculations: true,
   showIncludeCoastCheckbox: true,
@@ -17,23 +17,23 @@ export const environment = {
     minZoom: 3,
     zoomPadding: 20,
     disableBackgroundMap: false,
-    colorCodeIntensityChanges: false,
+    colorCodeIntensityChanges: false
   },
   editor: {
     autoSaveIntervalInSeconds: 30, // 0 to disable
     loadLatestCalculation: false,
-    defaultNormalizationType: 'AREA',
+    defaultNormalizationType: 'AREA'
   },
   backgroundMap: {
     gebco: {
       url: 'https://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv',
       params: {
         LAYERS: 'GEBCO_latest',
-        TILED: 'true',
-      },
+        TILED: 'true'
+      }
     },
     openSeaMap: {
-      url: 'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
+      url: 'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png'
       // marineProfile: {
       //   url: 'http://osm.franken.de:8080/geoserver/gwc/service/wms',
       //   params: {
@@ -43,11 +43,11 @@ export const environment = {
       //   },
       //   serverType: 'geoserver'
       // }
-    },
+    }
   },
   login: {
     noAccountUrl: 'https://your.server.com/no-account.html',
-    forgotPasswordUrl: 'https://your.server.com/forgot-password.html',
+    forgotPasswordUrl: 'https://your.server.com/forgot-password.html'
   },
   meta: {
     visible_fields: [
@@ -55,8 +55,8 @@ export const environment = {
       'limitationsforsymphony',
       'valuerange',
       'dataprocessing',
-      'datasources',
+      'datasources'
     ],
-    list_fields: ['datasources'],
-  },
+    list_fields: ['datasources']
+  }
 };

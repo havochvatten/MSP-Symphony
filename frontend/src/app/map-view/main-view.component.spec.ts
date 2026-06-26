@@ -23,6 +23,10 @@ import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as area } from '@data/area/area.reducers';
 import { initialState as calculation } from '@data/calculation/calculation.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
+import {
+  initialState as config,
+  configReducer
+} from '@data/systemproperties/systemproperties.reducer';
 import { ScenarioEditorComponent } from '@src/app/map-view/scenario/scenario-editor.component';
 import { StoreModule } from '@ngrx/store';
 import { CalculationHistoryComponent } from '@src/app/map-view/calculation-history/calculation-history.component';
@@ -54,7 +58,8 @@ describe('MainViewComponent', () => {
         MatRadioModule,
         MatCheckboxModule,
         FormsModule,
-        StoreModule.forRoot({}, {})
+        StoreModule.forRoot({}, {}),
+        StoreModule.forFeature('config', configReducer)
       ],
       declarations: [
         MainViewComponent,
@@ -88,7 +93,8 @@ describe('MainViewComponent', () => {
             metadata: metadata,
             calculation: calculation,
             area: area,
-            scenario: scenario
+            scenario: scenario,
+            config: config
           }
         }),
         provideZonelessChangeDetection()

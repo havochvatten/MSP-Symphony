@@ -2,6 +2,7 @@ package se.havochvatten.symphony.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.security.PermitAll;
 import se.havochvatten.symphony.dto.CalculationAreaDto;
 import se.havochvatten.symphony.entity.CalculationArea;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
@@ -16,6 +17,8 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
+import se.havochvatten.symphony.web.filter.PublicOrRestricted;
+
 import java.net.URI;
 import java.util.List;
 
@@ -57,6 +60,8 @@ public class CalculationAreaREST {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get all calculation areas for baselineName defined in the system " +
                           "for which a max value has been set")
+    @PermitAll
+    @PublicOrRestricted
     public Response findCalibratedCalculationAreas(@PathParam("baselineName") String baselineName) {
         List<CalculationArea> resp = calculationAreaService.findCalibratedCalculationAreas(baselineName);
 
