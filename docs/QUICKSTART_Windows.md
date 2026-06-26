@@ -544,6 +544,7 @@ ng serve --proxy-config proxy.conf.json --ssl=false
 - 401 Login error → Re-add application user with correct groups
 - areas.countrycode error → Ensure line is uncommented in `/app/config/symphony/symphony-global.properties`
 - Slow layers / cache errors → Verify /var/cache/symphony/data exists and is writable
-  General
+
+### General
 - Application feels slow → Increase -Xmx if you have enough RAM
 - Layers don't show correctly → Clear browser cache + reload page
