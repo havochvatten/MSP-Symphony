@@ -99,6 +99,7 @@ export class UploadUserAreaModalComponent implements OnInit {
   }
 
   confirmImport() {
+    if (!this.uploadedArea) return;
 
     if (this.categoryForm.invalid) return;
 
@@ -121,9 +122,25 @@ export class UploadUserAreaModalComponent implements OnInit {
       .subscribe(
       importedArea => {
         if (this.customAreaName && this.customAreaName.length > 0) {
-          this.dialog.close({
-            ...importedArea,
-            areaNames: [this.customAreaName]
+          this.areaService.getCategories().subscribe(categories => {
+            const allAreas = categories.flatMap(c => c.areas ?? []);
+            const area = allAreas.find(a => a.name === this.uploadedArea!.featureIdentifiers[0]);
+            if (area) {
+              this.areaService.updateUserArea({
+                id: area.id,
+                name: this.customAreaName,
+                description: area.description,
+                polygon: area.polygon,
+                categoryId: area.categoryId,
+              }).subscribe(() => {
+                this.dialog.close({
+                  ...importedArea,
+                  areaNames: [this.customAreaName]
+                });
+              });
+            } else {
+              this.dialog.close(importedArea);
+            }
           });
         } else {
           this.dialog.close(importedArea);

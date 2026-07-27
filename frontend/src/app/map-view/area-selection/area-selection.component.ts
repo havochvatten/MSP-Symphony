@@ -185,6 +185,10 @@ export class AreaSelectionComponent implements OnChanges, OnInit {
     });
 
     if (result) {
+      setTimeout(() => {
+        this.store.dispatch(AreaActions.fetchUserDefinedAreas());
+      }, 500);
+
       this.store.dispatch(AreaActions.fetchUserDefinedAreas());
       const areaImport = result as AreaImport;
 
