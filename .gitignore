@@ -21,4 +21,4 @@ target
 !.vscode/extensions.json
 .history/*
 *.code-workspace
-*.war
+*.warnode_modules/
