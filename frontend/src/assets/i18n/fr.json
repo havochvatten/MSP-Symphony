@@ -643,11 +643,13 @@
     },
     "report": {
         "calculation": {
-            "title": "Rapport de calcul"
+            "title": "Rapport de calcul",
+            "image-alt": "Carte de l'impact cumulé sur l'environnement pour « {{ name }} »"
         },
         "comparison": {
             "title": "Rapport de comparaison",
-            "vs": "vs."
+            "vs": "vs.",
+            "image-alt": "Carte de la différence d'impact cumulé sur l'environnement entre « {{ a }} » et « {{ b }} »"
         },
         "common": {
             "not-measurable": "(non mesurable)"
