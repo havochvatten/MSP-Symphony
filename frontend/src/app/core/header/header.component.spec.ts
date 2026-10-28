@@ -7,6 +7,7 @@ import { UserMenuToggleComponent } from './user-menu-toggle/user-menu-toggle.com
 import { StoreModule } from "@ngrx/store";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { provideZonelessChangeDetection } from "@angular/core";
+import { BrandingService } from "@src/app/core/branding/branding.service";
 
 describe('HeaderComponent', () => {
   let fixture: ComponentFixture<HeaderComponent>,
@@ -20,9 +21,11 @@ describe('HeaderComponent', () => {
         initialState : { user: { baseline: undefined, availableBaselines: [] } }
         }),
         TranslateService,
+        { provide: BrandingService, useValue: { configData: { showLogos: true, flagSrc: 'flag.svg', flagAlt: { en: 'Our flag' } } } },
         provideZonelessChangeDetection()
       ]
     }).compileComponents();
+    TestBed.inject(TranslateService).setDefaultLang('en');
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
     component.title = 'Symphony'
@@ -31,5 +34,9 @@ describe('HeaderComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('renders the flag alt text from the branding config', () => {
+    expect(fixture.nativeElement.querySelector('img.flag').getAttribute('alt')).toBe('Our flag');
   });
 });
