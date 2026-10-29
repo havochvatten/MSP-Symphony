@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Input, OnInit, NgModuleRef, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, Input, OnInit, NgModuleRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Store } from '@ngrx/store';
 import {
@@ -55,6 +55,7 @@ export class HeaderComponent implements OnInit {
   private readonly dialogService = inject(DialogService);
   private readonly moduleRef = inject(NgModuleRef<CoreModule>);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   isLoggedIn = false;
 
@@ -142,6 +143,8 @@ export class HeaderComponent implements OnInit {
 
   toggleOpenMenu = (newState: OpenState) => {
     this.openState = newState !== this.openState ? newState : 'NONE';
+    // Also called after dialogs close, outside any template event, so the zoneless scheduler must be told
+    this.changeDetectorRef.markForCheck();
   };
 
   onMenuNavigation = () => {
