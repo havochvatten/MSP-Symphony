@@ -1,0 +1,108 @@
+# Dependabot version and security updates.
+#
+# Version updates run once a week, Sunday evening, and only offer releases that
+# are at least seven days old. Nothing is merged automatically.
+#
+# Security updates are opened as soon as an advisory is published, regardless
+# of schedule, cooldown and open-pull-requests-limit (GitHub caps them at 10
+# open). They target develop, the default branch, so the ignore rules below
+# apply to them as well.
+
+version: 2
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "20:00"
+      timezone: "Europe/Stockholm"
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 4
+    groups:
+      # Framework, CLI, Material and build tooling are released together.
+      angular:
+        patterns:
+          - "@angular/*"
+          - "@angular-devkit/*"
+        update-types:
+          - "minor"
+          - "patch"
+      npm-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # Angular majors need `ng update` to run their migration schematics,
+      # which Dependabot cannot do. Upgrade these by hand, together.
+      - dependency-name: "@angular/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@angular-devkit/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@angular-eslint/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@ngrx/*"
+        update-types: ["version-update:semver-major"]
+      # Angular pins the TypeScript it compiles with to a narrow peer range,
+      # and TypeScript does not follow semver, so even a minor can break the
+      # build. Move it by hand with the Angular major that supports it.
+      - dependency-name: "typescript"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+
+  - package-ecosystem: "maven"
+    directory: "/symphony-ws"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "20:00"
+      timezone: "Europe/Stockholm"
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 3
+    groups:
+      maven-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # Provided by the WildFly application server at runtime (scope provided
+      # in pom.xml). Bumping them in the pom changes nothing that runs; they
+      # move when the server is upgraded. Remove this block when the backend
+      # moves to Quarkus.
+      - dependency-name: "jakarta.platform:jakarta.jakartaee-api"
+      - dependency-name: "jakarta.batch:jakarta.batch-api"
+      - dependency-name: "org.postgresql:postgresql"
+      - dependency-name: "org.hibernate.orm:hibernate-core"
+      - dependency-name: "com.fasterxml.jackson.core:jackson-annotations"
+      - dependency-name: "com.fasterxml.jackson.core:jackson-databind"
+      - dependency-name: "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
+      - dependency-name: "com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider"
+      - dependency-name: "org.jboss.resteasy:resteasy-core"
+      - dependency-name: "org.jboss.resteasy:resteasy-servlet-initializer"
+      - dependency-name: "org.jboss.resteasy:resteasy-multipart-provider"
+      - dependency-name: "org.jboss.resteasy:resteasy-jackson2-provider"
+      - dependency-name: "org.jboss:jboss-vfs"
+      - dependency-name: "org.jberet:jberet-core"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "20:00"
+      timezone: "Europe/Stockholm"
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 1
+    groups:
+      github-actions:
+        patterns:
+          - "*"
