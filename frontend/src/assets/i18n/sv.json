@@ -643,11 +643,13 @@
     },
     "report": {
         "calculation": {
-            "title": "Scenariorapport"
+            "title": "Scenariorapport",
+            "image-alt": "Karta över den kumulativa miljöpåverkan för \"{{ name }}\""
         },
         "comparison": {
             "title": "Scenariojämförelserapport",
-            "vs": "kontra"
+            "vs": "kontra",
+            "image-alt": "Karta över skillnaden i kumulativ miljöpåverkan mellan \"{{ a }}\" och \"{{ b }}\""
         },
         "common": {
             "not-measurable": "(ej mätbar)"

@@ -643,11 +643,13 @@
     },
     "report": {
         "calculation": {
-            "title": "Calculation Report"
+            "title": "Calculation Report",
+            "image-alt": "Map of the cumulative environmental impact for \"{{ name }}\""
         },
         "comparison": {
             "title": "Calculation Comparison Report",
-            "vs": "and"
+            "vs": "and",
+            "image-alt": "Map of the difference in cumulative environmental impact between \"{{ a }}\" and \"{{ b }}\""
         },
         "common": {
             "not-measurable": "(not measurable)"
