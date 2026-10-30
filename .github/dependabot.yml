@@ -1,12 +1,15 @@
 # Dependabot version and security updates.
 #
-# Version updates run once a week, Sunday evening, and only offer releases that
-# are at least seven days old. Nothing is merged automatically.
+# Version updates run once a week, Monday morning, and only offer releases
+# that are at least seven days old. Minor and patch updates arrive grouped:
+# Angular in one pull request, the rest of npm in another, and one each for
+# Maven and GitHub Actions. Majors arrive one by one. Nothing is merged
+# automatically.
 #
 # Security updates are opened as soon as an advisory is published, regardless
-# of schedule, cooldown and open-pull-requests-limit (GitHub caps them at 10
-# open). They target develop, the default branch, so the ignore rules below
-# apply to them as well.
+# of schedule, cooldown and open-pull-requests-limit. They are grouped into one
+# pull request per ecosystem. They target develop, the default branch, so the
+# ignore rules below apply to them as well.
 
 version: 2
 
@@ -15,14 +18,16 @@ updates:
     directory: "/frontend"
     schedule:
       interval: "weekly"
-      day: "sunday"
-      time: "20:00"
+      day: "monday"
+      time: "06:00"
       timezone: "Europe/Stockholm"
     cooldown:
       default-days: 7
     open-pull-requests-limit: 4
     groups:
-      # Framework, CLI, Material and build tooling are released together.
+      # Framework, CLI, Material and build tooling are released together. Kept
+      # apart from the rest so that a breaking library update elsewhere never
+      # holds back Angular's patches.
       angular:
         patterns:
           - "@angular/*"
@@ -36,6 +41,10 @@ updates:
         update-types:
           - "minor"
           - "patch"
+      npm-security:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
     ignore:
       # Angular majors need `ng update` to run their migration schematics,
       # which Dependabot cannot do. Upgrade these by hand, together.
@@ -54,13 +63,25 @@ updates:
         update-types:
           - "version-update:semver-major"
           - "version-update:semver-minor"
+      # Angular's build keeps its own Babel 7. Babel 8 at the root would not be
+      # used by the build, and the root entry is not used by anything else.
+      - dependency-name: "@babel/core"
+        update-types: ["version-update:semver-major"]
+      # Immutable 5 removed the default export and tightened the types of
+      # getIn/setIn/updateIn, which the reducers rely on. Migrate by hand.
+      - dependency-name: "immutable"
+        update-types: ["version-update:semver-major"]
+      # OpenLayers 10.11 tightened its types and breaks the build (area-layer.ts
+      # and others). Remove this rule once the code is adapted.
+      - dependency-name: "ol"
+        versions: [">= 10.11.0"]
 
   - package-ecosystem: "maven"
     directory: "/symphony-ws"
     schedule:
       interval: "weekly"
-      day: "sunday"
-      time: "20:00"
+      day: "monday"
+      time: "06:00"
       timezone: "Europe/Stockholm"
     cooldown:
       default-days: 7
@@ -72,7 +93,13 @@ updates:
         update-types:
           - "minor"
           - "patch"
+      maven-security:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
     ignore:
+      # JTS comes from GeoTools (29.6 uses JTS 1.19.0) and must move with it.
+      - dependency-name: "org.locationtech.jts*"
       # Provided by the WildFly application server at runtime (scope provided
       # in pom.xml). Bumping them in the pom changes nothing that runs; they
       # move when the server is upgraded. Remove this block when the backend
@@ -96,8 +123,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-      day: "sunday"
-      time: "20:00"
+      day: "monday"
+      time: "06:00"
       timezone: "Europe/Stockholm"
     cooldown:
       default-days: 7
