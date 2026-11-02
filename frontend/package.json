@@ -77,7 +77,7 @@
     "@types/d3": "^7.4.3",
     "@types/d3-sankey": "^0.12.4",
     "@types/geojson": "^7946.0.14",
-    "@types/jasmine": "~5.1.4",
+    "@types/jasmine": "~7.0.0",
     "@types/jasminewd2": "~2.0.13",
     "@types/node": "^20.12.12",
     "@types/uuid": "^9.0.8",
