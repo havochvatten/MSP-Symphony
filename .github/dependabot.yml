@@ -3,8 +3,8 @@
 # Version updates run once a week, Monday morning, and only offer releases
 # that are at least seven days old. Minor and patch updates arrive grouped:
 # Angular in one pull request, the rest of npm in another, and one each for
-# Maven and GitHub Actions. Majors arrive one by one. Nothing is merged
-# automatically.
+# Maven and GitHub Actions. Majors arrive one by one, except Font Awesome's,
+# which arrive together. Nothing is merged automatically.
 #
 # Security updates are opened as soon as an advisory is published, regardless
 # of schedule, cooldown and open-pull-requests-limit. They are grouped into one
@@ -35,6 +35,14 @@ updates:
         update-types:
           - "minor"
           - "patch"
+      # The svg core and the icon sets share their types and must be on the
+      # same version, so they move together, majors included. Listed before
+      # npm-minor-and-patch because a dependency joins the first group that
+      # matches it.
+      fontawesome:
+        patterns:
+          - "@fortawesome/fontawesome-svg-core"
+          - "@fortawesome/free-*"
       npm-minor-and-patch:
         patterns:
           - "*"
@@ -55,6 +63,9 @@ updates:
       - dependency-name: "@angular-eslint/*"
         update-types: ["version-update:semver-major"]
       - dependency-name: "@ngrx/*"
+        update-types: ["version-update:semver-major"]
+      # Each angular-fontawesome major supports exactly one Angular major.
+      - dependency-name: "@fortawesome/angular-fontawesome"
         update-types: ["version-update:semver-major"]
       # Angular pins the TypeScript it compiles with to a narrow peer range,
       # and TypeScript does not follow semver, so even a minor can break the
