@@ -25,6 +25,6 @@ jobs:
     - name: Build
       run: |
         cd frontend
-        npm install --include=optional
+        npm install
         npm run build
         npm run test-headless
