@@ -739,6 +739,13 @@
     "branding": {
         "SwAM": "Havs och Vattenmyndigheten"
     },
+    "funding-disclaimer": {
+        "heading": "Ansvarsfriskrivning och erkännande av finansiering",
+        "published": "Denna kod har publicerats av Havs- och vattenmyndigheten (HaV), under angiven licens. Delar av arbetet har finansierats via svenska Regeringskansliet respektive Sida, Styrelsen för internationellt utvecklingssamarbete.",
+        "responsibility": "Innehåll, resultat och användningar är uteslutande användarens ansvar. Varken Havs- och vattenmyndigheten, Regeringskansliet eller Sida kan under några omständigheter hållas ansvariga för innehåll, resultat eller användningar – inklusive, men inte begränsat till – beslut, ställningstaganden, publiceringar och åsikter.",
+        "views": "Innehåll, resultat och användningar återspeglar inte nödvändigtvis varken Havs- och vattenmyndighetens, Regeringskansliets eller Sidas.",
+        "logo-alt": "Sverige, Havs- och vattenmyndigheten"
+    },
     "api-messages": {
         "areas": {
             "import-success": {

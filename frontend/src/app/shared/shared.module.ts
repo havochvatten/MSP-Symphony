@@ -49,6 +49,7 @@ import { MultiActionButtonComponent } from '@shared/multi-action-button/multi-ac
 import { RenameItemModalComponent} from "@shared/rename-item-modal/rename-item-modal.component";
 import { ChangeLanguageDialogComponent } from './change-language-dialog/change-language-dialog.component';
 import { ChangeBaselineDialogComponent } from './change-baseline-dialog/change-baseline-dialog.component';
+import { FundingDisclaimerComponent } from './funding-disclaimer/funding-disclaimer.component';
 
 @NgModule({
   declarations: [
@@ -94,7 +95,8 @@ import { ChangeBaselineDialogComponent } from './change-baseline-dialog/change-b
     MultiActionButtonComponent,
     RenameItemModalComponent,
     ChangeLanguageDialogComponent,
-    ChangeBaselineDialogComponent
+    ChangeBaselineDialogComponent,
+    FundingDisclaimerComponent
   ],
     imports: [
         CommonModule,
@@ -148,7 +150,8 @@ import { ChangeBaselineDialogComponent } from './change-baseline-dialog/change-b
     ListFilterComponent,
     MultiToolsComponent,
     MultiActionButtonComponent,
-    RenameItemModalComponent
+    RenameItemModalComponent,
+    FundingDisclaimerComponent
   ]
 })
 export class SharedModule {}
