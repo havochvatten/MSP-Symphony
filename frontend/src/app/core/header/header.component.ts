@@ -138,7 +138,7 @@ export class HeaderComponent implements OnInit {
       });
     }
     this.logOutUserMenu.push(...aboutMenuItems, ...logOutUserMenuItem);
-    this.publicMenu = [...changeLanguageMenuItem, ...logInUserMenuItem];
+    this.publicMenu = [...changeLanguageMenuItem, ...aboutMenuItems, ...logInUserMenuItem];
   }
 
   toggleOpenMenu = (newState: OpenState) => {

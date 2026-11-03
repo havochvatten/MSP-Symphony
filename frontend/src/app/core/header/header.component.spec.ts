@@ -74,4 +74,9 @@ describe('HeaderComponent', () => {
       expect(isMenuOpen()).toBeFalse();
     });
   });
+
+  it('offers About to logged-out visitors between language and log in', () => {
+    expect(component.publicMenu!.map(item => item.name))
+      .toEqual(['user-menu.change-language', 'user-menu.about', 'login.login']);
+  });
 });
