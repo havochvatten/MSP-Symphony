@@ -5,8 +5,12 @@
   flex-direction: column;
   background-color: white;
   border-radius: 4px;
+  box-sizing: border-box;
   padding: 2rem;
-  width: 50rem;
+  width: 80rem;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
 
   h2 {
     color: colors.$hav-black;
@@ -28,6 +32,25 @@
         font-size: 1.4rem;
         margin: 0;
       }
+    }
+  }
+
+  #funding-disclaimer {
+    h3 {
+      color: colors.$hav-black;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin: 1.5rem 0 0.5rem;
+    }
+
+    ::ng-deep p {
+      margin-top: 0.2rem;
+      margin-bottom: 1rem;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
     }
   }
 
