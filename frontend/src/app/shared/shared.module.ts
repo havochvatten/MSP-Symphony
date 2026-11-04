@@ -33,6 +33,7 @@ import { StatusIconComponent } from './status-icon/status-icon.component';
 import { ComparisonReportModalComponent } from '@shared/report-modal/comparison-report-modal.component';
 import { OrdinalPipe } from '@shared/ordinal.pipe';
 import { AnchorPipe } from '@shared/anchor.pipe';
+import { LocalizedTextPipe } from '@shared/localized-text.pipe';
 import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal.component';
 import { InlineMapComponent } from './inline-map/inline-map.component';
 import { SelectIntersectionComponent} from "@shared/select-intersection/select-intersection.component";
@@ -83,6 +84,7 @@ import { ChangeBaselineDialogComponent } from './change-baseline-dialog/change-b
     StatusIconComponent,
     OrdinalPipe,
     AnchorPipe,
+    LocalizedTextPipe,
     ConfirmationModalComponent,
     InlineMapComponent,
     SelectIntersectionComponent,
@@ -139,6 +141,7 @@ import { ChangeBaselineDialogComponent } from './change-baseline-dialog/change-b
     TranslateModule,
     OrdinalPipe,
     AnchorPipe,
+    LocalizedTextPipe,
     InlineMapComponent,
     SelectIntersectionComponent,
     ComparisonColorScaleComponent,

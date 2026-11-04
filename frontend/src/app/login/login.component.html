@@ -2,7 +2,7 @@
   <img
     class="duck"
     [src]="brandingService.configData.loginLogoSrc"
-    [alt]="brandingService.configData.loginLogoAlt"/>
+    [alt]="brandingService.configData.loginLogoAlt | localizedText"/>
 }
 
 <div class="title-container">
@@ -63,7 +63,7 @@
   <img
     class="logo"
     [src]="brandingService.configData.logoSrc"
-    [alt]="brandingService.configData.logoAlt"/>
+    [alt]="brandingService.configData.logoAlt | localizedText"/>
 }
 
 <div class="topography" data-position="bottom-left"></div>

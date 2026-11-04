@@ -38,19 +38,33 @@ The application loads this file automatically on startup.
 
 | Field                        | Description                                                                                            | Generic default                  |
 |------------------------------|--------------------------------------------------------------------------------------------------------|----------------------------------|
-| `flagAlt`                    | Alternative text for the header flag / country logo                                                    | `undefined`                      |
+| `flagAlt`                    | Alternative text for the header flag / country logo, per language (see "Alternative texts")            | `undefined`                      |
 | `flagSrc`                    | Path to the header flag / country logo image                                                           | `undefined`                      |
 | `footerTextTranslationKey`   | Translation key for the footer text.                                                                   | `undefined`                      |
-| `loginLogoAlt`               | Alternative text for the login page logo                                                               | `undefined`                      |
+| `loginLogoAlt`               | Alternative text for the login page logo, per language (see "Alternative texts")                       | `{ "en": "Long-tailed duck", "sv": "Alfågel", "fr": "Harelde boréale" }`, only with the default `loginLogoSrc` |
 | `loginLogoSrc`               | Logo used on the login page (always shown, even when `showLogos` is `false`)                           | `"assets/long-tailed-duck.svg"`  |
-| `logoAlt`                    | Alternative text for the main header logo                                                              | `"Symphony"`                     |
+| `logoAlt`                    | Alternative text for the logo at the bottom of the login page, per language (see "Alternative texts")  | `{ "en": "Symphony" }`           |
 | `logoSrc`                    | Path to the main organization logo                                                                     | `undefined`                      |
-| `reportCountryLogoAlt`       | Alternative text for the country logo in reports                                                       | `undefined`                      |
+| `reportCountryLogoAlt`       | Alternative text for the country logo in reports, per language (see "Alternative texts")               | `undefined`                      |
 | `reportCountryLogoSrc`       | Path to the country logo used in reports                                                               | `undefined`                      |
-| `reportLogoAlt`              | Alternative text for the report logo                                                                   | `undefined`                      |
+| `reportLogoAlt`              | Alternative text for the report logo, per language (see "Alternative texts")                           | `undefined`                      |
 | `reportLogoSrc`              | Path to the logo used in reports                                                                       | `undefined`                      |
 | `showLogos`                  | Determines whether to show any of the logos listed here (except the login logo, which is always shown) | `false`                          |
 | `showReportClosingMatter`    | Determines whether to show the closing paragraph (with link) in reports                                | `false`                          |
+
+#### Alternative texts
+
+Each `*Alt` field is an object with one text per language:
+
+```json
+"reportCountryLogoAlt": { "en": "Sweden logo", "sv": "Sveriges logotyp", "fr": "Logo de la Suède" }
+```
+
+- Use one key per supported language (`en`, `sv`, `fr`).
+- English is used when the selected language is missing.
+- `""` marks an image as decorative.
+- Plain strings (the old format, e.g. `"logoAlt": "Symphony"`) are no longer accepted. The image gets an empty alt text and an error is logged in the browser console.
+- Whenever you set a `*Src`, set the matching `*Alt` too. A custom `loginLogoSrc` without a `loginLogoAlt` gets an empty alt text, not the default duck's.
 
 ### 4. Easy switch between versions
 

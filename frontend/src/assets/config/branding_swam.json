@@ -1,14 +1,26 @@
 {
-    "flagAlt": "Sverige : Havs och Vattenmyndigheten",
+    "flagAlt": {
+        "sv": "Sveriges logotyp och Havs- och vattenmyndighetens logotyp",
+        "en": "Sweden logo and Swedish Agency for Marine and Water Management logo",
+        "fr": "Logo de la Suède et logo de l'Office suédois de gestion des ressources marines et aquatiques"
+    },
     "flagSrc": "assets/branding/swam/Sweden-SwAM-white-horizontal-no-borders.svg",
     "footerTextTranslationKey": "branding.SwAM",
-    "loginLogoAlt": "Alfågel",
+    "loginLogoAlt": { "sv": "Alfågel", "en": "Long-tailed duck", "fr": "Harelde boréale" },
     "loginLogoSrc": "assets/long-tailed-duck.svg",
-    "logoAlt": "Havs och Vattenmyndigheten",
+    "logoAlt": {
+        "sv": "Havs- och vattenmyndighetens logotyp",
+        "en": "Swedish Agency for Marine and Water Management logo",
+        "fr": "Logo de l'Office suédois de gestion des ressources marines et aquatiques"
+    },
     "logoSrc": "assets/branding/swam/hav-logo-blue.svg",
-    "reportCountryLogoAlt": "Sweden",
+    "reportCountryLogoAlt": { "sv": "Sveriges logotyp", "en": "Sweden logo", "fr": "Logo de la Suède" },
     "reportCountryLogoSrc": "assets/branding/swam/sweden-logotype-english-nomargin.svg",
-    "reportLogoAlt": "Havs och Vattenmyndigheten",
+    "reportLogoAlt": {
+        "sv": "Havs- och vattenmyndighetens logotyp",
+        "en": "Swedish Agency for Marine and Water Management logo",
+        "fr": "Logo de l'Office suédois de gestion des ressources marines et aquatiques"
+    },
     "reportLogoSrc": "assets/branding/swam/hav-logo-black.svg",
     "showLogos": true,
     "showReportClosingMatter": true
