@@ -215,6 +215,19 @@ Reintroducing the 'Swagger UI' capability is being considered.
 may want to be disabled in a
 production environment. By default it is available at the */symphony-ws/swagger* endpoint.~~
 
+## How to cite
+
+If you use Symphony in your work, please cite it. GitHub generates a ready-made citation (APA and BibTeX) from
+[CITATION.cff](CITATION.cff): use the **Cite this repository** button in the sidebar of the repository page.
+
+Written out, with the year and version of the release you used:
+
+> Swedish Agency for Marine and Water Management (YYYY). Symphony Open "MSP-Symphony" (Version X.Y.Z) [Source code]. https://github.com/havochvatten/MSP-Symphony
+
+In Swedish:
+
+> Havs- och vattenmyndigheten (ÅÅÅÅ). Symphony Open "MSP-Symphony" (Version X.Y.Z) [Källkod]. https://github.com/havochvatten/MSP-Symphony
+
 ## License
 
 Symphony is licensed under the 2.0 version of the Apache License, see [LICENSE](LICENSE).

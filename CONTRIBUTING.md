@@ -6,3 +6,7 @@ in the [.editorconfig](.editorconfig) files.
 
 ## Version Control
 We make use of the [Git flow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) workflow.
+
+## Releases
+When making a release, update `version` and `date-released` in [CITATION.cff](CITATION.cff) to match it, so that the
+citation GitHub shows refers to the new release.
