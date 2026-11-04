@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it as below.
+type: software
+title: 'Symphony Open "MSP-Symphony"'
+authors:
+  - name: Swedish Agency for Marine and Water Management
+version: 1.25.0
+date-released: '2026-06-05'
+license: Apache-2.0
+repository-code: https://github.com/havochvatten/MSP-Symphony
+abstract: >-
+  Symphony is a method developed by the Swedish Agency for Marine and Water
+  Management to quantitatively weigh ecosystems and environmental pressures,
+  so that the cumulative environmental impact of different marine spatial
+  planning options can be objectively compared. This repository contains a
+  web application for building and evaluating Symphony scenarios.
+keywords:
+  - marine spatial planning
+  - cumulative impact assessment
+  - ecosystem-based management
+  - environmental pressures
