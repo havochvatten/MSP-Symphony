@@ -739,6 +739,13 @@
     "branding": {
         "SwAM": "Agence Suédoise pour la Gestion de l'Eau et des Zones Maritimes (Havs och Vattenmyndigheten)"
     },
+    "funding-disclaimer": {
+        "heading": "Disclaimer and acknowledgment of funding",
+        "published": "This code was published by SwAM, the Swedish Agency for Marine and Water Management, under the license specified. Part of the work was funded by the Government Offices of Sweden or Sida, the Swedish International Development Cooperation Agency.",
+        "responsibility": "The content, outputs and uses are the sole responsibility of the user of the code. Neither SwAM, the Government Offices of Sweden nor Sida can under any circumstance be held responsible for any content, outputs or uses, including, but not limited to, decisions taken, positions taken, publications and views expressed.",
+        "views": "The content, outputs and uses do not necessarily reflect those of neither SwAM, the Government Offices of Sweden nor Sida.",
+        "logo-alt": "Sweden, Swedish Agency for Marine and Water Management"
+    },
     "api-messages": {
         "areas": {
             "import-success": {
