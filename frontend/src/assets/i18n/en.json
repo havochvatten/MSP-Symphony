@@ -254,6 +254,12 @@
                 "create-copy": "Create copy",
                 "cancel": "Cancel"
             },
+            "new-scenario": {
+                "title": "Create new scenario",
+                "name-label": "Scenario name",
+                "create": "Create",
+                "cancel": "Cancel"
+            },
             "select-area-message": "Select an area to calculate. Start with selecting an area and then make any adjustments to nature values or pressures in the left panel.",
             "fetching-matrices": "Fetching information on area's sensitivity matrices...",
             "map-layer": "Map layer",

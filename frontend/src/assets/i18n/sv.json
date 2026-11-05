@@ -254,6 +254,12 @@
                 "create-copy": "Kopiera",
                 "cancel": "Avbryt"
             },
+            "new-scenario": {
+                "title": "Skapa nytt scenario",
+                "name-label": "Scenarionamn",
+                "create": "Skapa",
+                "cancel": "Avbryt"
+            },
             "select-area-message": "För att beräkna krävs det att ett område har markerats. Börja med att välja område och eventuella naturvärden och belastningar i vänster panel.",
             "fetching-matrices": "Hämtar information om områdets känslighetsmatriser...",
             "map-layer": "Kartlager",
