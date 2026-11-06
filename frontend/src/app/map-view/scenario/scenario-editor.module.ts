@@ -26,6 +26,7 @@ import { TransferChangesComponent } from './transfer-changes/transfer-changes.co
 import { OverviewInlineBandChangeComponent } from './changes-overview/overview-inline-band-change/overview-inline-band-change.component';
 import { SplitScenarioSettingsComponent } from './split-scenario-settings/split-scenario-settings.component';
 import { SetArbitraryMatrixComponent } from './set-arbitrary-matrix/set-arbitrary-matrix.component';
+import { NewScenarioNameComponent } from './new-scenario-name/new-scenario-name.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { SetArbitraryMatrixComponent } from './set-arbitrary-matrix/set-arbitrar
     OverviewInlineBandChangeComponent,
     SplitScenarioSettingsComponent,
     SetArbitraryMatrixComponent,
+    NewScenarioNameComponent,
   ],
     imports: [
         SharedModule,

@@ -14,6 +14,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { deleteScenario } from "@src/app/map-view/scenario/scenario-common";
 import { AddScenarioAreasComponent } from "@src/app/map-view/scenario/add-scenario-areas/add-scenario-areas.component";
 import { CopyScenarioComponent } from "@src/app/map-view/scenario/copy-scenario/copy-scenario.component";
+import {
+  NewScenarioNameComponent, NewScenarioNameData
+} from "@src/app/map-view/scenario/new-scenario-name/new-scenario-name.component";
+import { uniqueScenarioName } from "@src/app/map-view/scenario/unique-scenario-name";
 import { ListItemsSort } from "@data/common/sorting.interfaces";
 import { CalculationService } from "@data/calculation/calculation.service";
 import { MultiModeListable } from "@shared/multi-tools/multi-mode-listable";
@@ -67,25 +71,32 @@ export class ScenarioListComponent extends MultiModeListable implements OnDestro
       this.store.dispatch(ScenarioActions.setScenarioSortType({ sortType }));
   }
 
-  /* Create new scenario in selected area, and enter it */
-  async createScenario(areas: Area[], that: AddScenarioAreasComponent) {
-    // We could actually use "this" in place of ´that´ here and omit the
-    // component reference. But that'd require us to us to provide dummy
-    // properties and needlessly injected services in the containing class,
-    // just to keep Angular happy at compile time.
-    // Note that the ScenarioListComponent context really is inaccessible,
-    // as this method is to be called as a delegate only.
-
+  /* Ask for a name, then create a new scenario in the selected areas */
+  createScenario = async (areas: Area[], that: AddScenarioAreasComponent): Promise<void> => {
+    // `that` is the + button, which supplies the current selection and the scenario service.
+    // Read the selection now, so that changes made while the dialog is open do not leak in.
     const components = that.selectedComponents!,
-      name = (areas.length === 1 ?
-      that.translateService.instant('map.editor.list.scenario-name-template', {
+      baseline = that.baseline!,
+      baseName = (areas.length === 1 ?
+      this.translateService.instant('map.editor.list.scenario-name-template', {
         area: areas[0].name
       }) :
-      that.translateService.instant('map.editor.list.scenario-name'));
+      this.translateService.instant('map.editor.list.scenario-name')),
+      existingNames = (await firstValueFrom(this.scenario$)).map(s => s.name);
+
+    const name = await this.dialogService.open<string | null, ScenarioEditorModule>(
+      NewScenarioNameComponent,
+      this.moduleRef,
+      { data: { suggestedName: uniqueScenarioName(baseName, existingNames) } as NewScenarioNameData }
+    );
+
+    if (!name) {
+      return;
+    }
 
     that.scenarioService
       .create(
-        that.baseline!,
+        baseline,
         name,
         that.scenarioService.convertAreas(areas),
         Normalization.DEFAULT_OPTIONS,
@@ -94,7 +105,7 @@ export class ScenarioListComponent extends MultiModeListable implements OnDestro
       )
       .pipe(catchError(error => of(error)))
       .subscribe((scenario: Scenario) =>
-        that.store.dispatch(ScenarioActions.addScenario({ scenario }))
+        this.store.dispatch(ScenarioActions.addScenario({ scenario }))
       );
   }
 

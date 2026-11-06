@@ -254,6 +254,12 @@
                 "create-copy": "Copier",
                 "cancel": "Annuler"
             },
+            "new-scenario": {
+                "title": "Créer un nouveau scénario",
+                "name-label": "Nom du scénario",
+                "create": "Créer",
+                "cancel": "Annuler"
+            },
             "select-area-message": "Sélectionnez une zone de calcul. Commencez par sélectionner une zone, puis modifiez les valeurs des composantes écosystèmes ou menaces dans le panel de gauche.",
             "fetching-matrices": "Chargement des matrices de sensibilité...",
             "map-layer": "Couche de données",
