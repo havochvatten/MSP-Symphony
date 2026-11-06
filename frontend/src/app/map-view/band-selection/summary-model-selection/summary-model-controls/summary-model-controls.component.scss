@@ -1,13 +1,16 @@
 @use 'src/styles/hav-colors' as colors;
+@use 'src/styles/on-map';
 
 :host {
   .controls {
+    position: relative;
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
     align-items: center;
 
     .editing {
+      @include on-map.hover-box;
       display: flex;
       flex-wrap: nowrap;
       justify-content: flex-end;
@@ -50,6 +53,14 @@
 
     mat-spinner {
       margin-right: 1rem;
+    }
+
+    &.on-map {
+      padding-right: on-map.$eye-room;
+    }
+
+    .on-map-eye {
+      @include on-map.eye;
     }
 
     ::ng-deep mat-checkbox {
