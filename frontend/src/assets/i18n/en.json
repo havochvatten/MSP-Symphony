@@ -583,6 +583,9 @@
         },
         "area-options": {
             "get-shapefile": "Download shapefile bundle (.zip)"
+        },
+        "on-map": {
+            "more": "+{{count}} more"
         }
     },
     "controls": {

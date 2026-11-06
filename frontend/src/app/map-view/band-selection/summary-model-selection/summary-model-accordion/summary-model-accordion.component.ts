@@ -23,4 +23,9 @@ export class SummaryModelAccordionComponent {
 
   open = false;
   toggle: () => void = () => (this.open = !this.open);
+
+  /** Label of the summary model on the map, if any. At most one per tab is. */
+  get selectedLabel(): string | undefined {
+    return this.rows.find(({ model }) => this.isSummaryModelSelected(model))?.label;
+  }
 }

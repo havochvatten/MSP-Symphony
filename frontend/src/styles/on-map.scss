@@ -1,0 +1,57 @@
+// "On the map" markers for the layer panels (SYM-739). A turquoise bar on
+// the left edge marks categories and rows whose layers are on the map.
+@use 'src/styles/hav-colors' as colors;
+
+$bar-width: 5px;
+
+@mixin bar {
+  border-left: $bar-width solid colors.$hav-turquoise;
+}
+
+// Left padding that keeps content where it was when the bar replaces a 1px
+// border, so nothing shifts as layers are turned on.
+@function inset($padding) {
+  @return calc(#{$padding} - #{$bar-width - 1px});
+}
+
+// Where a mat-checkbox's label text starts: the label's margin
+// (mat-hav-component.scss) plus Material's own label padding. The names line
+// under a category title uses it to line up with the title.
+$checkbox-label-inset: calc(0.5rem + 4px);
+// The same, while the checkbox itself shows (when a scenario is active).
+$checkbox-label-inset-with-box: calc(var(--mat-checkbox-state-layer-size, 40px) + 0.5rem + 4px);
+
+// The row's .controls sits this far inside the row on the right.
+$row-inset: 0.4rem;
+
+// The rows' hover box (list-actions.scss) is pinned 2px from the top of the
+// row, which leaves it and its eye above the middle. In the layer rows it is
+// centred on the title line instead, with .controls as its positioned parent.
+// It keeps its horizontal position: 2px from the row's edge.
+@mixin hover-box {
+  top: 50%;
+  right: calc(2px - #{$row-inset});
+  transform: translateY(-50%);
+}
+
+// The eye on a row that is on the map. It sits exactly where the hover box's
+// eye sits, at the same size, so nothing moves when the box appears over it.
+// Needs the same positioned .controls as the hover box.
+@mixin eye {
+  position: absolute;
+  top: 50%;
+  right: calc(5px - #{$row-inset}); // hover box: right 2px + border 1px + padding 2px
+  transform: translateY(-50%);
+  height: 2.8rem;
+  width: 2.8rem;
+  color: colors.$hav-turquoise;
+  cursor: pointer;
+
+  ::ng-deep svg {
+    height: 1.75rem;
+    width: 1.75rem;
+  }
+}
+
+// Room for the eye, so a long title doesn't run under it.
+$eye-room: 3.3rem;

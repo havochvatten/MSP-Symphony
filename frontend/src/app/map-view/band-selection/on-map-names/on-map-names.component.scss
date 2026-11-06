@@ -1,0 +1,32 @@
+@use 'src/styles/hav-colors' as colors;
+
+:host {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  min-width: 0;
+  color: colors.$hav-turquoise;
+  font-size: 1.15rem;
+  line-height: 1.4;
+
+  app-icon {
+    flex-shrink: 0;
+    font-size: 1.3rem;
+    margin-top: 0.1rem;
+  }
+
+  .names-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  .more {
+    // Follows the last line of names when they wrap.
+    align-self: flex-end;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+}

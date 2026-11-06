@@ -8,7 +8,8 @@ import { provideZonelessChangeDetection } from "@angular/core";
 
 describe('AccordionBoxComponent', () => {
   let fixture: ComponentFixture<AccordionBoxComponent>,
-      component: AccordionBoxComponent;
+      component: AccordionBoxComponent,
+      el: HTMLElement;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -26,10 +27,22 @@ describe('AccordionBoxComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AccordionBoxComponent);
     component = fixture.componentInstance;
+    el = fixture.nativeElement;
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('is not marked by default, so other users of the box look as before', () => {
+    expect(el.querySelector('article')!.getAttribute('data-marked')).toBe('false');
+  });
+
+  it('is marked when asked', async () => {
+    fixture.componentRef.setInput('marked', true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(el.querySelector('article')!.getAttribute('data-marked')).toBe('true');
   });
 });

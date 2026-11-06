@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, inject } from '@angular/core';
+import { AfterViewInit, Component, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { Band, BandType } from '@data/metadata/metadata.interfaces';
 import { Store } from "@ngrx/store";
 import { State } from "@src/app/app-reducer";
@@ -13,7 +13,7 @@ import { MatCheckboxChange } from "@angular/material/checkbox";
   styleUrls: ['./checkbox-accordion.component.scss'],
   standalone: false
 })
-export class CheckboxAccordionComponent implements AfterViewInit {
+export class CheckboxAccordionComponent implements AfterViewInit, OnChanges {
   private store = inject<Store<State>>(Store);
 
   @Input() title?: string;
@@ -29,6 +29,9 @@ export class CheckboxAccordionComponent implements AfterViewInit {
   @Input() open = false;
   toggle: () => void = () => this.open = !this.open;
 
+  /** Titles of the shown layers that are on the map, in list order. */
+  visibleBandTitles: string[] = [];
+
   private groupBandNumbers = new Set();
 
   constructor() {
@@ -37,6 +40,12 @@ export class CheckboxAccordionComponent implements AfterViewInit {
           const changesBandNumbers = !changes[this.category] ? new Set() : new Set(Object.keys(changes[this.category]).map(n => +n));
           this.open ||= intersection(this.groupBandNumbers, changesBandNumbers).size>0
         });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['bands']) {
+      this.visibleBandTitles = this.bands.filter(({ visible }) => visible).map(({ title }) => title);
+    }
   }
 
   ngAfterViewInit() {
@@ -57,6 +66,11 @@ export class CheckboxAccordionComponent implements AfterViewInit {
 
   onChangeVisibleReliability = (visible: boolean, band: Band) => {
     this.changeVisibleReliability(visible, band);
+  }
+
+  /** Whether the accordion renders open: opened by the user, or forced open by a search. */
+  get expanded(): boolean {
+    return this.open || (this.searching && this.bands.length > 0);
   }
 
   get allBoxesAreChecked(): boolean {

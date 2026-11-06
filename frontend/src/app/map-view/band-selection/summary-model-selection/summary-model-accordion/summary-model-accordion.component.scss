@@ -1,6 +1,19 @@
 @use 'src/styles/hav-colors' as colors;
+@use 'src/styles/on-map';
 
 :host {
+  .header-title {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+
+    // The Överblick checkbox never shows.
+    app-on-map-names {
+      padding-left: on-map.$checkbox-label-inset;
+    }
+  }
+
   app-accordion-box-header,
   app-accordion-box-content .list-item {
     ::ng-deep mat-checkbox.mdc-checkbox--disabled {
@@ -27,6 +40,11 @@
         display: grid;
         border: 1px solid colors.$hav-border-grey;
         padding: 1.35rem 0.4rem;
+
+        &.on-map {
+          @include on-map.bar;
+          padding-left: on-map.inset(0.4rem);
+        }
       }
     }
   }
