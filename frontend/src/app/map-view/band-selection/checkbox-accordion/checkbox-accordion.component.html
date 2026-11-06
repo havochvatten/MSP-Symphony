@@ -1,24 +1,30 @@
 <!-- FIXME open if child bands has changes -->
 <app-accordion-box
-  [open]="open || (searching && bands.length > 0)"
+  [open]="expanded"
+  [marked]="visibleBandTitles.length > 0"
   [toggle]="toggle">
 
   <app-accordion-box-header>
-    @if (title) {
-      <mat-checkbox
-        [checked]="allBoxesAreChecked"
-        [indeterminate]="someBoxesAreChecked"
-        [disabled]="!scenarioActive"
-        (change)="updateAll()"
-        checkboxSize="small"
-      >{{ title }}</mat-checkbox>
-    }
+    <div class="header-title" [class.with-checkbox]="scenarioActive">
+      @if (title) {
+        <mat-checkbox
+          [checked]="allBoxesAreChecked"
+          [indeterminate]="someBoxesAreChecked"
+          [disabled]="!scenarioActive"
+          (change)="updateAll()"
+          checkboxSize="small"
+        >{{ title }}</mat-checkbox>
+      }
+      @if (!expanded && visibleBandTitles.length > 0) {
+        <app-on-map-names [names]="visibleBandTitles"></app-on-map-names>
+      }
+    </div>
   </app-accordion-box-header>
 
   <app-accordion-box-content>
     <ul>
       @for (band of bands; track band.bandNumber) {
-        <li class="list-item">
+        <li class="list-item" [class.on-map]="band.visible">
           <app-slider-controls
             [band]="band"
             [category]="category"
