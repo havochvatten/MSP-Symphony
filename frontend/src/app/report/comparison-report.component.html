@@ -3,20 +3,7 @@
   <header class="title">
     <h3>{{ report().a.name }} {{ 'report.comparison.vs' | translate }} {{ report().b.name }}</h3>
   </header>
-  <div class="logo">
-    @if (brandingService.configData.showLogos && brandingService.configData.reportLogoSrc) {
-      @if (brandingService.configData.reportCountryLogoSrc) {
-        <img
-          [src]="brandingService.configData.reportCountryLogoSrc"
-          class="report-country-logo"
-          [alt]="brandingService.configData.reportCountryLogoAlt | localizedText"/>
-      }
-      <img
-        [src]="brandingService.configData.reportLogoSrc"
-        class="report-logo"
-        [alt]="brandingService.configData.reportLogoAlt | localizedText"/>
-    }
-  </div>
+  <app-report-logos class="logo"></app-report-logos>
   <app-calculation-image [imageURL]="imageUrl" [alt]="'report.comparison.image-alt' | translate: { a: report().a.name, b: report().b.name }"></app-calculation-image>
     @if ((metadata$ | async); as metadata) {
       <app-cumulative-effect-etc [reports]="[report().a, report().b]"

@@ -33,6 +33,11 @@ describe('BrandingService', () => {
     expect(service.configData.loginLogoAlt).toBeUndefined();
   });
 
+  it('does not give a per-language custom login logo the default login logo alt text', async () => {
+    await load({ loginLogoSrc: { sv: 'assets/a.svg', en: 'assets/b.svg' } });
+    expect(service.configData.loginLogoAlt).toBeUndefined();
+  });
+
   it('uses the configured alt text for a custom login logo', async () => {
     await load({ loginLogoSrc: 'assets/branding/our-org/logo.svg', loginLogoAlt: { en: 'Our logo' } });
     expect(service.configData.loginLogoAlt).toEqual({ en: 'Our logo' });

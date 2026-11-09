@@ -34,6 +34,7 @@ import { ComparisonReportModalComponent } from '@shared/report-modal/comparison-
 import { OrdinalPipe } from '@shared/ordinal.pipe';
 import { AnchorPipe } from '@shared/anchor.pipe';
 import { LocalizedTextPipe } from '@shared/localized-text.pipe';
+import { LocalizedSrcPipe } from '@shared/localized-src.pipe';
 import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal.component';
 import { InlineMapComponent } from './inline-map/inline-map.component';
 import { SelectIntersectionComponent} from "@shared/select-intersection/select-intersection.component";
@@ -86,6 +87,7 @@ import { FundingDisclaimerComponent } from './funding-disclaimer/funding-disclai
     OrdinalPipe,
     AnchorPipe,
     LocalizedTextPipe,
+    LocalizedSrcPipe,
     ConfirmationModalComponent,
     InlineMapComponent,
     SelectIntersectionComponent,
@@ -144,6 +146,7 @@ import { FundingDisclaimerComponent } from './funding-disclaimer/funding-disclai
     OrdinalPipe,
     AnchorPipe,
     LocalizedTextPipe,
+    LocalizedSrcPipe,
     InlineMapComponent,
     SelectIntersectionComponent,
     ComparisonColorScaleComponent,

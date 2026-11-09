@@ -3,21 +3,22 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@src/environments/environment';
 import { LocalizedText } from '@shared/localized-text';
+import { LocalizedSrc } from '@shared/localized-src';
 
 const defaultLoginLogoSrc = 'assets/long-tailed-duck.svg';
 
 export interface BrandingConfig {
   flagAlt?: LocalizedText;
-  flagSrc?: string;
+  flagSrc?: LocalizedSrc;
   footerTextTranslationKey?: string;
   loginLogoAlt?: LocalizedText;
-  loginLogoSrc?: string;
+  loginLogoSrc?: LocalizedSrc;
   logoAlt?: LocalizedText;
-  logoSrc?: string;
+  logoSrc?: LocalizedSrc;
   reportCountryLogoAlt?: LocalizedText;
-  reportCountryLogoSrc?: string;
+  reportCountryLogoSrc?: LocalizedSrc;
   reportLogoAlt?: LocalizedText;
-  reportLogoSrc?: string;
+  reportLogoSrc?: LocalizedSrc;
   showLogos: boolean;
   showReportClosingMatter: boolean;
 }
