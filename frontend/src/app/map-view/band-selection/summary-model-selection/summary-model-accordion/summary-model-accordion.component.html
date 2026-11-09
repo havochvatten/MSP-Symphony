@@ -1,17 +1,22 @@
-<app-accordion-box [open]="open" [toggle]="toggle">
+<app-accordion-box [open]="open" [marked]="!!selectedLabel" [toggle]="toggle">
   <app-accordion-box-header>
-    <mat-checkbox
-      [checked]="false"
-      [indeterminate]="false"
-      [disabled]="true"
-      checkboxSize="small"
-    >{{ title }}</mat-checkbox>
+    <div class="header-title">
+      <mat-checkbox
+        [checked]="false"
+        [indeterminate]="false"
+        [disabled]="true"
+        checkboxSize="small"
+      >{{ title }}</mat-checkbox>
+      @if (!open && selectedLabel) {
+        <app-on-map-names [names]="[selectedLabel]"></app-on-map-names>
+      }
+    </div>
   </app-accordion-box-header>
 
   <app-accordion-box-content>
     <ul>
       @for (row of rows; track row.model) {
-        <li class="list-item">
+        <li class="list-item" [class.on-map]="isSummaryModelSelected(row.model)">
           <app-summary-model-controls
             [modelCategory]="modelCategory"
             [summaryModel]="row.model"

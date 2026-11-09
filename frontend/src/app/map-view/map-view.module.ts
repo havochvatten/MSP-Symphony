@@ -49,6 +49,7 @@ import { SummaryModelAccordionComponent } from './band-selection/summary-model-s
 import { SummaryModelControlsComponent } from './band-selection/summary-model-selection/summary-model-controls/summary-model-controls.component';
 import { SummaryModelDialogComponent } from './band-selection/summary-model-selection/summary-model-dialog/summary-model-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { OnMapNamesComponent } from './band-selection/on-map-names/on-map-names.component';
 
 @NgModule({
   declarations: [
@@ -83,7 +84,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     SummaryModelSelectionComponent,
     SummaryModelAccordionComponent,
     SummaryModelControlsComponent,
-    SummaryModelDialogComponent
+    SummaryModelDialogComponent,
+    OnMapNamesComponent
   ],
   imports: [
     SharedModule,

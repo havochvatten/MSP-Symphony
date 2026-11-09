@@ -15,6 +15,7 @@ import { initialState as calculation } from '@data/calculation/calculation.reduc
 describe('SummaryModelControlsComponent', () => {
   let fixture: ComponentFixture<SummaryModelControlsComponent>;
   let component: SummaryModelControlsComponent;
+  let el: HTMLElement;
 
   const mockDialogService = { open: jasmine.createSpy('open') };
   const mockDataLayerService = { getSummaryModelDescription: () => of({}) };
@@ -46,6 +47,7 @@ describe('SummaryModelControlsComponent', () => {
 
     fixture = TestBed.createComponent(SummaryModelControlsComponent);
     component = fixture.componentInstance;
+    el = fixture.nativeElement;
     component.modelCategory = 'ECOSYSTEM';
     component.summaryModel = 'simple';
     component.isSummaryModelSelected = () => false;
@@ -56,5 +58,28 @@ describe('SummaryModelControlsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('shows an eye outside the hover box when the model is on the map and loaded', () => {
+    fixture.componentRef.setInput('isSummaryModelSelected', () => true);
+    fixture.detectChanges();
+    expect(el.querySelector('.on-map-eye')).not.toBeNull();
+    expect(el.querySelector('.list-actions .on-map-eye')).toBeNull();
+  });
+
+  it('shows no extra eye while the model is loading', () => {
+    fixture.componentRef.setInput('isSummaryModelSelected', () => true);
+    fixture.componentRef.setInput('isSummaryModelLoaded', () => false);
+    fixture.detectChanges();
+    expect(el.querySelector('.on-map-eye')).toBeNull();
+  });
+
+  it('turns the model off when the eye is clicked', () => {
+    const toggleSummaryModel = jasmine.createSpy('toggleSummaryModel');
+    fixture.componentRef.setInput('isSummaryModelSelected', () => true);
+    fixture.componentRef.setInput('toggleSummaryModel', toggleSummaryModel);
+    fixture.detectChanges();
+    (el.querySelector('.on-map-eye') as HTMLElement).click();
+    expect(toggleSummaryModel).toHaveBeenCalledWith('simple');
   });
 });

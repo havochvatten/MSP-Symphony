@@ -1,4 +1,7 @@
-<div class="controls">
+<div
+  class="controls"
+  [class.on-map]="isSummaryModelSelected(summaryModel) && isSummaryModelLoaded(summaryModel)"
+>
   <mat-checkbox
     [checked]="isSummaryModelSelected(summaryModel)"
     [disabled]="true"
@@ -26,5 +29,13 @@
         (click)="toggleSummaryModel(summaryModel); $event.stopImmediatePropagation()"
       ></app-icon>
     </div>
+  }
+
+  @if (isSummaryModelSelected(summaryModel) && isSummaryModelLoaded(summaryModel)) {
+    <app-icon
+      class="on-map-eye"
+      iconType="eye"
+      (click)="toggleSummaryModel(summaryModel); $event.stopImmediatePropagation()"
+    ></app-icon>
   }
 </div>

@@ -163,6 +163,11 @@ class BandLayer extends SymphonyLayerGroup {
             // https://github.com/openlayers/openlayers/blob/f2c05afbd128428035f51945bbc74dc00aeaed7b/src/ol/Collection.js#L319
             this.getLayers().push(layer);
           }
+          // The image is already here, but refetching the metadata (Återställ)
+          // clears the loaded flag, which would leave the row spinning.
+          if (!band.loaded) {
+            this.store.dispatch(MetadataActions.setLoadedState({ band, value: true }));
+          }
         } else {
           const type = layerBands === this.loadedBands.ecoComponents ? 'ECOSYSTEM' : 'PRESSURE';
           this.dataLayerService
