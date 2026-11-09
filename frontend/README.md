@@ -39,16 +39,16 @@ The application loads this file automatically on startup.
 | Field                        | Description                                                                                            | Generic default                  |
 |------------------------------|--------------------------------------------------------------------------------------------------------|----------------------------------|
 | `flagAlt`                    | Alternative text for the header flag / country logo, per language (see "Alternative texts")            | `undefined`                      |
-| `flagSrc`                    | Path to the header flag / country logo image                                                           | `undefined`                      |
+| `flagSrc`                    | Path to the header flag / country logo, or one path per language (see "Per-language images")           | `undefined`                      |
 | `footerTextTranslationKey`   | Translation key for the footer text.                                                                   | `undefined`                      |
 | `loginLogoAlt`               | Alternative text for the login page logo, per language (see "Alternative texts")                       | `{ "en": "Long-tailed duck", "sv": "Alfågel", "fr": "Harelde boréale" }`, only with the default `loginLogoSrc` |
-| `loginLogoSrc`               | Logo used on the login page (always shown, even when `showLogos` is `false`)                           | `"assets/long-tailed-duck.svg"`  |
+| `loginLogoSrc`               | Logo used on the login page (always shown, even when `showLogos` is `false`): a path, or one path per language (see "Per-language images") | `"assets/long-tailed-duck.svg"`  |
 | `logoAlt`                    | Alternative text for the logo at the bottom of the login page, per language (see "Alternative texts")  | `{ "en": "Symphony" }`           |
-| `logoSrc`                    | Path to the main organization logo                                                                     | `undefined`                      |
+| `logoSrc`                    | Path to the main organization logo, or one path per language (see "Per-language images")               | `undefined`                      |
 | `reportCountryLogoAlt`       | Alternative text for the country logo in reports, per language (see "Alternative texts")               | `undefined`                      |
-| `reportCountryLogoSrc`       | Path to the country logo used in reports                                                               | `undefined`                      |
+| `reportCountryLogoSrc`       | Path to the country logo used in reports, or one path per language (see "Per-language images")         | `undefined`                      |
 | `reportLogoAlt`              | Alternative text for the report logo, per language (see "Alternative texts")                           | `undefined`                      |
-| `reportLogoSrc`              | Path to the logo used in reports                                                                       | `undefined`                      |
+| `reportLogoSrc`              | Path to the logo used in reports, or one path per language (see "Per-language images")                 | `undefined`                      |
 | `showLogos`                  | Determines whether to show any of the logos listed here (except the login logo, which is always shown) | `false`                          |
 | `showReportClosingMatter`    | Determines whether to show the closing paragraph (with link) in reports                                | `false`                          |
 
@@ -65,6 +65,21 @@ Each `*Alt` field is an object with one text per language:
 - `""` marks an image as decorative.
 - Plain strings (the old format, e.g. `"logoAlt": "Symphony"`) are no longer accepted. The image gets an empty alt text and an error is logged in the browser console.
 - Whenever you set a `*Src`, set the matching `*Alt` too. A custom `loginLogoSrc` without a `loginLogoAlt` gets an empty alt text, not the default duck's.
+
+#### Per-language images
+
+Each `*Src` field is either one path, used in every language, or an object with one path per language:
+
+```json
+"flagSrc": {
+  "sv": "assets/branding/swam/Sweden-SwAM-white-horizontal-no-borders.svg",
+  "en": "assets/branding/swam/Sweden-SwAM-white-horizontal-no-borders-en.svg"
+}
+```
+
+- The image follows the selected language, also when the user switches language.
+- English (the app's default language) is used when the selected language is missing, so the example above shows the English image in French.
+- When neither the selected language nor English has a path, no image is shown and an error is logged in the browser console.
 
 ### 4. Easy switch between versions
 

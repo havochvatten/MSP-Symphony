@@ -46,6 +46,46 @@ describe('HeaderComponent', () => {
     expect(fixture.nativeElement.querySelector('img.flag').getAttribute('alt')).toBe('Our flag');
   });
 
+  describe('with a header image per language', () => {
+    let translate: TranslateService;
+    const flag = (): HTMLImageElement | null => fixture.nativeElement.querySelector('img.flag');
+
+    beforeEach(() => {
+      translate = TestBed.inject(TranslateService);
+      TestBed.inject(BrandingService).configData.flagSrc = { sv: 'flag-sv.svg', en: 'flag-en.svg' };
+    });
+
+    it('shows the header image for the current language', () => {
+      translate.use('sv');
+      fixture.detectChanges();
+      expect(flag()?.getAttribute('src')).toBe('flag-sv.svg');
+    });
+
+    it('shows the English header image in French', () => {
+      translate.use('fr');
+      fixture.detectChanges();
+      expect(flag()?.getAttribute('src')).toBe('flag-en.svg');
+    });
+
+    it('switches the header image when the language changes', async () => {
+      translate.use('sv');
+      fixture.detectChanges();
+      expect(flag()?.getAttribute('src')).toBe('flag-sv.svg');
+
+      translate.use('en');
+      await fixture.whenStable();
+      expect(flag()?.getAttribute('src')).toBe('flag-en.svg');
+    });
+
+    it('shows no header image when none resolves', () => {
+      spyOn(console, 'error');
+      TestBed.inject(BrandingService).configData.flagSrc = { sv: 'flag-sv.svg' };
+      translate.use('fr');
+      fixture.detectChanges();
+      expect(flag()).toBeNull();
+    });
+  });
+
   describe('when the language dialog closes', () => {
     const isMenuOpen = () =>
       fixture.nativeElement.querySelector('.header-menu-container').classList.contains('is-open');

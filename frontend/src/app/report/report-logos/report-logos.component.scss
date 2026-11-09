@@ -1,0 +1,14 @@
+:host {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  // Clear space between the logos: HaV asks for 2 x its capital H (about 7.2 mm when its logo
+  // fills the 15 mm box), the Sweden logo for x1, the width of its blue field (about 4.8 mm here).
+  gap: 8mm;
+}
+
+img {
+  height: 15mm;
+  width: 37.5mm;
+  object-fit: contain;
+}

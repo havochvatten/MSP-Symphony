@@ -32,18 +32,6 @@
     .logo {
       grid-column: 4 / 6;
       grid-row: 1 / 2;
-      display: flex;
-      align-items: baseline;
-      justify-content: flex-end;
-
-      img {
-        height: 15mm;
-        width: 37.5mm;
-
-        &.sweden {
-          margin-right: 4rem;
-        }
-      }
     }
 
     app-calculation-image {

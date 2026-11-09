@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { LoginComponent } from './login.component';
 import { UserSelectors } from '@data/user';
 import { BrandingService } from '@src/app/core/branding/branding.service';
+import { TranslateService } from '@ngx-translate/core';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -68,5 +69,22 @@ describe('LoginComponent', () => {
   it('renders the logo alt texts from the branding config', () => {
     expect(fixture.nativeElement.querySelector('img.duck').getAttribute('alt')).toBe('Our login logo');
     expect(fixture.nativeElement.querySelector('img.logo').getAttribute('alt')).toBe('Our logo');
+  });
+
+  it('shows the bottom logo for the current language', () => {
+    const translate = TestBed.inject(TranslateService);
+    // Preloaded translations make use() switch synchronously instead of fetching the language files
+    translate.setTranslation('sv', {});
+    translate.setTranslation('fr', {});
+    TestBed.inject(BrandingService).configData.logoSrc = { sv: 'logo-sv.svg', en: 'logo-en.svg' };
+    const logo = () => fixture.nativeElement.querySelector('img.logo').getAttribute('src');
+
+    translate.use('sv');
+    fixture.detectChanges();
+    expect(logo()).toBe('logo-sv.svg');
+
+    translate.use('fr');
+    fixture.detectChanges();
+    expect(logo()).toBe('logo-en.svg');
   });
 });

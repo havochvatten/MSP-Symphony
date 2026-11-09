@@ -9,6 +9,7 @@ import { provideMockStore } from '@ngrx/store/testing';
 import { RouterModule } from "@angular/router";
 import { TranslationSetupModule } from '../app-translation-setup.module';
 import { PressureChartComponent } from './pressure-chart/pressure-chart.component';
+import { ReportLogosComponent } from './report-logos/report-logos.component';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { provideHttpClient } from "@angular/common/http";
@@ -25,7 +26,8 @@ describe('CalculationReportComponent', () => {
         ImpactTableComponent,
         HighestImpactsComponent,
         CumulativeEffectEtcComponent,
-        PressureChartComponent
+        PressureChartComponent,
+        ReportLogosComponent
       ],
       imports: [SharedModule, RouterModule.forRoot([]), TranslationSetupModule, MatProgressSpinnerModule],
       providers: [
