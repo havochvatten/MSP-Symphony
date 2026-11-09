@@ -90,7 +90,7 @@
     "karma-coverage-istanbul-reporter": "~3.0.3",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "^2.3.0",
-    "lint-staged": "^15.2.2",
+    "lint-staged": "^17.6.0",
     "postcss": ">=8.5.31",
     "prettier": "^3.9.10",
     "raw-loader": "^4.0.2",
