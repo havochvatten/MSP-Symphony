@@ -5,9 +5,10 @@ import { BandType } from '@data/metadata/metadata.interfaces';
 import { AppSettings } from '@src/app/app.settings';
 import { ModelDescriptionDialogData } from '@src/app/map-view/band-selection/summary-model-selection/summary-model-dialog/summary-model-dialog.component';
 import { Observable, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { switchMap, tap } from 'rxjs/operators';
 import { SummaryModel, SummaryModelCategory, SummaryModelOption } from '@data/calculation/calculation.interfaces';
 import { TranslateService } from '@ngx-translate/core';
+import { StyleVersionService } from '@data/style/style-version.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ import { TranslateService } from '@ngx-translate/core';
 export class DataLayerService {
   private readonly http = inject(HttpClient);
   private readonly translate = inject(TranslateService);
+  private readonly styleVersion = inject(StyleVersionService);
 
   private readonly summaryModelsCache = new Map<string, SummaryModelOption[]>();
 
@@ -25,11 +27,7 @@ export class DataLayerService {
     //       new HttpParams().set('crs', encodeURIComponent(AppSettings.MAP_PROJECTION));
     const params = new HttpParams().set('crs', encodeURIComponent(AppSettings.MAP_PROJECTION));
 
-    return this.http.get(url, {
-      responseType: 'blob',
-      observe: 'response',
-      params
-    });
+    return this.getImage(url, params);
   }
 
   public getSummaryModel(
@@ -40,11 +38,20 @@ export class DataLayerService {
     const url = `${env.apiBaseUrl}/datalayer/${baseline}/${summaryModelCategory.toLowerCase()}/model/${model}`;
     const params = new HttpParams().set('crs', encodeURIComponent(AppSettings.MAP_PROJECTION));
 
-    return this.http.get(url, {
-      responseType: 'blob',
-      observe: 'response',
-      params
-    });
+    return this.getImage(url, params);
+  }
+
+  /** Layer images are cached by the browser for a year; the style version makes a new style a new URL. */
+  private getImage(url: string, params: HttpParams) {
+    return this.styleVersion.getVersion().pipe(
+      switchMap((version) =>
+        this.http.get(url, {
+          responseType: 'blob',
+          observe: 'response',
+          params: version ? params.set('v', version) : params
+        })
+      )
+    );
   }
 
   public getSummaryModelDescription(

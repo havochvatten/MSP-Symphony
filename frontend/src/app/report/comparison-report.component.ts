@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { formatPercent } from "@angular/common";
 import { Observable } from 'rxjs';
@@ -12,6 +12,7 @@ import { CalculationService } from "@data/calculation/calculation.service";
 import { relativeDifference } from "@src/app/report/report.util";
 import { AbstractReport } from "@src/app/report/abstract-report.component";
 import { BrandingService } from '@src/app/core/branding/branding.service';
+import { StyleVersionService } from '@data/style/style-version.service';
 
 @Component({
   selector: 'app-calculation-report',
@@ -36,11 +37,15 @@ export class ComparisonReportComponent extends AbstractReport<ComparisonReport> 
 
   legend: Observable<Legend>;
 
+  /** Set once the style version is known, so the year-cached image is fetched again after a style change */
+  readonly comparisonImageUrl = signal<string | undefined>(undefined);
+
   constructor() {
     const store = inject<Store<State>>(Store);
     const route = inject(ActivatedRoute);
     const reportService = inject(ReportService);
     const calcService = inject(CalculationService);
+    const styleVersion = inject(StyleVersionService);
 
     super();
     this.store = store;
@@ -57,9 +62,12 @@ export class ComparisonReportComponent extends AbstractReport<ComparisonReport> 
 
     this.legend = calcService.getComparisonLegend(this.maxValue / 100);
 
-    this.imageUrl = bId
+    const imageUrl = bId
       ? `${env.apiBaseUrl}/calculation/diff/${aId}/${bId}?max=${this.maxValue}`
       : `${env.apiBaseUrl}/calculation/diff/${aId}?max=${this.maxValue}${this.reverse ? '&reverse=true' : ''}`;
+    styleVersion.getVersion().subscribe((version) =>
+      this.comparisonImageUrl.set(version ? `${imageUrl}&v=${encodeURIComponent(version)}` : imageUrl)
+    );
 
     reportService.getComparisonReport(aId, bId, this.reverse).subscribe({
       next: (report) => {
