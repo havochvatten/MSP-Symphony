@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { of } from 'rxjs';
-import { filter, switchMap, tap } from 'rxjs/operators';
+import { filter, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { State } from '../app-reducer';
@@ -10,7 +10,7 @@ import { fromJS } from "immutable";
 import { MetadataActions } from '@data/metadata';
 import { Report } from '@data/calculation/calculation.interfaces';
 import { environment as env } from "@src/environments/environment";
-import { NormalizationType } from "@data/calculation/calculation.service";
+import { CalculationService, NormalizationType } from "@data/calculation/calculation.service";
 import { ReportService } from "@src/app/report/report.service";
 import { AbstractReport } from "@src/app/report/abstract-report.component";
 import { BrandingService } from "@src/app/core/branding/branding.service";
@@ -27,6 +27,9 @@ export class CalculationReportComponent extends AbstractReport<Report> {
   private readonly store = inject(Store<State>);
   private readonly route = inject(ActivatedRoute);
   private readonly reportService = inject(ReportService);
+
+  /** The legend the result map uses, so the report legend and impact bars show the map's colours */
+  readonly resultLegend$ = inject(CalculationService).getLegend('result').pipe(shareReplay(1));
 
   area?: number;
   areaDict: Map<number, string> = new Map<number, string>();

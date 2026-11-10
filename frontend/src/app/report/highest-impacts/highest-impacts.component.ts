@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { BandGroup, Band } from '@data/metadata/metadata.interfaces';
-import { colors } from '@shared/pressure-color-scale/pressure-color-scale.component';
+import { LegendColor } from '@data/calculation/calculation.interfaces';
+import { colorForValue } from '@shared/legend-color';
 
 @Component({
   selector: 'app-highest-impacts',
@@ -14,6 +15,8 @@ export class HighestImpactsComponent implements OnChanges {
   @Input() impacts: Record<number, number> = {};
   @Input() total = 0;
   @Input() locale = 'en';
+  /** Served result legend (percent); bars take the colour the result map gives their share */
+  @Input() legend?: LegendColor[];
 
   highestImpacts: Band[] = [];
 
@@ -40,12 +43,7 @@ export class HighestImpactsComponent implements OnChanges {
   }
 
   getColor(impact: number) {
-    for (const pressure of colors) {
-      if (impact < pressure.max) {
-        return pressure.color;
-      }
-    }
-    return 'black';
+    return this.legend?.length ? colorForValue(this.legend, impact) : 'transparent';
   }
 
   bar(x: number, y: number, w: number, h: number, r: number, f = 1) {

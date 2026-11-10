@@ -44,6 +44,7 @@
         [impacts]="report().impactPerPressure"
         [total]="report().total"
         [locale]="locale"
+        [legend]="(resultLegend$ | async)?.colorMap"
       ></app-highest-impacts>
       @if (report().impactPerEcoComponent) {
         <app-highest-impacts
@@ -53,9 +54,10 @@
           [impacts]="report().impactPerEcoComponent"
           [total]="report().total"
           [locale]="locale"
+          [legend]="(resultLegend$ | async)?.colorMap"
         ></app-highest-impacts>
       }
-      <app-result-color-scale [locale]="locale" class="calc-report-legend"></app-result-color-scale>
+      <app-result-color-scale [locale]="locale" [colors]="(resultLegend$ | async)?.colorMap" class="calc-report-legend"></app-result-color-scale>
       <app-pressure-chart [id]="'sankey-single'" [diagramId]="'sankey-single'"
                           [chartWeightThreshold]="formatPercent(report().chartWeightThreshold, this.locale)"
                           [data]="formatChartData(report().chartData, metadata.bandDictionary)"
