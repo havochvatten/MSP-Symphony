@@ -183,13 +183,17 @@ configuration file illustrates how to accommodate this.
 For the backend there are unit tests and tests exercising the REST API. Which one to run is controlled through a 
 pair of Maven profiles.
 
-The _skip-apitests_ is active by default, and so running it is matter of:
+The _skip-apitests_ profile is active by default, so a plain `mvn test` runs the unit tests only:
 ```
 mvn test
 ```
 To run only the API tests activate the _only-apitests_ profile:
 ```
-mvn test -Pskip-apitests
+mvn test -Ponly-apitests
+```
+To run both the unit tests and the API tests, define the `apitests` property:
+```
+mvn test -Dapitests
 ```
 
 ### REST API tests credentials
