@@ -98,6 +98,8 @@ The build artifacts will end up in the `frontend/dist` directory.
 
 `npm install` installs a pre-commit hook that formats staged files under `frontend/src` with Prettier. HTML templates are left out (see `frontend/.prettierignore`), since Prettier can change their rendered whitespace.
 
+To hide the one-time formatting commit from local blame, run `git blame --ignore-revs-file .git-blame-ignore-revs <file>` (GitHub applies the file automatically). Avoid setting `blame.ignoreRevsFile` in your git config: `git blame` then fails on any checkout that predates the file.
+
 For frontend development there is also the Angular CLI development server, see the frontend README for more details. 
 
 ## Configuration and Deployment
