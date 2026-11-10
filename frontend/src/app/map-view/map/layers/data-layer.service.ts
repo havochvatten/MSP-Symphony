@@ -6,7 +6,11 @@ import { AppSettings } from '@src/app/app.settings';
 import { ModelDescriptionDialogData } from '@src/app/map-view/band-selection/summary-model-selection/summary-model-dialog/summary-model-dialog.component';
 import { Observable, of } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
-import { SummaryModel, SummaryModelCategory, SummaryModelOption } from '@data/calculation/calculation.interfaces';
+import {
+  SummaryModel,
+  SummaryModelCategory,
+  SummaryModelOption
+} from '@data/calculation/calculation.interfaces';
 import { TranslateService } from '@ngx-translate/core';
 import { StyleVersionService } from '@data/style/style-version.service';
 

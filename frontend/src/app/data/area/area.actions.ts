@@ -1,8 +1,15 @@
 import { createAction, props } from '@ngrx/store';
-import { Boundary, NationalAreaState, Polygon, StatePath,
-         UserArea, UserAreasState, CalculationAreaSlice } from './area.interfaces';
+import {
+  Boundary,
+  NationalAreaState,
+  Polygon,
+  StatePath,
+  UserArea,
+  UserAreasState,
+  CalculationAreaSlice
+} from './area.interfaces';
 import { ErrorMessage } from '@data/message/message.interfaces';
-import { MatrixRef } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
+import { MatrixRef } from '@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces';
 
 export const fetchNationalAreas = createAction('[Area] Fetch national areas');
 
@@ -59,7 +66,7 @@ export const fetchUserDefinedAreasFailure = createAction(
 
 export const createUserDefinedArea = createAction(
   '[Area] Create user defined area',
-  props<{ name: string, description: string, polygon: Polygon }>()
+  props<{ name: string; description: string; polygon: Polygon }>()
 );
 
 export const createUserDefinedAreaSuccess = createAction(
@@ -74,7 +81,7 @@ export const createUserDefinedAreaFailure = createAction(
 
 export const updateUserDefinedArea = createAction(
   '[Area] Update user defined area',
-  props<{ id: number, name: string, description: string, polygon: Polygon }>()
+  props<{ id: number; name: string; description: string; polygon: Polygon }>()
 );
 
 export const updateUserDefinedAreaSuccess = createAction(
@@ -109,7 +116,7 @@ export const deleteUserDefinedAreaFailure = createAction(
 
 export const updateSelectedArea = createAction(
   '[Area] Update selected area',
-  props<{ statePath?: StatePath, expand: boolean }>()
+  props<{ statePath?: StatePath; expand: boolean }>()
 );
 
 export const addUserDefinedMatrix = createAction(
@@ -119,7 +126,7 @@ export const addUserDefinedMatrix = createAction(
 
 export const toggleAreaGroupState = createAction(
   '[Area] Toggle state of area group',
-  props<{ statePath: StatePath, property: string }>()
+  props<{ statePath: StatePath; property: string }>()
 );
 
 export const fetchBoundaries = createAction('[Area] Fetch boundaries');

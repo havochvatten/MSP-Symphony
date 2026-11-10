@@ -9,11 +9,11 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideMockStore } from '@ngrx/store/testing';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
-import { provideZonelessChangeDetection } from "@angular/core";
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('CalculationReportModalComponent', () => {
   let fixture: ComponentFixture<CalculationReportModalComponent>,
-      component: CalculationReportModalComponent;
+    component: CalculationReportModalComponent;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -36,7 +36,7 @@ describe('CalculationReportModalComponent', () => {
         provideMockStore({
           initialState: {
             metadata,
-            user : {}
+            user: {}
           }
         }),
         provideZonelessChangeDetection()

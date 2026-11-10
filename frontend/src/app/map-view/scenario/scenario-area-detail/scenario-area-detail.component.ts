@@ -1,36 +1,39 @@
 import { Component, Input, OnDestroy, OnInit, inject, NgModuleRef } from '@angular/core';
-import { ChangesProperty, Scenario, ScenarioArea } from "@data/scenario/scenario.interfaces";
-import { Store } from "@ngrx/store";
-import { State } from "@src/app/app-reducer";
-import { CalcOperation, NormalizationType } from "@data/calculation/calculation.service";
-import { DialogService } from "@shared/dialog/dialog.service";
-import { TranslateService } from "@ngx-translate/core";
+import { ChangesProperty, Scenario, ScenarioArea } from '@data/scenario/scenario.interfaces';
+import { Store } from '@ngrx/store';
+import { State } from '@src/app/app-reducer';
+import { CalcOperation, NormalizationType } from '@data/calculation/calculation.service';
+import { DialogService } from '@shared/dialog/dialog.service';
+import { TranslateService } from '@ngx-translate/core';
 import {
   AreaMatrixData,
   AreaTypeMatrixMapping,
   AreaTypeRef,
   MatrixParameters
-} from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
-import { environment } from "@src/environments/environment";
-import { ScenarioActions, ScenarioSelectors, } from "@data/scenario";
-import { Observable, Subscription } from "rxjs";
-import { CalculationSelectors } from "@data/calculation";
-import { OperationParams } from "@data/calculation/calculation.interfaces";
-import { fetchAreaMatrices } from "@data/scenario/scenario.actions";
-import { transferChanges } from "@src/app/map-view/scenario/scenario-common";
-import { MetadataSelectors } from "@data/metadata";
-import { BandChange, BandType } from "@data/metadata/metadata.interfaces";
-import { ScenarioEditorModule } from "@src/app/map-view/scenario/scenario-editor.module";
+} from '@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces';
+import { environment } from '@src/environments/environment';
+import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
+import { Observable, Subscription } from 'rxjs';
+import { CalculationSelectors } from '@data/calculation';
+import { OperationParams } from '@data/calculation/calculation.interfaces';
+import { fetchAreaMatrices } from '@data/scenario/scenario.actions';
+import { transferChanges } from '@src/app/map-view/scenario/scenario-common';
+import { MetadataSelectors } from '@data/metadata';
+import { BandChange, BandType } from '@data/metadata/metadata.interfaces';
+import { ScenarioEditorModule } from '@src/app/map-view/scenario/scenario-editor.module';
 
-const availableOperationsByValue: Map<CalcOperation, string> = new Map<CalcOperation, string>(
-  [ [CalcOperation.Cumulative, 'CumulativeImpact' ] ,
-    [CalcOperation.RarityAdjusted, 'RarityAdjustedCumulativeImpact' ]]);
+const availableOperationsByValue: Map<CalcOperation, string> = new Map<CalcOperation, string>([
+  [CalcOperation.Cumulative, 'CumulativeImpact'],
+  [CalcOperation.RarityAdjusted, 'RarityAdjustedCumulativeImpact']
+]);
 
 @Component({
   selector: 'app-scenario-area-detail',
   templateUrl: './scenario-area-detail.component.html',
-  styleUrls: ['../scenario-detail/scenario-detail.component.scss',
-              './scenario-area-detail.component.scss'],
+  styleUrls: [
+    '../scenario-detail/scenario-detail.component.scss',
+    './scenario-area-detail.component.scss'
+  ],
   standalone: false
 })
 export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
@@ -43,7 +46,7 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
 
   @Input() scenario!: Scenario;
   @Input() areaIndex!: number;
-  @Input() deleteDelegate!: ((a:number, e:MouseEvent, s:Scenario) => void);
+  @Input() deleteDelegate!: (a: number, e: MouseEvent, s: Scenario) => void;
   @Input() confirmDeleteChange!: (bandName: string, change: BandChange) => Promise<boolean>;
 
   jsMath = Math;
@@ -58,20 +61,22 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
   areaFeatureName = '';
   locale = 'en';
   private matrixDataSubscription$: Subscription;
-  bandDictionary$: Observable<{[t: string]: { [p: string]: string } }>;
+  bandDictionary$: Observable<{ [t: string]: { [p: string]: string } }>;
 
   constructor() {
     const that = this;
     this.calculating$ = this.store.select(CalculationSelectors.selectCalculating);
     this.percentileValue$ = this.store.select(CalculationSelectors.selectPercentileValue);
-    this.matrixDataSubscription$ = this.store.select(ScenarioSelectors.selectActiveAreaMatrixData).subscribe((matrixData: AreaMatrixData | null) => {
-      if(matrixData) {
-        const coastAreaType = matrixData.areaTypes.find(type => type.coastalArea);
-        if (coastAreaType) {
-          that.associatedCoastalArea = coastAreaType;
+    this.matrixDataSubscription$ = this.store
+      .select(ScenarioSelectors.selectActiveAreaMatrixData)
+      .subscribe((matrixData: AreaMatrixData | null) => {
+        if (matrixData) {
+          const coastAreaType = matrixData.areaTypes.find((type) => type.coastalArea);
+          if (coastAreaType) {
+            that.associatedCoastalArea = coastAreaType;
+          }
         }
-      }
-    });
+      });
     this.bandDictionary$ = this.store.select(MetadataSelectors.selectMetaDisplayDictionary);
     this.locale = this.translateService.currentLang;
   }
@@ -80,14 +85,14 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
     this.matrixDataSubscription$.unsubscribe();
   }
 
-  changes(): { [ bandType: string ] : ChangesProperty } | null {
+  changes(): { [bandType: string]: ChangesProperty } | null {
     return this.area().changes;
   }
 
   ngOnInit(): void {
     this.areaFeatureName = this.area().feature.properties!['name'];
 
-    if(this.associatedCoastalArea && this.associatedCoastalArea.areas.length > 0) {
+    if (this.associatedCoastalArea && this.associatedCoastalArea.areas.length > 0) {
       const includeCoast =
         this.area().excludedCoastal === null || // newly created area, include coast by default
         this.area().excludedCoastal === -1;
@@ -103,23 +108,26 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
     this.store.dispatch(ScenarioActions.changeScenarioAreaMatrix(params));
   }
 
-  getOptions() : OperationParams {
-    return this.scenario.operationOptions ?? { 'domain' : 'GLOBAL' };
+  getOptions(): OperationParams {
+    return this.scenario.operationOptions ?? { domain: 'GLOBAL' };
   }
 
   deleteChange = async (bandTypeString: string, bandNumber: number, bandName: string) => {
     const componentType = bandTypeString as BandType,
-      confirmDeleteChange = await this.confirmDeleteChange(bandName, this.area().changes![componentType][bandNumber])
+      confirmDeleteChange = await this.confirmDeleteChange(
+        bandName,
+        this.area().changes![componentType][bandNumber]
+      );
 
     if (confirmDeleteChange) {
-      this.store.dispatch(ScenarioActions.deleteAreaBandChange({componentType, bandNumber}));
+      this.store.dispatch(ScenarioActions.deleteAreaBandChange({ componentType, bandNumber }));
     }
-  }
+  };
 
   close() {
-    this.store.dispatch(ScenarioActions.saveScenarioArea({ areaToBeSaved:this.area() }));
+    this.store.dispatch(ScenarioActions.saveScenarioArea({ areaToBeSaved: this.area() }));
     this.store.dispatch(ScenarioActions.closeActiveScenarioArea());
-    this.store.dispatch(fetchAreaMatrices({scenarioId: this.scenario.id}));
+    this.store.dispatch(fetchAreaMatrices({ scenarioId: this.scenario.id }));
   }
 
   delete(event: MouseEvent) {
@@ -127,20 +135,22 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
   }
 
   onCheckIncludeCoast(checked: boolean) {
-    if (!this.associatedCoastalArea)
-      return;
+    if (!this.associatedCoastalArea) return;
 
     if (!checked) {
       this.areaCoastMatrices = {
         id: this.associatedCoastalArea.id,
-        areaMatrices: this.associatedCoastalArea.areas.map(area => ({
+        areaMatrices: this.associatedCoastalArea.areas.map((area) => ({
           areaId: area.id,
           matrixId: area.defaultMatrix.id
         }))
       };
       if (this.areaCoastMatrices.areaMatrices.length > 0) {
-        this.store.dispatch(ScenarioActions.excludeActiveAreaCoastal(
-          { areaId: this.areaCoastMatrices.areaMatrices[0].areaId }));
+        this.store.dispatch(
+          ScenarioActions.excludeActiveAreaCoastal({
+            areaId: this.areaCoastMatrices.areaMatrices[0].areaId
+          })
+        );
       }
     } else {
       this.store.dispatch(ScenarioActions.excludeActiveAreaCoastal({ areaId: -1 }));
@@ -152,6 +162,12 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
   }
 
   async importChanges() {
-    await transferChanges(this.dialogService, this.translateService, this.store, this.moduleRef, this.area());
+    await transferChanges(
+      this.dialogService,
+      this.translateService,
+      this.store,
+      this.moduleRef,
+      this.area()
+    );
   }
 }

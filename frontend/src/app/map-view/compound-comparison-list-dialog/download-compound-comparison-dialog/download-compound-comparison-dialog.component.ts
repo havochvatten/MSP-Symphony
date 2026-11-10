@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
-import { DialogRef } from "@shared/dialog/dialog-ref";
-import { DialogConfig } from "@shared/dialog/dialog-config";
+import { DialogRef } from '@shared/dialog/dialog-ref';
+import { DialogConfig } from '@shared/dialog/dialog-config';
 import { DownloadCompoundComparisonOptions } from '@data/calculation/calculation.interfaces';
-import { MatRadioChange } from "@angular/material/radio";
+import { MatRadioChange } from '@angular/material/radio';
 
 @Component({
   selector: 'app-download-compound-comparison-dialog',
@@ -27,11 +27,11 @@ export class DownloadCompoundComparisonDialogComponent {
 
   close = () => {
     this.dialog.close(null);
-  }
+  };
 
   download = () => {
     this.dialog.close(this.downloadOptions);
-  }
+  };
 
   setFormat(changeEvent: MatRadioChange) {
     this.downloadOptions.asJson = changeEvent.value === 'json';

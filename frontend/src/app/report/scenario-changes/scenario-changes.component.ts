@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { ReportChanges } from "@data/calculation/calculation.interfaces";
-import { ChangesProperty } from "@data/scenario/scenario.interfaces";
-import { BandTypes } from "@data/metadata/metadata.interfaces";
-import { isEmpty } from "@shared/common.util";
+import { ReportChanges } from '@data/calculation/calculation.interfaces';
+import { ChangesProperty } from '@data/scenario/scenario.interfaces';
+import { BandTypes } from '@data/metadata/metadata.interfaces';
+import { isEmpty } from '@shared/common.util';
 
 // TODO Show addition or removal of non-default layer selection (i.e. climate)?
 @Component({
@@ -28,7 +28,7 @@ export class ScenarioChangesComponent {
 
   get allBaseChanges() {
     const changes: ChangesProperty = {};
-    for(const category of BandTypes) {
+    for (const category of BandTypes) {
       for (const bandNumber in this.scenarioChanges.baseChanges[category]) {
         changes[bandNumber] = this.scenarioChanges.baseChanges[category][bandNumber];
       }
@@ -38,10 +38,10 @@ export class ScenarioChangesComponent {
 
   get allAreaChanges(): { [key: number]: ChangesProperty } {
     const changes: { [key: number]: ChangesProperty } = {};
-    for(const areaId in this.scenarioChanges.areaChanges) {
+    for (const areaId in this.scenarioChanges.areaChanges) {
       changes[areaId] = {};
-      for(const category of BandTypes) {
-        for(const bandName in this.scenarioChanges.areaChanges[areaId][category]) {
+      for (const category of BandTypes) {
+        for (const bandName in this.scenarioChanges.areaChanges[areaId][category]) {
           changes[areaId][bandName] = this.scenarioChanges.areaChanges[areaId][category][bandName];
         }
       }
@@ -51,9 +51,9 @@ export class ScenarioChangesComponent {
 
   anyAreaChanges() {
     const areaChanges = this.allAreaChanges;
-    if(Object.keys(areaChanges).length > 0) {
-      for(const areaId in areaChanges) {
-        if(Object.keys(areaChanges[areaId]).length > 0) {
+    if (Object.keys(areaChanges).length > 0) {
+      for (const areaId in areaChanges) {
+        if (Object.keys(areaChanges[areaId]).length > 0) {
           return true;
         }
       }

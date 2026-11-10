@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnInit, inject } from '@angular/core';
-import { DecimalPipe } from "@angular/common";
-import { formatPercentage } from "@src/app/shared/common.util";
+import { DecimalPipe } from '@angular/common';
+import { formatPercentage } from '@src/app/shared/common.util';
 
 @Component({
   selector: 'app-histogram-chart',
@@ -8,57 +8,64 @@ import { formatPercentage } from "@src/app/shared/common.util";
   styleUrls: ['./histogram-chart.component.scss'],
   standalone: false
 })
-
 export class HistogramChartComponent implements OnInit, OnChanges {
   private readonly decimalPipe = inject(DecimalPipe);
 
-  @Input() bins: number[] = []
+  @Input() bins: number[] = [];
   @Input() reportMax!: number;
   @Input() inclusive = false;
   @Input() locale = 'en';
   @Input() algorithm = '';
 
   readonly leftMargin = 184;
-  readonly cHeight     = 800;
-  readonly topMargin   = 20;
+  readonly cHeight = 800;
+  readonly topMargin = 20;
 
   segments: Segment[] = [];
   binInfo: BinInfo[] = [];
   xlabels: [number, number][] = [];
 
-  readonly chartWidth  = 1200
+  readonly chartWidth = 1200;
   readonly chartHeight = 864;
-  readonly binWidth    = 10;
+  readonly binWidth = 10;
 
-  max         = 0;
-  bmax        = 0;
-  binSz       = 0;
+  max = 0;
+  bmax = 0;
+  binSz = 0;
   isRarityAdjusted = false;
 
   ngOnInit(): void {
-
     this.bmax = Math.max(...this.bins);
     this.binSz = this.reportMax / 100;
     this.isRarityAdjusted = this.algorithm === 'RarityAdjustedCumulativeImpact';
 
     const count = this.bins.reduce((a, b) => a + b, 0),
-          ystep =       // suitable vertical measure interval
-            this.bmax < 10 ? 1 :
-            this.bmax < 30 ? 5 :
-            this.bmax < 100 ? 10 :
-            this.bmax < 1000 ? 50 :
-            this.bmax < 3000 ? 100 :
-            this.bmax < 10000 ? 500 :
-            this.bmax < 20000 ? 1000 :
-            this.bmax < 100000 ? 5000 :
-            this.bmax < 300000 ? 10000 :
-            this.bmax < 1000000 ? 100000 :
-            500000;
+      ystep = // suitable vertical measure interval
+        this.bmax < 10
+          ? 1
+          : this.bmax < 30
+            ? 5
+            : this.bmax < 100
+              ? 10
+              : this.bmax < 1000
+                ? 50
+                : this.bmax < 3000
+                  ? 100
+                  : this.bmax < 10000
+                    ? 500
+                    : this.bmax < 20000
+                      ? 1000
+                      : this.bmax < 100000
+                        ? 5000
+                        : this.bmax < 300000
+                          ? 10000
+                          : this.bmax < 1000000
+                            ? 100000
+                            : 500000;
 
     let acc = 0;
 
-    this.max = this.bmax < 10 ? 10 :
-      (Math.trunc(this.bmax / ystep) + 1) * ystep;
+    this.max = this.bmax < 10 ? 10 : (Math.trunc(this.bmax / ystep) + 1) * ystep;
 
     this.binInfo = this.bins.map((b, ix) => {
       acc += b;
@@ -67,45 +74,57 @@ export class HistogramChartComponent implements OnInit, OnChanges {
 
     this.binInfo.push(this.makeInfo(100, acc, count));
 
-    this.segments = [...Array(Math.ceil(this.max / ystep)).keys()]
-      .map((v) => {
-        const yc = v * ystep;
-        return new Segment(
-          this.leftMargin - this.binWidth * 3,
-          this.topMargin + this.cHeight * (1 - yc / this.max),
-          this.binWidth * 104, yc)
+    this.segments = [...Array(Math.ceil(this.max / ystep)).keys()].map((v) => {
+      const yc = v * ystep;
+      return new Segment(
+        this.leftMargin - this.binWidth * 3,
+        this.topMargin + this.cHeight * (1 - yc / this.max),
+        this.binWidth * 104,
+        yc
+      );
     });
 
-    this.xlabels = [...Array(5).keys()].map(
-                    (v) => [
-                      ((this.leftMargin - this.binWidth * 1.5) +
-                      ((v + 1) * (this.binWidth * 20))),
-                      this.binInfo[(v + 1) * 20 - 1].middle
-                    ]);
+    this.xlabels = [...Array(5).keys()].map((v) => [
+      this.leftMargin - this.binWidth * 1.5 + (v + 1) * (this.binWidth * 20),
+      this.binInfo[(v + 1) * 20 - 1].middle
+    ]);
 
-    this.xlabels.unshift([this.leftMargin - (this.binWidth / 2), this.binInfo[0].middle]);
+    this.xlabels.unshift([this.leftMargin - this.binWidth / 2, this.binInfo[0].middle]);
   }
 
   chartViewBox() {
-    return '0 0 ' + this.chartWidth + ' ' + this.chartHeight
+    return '0 0 ' + this.chartWidth + ' ' + this.chartHeight;
   }
 
-  phDraw(ix : number, info: boolean):string {
+  phDraw(ix: number, info: boolean): string {
     const v = info ? 1 : this.bins[ix] / this.max,
       x = this.leftMargin - this.binWidth + ix * this.binWidth,
       y = this.topMargin + this.cHeight * (1 - v);
-    return ['M', x, y,
-      'h', info ? this.binWidth : this.binWidth * 0.85,
-      'V', this.cHeight + this.topMargin,
-      'H', x, 'Z'].join(' ');
+    return [
+      'M',
+      x,
+      y,
+      'h',
+      info ? this.binWidth : this.binWidth * 0.85,
+      'V',
+      this.cHeight + this.topMargin,
+      'H',
+      x,
+      'Z'
+    ].join(' ');
   }
 
   makeInfo(binIndex: number, acc: number, count: number) {
     // "Middle number": arbitrarily prefer an integer value when reasonable
     // Actual values may be expected to be discrete
-    const middle = binIndex * this.binSz + (this.binSz / 2);
-    return new BinInfo(this.decimalPipe.transform(binIndex * this.binSz, '1.2-5', this.locale) || '',
-                        acc, this.isRarityAdjusted || this.reportMax < 200 ? middle : Math.round(middle), count, this.locale)
+    const middle = binIndex * this.binSz + this.binSz / 2;
+    return new BinInfo(
+      this.decimalPipe.transform(binIndex * this.binSz, '1.2-5', this.locale) || '',
+      acc,
+      this.isRarityAdjusted || this.reportMax < 200 ? middle : Math.round(middle),
+      count,
+      this.locale
+    );
   }
 
   ngOnChanges(): void {
@@ -118,7 +137,7 @@ class Segment {
   value: number;
   draw: string;
 
-  constructor(x: number, y:number, w:number, value:number) {
+  constructor(x: number, y: number, w: number, value: number) {
     this.y = y;
     this.value = value;
     this.draw = ['M', x, y, 'h', w].join(' ');
@@ -130,7 +149,13 @@ class BinInfo {
   cumulativeQuantity: string;
   middle: number;
 
-  constructor(lowerBound: string, cQuantity: number, middle: number, count: number, locale: string) {
+  constructor(
+    lowerBound: string,
+    cQuantity: number,
+    middle: number,
+    count: number,
+    locale: string
+  ) {
     this.lowerBound = lowerBound;
     this.middle = middle;
     this.cumulativeQuantity = formatPercentage(cQuantity / count, 3, locale);

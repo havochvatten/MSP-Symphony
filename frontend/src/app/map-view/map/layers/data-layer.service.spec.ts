@@ -36,7 +36,9 @@ describe('DataLayerService', () => {
   it('requests summary model images with the style version', () => {
     setup('abc123').getSummaryModel('BALTIC', 'ECOSYSTEM', 'simple').subscribe();
     http.expectOne(
-      (req) => req.url.endsWith('/datalayer/BALTIC/ecosystem/model/simple') && req.params.get('v') === 'abc123'
+      (req) =>
+        req.url.endsWith('/datalayer/BALTIC/ecosystem/model/simple') &&
+        req.params.get('v') === 'abc123'
     );
   });
 

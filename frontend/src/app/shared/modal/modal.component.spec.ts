@@ -1,11 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ModalComponent } from './modal.component';
-import { provideZonelessChangeDetection } from "@angular/core";
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('ModalComponent', () => {
-  let fixture: ComponentFixture<ModalComponent>,
-      component: ModalComponent;
+  let fixture: ComponentFixture<ModalComponent>, component: ModalComponent;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

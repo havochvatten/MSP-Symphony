@@ -16,10 +16,7 @@ describe('SummaryModelSelectionComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        StoreModule.forRoot({}, {}),
-        TranslateModule.forRoot()
-      ],
+      imports: [StoreModule.forRoot({}, {}), TranslateModule.forRoot()],
       providers: [
         TranslateService,
         provideMockStore({

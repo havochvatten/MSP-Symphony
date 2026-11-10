@@ -10,7 +10,7 @@ describe('BrandingService', () => {
 
   const load = async (cfg: Partial<BrandingConfig>) => {
     const loaded = service.loadConfig();
-    http.expectOne(req => req.url.startsWith('/assets/config/')).flush(cfg);
+    http.expectOne((req) => req.url.startsWith('/assets/config/')).flush(cfg);
     await loaded;
   };
 
@@ -25,7 +25,11 @@ describe('BrandingService', () => {
 
   it('keeps the default login logo alt text with the default login logo', async () => {
     await load({ loginLogoSrc: 'assets/long-tailed-duck.svg' });
-    expect(service.configData.loginLogoAlt).toEqual({ en: 'Long-tailed duck', sv: 'Alfågel', fr: 'Harelde boréale' });
+    expect(service.configData.loginLogoAlt).toEqual({
+      en: 'Long-tailed duck',
+      sv: 'Alfågel',
+      fr: 'Harelde boréale'
+    });
   });
 
   it('does not give a custom login logo the default login logo alt text', async () => {
@@ -39,7 +43,10 @@ describe('BrandingService', () => {
   });
 
   it('uses the configured alt text for a custom login logo', async () => {
-    await load({ loginLogoSrc: 'assets/branding/our-org/logo.svg', loginLogoAlt: { en: 'Our logo' } });
+    await load({
+      loginLogoSrc: 'assets/branding/our-org/logo.svg',
+      loginLogoAlt: { en: 'Our logo' }
+    });
     expect(service.configData.loginLogoAlt).toEqual({ en: 'Our logo' });
   });
 });

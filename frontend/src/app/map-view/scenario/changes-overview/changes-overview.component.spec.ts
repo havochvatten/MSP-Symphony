@@ -1,15 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChangesOverviewComponent } from './changes-overview.component';
-import { DialogService } from "@shared/dialog/dialog.service";
-import { DialogRef } from "@shared/dialog/dialog-ref";
+import { DialogService } from '@shared/dialog/dialog.service';
+import { DialogRef } from '@shared/dialog/dialog-ref';
 import { DialogConfig } from '@shared/dialog/dialog-config';
-import { StoreModule } from "@ngrx/store";
-import { TranslateModule, TranslateService } from "@ngx-translate/core";
-import { provideMockStore } from "@ngrx/store/testing";
-import { initialState as scenario } from "@data/scenario/scenario.reducers";
+import { StoreModule } from '@ngrx/store';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { provideMockStore } from '@ngrx/store/testing';
+import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
-import { provideZonelessChangeDetection } from "@angular/core";
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('ChangesOverviewComponent', () => {
   let component: ChangesOverviewComponent;
@@ -17,12 +17,9 @@ describe('ChangesOverviewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        StoreModule.forRoot({},{}),
-        TranslateModule.forRoot()
-      ],
-      declarations: [ ChangesOverviewComponent ],
-      providers:  [
+      imports: [StoreModule.forRoot({}, {}), TranslateModule.forRoot()],
+      declarations: [ChangesOverviewComponent],
+      providers: [
         DialogService,
         DialogRef,
         TranslateService,
@@ -42,8 +39,7 @@ describe('ChangesOverviewComponent', () => {
         }),
         provideZonelessChangeDetection()
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ChangesOverviewComponent);
     component = fixture.componentInstance;

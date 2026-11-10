@@ -34,7 +34,9 @@ describe('clearStateOnLogout meta-reducer', () => {
     // Mirror the real store: root session slices + a separately-registered `config`
     // feature slice. The meta-reducer wraps this whole combined state.
     type TestState = State & { config: { appConfig: { publicAccess: boolean } } };
-    const configReducer = (s: { appConfig: { publicAccess: boolean } } = { appConfig: { publicAccess: false } }) => s;
+    const configReducer = (
+      s: { appConfig: { publicAccess: boolean } } = { appConfig: { publicAccess: false } }
+    ) => s;
     const fullReducer = combineReducers({
       ...reducers,
       config: configReducer
@@ -48,7 +50,10 @@ describe('clearStateOnLogout meta-reducer', () => {
     };
 
     const meta = clearStateOnLogout(fullReducer as unknown as ActionReducer<State>);
-    const after = meta(dirty as unknown as State, UserActions.logoutUserSuccess()) as unknown as TestState;
+    const after = meta(
+      dirty as unknown as State,
+      UserActions.logoutUserSuccess()
+    ) as unknown as TestState;
 
     expect(after.user.isLoggedIn).toBe(false); // session slice reset
     expect(after.config.appConfig.publicAccess).toBe(true); // feature slice preserved

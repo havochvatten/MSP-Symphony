@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DialogService } from "@shared/dialog/dialog.service";
-import { DialogRef } from "@shared/dialog/dialog-ref";
+import { DialogService } from '@shared/dialog/dialog.service';
+import { DialogRef } from '@shared/dialog/dialog-ref';
 import { DialogConfig } from '@shared/dialog/dialog-config';
-import { TranslateModule, TranslateService } from "@ngx-translate/core";
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CopyScenarioComponent } from './copy-scenario.component';
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('CopyScenarioComponent', () => {
   let component: CopyScenarioComponent;
@@ -15,11 +15,7 @@ describe('CopyScenarioComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        MatFormFieldModule,
-        MatCheckboxModule,
-        TranslateModule.forRoot()
-      ],
+      imports: [MatFormFieldModule, MatCheckboxModule, TranslateModule.forRoot()],
       providers: [
         DialogService,
         DialogRef,
@@ -36,9 +32,8 @@ describe('CopyScenarioComponent', () => {
         },
         provideZonelessChangeDetection()
       ],
-      declarations: [ CopyScenarioComponent ]
-    })
-    .compileComponents();
+      declarations: [CopyScenarioComponent]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(CopyScenarioComponent);
     component = fixture.componentInstance;

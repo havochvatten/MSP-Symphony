@@ -1,10 +1,19 @@
-import { AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  ViewChild,
+  inject
+} from '@angular/core';
 import { Store } from '@ngrx/store';
 import { fromEvent } from 'rxjs';
 import { State } from '@src/app/app-reducer';
 import { Band } from '@data/metadata/metadata.interfaces';
-import { ScenarioActions } from "@data/scenario";
-import { debounceTime, map } from "rxjs/operators";
+import { ScenarioActions } from '@data/scenario';
+import { debounceTime, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-eco-slider',
@@ -12,7 +21,7 @@ import { debounceTime, map } from "rxjs/operators";
   styleUrls: ['./eco-slider.component.scss'],
   standalone: false
 })
-export class EcoSliderComponent implements  OnChanges, AfterViewInit {
+export class EcoSliderComponent implements OnChanges, AfterViewInit {
   private store = inject<Store<State>>(Store);
 
   @Input() multiplier!: number;
@@ -21,12 +30,10 @@ export class EcoSliderComponent implements  OnChanges, AfterViewInit {
   @Input() groupSetting!: boolean;
   @Input() overridden!: boolean;
   @Input() areaIsVisible = false;
-  @Input() disabled = false
+  @Input() disabled = false;
   @Input() locale = 'en';
 
-  @ViewChild("constant") constantEl!: ElementRef;
-
-
+  @ViewChild('constant') constantEl!: ElementRef;
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['layerOpacity'] && changes['layerOpacity'].currentValue === undefined) {
@@ -41,42 +48,51 @@ export class EcoSliderComponent implements  OnChanges, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    fromEvent(this.constantEl.nativeElement, 'input').pipe(
-      map((event: unknown) =>
-        ((event as InputEvent).target as HTMLInputElement).value),
-      debounceTime(300)
-    ).subscribe(value => {
-      const _value = parseInt(value),
-            offset = _value > 150 ? 150 : _value;
-      this.constantEl.nativeElement.value = offset;
-      return this.store.dispatch(ScenarioActions.updateBandAttribute({
-        componentType: this.band.symphonyCategory,
-        band: this.band.bandNumber,
-        attribute: 'offset',
-        value: offset }));
-    });
+    fromEvent(this.constantEl.nativeElement, 'input')
+      .pipe(
+        map((event: unknown) => ((event as InputEvent).target as HTMLInputElement).value),
+        debounceTime(300)
+      )
+      .subscribe((value) => {
+        const _value = parseInt(value),
+          offset = _value > 150 ? 150 : _value;
+        this.constantEl.nativeElement.value = offset;
+        return this.store.dispatch(
+          ScenarioActions.updateBandAttribute({
+            componentType: this.band.symphonyCategory,
+            band: this.band.bandNumber,
+            attribute: 'offset',
+            value: offset
+          })
+        );
+      });
   }
 
   updateMultiplier(value: number) {
-    this.store.dispatch(ScenarioActions.updateBandAttribute({
-      componentType: this.band.symphonyCategory,
-      band: this.band.bandNumber,
-      attribute: 'multiplier',
-      value
-    }));
+    this.store.dispatch(
+      ScenarioActions.updateBandAttribute({
+        componentType: this.band.symphonyCategory,
+        band: this.band.bandNumber,
+        attribute: 'multiplier',
+        value
+      })
+    );
   }
 
   setOverride(setOverride: boolean) {
-    if(setOverride) {
+    if (setOverride) {
       this.updateMultiplier(1);
     } else {
-      this.store.dispatch(ScenarioActions.deleteAreaBandChange(
-          { componentType: this.band.symphonyCategory,  bandNumber: this.band.bandNumber }));
+      this.store.dispatch(
+        ScenarioActions.deleteAreaBandChange({
+          componentType: this.band.symphonyCategory,
+          bandNumber: this.band.bandNumber
+        })
+      );
     }
   }
 
-  getDisabled() : boolean {
+  getDisabled(): boolean {
     return !(this.overridden || this.groupSetting);
   }
-
 }

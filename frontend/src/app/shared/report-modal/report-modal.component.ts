@@ -1,8 +1,8 @@
 import { ElementRef, ViewChild, Directive, OnDestroy, inject } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DialogRef } from '../dialog/dialog-ref';
-import { environment as env } from "@src/environments/environment";
-import * as d3 from "d3";
+import { environment as env } from '@src/environments/environment';
+import * as d3 from 'd3';
 
 @Directive({ standalone: false })
 export abstract class ReportModalComponent implements OnDestroy {
@@ -16,10 +16,7 @@ export abstract class ReportModalComponent implements OnDestroy {
   private readonly dom = inject(DomSanitizer);
   private readonly url: string;
 
-  protected constructor(url: string,
-                        pfx: string,
-                        titleKey: string,
-                        annex?: string) {
+  protected constructor(url: string, pfx: string, titleKey: string, annex?: string) {
     this.url = url;
     this.param_annex = annex || '';
     this.safeUrl = this.dom.bypassSecurityTrustResourceUrl(url + this.param_annex);

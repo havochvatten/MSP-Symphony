@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { DialogRef } from "@shared/dialog/dialog-ref";
+import { DialogRef } from '@shared/dialog/dialog-ref';
 import buildInfo from '@src/build-info';
 import attributions from 'attributions';
 

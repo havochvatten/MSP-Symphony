@@ -1,11 +1,6 @@
 import { createSelector, createFeatureSelector } from '@ngrx/store';
-import {
-  State,
-} from './message.interfaces';
+import { State } from './message.interfaces';
 
 export const selectMessageState = createFeatureSelector<State>('message');
 
-export const selectPopups = createSelector(
-  selectMessageState,
-  (state) => state.popup
-);
+export const selectPopups = createSelector(selectMessageState, (state) => state.popup);

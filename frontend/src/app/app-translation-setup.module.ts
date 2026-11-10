@@ -6,9 +6,9 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import localeSv from '@angular/common/locales/sv';
 import localeEn from '@angular/common/locales/en';
 import localeFr from '@angular/common/locales/fr';
-import { Store } from "@ngrx/store";
-import { State } from "@src/app/app-reducer";
-import { UserSelectors } from "@data/user";
+import { Store } from '@ngrx/store';
+import { State } from '@src/app/app-reducer';
+import { UserSelectors } from '@data/user';
 
 registerLocaleData(localeSv);
 registerLocaleData(localeEn);
@@ -24,8 +24,9 @@ export function createTranslateLoader(http: HttpClient) {
 
 export function findBestLanguageMatch(setLocale?: string | undefined) {
   const userLanguage = setLocale ?? navigator.language?.slice(0, 2);
-  return typeof userLanguage !== 'undefined' && supportedLanguages.includes(userLanguage) ?
-      userLanguage : defaultLanguage;
+  return typeof userLanguage !== 'undefined' && supportedLanguages.includes(userLanguage)
+    ? userLanguage
+    : defaultLanguage;
 }
 
 @NgModule({
@@ -37,7 +38,7 @@ export function findBestLanguageMatch(setLocale?: string | undefined) {
         useFactory: createTranslateLoader,
         deps: [HttpClient]
       }
-    }),
+    })
   ],
   exports: [TranslateModule]
 })
@@ -49,7 +50,7 @@ export class TranslationSetupModule {
     translate.setDefaultLang(defaultLanguage);
     translate.use(findBestLanguageMatch());
     translate.addLangs(supportedLanguages);
-    store.select(UserSelectors.selectUser).subscribe(user => {
+    store.select(UserSelectors.selectUser).subscribe((user) => {
       if (user) {
         translate.use(findBestLanguageMatch(user.settings?.locale));
       }

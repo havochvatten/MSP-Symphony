@@ -5,21 +5,21 @@ import { filter, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { State } from '../app-reducer';
-import { fromJS } from "immutable";
+import { fromJS } from 'immutable';
 
 import { MetadataActions } from '@data/metadata';
 import { Report } from '@data/calculation/calculation.interfaces';
-import { environment as env } from "@src/environments/environment";
-import { CalculationService, NormalizationType } from "@data/calculation/calculation.service";
-import { ReportService } from "@src/app/report/report.service";
-import { AbstractReport } from "@src/app/report/abstract-report.component";
-import { BrandingService } from "@src/app/core/branding/branding.service";
+import { environment as env } from '@src/environments/environment';
+import { CalculationService, NormalizationType } from '@data/calculation/calculation.service';
+import { ReportService } from '@src/app/report/report.service';
+import { AbstractReport } from '@src/app/report/abstract-report.component';
+import { BrandingService } from '@src/app/core/branding/branding.service';
 
 @Component({
   selector: 'app-calculation-report',
   templateUrl: './calculation-report.component.html',
   styleUrls: ['./report.component.scss'],
-  standalone: false,
+  standalone: false
 })
 export class CalculationReportComponent extends AbstractReport<Report> {
   public brandingService = inject(BrandingService);
@@ -52,27 +52,27 @@ export class CalculationReportComponent extends AbstractReport<Report> {
               this.area = reportService.calculateArea(report);
               this.loadingReport = false;
               this.store.dispatch(
-                MetadataActions.fetchMetadataForBaseline({ baselineName: report.baselineName }),
+                MetadataActions.fetchMetadataForBaseline({ baselineName: report.baselineName })
               );
               window.parent.postMessage(
                 { type: 'calcReportLoaded', calcId: +calcId! },
-                window.origin,
+                window.origin
               );
               this.areaDict = reportService.setAreaDict(report);
               this.isDomainNormalization = report.normalization.type === NormalizationType.DOMAIN;
             },
             error: () => {
               this.loadingReport = false;
-            },
+            }
           });
-        }),
+        })
       )
       .subscribe();
   }
 
   calculatePercentOfTotal(
     components: Record<number, number>,
-    total: number,
+    total: number
   ): Record<string, number> {
     return fromJS(components)
       .map((x) => total && (100 * (x as number)) / total)

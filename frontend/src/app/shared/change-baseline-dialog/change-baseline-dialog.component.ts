@@ -61,12 +61,15 @@ export class ChangeBaselineDialogComponent {
     ).subscribe((action) => {
       this.loading = false;
       if (action.type === UserActions.fetchBaselineFailure.type) {
-        this.error = (action as ReturnType<typeof UserActions.fetchBaselineFailure>).error?.message
-          ?? 'change-baseline-modal.error';
+        this.error =
+          (action as ReturnType<typeof UserActions.fetchBaselineFailure>).error?.message ??
+          'change-baseline-modal.error';
       } else {
         this.dialog.close();
       }
     });
-    this.store.dispatch(UserActions.updateUserSettings({ activeBaselineId: this.selectedBaselineId }));
+    this.store.dispatch(
+      UserActions.updateUserSettings({ activeBaselineId: this.selectedBaselineId })
+    );
   }
 }

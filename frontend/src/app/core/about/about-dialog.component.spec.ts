@@ -1,14 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AboutDialogComponent } from './about-dialog.component';
-import { DialogRef } from "@shared/dialog/dialog-ref";
-import { TranslateModule } from "@ngx-translate/core";
-import { SharedModule } from "@shared/shared.module";
-import { provideMockStore } from "@ngrx/store/testing";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { DialogRef } from '@shared/dialog/dialog-ref';
+import { TranslateModule } from '@ngx-translate/core';
+import { SharedModule } from '@shared/shared.module';
+import { provideMockStore } from '@ngrx/store/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 class MockDialogRef {
-  close = () => {}
+  close = () => {};
 }
 
 describe('AboutDialogComponentComponent', () => {
@@ -18,16 +18,15 @@ describe('AboutDialogComponentComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot(), SharedModule],
-      declarations: [ AboutDialogComponent ],
+      declarations: [AboutDialogComponent],
       providers: [
         { provide: DialogRef, useClass: MockDialogRef },
         provideMockStore({
-          initialState : { user: {} }
+          initialState: { user: {} }
         }),
         provideZonelessChangeDetection()
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {

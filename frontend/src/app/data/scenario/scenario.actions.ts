@@ -1,72 +1,64 @@
-import { createAction, props } from "@ngrx/store";
+import { createAction, props } from '@ngrx/store';
 import {
   Scenario,
   ScenarioArea,
-  ScenarioAreaCoastalExclusion, ScenarioChangesSelection, ScenarioCopyOptions,
-  ScenarioMatrixDataMap, ScenarioSplitOptions, ScenarioSplitResponse
-} from "@data/scenario/scenario.interfaces";
-import { ErrorMessage } from "@data/message/message.interfaces";
-import { BandType } from "@data/metadata/metadata.interfaces";
+  ScenarioAreaCoastalExclusion,
+  ScenarioChangesSelection,
+  ScenarioCopyOptions,
+  ScenarioMatrixDataMap,
+  ScenarioSplitOptions,
+  ScenarioSplitResponse
+} from '@data/scenario/scenario.interfaces';
+import { ErrorMessage } from '@data/message/message.interfaces';
+import { BandType } from '@data/metadata/metadata.interfaces';
 import {
   AreaMatrixData,
   MatrixParameters
-} from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
-import { Feature } from "geojson";
-import { OperationParams } from "@data/calculation/calculation.interfaces";
-import { CalcOperation, NormalizationOptions } from "@data/calculation/calculation.service";
-import { ListItemsSort } from "@data/common/sorting.interfaces";
+} from '@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces';
+import { Feature } from 'geojson';
+import { OperationParams } from '@data/calculation/calculation.interfaces';
+import { CalcOperation, NormalizationOptions } from '@data/calculation/calculation.service';
+import { ListItemsSort } from '@data/common/sorting.interfaces';
 
-
-export const fetchScenarios = createAction(
-  '[Scenario] Fetch user scenarios',
-);
+export const fetchScenarios = createAction('[Scenario] Fetch user scenarios');
 
 export const fetchScenariosSuccess = createAction(
   '[Scenario] Fetch user scenarios success',
   props<{ scenarios: Scenario[] }>()
-)
+);
 
 export const fetchScenariosFailure = createAction(
   '[Scenario] Fetch user scenarios failure',
   props<{ error: ErrorMessage }>()
-)
-
-export const openScenario = createAction(
-  '[Scenario] Open scenario',
-  props<{ index: number }>()
 );
 
+export const openScenario = createAction('[Scenario] Open scenario', props<{ index: number }>());
+
 export const fetchSingleScenario = createAction(
-    '[Scenario] Fetch single scenario',
-    props<{ scenarioId: number }>()
-  );
+  '[Scenario] Fetch single scenario',
+  props<{ scenarioId: number }>()
+);
 
 export const fetchSingleScenarioSuccess = createAction(
-    '[Scenario] Fetch single scenario success',
-    props<{ scenario: Scenario }>()
-  );
+  '[Scenario] Fetch single scenario success',
+  props<{ scenario: Scenario }>()
+);
 
 export const openScenarioArea = createAction(
   '[Scenario] Open scenario area',
-  props<{ index: number, scenarioIndex: number | null }>()
+  props<{ index: number; scenarioIndex: number | null }>()
 );
 
-export const closeActiveScenario = createAction(
-  '[Scenario] Close active scenario'
-);
+export const closeActiveScenario = createAction('[Scenario] Close active scenario');
 
-export const closeActiveScenarioArea = createAction(
-  '[Scenario] Close active scenario area'
-);
+export const closeActiveScenarioArea = createAction('[Scenario] Close active scenario area');
 
 export const deleteScenario = createAction(
   '[Scenario] Delete active scenario',
   props<{ scenarioToBeDeleted: Scenario }>()
-)
-
-export const deleteScenarioSuccess = createAction(
-  '[Scenario] Delete scenario success'
 );
+
+export const deleteScenarioSuccess = createAction('[Scenario] Delete scenario success');
 
 export const deleteScenarioFailure = createAction(
   '[Scenario] Delete scenario failure',
@@ -76,11 +68,9 @@ export const deleteScenarioFailure = createAction(
 export const deleteMultipleScenarios = createAction(
   '[Scenario] Delete multiple scenarios by id',
   props<{ scenarioIds: number[] }>()
-)
-
-export const saveActiveScenario = createAction(
-  '[Scenario] Save active scenario'
 );
+
+export const saveActiveScenario = createAction('[Scenario] Save active scenario');
 
 export const saveScenarioSuccess = createAction(
   '[Scenario] Save scenario success',
@@ -93,7 +83,7 @@ export const saveScenarioFailure = createAction(
 );
 
 export const saveAndCalculateActiveScenario = createAction(
-  '[Scenario] Save and calculate active scenario',
+  '[Scenario] Save and calculate active scenario'
 );
 
 export const deleteScenarioArea = createAction(
@@ -112,13 +102,13 @@ export const saveScenarioArea = createAction(
 );
 
 export const saveArbitraryScenarioAreaMatrixSuccess = createAction(
-    '[Scenario] Save arbitrary scenario area matrix success',
-    props<{ savedScenarioArea: ScenarioArea }>()
+  '[Scenario] Save arbitrary scenario area matrix success',
+  props<{ savedScenarioArea: ScenarioArea }>()
 );
 
 export const splitAndReplaceScenarioArea = createAction(
   '[Scenario] Split and replace scenario area',
-  props<{ scenarioId: number, replacedAreaId: number, replacementAreas: ScenarioArea[] }>()
+  props<{ scenarioId: number; replacedAreaId: number; replacementAreas: ScenarioArea[] }>()
 );
 
 export const splitAndReplaceScenarioAreaSuccess = createAction(
@@ -126,14 +116,11 @@ export const splitAndReplaceScenarioAreaSuccess = createAction(
   props<{ updatedScenario: Scenario }>()
 );
 
-export const addScenario = createAction(
-  '[Scenario] Add scenario',
-  props<{ scenario: Scenario }>()
-);
+export const addScenario = createAction('[Scenario] Add scenario', props<{ scenario: Scenario }>());
 
 export const copyScenario = createAction(
   '[Scenario] Copy scenario',
-  props<{ scenarioId: number, options: ScenarioCopyOptions }>()
+  props<{ scenarioId: number; options: ScenarioCopyOptions }>()
 );
 
 export const copyScenarioSuccess = createAction(
@@ -168,43 +155,48 @@ export const changeScenarioNormalization = createAction(
 
 export const setArbitraryScenarioAreaMatrixAndNormalization = createAction(
   '[Scenario] Set arbitrary matrix in active scenario area',
-  props<{ areaId: number, matrixId: number, calcAreaId: number }>()
+  props<{ areaId: number; matrixId: number; calcAreaId: number }>()
 );
 
 export const changeScenarioAreaMatrix = createAction(
   '[Scenario] Change matrix in active scenario area',
-  props< MatrixParameters >()
+  props<MatrixParameters>()
 );
 
 export const excludeActiveAreaCoastal = createAction(
   '[Scenario] Optionally exclude coastal area from analysis',
-  props< ScenarioAreaCoastalExclusion >()
+  props<ScenarioAreaCoastalExclusion>()
 );
 
 export const updateBandAttributeForAreaIndex = createAction(
   '[Scenario] Update general intensity attribute or a specific area contained in the active scenario',
-  props<{ areaIndex: number|undefined; componentType: BandType;
-          band: number; attribute: string; value: number; }>()
+  props<{
+    areaIndex: number | undefined;
+    componentType: BandType;
+    band: number;
+    attribute: string;
+    value: number;
+  }>()
 );
 
 export const deleteBandChangeForAreaIndex = createAction(
   '[Scenario] Delete general band change or within a specific area contained in the active scenario',
-  props<{ areaIndex: number|undefined, componentType: BandType, band: number }>()
+  props<{ areaIndex: number | undefined; componentType: BandType; band: number }>()
 );
 
 export const updateBandAttribute = createAction(
   '[Scenario] Update intensity attribute for band in active scenario area',
-  props<{ componentType: BandType, band: number, attribute: string, value: number }>()
+  props<{ componentType: BandType; band: number; attribute: string; value: number }>()
 );
 
 export const toggleChangeAreaVisibility = createAction(
   '[Scenario] Request to toggle visibility of change area',
-  props<{ feature: Feature, featureIndex: number }>()
+  props<{ feature: Feature; featureIndex: number }>()
 );
 
 export const setChangeAreaVisibility = createAction(
   '[Scenario] Set visibility of change area',
-  props<{ featureIndex: number, visible: boolean }>()
+  props<{ featureIndex: number; visible: boolean }>()
 );
 
 export const addAreasToActiveScenario = createAction(
@@ -238,21 +230,21 @@ export const transferChangesFailure = createAction(
 );
 
 export const resetActiveScenarioChanges = createAction(
-  '[Scenario] Resets all changes for the active scenario',
+  '[Scenario] Resets all changes for the active scenario'
 );
 
 export const resetActiveScenarioAreaChanges = createAction(
-  '[Scenario] Resets all changes for the active scenario area',
+  '[Scenario] Resets all changes for the active scenario area'
 );
 
 export const deleteBandChange = createAction(
   '[Scenario] Delete band change in scenario',
-  props<{ componentType: BandType, bandNumber: number }>()
+  props<{ componentType: BandType; bandNumber: number }>()
 );
 
 export const deleteAreaBandChange = createAction(
   '[Scenario] Delete band change in scenario area',
-  props<{ componentType: BandType, bandNumber: number }>()
+  props<{ componentType: BandType; bandNumber: number }>()
 );
 
 export const fetchAreaMatrices = createAction(
@@ -267,7 +259,7 @@ export const fetchAreaMatricesSuccess = createAction(
 
 export const fetchAreaMatrixSuccess = createAction(
   '[Scenario] Fetch single matrix success',
-  props<{ areaId: number, matrixData: AreaMatrixData }>()
+  props<{ areaId: number; matrixData: AreaMatrixData }>()
 );
 
 export const fetchAreaMatricesFailure = createAction(
@@ -282,12 +274,12 @@ export const setScenarioSortType = createAction(
 
 export const splitScenarioForBatch = createAction(
   '[Scenario] Split scenario (usually preparing batch run)',
-  props<{ scenarioId: number, options: ScenarioSplitOptions }>()
+  props<{ scenarioId: number; options: ScenarioSplitOptions }>()
 );
 
 export const splitScenarioForBatchSuccess = createAction(
   '[Scenario] Split scenario success',
-  props< ScenarioSplitResponse >()
+  props<ScenarioSplitResponse>()
 );
 
 export const splitScenarioForBatchFailure = createAction(
@@ -300,6 +292,4 @@ export const setAutoBatch = createAction(
   props<{ ids: number[] }>()
 );
 
-export const resetAutoBatch = createAction(
-  '[Scenario] Reset (empty) auto batch ids',
-);
+export const resetAutoBatch = createAction('[Scenario] Reset (empty) auto batch ids');

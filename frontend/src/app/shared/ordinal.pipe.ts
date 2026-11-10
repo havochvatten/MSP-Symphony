@@ -1,4 +1,4 @@
-import { Pipe, PipeTransform } from "@angular/core";
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'ordinal',
@@ -7,14 +7,14 @@ import { Pipe, PipeTransform } from "@angular/core";
 export class OrdinalPipe implements PipeTransform {
   transform(value: number, locale: string): string {
     locale = locale ?? '';
-    const lang = locale.substring(0,2);
+    const lang = locale.substring(0, 2);
 
     // Concise approach found at https://stackoverflow.com/a/39466341
-    return lang === 'sv' || lang === 'se' ?
-              value + (['a', 'a', 'e'][((value + 90) % 100 - 10) % 10 - 1] || 'e') :
-           lang === 'fr' ?
-              value + (value === 1 ? 'er' : 'e') :
-           // default to English locale
-              value + (['st', 'nd', 'rd'][((value + 90) % 100 - 10) % 10 - 1] || 'th');
+    return lang === 'sv' || lang === 'se'
+      ? value + (['a', 'a', 'e'][((((value + 90) % 100) - 10) % 10) - 1] || 'e')
+      : lang === 'fr'
+        ? value + (value === 1 ? 'er' : 'e')
+        : // default to English locale
+          value + (['st', 'nd', 'rd'][((((value + 90) % 100) - 10) % 10) - 1] || 'th');
   }
 }

@@ -62,7 +62,7 @@ export class MainViewComponent implements OnInit, AfterViewInit {
   multiSelection = false;
   isMacOS = isMacOS();
   visibleReliability$: Observable<VisibleReliability | null>;
-  visibleSummaryModels$?: Observable<{ ECOSYSTEM: SummaryModel, PRESSURE: SummaryModel }>;
+  visibleSummaryModels$?: Observable<{ ECOSYSTEM: SummaryModel; PRESSURE: SummaryModel }>;
 
   protected activeScenario$: Observable<Scenario | undefined> = this.store.select(
     ScenarioSelectors.selectActiveScenario

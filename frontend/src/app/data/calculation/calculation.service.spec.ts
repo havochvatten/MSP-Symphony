@@ -6,23 +6,27 @@ import { provideMockStore } from '@ngrx/store/testing';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as area } from '@data/area/area.reducers';
 import { initialState as user } from '@data/user/user.reducers';
-import { provideZonelessChangeDetection } from "@angular/core";
+import { provideZonelessChangeDetection } from '@angular/core';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 import { StyleVersionService } from '@data/style/style-version.service';
 
 describe('CalculationService', () => {
-  beforeEach(() => TestBed.configureTestingModule({
-    providers: [provideMockStore({
-      initialState: {
-        metadata,
-        area,
-        user
-      }}),
-      provideHttpClient(),
-      provideZonelessChangeDetection()
-    ]
-  }));
+  beforeEach(() =>
+    TestBed.configureTestingModule({
+      providers: [
+        provideMockStore({
+          initialState: {
+            metadata,
+            area,
+            user
+          }
+        }),
+        provideHttpClient(),
+        provideZonelessChangeDetection()
+      ]
+    })
+  );
 
   it('should be created', () => {
     const service: CalculationService = TestBed.inject(CalculationService);
@@ -52,6 +56,8 @@ describe('CalculationService static images', () => {
 
   it('requests result and comparison images with the style version', () => {
     service.getStaticImage('/api/calculation/diff/1/2?max=50').subscribe();
-    http.expectOne((req) => req.url.startsWith('/api/calculation/diff/1/2') && req.params.get('v') === 'abc123');
+    http.expectOne(
+      (req) => req.url.startsWith('/api/calculation/diff/1/2') && req.params.get('v') === 'abc123'
+    );
   });
 });

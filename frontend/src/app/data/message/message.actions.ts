@@ -11,4 +11,4 @@ export const removePopupMessage = createAction(
   props<{ uuid: string }>()
 );
 
-export const noMessage = createAction('[Message] No message to add')
+export const noMessage = createAction('[Message] No message to add');

@@ -26,7 +26,7 @@ export class HighestImpactsComponent implements OnChanges {
         .reduce((bands: Band[], group: BandGroup) => [...bands, ...group.bands], [])
         .sort((a, b) => this.compareImpact(a.bandNumber, b.bandNumber))
         .slice(0, 5)
-        .filter(band => this.getImpact(band.bandNumber) > 0);
+        .filter((band) => this.getImpact(band.bandNumber) > 0);
     }
   }
 
@@ -35,11 +35,13 @@ export class HighestImpactsComponent implements OnChanges {
   }
 
   getImpact(bandNumber?: number): number {
-    if (bandNumber !== undefined && this.total
-      && Object.keys(this.impacts).includes(String(bandNumber)))
-      return 100*this.impacts[bandNumber]/this.total;
-    else
-      return 0;
+    if (
+      bandNumber !== undefined &&
+      this.total &&
+      Object.keys(this.impacts).includes(String(bandNumber))
+    )
+      return (100 * this.impacts[bandNumber]) / this.total;
+    else return 0;
   }
 
   getColor(impact: number) {

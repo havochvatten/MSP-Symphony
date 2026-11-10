@@ -1,8 +1,10 @@
 import { Component, ElementRef, ViewChild, inject } from '@angular/core';
-import { DialogRef } from "@shared/dialog/dialog-ref";
-import { DialogConfig } from "@shared/dialog/dialog-config";
-import { ScenarioSplitDialogResult, ScenarioSplitOptions } from "@data/scenario/scenario.interfaces";
-
+import { DialogRef } from '@shared/dialog/dialog-ref';
+import { DialogConfig } from '@shared/dialog/dialog-config';
+import {
+  ScenarioSplitDialogResult,
+  ScenarioSplitOptions
+} from '@data/scenario/scenario.interfaces';
 
 @Component({
   selector: 'app-split-scenario-settings',
@@ -13,7 +15,6 @@ import { ScenarioSplitDialogResult, ScenarioSplitOptions } from "@data/scenario/
 export class SplitScenarioSettingsComponent {
   dialog = inject(DialogRef);
   private config = inject(DialogConfig);
-
 
   @ViewChild('batchName') scenarioNameInput!: ElementRef<HTMLInputElement>;
 
@@ -31,7 +32,7 @@ export class SplitScenarioSettingsComponent {
   }
 
   splitScenario() {
-    const result : ScenarioSplitDialogResult = {
+    const result: ScenarioSplitDialogResult = {
       options: this.options,
       immediate: false
     };
@@ -47,5 +48,4 @@ export class SplitScenarioSettingsComponent {
       immediate: true
     });
   }
-
 }

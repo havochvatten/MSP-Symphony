@@ -1,8 +1,8 @@
 import { Component, ElementRef, ViewChild, inject } from '@angular/core';
-import { DialogRef } from "@shared/dialog/dialog-ref";
-import { DialogConfig } from "@shared/dialog/dialog-config";
-import { Scenario, ScenarioArea, ScenarioCopyOptions } from "@data/scenario/scenario.interfaces";
-import { MatCheckbox, MatCheckboxChange } from "@angular/material/checkbox";
+import { DialogRef } from '@shared/dialog/dialog-ref';
+import { DialogConfig } from '@shared/dialog/dialog-config';
+import { Scenario, ScenarioArea, ScenarioCopyOptions } from '@data/scenario/scenario.interfaces';
+import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-copy-scenario',
@@ -13,7 +13,6 @@ import { MatCheckbox, MatCheckboxChange } from "@angular/material/checkbox";
 export class CopyScenarioComponent {
   private dialog = inject(DialogRef);
   private conf = inject(DialogConfig);
-
 
   scenario: Scenario;
   allAreasWithChanges: ScenarioArea[] = [];
@@ -26,10 +25,12 @@ export class CopyScenarioComponent {
     const conf = this.conf;
 
     this.scenario = conf.data.scenario;
-    this.allAreasWithChanges = this.scenario.areas.filter(a => !!a.changes);
-    this.selectedAreaIds = this.allAreasWithChanges.map(a => a.id);
-    this.areasWithoutChangeFmt =
-      this.scenario.areas.filter(a => !a.changes).map(a => a.feature.properties!['name']).join(', ');
+    this.allAreasWithChanges = this.scenario.areas.filter((a) => !!a.changes);
+    this.selectedAreaIds = this.allAreasWithChanges.map((a) => a.id);
+    this.areasWithoutChangeFmt = this.scenario.areas
+      .filter((a) => !a.changes)
+      .map((a) => a.feature.properties!['name'])
+      .join(', ');
   }
 
   copy() {
@@ -41,7 +42,7 @@ export class CopyScenarioComponent {
       name: this.scenarioNameInput.nativeElement.value,
       includeScenarioChanges: this.areaSelect.checked,
       areaChangesToInclude: this.selectedAreaIds
-    }
+    };
   }
 
   cancel() {
@@ -52,7 +53,7 @@ export class CopyScenarioComponent {
     if ($event.checked) {
       this.selectedAreaIds.push(areaId);
     } else {
-      this.selectedAreaIds = this.selectedAreaIds.filter(id => id !== areaId);
+      this.selectedAreaIds = this.selectedAreaIds.filter((id) => id !== areaId);
     }
   }
 }

@@ -12,7 +12,7 @@ import { Coordinate } from 'ol/coordinate';
 import { environment } from '@src/environments/environment';
 import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
 import { ScenarioService } from '@data/scenario/scenario.service';
-import { MultiPolygon, Polygon, SimpleGeometry, Geometry } from "ol/geom";
+import { MultiPolygon, Polygon, SimpleGeometry, Geometry } from 'ol/geom';
 
 // Move to environment?
 export enum ChangeState {
@@ -35,7 +35,6 @@ const THE_EMPTY_STYLE = new Style({}); // This style will cause the feature to n
 
 @Directive()
 export class ScenarioLayer extends VectorLayer<VectorSource<Feature>> {
-
   private boundaryFeature?: Feature;
   private readonly format: GeoJSON;
 
@@ -64,14 +63,16 @@ export class ScenarioLayer extends VectorLayer<VectorSource<Feature>> {
     let poly: MultiPolygon | undefined;
 
     // TODO remove whole scenario layer when exiting scenario and create new one upon entering -- immutable
-    scenario.areas.forEach(a => {
+    scenario.areas.forEach((a) => {
       const feature = this.format.readFeature(a.feature) as Feature<Geometry>,
-            featurePoly = feature.getGeometry() as SimpleGeometry,
-            isSingle = featurePoly.getType() === 'Polygon';
-      if(!poly) {
-        poly = isSingle ? new MultiPolygon([featurePoly as Polygon]) : featurePoly as MultiPolygon;
+        featurePoly = feature.getGeometry() as SimpleGeometry,
+        isSingle = featurePoly.getType() === 'Polygon';
+      if (!poly) {
+        poly = isSingle
+          ? new MultiPolygon([featurePoly as Polygon])
+          : (featurePoly as MultiPolygon);
       } else {
-        if(isSingle) {
+        if (isSingle) {
           poly.appendPolygon(featurePoly as Polygon);
         } else {
           for (const innerPolygon of (featurePoly as MultiPolygon).getPolygons()) {
@@ -82,7 +83,7 @@ export class ScenarioLayer extends VectorLayer<VectorSource<Feature>> {
       this.getSource()?.addFeature(feature);
     });
 
-    if(poly) {
+    if (poly) {
       boundary.setGeometry(poly);
       this.getSource()?.addFeature(boundary);
       boundary.setStyle(SCENARIO_BOUNDARY_STYLE);
@@ -93,9 +94,7 @@ export class ScenarioLayer extends VectorLayer<VectorSource<Feature>> {
   // Fast-path for adding existing feature changes */
   addScenarioChangeAreas(changes: ChangesProperty) {
     if (changes) {
-
       if (environment.map.colorCodeIntensityChanges) {
-
         this.getColorCodedStyle(Object.values(changes));
 
         //this.getSource()?.addFeatures(features);
@@ -123,7 +122,7 @@ export class ScenarioLayer extends VectorLayer<VectorSource<Feature>> {
   static classifyBandChanges(bandChanges: BandChange[]) {
     if (
       bandChanges.every(
-        bandChange =>
+        (bandChange) =>
           (bandChange.multiplier ? convertMultiplierToPercent(bandChange.multiplier) < 0 : true) &&
           (bandChange.offset ? bandChange.offset < 0 : true)
       )
@@ -132,7 +131,7 @@ export class ScenarioLayer extends VectorLayer<VectorSource<Feature>> {
     // only decreases
     else if (
       bandChanges.every(
-        bandChange =>
+        (bandChange) =>
           (bandChange.multiplier ? convertMultiplierToPercent(bandChange.multiplier) > 0 : true) &&
           (bandChange.offset ? bandChange.offset > 0 : true)
       )
@@ -141,7 +140,7 @@ export class ScenarioLayer extends VectorLayer<VectorSource<Feature>> {
     // only increases
     else if (
       bandChanges.every(
-        bandChange =>
+        (bandChange) =>
           (bandChange.multiplier
             ? convertMultiplierToPercent(bandChange.multiplier) === 0
             : true) && (bandChange.offset ? bandChange.offset === 0 : true)

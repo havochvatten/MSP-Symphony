@@ -1,8 +1,8 @@
 import { AfterViewInit, Component, ElementRef, inject } from '@angular/core';
-import { DialogRef } from "@shared/dialog/dialog-ref";
-import { DialogConfig } from "@shared/dialog/dialog-config";
-import { Band } from "@data/metadata/metadata.interfaces";
-import { KeyValue } from "@angular/common";
+import { DialogRef } from '@shared/dialog/dialog-ref';
+import { DialogConfig } from '@shared/dialog/dialog-config';
+import { Band } from '@data/metadata/metadata.interfaces';
+import { KeyValue } from '@angular/common';
 import { environment as env } from '@src/environments/environment';
 
 @Component({
@@ -15,7 +15,6 @@ export class MetaInfoComponent implements AfterViewInit {
   private dialog = inject(DialogRef);
   private config = inject(DialogConfig);
   private container = inject(ElementRef);
-
 
   private band: Band;
   public bandMetadata: Map<string, string[]> = new Map<string, string[]>();
@@ -32,9 +31,11 @@ export class MetaInfoComponent implements AfterViewInit {
       let sep: string;
       if (this.band.meta[metaField]) {
         const listType = env.meta.list_fields.includes(metaField);
-        sep = (listType) ? ';' : '\\n';
-        (listType ? this.bandMetadataLists : this.bandMetadata)
-          .set(metaField, this.band.meta[metaField].split(sep));
+        sep = listType ? ';' : '\\n';
+        (listType ? this.bandMetadataLists : this.bandMetadata).set(
+          metaField,
+          this.band.meta[metaField].split(sep)
+        );
       }
     }
 
@@ -44,12 +45,14 @@ export class MetaInfoComponent implements AfterViewInit {
 
   close = () => {
     this.dialog.close();
+  };
+
+  preserveKV(a: KeyValue<string, string[]>, b: KeyValue<string, string[]>): number {
+    return 0;
   }
 
-  preserveKV(a: KeyValue<string, string[]>, b: KeyValue<string, string[]>): number { return 0; }
-
   ngAfterViewInit(): void {
-    if(this.container.nativeElement.scrollHeight > this.container.nativeElement.offsetHeight) {
+    if (this.container.nativeElement.scrollHeight > this.container.nativeElement.offsetHeight) {
       this.container.nativeElement.classList.add('has-overflow');
     }
   }

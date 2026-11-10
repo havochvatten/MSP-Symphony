@@ -40,7 +40,7 @@ export class BrandingService {
     reportLogoAlt: undefined,
     reportLogoSrc: undefined,
     showLogos: false,
-    showReportClosingMatter: false,
+    showReportClosingMatter: false
   };
 
   loadConfig(): Promise<void> {
@@ -50,7 +50,11 @@ export class BrandingService {
       .then((cfg) => {
         this.config = { ...this.config, ...cfg };
         // The default alt text describes the default duck, not a custom login logo
-        if (cfg.loginLogoSrc && cfg.loginLogoSrc !== defaultLoginLogoSrc && cfg.loginLogoAlt === undefined) {
+        if (
+          cfg.loginLogoSrc &&
+          cfg.loginLogoSrc !== defaultLoginLogoSrc &&
+          cfg.loginLogoAlt === undefined
+        ) {
           this.config.loginLogoAlt = undefined;
         }
         console.info(`✅ Loaded branding config from ${fileName}`);

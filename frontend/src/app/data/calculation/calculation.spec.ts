@@ -11,7 +11,7 @@ describe('CalculationReducer', () => {
     const populated = {
       ...initialState,
       calculations: [{ id: 1, name: 'c1' } as unknown as CalculationSlice],
-      batchProcesses: { 1: { } as never },
+      batchProcesses: { 1: {} as never },
       compoundComparisons: [{ id: 7 } as unknown as CompoundComparisonSlice],
       visibleResults: [1, 2],
       loadingResults: [3],
@@ -21,7 +21,10 @@ describe('CalculationReducer', () => {
       percentileValue: 0.95,
       summaryModels: { ECOSYSTEM: 'simple' as const, PRESSURE: 'balanced' as const },
       summaryModelLoading: { ECOSYSTEM: true, PRESSURE: true },
-      availableSummaryModels: { ECOSYSTEM: [{ key: 'simple', name: 'Simple model' }], PRESSURE: [{ key: 'balanced', name: 'Balanced model' }] }
+      availableSummaryModels: {
+        ECOSYSTEM: [{ key: 'simple', name: 'Simple model' }],
+        PRESSURE: [{ key: 'balanced', name: 'Balanced model' }]
+      }
     };
 
     const _state = calculationReducer(populated, UserActions.activeBaselineChanged({ baseline }));
@@ -41,7 +44,10 @@ describe('CalculationReducer', () => {
     expect(_state.summaryModels).toEqual({ ECOSYSTEM: 'none', PRESSURE: 'none' });
     expect(_state.summaryModelLoading).toEqual({ ECOSYSTEM: false, PRESSURE: false });
     // availableSummaryModels preserved — cleared by fetchSummaryModels, not activeBaselineChanged
-    expect(_state.availableSummaryModels).toEqual({ ECOSYSTEM: [{ key: 'simple', name: 'Simple model' }], PRESSURE: [{ key: 'balanced', name: 'Balanced model' }] });
+    expect(_state.availableSummaryModels).toEqual({
+      ECOSYSTEM: [{ key: 'simple', name: 'Simple model' }],
+      PRESSURE: [{ key: 'balanced', name: 'Balanced model' }]
+    });
   });
 });
 
@@ -76,14 +82,22 @@ describe('calculation reducer — summary model actions', () => {
   it('fetchSummaryModels clears availableSummaryModels for the requested category', () => {
     const populated = {
       ...initialState,
-      availableSummaryModels: { ECOSYSTEM: [{ key: 'simple', name: 'Simple model' }, { key: 'balanced', name: 'Balanced model' }], PRESSURE: [{ key: 'simple', name: 'Simple model' }] }
+      availableSummaryModels: {
+        ECOSYSTEM: [
+          { key: 'simple', name: 'Simple model' },
+          { key: 'balanced', name: 'Balanced model' }
+        ],
+        PRESSURE: [{ key: 'simple', name: 'Simple model' }]
+      }
     };
     const state = calculationReducer(
       populated,
       CalculationActions.fetchSummaryModels({ baselineName: 'B', category: 'ECOSYSTEM' })
     );
     expect(state.availableSummaryModels.ECOSYSTEM).toEqual([]);
-    expect(state.availableSummaryModels.PRESSURE).toEqual([{ key: 'simple', name: 'Simple model' }]); // unchanged
+    expect(state.availableSummaryModels.PRESSURE).toEqual([
+      { key: 'simple', name: 'Simple model' }
+    ]); // unchanged
   });
 
   it('fetchSummaryModelsSuccess populates availableSummaryModels', () => {
@@ -92,10 +106,16 @@ describe('calculation reducer — summary model actions', () => {
       CalculationActions.fetchSummaryModelsSuccess({
         baselineName: 'BASELINE2019',
         category: 'ECOSYSTEM',
-        models: [{ key: 'simple', name: 'Simple model' }, { key: 'balanced', name: 'Balanced model' }]
+        models: [
+          { key: 'simple', name: 'Simple model' },
+          { key: 'balanced', name: 'Balanced model' }
+        ]
       })
     );
-    expect(state.availableSummaryModels.ECOSYSTEM).toEqual([{ key: 'simple', name: 'Simple model' }, { key: 'balanced', name: 'Balanced model' }]);
+    expect(state.availableSummaryModels.ECOSYSTEM).toEqual([
+      { key: 'simple', name: 'Simple model' },
+      { key: 'balanced', name: 'Balanced model' }
+    ]);
     expect(state.availableSummaryModels.PRESSURE).toEqual([]); // unchanged
   });
 });
@@ -103,21 +123,34 @@ describe('calculation reducer — summary model actions', () => {
 describe('calculation selectors — summary model', () => {
   const state = {
     ...initialState,
-    availableSummaryModels: { ECOSYSTEM: [{ key: 'simple', name: 'Simple model' }, { key: 'balanced', name: 'Balanced model' }], PRESSURE: [{ key: 'simple', name: 'Simple model' }] },
+    availableSummaryModels: {
+      ECOSYSTEM: [
+        { key: 'simple', name: 'Simple model' },
+        { key: 'balanced', name: 'Balanced model' }
+      ],
+      PRESSURE: [{ key: 'simple', name: 'Simple model' }]
+    },
     summaryModels: { ECOSYSTEM: 'simple', PRESSURE: 'none' },
     summaryModelLoading: { ECOSYSTEM: true, PRESSURE: false }
   };
 
   it('selectAvailableSummaryModels returns models for category', () => {
-    expect(CalculationSelectors.selectAvailableSummaryModels('ECOSYSTEM').projector(state))
-      .toEqual([{ key: 'simple', name: 'Simple model' }, { key: 'balanced', name: 'Balanced model' }]);
-    expect(CalculationSelectors.selectAvailableSummaryModels('PRESSURE').projector(state))
-      .toEqual([{ key: 'simple', name: 'Simple model' }]);
+    expect(CalculationSelectors.selectAvailableSummaryModels('ECOSYSTEM').projector(state)).toEqual(
+      [
+        { key: 'simple', name: 'Simple model' },
+        { key: 'balanced', name: 'Balanced model' }
+      ]
+    );
+    expect(CalculationSelectors.selectAvailableSummaryModels('PRESSURE').projector(state)).toEqual([
+      { key: 'simple', name: 'Simple model' }
+    ]);
   });
 
   it('selectVisibleSummaryModels returns the summaryModels map', () => {
-    expect(CalculationSelectors.selectVisibleSummaryModels.projector(state))
-      .toEqual({ ECOSYSTEM: 'simple', PRESSURE: 'none' });
+    expect(CalculationSelectors.selectVisibleSummaryModels.projector(state)).toEqual({
+      ECOSYSTEM: 'simple',
+      PRESSURE: 'none'
+    });
   });
 
   it('selectSummaryModelLoading returns loading flag for category', () => {
@@ -168,7 +201,9 @@ describe('calculation selectors — summary model', () => {
 
     const done = calculationReducer(
       loading,
-      CalculationActions.fetchCompoundComparisonsFailure({ error: { status: 500, message: 'boom' } })
+      CalculationActions.fetchCompoundComparisonsFailure({
+        error: { status: 500, message: 'boom' }
+      })
     );
     expect(done.loadingCompoundComparisons).toBe(false);
   });

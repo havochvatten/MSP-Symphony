@@ -10,14 +10,13 @@ import { DialogRef } from '@src/app/shared/dialog/dialog-ref';
 export class ConfirmGenerateComparisonComponent {
   private dialog = inject(DialogRef);
 
-
   cmpName = '';
 
   close = () => {
     this.dialog.close();
-  }
+  };
 
   calculate = () => {
     this.dialog.close(this.cmpName);
-  }
+  };
 }
