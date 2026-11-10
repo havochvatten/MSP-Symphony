@@ -9,10 +9,12 @@ import org.geotools.styling.StyledLayerDescriptor;
 import org.xml.sax.SAXException;
 import se.havochvatten.symphony.dto.LegendDto;
 import se.havochvatten.symphony.service.PropertiesService;
+import se.havochvatten.symphony.util.StyleFingerprint;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
+import jakarta.json.Json;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -23,6 +25,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static se.havochvatten.symphony.dto.LegendDto.Type.*;
 
@@ -52,6 +55,19 @@ public class LegendREST {
             logger.severe(e.toString());
             return Response.serverError().build();
         }
+    }
+
+    @GET
+    @Path("style-version")
+    @Operation(summary = "Get a version of the map styles, which changes whenever any style file changes")
+    @Produces({MediaType.APPLICATION_JSON})
+    @PermitAll
+    @PublicOrRestricted
+    public Response getStyleVersion() {
+        String version = StyleFingerprint.combined(Stream.of("ecosystem", "pressure", "result", "comparison")
+            .map(type -> props.getProperty("data.styles." + type))
+            .toList());
+        return Response.ok(Json.createObjectBuilder().add("version", version).build()).build();
     }
 
     @GET
