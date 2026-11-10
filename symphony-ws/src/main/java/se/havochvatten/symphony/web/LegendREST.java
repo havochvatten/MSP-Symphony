@@ -20,6 +20,7 @@ import se.havochvatten.symphony.web.filter.PublicOrRestricted;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
@@ -103,8 +104,10 @@ public class LegendREST {
                 break;
         }
         var entries = symbolizer.getColorMap().getColorMapEntries();
-        legend.setColorMap(IntStream.range(0, symbolizer.getColorMap().getColorMapEntries().length)
-            .skip(type != LegendDto.Type.COMPARISON ? 1 : 0)
+        var indices = type == LegendDto.Type.COMPARISON
+            ? IntStream.range(0, entries.length)
+            : Arrays.stream(WebUtil.visibleLegendEntryIndices(entries));
+        legend.setColorMap(indices
             .mapToObj(index -> new LegendDto.ColorMapEntry(entries[index], type, index, dynamicMax))
             .toArray(LegendDto.ColorMapEntry[]::new));
 

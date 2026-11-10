@@ -9,17 +9,24 @@ http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd" version="1.1.0">
 		<Rule>
 		  <RasterSymbolizer>
 			  <ColorMap>
-				  <ColorMapEntry color="#000080" quantity="-0.45"/>
-				  <ColorMapEntry color="#3399cc" quantity="-0.30"/>
-				  <ColorMapEntry color="#00cc66" quantity="-0.15"/>
-				  <ColorMapEntry color="#66ffcc" quantity="-0.05"/>
-				  <ColorMapEntry color="#ccffff" quantity="-0.01"/>
-				  <ColorMapEntry color="#ffffff" quantity="0.0"/>
-				  <ColorMapEntry color="#ffffcc" quantity="0.01"/>
-				  <ColorMapEntry color="#ffcc66" quantity="0.05"/>
-				  <ColorMapEntry color="#ff6600" quantity="0.15"/>
-				  <ColorMapEntry color="#cc0000" quantity="0.30"/>
-				  <ColorMapEntry color="#800000" quantity="0.45"/>
+			  <!--
+			    Comparison scale: decreases navy to mint, no change white, increases yellow to dark red.
+			    Same colours as before, resampled in the OKLab colour space so each half has equal colour
+			    steps, with the red end deepened so both ends are equally dark.
+			    The quantities below are overwritten at runtime by WebUtil.COMPARISON_STEPS times the
+			    dynamic maximum; only the order of the entries matters.
+			  -->
+			    <ColorMapEntry color="#000080" quantity="-0.45"/>
+			    <ColorMapEntry color="#0058a8" quantity="-0.30"/>
+			    <ColorMapEntry color="#329bca" quantity="-0.15"/>
+			    <ColorMapEntry color="#08c679" quantity="-0.05"/>
+			    <ColorMapEntry color="#61fbc5" quantity="-0.01"/>
+			    <ColorMapEntry color="#ffffff" quantity="0.0"/>
+			    <ColorMapEntry color="#ffd67d" quantity="0.01"/>
+			    <ColorMapEntry color="#ff892f" quantity="0.05"/>
+			    <ColorMapEntry color="#de3400" quantity="0.15"/>
+			    <ColorMapEntry color="#960000" quantity="0.30"/>
+			    <ColorMapEntry color="#4a0000" quantity="0.45"/>
 			  </ColorMap>
 		  </RasterSymbolizer>
 		</Rule>
