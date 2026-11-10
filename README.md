@@ -51,7 +51,7 @@ At SwAM the frontend is served separately using Apache, although any web server 
 will do (see [Frontend](#frontend-1) below). The backend has been tested using Wildfly 36.0, PostgreSQL 14 and PostGIS v3.4,
 but more recent versions should be fine (as for Wildfly, at least all versions providing Jakarta EE 10).
 
-The frontend is realized as an Angular application (v 21), built with Node 22.13.0
+The frontend is realized as an Angular application (v 21), built with Node 24
 
 ## Getting the source
 
@@ -95,6 +95,8 @@ npm install
 ng build
 ```
 The build artifacts will end up in the `frontend/dist` directory.
+
+`npm install` installs a pre-commit hook that formats staged files under `frontend/src` with Prettier. HTML templates are left out (see `frontend/.prettierignore`), since Prettier can change their rendered whitespace.
 
 For frontend development there is also the Angular CLI development server, see the frontend README for more details. 
 
