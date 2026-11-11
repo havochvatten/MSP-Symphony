@@ -4,7 +4,7 @@
     <h3>{{ report().a.name }} {{ 'report.comparison.vs' | translate }} {{ report().b.name }}</h3>
   </header>
   <app-report-logos class="logo"></app-report-logos>
-  <app-calculation-image [imageURL]="imageUrl" [alt]="'report.comparison.image-alt' | translate: { a: report().a.name, b: report().b.name }"></app-calculation-image>
+  <app-calculation-image [imageURL]="comparisonImageUrl()" [alt]="'report.comparison.image-alt' | translate: { a: report().a.name, b: report().b.name }"></app-calculation-image>
     @if ((metadata$ | async); as metadata) {
       <app-cumulative-effect-etc [reports]="[report().a, report().b]"
                                  [area]="area"

@@ -8,19 +8,35 @@ http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd" version="1.1.0">
 	  <FeatureTypeStyle>
 		<Rule>
 		  <RasterSymbolizer>
-			<ColorMap type="intervals">
-			  <ColorMapEntry color="#000000" quantity="0" opacity="0"/>
-			  <ColorMapEntry color="#5871e3" quantity="1"/>
-			  <ColorMapEntry color="#0072fc" quantity="5"/>
-			  <ColorMapEntry color="#03c4ff" quantity="10"/>
-			  <ColorMapEntry color="#00ffc4" quantity="15"/>
-			  <ColorMapEntry color="#53ff02" quantity="20"/>
-			  <ColorMapEntry color="#a9ff02" quantity="25"/>
-			  <ColorMapEntry color="#feff00" quantity="30"/>
-			  <ColorMapEntry color="#fdaa05" quantity="35"/>
-			  <ColorMapEntry color="#fe8201" quantity="70"/>
-			  <ColorMapEntry color="#fe4f00" quantity="90"/>
-			  <ColorMapEntry color="#f50002" quantity="100"/>
+			<ColorMap type="ramp">
+			  <!--
+			    Pressure scale, yellow-red, 13 stops.
+			    Derived in the OKLab colour space: a path through the colour family, resampled so each
+			    legend step gets an equal share of the total colour difference.
+			    Contrast is gently aimed at values 1-20 (1.5x the share of the other steps), based on
+			    the Swedish whole-country data (90% of the sea area is 1-15). Other installations should point
+			    data.styles.* in symphony-global.properties at their own file and re-aim for their data.
+			    Starts at #ffffe0 (tinted against the white legend panel and the land colour); the dark
+			    end is kept off black so outlines and labels stay visible.
+			    The first two entries are not shown in the legend (LegendREST skips transparent entries and
+			    entries with the same colour as the next one). Value 0 means no data and stays transparent;
+			    values above 0 and below the first stop are drawn in the first colour, opaque.
+			  -->
+			  <ColorMapEntry color="#ffffe0" quantity="0" opacity="0"/>
+			  <ColorMapEntry color="#ffffe0" quantity="0.001"/>
+			  <ColorMapEntry color="#ffffe0" quantity="1"/>
+			  <ColorMapEntry color="#ffea89" quantity="5"/>
+			  <ColorMapEntry color="#ffc533" quantity="10"/>
+			  <ColorMapEntry color="#ff9a00" quantity="15"/>
+			  <ColorMapEntry color="#ff6c00" quantity="20"/>
+			  <ColorMapEntry color="#fd4500" quantity="25"/>
+			  <ColorMapEntry color="#e91d00" quantity="30"/>
+			  <ColorMapEntry color="#cc0400" quantity="40"/>
+			  <ColorMapEntry color="#ad0000" quantity="50"/>
+			  <ColorMapEntry color="#900000" quantity="60"/>
+			  <ColorMapEntry color="#730001" quantity="70"/>
+			  <ColorMapEntry color="#570004" quantity="80"/>
+			  <ColorMapEntry color="#3d0008" quantity="100"/>
 			</ColorMap>
 		  </RasterSymbolizer>
 		</Rule>

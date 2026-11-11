@@ -27,6 +27,7 @@ import se.havochvatten.symphony.service.BaselineVersionService;
 import se.havochvatten.symphony.service.DataLayerService;
 import se.havochvatten.symphony.service.SummaryModelConfigService;
 import se.havochvatten.symphony.service.PropertiesService;
+import se.havochvatten.symphony.util.StyleFingerprint;
 import se.havochvatten.symphony.web.filter.PublicOrRestricted;
 
 import java.awt.image.*;
@@ -78,7 +79,8 @@ public class DataLayerREST {
         BaselineVersion baselineVersion = baselineVersionService.getVersionByName(baselineName);
         var layerType = LayerType.valueOf(type.toUpperCase());
 
-        java.nio.file.Path cacheKey = java.nio.file.Path.of(baselineName, type).resolve(bandNo + ".png");
+        java.nio.file.Path cacheKey =
+            java.nio.file.Path.of(baselineName, type, styleFingerprint(layerType)).resolve(bandNo + ".png");
         if (cache != null && cache.containsKey(cacheKey)) {
             byte[] bytes = cache.get(cacheKey);
             String extent = readMetaData(bytes, "extent");
@@ -86,7 +88,7 @@ public class DataLayerREST {
         }
 
         GridCoverage2D coverage = data.getDataLayer(layerType, baselineVersion.getId(), bandNo);
-        return buildImageResponse(coverage, layerType, baselineName, type, String.valueOf(bandNo), crs);
+        return buildImageResponse(coverage, layerType, cacheKey, crs);
     }
 
     @GET
@@ -101,14 +103,15 @@ public class DataLayerREST {
         BaselineVersion baselineVersion = baselineVersionService.getVersionByName(baselineName);
         var layerType = LayerType.valueOf(type.toUpperCase());
 
-        java.nio.file.Path cacheKey = java.nio.file.Path.of(baselineName, type, "model").resolve(model + ".png");
+        java.nio.file.Path cacheKey = java.nio.file.Path.of(baselineName, type, "model", styleFingerprint(layerType))
+            .resolve(model + ".png");
         if (cache != null && cache.containsKey(cacheKey)) {
             byte[] bytes = cache.get(cacheKey);
             String extent = readMetaData(bytes, "extent");
             return ok(bytes, "image/png").header("SYM-Image-Extent", (extent == null ? "" : extent)).build();
         }
         GridCoverage2D coverage = data.getSummaryModel(layerType, baselineVersion, model);
-        return buildImageResponse(coverage, layerType, baselineVersion.getName(), type + "/model", model, crs);
+        return buildImageResponse(coverage, layerType, cacheKey, crs);
     }
 
     @GET
@@ -153,7 +156,17 @@ public class DataLayerREST {
         return ok(models).build();
     }
 
-    private Response buildImageResponse(GridCoverage2D coverage, LayerType layerType, String baselineName, String cacheTypePath, String cacheLeaf, String crs) throws Exception {
+    /** Style resource that renders this layer type, from data.styles.* */
+    private String styleResource(LayerType layerType) {
+        return props.getProperty("data.styles." + layerType.toString().toLowerCase());
+    }
+
+    /** Part of the image cache key, so images drawn with an older style are not served. */
+    private String styleFingerprint(LayerType layerType) {
+        return StyleFingerprint.ofResource(styleResource(layerType));
+    }
+
+    private Response buildImageResponse(GridCoverage2D coverage, LayerType layerType, java.nio.file.Path cacheKey, String crs) throws Exception {
         Envelope dataEnvelope = new ReferencedEnvelope(coverage.getEnvelope());
         crs = crs != null ? URLDecoder.decode(crs, StandardCharsets.UTF_8) : "EPSG:3035";
 
@@ -163,7 +176,7 @@ public class DataLayerREST {
         MathTransform transform = CRS.findMathTransform(gridGeometry.getCoordinateReferenceSystem(), targetCRS);
         Envelope targetEnvelope = JTS.transform(dataEnvelope, null, transform, 10);
 
-        RenderedImage img = WebUtil.render(coverage, targetCRS, targetEnvelope, WebUtil.getSLD(DataLayerREST.class.getClassLoader().getResourceAsStream(props.getProperty("data.styles." + layerType.toString().toLowerCase()))));
+        RenderedImage img = WebUtil.render(coverage, targetCRS, targetEnvelope, WebUtil.getSLD(DataLayerREST.class.getClassLoader().getResourceAsStream(styleResource(layerType))));
 
         byte[] samples = (byte[]) (img.getData().getDataElements(img.getMinX(), img.getMinY(), img.getWidth(), img.getHeight(), null));
         DataBuffer buf = new DataBufferByte(samples, samples.length);
@@ -175,7 +188,6 @@ public class DataLayerREST {
 
         byte[] bs = addMetaData(image, cm, sm, "extent", extent.toString());
         if (cache != null) {
-            java.nio.file.Path cacheKey = java.nio.file.Path.of(baselineName, cacheTypePath).resolve(cacheLeaf + ".png");
             cache.put(cacheKey, bs);
         }
 

@@ -14,12 +14,19 @@ import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { provideHttpClient } from "@angular/common/http";
 import { provideZonelessChangeDetection } from "@angular/core";
+import { of } from 'rxjs';
+import { CalculationService } from '@data/calculation/calculation.service';
+import { Legend } from '@data/calculation/calculation.interfaces';
 
 describe('CalculationReportComponent', () => {
   let fixture: ComponentFixture<CalculationReportComponent>,
       component: CalculationReportComponent;
 
+  const servedLegend: Legend = { unit: '%', colorMap: [{ color: '#123456', quantity: 1 }] };
+  let getLegend: jasmine.Spy;
+
   beforeEach(() => {
+    getLegend = jasmine.createSpy('getLegend').and.returnValue(of(servedLegend));
     TestBed.configureTestingModule({
       declarations: [
         CalculationReportComponent,
@@ -38,7 +45,8 @@ describe('CalculationReportComponent', () => {
             user: {}
           }
         }),
-        provideZonelessChangeDetection()
+        provideZonelessChangeDetection(),
+        { provide: CalculationService, useValue: { getLegend } }
       ]
     }).compileComponents();
     fixture = TestBed.createComponent(CalculationReportComponent);
@@ -48,5 +56,13 @@ describe('CalculationReportComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('takes the report legend and impact bar colours from the served result legend', (done) => {
+    expect(getLegend).toHaveBeenCalledWith('result');
+    component.resultLegend$.subscribe((legend) => {
+      expect(legend).toBe(servedLegend);
+      done();
+    });
   });
 });

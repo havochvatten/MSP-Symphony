@@ -27,7 +27,6 @@ import { DragDropDirective } from './drag-drop.directive';
 import { UploadFilesComponent } from './upload-files/upload-files.component';
 import { CalculationReportModalComponent } from './report-modal/calculation-report-modal.component';
 import { ResultColorScaleComponent } from './result-color-scale/result-color-scale.component';
-import { PressureColorScaleComponent } from './pressure-color-scale/pressure-color-scale.component';
 import { PopupMessageComponent } from './popup-message/popup-message.component';
 import { StatusIconComponent } from './status-icon/status-icon.component';
 import { ComparisonReportModalComponent } from '@shared/report-modal/comparison-report-modal.component';
@@ -81,7 +80,6 @@ import { FundingDisclaimerComponent } from './funding-disclaimer/funding-disclai
     CalculationReportModalComponent,
     ComparisonReportModalComponent,
     ResultColorScaleComponent,
-    PressureColorScaleComponent,
     PopupMessageComponent,
     StatusIconComponent,
     OrdinalPipe,

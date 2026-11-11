@@ -2,6 +2,7 @@ import { EventEmitter, Injectable, OnDestroy, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Store } from '@ngrx/store';
 import { firstValueFrom, Subscription } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { environment as env } from '@src/environments/environment';
 import { State } from '@src/app/app-reducer';
 import { MetadataSelectors } from '@data/metadata';
@@ -21,6 +22,7 @@ import proj4 from 'proj4';
 import { Scenario, ScenarioSplitOptions } from '@data/scenario/scenario.interfaces';
 import { UserSelectors } from '@data/user';
 import { Baseline } from '@data/user/user.interfaces';
+import { StyleVersionService } from '@data/style/style-version.service';
 
 export enum NormalizationType {
   AREA = 'AREA',
@@ -46,6 +48,7 @@ export interface NormalizationOptions {
 })
 export class CalculationService implements OnDestroy {
   private readonly http = inject(HttpClient);
+  private readonly styleVersion = inject(StyleVersionService);
   private readonly store = inject<Store<State>>(Store);
 
   public resultReady$ = new EventEmitter<StaticImageOptions>();
@@ -87,13 +90,19 @@ export class CalculationService implements OnDestroy {
 
   public getStaticImage(url: string) {
     const params = AppSettings.CLIENT_SIDE_PROJECTION
-      ? undefined
+      ? new HttpParams()
       : new HttpParams().set('crs', encodeURIComponent(AppSettings.MAP_PROJECTION));
-    return this.http.get(url, {
-      responseType: 'blob',
-      observe: 'response',
-      params
-    });
+    // Result and comparison images; comparison images are cached by the browser for a year, and the style
+    // version makes a new style a new URL
+    return this.styleVersion.getVersion().pipe(
+      switchMap((version) =>
+        this.http.get(url, {
+          responseType: 'blob',
+          observe: 'response',
+          params: version ? params.set('v', version) : params
+        })
+      )
+    );
   }
 
   public addComparisonResult(

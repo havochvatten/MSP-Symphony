@@ -9,10 +9,12 @@ import org.geotools.styling.StyledLayerDescriptor;
 import org.xml.sax.SAXException;
 import se.havochvatten.symphony.dto.LegendDto;
 import se.havochvatten.symphony.service.PropertiesService;
+import se.havochvatten.symphony.util.StyleFingerprint;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
+import jakarta.json.Json;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -20,8 +22,10 @@ import se.havochvatten.symphony.web.filter.PublicOrRestricted;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static se.havochvatten.symphony.dto.LegendDto.Type.*;
 
@@ -51,6 +55,19 @@ public class LegendREST {
             logger.severe(e.toString());
             return Response.serverError().build();
         }
+    }
+
+    @GET
+    @Path("style-version")
+    @Operation(summary = "Get a version of the map styles, which changes whenever any style file changes")
+    @Produces({MediaType.APPLICATION_JSON})
+    @PermitAll
+    @PublicOrRestricted
+    public Response getStyleVersion() {
+        String version = StyleFingerprint.combined(Stream.of("ecosystem", "pressure", "result", "comparison")
+            .map(type -> props.getProperty("data.styles." + type))
+            .toList());
+        return Response.ok(Json.createObjectBuilder().add("version", version).build()).build();
     }
 
     @GET
@@ -103,8 +120,10 @@ public class LegendREST {
                 break;
         }
         var entries = symbolizer.getColorMap().getColorMapEntries();
-        legend.setColorMap(IntStream.range(0, symbolizer.getColorMap().getColorMapEntries().length)
-            .skip(type != LegendDto.Type.COMPARISON ? 1 : 0)
+        var indices = type == LegendDto.Type.COMPARISON
+            ? IntStream.range(0, entries.length)
+            : Arrays.stream(WebUtil.visibleLegendEntryIndices(entries));
+        legend.setColorMap(indices
             .mapToObj(index -> new LegendDto.ColorMapEntry(entries[index], type, index, dynamicMax))
             .toArray(LegendDto.ColorMapEntry[]::new));
 
