@@ -1,11 +1,17 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges, inject } from '@angular/core';
-import { BandGroup, Band, BandType_Alt, bandTypesMap, BandType } from '@data/metadata/metadata.interfaces';
+import {
+  BandGroup,
+  Band,
+  BandType_Alt,
+  bandTypesMap,
+  BandType
+} from '@data/metadata/metadata.interfaces';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { MetadataActions } from '@data/metadata';
 import { Observable } from 'rxjs';
-import { ScenarioSelectors } from "@data/scenario";
-import { ScenarioDisplayMeta } from "@data/scenario/scenario.interfaces";
+import { ScenarioSelectors } from '@data/scenario';
+import { ScenarioDisplayMeta } from '@data/scenario/scenario.interfaces';
 
 //=== SEARCH UTILITIES ===
 
@@ -14,7 +20,7 @@ function searchTrim(search: string) {
 }
 
 function filterLayers(layers: Band[], search: string): Band[] {
-  return layers.filter(layer => layer.title.toLowerCase().includes(search));
+  return layers.filter((layer) => layer.title.toLowerCase().includes(search));
 }
 function includesGroup(groupName: string, search: string): boolean {
   return groupName.toLowerCase().includes(search);
@@ -32,7 +38,7 @@ function filterCheckBoxGroups(groups: BandGroup[], search: string): BandGroup[] 
         includesGroup(group.symphonyThemeName, search) ||
         filterLayers(group.bands, search).length > 0
     )
-    .map(group => ({
+    .map((group) => ({
       ...group,
       bands: includesGroup(group.symphonyThemeName, search)
         ? group.bands
@@ -57,7 +63,9 @@ export class BandSelectionComponent implements OnInit, OnChanges {
   scenarioDisplayNames?: Observable<ScenarioDisplayMeta>;
 
   ngOnInit() {
-    this.scenarioDisplayNames = this.store.select(ScenarioSelectors.selectActiveScenarioDisplayMeta);
+    this.scenarioDisplayNames = this.store.select(
+      ScenarioSelectors.selectActiveScenarioDisplayMeta
+    );
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -71,10 +79,8 @@ export class BandSelectionComponent implements OnInit, OnChanges {
     this.filteredGroups = filterCheckBoxGroups(this.bandGroups, this.search);
   };
 
-  onChange = (value: boolean|undefined, band: Band) => {
-    this.store.dispatch(
-      MetadataActions.selectBand({ band, value })
-    );
+  onChange = (value: boolean | undefined, band: Band) => {
+    this.store.dispatch(MetadataActions.selectBand({ band, value }));
   };
 
   onChangeVisible = (value: boolean, band: Band) => {
@@ -90,7 +96,7 @@ export class BandSelectionComponent implements OnInit, OnChanges {
   };
 
   flatBands(): Band[] {
-    return this.bandGroups.flatMap(group => group.bands);
+    return this.bandGroups.flatMap((group) => group.bands);
   }
 
   get placeholder() {
@@ -122,8 +128,11 @@ export class BandSelectionComponent implements OnInit, OnChanges {
   }
 
   updateAll() {
-    this.store.dispatch(MetadataActions.selectBandsByType(
-      { bandType: bandTypesMap.get(this.bandType) as BandType,
-              value: !this.allBoxesAreChecked }));
+    this.store.dispatch(
+      MetadataActions.selectBandsByType({
+        bandType: bandTypesMap.get(this.bandType) as BandType,
+        value: !this.allBoxesAreChecked
+      })
+    );
   }
 }

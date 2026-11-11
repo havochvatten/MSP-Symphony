@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { Observable } from "rxjs";
-import { Store } from "@ngrx/store";
-import { DialogRef } from "@shared/dialog/dialog-ref";
-import { DialogConfig } from "@shared/dialog/dialog-config";
-import { MatrixRef } from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
-import { State } from "@src/app/app-reducer";
-import { CalculationAreaSlice } from "@data/area/area.interfaces";
-import { AreaSelectors } from "@data/area";
+import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { DialogRef } from '@shared/dialog/dialog-ref';
+import { DialogConfig } from '@shared/dialog/dialog-config';
+import { MatrixRef } from '@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces';
+import { State } from '@src/app/app-reducer';
+import { CalculationAreaSlice } from '@data/area/area.interfaces';
+import { AreaSelectors } from '@data/area';
 
 @Component({
   selector: 'app-set-arbitrary-matrix',
@@ -35,7 +35,7 @@ export class SetArbitraryMatrixComponent {
         this.selectedCalculationArea = areas[0];
       }
     });
-}
+  }
 
   close() {
     this.dialog.close(null);

@@ -15,5 +15,5 @@ export class TabComponent {
   @Input() title?: string;
   @Input() icon: IconType = 'info-circle';
   @Input() id: string = uuid();
-  active = false
+  active = false;
 }

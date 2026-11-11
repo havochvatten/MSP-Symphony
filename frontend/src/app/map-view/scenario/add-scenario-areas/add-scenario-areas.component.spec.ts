@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { StoreModule } from "@ngrx/store";
-import { TranslateModule, TranslateService } from "@ngx-translate/core";
-import { Area } from "@data/area/area.interfaces";
-import { provideHttpClient } from "@angular/common/http";
+import { StoreModule } from '@ngrx/store';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Area } from '@data/area/area.interfaces';
+import { provideHttpClient } from '@angular/common/http';
 import { AddScenarioAreasComponent } from './add-scenario-areas.component';
-import { IconButtonComponent } from "@shared/icon-button/icon-button.component";
-import { SharedModule } from "@shared/shared.module";
-import { ScenarioEditorModule } from "@src/app/map-view/scenario/scenario-editor.module";
-import { provideMockStore } from "@ngrx/store/testing";
+import { IconButtonComponent } from '@shared/icon-button/icon-button.component';
+import { SharedModule } from '@shared/shared.module';
+import { ScenarioEditorModule } from '@src/app/map-view/scenario/scenario-editor.module';
+import { provideMockStore } from '@ngrx/store/testing';
 import { initialState as area } from '@data/area/area.reducers';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as user } from '@data/user/user.reducers';
-import { provideZonelessChangeDetection } from "@angular/core";
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('AddScenarioAreasComponent', () => {
   let component: AddScenarioAreasComponent;
@@ -37,9 +37,8 @@ describe('AddScenarioAreasComponent', () => {
         }),
         provideZonelessChangeDetection()
       ],
-      declarations: [ AddScenarioAreasComponent, IconButtonComponent ]
-    })
-    .compileComponents();
+      declarations: [AddScenarioAreasComponent, IconButtonComponent]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(AddScenarioAreasComponent);
     component = fixture.componentInstance;
@@ -55,7 +54,7 @@ describe('AddScenarioAreasComponent', () => {
     const button = () => fixture.nativeElement.querySelector('button') as HTMLButtonElement;
 
     const select = (...names: string[]) => {
-      component.selectedAreas = names.map(name => ({ name }) as Area);
+      component.selectedAreas = names.map((name) => ({ name }) as Area);
       fixture.detectChanges();
     };
 

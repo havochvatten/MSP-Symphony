@@ -6,19 +6,16 @@ import { MatrixTableComponent } from './matrix-table.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideMockStore } from '@ngrx/store/testing';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
-import { IconComponent } from "@shared/icon/icon.component";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { IconComponent } from '@shared/icon/icon.component';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('MatrixTableComponent', () => {
-  let fixture: ComponentFixture<MatrixTableComponent>,
-      component: MatrixTableComponent;
+  let fixture: ComponentFixture<MatrixTableComponent>, component: MatrixTableComponent;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [MatrixTableComponent, IconComponent],
-      imports: [
-        TranslationSetupModule
-      ],
+      imports: [TranslationSetupModule],
       providers: [
         provideHttpClient(),
         {

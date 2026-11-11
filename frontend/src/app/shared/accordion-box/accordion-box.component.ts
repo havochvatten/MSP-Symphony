@@ -10,12 +10,11 @@ export class AccordionBoxComponent {
   @Input() open = false;
   /** Shows the on-map bar on the left edge. Off by default. */
   @Input() marked = false;
-  @Input() toggle: () => void = () => this.open = !this.open;
+  @Input() toggle: () => void = () => (this.open = !this.open);
 
   onToggle() {
     this.toggle();
   }
-
 }
 
 @Component({

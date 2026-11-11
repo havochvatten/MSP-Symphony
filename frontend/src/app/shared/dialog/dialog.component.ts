@@ -1,4 +1,14 @@
-import { Component, Type, ViewChild, ComponentRef, OnDestroy, AfterViewInit, ChangeDetectorRef, HostBinding, inject } from '@angular/core';
+import {
+  Component,
+  Type,
+  ViewChild,
+  ComponentRef,
+  OnDestroy,
+  AfterViewInit,
+  ChangeDetectorRef,
+  HostBinding,
+  inject
+} from '@angular/core';
 import { InsertionDirective } from './insertion.directive';
 import { Subject } from 'rxjs';
 

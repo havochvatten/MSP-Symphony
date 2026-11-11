@@ -5,7 +5,8 @@ import {
   StatePath,
   UserArea,
   AreaGroup,
-  Area, AreaImport
+  Area,
+  AreaImport
 } from '@data/area/area.interfaces';
 import { filterNationalAreas, filterUserAreas } from './area-selection.util';
 import { Store } from '@ngrx/store';
@@ -13,15 +14,13 @@ import { State } from '@src/app/app-reducer';
 import { AreaActions, AreaSelectors } from '@data/area';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { RenameItemModalComponent } from '@shared/rename-item-modal/rename-item-modal.component';
-import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
+import { ConfirmationModalComponent } from '@shared/confirmation-modal/confirmation-modal.component';
 import { Observable } from 'rxjs';
-import {
-  UploadUserAreaModalComponent
-} from "@src/app/map-view/map/upload-user-area-modal/upload-user-area-modal.component";
-import { MessageActions } from "@data/message";
-import  { v4 as uuid } from "uuid";
-import { TranslateService } from "@ngx-translate/core";
-import { MapViewModule } from "@src/app/map-view/map-view.module";
+import { UploadUserAreaModalComponent } from '@src/app/map-view/map/upload-user-area-modal/upload-user-area-modal.component';
+import { MessageActions } from '@data/message';
+import { v4 as uuid } from 'uuid';
+import { TranslateService } from '@ngx-translate/core';
+import { MapViewModule } from '@src/app/map-view/map-view.module';
 
 @Component({
   selector: 'app-area-selection',
@@ -38,7 +37,7 @@ export class AreaSelectionComponent implements OnChanges {
   @Input() areas?: AllAreas;
   search = '';
   matchingResults = 0;
-  selectedAreas$?: Observable<StatePath[] | undefined>
+  selectedAreas$?: Observable<StatePath[] | undefined>;
   private nationalAreas: NationalArea[] = [];
   private userAreas: UserArea[] = [];
   filteredNationalAreas: NationalArea[] = [];
@@ -65,19 +64,24 @@ export class AreaSelectionComponent implements OnChanges {
 
   toggleExpandedAreaGroup = (statePath: StatePath) => {
     this.store.dispatch(AreaActions.toggleAreaGroupState({ statePath, property: 'expanded' }));
-  }
+  };
 
   onSearch = (value: string) => {
     this.search = value;
     this.filterAreas();
   };
 
-  selectArea = (statePath: StatePath, visible: boolean, groupStatePath: StatePath, expand: boolean) => {
+  selectArea = (
+    statePath: StatePath,
+    visible: boolean,
+    groupStatePath: StatePath,
+    expand: boolean
+  ) => {
     if (!visible) {
       this.toggleVisibleAreaGroup(groupStatePath);
     }
     this.store.dispatch(AreaActions.updateSelectedArea({ statePath, expand }));
-  }
+  };
 
   renameUserArea = async (userArea: UserArea) => {
     const areaName = await this.dialogService.open(RenameItemModalComponent, this.moduleRef, {
@@ -98,18 +102,22 @@ export class AreaSelectionComponent implements OnChanges {
   };
 
   deleteUserArea = async (userAreaId: number, userAreaName: string) => {
-
     const deleteArea = await this.dialogService.open<boolean, MapViewModule>(
-      ConfirmationModalComponent, this.moduleRef, {
+      ConfirmationModalComponent,
+      this.moduleRef,
+      {
         data: {
           header: this.translateService.instant('map.user-area.delete.modal.header'),
-          message: this.translateService.instant('map.user-area.delete.modal.message', { userAreaName }),
+          message: this.translateService.instant('map.user-area.delete.modal.message', {
+            userAreaName
+          }),
           confirmText: this.translateService.instant('controls.delete'),
           confirmColor: 'warn',
           cancelClass: 'primary',
           dialogClass: 'center'
         }
-      });
+      }
+    );
 
     if (deleteArea) {
       this.store.dispatch(AreaActions.deleteUserDefinedArea({ userAreaId }));
@@ -122,29 +130,31 @@ export class AreaSelectionComponent implements OnChanges {
 
   importUserArea = async () => {
     const result = await this.dialogService.open(UploadUserAreaModalComponent, this.moduleRef, {
-      data: { mimeType: "application/geopackage+sqlite3" }
+      data: { mimeType: 'application/geopackage+sqlite3' }
     });
 
     if (result) {
       this.store.dispatch(AreaActions.fetchUserDefinedAreas());
       const areaImport = result as AreaImport;
 
-      this.store.dispatch(MessageActions.addPopupMessage({
-        message: {
-          type: 'SUCCESS',
-          title: this.translateService.instant('api-messages.areas.import-success.title'),
-          message: this.translateService.instant(
-            (areaImport.areaNames.length > 1 ?
-              'api-messages.areas.import-success.message-multi' :
-              'api-messages.areas.import-success.message-single'),
-            { topLayerName: areaImport.areaNames[0], layersCount: areaImport.areaNames.length }),
-          uuid: uuid()
-        }
-      }));
+      this.store.dispatch(
+        MessageActions.addPopupMessage({
+          message: {
+            type: 'SUCCESS',
+            title: this.translateService.instant('api-messages.areas.import-success.title'),
+            message: this.translateService.instant(
+              areaImport.areaNames.length > 1
+                ? 'api-messages.areas.import-success.message-multi'
+                : 'api-messages.areas.import-success.message-single',
+              { topLayerName: areaImport.areaNames[0], layersCount: areaImport.areaNames.length }
+            ),
+            uuid: uuid()
+          }
+        })
+      );
       // TODO Zoom area?
     }
-  }
-
+  };
 
   private filterAreas() {
     this.filteredNationalAreas = filterNationalAreas(this.nationalAreas, this.search);

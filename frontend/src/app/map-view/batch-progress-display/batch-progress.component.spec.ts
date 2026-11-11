@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BatchProgressComponent } from './batch-progress.component';
-import { StoreModule } from "@ngrx/store";
-import { provideMockStore } from "@ngrx/store/testing";
-import { TranslateModule } from "@ngx-translate/core";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { StoreModule } from '@ngrx/store';
+import { provideMockStore } from '@ngrx/store/testing';
+import { TranslateModule } from '@ngx-translate/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('BatchProgressDisplayComponent', () => {
   let component: BatchProgressComponent;
@@ -12,10 +12,7 @@ describe('BatchProgressDisplayComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        StoreModule.forRoot({},{}),
-        TranslateModule.forRoot()
-      ],
+      imports: [StoreModule.forRoot({}, {}), TranslateModule.forRoot()],
       providers: [
         provideZonelessChangeDetection(),
         provideMockStore({
@@ -26,9 +23,8 @@ describe('BatchProgressDisplayComponent', () => {
           }
         })
       ],
-      declarations: [ BatchProgressComponent ]
-    })
-    .compileComponents();
+      declarations: [BatchProgressComponent]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(BatchProgressComponent);
     component = fixture.componentInstance;

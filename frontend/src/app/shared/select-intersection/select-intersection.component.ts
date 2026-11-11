@@ -1,10 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { DialogRef } from "@shared/dialog/dialog-ref";
-import { AreaSelectionConfig } from "@shared/select-intersection/select-intersection.interfaces";
-import { DialogConfig } from "@shared/dialog/dialog-config";
-import { getArea } from "ol/sphere";
-import { Polygon } from "ol/geom";
-import { GeoJSON } from "ol/format";
+import { DialogRef } from '@shared/dialog/dialog-ref';
+import { AreaSelectionConfig } from '@shared/select-intersection/select-intersection.interfaces';
+import { DialogConfig } from '@shared/dialog/dialog-config';
+import { getArea } from 'ol/sphere';
+import { Polygon } from 'ol/geom';
+import { GeoJSON } from 'ol/format';
 
 @Component({
   selector: 'app-select-intersection',
@@ -16,10 +16,10 @@ export class SelectIntersectionComponent {
   private readonly dialog = inject(DialogRef);
   private readonly conf = inject(DialogConfig);
 
-  areas : AreaSelectionConfig[];
+  areas: AreaSelectionConfig[];
   selected: number;
   multiselect: boolean[];
-  multi: boolean
+  multi: boolean;
   headerTextKey: string;
   messageTextKey: string;
   confirmTextKey: string;
@@ -31,24 +31,22 @@ export class SelectIntersectionComponent {
   constructor() {
     const conf = this.conf;
 
-    this.areas                  = conf.data.areas;
-    this.headerTextKey          = conf.data.headerTextKey;
-    this.messageTextKey         = conf.data.messageTextKey;
-    this.multi                  = conf.data.multi           || false;
-    this.confirmTextKey         = conf.data.confirmTextKey  || 'confirmation-modal.confirm'
-    this.cancelTextKey          = conf.data.cancelTextKey   || 'confirmation-modal.cancel';
+    this.areas = conf.data.areas;
+    this.headerTextKey = conf.data.headerTextKey;
+    this.messageTextKey = conf.data.messageTextKey;
+    this.multi = conf.data.multi || false;
+    this.confirmTextKey = conf.data.confirmTextKey || 'confirmation-modal.confirm';
+    this.cancelTextKey = conf.data.cancelTextKey || 'confirmation-modal.cancel';
     this.metaDescriptionTextKey = conf.data.metaDescriptionTextKey || null;
-    this.projection             = conf.data.projection    || 'EPSG:3857';
-    this.reprojection           = conf.data.reprojection  || 'EPSG:4326';
-    this.selected               = -1;
-    this.multiselect  = Array(this.areas.length).fill(false);
+    this.projection = conf.data.projection || 'EPSG:3857';
+    this.reprojection = conf.data.reprojection || 'EPSG:4326';
+    this.selected = -1;
+    this.multiselect = Array(this.areas.length).fill(false);
   }
 
   public squareKm(geometry: GeoJSON.Polygon | GeoJSON.MultiPolygon): number {
-
     // First, check for MultiPolygon geometries
-    const coords = (geometry.type === "Polygon") ?
-      [geometry.coordinates] : geometry.coordinates,
+    const coords = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates,
       wgs = { projection: this.reprojection };
     let measure = 0;
 
@@ -64,22 +62,21 @@ export class SelectIntersectionComponent {
   }
 
   confirm() {
-    if(!this.checkDisabled()) {
+    if (!this.checkDisabled()) {
       this.dialog.close(
-        this.multi ?
-          (this.areas.length > 1 ?
-            this.multiselect : [true]) :
-          this.selected);
+        this.multi ? (this.areas.length > 1 ? this.multiselect : [true]) : this.selected
+      );
     }
   }
 
-  checkDisabled():boolean {
-    return (this.multi &&
-            this.areas.length > 1 &&
-           !this.multiselect.reduce(this.multiAcc, false)) || (!this.multi && this.selected === -1);
+  checkDisabled(): boolean {
+    return (
+      (this.multi && this.areas.length > 1 && !this.multiselect.reduce(this.multiAcc, false)) ||
+      (!this.multi && this.selected === -1)
+    );
   }
 
-  multiAcc(a:boolean, b:boolean) : boolean {
+  multiAcc(a: boolean, b: boolean): boolean {
     return a || b;
   }
 
@@ -88,6 +85,6 @@ export class SelectIntersectionComponent {
   }
 
   select(index: number): void {
-      this.selected = index;
+    this.selected = index;
   }
 }

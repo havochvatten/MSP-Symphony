@@ -20,7 +20,12 @@ describe('ComparisonReportComponent', () => {
         provideMockStore({ initialState: {} }),
         {
           provide: ActivatedRoute,
-          useValue: { snapshot: { paramMap: convertToParamMap({ aId: '1', bId: '2', maxValue: '50' }), queryParams: {} } }
+          useValue: {
+            snapshot: {
+              paramMap: convertToParamMap({ aId: '1', bId: '2', maxValue: '50' }),
+              queryParams: {}
+            }
+          }
         },
         { provide: TranslateService, useValue: { currentLang: 'en' } },
         { provide: ReportService, useValue: { getComparisonReport: () => NEVER } },
@@ -33,7 +38,9 @@ describe('ComparisonReportComponent', () => {
   };
 
   it('requests the comparison image with the style version', () => {
-    expect(create('abc123').comparisonImageUrl()).toBe(`${env.apiBaseUrl}/calculation/diff/1/2?max=50&v=abc123`);
+    expect(create('abc123').comparisonImageUrl()).toBe(
+      `${env.apiBaseUrl}/calculation/diff/1/2?max=50&v=abc123`
+    );
   });
 
   it('requests the comparison image without a version when it is unavailable', () => {

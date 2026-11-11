@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateModule, TranslateService } from "@ngx-translate/core";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 import { FundingDisclaimerComponent } from './funding-disclaimer.component';
 
@@ -23,8 +23,9 @@ describe('FundingDisclaimerComponent', () => {
     translate.use(lang);
     fixture.detectChanges();
     await fixture.whenStable();
-    return Array.from(fixture.nativeElement.querySelectorAll('p') as NodeListOf<HTMLElement>)
-      .map(p => p.textContent!.trim());
+    return Array.from(fixture.nativeElement.querySelectorAll('p') as NodeListOf<HTMLElement>).map(
+      (p) => p.textContent!.trim()
+    );
   };
 
   it('renders the three Swedish paragraphs verbatim', async () => {
@@ -32,13 +33,17 @@ describe('FundingDisclaimerComponent', () => {
     expect(p.length).toBe(3);
     expect(p[0]).toMatch(/^Denna kod har publicerats av Havs- och vattenmyndigheten \(HaV\)/);
     expect(p[1]).toContain('användningar – inklusive, men inte begränsat till – beslut');
-    expect(p[2]).toBe('Innehåll, resultat och användningar återspeglar inte nödvändigtvis varken Havs- och vattenmyndighetens, Regeringskansliets eller Sidas.');
+    expect(p[2]).toBe(
+      'Innehåll, resultat och användningar återspeglar inte nödvändigtvis varken Havs- och vattenmyndighetens, Regeringskansliets eller Sidas.'
+    );
   });
 
   it('renders the English paragraphs', async () => {
     const p = await render('en');
     expect(p[0]).toMatch(/^This code was published by SwAM/);
-    expect(p[2]).toBe('The content, outputs and uses do not necessarily reflect those of neither SwAM, the Government Offices of Sweden nor Sida.');
+    expect(p[2]).toBe(
+      'The content, outputs and uses do not necessarily reflect those of neither SwAM, the Government Offices of Sweden nor Sida.'
+    );
   });
 
   it('leaves no margin below the last paragraph, so the space after the block matches the space before it', async () => {

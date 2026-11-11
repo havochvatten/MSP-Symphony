@@ -6,11 +6,11 @@ import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as area } from '@data/area/area.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { MatrixSelectionComponent } from './matrix-selection.component';
-import { MatRadioModule } from "@angular/material/radio";
-import { MatSelectModule } from "@angular/material/select";
-import { NormalizationType } from "@data/calculation/calculation.service";
-import { TranslateModule, TranslateService } from "@ngx-translate/core";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { NormalizationType } from '@data/calculation/calculation.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('MatrixSelectionComponent', () => {
   let component: MatrixSelectionComponent;
@@ -25,18 +25,17 @@ describe('MatrixSelectionComponent', () => {
         MatSelectModule,
         TranslateModule.forRoot()
       ],
-      declarations: [ MatrixSelectionComponent ],
+      declarations: [MatrixSelectionComponent],
       providers: [
         TranslateService,
-        provideMockStore(
-          { initialState: {
-              metadata: metadata,
-              area: area,
-              scenario: scenario,
-              user: { baseline: undefined }
-            }
+        provideMockStore({
+          initialState: {
+            metadata: metadata,
+            area: area,
+            scenario: scenario,
+            user: { baseline: undefined }
           }
-        ),
+        }),
         provideZonelessChangeDetection()
       ]
     }).compileComponents();
@@ -50,18 +49,24 @@ describe('MatrixSelectionComponent', () => {
       baselineId: 0,
       changes: {},
       ecosystemsToInclude: [],
-      name: "",
-      normalization: { type:NormalizationType.DOMAIN },
+      name: '',
+      normalization: { type: NormalizationType.DOMAIN },
       pressuresToInclude: [],
-      areas: [{
-        id: 1,
-        feature: {type:'Feature', geometry: {type: 'Polygon', coordinates:[]}, properties: { feature: { name: ''} }},
-        changes: {},
-        matrix: {matrixType: 'STANDARD'},
-        scenarioId: -1,
-        excludedCoastal: null,
-        customCalcAreaId: null
-      }],
+      areas: [
+        {
+          id: 1,
+          feature: {
+            type: 'Feature',
+            geometry: { type: 'Polygon', coordinates: [] },
+            properties: { feature: { name: '' } }
+          },
+          changes: {},
+          matrix: { matrixType: 'STANDARD' },
+          scenarioId: -1,
+          excludedCoastal: null,
+          customCalcAreaId: null
+        }
+      ],
       latestCalculationId: null
     };
     component.areaIndex = 0;

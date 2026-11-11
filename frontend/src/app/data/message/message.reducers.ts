@@ -13,6 +13,6 @@ export const messageReducer = createReducer(
   })),
   on(MessageActions.removePopupMessage, (state, { uuid }) => ({
     ...state,
-    popup: state.popup.filter(message => message.uuid !== uuid)
+    popup: state.popup.filter((message) => message.uuid !== uuid)
   }))
 );

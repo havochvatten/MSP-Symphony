@@ -1,9 +1,19 @@
-import { Component, ElementRef, EventEmitter, HostBinding, Input, Output, ViewChild, OnInit, inject } from '@angular/core';
-import { Store } from "@ngrx/store";
-import { State } from "@src/app/app-reducer";
-import { BandChange  } from "@data/metadata/metadata.interfaces";
-import { ScenarioActions } from "@data/scenario";
-import { convertMultiplierToPercent } from "@data/metadata/metadata.selectors";
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostBinding,
+  Input,
+  Output,
+  ViewChild,
+  OnInit,
+  inject
+} from '@angular/core';
+import { Store } from '@ngrx/store';
+import { State } from '@src/app/app-reducer';
+import { BandChange } from '@data/metadata/metadata.interfaces';
+import { ScenarioActions } from '@data/scenario';
+import { convertMultiplierToPercent } from '@data/metadata/metadata.selectors';
 
 @Component({
   selector: 'app-overview-inline-band-change',
@@ -14,7 +24,6 @@ import { convertMultiplierToPercent } from "@data/metadata/metadata.selectors";
 export class OverviewInlineBandChangeComponent implements OnInit {
   private store = inject<Store<State>>(Store);
 
-
   @Input() change!: BandChange;
   @Input() currentValueAsString!: string;
   @Input() areaIndex!: number;
@@ -23,8 +32,8 @@ export class OverviewInlineBandChangeComponent implements OnInit {
   @Output() editModeChange = new EventEmitter<object | null>();
   @HostBinding('className') componentClass = '';
 
-  @ViewChild("offsetInput") offsetInput!: ElementRef;
-  @ViewChild("multiplierInput") multiplierInput!: ElementRef;
+  @ViewChild('offsetInput') offsetInput!: ElementRef;
+  @ViewChild('multiplierInput') multiplierInput!: ElementRef;
 
   changeType: 'constant' | 'relative' = 'constant';
   editMode = false;
@@ -38,26 +47,32 @@ export class OverviewInlineBandChangeComponent implements OnInit {
     this.componentClass = 'cell-editing';
 
     if (this.changeType === 'constant') {
-        this.offsetInput.nativeElement.focus();
+      this.offsetInput.nativeElement.focus();
     } else {
-        this.multiplierInput.nativeElement.focus();
+      this.multiplierInput.nativeElement.focus();
     }
   }
 
   checkEmptyValue(): boolean {
     const change = this.getChange();
-    return (this.changeType === 'relative' && change.multiplier === 1) ||
-           (this.changeType === 'constant' && change.offset === 0);
+    return (
+      (this.changeType === 'relative' && change.multiplier === 1) ||
+      (this.changeType === 'constant' && change.offset === 0)
+    );
   }
 
   displayValue(): string {
-    if(this.checkEmptyValue()) {
+    if (this.checkEmptyValue()) {
       return '-';
     } else {
       const change = this.getChange();
-      return change.multiplier ?
-        Number.parseFloat(Number(convertMultiplierToPercent(change.multiplier) * 100).toFixed(2)) + '%' :
-        (change.offset ? String(change.offset) : '-');
+      return change.multiplier
+        ? Number.parseFloat(
+            Number(convertMultiplierToPercent(change.multiplier) * 100).toFixed(2)
+          ) + '%'
+        : change.offset
+          ? String(change.offset)
+          : '-';
     }
   }
 
@@ -79,26 +94,34 @@ export class OverviewInlineBandChangeComponent implements OnInit {
 
   exitEditMode() {
     this.editMode = false;
-    this.editModeChange.emit({areaIndex: this.areaIndex, change: this.getChange(), bandNumber: this.bandNumber});
+    this.editModeChange.emit({
+      areaIndex: this.areaIndex,
+      change: this.getChange(),
+      bandNumber: this.bandNumber
+    });
     this.componentClass = '';
   }
 
   confirmChange() {
     const change = this.getChange();
     if (this.checkEmptyValue()) {
-      this.store.dispatch(ScenarioActions.deleteBandChangeForAreaIndex({
-        componentType: change.type,
-        areaIndex: this.areaIndex === -1 ? undefined : this.areaIndex,
-        band: this.bandNumber
-      }));
+      this.store.dispatch(
+        ScenarioActions.deleteBandChangeForAreaIndex({
+          componentType: change.type,
+          areaIndex: this.areaIndex === -1 ? undefined : this.areaIndex,
+          band: this.bandNumber
+        })
+      );
     } else {
-        this.store.dispatch(ScenarioActions.updateBandAttributeForAreaIndex({
-            areaIndex: this.areaIndex === -1 ? undefined : this.areaIndex,
-            componentType: change.type,
-            band: this.bandNumber,
-            attribute: this.changeType === 'constant' ? 'offset' : 'multiplier',
-            value: this.changeType === 'constant' ? this.localOffset : this.localMultiplier,
-        }));
+      this.store.dispatch(
+        ScenarioActions.updateBandAttributeForAreaIndex({
+          areaIndex: this.areaIndex === -1 ? undefined : this.areaIndex,
+          componentType: change.type,
+          band: this.bandNumber,
+          attribute: this.changeType === 'constant' ? 'offset' : 'multiplier',
+          value: this.changeType === 'constant' ? this.localOffset : this.localMultiplier
+        })
+      );
     }
 
     this.exitEditMode();
@@ -115,12 +138,12 @@ export class OverviewInlineBandChangeComponent implements OnInit {
   }
 
   setChange($event: Event) {
-    const target = ($event.target as HTMLInputElement);
+    const target = $event.target as HTMLInputElement;
     let value = +target.value;
 
     if (this.changeType === 'relative') {
       value = Math.min(value, 150);
-      this.localMultiplier = +(value.toFixed(2)) / 100 + 1;
+      this.localMultiplier = +value.toFixed(2) / 100 + 1;
       this.multiplierInput.nativeElement.value = Math.trunc((this.localMultiplier - 1) * 100);
     } else {
       this.localOffset = Math.min(value, 150);

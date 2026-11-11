@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // TODO: try to implement w/o `any` (presumably prohibited by the chart library)
-import { ChartData } from "@src/app/report/pressure-chart/pressure-chart.component";
+import { ChartData } from '@src/app/report/pressure-chart/pressure-chart.component';
 
 export function relativeDifference(a: unknown, b: unknown) {
   const na = a as number,
@@ -10,9 +10,9 @@ export function relativeDifference(a: unknown, b: unknown) {
 }
 
 export function formatChartData(
-    data: ChartData,
-    bandDict: { [bandType: string]: { [p: string]: string } }): ChartData {
-
+  data: ChartData,
+  bandDict: { [bandType: string]: { [p: string]: string } }
+): ChartData {
   const changeName = (node: any) => {
     try {
       const bands = bandDict[(node.name[0] as 'b' | 'e') === 'e' ? 'ECOSYSTEM' : 'PRESSURE'];

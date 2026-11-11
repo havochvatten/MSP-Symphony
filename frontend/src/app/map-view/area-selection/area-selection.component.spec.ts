@@ -6,26 +6,21 @@ import { SharedModule } from '@shared/shared.module';
 import { provideMockStore } from '@ngrx/store/testing';
 import { SelectionLayoutComponent } from '../selection-layout/selection-layout.component';
 import { AreaGroupComponent } from './area-group/area-group.component';
-import { initialState as area } from "@data/area/area.reducers";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { initialState as area } from '@data/area/area.reducers';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('AreaSelectionComponent', () => {
-  let fixture: ComponentFixture<AreaSelectionComponent>,
-      component: AreaSelectionComponent;
+  let fixture: ComponentFixture<AreaSelectionComponent>, component: AreaSelectionComponent;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        AreaSelectionComponent,
-        SelectionLayoutComponent,
-        AreaGroupComponent
-      ],
+      declarations: [AreaSelectionComponent, SelectionLayoutComponent, AreaGroupComponent],
       imports: [SharedModule, TranslationSetupModule],
       providers: [
         provideMockStore({
           initialState: {
-            area : area,
-            user : {}
+            area: area,
+            user: {}
           }
         }),
         provideZonelessChangeDetection()

@@ -1,12 +1,12 @@
-import { BandChange } from "@data/metadata/metadata.interfaces";
-import { GeoJSONFeature } from "ol/format/GeoJSON";
-import { CalcOperation, NormalizationOptions } from "@data/calculation/calculation.service";
+import { BandChange } from '@data/metadata/metadata.interfaces';
+import { GeoJSONFeature } from 'ol/format/GeoJSON';
+import { CalcOperation, NormalizationOptions } from '@data/calculation/calculation.service';
 import {
   AreaMatrixData,
   MatrixParameters
-} from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
-import { OperationParams } from "@data/calculation/calculation.interfaces";
-import { ListItemsSort, SortableListItem } from "@data/common/sorting.interfaces";
+} from '@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces';
+import { OperationParams } from '@data/calculation/calculation.interfaces';
+import { ListItemsSort, SortableListItem } from '@data/common/sorting.interfaces';
 
 export interface State {
   scenarios: Scenario[];
@@ -21,7 +21,7 @@ export interface State {
 export interface Scenario extends SortableListItem {
   id: number;
   baselineId: number;
-  changes: { [key: string] : ChangesProperty };
+  changes: { [key: string]: ChangesProperty };
   normalization: NormalizationOptions;
   ecosystemsToInclude: number[];
   pressuresToInclude: number[];
@@ -34,7 +34,7 @@ export interface Scenario extends SortableListItem {
 export interface ScenarioArea {
   id: number;
   feature: GeoJSONFeature;
-  changes: { [key: string] : ChangesProperty } | null;
+  changes: { [key: string]: ChangesProperty } | null;
   matrix: MatrixParameters;
   scenarioId: number;
   excludedCoastal: number | null;
@@ -59,13 +59,13 @@ export interface ScenarioAreaCoastalExclusion {
 }
 
 export interface ScenarioChangeMap {
-  [ bandType: string ]: { [ bandId: number ]: BandChange };
+  [bandType: string]: { [bandId: number]: BandChange };
 }
 
 export interface ScenarioCopyOptions {
   name: string;
   includeScenarioChanges: boolean;
-  areaChangesToInclude : number[];
+  areaChangesToInclude: number[];
 }
 
 export interface ScenarioChangesSelection {

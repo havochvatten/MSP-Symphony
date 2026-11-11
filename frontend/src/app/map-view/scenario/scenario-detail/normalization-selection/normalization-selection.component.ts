@@ -1,13 +1,21 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
-import { NormalizationOptions, NormalizationType } from "@data/calculation/calculation.service";
-import { TranslateService } from "@ngx-translate/core";
-import { environment } from "@src/environments/environment";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  inject
+} from '@angular/core';
+import { NormalizationOptions, NormalizationType } from '@data/calculation/calculation.service';
+import { TranslateService } from '@ngx-translate/core';
+import { environment } from '@src/environments/environment';
 
 export const DEFAULT_OPTIONS: NormalizationOptions = {
   type: environment.editor.defaultNormalizationType as NormalizationType,
   stdDevMultiplier: 0,
   userDefinedValue: 1
-}
+};
 
 @Component({
   selector: 'app-normalization-selection',
@@ -48,12 +56,12 @@ export class NormalizationSelectionComponent implements OnChanges {
     }
   ];
 
-  showValueField(ntype :  NormalizationType): boolean {
+  showValueField(ntype: NormalizationType): boolean {
     return ntype === this.options.type;
   }
 
   check(ntype: string) {
-    if(!ntype) return;
+    if (!ntype) return;
     this.modeSelectionEvent.emit({
       type: NormalizationType[ntype as keyof typeof NormalizationType],
       userDefinedValue: this.options.userDefinedValue,
@@ -63,20 +71,20 @@ export class NormalizationSelectionComponent implements OnChanges {
 
   onChangeValue(ntype: string, event: Event) {
     const opts = this.options,
-          val = parseFloat((event.target! as HTMLInputElement).value);
+      val = parseFloat((event.target! as HTMLInputElement).value);
 
     this.modeSelectionEvent.emit({
       type: NormalizationType[ntype as keyof typeof NormalizationType],
-      userDefinedValue: ntype === NormalizationType.USER_DEFINED ?
-                        val : opts.userDefinedValue,
-      stdDevMultiplier: ntype === NormalizationType.STANDARD_DEVIATION ?
-                        val : opts.stdDevMultiplier,
+      userDefinedValue: ntype === NormalizationType.USER_DEFINED ? val : opts.userDefinedValue,
+      stdDevMultiplier: ntype === NormalizationType.STANDARD_DEVIATION ? val : opts.stdDevMultiplier
     });
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.algorithm?.currentValue === 'RarityAdjustedCumulativeImpact' &&
-      this.options.type === NormalizationType.DOMAIN) {
+    if (
+      changes.algorithm?.currentValue === 'RarityAdjustedCumulativeImpact' &&
+      this.options.type === NormalizationType.DOMAIN
+    ) {
       this.modeSelectionEvent.emit({
         type: NormalizationType.AREA,
         userDefinedValue: this.options.userDefinedValue,

@@ -16,7 +16,9 @@ describe('PublicGuard', () => {
   beforeEach(() => {
     const routerSpy = jasmine.createSpyObj<Router>('Router', ['createUrlTree']);
     // Echo the commands back so we can assert on the redirect target.
-    routerSpy.createUrlTree.and.callFake((commands: unknown[]) => ({ commands }) as unknown as UrlTree);
+    routerSpy.createUrlTree.and.callFake(
+      (commands: unknown[]) => ({ commands }) as unknown as UrlTree
+    );
 
     TestBed.configureTestingModule({
       providers: [provideMockStore(), { provide: Router, useValue: routerSpy }]

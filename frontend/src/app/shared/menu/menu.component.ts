@@ -3,7 +3,7 @@ import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 export interface MenuItem {
   url?: string | unknown[];
-  click?:(event: MouseEvent) => void;
+  click?: (event: MouseEvent) => void;
   name: string;
   icon?: IconDefinition;
 }

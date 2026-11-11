@@ -1,11 +1,10 @@
-import { Pipe, PipeTransform } from "@angular/core";
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'anchor',
   standalone: false
 })
 export class AnchorPipe implements PipeTransform {
-
   private urlRx = /(https?:\/\/[^ ]*)/g;
   private anchorRpl = '<a href="$1" target="_blank">$1</a>';
 

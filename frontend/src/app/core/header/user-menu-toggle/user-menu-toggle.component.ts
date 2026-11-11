@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { User } from "@data/user/user.interfaces";
+import { User } from '@data/user/user.interfaces';
 
 @Component({
   selector: 'app-user-menu-toggle',

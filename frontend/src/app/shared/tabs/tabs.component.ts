@@ -1,4 +1,12 @@
-import { Component, AfterContentInit, ContentChildren, QueryList, Input, EventEmitter, inject } from '@angular/core';
+import {
+  Component,
+  AfterContentInit,
+  ContentChildren,
+  QueryList,
+  Input,
+  EventEmitter,
+  inject
+} from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TabComponent } from './tab/tab.component';
 
@@ -25,7 +33,7 @@ export class TabsComponent implements AfterContentInit {
 
   selectTab(tabId?: string) {
     // set selected tab as active and the rest as not active
-    this.tabs.toArray().forEach(tab => (tab.active = tab.id === tabId));
+    this.tabs.toArray().forEach((tab) => (tab.active = tab.id === tabId));
     if (tabId && this.getRouteTabId() !== tabId) {
       this.navigateToURL(tabId);
     }

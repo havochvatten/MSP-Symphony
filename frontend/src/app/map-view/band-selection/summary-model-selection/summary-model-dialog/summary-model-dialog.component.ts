@@ -20,8 +20,7 @@ export interface ModelDescriptionDialogData {
 }
 
 type FormulaToken =
-  | { type: 'text', value: string }
-  | { type: 'step', value: string, stepNumber: number };
+  { type: 'text'; value: string } | { type: 'step'; value: string; stepNumber: number };
 
 interface RenderedStep {
   number: number;
@@ -43,10 +42,9 @@ interface RenderedStep {
   selector: 'app-model-description-dialog',
   templateUrl: './summary-model-dialog.component.html',
   styleUrls: ['./summary-model-dialog.component.scss'],
-  standalone: false,
+  standalone: false
 })
 export class SummaryModelDialogComponent {
-
   title: string = '';
   steps: RenderedStep[] = [];
   private highlightedStep: number | null = null;
@@ -54,7 +52,7 @@ export class SummaryModelDialogComponent {
   private readonly config = inject(DialogConfig) as { data: ModelDescriptionDialogData };
   private readonly dialogRef = inject(DialogRef);
   private readonly translate = inject(TranslateService);
-  private readonly cdr = inject(ChangeDetectorRef)
+  private readonly cdr = inject(ChangeDetectorRef);
 
   constructor() {
     const payload = this.config.data;
@@ -76,7 +74,7 @@ export class SummaryModelDialogComponent {
     const outputDependencies = new Set<number>();
     if (outputStepIndex !== -1) {
       const outputStep = payload.steps[outputStepIndex];
-      outputStep.formulaInputs?.forEach(input => {
+      outputStep.formulaInputs?.forEach((input) => {
         const num = nameToNumber.get(input.name);
         if (num) outputDependencies.add(num);
       });
@@ -136,7 +134,7 @@ export class SummaryModelDialogComponent {
     return tokens;
   }
 
-  private getStepDisplayName(step: { name: string, label: string }): string {
+  private getStepDisplayName(step: { name: string; label: string }): string {
     return step.label || step.name;
   }
 

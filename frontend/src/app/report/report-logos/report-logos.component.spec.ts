@@ -30,7 +30,10 @@ describe('ReportLogosComponent', () => {
       reportCountryLogoSrc: 'se.svg',
       reportCountryLogoAlt: { sv: 'Sverige', en: 'Sweden' },
       reportLogoSrc: { sv: 'hav-sv.svg', en: 'hav-en.svg' },
-      reportLogoAlt: { sv: 'Havs- och vattenmyndigheten', en: 'Swedish Agency for Marine and Water Management' }
+      reportLogoAlt: {
+        sv: 'Havs- och vattenmyndigheten',
+        en: 'Swedish Agency for Marine and Water Management'
+      }
     };
     TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot()],
@@ -83,7 +86,7 @@ describe('ReportLogosComponent', () => {
   it('shows only the agency logo when there is no country logo', async () => {
     config.reportCountryLogoSrc = undefined;
     await render();
-    expect(images().map(img => img.className)).toEqual(['report-logo']);
+    expect(images().map((img) => img.className)).toEqual(['report-logo']);
   });
 
   it('uses the configured alt texts', async () => {

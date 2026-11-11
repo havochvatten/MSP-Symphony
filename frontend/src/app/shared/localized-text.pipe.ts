@@ -21,7 +21,10 @@ export class LocalizedTextPipe implements PipeTransform {
 
   transform(text: LocalizedText | null | undefined): string {
     const { value, error } = resolveLocalizedText(
-      text, this.translate.currentLang, this.translate.getDefaultLang());
+      text,
+      this.translate.currentLang,
+      this.translate.getDefaultLang()
+    );
     if (error && !this.reportedErrors.has(error)) {
       this.reportedErrors.add(error);
       console.error(error);

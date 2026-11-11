@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { ComparisonLegendState } from "@data/calculation/calculation.interfaces";
+import { ComparisonLegendState } from '@data/calculation/calculation.interfaces';
 
 @Component({
   selector: 'app-comparison-color-scale',
@@ -8,8 +8,6 @@ import { ComparisonLegendState } from "@data/calculation/calculation.interfaces"
   standalone: false
 })
 export class ComparisonColorScaleComponent {
-
   @Input() locale = 'en';
   @Input() legends!: ComparisonLegendState[];
-
 }

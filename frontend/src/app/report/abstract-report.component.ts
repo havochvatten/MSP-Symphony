@@ -1,22 +1,21 @@
 import { computed, signal, inject, Component } from '@angular/core';
-import { formatPercent } from "@angular/common";
-import { Store } from "@ngrx/store";
-import { map, withLatestFrom } from "rxjs/operators";
-import { Observable } from "rxjs";
-import { TranslateService } from "@ngx-translate/core";
-import buildInfo from "@src/build-info";
-import { State } from "@src/app/app-reducer";
-import { formatChartData } from "@src/app/report/report.util";
-import { MetadataSelectors } from "@data/metadata";
-import { CalculationActions, CalculationSelectors } from "@data/calculation";
-import { BandGroup } from "@data/metadata/metadata.interfaces";
+import { formatPercent } from '@angular/common';
+import { Store } from '@ngrx/store';
+import { map, withLatestFrom } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
+import buildInfo from '@src/build-info';
+import { State } from '@src/app/app-reducer';
+import { formatChartData } from '@src/app/report/report.util';
+import { MetadataSelectors } from '@data/metadata';
+import { CalculationActions, CalculationSelectors } from '@data/calculation';
+import { BandGroup } from '@data/metadata/metadata.interfaces';
 
 @Component({
   template: '',
   standalone: false
 })
 export abstract class AbstractReport<ReportType> {
-
   reportSignal = signal<ReportType | null>(null);
   report = computed(() => {
     return this.reportSignal()!;
@@ -27,7 +26,7 @@ export abstract class AbstractReport<ReportType> {
   protected imageUrl?: string;
 
   protected readonly percentileValue$: Observable<number>; // FIXME: shouldn't be an observable!
-  protected readonly bandDictionary$: Observable<{ [k: string] : { [p: string]: string } }>;
+  protected readonly bandDictionary$: Observable<{ [k: string]: { [p: string]: string } }>;
   protected _metadata$: Observable<{
     ecoComponent: BandGroup[];
     pressureComponent: BandGroup[];
@@ -36,7 +35,7 @@ export abstract class AbstractReport<ReportType> {
   protected symphonyVersion = buildInfo.version;
 
   protected metadata$: Observable<{
-    metadata: { ecoComponent: BandGroup[], pressureComponent: BandGroup[] };
+    metadata: { ecoComponent: BandGroup[]; pressureComponent: BandGroup[] };
     bandDictionary: { [p: string]: { [p: string]: string } };
     percentileValue: number;
   } | null>;
@@ -59,7 +58,8 @@ export abstract class AbstractReport<ReportType> {
         metadata && bandDictionary && percentileValue && metadata.ecoComponent.length > 0
           ? { metadata, bandDictionary, percentileValue }
           : null
-      ));
+      )
+    );
 
     store.dispatch(CalculationActions.fetchPercentile());
   }

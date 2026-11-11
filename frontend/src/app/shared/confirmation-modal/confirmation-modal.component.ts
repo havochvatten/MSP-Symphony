@@ -1,6 +1,6 @@
 import { Component, ElementRef, HostBinding, inject } from '@angular/core';
-import { DialogRef } from "@shared/dialog/dialog-ref";
-import { DialogConfig } from "@shared/dialog/dialog-config";
+import { DialogRef } from '@shared/dialog/dialog-ref';
+import { DialogConfig } from '@shared/dialog/dialog-config';
 
 @Component({
   selector: 'app-confirmation-modal',
@@ -8,7 +8,7 @@ import { DialogConfig } from "@shared/dialog/dialog-config";
   styleUrls: ['./confirmation-modal.component.scss'],
   standalone: false
 })
-export class ConfirmationModalComponent  {
+export class ConfirmationModalComponent {
   private readonly dialog = inject(DialogRef);
   private readonly element = inject(ElementRef);
 
@@ -32,10 +32,10 @@ export class ConfirmationModalComponent  {
     this.confirmText = conf.data.confirmText || null;
     this.cancelText = conf.data.cancelText || null;
     this.confirmClass = conf.data.confirmClass || null;
-    this.cancelClass = conf.data.cancelClass || "secondary";
+    this.cancelClass = conf.data.cancelClass || 'secondary';
     this.buttonsClass = conf.data.buttonsClass || null;
-    this.matColorConfirm = conf.data.confirmColor || "primary";
-    this.matColorCancel = conf.data.cancelColor || "primary";
+    this.matColorConfirm = conf.data.confirmColor || 'primary';
+    this.matColorCancel = conf.data.cancelColor || 'primary';
     this.element.nativeElement.className = conf.data.dialogClass || null;
   }
 

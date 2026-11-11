@@ -22,7 +22,10 @@ export class LocalizedSrcPipe implements PipeTransform {
 
   transform(src: LocalizedSrc | null | undefined): string {
     const { value, error } = resolveLocalizedSrc(
-      src, this.translate.currentLang, this.translate.getDefaultLang());
+      src,
+      this.translate.currentLang,
+      this.translate.getDefaultLang()
+    );
     if (error && !this.reportedErrors.has(error)) {
       this.reportedErrors.add(error);
       console.error(error);

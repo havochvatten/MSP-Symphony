@@ -1,19 +1,17 @@
 import { Component, inject, NgModuleRef } from '@angular/core';
-import { Scenario } from "@data/scenario/scenario.interfaces";
-import { Store } from "@ngrx/store";
-import { State } from "@src/app/app-reducer";
-import { ScenarioActions, ScenarioSelectors } from "@data/scenario";
-import {
-  AreaMatrixData,
-} from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces";
-import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
-import { TranslateService } from "@ngx-translate/core";
-import { DialogService } from "@shared/dialog/dialog.service";
-import { changeText } from "@src/app/shared/common.util";
-import { Observable } from "rxjs";
-import { MetadataActions } from "@data/metadata";
-import { BandChange } from "@data/metadata/metadata.interfaces";
-import { MapViewModule } from "@src/app/map-view/map-view.module";
+import { Scenario } from '@data/scenario/scenario.interfaces';
+import { Store } from '@ngrx/store';
+import { State } from '@src/app/app-reducer';
+import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
+import { AreaMatrixData } from '@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix.interfaces';
+import { ConfirmationModalComponent } from '@shared/confirmation-modal/confirmation-modal.component';
+import { TranslateService } from '@ngx-translate/core';
+import { DialogService } from '@shared/dialog/dialog.service';
+import { changeText } from '@src/app/shared/common.util';
+import { Observable } from 'rxjs';
+import { MetadataActions } from '@data/metadata';
+import { BandChange } from '@data/metadata/metadata.interfaces';
+import { MapViewModule } from '@src/app/map-view/map-view.module';
 
 @Component({
   selector: 'app-scenario-editor',
@@ -32,15 +30,15 @@ export class ScenarioEditorComponent {
 
   constructor() {
     this.store.dispatch(ScenarioActions.fetchScenarios());
-    this.store.select(ScenarioSelectors.selectActiveScenario)
-      .subscribe(scenario => {
-        if(scenario && scenario.id !== this.activeScenario?.id) {
-          this.store.dispatch(MetadataActions.fetchMetadata());
-        }
-        this.activeScenario = scenario;
-      });
-    this.store.select(ScenarioSelectors.selectActiveScenarioArea)
-      .subscribe(areaIndex => this.activeAreaIndex = areaIndex);
+    this.store.select(ScenarioSelectors.selectActiveScenario).subscribe((scenario) => {
+      if (scenario && scenario.id !== this.activeScenario?.id) {
+        this.store.dispatch(MetadataActions.fetchMetadata());
+      }
+      this.activeScenario = scenario;
+    });
+    this.store
+      .select(ScenarioSelectors.selectActiveScenarioArea)
+      .subscribe((areaIndex) => (this.activeAreaIndex = areaIndex));
   }
 
   getActiveAreaIndex(): number | undefined {
@@ -51,58 +49,68 @@ export class ScenarioEditorComponent {
     return this.activeScenario;
   }
 
-  confirmDeleteArea = async(areaId: number, $event: MouseEvent, scenario: Scenario | undefined) => {
+  confirmDeleteArea = async (
+    areaId: number,
+    $event: MouseEvent,
+    scenario: Scenario | undefined
+  ) => {
     $event.stopPropagation();
 
-    if(scenario === undefined) return;
+    if (scenario === undefined) return;
 
-    const area = scenario.areas.find(a => a.id === areaId);
+    const area = scenario.areas.find((a) => a.id === areaId);
 
-    if(area) {
+    if (area) {
       const param = { scenario: scenario.name, area: area.feature.properties!['name'] },
         confirmDeleteArea: boolean = await this.dialogService.open(
-          ConfirmationModalComponent, this.moduleRef,
+          ConfirmationModalComponent,
+          this.moduleRef,
           {
             data: {
               header: `${this.translateService.instant('map.editor.areas.remove.modal.title')}`,
-              message : `${this.translateService.instant('map.editor.areas.remove.modal.message', param)}` +
-                (scenario.areas.length > 1 ? '' : '<br>' +
-                  `${this.translateService.instant('map.editor.areas.remove.modal.message-last', param)}`),
+              message:
+                `${this.translateService.instant('map.editor.areas.remove.modal.message', param)}` +
+                (scenario.areas.length > 1
+                  ? ''
+                  : '<br>' +
+                    `${this.translateService.instant('map.editor.areas.remove.modal.message-last', param)}`),
               confirmText: this.translateService.instant('map.editor.areas.remove.modal.confirm'),
               confirmColor: 'warn',
               dialogClass: 'center wide1'
             }
-          });
+          }
+        );
       if (confirmDeleteArea) {
         this.deleteAreaAction(areaId, scenario);
       }
     }
-  }
+  };
 
-  confirmDeleteChange = async (bandName: string, change: BandChange) : Promise<boolean> => {
-    const changeDescription =
-      this.changeText(bandName, change);
+  confirmDeleteChange = async (bandName: string, change: BandChange): Promise<boolean> => {
+    const changeDescription = this.changeText(bandName, change);
 
-    return await this.dialogService.open(ConfirmationModalComponent, this.moduleRef,
-      { data: {
-          header: this.translateService.instant('map.editor.changes.clear-change-modal.header'),
-          message: this.translateService.instant('map.editor.changes.clear-change-modal.message', { changeDescription }),
-          confirmText: this.translateService.instant('map.editor.changes.clear-change-modal.confirm'),
-          dialogClass: 'center block-identifier',
-          confirmColor: 'warn',
-          buttonsClass: 'center'
-        }
-      });
-  }
+    return await this.dialogService.open(ConfirmationModalComponent, this.moduleRef, {
+      data: {
+        header: this.translateService.instant('map.editor.changes.clear-change-modal.header'),
+        message: this.translateService.instant('map.editor.changes.clear-change-modal.message', {
+          changeDescription
+        }),
+        confirmText: this.translateService.instant('map.editor.changes.clear-change-modal.confirm'),
+        dialogClass: 'center block-identifier',
+        confirmColor: 'warn',
+        buttonsClass: 'center'
+      }
+    });
+  };
 
   deleteAreaAction = (areaId: number, scenario: Scenario) => {
     this.store.dispatch(ScenarioActions.closeActiveScenarioArea());
     if (scenario.areas.length > 1) {
-      this.store.dispatch(ScenarioActions.deleteScenarioArea({areaId}));
+      this.store.dispatch(ScenarioActions.deleteScenarioArea({ areaId }));
     } else {
       this.store.dispatch(ScenarioActions.deleteScenario({ scenarioToBeDeleted: scenario }));
     }
-  }
+  };
 
   changeText = changeText;
 }

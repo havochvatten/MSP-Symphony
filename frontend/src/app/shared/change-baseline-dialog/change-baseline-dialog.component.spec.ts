@@ -67,9 +67,22 @@ describe('ChangeBaselineDialogComponent', () => {
     component.apply();
 
     expect(component.loading).toBe(true);
-    expect(dispatchSpy).toHaveBeenCalledWith(UserActions.updateUserSettings({ activeBaselineId: 2 }));
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      UserActions.updateUserSettings({ activeBaselineId: 2 })
+    );
 
-    actions$.next(UserActions.activeBaselineChanged({ baseline: { id: 2, name: 'B', description: '', locale: 'sv', validFrom: 0, title: 'Some baseline' } }));
+    actions$.next(
+      UserActions.activeBaselineChanged({
+        baseline: {
+          id: 2,
+          name: 'B',
+          description: '',
+          locale: 'sv',
+          validFrom: 0,
+          title: 'Some baseline'
+        }
+      })
+    );
 
     expect(component.loading).toBe(false);
     expect(dialogRef.close).toHaveBeenCalled();
@@ -82,7 +95,9 @@ describe('ChangeBaselineDialogComponent', () => {
 
     component.apply();
 
-    actions$.next(UserActions.fetchBaselineFailure({ error: { status: 404, message: 'Not found' } }));
+    actions$.next(
+      UserActions.fetchBaselineFailure({ error: { status: 404, message: 'Not found' } })
+    );
 
     expect(component.loading).toBe(false);
     expect(component.error).toBe('Not found');

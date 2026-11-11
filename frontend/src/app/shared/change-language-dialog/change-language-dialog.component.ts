@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { DialogRef } from "@shared/dialog/dialog-ref";
-import { TranslateService } from "@ngx-translate/core";
+import { DialogRef } from '@shared/dialog/dialog-ref';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-change-language-dialog',
@@ -10,7 +10,6 @@ import { TranslateService } from "@ngx-translate/core";
 })
 export class ChangeLanguageDialogComponent {
   private dialog = inject(DialogRef);
-
 
   languages: string[] = ['en'];
   selectedLanguage = 'en';
@@ -25,7 +24,7 @@ export class ChangeLanguageDialogComponent {
 
     if (browserLang && this.languages.includes(browserLang)) {
       // Move the browser language preference to the top of the list
-      this.languages = [browserLang, ...this.languages.filter(lang => lang !== browserLang)];
+      this.languages = [browserLang, ...this.languages.filter((lang) => lang !== browserLang)];
     }
   }
 

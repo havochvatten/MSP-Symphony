@@ -1,4 +1,12 @@
-import { ChangeDetectorRef, Component, DestroyRef, Input, OnInit, NgModuleRef, inject } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  Input,
+  OnInit,
+  NgModuleRef,
+  inject
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Store } from '@ngrx/store';
 import {
