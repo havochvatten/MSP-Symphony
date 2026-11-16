@@ -1,5 +1,12 @@
-import { AfterContentInit, Component, ContentChildren, Input, QueryList, WritableSignal } from '@angular/core';
-import { MultiActionButtonComponent } from "@shared/multi-action-button/multi-action-button.component";
+import {
+  AfterContentInit,
+  Component,
+  ContentChildren,
+  Input,
+  QueryList,
+  WritableSignal
+} from '@angular/core';
+import { MultiActionButtonComponent } from '@shared/multi-action-button/multi-action-button.component';
 
 @Component({
   selector: 'app-multi-tools',
@@ -8,19 +15,18 @@ import { MultiActionButtonComponent } from "@shared/multi-action-button/multi-ac
   standalone: false
 })
 export class MultiToolsComponent implements AfterContentInit {
+  @ContentChildren(MultiActionButtonComponent)
+  actionButtons?: QueryList<MultiActionButtonComponent>;
 
-  @ContentChildren(MultiActionButtonComponent) actionButtons?: QueryList<MultiActionButtonComponent>;
-
-  @Input() isMultiMode!: WritableSignal<boolean>
+  @Input() isMultiMode!: WritableSignal<boolean>;
   @Input() modeChangeEffect: (() => void) | undefined;
-  @Input() disabledPredicate!: () => boolean
+  @Input() disabledPredicate!: () => boolean;
   @Input() exitLabel = 'controls.multi-mode-list.exit';
   @Input() enterLabel = 'controls.multi-mode-list.enter';
 
-
   ngAfterContentInit() {
     this.actionButtons!.forEach((actionButton) => {
-      if(actionButton.disabledPredicate === undefined) {
+      if (actionButton.disabledPredicate === undefined) {
         actionButton.disabledPredicate = this.disabledPredicate;
       }
       actionButton.isMultiMode = this.isMultiMode;
@@ -30,7 +36,7 @@ export class MultiToolsComponent implements AfterContentInit {
   toggleMultiMode() {
     this.isMultiMode.update((v) => !v);
 
-    if(this.modeChangeEffect) {
+    if (this.modeChangeEffect) {
       this.modeChangeEffect();
     }
   }

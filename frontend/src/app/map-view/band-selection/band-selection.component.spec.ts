@@ -9,21 +9,16 @@ import { initialState as area } from '@data/area/area.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { initialState as calculation } from '@data/calculation/calculation.reducers';
 import { SelectionLayoutComponent } from '../selection-layout/selection-layout.component';
-import { StoreModule } from "@ngrx/store";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { StoreModule } from '@ngrx/store';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('BandSelectionComponent', () => {
-  let fixture: ComponentFixture<BandSelectionComponent>,
-      component: BandSelectionComponent;
+  let fixture: ComponentFixture<BandSelectionComponent>, component: BandSelectionComponent;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [BandSelectionComponent, SelectionLayoutComponent],
-      imports: [
-        SharedModule,
-        TranslationSetupModule,
-        StoreModule.forRoot({}, {}),
-      ],
+      imports: [SharedModule, TranslationSetupModule, StoreModule.forRoot({}, {})],
       providers: [
         provideMockStore({
           initialState: {
@@ -40,10 +35,10 @@ describe('BandSelectionComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BandSelectionComponent)
+    fixture = TestBed.createComponent(BandSelectionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  })
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -277,7 +277,12 @@
         <profile>
             <id>skip-apitests</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <!-- Active unless -Dapitests is given. activeByDefault does not work here: Maven
+                     turns it off as soon as any other profile is activated, and the enforce-*
+                     profiles below are always active. -->
+                <property>
+                    <name>!apitests</name>
+                </property>
             </activation>
             <build>
                 <plugins>
@@ -303,6 +308,8 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
+                            <!-- Clear the excludes contributed by skip-apitests -->
+                            <excludes combine.self="override"/>
                             <includes><!-- Include only API tests -->
                                 <include>se.havochvatten.symphony.web.*Test</include>
                                 <include>se.havochvatten.symphony.calculation.*RESTTest</include>

@@ -13,8 +13,8 @@ import { MessageInterfaces } from '@data/message';
 import { messageReducer } from '@data/message/message.reducers';
 import { CalculationInterfaces } from '@data/calculation';
 import { calculationReducer } from '@data/calculation/calculation.reducers';
-import { ScenarioInterfaces } from "@data/scenario";
-import { scenarioReducer } from "@data/scenario/scenario.reducers";
+import { ScenarioInterfaces } from '@data/scenario';
+import { scenarioReducer } from '@data/scenario/scenario.reducers';
 
 export interface State {
   metadata: MetadataInterfaces.State;

@@ -21,7 +21,11 @@ import { SearchInputComponent } from './search-input/search-input.component';
 import { IconComponent } from './icon/icon.component';
 import { LoaderComponent } from './loader/loader.component';
 import { ToggleComponent } from './toggle/toggle.component';
-import { AccordionBoxComponent, AccordionBoxHeaderComponent, AccordionBoxContentComponent } from './accordion-box/accordion-box.component';
+import {
+  AccordionBoxComponent,
+  AccordionBoxHeaderComponent,
+  AccordionBoxContentComponent
+} from './accordion-box/accordion-box.component';
 import { SelectComponent } from './select/select.component';
 import { DragDropDirective } from './drag-drop.directive';
 import { UploadFilesComponent } from './upload-files/upload-files.component';
@@ -36,17 +40,17 @@ import { LocalizedTextPipe } from '@shared/localized-text.pipe';
 import { LocalizedSrcPipe } from '@shared/localized-src.pipe';
 import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal.component';
 import { InlineMapComponent } from './inline-map/inline-map.component';
-import { SelectIntersectionComponent} from "@shared/select-intersection/select-intersection.component";
+import { SelectIntersectionComponent } from '@shared/select-intersection/select-intersection.component';
 import { ComparisonColorScaleComponent } from './comparison-color-scale/comparison-color-scale.component';
-import { MatButtonModule } from "@angular/material/button";
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { MatRadioModule } from "@angular/material/radio";
-import { MatInputModule } from "@angular/material/input";
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ListFilterComponent } from './list-filter/list-filter.component';
 import { MultiToolsComponent } from './multi-tools/multi-tools.component';
 import { MultiActionButtonComponent } from '@shared/multi-action-button/multi-action-button.component';
-import { RenameItemModalComponent} from "@shared/rename-item-modal/rename-item-modal.component";
+import { RenameItemModalComponent } from '@shared/rename-item-modal/rename-item-modal.component';
 import { ChangeLanguageDialogComponent } from './change-language-dialog/change-language-dialog.component';
 import { ChangeBaselineDialogComponent } from './change-baseline-dialog/change-baseline-dialog.component';
 import { FundingDisclaimerComponent } from './funding-disclaimer/funding-disclaimer.component';
@@ -98,19 +102,19 @@ import { FundingDisclaimerComponent } from './funding-disclaimer/funding-disclai
     ChangeBaselineDialogComponent,
     FundingDisclaimerComponent
   ],
-    imports: [
-        CommonModule,
-        FontAwesomeModule,
-        ReactiveFormsModule,
-        RouterModule,
-        TranslateModule,
-        MatButtonModule,
-        MatCheckboxModule,
-        MatRadioModule,
-        MatInputModule,
-        MatProgressSpinnerModule,
-        FormsModule
-    ],
+  imports: [
+    CommonModule,
+    FontAwesomeModule,
+    ReactiveFormsModule,
+    RouterModule,
+    TranslateModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatRadioModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    FormsModule
+  ],
   exports: [
     CommonModule,
     IconButtonComponent,

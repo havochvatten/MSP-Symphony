@@ -1,24 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FooterComponent } from './footer.component';
-import {
-  TranslateModule,
-  TranslateService
-} from "@ngx-translate/core";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('FooterComponent', () => {
-  let fixture: ComponentFixture<FooterComponent>,
-      component: FooterComponent;
+  let fixture: ComponentFixture<FooterComponent>, component: FooterComponent;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ TranslateModule.forRoot() ],
-      providers:[
-        TranslateService,
-        provideZonelessChangeDetection()
-      ],
-      declarations: [ FooterComponent ]
+      imports: [TranslateModule.forRoot()],
+      providers: [TranslateService, provideZonelessChangeDetection()],
+      declarations: [FooterComponent]
     }).compileComponents();
     fixture = TestBed.createComponent(FooterComponent);
     component = fixture.componentInstance;

@@ -4,29 +4,40 @@ import { provideMockStore } from '@ngrx/store/testing';
 import { HeaderComponent } from './header.component';
 import { SharedModule } from '@shared/shared.module';
 import { UserMenuToggleComponent } from './user-menu-toggle/user-menu-toggle.component';
-import { StoreModule } from "@ngrx/store";
-import { TranslateModule, TranslateService } from "@ngx-translate/core";
-import { provideZonelessChangeDetection } from "@angular/core";
-import { BrandingService } from "@src/app/core/branding/branding.service";
-import { DialogService } from "@shared/dialog/dialog.service";
-import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { provideRouter } from "@angular/router";
+import { StoreModule } from '@ngrx/store';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { BrandingService } from '@src/app/core/branding/branding.service';
+import { DialogService } from '@shared/dialog/dialog.service';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
 
 describe('HeaderComponent', () => {
   let fixture: ComponentFixture<HeaderComponent>,
-      component: HeaderComponent,
-      dialogResult: string | undefined;
+    component: HeaderComponent,
+    dialogResult: string | undefined;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, StoreModule.forRoot({}, {}), TranslateModule.forRoot(), NoopAnimationsModule],
+      imports: [
+        SharedModule,
+        StoreModule.forRoot({}, {}),
+        TranslateModule.forRoot(),
+        NoopAnimationsModule
+      ],
       declarations: [HeaderComponent, UserMenuToggleComponent],
-      providers: [provideMockStore({
-        initialState : { user: { baseline: undefined, availableBaselines: [] } }
+      providers: [
+        provideMockStore({
+          initialState: { user: { baseline: undefined, availableBaselines: [] } }
         }),
         TranslateService,
         { provide: DialogService, useValue: { open: () => Promise.resolve(dialogResult) } },
-        { provide: BrandingService, useValue: { configData: { showLogos: true, flagSrc: 'flag.svg', flagAlt: { en: 'Our flag' } } } },
+        {
+          provide: BrandingService,
+          useValue: {
+            configData: { showLogos: true, flagSrc: 'flag.svg', flagAlt: { en: 'Our flag' } }
+          }
+        },
         provideRouter([]),
         provideZonelessChangeDetection()
       ]
@@ -34,7 +45,7 @@ describe('HeaderComponent', () => {
     TestBed.inject(TranslateService).setDefaultLang('en');
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
-    component.title = 'Symphony'
+    component.title = 'Symphony';
     fixture.detectChanges();
   });
 
@@ -116,7 +127,10 @@ describe('HeaderComponent', () => {
   });
 
   it('offers About to logged-out visitors between language and log in', () => {
-    expect(component.publicMenu!.map(item => item.name))
-      .toEqual(['user-menu.change-language', 'user-menu.about', 'login.login']);
+    expect(component.publicMenu!.map((item) => item.name)).toEqual([
+      'user-menu.change-language',
+      'user-menu.about',
+      'login.login'
+    ]);
   });
 });

@@ -8,11 +8,16 @@ import {
 } from '@shared/accordion-box/accordion-box.component';
 import { IconButtonComponent } from '@shared/icon-button/icon-button.component';
 import { IconComponent } from '@shared/icon/icon.component';
-import { StoreModule } from "@ngrx/store";
-import { provideMockStore } from "@ngrx/store/testing";
+import { StoreModule } from '@ngrx/store';
+import { provideMockStore } from '@ngrx/store/testing';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
-import { TranslateModule, TranslateService } from "@ngx-translate/core";
-import { Component, CUSTOM_ELEMENTS_SCHEMA, Input, provideZonelessChangeDetection } from "@angular/core";
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  Input,
+  provideZonelessChangeDetection
+} from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { Band } from '@data/metadata/metadata.interfaces';
 import { OnMapNamesComponent } from '../on-map-names/on-map-names.component';
@@ -32,8 +37,8 @@ class SliderControlsStubComponent {
 
 describe('CheckboxAccordionComponent', () => {
   let fixture: ComponentFixture<CheckboxAccordionComponent>,
-      component: CheckboxAccordionComponent,
-      el: HTMLElement;
+    component: CheckboxAccordionComponent,
+    el: HTMLElement;
 
   const band = (title: string, bandNumber: number, visible = false, loaded = true): Band => ({
     title,
@@ -46,7 +51,7 @@ describe('CheckboxAccordionComponent', () => {
     loaded
   });
 
-  const render = (inputs: { title?: string, bands?: Band[], searching?: boolean }) => {
+  const render = (inputs: { title?: string; bands?: Band[]; searching?: boolean }) => {
     Object.entries(inputs).forEach(([name, value]) => fixture.componentRef.setInput(name, value));
     fixture.detectChanges();
   };
@@ -64,10 +69,7 @@ describe('CheckboxAccordionComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        StoreModule.forRoot({},{}),
-        TranslateModule.forRoot()
-      ],
+      imports: [StoreModule.forRoot({}, {}), TranslateModule.forRoot()],
       providers: [
         TranslateService,
         provideMockStore({

@@ -75,7 +75,9 @@ class BandLayer extends SymphonyLayerGroup {
     this.visibleSummaryModels[modelCategory] = model;
 
     if (model === 'none') {
-      this.store.dispatch(CalculationActions.setSummaryModelLoading({ category: modelCategory, loading: false }));
+      this.store.dispatch(
+        CalculationActions.setSummaryModelLoading({ category: modelCategory, loading: false })
+      );
       return;
     }
 
@@ -85,25 +87,33 @@ class BandLayer extends SymphonyLayerGroup {
       if (!this.getLayers().getArray().includes(layer)) {
         this.getLayers().push(layer);
       }
-      this.store.dispatch(CalculationActions.setSummaryModelLoading({ category: modelCategory, loading: false }));
+      this.store.dispatch(
+        CalculationActions.setSummaryModelLoading({ category: modelCategory, loading: false })
+      );
       return;
     }
 
     // === New model – start loading ===
-    this.store.dispatch(CalculationActions.setSummaryModelLoading({ category: modelCategory, loading: true }));
+    this.store.dispatch(
+      CalculationActions.setSummaryModelLoading({ category: modelCategory, loading: true })
+    );
 
     this.dataLayerService.getSummaryModel(this.baseline, modelCategory, model).subscribe({
       next: (response) => {
         const extentHeader = response.headers.get('SYM-Image-Extent');
         if (!extentHeader) {
           console.error('SummaryModel image does not have any extent header, ignoring.');
-          this.store.dispatch(CalculationActions.setSummaryModelLoading({ category: modelCategory, loading: false }));
+          this.store.dispatch(
+            CalculationActions.setSummaryModelLoading({ category: modelCategory, loading: false })
+          );
           return;
         }
 
         if (!response.body) {
           console.warn(`No body in summary model response for "${model}"`);
-          this.store.dispatch(CalculationActions.setSummaryModelLoading({ category: modelCategory, loading: false }));
+          this.store.dispatch(
+            CalculationActions.setSummaryModelLoading({ category: modelCategory, loading: false })
+          );
           return;
         }
 
@@ -125,11 +135,15 @@ class BandLayer extends SymphonyLayerGroup {
         }
 
         // === SUCCESS: turn off spinner ===
-        this.store.dispatch(CalculationActions.setSummaryModelLoading({ category: modelCategory, loading: false }));
+        this.store.dispatch(
+          CalculationActions.setSummaryModelLoading({ category: modelCategory, loading: false })
+        );
       },
       error: (err) => {
         console.error(`Failed to load summary model: "${model}":`, err);
-        this.store.dispatch(CalculationActions.setSummaryModelLoading({ category: modelCategory, loading: false }));
+        this.store.dispatch(
+          CalculationActions.setSummaryModelLoading({ category: modelCategory, loading: false })
+        );
       }
     });
   }
@@ -200,7 +214,9 @@ class BandLayer extends SymphonyLayerGroup {
                 visibleBandNumbers.add(band.bandNumber);
               } else {
                 console.error(
-                  'Image for band ' + band.bandNumber + ' does not have any extent header, ignoring.'
+                  'Image for band ' +
+                    band.bandNumber +
+                    ' does not have any extent header, ignoring.'
                 );
               }
             });

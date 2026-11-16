@@ -54,6 +54,4 @@ describe('OnMapNamesComponent', () => {
     await render(['Gråsäl']);
     expect(el.querySelector('app-icon')?.getAttribute('icontype')).toBe('eye');
   });
-
-
 });

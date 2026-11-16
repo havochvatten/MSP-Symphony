@@ -1,18 +1,24 @@
 import { Component, Input, NgModuleRef, OnDestroy, OnInit, inject } from '@angular/core';
-import { Band, BandChange, bandEquals, BandType, VisibleReliability } from '@data/metadata/metadata.interfaces';
-import { Store } from "@ngrx/store";
-import { State } from "@src/app/app-reducer";
-import { ScenarioSelectors } from "@data/scenario";
-import { ChangesProperty, Scenario } from "@data/scenario/scenario.interfaces";
-import { Subscription } from "rxjs";
-import { selectActiveScenario } from "@data/scenario/scenario.selectors";
-import { DialogService } from "@shared/dialog/dialog.service";
-import { MetaInfoComponent } from "@src/app/map-view/meta-info/meta-info.component";
-import { isEmpty } from "@shared/common.util";
-import { MatCheckboxChange } from "@angular/material/checkbox";
-import { environment as env } from "@src/environments/environment";
-import { MetadataSelectors } from "@data/metadata";
-import { MapViewModule } from "@src/app/map-view/map-view.module";
+import {
+  Band,
+  BandChange,
+  bandEquals,
+  BandType,
+  VisibleReliability
+} from '@data/metadata/metadata.interfaces';
+import { Store } from '@ngrx/store';
+import { State } from '@src/app/app-reducer';
+import { ScenarioSelectors } from '@data/scenario';
+import { ChangesProperty, Scenario } from '@data/scenario/scenario.interfaces';
+import { Subscription } from 'rxjs';
+import { selectActiveScenario } from '@data/scenario/scenario.selectors';
+import { DialogService } from '@shared/dialog/dialog.service';
+import { MetaInfoComponent } from '@src/app/map-view/meta-info/meta-info.component';
+import { isEmpty } from '@shared/common.util';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import { environment as env } from '@src/environments/environment';
+import { MetadataSelectors } from '@data/metadata';
+import { MapViewModule } from '@src/app/map-view/map-view.module';
 
 @Component({
   selector: 'app-slider-controls',
@@ -48,28 +54,29 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
   @Input() category!: BandType; // unfortunate "property drilling"
 
   @Input() disabled = false;
-  @Input() onSelect!: (event: MatCheckboxChange, band: Band)=> void;
+  @Input() onSelect!: (event: MatCheckboxChange, band: Band) => void;
   @Input() onChangeVisible!: (value: boolean, band: Band) => void;
   @Input() onChangeVisibleReliability!: (value: boolean, band: Band) => void;
 
   isEmpty = isEmpty;
 
   constructor() {
-    this.scenarioSubscription$ = this.store.select(selectActiveScenario)
-      .subscribe(s => {
-        if (s === undefined)
-          this.open = false;
+    this.scenarioSubscription$ = this.store.select(selectActiveScenario).subscribe((s) => {
+      if (s === undefined) this.open = false;
 
-        this.scenario = s;
-      });
-
-    this.scenarioAreaSubscription$ = this.store.select(ScenarioSelectors.selectActiveScenarioArea).subscribe(area => {
-      this.groupSetting = area === undefined;
+      this.scenario = s;
     });
 
-    this.changesSubscription$ = this.store.select(ScenarioSelectors.selectActiveScenarioChanges)
-      .subscribe((changes: {[bandType: string] : ChangesProperty }) => {
-        if (this.band && changes[this.category] && Object.keys(changes[this.category]).length>0) {
+    this.scenarioAreaSubscription$ = this.store
+      .select(ScenarioSelectors.selectActiveScenarioArea)
+      .subscribe((area) => {
+        this.groupSetting = area === undefined;
+      });
+
+    this.changesSubscription$ = this.store
+      .select(ScenarioSelectors.selectActiveScenarioChanges)
+      .subscribe((changes: { [bandType: string]: ChangesProperty }) => {
+        if (this.band && changes[this.category] && Object.keys(changes[this.category]).length > 0) {
           if (this.band.bandNumber in changes[this.category]) {
             this.change = changes[this.category][this.band!.bandNumber];
             this.open = true;
@@ -79,9 +86,10 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
         this.change = undefined;
       });
 
-    this.overrideChangesSubscription$ = this.store.select(ScenarioSelectors.selectActiveScenarioAreaChanges)
-      .subscribe((changes: {[bandType: string] : ChangesProperty }) => {
-        if (this.band && changes[this.category] && Object.keys(changes[this.category]).length>0) {
+    this.overrideChangesSubscription$ = this.store
+      .select(ScenarioSelectors.selectActiveScenarioAreaChanges)
+      .subscribe((changes: { [bandType: string]: ChangesProperty }) => {
+        if (this.band && changes[this.category] && Object.keys(changes[this.category]).length > 0) {
           if (this.band.bandNumber in changes[this.category]) {
             this.overriddenChange = changes[this.category][this.band!.bandNumber];
             this.open = true;
@@ -91,16 +99,17 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
         this.overriddenChange = undefined;
       });
 
-    this.store.select(MetadataSelectors.selectVisibleReliability)
-      .subscribe(visibleReliability => {
+    this.store
+      .select(MetadataSelectors.selectVisibleReliability)
+      .subscribe((visibleReliability) => {
         this.visibleReliability = visibleReliability;
       });
   }
 
   ngOnInit(): void {
     this.hasPublicMeta = env.meta.visible_fields.some(
-      visible_field => !!this.band?.meta && !!this.band.meta[visible_field]
-    )
+      (visible_field) => !!this.band?.meta && !!this.band.meta[visible_field]
+    );
   }
 
   toggleOpen() {
@@ -120,16 +129,16 @@ export class SliderControlsComponent implements OnDestroy, OnInit {
     return this.groupSetting;
   }
 
-  getMultiplier() : number {
+  getMultiplier(): number {
     const groupMultiplier = this.change?.multiplier ?? 1,
       overriddenMultiplier = this.overriddenChange?.multiplier ?? 1;
 
     return this.groupSetting || !this.overriddenChange ? groupMultiplier : overriddenMultiplier;
   }
 
-  getOffset() : number {
+  getOffset(): number {
     const groupOffset = this.change?.offset ?? 0,
-        overriddenOffset = this.overriddenChange?.offset ?? 0;
+      overriddenOffset = this.overriddenChange?.offset ?? 0;
 
     return this.groupSetting || !this.overriddenChange ? groupOffset : overriddenOffset;
   }

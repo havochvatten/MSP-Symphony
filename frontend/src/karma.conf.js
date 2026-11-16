@@ -1,7 +1,7 @@
 // Karma configuration file, see link for more information
 // https://karma-runner.github.io/1.0/config/configuration-file.html
 
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
@@ -14,7 +14,7 @@ module.exports = function(config) {
     ],
     client: {
       clearContext: false, // leave Jasmine Spec Runner output visible in browser
-      verboseDeprecations: true,
+      verboseDeprecations: true
       // jasmine: {
       //   timeoutInterval: 10000   // useful setting: jasmine.DEFAULT_TIMEOUT_INTERVAL (default: 5000)
       // }

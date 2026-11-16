@@ -67,7 +67,9 @@ describe('LoginComponent', () => {
   });
 
   it('renders the logo alt texts from the branding config', () => {
-    expect(fixture.nativeElement.querySelector('img.duck').getAttribute('alt')).toBe('Our login logo');
+    expect(fixture.nativeElement.querySelector('img.duck').getAttribute('alt')).toBe(
+      'Our login logo'
+    );
     expect(fixture.nativeElement.querySelector('img.logo').getAttribute('alt')).toBe('Our logo');
   });
 

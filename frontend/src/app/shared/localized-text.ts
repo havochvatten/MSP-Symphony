@@ -30,7 +30,8 @@ export function resolveLocalizedText(
   }
   return {
     value: '',
-    error: `Localized text has no entry for language "${language}" or fallback "${fallbackLanguage}" `
-      + `(expected ${expectedFormat}): ${JSON.stringify(text)}`
+    error:
+      `Localized text has no entry for language "${language}" or fallback "${fallbackLanguage}" ` +
+      `(expected ${expectedFormat}): ${JSON.stringify(text)}`
   };
 }

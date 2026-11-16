@@ -1,4 +1,12 @@
-import { ChangeDetectorRef, Component, inject, NgModuleRef, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  inject,
+  NgModuleRef,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Actions, ofType } from '@ngrx/effects';
 import { Router } from '@angular/router';
@@ -23,7 +31,7 @@ import { UserActions } from '@data/user';
   styleUrl: './public-view.component.scss',
   standalone: false
 })
-export class PublicView {
+export class PublicView implements OnInit, AfterViewInit {
   private readonly store = inject<Store<State>>(Store);
   private readonly cd = inject(ChangeDetectorRef);
   private readonly dialogService = inject(DialogService);

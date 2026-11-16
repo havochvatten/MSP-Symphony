@@ -81,7 +81,9 @@ describe('metadata reducer — baseline change', () => {
     );
     const state = metadataReducer(
       populated,
-      UserActions.activeBaselineChanged({ baseline: { id: 9, name: 'B', description: '' } as Baseline })
+      UserActions.activeBaselineChanged({
+        baseline: { id: 9, name: 'B', description: '' } as Baseline
+      })
     );
     expect(state.availableSummaryModelDescriptions).toEqual({ ECOSYSTEM: null, PRESSURE: null });
   });
@@ -97,8 +99,9 @@ describe('metadata selectors — summary model', () => {
       }
     };
 
-    const result = MetadataSelectors.selectSummaryModelDescription('ECOSYSTEM', 'simple')
-      .projector(state);
+    const result = MetadataSelectors.selectSummaryModelDescription('ECOSYSTEM', 'simple').projector(
+      state
+    );
 
     expect(result).toEqual(MOCK_DESC);
   });
@@ -106,8 +109,9 @@ describe('metadata selectors — summary model', () => {
   it('selectSummaryModelDescription returns null when category has no descriptions', () => {
     const state = { ...initialState };
 
-    const result = MetadataSelectors.selectSummaryModelDescription('ECOSYSTEM', 'simple')
-      .projector(state);
+    const result = MetadataSelectors.selectSummaryModelDescription('ECOSYSTEM', 'simple').projector(
+      state
+    );
 
     expect(result).toBeNull();
   });
@@ -121,8 +125,10 @@ describe('metadata selectors — summary model', () => {
       }
     };
 
-    const result = MetadataSelectors.selectSummaryModelDescription('ECOSYSTEM', 'nonexistent')
-      .projector(state);
+    const result = MetadataSelectors.selectSummaryModelDescription(
+      'ECOSYSTEM',
+      'nonexistent'
+    ).projector(state);
 
     expect(result).toBeNull();
   });

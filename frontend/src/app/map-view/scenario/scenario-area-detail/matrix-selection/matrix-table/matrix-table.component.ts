@@ -6,10 +6,10 @@ import { MatrixService } from '../matrix.service';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { isEqual } from "@shared/common.util";
-import { DialogService } from "@shared/dialog/dialog.service";
-import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
-import { ScenarioEditorModule } from "@src/app/map-view/scenario/scenario-editor.module";
+import { isEqual } from '@shared/common.util';
+import { DialogService } from '@shared/dialog/dialog.service';
+import { ConfirmationModalComponent } from '@shared/confirmation-modal/confirmation-modal.component';
+import { ScenarioEditorModule } from '@src/app/map-view/scenario/scenario-editor.module';
 
 interface NamedObject {
   name: string;
@@ -37,8 +37,8 @@ export class MatrixTableComponent {
   initialName: string;
   matrixNames: string[];
   dirty = false;
-  savedAsNewId: number|undefined;
-  savedAsNewName: string|undefined;
+  savedAsNewId: number | undefined;
+  savedAsNewName: string | undefined;
   editName = false;
   locale = 'en';
 
@@ -53,18 +53,23 @@ export class MatrixTableComponent {
     this.initClean();
   }
 
-  public initClean():void {
+  public initClean(): void {
     this.dirty = false;
-    this.matrixDataRef = this.matrixData.sensMatrix.rows.flatMap((r) => r.columns.map((c) => +c.value));
+    this.matrixDataRef = this.matrixData.sensMatrix.rows.flatMap((r) =>
+      r.columns.map((c) => +c.value)
+    );
   }
 
-  hasChangedName():boolean {
+  hasChangedName(): boolean {
     return this.matrixData.name.trim() !== this.initialName;
   }
 
   onChange(value: number, row: number, column: number) {
     this.matrixData.sensMatrix.rows[row].columns[column].value = value;
-    this.dirty = !isEqual(this.matrixData.sensMatrix.rows.flatMap((r) => r.columns.map((c) => +c.value)), this.matrixDataRef);
+    this.dirty = !isEqual(
+      this.matrixData.sensMatrix.rows.flatMap((r) => r.columns.map((c) => +c.value)),
+      this.matrixDataRef
+    );
   }
 
   onChangeName(name: string) {
@@ -75,7 +80,7 @@ export class MatrixTableComponent {
     await this.matrixService
       .createSensitivityMatrixForArea(this.areaId, this.matrixData)
       .pipe(
-        tap(response => {
+        tap((response) => {
           this.matrixData = response;
           this.savedAsNewId = response.id;
           this.savedAsNewName = response.name;
@@ -83,7 +88,7 @@ export class MatrixTableComponent {
           this.immutable = false;
           then();
         }),
-        catchError(error => of(console.error(error)))
+        catchError((error) => of(console.error(error)))
       )
       .subscribe();
   }
@@ -95,76 +100,102 @@ export class MatrixTableComponent {
         tap(() => {
           then();
         }),
-        catchError(error => of(console.error(error)))
+        catchError((error) => of(console.error(error)))
       )
       .subscribe();
   }
 
   async deleteMatrix() {
-    const confirmDelete: boolean = await this.dialogService.open(ConfirmationModalComponent, this.moduleRef, {
-      data: {
-        header: this.translateService.instant('map.editor.matrix.table.confirm-delete.header'),
-        message: this.translateService.instant('map.editor.matrix.table.confirm-delete.message',
-                                { matrixToDelete: this.initialName }),
-        confirmText: this.translateService.instant('map.editor.matrix.table.confirm-delete.confirm'),
-        confirmColor: 'warn',
-        dialogClass: 'center'
+    const confirmDelete: boolean = await this.dialogService.open(
+      ConfirmationModalComponent,
+      this.moduleRef,
+      {
+        data: {
+          header: this.translateService.instant('map.editor.matrix.table.confirm-delete.header'),
+          message: this.translateService.instant('map.editor.matrix.table.confirm-delete.message', {
+            matrixToDelete: this.initialName
+          }),
+          confirmText: this.translateService.instant(
+            'map.editor.matrix.table.confirm-delete.confirm'
+          ),
+          confirmColor: 'warn',
+          dialogClass: 'center'
+        }
       }
-    });
+    );
 
     if (confirmDelete) {
       this.matrixService
         .deleteSensitivityMatrix(this.matrixData.id as number)
         .pipe(
           tap(() => {
-            this.dialog.close({deleted: true});
+            this.dialog.close({ deleted: true });
           }),
-          catchError(error => of(console.error(error)))
+          catchError((error) => of(console.error(error)))
         )
         .subscribe();
     }
   }
 
   async confirmClose() {
-    const cbClose = () => { this.close() }, // Wrap method in closure, preserving (this) context
-          closeModal = {
-            header: this.translateService.instant('map.editor.matrix.table.changes.header'),
-            confirmText: this.translateService.instant('map.editor.matrix.table.changes.save'),
-            cancelText: this.translateService.instant('map.editor.matrix.table.changes.abandon'),
-            buttonsClass: 'right no-margin',
-            cancelColor: 'warn',
-            message: null,
-          };
+    const cbClose = () => {
+        this.close();
+      }, // Wrap method in closure, preserving (this) context
+      closeModal = {
+        header: this.translateService.instant('map.editor.matrix.table.changes.header'),
+        confirmText: this.translateService.instant('map.editor.matrix.table.changes.save'),
+        cancelText: this.translateService.instant('map.editor.matrix.table.changes.abandon'),
+        buttonsClass: 'right no-margin',
+        cancelColor: 'warn',
+        message: null
+      };
 
-    if(this.immutable && this.dirty) {
-      const mxNrRx = / (?:\((\d+)\))+$/, mxNameResult = mxNrRx.exec(this.matrixData.name);
-      let i = mxNameResult ? +mxNameResult[1] : 0, nextName: string;
+    if (this.immutable && this.dirty) {
+      const mxNrRx = / (?:\((\d+)\))+$/,
+        mxNameResult = mxNrRx.exec(this.matrixData.name);
+      let i = mxNameResult ? +mxNameResult[1] : 0,
+        nextName: string;
 
       do {
-        nextName = `${this.matrixData.name} (${++i})`
-      } while (this.nameExists(nextName))
+        nextName = `${this.matrixData.name} (${++i})`;
+      } while (this.nameExists(nextName));
 
-      closeModal.message = this.translateService.instant('map.editor.matrix.table.changes.immutable-message', { suggestedName: nextName });
+      closeModal.message = this.translateService.instant(
+        'map.editor.matrix.table.changes.immutable-message',
+        { suggestedName: nextName }
+      );
 
       const confirmSaveCopy: boolean = await this.dialogService.open(
-        ConfirmationModalComponent, this.moduleRef, { data: closeModal });
+        ConfirmationModalComponent,
+        this.moduleRef,
+        { data: closeModal }
+      );
 
-      if(confirmSaveCopy) {
+      if (confirmSaveCopy) {
         this.matrixData.name = nextName;
         await this.saveAsNew(cbClose);
         return;
       }
-
     } else {
-      closeModal.message = this.translateService.instant('map.editor.matrix.table.changes.message',
+      closeModal.message = this.translateService.instant(
+        'map.editor.matrix.table.changes.message',
         {
-          matrixName: this.hasChangedName() && this.nameExists() ? this.initialName : this.matrixData.name,
-          newNotice: this.hasChangedName() && !this.nameExists() ? ' ' + this.translateService.instant('map.editor.matrix.table.changes.new-notice') : ''
-        });
+          matrixName:
+            this.hasChangedName() && this.nameExists() ? this.initialName : this.matrixData.name,
+          newNotice:
+            this.hasChangedName() && !this.nameExists()
+              ? ' ' + this.translateService.instant('map.editor.matrix.table.changes.new-notice')
+              : ''
+        }
+      );
 
       // note: inverse condition for brevity ('short-circuit' conjunction)
-      const confirmAbandon = this.immutable || !(this.dirty || (!this.nameExists() && this.hasChangedName())) ||
-        !(await this.dialogService.open(ConfirmationModalComponent, this.moduleRef, { data: closeModal }));
+      const confirmAbandon =
+        this.immutable ||
+        !(this.dirty || (!this.nameExists() && this.hasChangedName())) ||
+        !(await this.dialogService.open(ConfirmationModalComponent, this.moduleRef, {
+          data: closeModal
+        }));
 
       if (!confirmAbandon) {
         if (this.hasChangedName() && !this.nameExists()) {
@@ -180,17 +211,18 @@ export class MatrixTableComponent {
   }
 
   close() {
-    this.dialog.close(
-      { id: this.savedAsNewId || this.matrixData.id,
-        name: this.savedAsNewName || this.initialName,
-        savedAsNew: !!this.savedAsNewId });
+    this.dialog.close({
+      id: this.savedAsNewId || this.matrixData.id,
+      name: this.savedAsNewName || this.initialName,
+      savedAsNew: !!this.savedAsNewId
+    });
   }
 
   getName(object: NamedObject) {
     return object.name;
   }
 
-  nameExists(name:string|undefined = undefined):boolean {
+  nameExists(name: string | undefined = undefined): boolean {
     return this.matrixNames.includes(name || this.matrixData.name);
   }
 }

@@ -1,10 +1,21 @@
 import {
-  AfterViewInit, Component, DOCUMENT, ElementRef, HostListener, OnDestroy, ViewChild, computed, inject, signal
+  AfterViewInit,
+  Component,
+  DOCUMENT,
+  ElementRef,
+  HostListener,
+  OnDestroy,
+  ViewChild,
+  computed,
+  inject,
+  signal
 } from '@angular/core';
 import { DialogRef } from '@shared/dialog/dialog-ref';
 import { DialogConfig } from '@shared/dialog/dialog-config';
 
-export interface NewScenarioNameData { suggestedName: string }
+export interface NewScenarioNameData {
+  suggestedName: string;
+}
 
 /** Asks for the name of a new scenario. Closes with the trimmed name, or null when cancelled. */
 @Component({

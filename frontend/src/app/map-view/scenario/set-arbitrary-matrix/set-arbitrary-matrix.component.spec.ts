@@ -1,15 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { DialogService } from "@shared/dialog/dialog.service";
-import { DialogRef } from "@shared/dialog/dialog-ref";
-import { DialogConfig } from "@shared/dialog/dialog-config";
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { DialogService } from '@shared/dialog/dialog.service';
+import { DialogRef } from '@shared/dialog/dialog-ref';
+import { DialogConfig } from '@shared/dialog/dialog-config';
 import { SetArbitraryMatrixComponent } from './set-arbitrary-matrix.component';
-import { TranslateModule } from "@ngx-translate/core";
+import { TranslateModule } from '@ngx-translate/core';
 import { provideMockStore } from '@ngrx/store/testing';
-import { initialState as area } from "@data/area/area.reducers";
-import { MatSelectModule } from "@angular/material/select";
-import { provideZonelessChangeDetection } from "@angular/core";
-import { FormsModule } from "@angular/forms";
+import { initialState as area } from '@data/area/area.reducers';
+import { MatSelectModule } from '@angular/material/select';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 describe('SetArbitraryMatrixComponent', () => {
   let component: SetArbitraryMatrixComponent;
@@ -17,12 +17,7 @@ describe('SetArbitraryMatrixComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        NoopAnimationsModule,
-        MatSelectModule,
-        FormsModule,
-        TranslateModule.forRoot()
-      ],
+      imports: [NoopAnimationsModule, MatSelectModule, FormsModule, TranslateModule.forRoot()],
       providers: [
         DialogService,
         DialogRef,

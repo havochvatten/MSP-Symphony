@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ConfirmResetComponent } from './confirm-reset.component';
-import { StoreModule } from "@ngrx/store";
-import { DialogService } from "@shared/dialog/dialog.service";
-import { DialogRef } from "@shared/dialog/dialog-ref";
-import { TranslateModule, TranslateService } from "@ngx-translate/core";
-import { provideMockStore } from "@ngrx/store/testing";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { StoreModule } from '@ngrx/store';
+import { DialogService } from '@shared/dialog/dialog.service';
+import { DialogRef } from '@shared/dialog/dialog-ref';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { provideMockStore } from '@ngrx/store/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('ConfirmResetComponent', () => {
   let component: ConfirmResetComponent;
@@ -14,10 +14,7 @@ describe('ConfirmResetComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        StoreModule.forRoot({},{}),
-        TranslateModule.forRoot()
-      ],
+      imports: [StoreModule.forRoot({}, {}), TranslateModule.forRoot()],
       providers: [
         DialogService,
         DialogRef,
@@ -29,9 +26,8 @@ describe('ConfirmResetComponent', () => {
         }),
         provideZonelessChangeDetection()
       ],
-      declarations: [ ConfirmResetComponent ]
-    })
-    .compileComponents();
+      declarations: [ConfirmResetComponent]
+    }).compileComponents();
     fixture = TestBed.createComponent(ConfirmResetComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

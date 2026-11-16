@@ -4,13 +4,13 @@ import { provideMockStore } from '@ngrx/store/testing';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as calculation } from '@data/calculation/calculation.reducers';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
-import { IconComponent } from "@shared/icon/icon.component";
-import { SharedModule } from "@shared/shared.module";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { IconComponent } from '@shared/icon/icon.component';
+import { SharedModule } from '@shared/shared.module';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('CalculationHistoryComponent', () => {
   let fixture: ComponentFixture<CalculationHistoryComponent>,
-      component: CalculationHistoryComponent;
+    component: CalculationHistoryComponent;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

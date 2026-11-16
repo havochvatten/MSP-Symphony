@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChangeLanguageDialogComponent } from './change-language-dialog.component';
-import { DialogRef } from "@shared/dialog/dialog-ref";
-import { TranslateModule, TranslateService } from "@ngx-translate/core";
-import { MatRadioModule } from "@angular/material/radio";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { DialogRef } from '@shared/dialog/dialog-ref';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { MatRadioModule } from '@angular/material/radio';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('ChangeLanguageDialogComponent', () => {
   let component: ChangeLanguageDialogComponent;
@@ -33,8 +33,10 @@ describe('ChangeLanguageDialogComponent', () => {
   });
 
   it('marks the flags as decorative, since the language name is shown next to them', () => {
-    const flags: HTMLImageElement[] = Array.from(fixture.nativeElement.querySelectorAll('.language-flag img'));
+    const flags: HTMLImageElement[] = Array.from(
+      fixture.nativeElement.querySelectorAll('.language-flag img')
+    );
     expect(flags.length).toBe(3);
-    flags.forEach(img => expect(img.getAttribute('alt')).toBe(''));
+    flags.forEach((img) => expect(img.getAttribute('alt')).toBe(''));
   });
 });

@@ -5,7 +5,7 @@ import { LocalizedSrc } from './localized-src';
 import { LocalizedSrcPipe } from './localized-src.pipe';
 
 @Component({
-  template: `@if (src | localizedSrc; as s) { <img [src]="s"> }`,
+  template: `@if (src | localizedSrc; as s) { <img [src]="s" alt=""> }`,
   standalone: false
 })
 class HostComponent {

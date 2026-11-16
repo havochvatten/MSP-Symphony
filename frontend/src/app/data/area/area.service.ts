@@ -29,8 +29,10 @@ export default class AreaService {
   }
 
   uploadUserArea(formData: FormData) {
-    return this.http.post<AreaInterfaces.UploadedUserDefinedArea>(`${BASE_URL}/user/area/import`,
-      formData);
+    return this.http.post<AreaInterfaces.UploadedUserDefinedArea>(
+      `${BASE_URL}/user/area/import`,
+      formData
+    );
   }
 
   confirmUserAreaImport(key: string) {
@@ -38,8 +40,7 @@ export default class AreaService {
   }
 
   updateUserArea(userArea: Partial<UserArea>) {
-    return this.http.put<AreaInterfaces.UserArea>(`${BASE_URL}/user/area/${userArea.id}`, userArea
-    );
+    return this.http.put<AreaInterfaces.UserArea>(`${BASE_URL}/user/area/${userArea.id}`, userArea);
   }
 
   deleteUserArea(userAreaId: number) {
@@ -51,11 +52,12 @@ export default class AreaService {
   }
 
   getBoundaries() {
-    return this.http.get<{ areas: AreaInterfaces.Boundary[] }>(`${BASE_URL}/areas/boundary`
-    );
+    return this.http.get<{ areas: AreaInterfaces.Boundary[] }>(`${BASE_URL}/areas/boundary`);
   }
 
   getCalibratedCalculationAreas(baselineName: string) {
-    return this.http.get<AreaInterfaces.CalculationAreaSlice[]>(`${BASE_URL}/calculationarea/calibrated/${baselineName}`)
+    return this.http.get<AreaInterfaces.CalculationAreaSlice[]>(
+      `${BASE_URL}/calculationarea/calibrated/${baselineName}`
+    );
   }
 }

@@ -20,7 +20,11 @@
         "sv": "assets/branding/swam/hav-logo-blue.svg",
         "en": "assets/branding/swam/hav-logo-en-blue.svg"
     },
-    "reportCountryLogoAlt": { "sv": "Sveriges logotyp", "en": "Sweden logo", "fr": "Logo de la Suède" },
+    "reportCountryLogoAlt": {
+        "sv": "Sveriges logotyp",
+        "en": "Sweden logo",
+        "fr": "Logo de la Suède"
+    },
     "reportCountryLogoSrc": "assets/branding/swam/sweden-logotype-english-nomargin.svg",
     "reportLogoAlt": {
         "sv": "Havs- och vattenmyndighetens logotyp",

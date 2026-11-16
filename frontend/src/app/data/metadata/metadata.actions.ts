@@ -81,5 +81,5 @@ export const fetchSummaryModelDescriptionsSuccess = createAction(
 
 export const fetchSummaryModelDescriptionsFailure = createAction(
   '[Calculation] Fetch Summary Model Descriptions Failure',
-  props<{ category: SummaryModelCategory, error: string }>()
+  props<{ category: SummaryModelCategory; error: string }>()
 );

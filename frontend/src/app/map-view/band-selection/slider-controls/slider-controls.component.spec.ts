@@ -6,19 +6,19 @@ import { SliderControlsComponent } from './slider-controls.component';
 import { EcoSliderComponent } from '../eco-slider/eco-slider.component';
 import { SharedModule } from '@shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
-import { StoreModule } from "@ngrx/store";
-import { MatCheckboxModule } from "@angular/material/checkbox";
+import { StoreModule } from '@ngrx/store';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { provideZonelessChangeDetection } from "@angular/core";
+import { provideZonelessChangeDetection } from '@angular/core';
 import { MockStore } from '@ngrx/store/testing';
 import { MetadataSelectors } from '@data/metadata';
 
 describe('SliderControlsComponent', () => {
   let fixture: ComponentFixture<SliderControlsComponent>,
-      component: SliderControlsComponent,
-      el: HTMLElement;
+    component: SliderControlsComponent,
+    el: HTMLElement;
 
-  const setBand = (state: { visible: boolean, loaded: boolean }) => {
+  const setBand = (state: { visible: boolean; loaded: boolean }) => {
     fixture.componentRef.setInput('band', { ...component.band, ...state });
     fixture.detectChanges();
   };
@@ -28,7 +28,7 @@ describe('SliderControlsComponent', () => {
       imports: [
         SharedModule,
         TranslationSetupModule,
-        StoreModule.forRoot({},{}),
+        StoreModule.forRoot({}, {}),
         MatCheckboxModule,
         MatProgressSpinnerModule
       ],
@@ -36,60 +36,61 @@ describe('SliderControlsComponent', () => {
       providers: [
         provideZonelessChangeDetection(),
         provideMockStore({
-        initialState: {
-          metadata: metadata,
-          scenario: scenario,
-          user: {}
-        }
-      })]
+          initialState: {
+            metadata: metadata,
+            scenario: scenario,
+            user: {}
+          }
+        })
+      ]
     }).compileComponents();
     fixture = TestBed.createComponent(SliderControlsComponent);
     component = fixture.componentInstance;
     component.band = {
-      title: "",
+      title: '',
       bandNumber: 0,
       selected: false,
-      symphonyCategory: "ECOSYSTEM",
+      symphonyCategory: 'ECOSYSTEM',
       reliability: null,
-      meta : {
-        accessUserRestrictions: "",
-        authorEmail: "",
-        authorOrganisation: "",
-        dataOwner: "",
-        dataOwnerLocal: "",
-        dataSources: "",
-        dateCreated: "",
-        descriptiveKeywords: "",
-        lineage: "",
-        maintenanceInformation: "",
-        mapAcknowledgement: "",
-        marinePlaneArea: "",
-        metadataDate: "",
-        metadataEmail: "",
-        metadataFileName: "",
-        metadataLanguage: "",
-        metadataOrganisation: "",
-        metadataOrganisationLocal: "",
-        otherRestrictions: "",
-        ownerEmail: "",
-        rasterFileName: "",
-        rasterSpatialReferenceSystem: "",
-        recommendations: "",
-        securityClassification: "",
-        spatialPresentation: "",
-        status: "",
-        summary: "",
-        summaryLocal: "",
-        symphonyDataType: "",
-        theme: "",
-        topicCategory: "",
-        useLimitations: "",
+      meta: {
+        accessUserRestrictions: '',
+        authorEmail: '',
+        authorOrganisation: '',
+        dataOwner: '',
+        dataOwnerLocal: '',
+        dataSources: '',
+        dateCreated: '',
+        descriptiveKeywords: '',
+        lineage: '',
+        maintenanceInformation: '',
+        mapAcknowledgement: '',
+        marinePlaneArea: '',
+        metadataDate: '',
+        metadataEmail: '',
+        metadataFileName: '',
+        metadataLanguage: '',
+        metadataOrganisation: '',
+        metadataOrganisationLocal: '',
+        otherRestrictions: '',
+        ownerEmail: '',
+        rasterFileName: '',
+        rasterSpatialReferenceSystem: '',
+        recommendations: '',
+        securityClassification: '',
+        spatialPresentation: '',
+        status: '',
+        summary: '',
+        summaryLocal: '',
+        symphonyDataType: '',
+        theme: '',
+        topicCategory: '',
+        useLimitations: '',
         methodSummary: '',
         limitationsForSymphony: '',
         valueRange: '',
         dataProcessing: ''
       }
-    }
+    };
     el = fixture.nativeElement;
     fixture.detectChanges();
   });
@@ -124,7 +125,10 @@ describe('SliderControlsComponent', () => {
 
   it('ignores the reliability overlay', () => {
     const store = TestBed.inject(MockStore);
-    store.overrideSelector(MetadataSelectors.selectVisibleReliability, { band: component.band, opaque: true });
+    store.overrideSelector(MetadataSelectors.selectVisibleReliability, {
+      band: component.band,
+      opaque: true
+    });
     store.refreshState();
     setBand({ visible: false, loaded: true });
     expect(el.querySelector('.on-map-eye')).toBeNull();

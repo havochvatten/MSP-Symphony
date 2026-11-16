@@ -27,11 +27,8 @@ export function filterNationalAreas(nationalAreas: NationalArea[], search: strin
 
 function filterAreas(areaGroups: AreaGroup[], search: string): AreaGroup[] {
   return areaGroups.reduce((groups: AreaGroup[], areaGroup: AreaGroup) => {
-    const areas = areaGroup.areas.filter(area =>
-      (area.searchdata ? area.searchdata : area.name)
-        .trim()
-        .toLowerCase()
-        .includes(search)
+    const areas = areaGroup.areas.filter((area) =>
+      (area.searchdata ? area.searchdata : area.name).trim().toLowerCase().includes(search)
     );
     return [
       ...groups,
@@ -52,10 +49,5 @@ export function filterUserAreas(userAreas: UserArea[], search: string): UserArea
     return userAreas;
   }
   search = searchTrim(search);
-  return userAreas.filter(userArea =>
-    userArea.name
-      .trim()
-      .toLowerCase()
-      .includes(search)
-  );
+  return userAreas.filter((userArea) => userArea.name.trim().toLowerCase().includes(search));
 }

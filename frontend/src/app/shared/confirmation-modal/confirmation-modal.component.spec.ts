@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ConfirmationModalComponent } from './confirmation-modal.component';
-import { DialogRef } from "@shared/dialog/dialog-ref";
-import { DialogConfig } from "../dialog/dialog-config";
-import { TranslateModule } from "@ngx-translate/core";
-import { MatButtonModule } from "@angular/material/button";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { DialogRef } from '@shared/dialog/dialog-ref';
+import { DialogConfig } from '../dialog/dialog-config';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatButtonModule } from '@angular/material/button';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('ConfirmationModalComponent', () => {
   let component: ConfirmationModalComponent;
@@ -13,10 +13,7 @@ describe('ConfirmationModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        MatButtonModule,
-        TranslateModule.forRoot()
-      ],
+      imports: [MatButtonModule, TranslateModule.forRoot()],
       providers: [
         DialogRef,
         {
@@ -28,10 +25,9 @@ describe('ConfirmationModalComponent', () => {
           }
         },
         provideZonelessChangeDetection()
-    ],
-      declarations: [ ConfirmationModalComponent ],
-    })
-    .compileComponents();
+      ],
+      declarations: [ConfirmationModalComponent]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ConfirmationModalComponent);
     component = fixture.componentInstance;

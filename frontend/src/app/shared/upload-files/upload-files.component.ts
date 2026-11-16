@@ -10,7 +10,7 @@ export class UploadFilesComponent {
   files: string[] = [];
 
   uploadFile(fileList: FileList) {
-    for(const file of fileList) {
+    for (const file of fileList) {
       this.files.push(file.name);
     }
   }

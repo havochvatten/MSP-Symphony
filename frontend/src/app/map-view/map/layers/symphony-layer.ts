@@ -1,4 +1,4 @@
-import LayerGroup from "ol/layer/Group";
+import LayerGroup from 'ol/layer/Group';
 
 export abstract class SymphonyLayerGroup extends LayerGroup {
   public antialias = true;

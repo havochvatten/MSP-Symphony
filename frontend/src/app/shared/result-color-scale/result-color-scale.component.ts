@@ -11,11 +11,11 @@ export class ResultColorScaleComponent {
   @Input() locale = 'en';
   @Input() title?: string;
   @Input() unit = '%';
-  @Input() perMille = false
+  @Input() perMille = false;
   @Input() decimals = true;
 
   digitsInfo(): string {
-    return this.decimals ? '1.0-2' : '1.0-0'
+    return this.decimals ? '1.0-2' : '1.0-0';
   }
 
   @Input() colors?: LegendColor[];

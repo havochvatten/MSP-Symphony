@@ -71,7 +71,9 @@ describe('MetadataEffects — fetchSummaryModelDescriptions$', () => {
       >;
       expect(action.type).toBe(MetadataActions.fetchSummaryModelDescriptionsSuccess.type);
       expect(action.category).toBe('ECOSYSTEM');
-      expect(Object.keys(action.descriptions)).toEqual(jasmine.arrayContaining(['simple', 'balanced']));
+      expect(Object.keys(action.descriptions)).toEqual(
+        jasmine.arrayContaining(['simple', 'balanced'])
+      );
       done();
     }, 50);
   });

@@ -126,8 +126,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   showPublicVersion = false;
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
 
-  constructor(private readonly router: Router) {
+  constructor() {
     const currentRoute = this.router.url;
 
     this.isPublic$ = this.configStore.select(selectPublicAccess);
@@ -267,7 +268,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         this.map,
         this.dispatchSelectionUpdate,
         this.zoomToExtent,
-        () => {},
+        () => undefined, // public viewer cannot draw
         this.onDrawInvalid,
         this.onDownloadClick,
         this.onSplitClick,

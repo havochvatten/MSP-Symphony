@@ -16,15 +16,23 @@ export class ImpactTableComponent {
   @Input() locale = 'en';
 
   isExcluded(bandNumber: number): boolean {
-    return this.scenarioImpacts.every(impacts => !(bandNumber in impacts));
+    return this.scenarioImpacts.every((impacts) => !(bandNumber in impacts));
   }
 
   groupExcluded(bandGroup: BandGroup): boolean {
-    return bandGroup.bands.every(b => this.isExcluded(b.bandNumber));
+    return bandGroup.bands.every((b) => this.isExcluded(b.bandNumber));
   }
 
   formatPercentage(value: number, ersatz: string, relative: boolean) {
-    return isNaN(value) ? "" : formatPercentage(value / (this.isComparative() ? 1 : 100), 2, this.locale, ersatz, relative);
+    return isNaN(value)
+      ? ''
+      : formatPercentage(
+          value / (this.isComparative() ? 1 : 100),
+          2,
+          this.locale,
+          ersatz,
+          relative
+        );
   }
 
   isComparative(): boolean {

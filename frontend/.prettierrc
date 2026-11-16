@@ -7,6 +7,7 @@
   "bracketSpacing": true,
   "trailingComma": "none",
   "endOfLine": "lf",
+  "embeddedLanguageFormatting": "off",
   "overrides": [
     {
       "files": "*.json",

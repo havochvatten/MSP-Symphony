@@ -33,14 +33,8 @@ describe('SummaryModelAccordionComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        TranslateModule.forRoot(),
-        MatCheckboxModule
-      ],
-      providers: [
-        TranslateService,
-        provideZonelessChangeDetection()
-      ],
+      imports: [TranslateModule.forRoot(), MatCheckboxModule],
+      providers: [TranslateService, provideZonelessChangeDetection()],
       declarations: [
         SummaryModelAccordionComponent,
         AccordionBoxComponent,

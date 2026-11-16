@@ -23,10 +23,7 @@ describe('SummaryModelControlsComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        StoreModule.forRoot({}, {}),
-        TranslateModule.forRoot()
-      ],
+      imports: [StoreModule.forRoot({}, {}), TranslateModule.forRoot()],
       providers: [
         TranslateService,
         { provide: DialogService, useValue: mockDialogService },

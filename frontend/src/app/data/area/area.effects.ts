@@ -5,12 +5,20 @@ import { of } from 'rxjs';
 
 import AreaService from './area.service';
 import { AreaActions } from './';
-import { Area, Areas, Feature, NationalArea, NationalAreaState, Polygon, StatePath } from './area.interfaces';
-import { ServerError } from "../message/message.interfaces";
+import {
+  Area,
+  Areas,
+  Feature,
+  NationalArea,
+  NationalAreaState,
+  Polygon,
+  StatePath
+} from './area.interfaces';
+import { ServerError } from '../message/message.interfaces';
 import { TranslateService } from '@ngx-translate/core';
-import { Store } from "@ngrx/store";
-import { State } from "@src/app/app-reducer";
-import { UserActions } from "@data/user";
+import { Store } from '@ngrx/store';
+import { State } from '@src/app/app-reducer';
+import { UserActions } from '@data/user';
 
 @Injectable()
 export class AreaEffects {
@@ -19,79 +27,85 @@ export class AreaEffects {
   private readonly areaService = inject(AreaService);
   private readonly translateService = inject(TranslateService);
 
-
-  fetchNationalAreas$ = createEffect(() => this.actions$.pipe(
-    ofType(AreaActions.fetchNationalAreas),
-    mergeMap(() =>
-      this.areaService.getNationalAreaTypes().pipe(
-        map((areaTypes: string[]) => [
-          AreaActions.fetchNationalAreaTypesSuccess({ areaTypes }),
-          ...areaTypes.map(areaType => AreaActions.fetchNationalArea({ areaType }))
-        ]),
-        catchError(({ status, error: message }) =>
-          of([AreaActions.fetchNationalAreaTypesFailure({ error: { status, message } })])
-        ),
-        concatMap(actions => actions)
-      )
-    )
-  ));
-
-  fetchNationalArea$ = createEffect(() => this.actions$.pipe(
-    ofType(AreaActions.fetchNationalArea),
-    mergeMap(({ areaType }) =>
-      this.areaService.getNationalAreasData(areaType).pipe(
-        map(area => {
-          const language = this.translateService.currentLang;
-          const nationalArea = {
-            [area.type]: flattenAreaGroups(area, language)
-          };
-          return AreaActions.fetchNationalAreaSuccess({ nationalArea });
-        }),
-        catchError(({ status, error: message }) =>
-          of(AreaActions.fetchNationalAreaFailure({ error: { status, message } }))
+  fetchNationalAreas$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AreaActions.fetchNationalAreas),
+      mergeMap(() =>
+        this.areaService.getNationalAreaTypes().pipe(
+          map((areaTypes: string[]) => [
+            AreaActions.fetchNationalAreaTypesSuccess({ areaTypes }),
+            ...areaTypes.map((areaType) => AreaActions.fetchNationalArea({ areaType }))
+          ]),
+          catchError(({ status, error: message }) =>
+            of([AreaActions.fetchNationalAreaTypesFailure({ error: { status, message } })])
+          ),
+          concatMap((actions) => actions)
         )
       )
     )
-  ));
+  );
 
-  fetchUserDefinedArea$ = createEffect(() => this.actions$.pipe(
-    ofType(AreaActions.fetchUserDefinedAreas),
-    mergeMap(() =>
-      this.areaService.getUserAreas().pipe(
-        map(userAreas =>
-          AreaActions.fetchUserDefinedAreasSuccess({
-            userAreas: userAreas.reduce(
-              (userAreaState, userArea) => ({
-                ...userAreaState,
-                [userArea.id as number]: {
-                  ...userArea,
-                  displayName: userArea.name,
-                  statePath: ['userArea', userArea.id],
-                  feature: createFeature(
-                    userArea.name,
-                    userArea.name,
-                    userArea.name,
-                    ['userArea', userArea.id as number],
-                    userArea.polygon
-                  )
-                }
-              }),
-              {}
-            )
-          })
-        ),
-        catchError(({ status, error: message }) =>
-          of(AreaActions.fetchUserDefinedAreasFailure({ error: { status, message } }))
+  fetchNationalArea$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AreaActions.fetchNationalArea),
+      mergeMap(({ areaType }) =>
+        this.areaService.getNationalAreasData(areaType).pipe(
+          map((area) => {
+            const language = this.translateService.currentLang;
+            const nationalArea = {
+              [area.type]: flattenAreaGroups(area, language)
+            };
+            return AreaActions.fetchNationalAreaSuccess({ nationalArea });
+          }),
+          catchError(({ status, error: message }) =>
+            of(AreaActions.fetchNationalAreaFailure({ error: { status, message } }))
+          )
         )
       )
     )
-  ));
+  );
 
-  fetchCalibratedCalculationAreas$ = createEffect(() => this.actions$.pipe(
-    ofType(UserActions.fetchBaselineSuccess),
-    mergeMap(({ baseline }) =>
+  fetchUserDefinedArea$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AreaActions.fetchUserDefinedAreas),
+      mergeMap(() =>
+        this.areaService.getUserAreas().pipe(
+          map((userAreas) =>
+            AreaActions.fetchUserDefinedAreasSuccess({
+              userAreas: userAreas.reduce(
+                (userAreaState, userArea) => ({
+                  ...userAreaState,
+                  [userArea.id as number]: {
+                    ...userArea,
+                    displayName: userArea.name,
+                    statePath: ['userArea', userArea.id],
+                    feature: createFeature(
+                      userArea.name,
+                      userArea.name,
+                      userArea.name,
+                      ['userArea', userArea.id as number],
+                      userArea.polygon
+                    )
+                  }
+                }),
+                {}
+              )
+            })
+          ),
+          catchError(({ status, error: message }) =>
+            of(AreaActions.fetchUserDefinedAreasFailure({ error: { status, message } }))
+          )
+        )
+      )
+    )
+  );
+
+  fetchCalibratedCalculationAreas$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.fetchBaselineSuccess),
+      mergeMap(({ baseline }) =>
         this.areaService.getCalibratedCalculationAreas(baseline!.name).pipe(
-          map(calibratedAreas =>
+          map((calibratedAreas) =>
             AreaActions.fetchCalibratedCalculationAreasSuccess({ calibratedAreas })
           ),
           catchError(({ status, error: message }) =>
@@ -102,107 +116,113 @@ export class AreaEffects {
     )
   );
 
-  createUserDefinedArea$ = createEffect(() => this.actions$.pipe(
-    ofType(AreaActions.createUserDefinedArea),
-    mergeMap(({ name, description, polygon }) =>
-      this.areaService.createUserArea({ name, description, polygon }).pipe(
-        map(userAreaResponse =>
-          AreaActions.createUserDefinedAreaSuccess({
-            userArea: {
-              ...userAreaResponse,
-              visible: true,
-              displayName: userAreaResponse.name,
-              statePath: ['userArea', userAreaResponse.id as number],
-              feature: createFeature(
-                userAreaResponse.name,
-                userAreaResponse.name,
-                userAreaResponse.name,
-                ['userArea', userAreaResponse.id as number],
-                userAreaResponse.polygon
-              )
-            }
-          })
-        ),
-        catchError(({ status, error: message }) => {
-            const srvError = (message as ServerError), translateKey = 'map.user-area.create.error.' + srvError.errorCode,
-                  tmpMessage = this.translateService.instant(translateKey,
-                    { areaName: name });
-            if(tmpMessage !== translateKey) {
+  createUserDefinedArea$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AreaActions.createUserDefinedArea),
+      mergeMap(({ name, description, polygon }) =>
+        this.areaService.createUserArea({ name, description, polygon }).pipe(
+          map((userAreaResponse) =>
+            AreaActions.createUserDefinedAreaSuccess({
+              userArea: {
+                ...userAreaResponse,
+                visible: true,
+                displayName: userAreaResponse.name,
+                statePath: ['userArea', userAreaResponse.id as number],
+                feature: createFeature(
+                  userAreaResponse.name,
+                  userAreaResponse.name,
+                  userAreaResponse.name,
+                  ['userArea', userAreaResponse.id as number],
+                  userAreaResponse.polygon
+                )
+              }
+            })
+          ),
+          catchError(({ status, error: message }) => {
+            const srvError = message as ServerError,
+              translateKey = 'map.user-area.create.error.' + srvError.errorCode,
+              tmpMessage = this.translateService.instant(translateKey, { areaName: name });
+            if (tmpMessage !== translateKey) {
               (message as ServerError).errorMessage = tmpMessage;
             }
-            return of(AreaActions.createUserDefinedAreaFailure({error: { status, message }}))
-          }
-        )
-      )
-    )
-  ));
-
-  updateUserDefinedArea$ = createEffect(() => this.actions$.pipe(
-    ofType(AreaActions.updateUserDefinedArea),
-    mergeMap(({ id, name, description, polygon }) =>
-      this.areaService.updateUserArea({ id, name, description, polygon }).pipe(
-        map(userAreaResponse =>
-          AreaActions.updateUserDefinedAreaSuccess({
-            userArea: {
-              ...userAreaResponse,
-              visible: true,
-              displayName: userAreaResponse.name,
-              statePath: ['userArea', userAreaResponse.id as number],
-              feature: createFeature(
-                userAreaResponse.name,
-                userAreaResponse.name,
-                userAreaResponse.name,
-                ['userArea', userAreaResponse.id as number],
-                userAreaResponse.polygon
-              )
-            }
+            return of(AreaActions.createUserDefinedAreaFailure({ error: { status, message } }));
           })
-        ),
-        catchError(({ status, error: message }) =>
-          of(AreaActions.updateUserDefinedAreaFailure({ error: { status, message } }))
         )
       )
     )
-  ));
+  );
 
-  deleteUserDefinedArea$ = createEffect(() => this.actions$.pipe(
-    ofType(AreaActions.deleteUserDefinedArea),
-    mergeMap(({ userAreaId }) =>
-      this.areaService.deleteUserArea(userAreaId).pipe(
-        map(() => AreaActions.deleteUserDefinedAreaSuccess({ userAreaId })),
-        catchError(({ status, error: message }) =>
-          of(AreaActions.deleteUserDefinedAreaFailure({ error: { status, message } }))
-        )
-      )
-    )
-  ));
-
-  deleteMultipleUserDefinedAreas$ = createEffect(() => this.actions$.pipe(
-    ofType(AreaActions.deleteMultipleUserDefinedAreas),
-    mergeMap(({ userAreaIds }) =>
-      this.areaService.deletemultipleUserAreas(userAreaIds).pipe(
-        map(() => AreaActions.fetchUserDefinedAreas()),
-        catchError(({ status, error: message }) =>
-          of(AreaActions.deleteUserDefinedAreaFailure({ error: { status, message } }))
-        )
-      )
-    )
-  ));
-
-  fetchBoundaries$ = createEffect(() => this.actions$.pipe(
-    ofType(AreaActions.fetchBoundaries),
-    mergeMap(() =>
-      this.areaService
-        .getBoundaries()
-        .pipe(
-          map(
-            ({areas: boundaries}) => AreaActions.fetchBoundariesSuccess({boundaries})),
-          catchError(({status, error: message}) =>
-            of(AreaActions.fetchBoundariesFailure({error: {status, message}}))
+  updateUserDefinedArea$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AreaActions.updateUserDefinedArea),
+      mergeMap(({ id, name, description, polygon }) =>
+        this.areaService.updateUserArea({ id, name, description, polygon }).pipe(
+          map((userAreaResponse) =>
+            AreaActions.updateUserDefinedAreaSuccess({
+              userArea: {
+                ...userAreaResponse,
+                visible: true,
+                displayName: userAreaResponse.name,
+                statePath: ['userArea', userAreaResponse.id as number],
+                feature: createFeature(
+                  userAreaResponse.name,
+                  userAreaResponse.name,
+                  userAreaResponse.name,
+                  ['userArea', userAreaResponse.id as number],
+                  userAreaResponse.polygon
+                )
+              }
+            })
+          ),
+          catchError(({ status, error: message }) =>
+            of(AreaActions.updateUserDefinedAreaFailure({ error: { status, message } }))
           )
         )
+      )
     )
-  ));
+  );
+
+  deleteUserDefinedArea$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AreaActions.deleteUserDefinedArea),
+      mergeMap(({ userAreaId }) =>
+        this.areaService.deleteUserArea(userAreaId).pipe(
+          map(() => AreaActions.deleteUserDefinedAreaSuccess({ userAreaId })),
+          catchError(({ status, error: message }) =>
+            of(AreaActions.deleteUserDefinedAreaFailure({ error: { status, message } }))
+          )
+        )
+      )
+    )
+  );
+
+  deleteMultipleUserDefinedAreas$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AreaActions.deleteMultipleUserDefinedAreas),
+      mergeMap(({ userAreaIds }) =>
+        this.areaService.deletemultipleUserAreas(userAreaIds).pipe(
+          map(() => AreaActions.fetchUserDefinedAreas()),
+          catchError(({ status, error: message }) =>
+            of(AreaActions.deleteUserDefinedAreaFailure({ error: { status, message } }))
+          )
+        )
+      )
+    )
+  );
+
+  fetchBoundaries$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AreaActions.fetchBoundaries),
+      mergeMap(() =>
+        this.areaService.getBoundaries().pipe(
+          map(({ areas: boundaries }) => AreaActions.fetchBoundariesSuccess({ boundaries })),
+          catchError(({ status, error: message }) =>
+            of(AreaActions.fetchBoundariesFailure({ error: { status, message } }))
+          )
+        )
+      )
+    )
+  );
 
   // @Effect()
   // uploadPolygons$ = this.actions$.pipe(
@@ -222,7 +242,7 @@ export class AreaEffects {
 function flattenAreaGroups(nationalArea: NationalArea, language: string): NationalAreaState {
   return {
     ...nationalArea,
-    displayName: nationalArea[language] as string ?? nationalArea['en'],
+    displayName: (nationalArea[language] as string) ?? nationalArea['en'],
     groups: nationalArea.groups.reduce(
       (groupMap, group) => ({
         ...groupMap,
@@ -242,7 +262,7 @@ function flattenAreaGroups(nationalArea: NationalArea, language: string): Nation
 function flattenAreas(areas: Area[], parentPath: StatePath): Areas {
   return areas.reduce((prevAreas, area) => {
     const statePath = [...parentPath, 'areas', area.name];
-    const displayName =  area.name + (area.code ? ` (${area.code})` : '');
+    const displayName = area.name + (area.code ? ` (${area.code})` : '');
     return {
       ...prevAreas,
       [area.name]: {

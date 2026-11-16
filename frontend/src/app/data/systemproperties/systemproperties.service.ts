@@ -12,9 +12,8 @@ import { AppConfig } from './systemproperties.interfaces';
 export class ConfigService {
   private readonly http = inject(HttpClient);
   private readonly configUrl = `${env.apiBaseUrl}/systemproperties`;
+  private readonly store = inject(Store);
   private config$: Observable<AppConfig> | null = null;
-
-  constructor(private readonly store: Store) {}
 
   loadConfig(): Observable<AppConfig> {
     this.config$ ??= this.http.get<AppConfig>(this.configUrl).pipe(

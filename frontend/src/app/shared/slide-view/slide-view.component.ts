@@ -1,6 +1,12 @@
 import {
-  Component, ContentChildren, Input, Output,
-  EventEmitter, QueryList, OnChanges, AfterViewInit
+  Component,
+  ContentChildren,
+  Input,
+  Output,
+  EventEmitter,
+  QueryList,
+  OnChanges,
+  AfterViewInit
 } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { IconType } from '@shared/icon/icon.component';
@@ -51,8 +57,7 @@ export class SlideViewComponent implements OnChanges, AfterViewInit {
   @ContentChildren(SlideViewTabComponent) tabs!: QueryList<SlideViewTabComponent>;
   @Input() routeTabIdIsAvailable = false;
 
-  constructor(
-  ) {}
+  constructor() {}
 
   ngAfterViewInit() {
     if (this.open) {
@@ -66,15 +71,15 @@ export class SlideViewComponent implements OnChanges, AfterViewInit {
 
   ngOnChanges() {
     if (!this.open && this.tabs) {
-      this.tabs.toArray().forEach(tab => (tab.active = false));
+      this.tabs.toArray().forEach((tab) => (tab.active = false));
     }
   }
 
   selectTab(tabId?: string) {
-    if (this.tabs.toArray().filter(tab => tab.active).length === 0) {
+    if (this.tabs.toArray().filter((tab) => tab.active).length === 0) {
       this.onClick();
     }
-    this.tabs.toArray().forEach(tab => (tab.active = tab.id === tabId));
+    this.tabs.toArray().forEach((tab) => (tab.active = tab.id === tabId));
     this.navigate.emit(tabId);
   }
 

@@ -3,8 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { MatrixService } from './matrix.service';
 import { provideHttpClient } from '@angular/common/http';
 import { provideMockStore } from '@ngrx/store/testing';
-import { TranslateModule, TranslateService } from "@ngx-translate/core";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('MatrixService', () => {
   let service: MatrixService;

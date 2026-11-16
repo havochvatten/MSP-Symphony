@@ -5,26 +5,21 @@ import {
   ToolbarZoomButtonsComponent,
   ToolbarButtonComponent
 } from '../toolbar-button/toolbar-button.component';
-import { StoreModule } from "@ngrx/store";
+import { StoreModule } from '@ngrx/store';
 import { SharedModule } from '@shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { MapOpacitySliderComponent } from '../map-opacity-slider/map-opacity-slider.component';
-import { provideMockStore } from "@ngrx/store/testing";
+import { provideMockStore } from '@ngrx/store/testing';
 import { initialState as user } from '@data/user/user.reducers';
-import { provideZonelessChangeDetection } from "@angular/core";
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('MapToolbarComponent', () => {
-  let fixture: ComponentFixture<MapToolbarComponent>,
-      component: MapToolbarComponent;
+  let fixture: ComponentFixture<MapToolbarComponent>, component: MapToolbarComponent;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        SharedModule,
-        TranslationSetupModule,
-        StoreModule.forRoot({},{}),
-      ],
-      providers : [
+      imports: [SharedModule, TranslationSetupModule, StoreModule.forRoot({}, {})],
+      providers: [
         provideMockStore({
           initialState: {
             user

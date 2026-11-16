@@ -5,22 +5,16 @@ import { SharedModule } from '@shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { provideMockStore } from '@ngrx/store/testing';
 import { initialState } from '@data/metadata/metadata.reducers';
-import { RouterModule } from "@angular/router";
-import { provideZonelessChangeDetection } from "@angular/core";
-import { MatCheckboxModule } from "@angular/material/checkbox";
+import { RouterModule } from '@angular/router';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 describe('EcoSliderComponent', () => {
-  let fixture: ComponentFixture<EcoSliderComponent>,
-      component: EcoSliderComponent;
+  let fixture: ComponentFixture<EcoSliderComponent>, component: EcoSliderComponent;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        SharedModule,
-        TranslationSetupModule,
-        MatCheckboxModule,
-        RouterModule.forRoot([])
-      ],
+      imports: [SharedModule, TranslationSetupModule, MatCheckboxModule, RouterModule.forRoot([])],
       declarations: [EcoSliderComponent],
       providers: [
         provideMockStore({

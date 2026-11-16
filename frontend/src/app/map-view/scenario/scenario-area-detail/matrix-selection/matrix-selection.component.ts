@@ -1,20 +1,34 @@
-import { Component, EventEmitter, Input, NgModuleRef, OnDestroy, OnInit, Output, ViewChild, inject } from '@angular/core';
 import {
-  Area, AreaTypeMatrixMapping,
-  MatrixRef, MatrixOption, MatrixParameters,
-  SensitivityMatrix, AreaMatrixData
-} from "./matrix.interfaces";
+  Component,
+  EventEmitter,
+  Input,
+  NgModuleRef,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+  inject
+} from '@angular/core';
+import {
+  Area,
+  AreaTypeMatrixMapping,
+  MatrixRef,
+  MatrixOption,
+  MatrixParameters,
+  SensitivityMatrix,
+  AreaMatrixData
+} from './matrix.interfaces';
 import { MatrixTableComponent } from './matrix-table/matrix-table.component';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
-import { TranslateService } from "@ngx-translate/core";
+import { TranslateService } from '@ngx-translate/core';
 import { MatrixService } from './matrix.service';
-import { MatSelect } from "@angular/material/select";
-import { Scenario } from "@data/scenario/scenario.interfaces";
-import { ScenarioActions, ScenarioSelectors } from "@data/scenario";
-import { Subscription } from "rxjs";
-import { ScenarioEditorModule } from "@src/app/map-view/scenario/scenario-editor.module";
+import { MatSelect } from '@angular/material/select';
+import { Scenario } from '@data/scenario/scenario.interfaces';
+import { ScenarioActions, ScenarioSelectors } from '@data/scenario';
+import { Subscription } from 'rxjs';
+import { ScenarioEditorModule } from '@src/app/map-view/scenario/scenario-editor.module';
 
 @Component({
   selector: 'app-matrix-selection',
@@ -43,41 +57,45 @@ export class MatrixSelectionComponent implements OnInit, OnDestroy {
   @Input() areaIndex!: number;
   @Output() setMatrix = new EventEmitter<MatrixParameters>();
   @ViewChild('altMx') altMatrixSelect: MatSelect | undefined;
-  @ViewChild('usrMx') userMatrixSelect: MatSelect| undefined;
+  @ViewChild('usrMx') userMatrixSelect: MatSelect | undefined;
   @ViewChild('typeMx') typeMatrixSelect: MatSelect | undefined;
-  private defaultMatrixTranslation?: string
+  private defaultMatrixTranslation?: string;
   private matrixData?: AreaMatrixData;
   private matrixDataSubscription$: Subscription;
 
-
   constructor() {
-    this.translateService.get('map.editor.matrix.default-matrix').subscribe(res => {
+    this.translateService.get('map.editor.matrix.default-matrix').subscribe((res) => {
       this.defaultMatrixTranslation = res;
     });
-    this.matrixDataSubscription$ = this.store.select(ScenarioSelectors.selectActiveAreaMatrixData).subscribe((matrixData: AreaMatrixData | null) => {
-      if(matrixData) {
-        this.matrixData = matrixData;
-        if(this.matrixData && this.matrixData.defaultArea) {
-          this.areaTypes = this.matrixData.areaTypes.filter(type => !type.coastalArea);
-          this.matrixOptions =
-            [this.matrixData.defaultArea.defaultMatrix,
-            ...this.matrixData.defaultArea.commonBaselineMatrices,
-            ...this.matrixData.defaultArea.userDefinedMatrices];
-        } else if (this.matrixData && this.matrixData.alternativeMatrices) {
-          this.matrixOptions = [
-              ...this.matrixData.alternativeMatrices.filter(mx => mx.immutable),
-              ...this.matrixData.alternativeMatrices.filter(mx => !mx.immutable)];
+    this.matrixDataSubscription$ = this.store
+      .select(ScenarioSelectors.selectActiveAreaMatrixData)
+      .subscribe((matrixData: AreaMatrixData | null) => {
+        if (matrixData) {
+          this.matrixData = matrixData;
+          if (this.matrixData && this.matrixData.defaultArea) {
+            this.areaTypes = this.matrixData.areaTypes.filter((type) => !type.coastalArea);
+            this.matrixOptions = [
+              this.matrixData.defaultArea.defaultMatrix,
+              ...this.matrixData.defaultArea.commonBaselineMatrices,
+              ...this.matrixData.defaultArea.userDefinedMatrices
+            ];
+          } else if (this.matrixData && this.matrixData.alternativeMatrices) {
+            this.matrixOptions = [
+              ...this.matrixData.alternativeMatrices.filter((mx) => mx.immutable),
+              ...this.matrixData.alternativeMatrices.filter((mx) => !mx.immutable)
+            ];
+          }
+          if (this.scenario && this.scenario.areas[this.areaIndex].matrix) {
+            // scenario may be undefined before component initialization
+            this.setSelectedCustomMatrix(this.scenario.areas[this.areaIndex].matrix.matrixId);
+          }
         }
-        if(this.scenario && this.scenario.areas[this.areaIndex].matrix) { // scenario may be undefined before component initialization
-          this.setSelectedCustomMatrix(this.scenario.areas[this.areaIndex].matrix.matrixId);
-        }
-      }
-    });
+      });
   }
 
-  ngOnInit():void {
+  ngOnInit(): void {
     let matrixId;
-    if(!this.scenario.areas[this.areaIndex].matrix) {
+    if (!this.scenario.areas[this.areaIndex].matrix) {
       this.matrixOption = 'STANDARD';
       this.setMatrix.emit({ matrixType: 'STANDARD', matrixId: undefined });
     } else {
@@ -93,18 +111,27 @@ export class MatrixSelectionComponent implements OnInit, OnDestroy {
     if (matrixId) {
       switch (this.matrixOption) {
         case 'STANDARD':
-          this.selectedAreaType = this.areaTypes.find(type =>
-            type.areas.find(area => area.defaultMatrix?.id === matrixId || area.matrices.find(mx => mx.id === matrixId)));
-          if(this.selectedAreaType) {
+          this.selectedAreaType = this.areaTypes.find((type) =>
+            type.areas.find(
+              (area) =>
+                area.defaultMatrix?.id === matrixId ||
+                area.matrices.find((mx) => mx.id === matrixId)
+            )
+          );
+          if (this.selectedAreaType) {
             this.areaTypeSelect(this.selectedAreaType);
-            this.selectedTypedMatrix = this.getAllAreaTypeMatrixOptions().find(mx => mx.id === matrixId);
+            this.selectedTypedMatrix = this.getAllAreaTypeMatrixOptions().find(
+              (mx) => mx.id === matrixId
+            );
           }
           break;
         case 'OPTIONAL':
-          this.selectedOptionalMatrix = this.commonOptionalMatrices.find(mx => mx.id === matrixId);
+          this.selectedOptionalMatrix = this.commonOptionalMatrices.find(
+            (mx) => mx.id === matrixId
+          );
           break;
         case 'CUSTOM':
-          this.selectedCustomMatrix = this.matrixOptions.find(mx => mx.id === matrixId);
+          this.selectedCustomMatrix = this.matrixOptions.find((mx) => mx.id === matrixId);
           break;
       }
     }
@@ -112,15 +139,17 @@ export class MatrixSelectionComponent implements OnInit, OnDestroy {
 
   private getAllAreaTypeMatrixOptions(): MatrixRef[] {
     const areaTypeMatrixOptions: MatrixRef[] = [];
-    if(this.areaTypes){
-      for(const areaType of this.areaTypes) {
-        for (const area of areaType.areas){
-          if(area.defaultMatrix &&
-            !areaTypeMatrixOptions.find(m => m.id === area.defaultMatrix.id))
-              areaTypeMatrixOptions.push(area.defaultMatrix);
+    if (this.areaTypes) {
+      for (const areaType of this.areaTypes) {
+        for (const area of areaType.areas) {
+          if (
+            area.defaultMatrix &&
+            !areaTypeMatrixOptions.find((m) => m.id === area.defaultMatrix.id)
+          )
+            areaTypeMatrixOptions.push(area.defaultMatrix);
 
-          for(const mx of area.matrices) {
-            if(!areaTypeMatrixOptions.find(m => m.id === mx.id)) {
+          for (const mx of area.matrices) {
+            if (!areaTypeMatrixOptions.find((m) => m.id === mx.id)) {
               areaTypeMatrixOptions.push(mx);
             }
           }
@@ -131,18 +160,18 @@ export class MatrixSelectionComponent implements OnInit, OnDestroy {
   }
 
   get standardLabel() {
-    if(this.matrixData) {
-      return (
-        !this.defaultMatrixTranslation ? '' :
-          this.matrixData.defaultArea?.name ? `${this.defaultMatrixTranslation} (${this.matrixData.defaultArea.name})` :
-            this.defaultMatrixTranslation
-      );
+    if (this.matrixData) {
+      return !this.defaultMatrixTranslation
+        ? ''
+        : this.matrixData.defaultArea?.name
+          ? `${this.defaultMatrixTranslation} (${this.matrixData.defaultArea.name})`
+          : this.defaultMatrixTranslation;
     }
     return '';
   }
 
   get commonOptionalMatrices() {
-    if(this.matrixData && this.matrixData.defaultArea) {
+    if (this.matrixData && this.matrixData.defaultArea) {
       return [...this.matrixData.defaultArea.commonBaselineMatrices];
     }
     return [];
@@ -155,29 +184,31 @@ export class MatrixSelectionComponent implements OnInit, OnDestroy {
       this.setMatrix.emit({ matrixType: 'STANDARD', matrixId: undefined });
     }
 
-    [this.altMatrixSelect, this.userMatrixSelect, this.typeMatrixSelect].forEach(
-      dd => {
-        if(dd && dd !== control) {
-          dd.options.forEach(i => i.deselect())
-        } else if (dd === control && dd.options.length === 1) {
-          dd.writeValue(dd.options.first.value);
-          this.customSelect(dd.options.first.value);
-        }
-      });
+    [this.altMatrixSelect, this.userMatrixSelect, this.typeMatrixSelect].forEach((dd) => {
+      if (dd && dd !== control) {
+        dd.options.forEach((i) => i.deselect());
+      } else if (dd === control && dd.options.length === 1) {
+        dd.writeValue(dd.options.first.value);
+        this.customSelect(dd.options.first.value);
+      }
+    });
   }
 
   hasAreaTypes = () => Boolean(this.areaTypes?.length);
 
   hasOptionalMatrices = () =>
-    (this.matrixData === null || !this.matrixData?.defaultArea) ? false :
-    Boolean(this.matrixData!.defaultArea!.commonBaselineMatrices.length) || false;
+    this.matrixData === null || !this.matrixData?.defaultArea
+      ? false
+      : Boolean(this.matrixData!.defaultArea!.commonBaselineMatrices.length) || false;
 
   areaTypeSelect(event: AreaTypeMatrixMapping) {
     this.selectedAreaType = event;
-    if(this.selectedAreaType) {
+    if (this.selectedAreaType) {
       this.firstAreaOfSelectedAreaType = this.selectedAreaType!.areas[0];
-      this.areaTypeMatrixOptions = [this.firstAreaOfSelectedAreaType.defaultMatrix,
-        ...this.firstAreaOfSelectedAreaType.matrices];
+      this.areaTypeMatrixOptions = [
+        this.firstAreaOfSelectedAreaType.defaultMatrix,
+        ...this.firstAreaOfSelectedAreaType.matrices
+      ];
     } else {
       this.firstAreaOfSelectedAreaType = undefined;
       this.selectedTypedMatrix = undefined;
@@ -186,35 +217,45 @@ export class MatrixSelectionComponent implements OnInit, OnDestroy {
   }
 
   customSelect(matrix: MatrixRef) {
-    if(matrix) {
+    if (matrix) {
       this.setSelectedCustomMatrix(matrix.id);
       this.setMatrix.emit({ matrixType: this.matrixOption, matrixId: matrix.id });
     }
   }
 
   async editMatrix() {
-    const matrixId = this.selectedCustomMatrix ? this.selectedCustomMatrix.id : this.matrixData!.defaultArea?.defaultMatrix.id;
+    const matrixId = this.selectedCustomMatrix
+      ? this.selectedCustomMatrix.id
+      : this.matrixData!.defaultArea?.defaultMatrix.id;
 
     this.loadingMatrix = true;
     try {
-      const sensitivityMatrix = await this.matrixService.getSensitivityMatrix(matrixId as number).toPromise();
+      const sensitivityMatrix = await this.matrixService
+        .getSensitivityMatrix(matrixId as number)
+        .toPromise();
       this.loadingMatrix = false;
 
-      const { savedAsNew, deleted } = await this.dialogService.open<SensitivityMatrix & {savedAsNew: boolean, deleted: boolean}, ScenarioEditorModule>(MatrixTableComponent, this.moduleRef, {
+      const { savedAsNew, deleted } = await this.dialogService.open<
+        SensitivityMatrix & { savedAsNew: boolean; deleted: boolean },
+        ScenarioEditorModule
+      >(MatrixTableComponent, this.moduleRef, {
         data: {
           area: this.matrixData!.defaultArea?.name,
           areaId: this.matrixData!.defaultArea?.id,
           matrixData: sensitivityMatrix,
-          immutable: this.selectedCustomMatrix?.immutable || this.selectedCustomMatrix?.id === this.matrixData!.defaultArea?.defaultMatrix.id || false,
+          immutable:
+            this.selectedCustomMatrix?.immutable ||
+            this.selectedCustomMatrix?.id === this.matrixData!.defaultArea?.defaultMatrix.id ||
+            false,
           matrixNames: this.matrixOptions.map((m) => m.name)
         }
       });
-      if(savedAsNew || deleted) {
+      if (savedAsNew || deleted) {
         this.store.dispatch(ScenarioActions.fetchAreaMatrices({ scenarioId: this.scenario.id }));
       }
     } catch (error) {
       this.loadingMatrix = false;
-      console.error("Error fetching matrix:" +error);
+      console.error('Error fetching matrix:' + error);
     }
   }
 

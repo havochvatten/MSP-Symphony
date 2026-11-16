@@ -10,8 +10,8 @@ export function getFeaturesByStatePaths(
 ): Feature<Geometry>[] | null {
   const matchingFeatures: Feature<Geometry>[] = [];
 
-  source.forEachFeature(f => {
-    if(paths.includes(f.get('statePath') as StatePath)){
+  source.forEachFeature((f) => {
+    if (paths.includes(f.get('statePath') as StatePath)) {
       matchingFeatures.push(f);
     }
   });

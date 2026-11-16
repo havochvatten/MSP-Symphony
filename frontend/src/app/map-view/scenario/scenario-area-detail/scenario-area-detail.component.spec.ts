@@ -1,24 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { StoreModule } from "@ngrx/store";
-import { provideMockStore } from "@ngrx/store/testing";
-import { provideHttpClient } from "@angular/common/http";
-import { TranslateModule, TranslateService } from "@ngx-translate/core";
-import { OrdinalPipe } from "@shared/ordinal.pipe";
-import { NormalizationType } from "@data/calculation/calculation.service";
+import { StoreModule } from '@ngrx/store';
+import { provideMockStore } from '@ngrx/store/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { OrdinalPipe } from '@shared/ordinal.pipe';
+import { NormalizationType } from '@data/calculation/calculation.service';
 import { ScenarioAreaDetailComponent } from './scenario-area-detail.component';
-import { IconComponent } from "@shared/icon/icon.component";
-import { ChangesListComponent } from "@src/app/map-view/scenario/scenario-detail/changes-list/changes-list.component";
-import {
-  MatrixSelectionComponent
-} from "@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix-selection.component";
+import { IconComponent } from '@shared/icon/icon.component';
+import { ChangesListComponent } from '@src/app/map-view/scenario/scenario-detail/changes-list/changes-list.component';
+import { MatrixSelectionComponent } from '@src/app/map-view/scenario/scenario-area-detail/matrix-selection/matrix-selection.component';
 import { initialState as calculation } from '@data/calculation/calculation.reducers';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { initialState as user } from '@data/user/user.reducers';
-import { provideZonelessChangeDetection } from "@angular/core";
-import { MatRadioModule } from "@angular/material/radio";
-import { MatSelectModule } from "@angular/material/select";
+import { provideZonelessChangeDetection } from '@angular/core';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
 describe('ScenarioAreaDetailComponent', () => {
   let component: ScenarioAreaDetailComponent;
   let fixture: ComponentFixture<ScenarioAreaDetailComponent>;
@@ -26,14 +24,21 @@ describe('ScenarioAreaDetailComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        StoreModule.forRoot({},{}),
-        TranslateModule.forRoot() ,
+        StoreModule.forRoot({}, {}),
+        TranslateModule.forRoot(),
         MatRadioModule,
         MatSelectModule
       ],
-      declarations: [ ScenarioAreaDetailComponent, OrdinalPipe,
-                      IconComponent, ChangesListComponent, MatrixSelectionComponent ],
-      providers: [ OrdinalPipe, TranslateService,
+      declarations: [
+        ScenarioAreaDetailComponent,
+        OrdinalPipe,
+        IconComponent,
+        ChangesListComponent,
+        MatrixSelectionComponent
+      ],
+      providers: [
+        OrdinalPipe,
+        TranslateService,
         provideHttpClient(),
         provideMockStore({
           initialState: {
@@ -45,8 +50,7 @@ describe('ScenarioAreaDetailComponent', () => {
         }),
         provideZonelessChangeDetection()
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ScenarioAreaDetailComponent);
     component = fixture.componentInstance;
@@ -58,18 +62,24 @@ describe('ScenarioAreaDetailComponent', () => {
       baselineId: 0,
       changes: {},
       ecosystemsToInclude: [],
-      name: "",
-      normalization: { type:NormalizationType.DOMAIN },
+      name: '',
+      normalization: { type: NormalizationType.DOMAIN },
       pressuresToInclude: [],
-      areas: [{
-        id: 1,
-        feature: {type:'Feature', geometry: {type: 'Polygon', coordinates:[]}, properties: { feature: { name: ''} }},
-        changes: {},
-        matrix: {matrixType: 'STANDARD'},
-        scenarioId: -1,
-        excludedCoastal: null,
-        customCalcAreaId: null
-      }],
+      areas: [
+        {
+          id: 1,
+          feature: {
+            type: 'Feature',
+            geometry: { type: 'Polygon', coordinates: [] },
+            properties: { feature: { name: '' } }
+          },
+          changes: {},
+          matrix: { matrixType: 'STANDARD' },
+          scenarioId: -1,
+          excludedCoastal: null,
+          customCalcAreaId: null
+        }
+      ],
       latestCalculationId: null
     };
     component.areaIndex = 0;

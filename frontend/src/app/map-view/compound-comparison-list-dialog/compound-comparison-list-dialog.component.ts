@@ -1,18 +1,19 @@
 import { Component, inject } from '@angular/core';
-import { Store } from "@ngrx/store";
-import { Subscription } from "rxjs";
-import { State } from "@src/app/app-reducer";
-import { DialogRef } from "@shared/dialog/dialog-ref";
-import { CalculationActions, CalculationSelectors } from "@data/calculation";
-import { CompoundComparisonSlice, DownloadCompoundComparisonOptions } from "@data/calculation/calculation.interfaces";
-import { TranslateService } from '@ngx-translate/core';
-import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
-import { environment as env } from "@src/environments/environment";
-import { ListItemsSort } from "@data/common/sorting.interfaces";
+import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs';
+import { State } from '@src/app/app-reducer';
+import { DialogRef } from '@shared/dialog/dialog-ref';
+import { CalculationActions, CalculationSelectors } from '@data/calculation';
 import {
-  DownloadCompoundComparisonDialogComponent
-} from "@src/app/map-view/compound-comparison-list-dialog/download-compound-comparison-dialog/download-compound-comparison-dialog.component";
-import { MultiModeListable } from "@shared/multi-tools/multi-mode-listable";
+  CompoundComparisonSlice,
+  DownloadCompoundComparisonOptions
+} from '@data/calculation/calculation.interfaces';
+import { TranslateService } from '@ngx-translate/core';
+import { ConfirmationModalComponent } from '@shared/confirmation-modal/confirmation-modal.component';
+import { environment as env } from '@src/environments/environment';
+import { ListItemsSort } from '@data/common/sorting.interfaces';
+import { DownloadCompoundComparisonDialogComponent } from '@src/app/map-view/compound-comparison-list-dialog/download-compound-comparison-dialog/download-compound-comparison-dialog.component';
+import { MultiModeListable } from '@shared/multi-tools/multi-mode-listable';
 
 @Component({
   selector: 'app-compound-comparison-list-dialog',
@@ -25,7 +26,6 @@ export class CompoundComparisonListDialogComponent extends MultiModeListable {
   private readonly dialog = inject(DialogRef);
   private readonly translateService = inject(TranslateService);
 
-
   compoundComparison$ = this.store.select(CalculationSelectors.selectCompoundComparisons);
   checkEmpty$: Subscription;
   apiUrl: string;
@@ -36,7 +36,7 @@ export class CompoundComparisonListDialogComponent extends MultiModeListable {
     this.apiUrl = env.apiBaseUrl + '/report/multi-comparison';
 
     this.checkEmpty$ = this.compoundComparison$.subscribe((ccs) => {
-      if(ccs.length === 0) {
+      if (ccs.length === 0) {
         this.close();
       }
     });
@@ -46,20 +46,25 @@ export class CompoundComparisonListDialogComponent extends MultiModeListable {
     this.setSort(ListItemsSort.None);
     this.dialog.close();
     this.checkEmpty$?.unsubscribe();
-  }
+  };
 
-  async deleteCC (cmp: CompoundComparisonSlice) {
-    const confirmDelete: boolean = await this.dialogService.open(ConfirmationModalComponent, this.moduleRef, {
-      data: {
-        header: this.translateService.instant('map.compound-data-list.delete-modal.header'),
-        message: this.translateService.instant('map.compound-data-list.delete-modal.message',
-          { comparisonName: cmp.name }),
-        confirmText: this.translateService.instant('controls.delete'),
-        confirmColor: 'warn',
-        dialogClass: 'center block-identifier wide1',
-        buttonsClass: 'no-margin'
+  async deleteCC(cmp: CompoundComparisonSlice) {
+    const confirmDelete: boolean = await this.dialogService.open(
+      ConfirmationModalComponent,
+      this.moduleRef,
+      {
+        data: {
+          header: this.translateService.instant('map.compound-data-list.delete-modal.header'),
+          message: this.translateService.instant('map.compound-data-list.delete-modal.message', {
+            comparisonName: cmp.name
+          }),
+          confirmText: this.translateService.instant('controls.delete'),
+          confirmColor: 'warn',
+          dialogClass: 'center block-identifier wide1',
+          buttonsClass: 'no-margin'
+        }
       }
-    });
+    );
 
     if (confirmDelete) {
       this.store.dispatch(CalculationActions.deleteCompoundComparison({ id: cmp.id }));
@@ -67,15 +72,17 @@ export class CompoundComparisonListDialogComponent extends MultiModeListable {
   }
 
   async downloadCC(cmp: CompoundComparisonSlice) {
-    const ccDownloadOptions: DownloadCompoundComparisonOptions =
-      await this.dialogService.open(
-        DownloadCompoundComparisonDialogComponent, this.moduleRef, {
-          data: {
-            comparisonName: cmp.name
-          }
-        });
+    const ccDownloadOptions: DownloadCompoundComparisonOptions = await this.dialogService.open(
+      DownloadCompoundComparisonDialogComponent,
+      this.moduleRef,
+      {
+        data: {
+          comparisonName: cmp.name
+        }
+      }
+    );
 
-    if(ccDownloadOptions) {
+    if (ccDownloadOptions) {
       const params = new URLSearchParams({
         lang: this.translateService.currentLang,
         nonzero: !ccDownloadOptions.includeUnchanged + '',
@@ -86,8 +93,7 @@ export class CompoundComparisonListDialogComponent extends MultiModeListable {
         params.set('meta-terms', this.metaTitlesParam());
       }
 
-      document.location.href =
-        `${this.apiUrl}/${cmp.id}/${ccDownloadOptions.asJson ? 'json' : 'ods'}?${params.toString()}`;
+      document.location.href = `${this.apiUrl}/${cmp.id}/${ccDownloadOptions.asJson ? 'json' : 'ods'}?${params.toString()}`;
     }
   }
 
@@ -97,16 +103,25 @@ export class CompoundComparisonListDialogComponent extends MultiModeListable {
 
   metaTitlesParam(): string {
     const titleCase = (str: string) => str[0].toUpperCase() + str.slice(1),
-      titles: {[key:string]: string} = this.translateService.instant([
-      'report.cumulative-effect-etc.calculated-area',
-      'report.cumulative-effect-etc.average','report.cumulative-effect-etc.std-dev',
-      'report.cumulative-effect-etc.max',
-      'map.compound-data-list.terms.total', 'map.compound-data-list.terms.sum', 'map.compound-data-list.terms.baseline',
-      'map.compound-data-list.terms.difference', 'map.compound-data-list.compound-comparison-data',
-      'map.compound-data-list.terms.pixels', 'map.compound-data-list.terms.non-planar', 'map.compound-data-list.terms.combined',
-      'map.compound-data-list.terms.scenarioTitle', 'map.compound-data-list.terms.scenario',
-      'map.metadata.theme', 'map.metadata.ecosystem', 'map.metadata.pressure']
-      );
+      titles: { [key: string]: string } = this.translateService.instant([
+        'report.cumulative-effect-etc.calculated-area',
+        'report.cumulative-effect-etc.average',
+        'report.cumulative-effect-etc.std-dev',
+        'report.cumulative-effect-etc.max',
+        'map.compound-data-list.terms.total',
+        'map.compound-data-list.terms.sum',
+        'map.compound-data-list.terms.baseline',
+        'map.compound-data-list.terms.difference',
+        'map.compound-data-list.compound-comparison-data',
+        'map.compound-data-list.terms.pixels',
+        'map.compound-data-list.terms.non-planar',
+        'map.compound-data-list.terms.combined',
+        'map.compound-data-list.terms.scenarioTitle',
+        'map.compound-data-list.terms.scenario',
+        'map.metadata.theme',
+        'map.metadata.ecosystem',
+        'map.metadata.pressure'
+      ]);
 
     return JSON.stringify({
       compoundHeading: titles['map.compound-data-list.compound-comparison-data'],
@@ -132,20 +147,29 @@ export class CompoundComparisonListDialogComponent extends MultiModeListable {
   deleteSelectedCompoundComparisons = async () => {
     const multi = this.selectedIds.length > 1;
     await this.deleteSelected(
-        { data: {
-            header: this.translateService.instant(
-              multi ? 'map.compound-data-list.delete-modal.header-multiple' :
-                'map.compound-data-list.delete-modal.header'),
-            message: this.translateService.instant(
-              multi ? 'map.compound-data-list.delete-modal.message-multiple' :
-                'map.compound-data-list.delete-modal.message-single', { count: this.selectedIds.length }),
-            confirmText: this.translateService.instant('controls.delete'),
-            confirmColor: 'warn',
-            buttonsClass: 'no-margin'
-          }
-        },
-    () => {
-        this.store.dispatch(CalculationActions.deleteMultipleCompoundComparisons({ ids: this.selectedIds }));
-      });
-  }
+      {
+        data: {
+          header: this.translateService.instant(
+            multi
+              ? 'map.compound-data-list.delete-modal.header-multiple'
+              : 'map.compound-data-list.delete-modal.header'
+          ),
+          message: this.translateService.instant(
+            multi
+              ? 'map.compound-data-list.delete-modal.message-multiple'
+              : 'map.compound-data-list.delete-modal.message-single',
+            { count: this.selectedIds.length }
+          ),
+          confirmText: this.translateService.instant('controls.delete'),
+          confirmColor: 'warn',
+          buttonsClass: 'no-margin'
+        }
+      },
+      () => {
+        this.store.dispatch(
+          CalculationActions.deleteMultipleCompoundComparisons({ ids: this.selectedIds })
+        );
+      }
+    );
+  };
 }

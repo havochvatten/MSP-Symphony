@@ -1,4 +1,4 @@
-import { GeoJSONGeometry } from "ol/format/GeoJSON";
+import { GeoJSONGeometry } from 'ol/format/GeoJSON';
 
 export interface AreaSelectionConfig {
   polygon: GeoJSONGeometry;

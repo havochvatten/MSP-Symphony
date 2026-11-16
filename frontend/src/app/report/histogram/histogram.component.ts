@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Report } from "@data/calculation/calculation.interfaces";
+import { Report } from '@data/calculation/calculation.interfaces';
 
 @Component({
   selector: 'app-histogram',
@@ -7,8 +7,7 @@ import { Report } from "@data/calculation/calculation.interfaces";
   styleUrls: ['./histogram.component.scss'],
   standalone: false
 })
-
-export class HistogramComponent  {
+export class HistogramComponent {
   @Input() title?: string;
   @Input() report!: Report;
   @Input() locale = 'en';

@@ -16,7 +16,7 @@ export class RenameItemModalComponent {
   itemName = '';
 
   constructor() {
-    this.headerText = this.config.data.headerText
+    this.headerText = this.config.data.headerText;
     this.itemName = this.config.data.itemName;
   }
 
