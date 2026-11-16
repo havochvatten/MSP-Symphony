@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { StoreModule } from '@ngrx/store';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { Area } from '@data/area/area.interfaces';
 import { provideHttpClient } from '@angular/common/http';
 import { AddScenarioAreasComponent } from './add-scenario-areas.component';
@@ -24,7 +25,7 @@ describe('AddScenarioAreasComponent', () => {
         ScenarioEditorModule,
         SharedModule,
         StoreModule.forRoot({}, {}),
-        TranslateModule.forRoot()
+        TranslateSpecModule
       ],
       providers: [
         provideHttpClient(),
@@ -55,6 +56,8 @@ describe('AddScenarioAreasComponent', () => {
 
     const select = (...names: string[]) => {
       component.selectedAreas = names.map((name) => ({ name }) as Area);
+      // selectedAreas is a plain field; v18's pipe no longer marks the view on a language change.
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
     };
 

@@ -6,7 +6,8 @@ import { LocalizedSrc, resolveLocalizedSrc } from './localized-src';
 /**
  * Picks the image path for the selected language, falling back to the default language.
  * Returns '' when nothing resolves, so templates can guard with `@if (x | localizedSrc; as src)`.
- * Impure, and marks its view for check on language change, since the app is zoneless.
+ * Impure. Its onLangChange subscription marks the view for check on a language change,
+ * since the app is zoneless.
  */
 @Pipe({ name: 'localizedSrc', pure: false, standalone: false })
 export class LocalizedSrcPipe implements PipeTransform {
@@ -23,8 +24,8 @@ export class LocalizedSrcPipe implements PipeTransform {
   transform(src: LocalizedSrc | null | undefined): string {
     const { value, error } = resolveLocalizedSrc(
       src,
-      this.translate.currentLang,
-      this.translate.getDefaultLang()
+      this.translate.getCurrentLang() ?? undefined,
+      this.translate.getFallbackLang() ?? undefined
     );
     if (error && !this.reportedErrors.has(error)) {
       this.reportedErrors.add(error);

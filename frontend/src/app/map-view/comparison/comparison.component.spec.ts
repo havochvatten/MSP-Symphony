@@ -2,7 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ComparisonComponent } from '@src/app/map-view/comparison/comparison.component';
 import { StoreModule } from '@ngrx/store';
 import { provideHttpClient } from '@angular/common/http';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { FormBuilder } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { provideMockStore } from '@ngrx/store/testing';
@@ -26,7 +27,7 @@ describe('ComparisonComponent', () => {
         MatCheckboxModule,
         MatProgressSpinnerModule,
         StoreModule.forRoot({}, {}),
-        TranslateModule.forRoot()
+        TranslateSpecModule
       ],
       providers: [
         TranslateService,

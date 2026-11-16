@@ -9,7 +9,8 @@ import { MatrixSelectionComponent } from './matrix-selection.component';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { NormalizationType } from '@data/calculation/calculation.service';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('MatrixSelectionComponent', () => {
@@ -23,7 +24,7 @@ describe('MatrixSelectionComponent', () => {
         TranslationSetupModule,
         MatRadioModule,
         MatSelectModule,
-        TranslateModule.forRoot()
+        TranslateSpecModule
       ],
       declarations: [MatrixSelectionComponent],
       providers: [

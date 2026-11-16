@@ -5,6 +5,7 @@ import { State } from '@src/app/app-reducer';
 import { CalcOperation, NormalizationType } from '@data/calculation/calculation.service';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { TranslateService } from '@ngx-translate/core';
+import { defaultLanguage } from '@shared/languages';
 import {
   AreaMatrixData,
   AreaTypeMatrixMapping,
@@ -78,7 +79,7 @@ export class ScenarioAreaDetailComponent implements OnInit, OnDestroy {
         }
       });
     this.bandDictionary$ = this.store.select(MetadataSelectors.selectMetaDisplayDictionary);
-    this.locale = this.translateService.currentLang;
+    this.locale = this.translateService.getCurrentLang() ?? defaultLanguage;
   }
 
   ngOnDestroy(): void {

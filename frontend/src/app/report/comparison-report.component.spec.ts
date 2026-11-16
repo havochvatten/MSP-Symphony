@@ -27,7 +27,7 @@ describe('ComparisonReportComponent', () => {
             }
           }
         },
-        { provide: TranslateService, useValue: { currentLang: 'en' } },
+        { provide: TranslateService, useValue: { getCurrentLang: () => 'en' } },
         { provide: ReportService, useValue: { getComparisonReport: () => NEVER } },
         { provide: CalculationService, useValue: { getComparisonLegend: () => NEVER } },
         { provide: BrandingService, useValue: {} },

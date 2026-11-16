@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { BrandingConfig, BrandingService } from '@src/app/core/branding/branding.service';
 import { LocalizedSrcPipe } from '@shared/localized-src.pipe';
 import { LocalizedTextPipe } from '@shared/localized-text.pipe';
@@ -36,7 +37,7 @@ describe('ReportLogosComponent', () => {
       }
     };
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
+      imports: [TranslateSpecModule],
       declarations: [ReportLogosComponent, LocalizedSrcPipe, LocalizedTextPipe],
       providers: [
         { provide: BrandingService, useValue: { configData: config } },
@@ -44,7 +45,7 @@ describe('ReportLogosComponent', () => {
       ]
     });
     translate = TestBed.inject(TranslateService);
-    translate.setDefaultLang('en');
+    translate.setFallbackLang('en');
     translate.use('sv');
   });
 

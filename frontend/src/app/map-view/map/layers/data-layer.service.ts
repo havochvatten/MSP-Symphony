@@ -12,6 +12,7 @@ import {
   SummaryModelOption
 } from '@data/calculation/calculation.interfaces';
 import { TranslateService } from '@ngx-translate/core';
+import { defaultLanguage } from '@shared/languages';
 import { StyleVersionService } from '@data/style/style-version.service';
 
 @Injectable({
@@ -64,7 +65,10 @@ export class DataLayerService {
     model: Exclude<SummaryModel, 'none'>
   ) {
     const url = `${env.apiBaseUrl}/datalayer/${baseline}/${summaryModelCategory.toLowerCase()}/model/${model}/description`;
-    const params = new HttpParams().set('locale', this.translate.currentLang);
+    const params = new HttpParams().set(
+      'locale',
+      this.translate.getCurrentLang() ?? defaultLanguage
+    );
 
     return this.http.get<ModelDescriptionDialogData>(url, { params });
   }
@@ -74,7 +78,7 @@ export class DataLayerService {
     summaryModelCategory: SummaryModelCategory
   ): Observable<SummaryModelOption[]> {
     const category = summaryModelCategory.toLowerCase(); // 'ecosystem' | 'pressure'
-    const locale = this.translate.currentLang;
+    const locale = this.translate.getCurrentLang() ?? defaultLanguage;
     // Locale is part of the cache key: the picker labels are localized, and a language
     // switch re-runs this fetch — without the locale the cache would serve stale names.
     const cacheKey = `${baseline.toLowerCase()}:${category}:${locale}`;

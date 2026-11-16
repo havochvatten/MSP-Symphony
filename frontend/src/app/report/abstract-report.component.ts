@@ -4,6 +4,7 @@ import { Store } from '@ngrx/store';
 import { map, withLatestFrom } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+import { defaultLanguage } from '@shared/languages';
 import buildInfo from '@src/build-info';
 import { State } from '@src/app/app-reducer';
 import { formatChartData } from '@src/app/report/report.util';
@@ -47,7 +48,7 @@ export abstract class AbstractReport<ReportType> {
     const translate = inject(TranslateService);
     const store = inject<Store<State>>(Store);
 
-    this.locale = translate.currentLang;
+    this.locale = translate.getCurrentLang() ?? defaultLanguage;
     this._metadata$ = store.select(MetadataSelectors.selectMetadata);
     this.bandDictionary$ = store.select(MetadataSelectors.selectMetaDisplayDictionary);
     this.percentileValue$ = store.select(CalculationSelectors.selectPercentileValue);

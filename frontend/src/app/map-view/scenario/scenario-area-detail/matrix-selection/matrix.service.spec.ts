@@ -4,7 +4,8 @@ import { MatrixService } from './matrix.service';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideMockStore } from '@ngrx/store/testing';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { environment as env } from '@src/environments/environment';
 
@@ -15,7 +16,7 @@ describe('MatrixService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
+      imports: [TranslateSpecModule],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),

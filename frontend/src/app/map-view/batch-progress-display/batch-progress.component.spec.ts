@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BatchProgressComponent } from './batch-progress.component';
 import { StoreModule } from '@ngrx/store';
 import { provideMockStore } from '@ngrx/store/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('BatchProgressDisplayComponent', () => {
@@ -12,7 +12,7 @@ describe('BatchProgressDisplayComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [StoreModule.forRoot({}, {}), TranslateModule.forRoot()],
+      imports: [StoreModule.forRoot({}, {}), TranslateSpecModule],
       providers: [
         provideZonelessChangeDetection(),
         provideMockStore({

@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { DialogConfig } from '@shared/dialog/dialog-config';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { DialogRef } from '@shared/dialog/dialog-ref';
@@ -14,7 +15,7 @@ describe('MergeAreasModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
+      imports: [TranslateSpecModule],
       providers: [
         TranslateService,
         DialogService,

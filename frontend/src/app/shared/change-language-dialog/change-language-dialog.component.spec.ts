@@ -2,7 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChangeLanguageDialogComponent } from './change-language-dialog.component';
 import { DialogRef } from '@shared/dialog/dialog-ref';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { MatRadioModule } from '@angular/material/radio';
 import { provideZonelessChangeDetection } from '@angular/core';
 
@@ -13,7 +14,7 @@ describe('ChangeLanguageDialogComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ChangeLanguageDialogComponent],
-      imports: [TranslateModule.forRoot(), MatRadioModule],
+      imports: [TranslateSpecModule, MatRadioModule],
       providers: [
         provideZonelessChangeDetection(),
         {

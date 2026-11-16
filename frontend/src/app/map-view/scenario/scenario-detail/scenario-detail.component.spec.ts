@@ -3,7 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ScenarioDetailComponent } from './scenario-detail.component';
 import { StoreModule } from '@ngrx/store';
 import { provideHttpClient } from '@angular/common/http';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { NormalizationType } from '@data/calculation/calculation.service';
 import { MatRadioModule } from '@angular/material/radio';
 import { IconComponent } from '@shared/icon/icon.component';
@@ -26,7 +27,7 @@ describe('ScenarioDetailComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [StoreModule.forRoot({}, {}), TranslateModule.forRoot(), MatRadioModule],
+      imports: [StoreModule.forRoot({}, {}), TranslateSpecModule, MatRadioModule],
       providers: [
         TranslateService,
         OrdinalPipe,

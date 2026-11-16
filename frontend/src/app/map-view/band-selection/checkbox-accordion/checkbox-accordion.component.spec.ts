@@ -11,7 +11,8 @@ import { IconComponent } from '@shared/icon/icon.component';
 import { StoreModule } from '@ngrx/store';
 import { provideMockStore } from '@ngrx/store/testing';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import {
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
@@ -69,7 +70,7 @@ describe('CheckboxAccordionComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [StoreModule.forRoot({}, {}), TranslateModule.forRoot()],
+      imports: [StoreModule.forRoot({}, {}), TranslateSpecModule],
       providers: [
         TranslateService,
         provideMockStore({

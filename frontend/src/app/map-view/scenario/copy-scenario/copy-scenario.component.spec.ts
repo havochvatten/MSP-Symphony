@@ -3,7 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { DialogRef } from '@shared/dialog/dialog-ref';
 import { DialogConfig } from '@shared/dialog/dialog-config';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { CopyScenarioComponent } from './copy-scenario.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -15,7 +16,7 @@ describe('CopyScenarioComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatFormFieldModule, MatCheckboxModule, TranslateModule.forRoot()],
+      imports: [MatFormFieldModule, MatCheckboxModule, TranslateSpecModule],
       providers: [
         DialogService,
         DialogRef,

@@ -4,7 +4,8 @@ import { DownloadCompoundComparisonDialogComponent } from './download-compound-c
 import { DialogService } from '@shared/dialog/dialog.service';
 import { DialogRef } from '@shared/dialog/dialog-ref';
 import { DialogConfig } from '@shared/dialog/dialog-config';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { MatRadioModule } from '@angular/material/radio';
@@ -16,7 +17,7 @@ describe('DownloadCompoundComparisonDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [MatRadioModule, MatCheckboxModule, FormsModule, TranslateModule.forRoot()],
+      imports: [MatRadioModule, MatCheckboxModule, FormsModule, TranslateSpecModule],
       providers: [
         DialogService,
         DialogRef,

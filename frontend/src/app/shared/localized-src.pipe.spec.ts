@@ -1,6 +1,7 @@
 import { Component, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { LocalizedSrc } from './localized-src';
 import { LocalizedSrcPipe } from './localized-src.pipe';
 
@@ -19,12 +20,12 @@ describe('LocalizedSrcPipe', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
+      imports: [TranslateSpecModule],
       declarations: [HostComponent, LocalizedSrcPipe],
       providers: [provideZonelessChangeDetection()]
     });
     translate = TestBed.inject(TranslateService);
-    translate.setDefaultLang('en');
+    translate.setFallbackLang('en');
     translate.use('sv');
     fixture = TestBed.createComponent(HostComponent);
     await fixture.whenStable();

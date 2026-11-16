@@ -1,5 +1,5 @@
 import { RouterModule } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { DialogComponent } from './dialog/dialog.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgModule } from '@angular/core';
@@ -107,7 +107,7 @@ import { FundingDisclaimerComponent } from './funding-disclaimer/funding-disclai
     FontAwesomeModule,
     ReactiveFormsModule,
     RouterModule,
-    TranslateModule,
+    TranslatePipe,
     MatButtonModule,
     MatCheckboxModule,
     MatRadioModule,
@@ -144,7 +144,7 @@ import { FundingDisclaimerComponent } from './funding-disclaimer/funding-disclai
     PopupMessageComponent,
     StatusIconComponent,
     RouterModule,
-    TranslateModule,
+    TranslatePipe,
     OrdinalPipe,
     AnchorPipe,
     LocalizedTextPipe,

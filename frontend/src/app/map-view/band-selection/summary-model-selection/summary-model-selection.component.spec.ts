@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { StoreModule } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
@@ -16,7 +17,7 @@ describe('SummaryModelSelectionComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [StoreModule.forRoot({}, {}), TranslateModule.forRoot()],
+      imports: [StoreModule.forRoot({}, {}), TranslateSpecModule],
       providers: [
         TranslateService,
         provideMockStore({

@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ConfirmationModalComponent } from './confirmation-modal.component';
 import { DialogRef } from '@shared/dialog/dialog-ref';
 import { DialogConfig } from '../dialog/dialog-config';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { MatButtonModule } from '@angular/material/button';
 import { provideZonelessChangeDetection } from '@angular/core';
 
@@ -13,7 +13,7 @@ describe('ConfirmationModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatButtonModule, TranslateModule.forRoot()],
+      imports: [MatButtonModule, TranslateSpecModule],
       providers: [
         DialogRef,
         {

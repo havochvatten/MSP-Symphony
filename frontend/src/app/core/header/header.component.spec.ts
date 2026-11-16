@@ -5,7 +5,8 @@ import { HeaderComponent } from './header.component';
 import { SharedModule } from '@shared/shared.module';
 import { UserMenuToggleComponent } from './user-menu-toggle/user-menu-toggle.component';
 import { StoreModule } from '@ngrx/store';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { BrandingService } from '@src/app/core/branding/branding.service';
 import { DialogService } from '@shared/dialog/dialog.service';
@@ -22,7 +23,7 @@ describe('HeaderComponent', () => {
       imports: [
         SharedModule,
         StoreModule.forRoot({}, {}),
-        TranslateModule.forRoot(),
+        TranslateSpecModule,
         NoopAnimationsModule
       ],
       declarations: [HeaderComponent, UserMenuToggleComponent],
@@ -42,7 +43,7 @@ describe('HeaderComponent', () => {
         provideZonelessChangeDetection()
       ]
     }).compileComponents();
-    TestBed.inject(TranslateService).setDefaultLang('en');
+    TestBed.inject(TranslateService).setFallbackLang('en');
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
     component.title = 'Symphony';
