@@ -66,7 +66,6 @@
     "@angular/cli": "^21.2.29",
     "@angular/compiler-cli": "^21.2.26",
     "@angular/language-service": "^21.2.26",
-    "@babel/core": "^7.29.13",
     "@eslint/js": "^10.0.1",
     "@types/d3": "^7.4.3",
     "@types/d3-sankey": "^0.12.4",

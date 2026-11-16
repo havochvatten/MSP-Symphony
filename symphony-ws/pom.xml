@@ -422,7 +422,7 @@
                             <ignoreVersions>
                                 <ignoreVersion>
                                     <type>regex</type>
-                                    <version>(?i).*[-|.](alpha|beta|m|rc)([-.]?\d+)?</version>
+                                    <version>(?i).*[-.](alpha|beta|m|rc|cr)([-.]?\d+)?</version>
                                 </ignoreVersion>
                             </ignoreVersions>
                         </ruleSet>

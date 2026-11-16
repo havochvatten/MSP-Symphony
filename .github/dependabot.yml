@@ -84,10 +84,6 @@ updates:
         update-types:
           - "version-update:semver-major"
           - "version-update:semver-minor"
-      # Angular's build keeps its own Babel 7. Babel 8 at the root would not be
-      # used by the build, and the root entry is not used by anything else.
-      - dependency-name: "@babel/core"
-        update-types: ["version-update:semver-major"]
       # Immutable 5 removed the default export and tightened the types of
       # getIn/setIn/updateIn, which the reducers rely on. Migrate by hand.
       - dependency-name: "immutable"
