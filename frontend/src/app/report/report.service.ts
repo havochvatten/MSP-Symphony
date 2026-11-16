@@ -11,7 +11,9 @@ export class ReportService {
   private readonly http = inject(HttpClient);
   private readonly translate = inject(TranslateService);
 
-  private langParam = `?lang=${this.translate.currentLang}`;
+  private get langParam(): string {
+    return `?lang=${this.translate.currentLang}`;
+  }
 
   public getReport(id: string) {
     return this.http.get<Report>(`${env.apiBaseUrl}/report/${id}${this.langParam}`);

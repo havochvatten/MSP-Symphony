@@ -19,7 +19,9 @@ export class MatrixService implements OnDestroy {
   baseline = '';
   baselineSubscription?: Subscription;
 
-  private langParam = `?lang=${this.translate.currentLang}`;
+  private get langParam(): string {
+    return `?lang=${this.translate.currentLang}`;
+  }
 
   constructor() {
     this.baselineSubscription = this.store
