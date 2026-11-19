@@ -71,7 +71,7 @@ wsl --install
 wsl --set-default-version 2
 Open Ubuntu (terminal) and run:
 sudo apt update && sudo apt upgrade -y
-sudo apt install openjdk-17-jdk maven postgresql postgresql-contrib postgis
+sudo apt install openjdk-21-jdk maven postgresql postgresql-contrib postgis
 gdal-bin unzip wget curl git -y
 ```
 
