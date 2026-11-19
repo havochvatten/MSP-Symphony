@@ -50,8 +50,8 @@ v[36.0.1](https://www.wildfly.org/downloads/#36.0.1.Final)).
 The backend requires Java 21, both to build it and to run it: the application server has to run on a Java 21 JVM.  
 At SwAM the frontend is served separately using Apache, although any web server capable of serving static content 
 will do (see [Frontend](#frontend-1) below). The backend has been tested using Wildfly 36.0 on Java 21, PostgreSQL 14
-and PostGIS v3.4, but more recent versions should be fine (as for Wildfly, at least all versions providing Jakarta EE
-10).
+and PostGIS v3.4, but more recent versions should be fine (as for Wildfly, at least all versions providing
+Jakarta EE 10).
 
 The frontend is realized as an Angular application (v 21), built with Node 24
 
@@ -159,9 +159,9 @@ _api.base_url_ property may want to be overridden to point to a remote server wh
 
 It is a very good idea to give the system ample heap space to work with, at least a few GBs. Example: `-Xmx10G`
 
-The system assumes that all strings related to area polygons are in UTF encoding. Current JVMs typically defaults to 
-the default native platform encoding. Notably, on Windows that is not UTF and so if running on Windows specifying
-`-Dfile.encoding=UTF-8` may be necessary (that setting is used also when reading data from the datbase).
+The system assumes that all strings related to area polygons are in UTF-8 encoding. From Java 18 the JVM uses UTF-8
+as its default charset on every platform (also for data read from the database), so `-Dfile.encoding=UTF-8` is no
+longer needed, although it does no harm.
 
 ### 5. Configure summary models
 
