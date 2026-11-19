@@ -25,7 +25,7 @@ public class RarityAdjustedCumulativeImpactOp extends CumulativeImpactOp {
 
     @Override
     protected void computeRect(Raster[] sources, WritableRaster dst, Rectangle dstRect) {
-        LOG.fine("computeRect: " + dstRect + ", thread=" + Thread.currentThread().getId());
+        LOG.fine("computeRect: " + dstRect + ", thread=" + Thread.currentThread().threadId());
 
         RasterFormatTag[] formatTags = getFormatTags();
         Rectangle srcRect = mapDestRect(dstRect, 0);
