@@ -72,7 +72,7 @@
     "@types/geojson": "^7946.0.14",
     "@types/jasmine": "~7.0.0",
     "@types/jasminewd2": "~2.0.13",
-    "@types/node": "^20.12.12",
+    "@types/node": "^26.6.6",
     "angular-eslint": "^21.4.0",
     "autoprefixer": "^10.6.2",
     "eslint": "^10.14.0",
