@@ -6,6 +6,7 @@ import { MatrixService } from '../matrix.service';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+import { defaultLanguage } from '@shared/languages';
 import { isEqual } from '@shared/common.util';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { ConfirmationModalComponent } from '@shared/confirmation-modal/confirmation-modal.component';
@@ -48,7 +49,7 @@ export class MatrixTableComponent {
     this.matrixData = this.config.data.matrixData;
     this.immutable = this.config.data.immutable;
     this.matrixNames = this.config.data.matrixNames;
-    this.locale = this.translateService.currentLang;
+    this.locale = this.translateService.getCurrentLang() ?? defaultLanguage;
     this.initialName = this.matrixData.name;
     this.initClean();
   }

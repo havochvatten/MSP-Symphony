@@ -7,6 +7,7 @@ import { UserSelectors } from '@data/user';
 import { SensitivityMatrix } from './matrix.interfaces';
 import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+import { defaultLanguage } from '@shared/languages';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,9 @@ export class MatrixService implements OnDestroy {
   baseline = '';
   baselineSubscription?: Subscription;
 
-  private langParam = `?lang=${this.translate.currentLang}`;
+  private get langParam(): string {
+    return `?lang=${this.translate.getCurrentLang() ?? defaultLanguage}`;
+  }
 
   constructor() {
     this.baselineSubscription = this.store

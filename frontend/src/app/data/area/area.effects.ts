@@ -16,6 +16,7 @@ import {
 } from './area.interfaces';
 import { ServerError } from '../message/message.interfaces';
 import { TranslateService } from '@ngx-translate/core';
+import { defaultLanguage } from '@shared/languages';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { UserActions } from '@data/user';
@@ -51,7 +52,7 @@ export class AreaEffects {
       mergeMap(({ areaType }) =>
         this.areaService.getNationalAreasData(areaType).pipe(
           map((area) => {
-            const language = this.translateService.currentLang;
+            const language = this.translateService.getCurrentLang() ?? defaultLanguage;
             const nationalArea = {
               [area.type]: flattenAreaGroups(area, language)
             };

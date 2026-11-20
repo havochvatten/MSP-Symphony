@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { MatInputModule } from '@angular/material/input';
 import { DialogRef } from '@shared/dialog/dialog-ref';
 import { DialogConfig } from '@shared/dialog/dialog-config';
@@ -34,7 +34,7 @@ describe('NewScenarioNameComponent', () => {
     spyOn(dialogRef, 'close');
 
     await TestBed.configureTestingModule({
-      imports: [MatInputModule, TranslateModule.forRoot()],
+      imports: [MatInputModule, TranslateSpecModule],
       providers: [
         { provide: DialogRef, useValue: dialogRef },
         { provide: DialogConfig, useValue: { data: { suggestedName } } },

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { ActiveScenarioDisplayComponent } from './active-scenario-display.component';
 import { NormalizationType } from '@data/calculation/calculation.service';
 import { provideZonelessChangeDetection } from '@angular/core';
@@ -11,7 +12,7 @@ describe('ActiveScenarioDisplayComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
+      imports: [TranslateSpecModule],
       providers: [TranslateService, provideZonelessChangeDetection()],
       declarations: [ActiveScenarioDisplayComponent]
     }).compileComponents();

@@ -3,7 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ScenarioListComponent } from './scenario-list.component';
 import { StoreModule } from '@ngrx/store';
 import { provideHttpClient } from '@angular/common/http';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { initialState as scenario } from '@data/scenario/scenario.reducers';
 import { initialState as area } from '@data/area/area.reducers';
@@ -33,7 +34,7 @@ describe('ScenarioListComponent', () => {
         ScenarioEditorModule,
         SharedModule,
         StoreModule.forRoot({}, {}),
-        TranslateModule.forRoot()
+        TranslateSpecModule
       ],
       providers: [
         TranslateService,

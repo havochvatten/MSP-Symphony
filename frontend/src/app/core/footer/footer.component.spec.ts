@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FooterComponent } from './footer.component';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('FooterComponent', () => {
@@ -9,7 +10,7 @@ describe('FooterComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
+      imports: [TranslateSpecModule],
       providers: [TranslateService, provideZonelessChangeDetection()],
       declarations: [FooterComponent]
     }).compileComponents();

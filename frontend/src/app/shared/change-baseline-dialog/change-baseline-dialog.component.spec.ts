@@ -4,7 +4,7 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { Subject } from 'rxjs';
 import { Action } from '@ngrx/store';
 import { provideZonelessChangeDetection } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
@@ -25,7 +25,7 @@ describe('ChangeBaselineDialogComponent', () => {
     dialogRef = { close: jasmine.createSpy('close') };
     TestBed.configureTestingModule({
       declarations: [ChangeBaselineDialogComponent],
-      imports: [TranslateModule.forRoot(), MatRadioModule, MatProgressSpinnerModule],
+      imports: [TranslateSpecModule, MatRadioModule, MatProgressSpinnerModule],
       providers: [
         provideZonelessChangeDetection(),
         provideMockStore({ initialState: { user } }),

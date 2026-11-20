@@ -3,7 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { StoreModule } from '@ngrx/store';
 import { provideMockStore } from '@ngrx/store/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { OrdinalPipe } from '@shared/ordinal.pipe';
 import { NormalizationType } from '@data/calculation/calculation.service';
 import { ScenarioAreaDetailComponent } from './scenario-area-detail.component';
@@ -23,12 +24,7 @@ describe('ScenarioAreaDetailComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        StoreModule.forRoot({}, {}),
-        TranslateModule.forRoot(),
-        MatRadioModule,
-        MatSelectModule
-      ],
+      imports: [StoreModule.forRoot({}, {}), TranslateSpecModule, MatRadioModule, MatSelectModule],
       declarations: [
         ScenarioAreaDetailComponent,
         OrdinalPipe,

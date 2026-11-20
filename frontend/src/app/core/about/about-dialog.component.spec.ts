@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AboutDialogComponent } from './about-dialog.component';
 import { DialogRef } from '@shared/dialog/dialog-ref';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { SharedModule } from '@shared/shared.module';
 import { provideMockStore } from '@ngrx/store/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
@@ -17,7 +17,7 @@ describe('AboutDialogComponentComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot(), SharedModule],
+      imports: [TranslateSpecModule, SharedModule],
       declarations: [AboutDialogComponent],
       providers: [
         { provide: DialogRef, useClass: MockDialogRef },

@@ -2,7 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HistogramChartComponent } from './histogram-chart.component';
 import { DecimalPipe } from '@angular/common';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('HistogramChartComponent', () => {
@@ -11,7 +12,7 @@ describe('HistogramChartComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
+      imports: [TranslateSpecModule],
       declarations: [HistogramChartComponent],
       providers: [DecimalPipe, TranslateService, provideZonelessChangeDetection()]
     }).compileComponents();

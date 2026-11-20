@@ -5,7 +5,8 @@ import { provideMockStore } from '@ngrx/store/testing';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { DialogRef } from '@shared/dialog/dialog-ref';
 import { DialogConfig } from '@shared/dialog/dialog-config';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { TransferChangesComponent } from './transfer-changes.component';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -28,7 +29,7 @@ describe('TransferChangesComponent', () => {
         MatRadioModule,
         MatCheckboxModule,
         StoreModule.forRoot({}, {}),
-        TranslateModule.forRoot()
+        TranslateSpecModule
       ],
       providers: [
         DialogService,

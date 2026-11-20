@@ -9,6 +9,7 @@ import {
   DownloadCompoundComparisonOptions
 } from '@data/calculation/calculation.interfaces';
 import { TranslateService } from '@ngx-translate/core';
+import { defaultLanguage } from '@shared/languages';
 import { ConfirmationModalComponent } from '@shared/confirmation-modal/confirmation-modal.component';
 import { environment as env } from '@src/environments/environment';
 import { ListItemsSort } from '@data/common/sorting.interfaces';
@@ -84,7 +85,7 @@ export class CompoundComparisonListDialogComponent extends MultiModeListable {
 
     if (ccDownloadOptions) {
       const params = new URLSearchParams({
-        lang: this.translateService.currentLang,
+        lang: this.translateService.getCurrentLang() ?? defaultLanguage,
         nonzero: !ccDownloadOptions.includeUnchanged + '',
         combined: ccDownloadOptions.includeCombined + ''
       });

@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 
 import { AccordionBoxComponent } from './accordion-box.component';
 import { IconButtonComponent } from '../icon-button/icon-button.component';
@@ -13,7 +14,7 @@ describe('AccordionBoxComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
+      imports: [TranslateSpecModule],
       providers: [TranslateService, provideZonelessChangeDetection()],
       declarations: [AccordionBoxComponent, IconButtonComponent, IconComponent]
     }).compileComponents();

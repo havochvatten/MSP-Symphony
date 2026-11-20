@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { ComparisonReport, Report } from '@data/calculation/calculation.interfaces';
 import { environment as env } from '@src/environments/environment';
 import { TranslateService } from '@ngx-translate/core';
+import { defaultLanguage } from '@shared/languages';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,9 @@ export class ReportService {
   private readonly http = inject(HttpClient);
   private readonly translate = inject(TranslateService);
 
-  private langParam = `?lang=${this.translate.currentLang}`;
+  private get langParam(): string {
+    return `?lang=${this.translate.getCurrentLang() ?? defaultLanguage}`;
+  }
 
   public getReport(id: string) {
     return this.http.get<Report>(`${env.apiBaseUrl}/report/${id}${this.langParam}`);

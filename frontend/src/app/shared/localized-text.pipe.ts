@@ -5,7 +5,8 @@ import { LocalizedText, resolveLocalizedText } from './localized-text';
 
 /**
  * Picks the text for the selected language, falling back to the default language.
- * Impure, and marks its view for check on language change, since the app is zoneless.
+ * Impure. Its onLangChange subscription marks the view for check on a language change,
+ * since the app is zoneless.
  */
 @Pipe({ name: 'localizedText', pure: false, standalone: false })
 export class LocalizedTextPipe implements PipeTransform {
@@ -22,8 +23,8 @@ export class LocalizedTextPipe implements PipeTransform {
   transform(text: LocalizedText | null | undefined): string {
     const { value, error } = resolveLocalizedText(
       text,
-      this.translate.currentLang,
-      this.translate.getDefaultLang()
+      this.translate.getCurrentLang() ?? undefined,
+      this.translate.getFallbackLang() ?? undefined
     );
     if (error && !this.reportedErrors.has(error)) {
       this.reportedErrors.add(error);

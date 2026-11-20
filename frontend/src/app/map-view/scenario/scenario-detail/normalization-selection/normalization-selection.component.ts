@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { NormalizationOptions, NormalizationType } from '@data/calculation/calculation.service';
 import { TranslateService } from '@ngx-translate/core';
+import { defaultLanguage } from '@shared/languages';
 import { environment } from '@src/environments/environment';
 
 export const DEFAULT_OPTIONS: NormalizationOptions = {
@@ -34,7 +35,7 @@ export class NormalizationSelectionComponent implements OnChanges {
   locale = 'en';
 
   constructor() {
-    this.locale = this.translateService.currentLang;
+    this.locale = this.translateService.getCurrentLang() ?? defaultLanguage;
   }
 
   radioButtons = [

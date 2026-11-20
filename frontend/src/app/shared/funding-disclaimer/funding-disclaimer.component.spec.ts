@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { provideZonelessChangeDetection } from '@angular/core';
 
 import { FundingDisclaimerComponent } from './funding-disclaimer.component';
@@ -9,7 +10,7 @@ describe('FundingDisclaimerComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
+      imports: [TranslateSpecModule],
       declarations: [FundingDisclaimerComponent],
       providers: [provideZonelessChangeDetection()]
     }).compileComponents();
@@ -56,7 +57,7 @@ describe('FundingDisclaimerComponent', () => {
 
   it('renders the English text in the French UI', async () => {
     // A non-English fallback, so English text in fr can only come from fr.json itself
-    TestBed.inject(TranslateService).setDefaultLang('sv');
+    TestBed.inject(TranslateService).setFallbackLang('sv');
     const en = await render('en');
     const fr = await render('fr');
     expect(fr).toEqual(en);

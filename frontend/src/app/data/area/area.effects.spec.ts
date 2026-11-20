@@ -26,7 +26,10 @@ describe('AreaEffects', () => {
         provideMockActions(() => actions$),
         provideMockStore(),
         { provide: AreaService, useValue: areaServiceStub },
-        { provide: TranslateService, useValue: { currentLang: 'en', instant: (k: string) => k } }
+        {
+          provide: TranslateService,
+          useValue: { getCurrentLang: () => 'en', instant: (k: string) => k }
+        }
       ]
     });
 
