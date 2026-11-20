@@ -66,7 +66,7 @@ public class CumulativeImpactOp extends PointOpImage {
     @Override
     protected void computeRect(Raster[] sources, WritableRaster dst, Rectangle dstRect) {
 //    protected void computeRect(PlanarImage[] sources, WritableRaster dst, Rectangle dstRect) { // uncobbled sources
-        LOG.trace("computeRect: " + dstRect + ", thread=" + Thread.currentThread().getId());
+        LOG.trace("computeRect: " + dstRect + ", thread=" + Thread.currentThread().threadId());
 
         RasterFormatTag[] formatTags = getFormatTags();
         Rectangle srcRect = mapDestRect(dstRect, 0); // assume identical to sources[1]
