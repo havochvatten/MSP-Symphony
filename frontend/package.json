@@ -60,10 +60,10 @@
     "uuid": "^14.0.3"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^21.2.29",
+    "@angular-devkit/build-angular": "^21.2.30",
     "@angular-eslint/builder": "^21.4.0",
     "@angular-eslint/schematics": "^21.4.0",
-    "@angular/cli": "^21.2.29",
+    "@angular/cli": "^21.2.30",
     "@angular/compiler-cli": "^21.2.26",
     "@angular/language-service": "^21.2.26",
     "@eslint/js": "^10.0.1",
