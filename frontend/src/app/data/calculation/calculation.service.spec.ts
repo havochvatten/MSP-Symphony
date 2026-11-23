@@ -56,8 +56,10 @@ describe('CalculationService static images', () => {
 
   it('requests result and comparison images with the style version', () => {
     service.getStaticImage('/api/calculation/diff/1/2?max=50').subscribe();
-    http.expectOne(
-      (req) => req.url.startsWith('/api/calculation/diff/1/2') && req.params.get('v') === 'abc123'
+    const req = http.expectOne(
+      (r) => r.url.startsWith('/api/calculation/diff/1/2') && r.params.get('v') === 'abc123'
     );
+    expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('v')).toBe('abc123');
   });
 });

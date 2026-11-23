@@ -46,10 +46,15 @@ describe('LocalizedSrcPipe', () => {
   });
 
   it('renders no image when no path resolves', async () => {
+    spyOn(console, 'error');
     fixture.componentInstance.src = { sv: 'sv.svg' };
     translate.use('fr');
     await fixture.whenStable();
     expect(img()).toBeNull();
+    expect(console.error).toHaveBeenCalledWith(
+      'Localized text has no entry for language "fr" or fallback "en" ' +
+        '(expected { "<lang>": "<text>" }): {"sv":"sv.svg"}'
+    );
   });
 
   it('logs an unresolvable path once', () => {

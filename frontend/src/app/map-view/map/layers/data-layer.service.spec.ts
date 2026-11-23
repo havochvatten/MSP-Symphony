@@ -28,18 +28,21 @@ describe('DataLayerService', () => {
 
   it('requests band images with the style version', () => {
     setup('abc123').getDataLayer('BALTIC', 'ECOSYSTEM', 3).subscribe();
-    http.expectOne(
-      (req) => req.url.endsWith('/datalayer/ecosystem/3/BALTIC') && req.params.get('v') === 'abc123'
+    const req = http.expectOne(
+      (r) => r.url.endsWith('/datalayer/ecosystem/3/BALTIC') && r.params.get('v') === 'abc123'
     );
+    expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('v')).toBe('abc123');
   });
 
   it('requests summary model images with the style version', () => {
     setup('abc123').getSummaryModel('BALTIC', 'ECOSYSTEM', 'simple').subscribe();
-    http.expectOne(
-      (req) =>
-        req.url.endsWith('/datalayer/BALTIC/ecosystem/model/simple') &&
-        req.params.get('v') === 'abc123'
+    const req = http.expectOne(
+      (r) =>
+        r.url.endsWith('/datalayer/BALTIC/ecosystem/model/simple') && r.params.get('v') === 'abc123'
     );
+    expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('v')).toBe('abc123');
   });
 
   it('still requests the image when the version is unavailable', () => {
