@@ -33,8 +33,6 @@ export class ComparisonReportComponent extends AbstractReport<ComparisonReport> 
   maxValue: number;
   reverse: boolean;
 
-  chartWeightThresholdPercentage = '1%';
-
   legend: Observable<Legend>;
 
   /** Set once the style version is known, so the year-cached image is fetched again after a style change */
@@ -86,11 +84,6 @@ export class ComparisonReportComponent extends AbstractReport<ComparisonReport> 
         );
         this.areaDictA = reportService.setAreaDict(report.a);
         this.areaDictB = reportService.setAreaDict(report.b);
-
-        this.chartWeightThresholdPercentage = formatPercent(
-          report.a.chartWeightThreshold,
-          this.locale
-        );
       },
       error: () => {
         this.loadingReport = false;
@@ -99,7 +92,7 @@ export class ComparisonReportComponent extends AbstractReport<ComparisonReport> 
   }
 
   getChartThresholdPercentage(): string {
-    return this.chartWeightThresholdPercentage;
+    return formatPercent(this.report().a.chartWeightThreshold, this.locale());
   }
 
   // Compute relative difference with regard to first scenario element in components

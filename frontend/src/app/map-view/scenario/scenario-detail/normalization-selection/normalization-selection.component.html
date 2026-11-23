@@ -12,7 +12,7 @@
         [value]="'DOMAIN'"
         [disabled]="algorithm === 'RarityAdjustedCumulativeImpact'"
         (change)="check($event.value)"
-      ><span class="normalization-label-text">{{ 'map.editor.normalization.domain' | translate : { ordinalPercentileValue: this.percentileValue | ordinal:locale } }}</span>
+      ><span class="normalization-label-text">{{ 'map.editor.normalization.domain' | translate : { ordinalPercentileValue: this.percentileValue | ordinal:locale() } }}</span>
       </mat-radio-button>
       <mat-radio-button
         [value]="'STANDARD_DEVIATION'"

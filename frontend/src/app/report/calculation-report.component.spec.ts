@@ -14,9 +14,10 @@ import { initialState as metadata } from '@data/metadata/metadata.reducers';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { provideHttpClient } from '@angular/common/http';
 import { provideZonelessChangeDetection } from '@angular/core';
-import { of } from 'rxjs';
+import { firstValueFrom, of } from 'rxjs';
 import { CalculationService } from '@data/calculation/calculation.service';
 import { Legend } from '@data/calculation/calculation.interfaces';
+import { TranslateService } from '@ngx-translate/core';
 
 describe('CalculationReportComponent', () => {
   let fixture: ComponentFixture<CalculationReportComponent>, component: CalculationReportComponent;
@@ -68,5 +69,20 @@ describe('CalculationReportComponent', () => {
       expect(legend).toBe(servedLegend);
       done();
     });
+  });
+
+  it('keeps the report locale signal in step with language changes after construction', async () => {
+    const translate = TestBed.inject(TranslateService);
+    translate.setTranslation('sv', {}, true);
+    translate.setTranslation('en', {}, true);
+    await firstValueFrom(translate.use('sv'));
+    // The user's saved language arrives after the report has been constructed.
+    const late = TestBed.createComponent(CalculationReportComponent).componentInstance;
+    expect(late['locale']()).toBe('sv');
+
+    await firstValueFrom(translate.use('en'));
+
+    expect(late['locale']()).toBe('en');
+    expect(component['locale']()).toBe('en');
   });
 });

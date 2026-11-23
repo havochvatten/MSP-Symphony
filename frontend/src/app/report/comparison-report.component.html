@@ -8,10 +8,11 @@
     @if ((metadata$ | async); as metadata) {
       <app-cumulative-effect-etc [reports]="[report().a, report().b]"
                                  [area]="area"
-                                 [locale]="locale"
+                                 [locale]="locale()"
                                  [bandDict]="metadata.bandDictionary"
       ></app-cumulative-effect-etc>
       <app-result-color-scale
+        [locale]="locale()"
         [perMille]="true"
         [decimals]="maxValue < 0.45"
         [colors]="(legend | async)?.colorMap"
@@ -22,7 +23,7 @@
           [id]="'sankey-cmp-positive'" [diagramId]="'sankey-cmp-positive'"
           [chartWeightThreshold]="getChartThresholdPercentage()"
           [data]="formatChartData(report().chartDataPositive, metadata.bandDictionary)"
-          [locale]="locale"
+          [locale]="locale()"
         ></app-pressure-chart>
       }
       @if (report().chartDataNegative.links.length > 1) {
@@ -30,7 +31,7 @@
           [id]="'sankey-cmp-negative'" [diagramId]="'sankey-cmp-negative'"
           [chartWeightThreshold]="getChartThresholdPercentage()"
           [data]="formatChartData(report().chartDataNegative, metadata.bandDictionary)"
-          [locale]="locale"
+          [locale]="locale()"
         ></app-pressure-chart>
       }
       @if (report().a.scenarioChanges !== null) {
@@ -62,7 +63,7 @@
         calculateRelativeDifference([report().a.impactPerPressure, report().b.impactPerPressure])
        ]"
         [names]="[report().a.name, report().b.name, 'report.cumulative-effect-etc.relative-diff' | translate]"
-        [locale]="locale"
+        [locale]="locale()"
       ></app-impact-table>
       <app-impact-table
         class="ecocomponent-impacts"
@@ -72,7 +73,7 @@
         calculateRelativeDifference([report().a.impactPerEcoComponent, report().b.impactPerEcoComponent])
        ]"
         [names]="[report().a.name, report().b.name, 'report.cumulative-effect-etc.relative-diff' | translate]"
-        [locale]="locale"
+        [locale]="locale()"
       ></app-impact-table>
     }
     @if (brandingService.configData.showReportClosingMatter) {

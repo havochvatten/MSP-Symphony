@@ -3,8 +3,7 @@ import { formatPercent } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { map, withLatestFrom } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { TranslateService } from '@ngx-translate/core';
-import { defaultLanguage } from '@shared/languages';
+import { injectCurrentLocale } from '@shared/current-locale';
 import buildInfo from '@src/build-info';
 import { State } from '@src/app/app-reducer';
 import { formatChartData } from '@src/app/report/report.util';
@@ -22,7 +21,7 @@ export abstract class AbstractReport<ReportType> {
     return this.reportSignal()!;
   });
 
-  protected locale = 'en';
+  protected readonly locale = injectCurrentLocale();
   protected loadingReport = true;
   protected imageUrl?: string;
 
@@ -45,10 +44,8 @@ export abstract class AbstractReport<ReportType> {
   protected formatPercent = formatPercent;
 
   protected constructor() {
-    const translate = inject(TranslateService);
     const store = inject<Store<State>>(Store);
 
-    this.locale = translate.getCurrentLang() ?? defaultLanguage;
     this._metadata$ = store.select(MetadataSelectors.selectMetadata);
     this.bandDictionary$ = store.select(MetadataSelectors.selectMetaDisplayDictionary);
     this.percentileValue$ = store.select(CalculationSelectors.selectPercentileValue);

@@ -15,7 +15,7 @@
       <span>
         @switch (scenario.normalization.type) {
           @case (type.DOMAIN) {
-            {{ 'map.editor.normalization.domain' | translate:{ ordinalPercentileValue: (percentileValue$ | async) | ordinal:locale } }}
+            {{ 'map.editor.normalization.domain' | translate:{ ordinalPercentileValue: (percentileValue$ | async) | ordinal:locale() } }}
           }
           @case (type.AREA) {
             {{ 'map.editor.normalization.area' | translate }}
@@ -27,7 +27,7 @@
           }
           @case (type.USER_DEFINED) {
             {{ 'map.editor.normalization.custom' | translate }} = {{
-            scenario.normalization.userDefinedValue | number: '1.0-4':locale }}
+            scenario.normalization.userDefinedValue | number: '1.0-4':locale() }}
           }
         }
       </span>
