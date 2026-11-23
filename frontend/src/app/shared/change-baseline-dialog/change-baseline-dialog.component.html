@@ -1,5 +1,5 @@
 <h4>{{ 'change-baseline-modal.header' | translate }}</h4>
-<div class="baseline-options">
+<mat-radio-group class="baseline-options" [value]="selectedBaselineId" (change)="selectedBaselineId = $event.value">
   @for (baseline of availableBaselines; track baseline.id) {
     <div
       class="baseline-option"
@@ -11,14 +11,10 @@
         <span class="baseline-name">{{ baseline.title || baseline.name }}</span>
         <span class="baseline-description">{{ baseline.description }}</span>
       </div>
-      <mat-radio-button
-        [value]="baseline.id"
-        [checked]="baseline.id === selectedBaselineId"
-        (change)="selectedBaselineId = baseline.id">
-      </mat-radio-button>
+      <mat-radio-button [value]="baseline.id"></mat-radio-button>
     </div>
   }
-</div>
+</mat-radio-group>
 <div class="notice">
   {{ 'change-baseline-modal.notice' | translate }}
 </div>

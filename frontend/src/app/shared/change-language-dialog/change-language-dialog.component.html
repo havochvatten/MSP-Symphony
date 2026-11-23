@@ -1,5 +1,9 @@
 <h4>{{ 'change-language-modal.header' | translate }}</h4>
-<div class="language-options">
+<mat-radio-group
+  class="language-options"
+  [value]="selectedLanguage"
+  (change)="selectedLanguage = $event.value"
+  >
   @for (language of languages; track language) {
     <div
       class="language-option"
@@ -13,13 +17,11 @@
       <span class="language-name">{{ 'change-language-modal.languages.' + language | translate }}</span>
       <mat-radio-button
         [value]="language"
-        [checked]="language === selectedLanguage"
-        (change)="selectedLanguage = language"
         >
       </mat-radio-button>
     </div>
   }
-</div>
+</mat-radio-group>
 <div class="button-pane right">
   <button mat-flat-button [ngClass]="'secondary'" (click)="close()">{{
     'confirmation-modal.cancel' | translate

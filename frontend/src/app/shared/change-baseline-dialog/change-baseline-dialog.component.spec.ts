@@ -12,6 +12,9 @@ import { ChangeBaselineDialogComponent } from './change-baseline-dialog.componen
 import { DialogRef } from '@shared/dialog/dialog-ref';
 import { UserActions } from '@data/user';
 import { initialState as user } from '@data/user/user.reducers';
+import { Baseline } from '@data/user/user.interfaces';
+import { By } from '@angular/platform-browser';
+import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
 
 describe('ChangeBaselineDialogComponent', () => {
   let fixture: ComponentFixture<ChangeBaselineDialogComponent>;
@@ -102,5 +105,66 @@ describe('ChangeBaselineDialogComponent', () => {
     expect(component.loading).toBe(false);
     expect(component.error).toBe('Not found');
     expect(dialogRef.close).not.toHaveBeenCalled();
+  });
+});
+
+describe('ChangeBaselineDialogComponent selection', () => {
+  const baselines: Baseline[] = [
+    { id: 1, name: 'one', title: 'One', description: '', locale: 'sv', validFrom: 0 },
+    { id: 2, name: 'two', title: 'Two', description: '', locale: 'sv', validFrom: 0 }
+  ];
+  let fixture: ComponentFixture<ChangeBaselineDialogComponent>;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [ChangeBaselineDialogComponent],
+      imports: [TranslateSpecModule, MatRadioModule, MatProgressSpinnerModule],
+      providers: [
+        provideZonelessChangeDetection(),
+        provideMockStore({
+          initialState: {
+            user: { ...user, baseline: baselines[0], availableBaselines: baselines }
+          }
+        }),
+        provideMockActions(() => new Subject<Action>()),
+        { provide: DialogRef, useValue: { close: jasmine.createSpy('close') } }
+      ]
+    });
+    fixture = TestBed.createComponent(ChangeBaselineDialogComponent);
+    fixture.detectChanges();
+  });
+
+  function radios(): MatRadioButton[] {
+    return fixture.debugElement
+      .queryAll(By.css('mat-radio-button'))
+      .map((d) => d.componentInstance as MatRadioButton);
+  }
+
+  it('starts with the active baseline selected and apply disabled', () => {
+    expect(radios().map((r) => r.checked)).toEqual([true, false]);
+    expect(fixture.componentInstance.isApplyDisabled).toBe(true);
+  });
+
+  it('selects a baseline when its radio is chosen', () => {
+    // Change the group directly, without a click that would also reach the row's click handler.
+    const group = fixture.debugElement
+      .query(By.directive(MatRadioGroup))
+      .injector.get(MatRadioGroup);
+    group.selected = radios()[1];
+    group._emitChangeEvent();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.selectedBaselineId).toBe(2);
+    expect(radios().map((r) => r.checked)).toEqual([false, true]);
+    expect(fixture.componentInstance.isApplyDisabled).toBe(false);
+  });
+
+  it('selects a baseline when its row is clicked', () => {
+    const rows = fixture.debugElement.queryAll(By.css('.baseline-option'));
+    (rows[1].nativeElement as HTMLElement).click();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.selectedBaselineId).toBe(2);
+    expect(radios().map((r) => r.checked)).toEqual([false, true]);
   });
 });
