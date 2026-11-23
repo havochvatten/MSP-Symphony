@@ -84,6 +84,11 @@ updates:
         update-types:
           - "version-update:semver-major"
           - "version-update:semver-minor"
+      # @types/node describes the Node runtime the build and test tooling run
+      # on, so its major must match the Node in angular.yml (24.x). Raise this
+      # bound when CI and local development move to a newer Node.
+      - dependency-name: "@types/node"
+        versions: [">= 25.0.0"]
       # Immutable 5 removed the default export and tightened the types of
       # getIn/setIn/updateIn, which the reducers rely on. Migrate by hand.
       - dependency-name: "immutable"
