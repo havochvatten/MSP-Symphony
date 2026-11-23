@@ -54,7 +54,7 @@
     "immutable": "^4.3.9",
     "karma-coverage": "^2.2.1",
     "ol": "^10.10.0",
-    "proj4": "^2.22.0",
+    "proj4": "^2.23.0",
     "rxjs": "^7.8.1",
     "tslib": "^2.9.1",
     "uuid": "^14.0.3"
@@ -75,7 +75,7 @@
     "@types/node": "^20.12.12",
     "angular-eslint": "^21.4.0",
     "autoprefixer": "^10.6.2",
-    "eslint": "^10.14.0",
+    "eslint": "^10.15.0",
     "globals": "^17.14.0",
     "husky": "^9.1.7",
     "jasmine-core": "~7.0.2",
@@ -85,13 +85,13 @@
     "karma-coverage-istanbul-reporter": "~3.0.3",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "^2.3.0",
-    "lint-staged": "^17.6.0",
-    "postcss": ">=8.5.32",
-    "prettier": "^3.9.10",
+    "lint-staged": "^17.6.1",
+    "postcss": ">=8.5.33",
+    "prettier": "^3.10.1",
     "raw-loader": "^4.0.2",
     "ts-node": "~10.9.2",
     "typescript": "5.9.3",
-    "typescript-eslint": "^8.72.1"
+    "typescript-eslint": "^8.72.2"
   },
   "overrides": {
     "cookie": "^0.7.0",
