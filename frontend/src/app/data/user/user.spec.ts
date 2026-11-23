@@ -1,6 +1,21 @@
+import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { provideMockActions } from '@ngrx/effects/testing';
+import { Action } from '@ngrx/store';
+import { provideMockStore } from '@ngrx/store/testing';
+import {
+  provideTranslateService,
+  TranslateLoader,
+  TranslateService,
+  TranslationObject
+} from '@ngx-translate/core';
+import { Observable, of, Subject } from 'rxjs';
 import { initialState, userReducer } from './user.reducers';
 import { Baseline, State, User } from './user.interfaces';
+import { UserEffects } from './user.effects';
+import UserService from './user.service';
 import { UserActions, UserSelectors } from '.';
+import { MetadataActions } from '@data/metadata';
 
 const testUser: User = {
   username: 'Test'
@@ -102,5 +117,88 @@ describe('UserSelectors', () => {
         availableBaselines: [baselineA, baselineB]
       })
     ).toEqual([baselineA, baselineB]);
+  });
+});
+
+describe('UserEffects publicUserLanguageChanged$', () => {
+  let actions$: Subject<Action>;
+  let pending$: Subject<TranslationObject>;
+  let translate: TranslateService;
+  let effects: UserEffects;
+  let emissions: { action: Action; langAtEmission: string | null }[];
+
+  beforeEach(async () => {
+    actions$ = new Subject<Action>();
+    pending$ = new Subject<TranslationObject>();
+    emissions = [];
+
+    // 'sv' is available at once, 'en' stays pending until pending$ emits.
+    const loader: TranslateLoader = {
+      getTranslation: (lang: string): Observable<TranslationObject> =>
+        lang === 'sv' ? of({}) : pending$
+    };
+
+    TestBed.configureTestingModule({
+      providers: [
+        UserEffects,
+        provideRouter([]),
+        provideMockActions(() => actions$),
+        provideMockStore({ initialState: {} }),
+        { provide: UserService, useValue: jasmine.createSpyObj('UserService', ['login']) },
+        provideTranslateService({ loader: { provide: TranslateLoader, useValue: loader } })
+      ]
+    });
+
+    translate = TestBed.inject(TranslateService);
+    effects = TestBed.inject(UserEffects);
+
+    translate.use('sv');
+    expect(translate.getCurrentLang()).toBe('sv');
+
+    (effects.publicUserLanguageChanged$ as Observable<Action>).subscribe((action) => {
+      emissions.push({ action, langAtEmission: translate.getCurrentLang() });
+    });
+  });
+
+  it('fetches metadata only after the new language is active', () => {
+    translate.use('en'); // pending: the English file has not loaded yet
+    actions$.next(UserActions.updatePublicUserLanguage({ locale: 'en' }));
+
+    expect(emissions).toEqual([]);
+
+    pending$.next({});
+    pending$.complete();
+
+    expect(emissions.length).toBe(1);
+    expect(emissions[0].action).toEqual(MetadataActions.fetchMetadata());
+    expect(emissions[0].langAtEmission).toBe('en');
+  });
+
+  it('fetches metadata at once when the chosen language is already active', () => {
+    actions$.next(UserActions.updatePublicUserLanguage({ locale: 'sv' }));
+
+    expect(emissions.length).toBe(1);
+    expect(emissions[0].action).toEqual(MetadataActions.fetchMetadata());
+    expect(emissions[0].langAtEmission).toBe('sv');
+  });
+
+  it('lets a second quick switch cancel the wait for the first', () => {
+    translate.use('en'); // pending
+    actions$.next(UserActions.updatePublicUserLanguage({ locale: 'en' }));
+    // The user changes their mind and picks the language that is still active.
+    translate.use('sv');
+    actions$.next(UserActions.updatePublicUserLanguage({ locale: 'sv' }));
+
+    expect(emissions.length).toBe(1);
+    expect(emissions[0].langAtEmission).toBe('sv');
+
+    // English becomes the active language later on (for example through another path). The
+    // cancelled wait for the first switch must not fetch metadata a second time.
+    translate.use('en');
+    pending$.next({});
+    pending$.complete();
+
+    expect(translate.getCurrentLang()).toBe('en');
+    expect(emissions.length).toBe(1);
   });
 });
