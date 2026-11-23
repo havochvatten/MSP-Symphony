@@ -1,10 +1,9 @@
 import { createReducer, on } from '@ngrx/store';
 import { setIn } from 'immutable';
-import { Band, bandEquals, Groups, State } from './metadata.interfaces';
+import { Band, bandEquals, BandType, Groups, State } from './metadata.interfaces';
 import { MetadataActions, MetadataInterfaces } from './';
 import { ScenarioActions } from '@data/scenario';
 import { UserActions } from '@data/user';
-import { getBandPath } from '@data/metadata/metadata.selectors';
 
 export const initialState: MetadataInterfaces.State = {
   ECOSYSTEM: {},
@@ -24,13 +23,9 @@ export const metadataReducer = createReducer(
     ECOSYSTEM: metadata.ecoComponent,
     PRESSURE: metadata.pressureComponent
   })),
-  on(MetadataActions.fetchSparseMetadataSuccess, (state, { metadata }) => {
-    return {
-      ...state,
-      ECOSYSTEM: mapSelectedToState(state, metadata.ecoComponent).ECOSYSTEM,
-      PRESSURE: mapSelectedToState(state, metadata.pressureComponent).PRESSURE
-    };
-  }),
+  on(MetadataActions.fetchSparseMetadataSuccess, (state, { metadata }) =>
+    mergeSparseMetadata(state, metadata)
+  ),
   on(MetadataActions.selectBand, (state, { band, value }) => {
     return setLayerAttribute(state, band, 'selected', value);
   }),
@@ -111,23 +106,71 @@ export const metadataReducer = createReducer(
   }))
 );
 
+// Theme names are translated, so a band is addressed by its category and number. The theme key
+// is looked up in the current state.
+function findBandPath(
+  state: State,
+  category: BandType,
+  bandNumber: number
+): [BandType, string, 'bands', number] | undefined {
+  const theme = Object.keys(state[category]).find(
+    (key) => state[category][key].bands[bandNumber] !== undefined
+  );
+  return theme === undefined ? undefined : [category, theme, 'bands', bandNumber];
+}
+
+function findBand(state: State, category: BandType, bandNumber: number): Band | undefined {
+  const path = findBandPath(state, category, bandNumber);
+  return path ? state[path[0]][path[1]].bands[path[3]] : undefined;
+}
+
+// The scenario payload is sparse: it only carries theme names, titles and the selection, in the
+// current language. The incoming groups define the theme keys; everything else on a band
+// (reliability, the remaining meta fields, visible, loaded) is kept from the earlier load.
+function mergeSparseMetadata(
+  state: State,
+  metadata: { ecoComponent: Groups; pressureComponent: Groups }
+): State {
+  const mergeGroups = (groups: Groups): Groups =>
+    Object.fromEntries(
+      Object.entries(groups).map(([theme, group]) => [
+        theme,
+        {
+          ...group,
+          bands: Object.fromEntries(
+            Object.entries(group.bands).map(([key, band]) => [key, mergeBand(state, band)])
+          )
+        }
+      ])
+    );
+
+  return {
+    ...state,
+    ECOSYSTEM: mergeGroups(metadata.ecoComponent),
+    PRESSURE: mergeGroups(metadata.pressureComponent)
+  };
+}
+
+function mergeBand(state: State, band: Band): Band {
+  const old: Band | undefined = findBand(state, band.symphonyCategory, band.bandNumber);
+  if (!old) return band;
+  const merged: Band = {
+    ...old,
+    title: band.title,
+    displayName: band.displayName ?? band.title,
+    selected: band.selected,
+    meta: { ...old.meta, ...band.meta }
+  };
+  return merged;
+}
+
 function setLayerAttribute(state: State, band: Band, attribute: string, value: unknown): State {
-  // artificial "path" / hierarchy modeled on the previous implementation
-  // TODO: Reimplement
-  return setIn(state, [...getBandPath(band), attribute], value);
+  // An unknown band (for example an object from before a reload) is ignored on purpose.
+  const path = findBandPath(state, band.symphonyCategory, band.bandNumber);
+  return path ? setIn(state, [...path, attribute], value) : state;
 }
 
-function getLayerAttribute<type>(state: State, band: Band, attribute: string): type {
-  return state[band.symphonyCategory][band.meta.symphonytheme].bands[band.bandNumber][
-    attribute as keyof Band
-  ] as type;
-}
-
-function mapSelectedToState(state: State, groups: Groups): State {
-  for (const group of Object.values(groups)) {
-    for (const band of Object.values(group.bands)) {
-      state = setLayerAttribute(state, band, 'selected', band.selected);
-    }
-  }
-  return state;
+function getLayerAttribute<type>(state: State, band: Band, attribute: string): type | undefined {
+  const found = findBand(state, band.symphonyCategory, band.bandNumber);
+  return found ? (found[attribute as keyof Band] as type) : undefined;
 }

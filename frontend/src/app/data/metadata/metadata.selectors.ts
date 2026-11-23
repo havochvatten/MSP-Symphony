@@ -13,13 +13,6 @@ export const selectMetadataState = createFeatureSelector<State>('metadata');
 
 export const selectIsLoading = createSelector(selectMetadataState, (state) => state.loading);
 
-export const getBandPath = (band: Band) => [
-  band.symphonyCategory,
-  band.meta.symphonytheme,
-  'bands',
-  band.bandNumber
-];
-
 export const selectReliabilityMap = createSelector(selectMetadataState, (state: State) => {
   const uncertainties: ReliabilityMap = { ECOSYSTEM: {}, PRESSURE: {} },
     allBands = flattenBands([...selectGroups(state.ECOSYSTEM), ...selectGroups(state.PRESSURE)]),
