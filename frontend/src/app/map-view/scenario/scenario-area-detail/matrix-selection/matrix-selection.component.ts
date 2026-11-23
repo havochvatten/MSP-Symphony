@@ -22,7 +22,6 @@ import { MatrixTableComponent } from './matrix-table/matrix-table.component';
 import { DialogService } from '@shared/dialog/dialog.service';
 import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
-import { TranslateService } from '@ngx-translate/core';
 import { MatrixService } from './matrix.service';
 import { MatSelect } from '@angular/material/select';
 import { Scenario } from '@data/scenario/scenario.interfaces';
@@ -37,7 +36,6 @@ import { ScenarioEditorModule } from '@src/app/map-view/scenario/scenario-editor
   standalone: false
 })
 export class MatrixSelectionComponent implements OnInit, OnDestroy {
-  private readonly translateService = inject(TranslateService);
   private readonly matrixService = inject(MatrixService);
   private readonly dialogService = inject(DialogService);
   private readonly moduleRef = inject(NgModuleRef<ScenarioEditorModule>);
@@ -59,14 +57,10 @@ export class MatrixSelectionComponent implements OnInit, OnDestroy {
   @ViewChild('altMx') altMatrixSelect: MatSelect | undefined;
   @ViewChild('usrMx') userMatrixSelect: MatSelect | undefined;
   @ViewChild('typeMx') typeMatrixSelect: MatSelect | undefined;
-  private defaultMatrixTranslation?: string;
   private matrixData?: AreaMatrixData;
   private matrixDataSubscription$: Subscription;
 
   constructor() {
-    this.translateService.get('map.editor.matrix.default-matrix').subscribe((res) => {
-      this.defaultMatrixTranslation = res;
-    });
     this.matrixDataSubscription$ = this.store
       .select(ScenarioSelectors.selectActiveAreaMatrixData)
       .subscribe((matrixData: AreaMatrixData | null) => {
@@ -159,15 +153,12 @@ export class MatrixSelectionComponent implements OnInit, OnDestroy {
     return areaTypeMatrixOptions;
   }
 
-  get standardLabel() {
-    if (this.matrixData) {
-      return !this.defaultMatrixTranslation
-        ? ''
-        : this.matrixData.defaultArea?.name
-          ? `${this.defaultMatrixTranslation} (${this.matrixData.defaultArea.name})`
-          : this.defaultMatrixTranslation;
-    }
-    return '';
+  protected get hasMatrixData(): boolean {
+    return !!this.matrixData;
+  }
+
+  protected get defaultAreaName(): string | undefined {
+    return this.matrixData?.defaultArea?.name || undefined;
   }
 
   get commonOptionalMatrices() {

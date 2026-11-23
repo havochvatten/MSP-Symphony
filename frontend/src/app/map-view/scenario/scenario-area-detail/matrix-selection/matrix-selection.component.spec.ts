@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideMockStore } from '@ngrx/store/testing';
+import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { SharedModule } from '@shared/shared.module';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
 import { initialState as metadata } from '@data/metadata/metadata.reducers';
@@ -21,6 +21,8 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { EMPTY } from 'rxjs';
 import { Baseline } from '@data/user/user.interfaces';
 import { initialState as user } from '@data/user/user.reducers';
+import { ScenarioSelectors } from '@data/scenario';
+import { AreaMatrixData, MatrixRef } from './matrix.interfaces';
 
 const testScenario: Scenario = {
   operation: 0,
@@ -192,5 +194,101 @@ describe('MatrixSelectionComponent next to another dialog', () => {
     const radios = matrixRadios(fixture);
     expect(radios[radios.length - 1].checked).toBeTrue();
     expect(radios[0].checked).toBeFalse();
+  });
+});
+
+describe('MatrixSelectionComponent default-matrix label', () => {
+  const defaultMatrix: MatrixRef = { id: 1, name: 'Default', immutable: true };
+  const matrixData: AreaMatrixData = {
+    defaultArea: {
+      id: 10,
+      name: 'Östersjön',
+      defaultMatrix,
+      matrices: [],
+      userDefinedMatrices: [],
+      commonBaselineMatrices: []
+    },
+    areaTypes: [],
+    overlap: [],
+    alternativeMatrices: null
+  };
+
+  let translate: TranslateService;
+  let store: MockStore;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        SharedModule,
+        TranslationSetupModule,
+        MatRadioModule,
+        MatSelectModule,
+        TranslateSpecModule
+      ],
+      declarations: [MatrixSelectionComponent],
+      providers: [
+        TranslateService,
+        provideMockStore({
+          initialState: {
+            metadata: metadata,
+            area: area,
+            scenario: scenario,
+            user: { baseline: undefined }
+          }
+        }),
+        provideZonelessChangeDetection()
+      ]
+    }).compileComponents();
+    translate = TestBed.inject(TranslateService);
+    translate.setTranslation(
+      'sv',
+      { map: { editor: { matrix: { 'default-matrix': 'Standardmatris' } } } },
+      true
+    );
+    translate.setTranslation(
+      'en',
+      { map: { editor: { matrix: { 'default-matrix': 'Default matrix' } } } },
+      true
+    );
+    translate.use('sv');
+    store = TestBed.inject(MockStore);
+  });
+
+  function render(data: AreaMatrixData): ComponentFixture<MatrixSelectionComponent> {
+    store.overrideSelector(ScenarioSelectors.selectActiveAreaMatrixData, data);
+    const fixture = TestBed.createComponent(MatrixSelectionComponent);
+    fixture.componentInstance.scenario = testScenario;
+    fixture.componentInstance.areaIndex = 0;
+    fixture.detectChanges();
+    return fixture;
+  }
+
+  function standardRadioText(fixture: ComponentFixture<MatrixSelectionComponent>): string {
+    const radio = fixture.debugElement.query(By.css('mat-radio-button'));
+    return (radio.nativeElement as HTMLElement).textContent!.trim();
+  }
+
+  it('shows the default-matrix label in the new language after a switch', async () => {
+    const fixture = render(matrixData);
+    expect(standardRadioText(fixture)).toBe('Standardmatris (Östersjön)');
+
+    translate.use('en');
+    await fixture.whenStable();
+
+    expect(standardRadioText(fixture)).toBe('Default matrix (Östersjön)');
+  });
+
+  it('follows the language when the area has no default-area name', async () => {
+    const fixture = render({
+      ...matrixData,
+      defaultArea: null,
+      alternativeMatrices: [{ id: 2, name: 'Alternative', immutable: true }]
+    });
+    expect(standardRadioText(fixture)).toBe('Standardmatris');
+
+    translate.use('en');
+    await fixture.whenStable();
+
+    expect(standardRadioText(fixture)).toBe('Default matrix');
   });
 });

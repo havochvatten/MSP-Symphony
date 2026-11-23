@@ -9,7 +9,11 @@
     value="STANDARD"
     (change)="check('STANDARD', null)"
     [disabled]="arbitraryMatrixSelection()"
-    > {{ standardLabel }}
+    >
+    @if (hasMatrixData) {
+      {{ 'map.editor.matrix.default-matrix' | translate
+      }}@if (defaultAreaName) { ({{ defaultAreaName }})}
+    }
   </mat-radio-button>
   @if (hasOptionalMatrices()) {
     <section>
