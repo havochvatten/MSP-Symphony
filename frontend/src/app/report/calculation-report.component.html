@@ -13,7 +13,7 @@
                                  [percentileValue]="metadata.percentileValue"
                                  [bandDict]="metadata.bandDictionary"
                                  [normalized]="isDomainNormalization"
-                                 [locale]="locale"
+                                 [locale]="locale()"
       ></app-cumulative-effect-etc>
       <ng-container>
         <div id="matrix-selection">
@@ -43,7 +43,7 @@
         [bandGroups]="metadata.metadata.pressureComponent"
         [impacts]="report().impactPerPressure"
         [total]="report().total"
-        [locale]="locale"
+        [locale]="locale()"
         [legend]="(resultLegend$ | async)?.colorMap"
       ></app-highest-impacts>
       @if (report().impactPerEcoComponent) {
@@ -53,15 +53,15 @@
           [bandGroups]="metadata.metadata.ecoComponent"
           [impacts]="report().impactPerEcoComponent"
           [total]="report().total"
-          [locale]="locale"
+          [locale]="locale()"
           [legend]="(resultLegend$ | async)?.colorMap"
         ></app-highest-impacts>
       }
-      <app-result-color-scale [locale]="locale" [colors]="(resultLegend$ | async)?.colorMap" class="calc-report-legend"></app-result-color-scale>
+      <app-result-color-scale [locale]="locale()" [colors]="(resultLegend$ | async)?.colorMap" class="calc-report-legend"></app-result-color-scale>
       <app-pressure-chart [id]="'sankey-single'" [diagramId]="'sankey-single'"
-                          [chartWeightThreshold]="formatPercent(report().chartWeightThreshold, this.locale)"
+                          [chartWeightThreshold]="formatPercent(report().chartWeightThreshold, locale())"
                           [data]="formatChartData(report().chartData, metadata.bandDictionary)"
-                          [locale]="locale"
+                          [locale]="locale()"
       ></app-pressure-chart>
       <app-scenario-changes
         [scenarioChanges]="report().scenarioChanges"
@@ -74,21 +74,21 @@
                         [bandGroups]="metadata.metadata.pressureComponent"
                         [scenarioImpacts]="[report().impactPerPressure, calculatePercentOfTotal(report().impactPerPressure, report().total)]"
                         [names]="['report.impact-table.cumulative' | translate, 'report.impact-table.percentage-of-total' | translate]"
-                        [locale]="locale"
+                        [locale]="locale()"
       ></app-impact-table>
       <app-impact-table class="ecocomponent-impacts"
                         [title]="'report.impact-table.ecoComponent' | translate"
                         [bandGroups]="metadata.metadata.ecoComponent"
                         [scenarioImpacts]="[report().impactPerEcoComponent, calculatePercentOfTotal(report().impactPerEcoComponent, report().total)]"
                         [names]="['report.impact-table.cumulative' | translate, 'report.impact-table.percentage-of-total' | translate]"
-                        [locale]="locale"
+                        [locale]="locale()"
       ></app-impact-table>
     }
   <app-histogram
     [title]="('report.histogram.caption'| translate) +
         ' (' + ('map.editor.operation.'+ (report().operationName) + '.title' | translate | lowercase) +')'"
     [report]="report()"
-    [locale]="locale"
+    [locale]="locale()"
   >
   </app-histogram>
     @if (brandingService.configData.showReportClosingMatter) {

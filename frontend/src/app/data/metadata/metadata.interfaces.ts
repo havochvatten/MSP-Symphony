@@ -27,6 +27,7 @@ export interface Band extends SelectableLayer {
   intensityMultiplier?: number; // TODO Rename
   constantIntensity?: number; // TODO rename
   layerOpacity?: number;
+  displayName?: string; // Copy of the title, added by MetadataEffects.formatComponentData
   meta: { [key: string]: string };
 }
 

@@ -1,15 +1,6 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
-  inject
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { NormalizationOptions, NormalizationType } from '@data/calculation/calculation.service';
-import { TranslateService } from '@ngx-translate/core';
-import { defaultLanguage } from '@shared/languages';
+import { injectCurrentLocale } from '@shared/current-locale';
 import { environment } from '@src/environments/environment';
 
 export const DEFAULT_OPTIONS: NormalizationOptions = {
@@ -25,18 +16,12 @@ export const DEFAULT_OPTIONS: NormalizationOptions = {
   standalone: false
 })
 export class NormalizationSelectionComponent implements OnChanges {
-  private translateService = inject(TranslateService);
-
   @Input() options: NormalizationOptions = DEFAULT_OPTIONS;
   @Input() algorithm = '';
   @Input() percentileValue = 0;
   @Output() modeSelectionEvent = new EventEmitter<NormalizationOptions>();
   readonly NormalizationType = NormalizationType;
-  locale = 'en';
-
-  constructor() {
-    this.locale = this.translateService.getCurrentLang() ?? defaultLanguage;
-  }
+  protected readonly locale = injectCurrentLocale();
 
   radioButtons = [
     {

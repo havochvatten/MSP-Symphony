@@ -10,8 +10,10 @@ import { provideZonelessChangeDetection } from '@angular/core';
 describe('ChangeLanguageDialogComponent', () => {
   let component: ChangeLanguageDialogComponent;
   let fixture: ComponentFixture<ChangeLanguageDialogComponent>;
+  let dialogRef: { close: jasmine.Spy };
 
   beforeEach(() => {
+    dialogRef = { close: jasmine.createSpy('close') };
     TestBed.configureTestingModule({
       declarations: [ChangeLanguageDialogComponent],
       imports: [TranslateSpecModule, MatRadioModule],
@@ -19,7 +21,7 @@ describe('ChangeLanguageDialogComponent', () => {
         provideZonelessChangeDetection(),
         {
           provide: DialogRef,
-          useValue: {}
+          useValue: dialogRef
         }
       ]
     });
@@ -39,5 +41,18 @@ describe('ChangeLanguageDialogComponent', () => {
     );
     expect(flags.length).toBe(3);
     flags.forEach((img) => expect(img.getAttribute('alt')).toBe(''));
+  });
+
+  it('returns the language the user clicked', () => {
+    const radios: HTMLInputElement[] = Array.from(
+      fixture.nativeElement.querySelectorAll('mat-radio-button input')
+    );
+    const languages = component.languages;
+    radios[languages.indexOf('sv')].click();
+    fixture.detectChanges();
+
+    component.apply();
+
+    expect(dialogRef.close).toHaveBeenCalledOnceWith('sv');
   });
 });

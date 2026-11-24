@@ -1,5 +1,6 @@
 import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
@@ -10,6 +11,7 @@ import {
   filter,
   map,
   mergeMap,
+  switchMap,
   take,
   tap,
   withLatestFrom
@@ -34,6 +36,7 @@ export class UserEffects {
   private readonly configStore = inject(Store);
   private readonly userService = inject(UserService);
   private readonly router = inject(Router);
+  private readonly translate = inject(TranslateService);
 
   loginUser$ = createEffect(() =>
     this.actions$.pipe(
@@ -323,12 +326,23 @@ export class UserEffects {
     )
   );
 
-  // The reducer updates the public user's locale before this effect runs, so re-fetching
-  // metadata picks up the new language for backend-provided band/ecosystem names.
+  // The reducer updates the public user's locale before this effect runs, but ngx-translate only
+  // switches getCurrentLang() once the new language file has loaded. Re-fetching metadata before
+  // that would return backend-provided band/ecosystem names in the old language, so wait for the
+  // language change (or fetch at once when the language is already active). switchMap lets a second
+  // quick switch cancel the wait for the first.
   publicUserLanguageChanged$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.updatePublicUserLanguage),
-      map(() => MetadataActions.fetchMetadata())
+      switchMap(({ locale }) =>
+        this.translate.getCurrentLang() === locale
+          ? of(MetadataActions.fetchMetadata())
+          : this.translate.onLangChange.pipe(
+              filter((event) => event.lang === locale),
+              take(1),
+              map(() => MetadataActions.fetchMetadata())
+            )
+      )
     )
   );
 }

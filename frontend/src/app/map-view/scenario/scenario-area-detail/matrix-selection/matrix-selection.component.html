@@ -3,17 +3,22 @@
 <!--  <h4>{{ 'map.editor.fetching-matrices' | translate}}</h4>-->
 <!--</div>-->
 
+<mat-radio-group [value]="matrixOption">
 <section>
   <mat-radio-button
-    [checked]="matrixOption === 'STANDARD'"
+    value="STANDARD"
     (change)="check('STANDARD', null)"
     [disabled]="arbitraryMatrixSelection()"
-    > {{ standardLabel }}
+    >
+    @if (hasMatrixData) {
+      {{ 'map.editor.matrix.default-matrix' | translate
+      }}@if (defaultAreaName) { ({{ defaultAreaName }})}
+    }
   </mat-radio-button>
   @if (hasOptionalMatrices()) {
     <section>
       <mat-radio-button
-        [checked]="matrixOption === 'OPTIONAL'"
+        value="OPTIONAL"
         (change)="check('OPTIONAL', altMx)"
         >{{ 'map.editor.matrix.alt-matrix' | translate }}
       </mat-radio-button>
@@ -66,7 +71,7 @@
 
 <section>
   <mat-radio-button
-    [checked]="matrixOption === 'CUSTOM'"
+    value="CUSTOM"
     (change)="check('CUSTOM', usrMx)"
     >{{ 'map.editor.matrix.user-matrix' | translate }}
   </mat-radio-button>
@@ -98,4 +103,4 @@
     </button>
   </article>
 </section>
-
+</mat-radio-group>

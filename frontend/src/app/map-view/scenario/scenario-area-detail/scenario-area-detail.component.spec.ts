@@ -18,6 +18,11 @@ import { initialState as user } from '@data/user/user.reducers';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
+import { registerLocaleData } from '@angular/common';
+import localeSv from '@angular/common/locales/sv';
+
+registerLocaleData(localeSv);
+
 describe('ScenarioAreaDetailComponent', () => {
   let component: ScenarioAreaDetailComponent;
   let fixture: ComponentFixture<ScenarioAreaDetailComponent>;
@@ -84,5 +89,34 @@ describe('ScenarioAreaDetailComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('formats with the new locale after a language switch', async () => {
+    const translate = TestBed.inject(TranslateService);
+    translate.setTranslation('sv', { map: { editor: { normalization: { custom: 'Eget' } } } });
+    translate.setTranslation('en', { map: { editor: { normalization: { custom: 'Custom' } } } });
+    await translate.use('sv');
+
+    const switchedFixture = TestBed.createComponent(ScenarioAreaDetailComponent);
+    const switched = switchedFixture.componentInstance;
+    switched.scenario = {
+      ...component.scenario,
+      normalization: { type: NormalizationType.USER_DEFINED, userDefinedValue: 0.5 }
+    };
+    switched.areaIndex = 0;
+    await switchedFixture.whenStable();
+    const normalizationText = () =>
+      switchedFixture.nativeElement
+        .querySelector('#applied-group-settings > div:nth-child(2) span')
+        .textContent.replace(/\s+/g, ' ')
+        .trim();
+    expect(switched['locale']()).toBe('sv');
+    expect(normalizationText()).toBe('Eget = 0,5');
+
+    await translate.use('en');
+    await switchedFixture.whenStable();
+
+    expect(switched['locale']()).toBe('en');
+    expect(normalizationText()).toBe('Custom = 0.5');
   });
 });

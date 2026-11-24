@@ -107,13 +107,13 @@
       @if (operation.value === 'RarityAdjustedCumulativeImpact') {
         <article>
           <p>{{ 'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.description' | translate}}</p>
-          @for (paramValue of ['GLOBAL', 'LOCAL']; track paramValue) {
-            <mat-radio-button
-              value="{{paramValue}}" [checked]="getParams().domain === paramValue"
-              (change)="onCheckRarityIndicesDomain(paramValue)">
-              {{ 'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.' + paramValue | translate }}
-            </mat-radio-button>
-          }
+          <mat-radio-group [value]="getParams().domain" (change)="onCheckRarityIndicesDomain($event.value)">
+            @for (paramValue of ['GLOBAL', 'LOCAL']; track paramValue) {
+              <mat-radio-button [value]="paramValue">
+                {{ 'map.editor.operation.RarityAdjustedCumulativeImpact.options.domain.' + paramValue | translate }}
+              </mat-radio-button>
+            }
+          </mat-radio-group>
         </article>
       }
     </section>
