@@ -4,8 +4,8 @@ type: software
 title: 'Symphony Open "MSP-Symphony"'
 authors:
   - name: Swedish Agency for Marine and Water Management
-version: 1.25.0
-date-released: '2026-06-05'
+version: 1.26.0
+date-released: '2026-11-24'
 license: Apache-2.0
 repository-code: https://github.com/havochvatten/MSP-Symphony
 abstract: >-
