@@ -1,0 +1,157 @@
+# Dependabot version and security updates.
+#
+# Version updates run once a week, Monday morning, and only offer releases
+# that are at least seven days old. Minor and patch updates arrive grouped:
+# Angular in one pull request, the rest of npm in another, and one each for
+# Maven and GitHub Actions. Majors arrive one by one, except Font Awesome's
+# and ngx-translate's, which arrive together. Nothing is merged automatically.
+#
+# Security updates are opened as soon as an advisory is published, regardless
+# of schedule, cooldown and open-pull-requests-limit. They are grouped into one
+# pull request per ecosystem. They target develop, the default branch, so the
+# ignore rules below apply to them as well.
+
+version: 2
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Stockholm"
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 4
+    groups:
+      # Framework, CLI, Material and build tooling are released together. Kept
+      # apart from the rest so that a breaking library update elsewhere never
+      # holds back Angular's patches.
+      angular:
+        patterns:
+          - "@angular/*"
+          - "@angular-devkit/*"
+        update-types:
+          - "minor"
+          - "patch"
+      # The svg core and the icon sets share their types and must be on the
+      # same version, so they move together, majors included. Listed before
+      # npm-minor-and-patch because a dependency joins the first group that
+      # matches it.
+      fontawesome:
+        patterns:
+          - "@fortawesome/fontawesome-svg-core"
+          - "@fortawesome/free-*"
+      # The ngx-translate core and http-loader are released in lockstep, and
+      # http-loader declares a minimum core version, so they must move together,
+      # majors included. A loader-only major (#282) breaks the build. Listed
+      # before npm-minor-and-patch because a dependency joins the first group
+      # that matches it.
+      ngx-translate:
+        patterns:
+          - "@ngx-translate/*"
+      npm-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      npm-security:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
+    ignore:
+      # Angular majors need `ng update` to run their migration schematics,
+      # which Dependabot cannot do. Upgrade these by hand, together.
+      - dependency-name: "@angular/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@angular-devkit/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@angular-eslint/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "angular-eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@ngrx/*"
+        update-types: ["version-update:semver-major"]
+      # Each angular-fontawesome major supports exactly one Angular major.
+      - dependency-name: "@fortawesome/angular-fontawesome"
+        update-types: ["version-update:semver-major"]
+      # Angular pins the TypeScript it compiles with to a narrow peer range,
+      # and TypeScript does not follow semver, so even a minor can break the
+      # build. Move it by hand with the Angular major that supports it.
+      - dependency-name: "typescript"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+      # @types/node describes the Node runtime the build and test tooling run
+      # on, so its major must match the Node in angular.yml (24.x). Raise this
+      # bound when CI and local development move to a newer Node.
+      - dependency-name: "@types/node"
+        versions: [">= 25.0.0"]
+      # Immutable 5 removed the default export and tightened the types of
+      # getIn/setIn/updateIn, which the reducers rely on. Migrate by hand.
+      - dependency-name: "immutable"
+        update-types: ["version-update:semver-major"]
+      # OpenLayers 10.11 tightened its types and breaks the build (area-layer.ts
+      # and others). Remove this rule once the code is adapted.
+      - dependency-name: "ol"
+        versions: [">= 10.11.0"]
+
+  - package-ecosystem: "maven"
+    directory: "/symphony-ws"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Stockholm"
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 3
+    groups:
+      maven-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      maven-security:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
+    ignore:
+      # JTS comes from GeoTools (29.6 uses JTS 1.19.0) and must move with it.
+      - dependency-name: "org.locationtech.jts*"
+      # Provided by the WildFly application server at runtime (scope provided
+      # in pom.xml). Bumping them in the pom changes nothing that runs; they
+      # move when the server is upgraded. Remove this block when the backend
+      # moves to Quarkus.
+      - dependency-name: "jakarta.platform:jakarta.jakartaee-api"
+      - dependency-name: "jakarta.batch:jakarta.batch-api"
+      - dependency-name: "org.postgresql:postgresql"
+      - dependency-name: "org.hibernate.orm:hibernate-core"
+      - dependency-name: "com.fasterxml.jackson.core:jackson-annotations"
+      - dependency-name: "com.fasterxml.jackson.core:jackson-databind"
+      - dependency-name: "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
+      - dependency-name: "com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider"
+      - dependency-name: "org.jboss.resteasy:resteasy-core"
+      - dependency-name: "org.jboss.resteasy:resteasy-servlet-initializer"
+      - dependency-name: "org.jboss.resteasy:resteasy-multipart-provider"
+      - dependency-name: "org.jboss.resteasy:resteasy-jackson2-provider"
+      - dependency-name: "org.jboss:jboss-vfs"
+      - dependency-name: "org.jberet:jberet-core"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Stockholm"
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 1
+    groups:
+      github-actions:
+        patterns:
+          - "*"

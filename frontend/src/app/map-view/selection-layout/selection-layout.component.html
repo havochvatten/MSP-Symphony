@@ -3,26 +3,28 @@
     <h2>{{ title }}</h2>
     @if (!areaTab) {
       <div class="selection-info">
-        <div class="active-scenario-display">
-          @if (selectedScenarioName) {
-            <span>{{ selectedScenarioName }}</span>
+        @if (isLoggedIn$ | async) {
+          <div class="active-scenario-display">
+            @if (selectedScenarioName) {
+              <span>{{ selectedScenarioName }}</span>
+            }
+            @if (!selectedScenarioName) {
+              <span>{{ 'map.no-active-scenario' | translate }}</span>
+            }
+            @if (selectedScenarioName && selectedAreaName) {
+              <span>{{ selectedAreaName }}</span>
+            }
+            @if (!selectedAreaName && !!selectedScenarioName) {
+              <span class="scenariowide-settings">{{
+                'map.scenariowide-settings' | translate
+              }}</span>
+            }
+          </div>
+          @if (showResetButton) {
+            <button (click)="reset()" title="{{ 'map.reset-preselected-description' | translate }}">
+              {{ 'map.reset-preselected' | translate }}
+            </button>
           }
-          @if (!selectedScenarioName) {
-            <span>{{ 'map.no-active-scenario' | translate }}</span>
-          }
-          @if (selectedScenarioName && selectedAreaName) {
-            <span>{{ selectedAreaName }}</span>
-          }
-          @if (!selectedAreaName && !!selectedScenarioName) {
-            <span class="scenariowide-settings">{{ 'map.scenariowide-settings' | translate }}</span>
-          }
-        </div>
-        @if (showResetButton) {
-<button (click)="reset()" title="{{
-        'map.reset-preselected-description' | translate
-      }}">{{
-            'map.reset-preselected' | translate
-          }}</button>
         }
       </div>
     }

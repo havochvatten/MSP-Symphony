@@ -1,12 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SelectIntersectionComponent } from './select-intersection.component';
-import { DialogService } from "@shared/dialog/dialog.service";
-import { DialogRef } from "@shared/dialog/dialog-ref";
-import { DialogConfig } from "@shared/dialog/dialog-config";
-import { TranslateModule, TranslateService } from "@ngx-translate/core";
-import { MatRadioModule } from "@angular/material/radio";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { DialogService } from '@shared/dialog/dialog.service';
+import { DialogRef } from '@shared/dialog/dialog-ref';
+import { DialogConfig } from '@shared/dialog/dialog-config';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
+import { MatRadioModule } from '@angular/material/radio';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('SelectIntersectionComponent', () => {
   let component: SelectIntersectionComponent;
@@ -14,10 +15,7 @@ describe('SelectIntersectionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports : [
-        TranslateModule.forRoot(),
-        MatRadioModule
-      ],
+      imports: [TranslateSpecModule, MatRadioModule],
       providers: [
         TranslateService,
         DialogService,
@@ -26,15 +24,14 @@ describe('SelectIntersectionComponent', () => {
           provide: DialogConfig,
           useValue: {
             data: {
-              areas: [],
+              areas: []
             }
           }
         },
         provideZonelessChangeDetection()
       ],
-      declarations: [ SelectIntersectionComponent ]
-    })
-    .compileComponents();
+      declarations: [SelectIntersectionComponent]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SelectIntersectionComponent);
     component = fixture.componentInstance;

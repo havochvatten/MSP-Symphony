@@ -32,7 +32,6 @@
             ],
             "scripts": [],
             "allowedCommonJsDependencies": [
-              "uuid/v4",
               "pbf",
               "xml-utils/find-tags-by-name.js",
               "xml-utils/get-attribute.js",

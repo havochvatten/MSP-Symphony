@@ -3,13 +3,12 @@ import { DecimalPipe } from '@angular/common';
 
 import { PressureChartComponent } from './pressure-chart.component';
 import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
-import { StoreModule } from "@ngrx/store";
-import { provideMockStore } from "@ngrx/store/testing";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { StoreModule } from '@ngrx/store';
+import { provideMockStore } from '@ngrx/store/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('PressureChartComponent', () => {
-  let fixture: ComponentFixture<PressureChartComponent>,
-      component: PressureChartComponent;
+  let fixture: ComponentFixture<PressureChartComponent>, component: PressureChartComponent;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -18,9 +17,9 @@ describe('PressureChartComponent', () => {
       providers: [
         DecimalPipe,
         provideMockStore({
-          initialState : { user: {} }
+          initialState: { user: {} }
         }),
-        provideZonelessChangeDetection(),
+        provideZonelessChangeDetection()
       ]
     }).compileComponents();
     fixture = TestBed.createComponent(PressureChartComponent);

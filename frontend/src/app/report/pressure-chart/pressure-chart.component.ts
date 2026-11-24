@@ -39,7 +39,7 @@ export class PressureChartComponent implements AfterViewInit {
   @Input() chartWeightThreshold = '';
 
   ngAfterViewInit() {
-      this.DrawChart();
+    this.DrawChart();
   }
 
   private DrawChart() {
@@ -48,7 +48,7 @@ export class PressureChartComponent implements AfterViewInit {
       height = +svg.attr('height');
 
     const formatNumber = (d: number) => this.numberPipe.transform(d, '1.1-2', this.locale),
-      format = function(d: number) {
+      format = function (d: number) {
         return formatNumber(100 * d) + '%';
       },
       color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -57,7 +57,10 @@ export class PressureChartComponent implements AfterViewInit {
       .sankey()
       .nodeWidth(15)
       .nodePadding(10)
-      .extent([[1, 1], [width - 1, height - 6]]);
+      .extent([
+        [1, 1],
+        [width - 1, height - 6]
+      ]);
 
     let link = svg
       .append('g')
@@ -75,7 +78,7 @@ export class PressureChartComponent implements AfterViewInit {
       .selectAll('g');
 
     // @ts-ignore
-    sankey.nodeId(d => d.nodeId);
+    sankey.nodeId((d) => d.nodeId);
 
     if (this.data) {
       sankey(this.data);
@@ -93,10 +96,7 @@ export class PressureChartComponent implements AfterViewInit {
         .text((d: any) => `${d.source.name} → ${d.target.name}\n${format(d.value)}`);
 
       // @ts-ignore
-      node = node
-        .data(this.data.nodes)
-        .enter()
-        .append('g');
+      node = node.data(this.data.nodes).enter().append('g');
 
       node
         .append('rect')
@@ -121,7 +121,7 @@ export class PressureChartComponent implements AfterViewInit {
         .attr('x', (d: any) => d.x1 + 8)
         .attr('text-anchor', 'start');
 
-      node.selectAll('text').each(function(d: any) {
+      node.selectAll('text').each(function (d: any) {
         if (this) {
           const bbox = (this as SVGTextElement).getBBox();
           d3.select(`text#a${d.nodeId}`)

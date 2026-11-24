@@ -11,12 +11,19 @@ import java.awt.image.SampleModel;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 public final class MetaDataUtil {
     private MetaDataUtil() {}
 
     public static byte[] addMetaData(BufferedImage buffImg, ColorModel cm, SampleModel sm, String key,
                                      String value) throws Exception {
+        return addMetaData(buffImg, cm, sm, Map.of(key, value));
+    }
+
+    /** Writes the image as PNG with one text entry per map entry, in the map's iteration order. */
+    public static byte[] addMetaData(BufferedImage buffImg, ColorModel cm, SampleModel sm,
+                                     Map<String, String> entries) throws Exception {
         String rootNode = "javax_imageio_png_1.0";
 
         ImageWriter writer = ImageIO.getImageWritersByFormatName("png").next();
@@ -26,12 +33,13 @@ public final class MetaDataUtil {
         javax.imageio.metadata.IIOMetadata metadata = writer.getDefaultImageMetadata(typeSpecifier,
             writeParam);
 
-        IIOMetadataNode textEntry = new IIOMetadataNode("tEXtEntry");
-        textEntry.setAttribute("keyword", key);
-        textEntry.setAttribute("value", value);
-
         IIOMetadataNode text = new IIOMetadataNode("tEXt");
-        text.appendChild(textEntry);
+        entries.forEach((key, value) -> {
+            IIOMetadataNode textEntry = new IIOMetadataNode("tEXtEntry");
+            textEntry.setAttribute("keyword", key);
+            textEntry.setAttribute("value", value);
+            text.appendChild(textEntry);
+        });
 
         IIOMetadataNode root = new IIOMetadataNode(rootNode);
         root.appendChild(text);

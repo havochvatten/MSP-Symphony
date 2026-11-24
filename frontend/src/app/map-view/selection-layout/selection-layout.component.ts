@@ -1,7 +1,11 @@
 import { Component, Input, NgModuleRef, inject } from '@angular/core';
-import { DialogService } from "@shared/dialog/dialog.service";
-import { ConfirmResetComponent } from "@src/app/map-view/confirm-reset/confirm-reset.component";
-import { MapViewModule } from "@src/app/map-view/map-view.module";
+import { UserSelectors } from '@data/user';
+import { Store } from '@ngrx/store';
+import { DialogService } from '@shared/dialog/dialog.service';
+import { ConfirmResetComponent } from '@src/app/map-view/confirm-reset/confirm-reset.component';
+import { MapViewModule } from '@src/app/map-view/map-view.module';
+import { State } from 'ol/render';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-selection-layout',
@@ -12,6 +16,7 @@ import { MapViewModule } from "@src/app/map-view/map-view.module";
 export class SelectionLayoutComponent {
   private readonly dialogService = inject(DialogService);
   private readonly moduleRef = inject(NgModuleRef<MapViewModule>);
+  private readonly store = inject<Store<State>>(Store);
 
   @Input() title?: string;
   @Input() selectedScenarioName?: string;
@@ -23,7 +28,12 @@ export class SelectionLayoutComponent {
   @Input() showResetButton = false;
   @Input() areaTab = false;
 
-  reset() : void {
+  private isLoggedIn$: Observable<boolean>;
+
+  constructor() {
+    this.isLoggedIn$ = this.store.select(UserSelectors.selectIsLoggedIn);
+  }
+  reset(): void {
     this.dialogService.open(ConfirmResetComponent, this.moduleRef, {});
   }
 }

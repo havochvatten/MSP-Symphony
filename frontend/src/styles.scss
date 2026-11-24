@@ -1,6 +1,7 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
 @use 'styles/mat-hav-palette' as mat-hav;
+@use 'styles/hav-colors' as colors;
 
 @use 'styles/mat-hav-component.scss';
 @use "styles/dialog.scss";
@@ -82,7 +83,7 @@ html {
   h5,
   h6,
   p {
-    color: rgba(0, 0, 0, 0.87);
+    color: colors.$hav-text-primary;
   }
 
   h1,

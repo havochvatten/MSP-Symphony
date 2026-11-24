@@ -1,5 +1,5 @@
 import { Component, Input, WritableSignal } from '@angular/core';
-import { IconType } from "@shared/icon/icon.component";
+import { IconType } from '@shared/icon/icon.component';
 
 @Component({
   selector: 'app-multi-action-button',
@@ -8,10 +8,10 @@ import { IconType } from "@shared/icon/icon.component";
   standalone: false
 })
 export class MultiActionButtonComponent {
-  @Input() multiActionLabel!: string
-  @Input() multiActionLabelDisabled!: string
+  @Input() multiActionLabel!: string;
+  @Input() multiActionLabelDisabled!: string;
   @Input() multiActionIcon!: IconType;
-  @Input() multiActionDelegate!: () => Promise<void>
+  @Input() multiActionDelegate!: () => Promise<void>;
   @Input() disabledPredicate!: () => boolean;
   @Input() isMultiMode!: WritableSignal<boolean>;
 }

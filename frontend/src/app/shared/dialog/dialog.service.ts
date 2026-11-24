@@ -20,7 +20,7 @@ export class DialogService {
   private readonly appRef = inject(ApplicationRef);
   private readonly componentFactoryResolver = inject(ComponentFactoryResolver);
 
-  dialogRefs = new Map<DialogRef, ComponentRef<DialogComponent>>;
+  dialogRefs = new Map<DialogRef, ComponentRef<DialogComponent>>();
 
   private appendDialogComponentToBody = (injector: Injector, config?: DialogConfig) => {
     const map = new WeakMap();
@@ -42,7 +42,8 @@ export class DialogService {
 
     this.appRef.attachView(componentRef.hostView);
 
-    const domElement = (componentRef.hostView as EmbeddedViewRef<never>).rootNodes[0] as HTMLElement;
+    const domElement = (componentRef.hostView as EmbeddedViewRef<never>)
+      .rootNodes[0] as HTMLElement;
     document.body.appendChild(domElement);
 
     this.dialogRefs.set(dialogRef, componentRef);
@@ -63,7 +64,11 @@ export class DialogService {
     }
   };
 
-  public open<T, M extends NgModule>(componentType: Type<unknown>, moduleRef: NgModuleRef<M>, config?: DialogConfig) {
+  public open<T, M extends NgModule>(
+    componentType: Type<unknown>,
+    moduleRef: NgModuleRef<M>,
+    config?: DialogConfig
+  ) {
     const injector = moduleRef.injector;
     const dialogRef = this.appendDialogComponentToBody(injector, config);
     if (this.dialogRefs.get(dialogRef)) {

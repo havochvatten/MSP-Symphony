@@ -2,6 +2,7 @@ package se.havochvatten.symphony.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.security.PermitAll;
 import se.havochvatten.symphony.entity.NationalArea;
 import se.havochvatten.symphony.exception.SymphonyStandardAppException;
 import se.havochvatten.symphony.service.AreasService;
@@ -15,6 +16,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.CacheControl;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import se.havochvatten.symphony.web.filter.PublicOrRestricted;
+
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,6 +25,7 @@ import java.util.logging.Logger;
 @Stateless
 @Tag(name = "/areas")
 @Path("areas")
+@RolesAllowed("GRP_SYMPHONY")
 public class AreasREST {
     private static final Logger LOG = Logger.getLogger(AreasREST.class.getName());
 
@@ -39,7 +43,6 @@ public class AreasREST {
     @GET
     @Operation(summary = "JSON array with all types of areas")
     @Produces({MediaType.APPLICATION_JSON})
-    @RolesAllowed("GRP_SYMPHONY")
     public Response getAreaTypes() throws SymphonyStandardAppException {
         String countryCode = props.getProperty(COUNTRYCODE_PROPERTY);
         if (countryCode == null) {
@@ -58,7 +61,6 @@ public class AreasREST {
     @Path("{type}")
     @Operation(summary = "JSON structure of all areas for given type")
     @Produces({MediaType.APPLICATION_JSON})
-    @RolesAllowed("GRP_SYMPHONY")
     public Response getAreas(@PathParam("type") String type) throws SymphonyStandardAppException {
         String countryCode = props.getProperty(COUNTRYCODE_PROPERTY);
 
@@ -74,7 +76,8 @@ public class AreasREST {
     @Path("/boundary")
     @Operation(summary = "JSON polygons for country that user created areas must keep within (not cross)")
     @Produces({MediaType.APPLICATION_JSON})
-    @RolesAllowed("GRP_SYMPHONY")
+    @PermitAll
+    @PublicOrRestricted
     public Response getBoundaries() throws SymphonyStandardAppException {
         String countryCode = props.getProperty(COUNTRYCODE_PROPERTY);
         if (countryCode == null) {
@@ -94,7 +97,6 @@ public class AreasREST {
     @Path("/download")
     @Operation(summary = "Download areas as a .shp file bundle (.zip archive)")
     @Produces("application/octet-stream")
-    @RolesAllowed("GRP_SYMPHONY")
     public Response downloadAreas(@QueryParam("path") String path) throws SymphonyStandardAppException {
         String countryCode = props.getProperty(COUNTRYCODE_PROPERTY);
         String[] statePaths = path.split(",");

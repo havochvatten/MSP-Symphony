@@ -1,43 +1,47 @@
-import { Injectable, inject } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { ComparisonReport, Report } from "@data/calculation/calculation.interfaces";
-import { environment as env } from "@src/environments/environment";
-import { TranslateService } from "@ngx-translate/core";
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { ComparisonReport, Report } from '@data/calculation/calculation.interfaces';
+import { environment as env } from '@src/environments/environment';
+import { TranslateService } from '@ngx-translate/core';
+import { defaultLanguage } from '@shared/languages';
 
 @Injectable({
   providedIn: 'root'
 })
-export class
-ReportService {
+export class ReportService {
   private readonly http = inject(HttpClient);
   private readonly translate = inject(TranslateService);
 
-  private langParam = `?lang=${this.translate.currentLang}`;
+  private get langParam(): string {
+    return `?lang=${this.translate.getCurrentLang() ?? defaultLanguage}`;
+  }
 
   public getReport(id: string) {
     return this.http.get<Report>(`${env.apiBaseUrl}/report/${id}${this.langParam}`);
   }
 
   public getComparisonReport(aId: string, bId: string | null, reverse: boolean) {
-    if(bId) {
-      return this.http.get<ComparisonReport>(`${env.apiBaseUrl}/report/comparison/${aId}/${bId}${this.langParam}`);
+    if (bId) {
+      return this.http.get<ComparisonReport>(
+        `${env.apiBaseUrl}/report/comparison/${aId}/${bId}${this.langParam}`
+      );
     } else {
-      return this.http.get<ComparisonReport>(`${env.apiBaseUrl}/report/comparison/${aId}${this.langParam}` +
-                                                  (reverse ? '&reverse=true' : ''));
+      return this.http.get<ComparisonReport>(
+        `${env.apiBaseUrl}/report/comparison/${aId}${this.langParam}` +
+          (reverse ? '&reverse=true' : '')
+      );
     }
   }
 
   public calculateArea(report: Report) {
     if (report.calculatedPixels && report.gridResolution)
-      return report.calculatedPixels*report.gridResolution*report.gridResolution; // Unit: m2
-    else
-      return report.geographicalArea;
+      return report.calculatedPixels * report.gridResolution * report.gridResolution; // Unit: m2
+    else return report.geographicalArea;
   }
 
   public setAreaDict(report: Report): Map<number, string> {
-
     const areaDict = new Map<number, string>();
-    if(report.scenarioChanges !== null) {
+    if (report.scenarioChanges !== null) {
       const index_ids = Object.keys(report.scenarioChanges.areaChanges);
 
       index_ids.map((areaId, ix) => {

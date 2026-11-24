@@ -47,11 +47,13 @@ While any Jakarta EE 10.0-compliant application server should work in principle,
 consequently, the [provided release artifacts](https://github.com/havochvatten/MSP-Symphony/releases)) is adapted 
 specifically to the dependency provisions of the [Wildfly](https://www.wildfly.org/) application server (@ 
 v[36.0.1](https://www.wildfly.org/downloads/#36.0.1.Final)).  
+The backend requires Java 21, both to build it and to run it: the application server has to run on a Java 21 JVM.  
 At SwAM the frontend is served separately using Apache, although any web server capable of serving static content 
-will do (see [Frontend](#frontend-1) below). The backend has been tested using Wildfly 36.0, PostgreSQL 14 and PostGIS v3.4,
-but more recent versions should be fine (as for Wildfly, at least all versions providing Jakarta EE 10).
+will do (see [Frontend](#frontend-1) below). The backend has been tested using Wildfly 36.0 on Java 21, PostgreSQL 14
+and PostGIS v3.4, but more recent versions should be fine (as for Wildfly, at least all versions providing
+Jakarta EE 10).
 
-The frontend is realized as an Angular application (v 21), built with Node 22.13.0
+The frontend is realized as an Angular application (v 21), built with Node 24
 
 ## Getting the source
 
@@ -95,6 +97,10 @@ npm install
 ng build
 ```
 The build artifacts will end up in the `frontend/dist` directory.
+
+`npm install` installs a pre-commit hook that formats staged files under `frontend/src` with Prettier. HTML templates are left out (see `frontend/.prettierignore`), since Prettier can change their rendered whitespace.
+
+To hide the one-time formatting commit from local blame, run `git blame --ignore-revs-file .git-blame-ignore-revs <file>` (GitHub applies the file automatically). Avoid setting `blame.ignoreRevsFile` in your git config: `git blame` then fails on any checkout that predates the file.
 
 For frontend development there is also the Angular CLI development server, see the frontend README for more details. 
 
@@ -153,9 +159,18 @@ _api.base_url_ property may want to be overridden to point to a remote server wh
 
 It is a very good idea to give the system ample heap space to work with, at least a few GBs. Example: `-Xmx10G`
 
-The system assumes that all strings related to area polygons are in UTF encoding. Current JVMs typically defaults to 
-the default native platform encoding. Notably, on Windows that is not UTF and so if running on Windows specifying
-`-Dfile.encoding=UTF-8` may be necessary (that setting is used also when reading data from the datbase).
+The system assumes that all strings related to area polygons are in UTF-8 encoding. From Java 18 the JVM uses UTF-8
+as its default charset on every platform (also for data read from the database), so `-Dfile.encoding=UTF-8` is no
+longer needed, although it does no harm.
+
+### 5. Configure summary models
+
+Summary models define a step-based pipeline that transforms multiple source raster bands (ecosystem or pressure) 
+into a single output heatmap. This is done by aggregating bands using operations like `MEAN`, `MAX`, or `SUM`, 
+and optionally applying normalization.
+
+For detailed information on how to create and maintain these configuration files, see the 
+[Summary Model Configuration Guide](docs/SUMMARY_MODELS.md).
 
 ### Frontend
 
@@ -170,13 +185,17 @@ configuration file illustrates how to accommodate this.
 For the backend there are unit tests and tests exercising the REST API. Which one to run is controlled through a 
 pair of Maven profiles.
 
-The _skip-apitests_ is active by default, and so running it is matter of:
+The _skip-apitests_ profile is active by default, so a plain `mvn test` runs the unit tests only:
 ```
 mvn test
 ```
 To run only the API tests activate the _only-apitests_ profile:
 ```
-mvn test -Pskip-apitests
+mvn test -Ponly-apitests
+```
+To run both the unit tests and the API tests, define the `apitests` property:
+```
+mvn test -Dapitests
 ```
 
 ### REST API tests credentials
@@ -205,6 +224,19 @@ Reintroducing the 'Swagger UI' capability is being considered.
 ~~The package comes bundled with [Swagger](https://swagger.io/) which can be used for exploring APIs and debugging, but
 may want to be disabled in a
 production environment. By default it is available at the */symphony-ws/swagger* endpoint.~~
+
+## How to cite
+
+If you use Symphony in your work, please cite it. GitHub generates a ready-made citation (APA and BibTeX) from
+[CITATION.cff](CITATION.cff): use the **Cite this repository** button in the sidebar of the repository page.
+
+Written out, with the year and version of the release you used:
+
+> Swedish Agency for Marine and Water Management (YYYY). Symphony Open "MSP-Symphony" (Version X.Y.Z) [Source code]. https://github.com/havochvatten/MSP-Symphony
+
+In Swedish:
+
+> Havs- och vattenmyndigheten (ÅÅÅÅ). Symphony Open "MSP-Symphony" (Version X.Y.Z) [Källkod]. https://github.com/havochvatten/MSP-Symphony
 
 ## License
 

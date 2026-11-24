@@ -1,0 +1,15 @@
+<h3>{{ 'map.editor.new-scenario.title' | translate }}</h3>
+<mat-label>{{ 'map.editor.new-scenario.name-label' | translate }}</mat-label>
+<input matInput #nameInput
+       [attr.aria-label]="'map.editor.new-scenario.name-label' | translate"
+       [value]="name()"
+       (input)="name.set(nameInput.value)"
+       (keydown.enter)="create()">
+<div class="button-pane">
+  <button mat-flat-button data-test="create" [disabled]="isBlank()" (click)="create()">{{
+    'map.editor.new-scenario.create' | translate
+  }}</button>
+  <button mat-flat-button data-test="cancel" [ngClass]="'secondary'" (click)="cancel()">{{
+    'map.editor.new-scenario.cancel' | translate
+  }}</button>
+</div>

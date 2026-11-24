@@ -1,4 +1,4 @@
-<div class="controls">
+<div class="controls" [class.on-map]="band.visible && band.loaded">
   <mat-checkbox
     [name]="band.symphonyCategory + '_' + band.bandNumber"
     [checked]="band.selected"
@@ -51,6 +51,13 @@
         (click)="onChangeVisible(!band.visible, band)"
       ></app-icon>
     </div>
+  }
+  @if (band.visible && band.loaded) {
+    <app-icon
+      class="on-map-eye"
+      iconType="eye"
+      (click)="onChangeVisible(false, band)"
+    ></app-icon>
   }
   @if (band.visible && !band.loaded) {
     <mat-spinner

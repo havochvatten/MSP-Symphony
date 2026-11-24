@@ -1,0 +1,14 @@
+@if (config.showLogos) {
+  @if (config.reportLogoSrc | localizedSrc; as reportLogoSrc) {
+    @if (config.reportCountryLogoSrc | localizedSrc; as reportCountryLogoSrc) {
+      <img
+        [src]="reportCountryLogoSrc"
+        class="report-country-logo"
+        [alt]="config.reportCountryLogoAlt | localizedText"/>
+    }
+    <img
+      [src]="reportLogoSrc"
+      class="report-logo"
+      [alt]="config.reportLogoAlt | localizedText"/>
+  }
+}

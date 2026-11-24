@@ -89,7 +89,7 @@ $buttons-row-gap: 1rem;
 
       .scenario {
         box-sizing: border-box;
-        border: 1px solid #707070;
+        border: 1px solid colors.$hav-border-grey;
         padding: 1.2rem;
         display: flex;
         flex-direction: column;

@@ -1,0 +1,5 @@
+<app-icon iconType="eye"></app-icon>
+<span class="names-text">{{ shownNames.join(', ') }}</span>
+@if (hiddenCount > 0) {
+  <span class="more">{{ 'map.on-map.more' | translate: { count: hiddenCount } }}</span>
+}

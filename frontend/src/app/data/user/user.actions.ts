@@ -23,7 +23,7 @@ export const fetchUserSettingsSuccess = createAction(
 
 export const loginUser = createAction(
   '[User] Login user',
-  props<{ username: string, password: string }>()
+  props<{ username: string; password: string }>()
 );
 
 export const loginUserSuccess = createAction('[User] Login user success', props<{ user: User }>());
@@ -41,6 +41,8 @@ export const logoutUserFailure = createAction(
   '[User] Logout user failure',
   props<{ error: ErrorMessage }>()
 );
+
+export const fetchCurrentBaseline = createAction('[User] Fetch current baseline');
 
 export const fetchBaseline = createAction('[User] Fetch baseline');
 
@@ -82,3 +84,10 @@ export const activeBaselineChanged = createAction(
 );
 
 export const navigateTo = createAction('[User] Navigate to', props<{ url: string }>());
+
+export const createPublicUser = createAction('[User] Public user');
+
+export const updatePublicUserLanguage = createAction(
+  '[User] Update public user language setting',
+  props<{ locale?: string }>()
+);

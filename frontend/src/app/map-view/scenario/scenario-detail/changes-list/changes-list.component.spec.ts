@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TranslateModule, TranslateService } from "@ngx-translate/core";
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateSpecModule } from '@src/testing/translate-spec.module';
 import { ChangesListComponent } from './changes-list.component';
-import { IconComponent } from "@shared/icon/icon.component";
-import { provideMockStore } from "@ngrx/store/testing";
-import { initialState } from "@data/metadata/metadata.reducers";
-import { provideZonelessChangeDetection } from "@angular/core";
-
+import { IconComponent } from '@shared/icon/icon.component';
+import { provideMockStore } from '@ngrx/store/testing';
+import { initialState } from '@data/metadata/metadata.reducers';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('ChangesListComponent', () => {
   let component: ChangesListComponent;
@@ -14,17 +14,18 @@ describe('ChangesListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ TranslateModule.forRoot() ],
+      imports: [TranslateSpecModule],
       providers: [
         TranslateService,
-        provideMockStore({ initialState: {
-          metadata: initialState
-        }}),
+        provideMockStore({
+          initialState: {
+            metadata: initialState
+          }
+        }),
         provideZonelessChangeDetection()
       ],
-      declarations: [ ChangesListComponent, IconComponent ]
-    })
-    .compileComponents();
+      declarations: [ChangesListComponent, IconComponent]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ChangesListComponent);
     component = fixture.componentInstance;

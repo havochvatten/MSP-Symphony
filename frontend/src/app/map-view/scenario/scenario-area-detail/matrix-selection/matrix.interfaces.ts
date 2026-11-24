@@ -1,4 +1,4 @@
-import { GeoJSONGeometry } from "ol/format/GeoJSON";
+import { GeoJSONGeometry } from 'ol/format/GeoJSON';
 
 export interface MatrixRef {
   id: number;
@@ -78,4 +78,3 @@ export interface MatrixParameters {
   areaTypes?: AreaTypeRef[];
   matrixId?: number;
 }
-

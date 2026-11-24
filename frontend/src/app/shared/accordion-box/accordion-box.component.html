@@ -1,4 +1,4 @@
-<article>
+<article [attr.data-marked]="marked">
   <header>
     <ng-content select="app-accordion-box-header" [attr.data-open]="open"></ng-content>
     <app-icon-button [icon]="open ? 'chevron-up' : 'chevron-down'"

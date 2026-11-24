@@ -1,15 +1,18 @@
 @use 'src/styles/constants' as cns;
 @use 'src/styles/hav-colors' as colors;
 @use 'src/styles/margins' as margins;
+@use 'src/styles/on-map';
 
 :host {
   .controls {
+    position: relative;
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
     align-items: center;
 
     .editing {
+      @include on-map.hover-box;
       display: flex;
       flex-wrap: nowrap;
       justify-content: flex-end;
@@ -31,7 +34,7 @@
 
         app-icon {
           font-size: 2.4rem;
-          color: rgba(0,0,0,0.87);
+          color: colors.$hav-text-primary;
 
           &[icontype='sliders'],
           &[icontype='info-circle-large'] {
@@ -77,6 +80,14 @@
 
     mat-spinner {
       margin-right: 1rem;
+    }
+
+    &.on-map {
+      padding-right: on-map.$eye-room;
+    }
+
+    .on-map-eye {
+      @include on-map.eye;
     }
 
     ::ng-deep mat-checkbox {

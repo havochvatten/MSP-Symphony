@@ -77,4 +77,12 @@ public class PropertiesService {
     public String getProperty(String name, String fallback) {
         return props.containsKey(name) ? props.getProperty(name) : fallback;
     }
+
+    public boolean getPropertyAsBool(String name) {
+        return Boolean.parseBoolean(getProperty(name));
+    }
+
+    public boolean getPropertyAsBool(String name, boolean fallback) {
+        return props.containsKey(name) ? getPropertyAsBool(name) : fallback;
+    }
 }

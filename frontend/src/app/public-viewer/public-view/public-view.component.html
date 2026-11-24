@@ -1,0 +1,61 @@
+<div class="result-info-panel"></div>
+<!--TODO Migrate to use routerLinks instead-->
+<app-slide-view
+  position="left"
+  [open]="leftSidebarIsOpen"
+  (toggleTab)="toggleLeftSidebar()"
+  (openCCList)="onOpenCCList()"
+>
+  <app-slide-view-tab [title]="'map.intensity.ecosystems' | translate" icon="fish">
+    <app-band-selection
+      bandType="ecoComponents"
+      [title]="'map.intensity.ecosystems' | translate"
+      [bandGroups]="$any(metadata | async).ecoComponent"
+    ></app-band-selection>
+  </app-slide-view-tab>
+  <app-slide-view-tab [title]="'map.intensity.pressures' | translate" icon="human">
+    <app-band-selection
+      bandType="pressures"
+      [title]="'map.intensity.pressures' | translate"
+      [bandGroups]="$any(metadata | async).pressureComponent"
+    ></app-band-selection>
+  </app-slide-view-tab>
+
+  <div id="map-overlay">
+    @if (
+      ((legends$ | async).result && this.getVisibleImpact()) ||
+      (legends$ | async).ecosystem ||
+      (legends$ | async).pressure ||
+      (visibleReliability$ | async) !== null
+    ) {
+      <div class="color-scale-container">
+        @if ((legends$ | async).result && this.getVisibleImpact()) {
+          <app-result-color-scale
+            class="legend-section"
+            [title]="'map.color-scale.result' | translate"
+            [colors]="(legends$ | async).result.colorMap"
+            [unit]="(legends$ | async).result.unit"
+          ></app-result-color-scale>
+        }
+        @if ((legends$ | async).ecosystem) {
+          <app-result-color-scale
+            class="legend-section"
+            [title]="'map.color-scale.ecosystem' | translate"
+            [colors]="(legends$ | async).ecosystem.colorMap"
+            [unit]="(legends$ | async).ecosystem.unit"
+          ></app-result-color-scale>
+        }
+        @if ((legends$ | async).pressure) {
+          <app-result-color-scale
+            class="legend-section"
+            [title]="'map.color-scale.pressure' | translate"
+            [colors]="(legends$ | async).pressure.colorMap"
+            [unit]="(legends$ | async).pressure.unit"
+          ></app-result-color-scale>
+        }
+      </div>
+    }
+    <div id="scale-container"></div>
+  </div>
+</app-slide-view>
+<app-map [mapCenter]="center" (resultLayerGroupChange)="setVisibleImpact($event)"> </app-map>

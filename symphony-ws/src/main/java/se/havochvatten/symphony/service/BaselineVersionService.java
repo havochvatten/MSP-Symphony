@@ -1,5 +1,7 @@
 package se.havochvatten.symphony.service;
 
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
 import se.havochvatten.symphony.dto.UserDto;
 import se.havochvatten.symphony.entity.BaselineVersion;
 import se.havochvatten.symphony.exception.SymphonyModelErrorCode;
@@ -16,6 +18,9 @@ import java.util.List;
 public class BaselineVersionService {
     @PersistenceContext(unitName = "symphonyPU")
     private EntityManager em;
+
+    @Inject
+    private PropertiesService props;
 
     /**
      * @return BaselineVersion with the given name
@@ -68,11 +73,28 @@ public class BaselineVersionService {
     }
 
     /**
+     * Get all Baseline/branch versions in the system based on public access & role
+     *
+     * @return List<BaselineVersion>
+     */
+    public List<BaselineVersion> getBaselineVersions(boolean isAuthorized) throws SymphonyStandardAppException {
+        List<BaselineVersion> baselineVersions;
+        boolean publicAccessEnabled = props.getPropertyAsBool("symphony.public_access", false);
+
+        if (publicAccessEnabled) {
+            baselineVersions = isAuthorized ? findAll() : List.of(getBaselineVersionByDate(new Date()));
+        } else {
+            baselineVersions = findAll();
+        }
+        return baselineVersions;
+    }
+
+    /**
      * Get all Baseline/branch versions in the system
      *
      * @return List<BaselineVersion>
      */
-    public List<BaselineVersion> findAll() {
+    private List<BaselineVersion> findAll() {
         return em.createNamedQuery("BaselineVersion.findAll", BaselineVersion.class)
             .getResultList();
     }

@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ListFilterComponent } from './list-filter.component';
-import { TranslationSetupModule } from "@src/app/app-translation-setup.module";
-import { provideMockStore } from "@ngrx/store/testing";
-import { SharedModule } from "@shared/shared.module";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
+import { provideMockStore } from '@ngrx/store/testing';
+import { SharedModule } from '@shared/shared.module';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('ListFilterComponent', () => {
   let component: ListFilterComponent;
@@ -12,17 +12,13 @@ describe('ListFilterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports:[
-        SharedModule,
-        TranslationSetupModule
-      ],
-      declarations: [ ListFilterComponent ],
+      imports: [SharedModule, TranslationSetupModule],
+      declarations: [ListFilterComponent],
       providers: [
-        provideMockStore({ initialState : { user: {} } }),
+        provideMockStore({ initialState: { user: {} } }),
         provideZonelessChangeDetection()
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ListFilterComponent);
     component = fixture.componentInstance;

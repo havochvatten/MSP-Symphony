@@ -9,10 +9,7 @@ export class DialogInjector implements Injector {
     private additionalTokens: WeakMap<any, any>
   ) {}
 
-  get<T>(
-    token: Type<T> | InjectionToken<T>,
-    notFoundValue?: T
-  ): T;
+  get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T): T;
 
   get(token: any, notFoundValue?: any): any;
 

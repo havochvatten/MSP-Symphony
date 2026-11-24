@@ -69,7 +69,7 @@ public class WebUtil {
                 targetEnvelope.getMaxX(), targetEnvelope.getMaxY())).build();
     }
 
-    static StyledLayerDescriptor getSLD(InputStream in) throws ParserConfigurationException, SAXException,
+    public static StyledLayerDescriptor getSLD(InputStream in) throws ParserConfigurationException, SAXException,
             IOException {
         Configuration config = new SLDConfiguration();
         Parser parser = new Parser(config);
@@ -84,8 +84,8 @@ public class WebUtil {
         return featureTypeStyles.get(0).rules();
     }
 
-    static RenderedImage render(GridCoverage2D cov, CoordinateReferenceSystem crs, Envelope env,
-                                StyledLayerDescriptor sld) throws Exception {
+    public static RenderedImage render(GridCoverage2D cov, CoordinateReferenceSystem crs, Envelope env,
+                                       StyledLayerDescriptor sld) throws Exception {
         GridCoverageRenderer renderer = new GridCoverageRenderer(crs, env,
                 cov.getGridGeometry().getGridRange2D(), null);
         RasterSymbolizer symbolizer = WebUtil.getRasterSymbolizer(sld);
@@ -109,7 +109,7 @@ public class WebUtil {
             0); // no tiles
     }
 
-    static RenderedImage renderNormalized(GridCoverage2D cov, CoordinateReferenceSystem crs, Envelope env,
+    public static RenderedImage renderNormalized(GridCoverage2D cov, CoordinateReferenceSystem crs, Envelope env,
                                           StyledLayerDescriptor sld, double normalizationValue) throws Exception {
         GridCoverageRenderer renderer = new GridCoverageRenderer(crs, env,
             cov.getGridGeometry().getGridRange2D(), null);
@@ -138,8 +138,35 @@ public class WebUtil {
         return baos;
     }
 
+    /**
+     * Indices of the colour map entries a legend shows, in order. Skips the placeholders below the first
+     * visible stop: fully transparent entries (value 0, no data) and entries with the same colour as the next
+     * one (the entry that makes values just above 0 draw in the first colour). Every entry from the first
+     * visible stop on is shown, so a custom style can repeat a colour on purpose.
+     */
+    public static int[] visibleLegendEntryIndices(ColorMapEntry[] entries) {
+        int first = 0;
+        while (first < entries.length && isLeadingPlaceholder(entries, first)) {
+            first++;
+        }
+        return java.util.stream.IntStream.range(first, entries.length).toArray();
+    }
+
+    private static boolean isLeadingPlaceholder(ColorMapEntry[] entries, int i) {
+        return isTransparent(entries[i])
+            || (i + 1 < entries.length && colorOf(entries[i]).equals(colorOf(entries[i + 1])));
+    }
+
+    private static boolean isTransparent(ColorMapEntry entry) {
+        return entry.getOpacity() != null && entry.getOpacity().evaluate(null, Double.class) == 0.0;
+    }
+
+    private static Color colorOf(ColorMapEntry entry) {
+        return entry.getColor().evaluate(null, Color.class);
+    }
+
     // TODO This could maybe be simplified using a StyleVisitor instead
-    static RasterSymbolizer getRasterSymbolizer(StyledLayerDescriptor sld) {
+    public static RasterSymbolizer getRasterSymbolizer(StyledLayerDescriptor sld) {
         List<Rule> rules = getRules(sld);
         List<Symbolizer> symbolizers = rules.get(0).symbolizers();
         return (RasterSymbolizer)symbolizers.get(0);

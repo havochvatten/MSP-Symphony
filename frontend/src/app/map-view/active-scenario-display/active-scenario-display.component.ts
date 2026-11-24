@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Scenario } from "@data/scenario/scenario.interfaces";
+import { Scenario } from '@data/scenario/scenario.interfaces';
 
 @Component({
   selector: 'app-active-scenario-display',
@@ -8,7 +8,6 @@ import { Scenario } from "@data/scenario/scenario.interfaces";
   standalone: false
 })
 export class ActiveScenarioDisplayComponent {
-
   @Input() scenario!: Scenario;
   @Input() set calculating(calculating: boolean) {
     this._calculating = calculating;
@@ -23,7 +22,7 @@ export class ActiveScenarioDisplayComponent {
   }
 
   getAreaName() {
-    if(this.area !== undefined && this.scenario?.areas[this.area] !== undefined) {
+    if (this.area !== undefined && this.scenario?.areas[this.area] !== undefined) {
       return this.scenario?.areas[this.area].feature.properties!['name'];
     } else {
       return undefined;
@@ -31,6 +30,6 @@ export class ActiveScenarioDisplayComponent {
   }
 
   exitScenario() {
-    this.exit.emit()
+    this.exit.emit();
   }
 }

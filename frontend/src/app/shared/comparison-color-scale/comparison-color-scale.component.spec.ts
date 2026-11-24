@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ComparisonColorScaleComponent } from './comparison-color-scale.component';
-import { provideZonelessChangeDetection } from "@angular/core";
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('ComparisonColorScaleComponent', () => {
   let component: ComparisonColorScaleComponent;
@@ -9,12 +9,9 @@ describe('ComparisonColorScaleComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      providers: [
-        provideZonelessChangeDetection()
-      ],
-      declarations: [ ComparisonColorScaleComponent ]
-    })
-    .compileComponents();
+      providers: [provideZonelessChangeDetection()],
+      declarations: [ComparisonColorScaleComponent]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ComparisonColorScaleComponent);
     component = fixture.componentInstance;

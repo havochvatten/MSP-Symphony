@@ -1,23 +1,24 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { formatPercent } from "@angular/common";
+import { formatPercent } from '@angular/common';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { State } from '../app-reducer';
 import { MetadataActions } from '@data/metadata';
 import { ComparisonReport, Legend } from '@data/calculation/calculation.interfaces';
-import { environment as env } from "@src/environments/environment";
-import { ReportService } from "@src/app/report/report.service";
-import { CalculationService } from "@data/calculation/calculation.service";
-import { relativeDifference } from "@src/app/report/report.util";
-import { AbstractReport } from "@src/app/report/abstract-report.component";
+import { environment as env } from '@src/environments/environment';
+import { ReportService } from '@src/app/report/report.service';
+import { CalculationService } from '@data/calculation/calculation.service';
+import { relativeDifference } from '@src/app/report/report.util';
+import { AbstractReport } from '@src/app/report/abstract-report.component';
 import { BrandingService } from '@src/app/core/branding/branding.service';
+import { StyleVersionService } from '@data/style/style-version.service';
 
 @Component({
   selector: 'app-calculation-report',
   templateUrl: './comparison-report.component.html',
   styleUrls: ['./report.component.scss'],
-  standalone: false,
+  standalone: false
 })
 export class ComparisonReportComponent extends AbstractReport<ComparisonReport> {
   public brandingService = inject(BrandingService);
@@ -36,11 +37,15 @@ export class ComparisonReportComponent extends AbstractReport<ComparisonReport> 
 
   legend: Observable<Legend>;
 
+  /** Set once the style version is known, so the year-cached image is fetched again after a style change */
+  readonly comparisonImageUrl = signal<string | undefined>(undefined);
+
   constructor() {
     const store = inject<Store<State>>(Store);
     const route = inject(ActivatedRoute);
     const reportService = inject(ReportService);
     const calcService = inject(CalculationService);
+    const styleVersion = inject(StyleVersionService);
 
     super();
     this.store = store;
@@ -57,9 +62,16 @@ export class ComparisonReportComponent extends AbstractReport<ComparisonReport> 
 
     this.legend = calcService.getComparisonLegend(this.maxValue / 100);
 
-    this.imageUrl = bId
+    const imageUrl = bId
       ? `${env.apiBaseUrl}/calculation/diff/${aId}/${bId}?max=${this.maxValue}`
       : `${env.apiBaseUrl}/calculation/diff/${aId}?max=${this.maxValue}${this.reverse ? '&reverse=true' : ''}`;
+    styleVersion
+      .getVersion()
+      .subscribe((version) =>
+        this.comparisonImageUrl.set(
+          version ? `${imageUrl}&v=${encodeURIComponent(version)}` : imageUrl
+        )
+      );
 
     reportService.getComparisonReport(aId, bId, this.reverse).subscribe({
       next: (report) => {
@@ -70,19 +82,19 @@ export class ComparisonReportComponent extends AbstractReport<ComparisonReport> 
         this.loadingReport = false;
 
         this.store.dispatch(
-          MetadataActions.fetchMetadataForBaseline({ baselineName: report.a.baselineName }),
+          MetadataActions.fetchMetadataForBaseline({ baselineName: report.a.baselineName })
         );
         this.areaDictA = reportService.setAreaDict(report.a);
         this.areaDictB = reportService.setAreaDict(report.b);
 
         this.chartWeightThresholdPercentage = formatPercent(
           report.a.chartWeightThreshold,
-          this.locale,
+          this.locale
         );
       },
       error: () => {
         this.loadingReport = false;
-      },
+      }
     });
   }
 

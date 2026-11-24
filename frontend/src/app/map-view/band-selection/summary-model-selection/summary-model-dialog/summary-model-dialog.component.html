@@ -1,0 +1,46 @@
+<div class="summary-model-dialog-header">
+  <h2 class="summary-model-dialog-title">{{ title }}</h2>
+  <app-icon-button icon="times" label="{{ 'controls.close' | translate }}" (iconClick)="close()"></app-icon-button>
+</div>
+
+<div class="summary-model-dialog-content">
+  @for (step of steps; track step.name) {
+    @if (step.output) {
+      <h3 class="summary-model-dialog-output">{{ 'map.summary-model.output' | translate }}</h3>
+    }
+
+    <div
+      class="step"
+      [attr.id]="'step-' + step.number"
+      [class.part-of-output]="step.isPartOfOutput"
+      [class.output]="step.output"
+      [class.highlight]="highlightedStep === step.number"
+    >
+      <div class="step-header">
+        @if (!step.output) {
+          <span class="step-number">{{ step.number }}.</span>
+        }
+      </div>
+
+      <code class="formula">
+        @for (token of step.formulaTokens; track token) {
+          @if (token.type === 'text') {
+            <span>{{ token.value }}</span>
+          } @else {
+            <button
+              type="button"
+              class="formula-link"
+              (click)="scrollToStep(token.stepNumber)"
+              [attr.aria-label]="'Scroll to step ' + token.stepNumber">
+              <span class="formula-badge">{{ token.stepNumber }}</span>{{ token.value }}
+            </button>
+          }
+        }
+      </code>
+
+      @if (step.normalization) {
+        <span class="normalization">[ {{ 'map.summary-model.linearNormalization' | translate }} {{ step.normalization }} ]</span>
+      }
+    </div>
+  }
+</div>

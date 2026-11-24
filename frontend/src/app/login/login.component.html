@@ -1,8 +1,8 @@
-@if (brandingService.configData.loginLogoSrc) {
+@if (brandingService.configData.loginLogoSrc | localizedSrc; as loginLogoSrc) {
   <img
     class="duck"
-    [src]="brandingService.configData.loginLogoSrc"
-    [alt]="brandingService.configData.loginLogoAlt"/>
+    [src]="loginLogoSrc"
+    [alt]="brandingService.configData.loginLogoAlt | localizedText"/>
 }
 
 <div class="title-container">
@@ -60,10 +60,12 @@
 </div>
 
 @if (brandingService.configData.showLogos) {
-  <img
-    class="logo"
-    [src]="brandingService.configData.logoSrc"
-    [alt]="brandingService.configData.logoAlt"/>
+  @if (brandingService.configData.logoSrc | localizedSrc; as logoSrc) {
+    <img
+      class="logo"
+      [src]="logoSrc"
+      [alt]="brandingService.configData.logoAlt | localizedText"/>
+  }
 }
 
 <div class="topography" data-position="bottom-left"></div>

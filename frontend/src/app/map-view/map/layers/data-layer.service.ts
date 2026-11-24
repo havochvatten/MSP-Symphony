@@ -1,14 +1,29 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { environment as env } from "@src/environments/environment";
-import { BandType } from "@data/metadata/metadata.interfaces";
-import { AppSettings } from "@src/app/app.settings";
+import { inject, Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { environment as env } from '@src/environments/environment';
+import { BandType } from '@data/metadata/metadata.interfaces';
+import { AppSettings } from '@src/app/app.settings';
+import { ModelDescriptionDialogData } from '@src/app/map-view/band-selection/summary-model-selection/summary-model-dialog/summary-model-dialog.component';
+import { Observable, of } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
+import {
+  SummaryModel,
+  SummaryModelCategory,
+  SummaryModelOption
+} from '@data/calculation/calculation.interfaces';
+import { TranslateService } from '@ngx-translate/core';
+import { defaultLanguage } from '@shared/languages';
+import { StyleVersionService } from '@data/style/style-version.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataLayerService {
   private readonly http = inject(HttpClient);
+  private readonly translate = inject(TranslateService);
+  private readonly styleVersion = inject(StyleVersionService);
+
+  private readonly summaryModelsCache = new Map<string, SummaryModelOption[]>();
 
   public getDataLayer(baseline: string, type: BandType, bandNumber: number) {
     const url = `${env.apiBaseUrl}/datalayer/${type.toLowerCase()}/${bandNumber}/${baseline}`;
@@ -17,10 +32,68 @@ export class DataLayerService {
     //       new HttpParams().set('crs', encodeURIComponent(AppSettings.MAP_PROJECTION));
     const params = new HttpParams().set('crs', encodeURIComponent(AppSettings.MAP_PROJECTION));
 
-    return this.http.get(url, {
-      responseType: 'blob',
-      observe: 'response',
-      params
-    });
+    return this.getImage(url, params);
+  }
+
+  public getSummaryModel(
+    baseline: string,
+    summaryModelCategory: SummaryModelCategory,
+    model: Exclude<SummaryModel, 'none'>
+  ) {
+    const url = `${env.apiBaseUrl}/datalayer/${baseline}/${summaryModelCategory.toLowerCase()}/model/${model}`;
+    const params = new HttpParams().set('crs', encodeURIComponent(AppSettings.MAP_PROJECTION));
+
+    return this.getImage(url, params);
+  }
+
+  /** Layer images are cached by the browser for a year; the style version makes a new style a new URL. */
+  private getImage(url: string, params: HttpParams) {
+    return this.styleVersion.getVersion().pipe(
+      switchMap((version) =>
+        this.http.get(url, {
+          responseType: 'blob',
+          observe: 'response',
+          params: version ? params.set('v', version) : params
+        })
+      )
+    );
+  }
+
+  public getSummaryModelDescription(
+    baseline: string,
+    summaryModelCategory: SummaryModelCategory,
+    model: Exclude<SummaryModel, 'none'>
+  ) {
+    const url = `${env.apiBaseUrl}/datalayer/${baseline}/${summaryModelCategory.toLowerCase()}/model/${model}/description`;
+    const params = new HttpParams().set(
+      'locale',
+      this.translate.getCurrentLang() ?? defaultLanguage
+    );
+
+    return this.http.get<ModelDescriptionDialogData>(url, { params });
+  }
+
+  public getSummaryModels(
+    baseline: string,
+    summaryModelCategory: SummaryModelCategory
+  ): Observable<SummaryModelOption[]> {
+    const category = summaryModelCategory.toLowerCase(); // 'ecosystem' | 'pressure'
+    const locale = this.translate.getCurrentLang() ?? defaultLanguage;
+    // Locale is part of the cache key: the picker labels are localized, and a language
+    // switch re-runs this fetch — without the locale the cache would serve stale names.
+    const cacheKey = `${baseline.toLowerCase()}:${category}:${locale}`;
+
+    if (this.summaryModelsCache.has(cacheKey)) {
+      return of(this.summaryModelsCache.get(cacheKey)!);
+    }
+
+    const url = `${env.apiBaseUrl}/datalayer/${baseline}/${category}/models`;
+    const params = new HttpParams().set('locale', locale);
+
+    return this.http.get<SummaryModelOption[]>(url, { params }).pipe(
+      tap((models) => {
+        this.summaryModelsCache.set(cacheKey, models);
+      })
+    );
   }
 }

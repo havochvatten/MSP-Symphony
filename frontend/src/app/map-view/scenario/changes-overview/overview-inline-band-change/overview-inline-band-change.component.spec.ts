@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { OverviewInlineBandChangeComponent } from './overview-inline-band-change.component';
-import { provideMockStore } from "@ngrx/store/testing";
-import { initialState } from "@data/metadata/metadata.reducers";
-import { TranslationSetupModule } from "@src/app/app-translation-setup.module";
-import { SharedModule } from "@shared/shared.module";
-import { provideZonelessChangeDetection } from "@angular/core";
+import { provideMockStore } from '@ngrx/store/testing';
+import { initialState } from '@data/metadata/metadata.reducers';
+import { TranslationSetupModule } from '@src/app/app-translation-setup.module';
+import { SharedModule } from '@shared/shared.module';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('OverviewInlineBandChangeComponent', () => {
   let component: OverviewInlineBandChangeComponent;
@@ -14,16 +14,17 @@ describe('OverviewInlineBandChangeComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TranslationSetupModule, SharedModule],
-      declarations: [ OverviewInlineBandChangeComponent ],
+      declarations: [OverviewInlineBandChangeComponent],
       providers: [
-        provideMockStore({ initialState: {
-          metadata: initialState,
-          user: {}
-        }}),
+        provideMockStore({
+          initialState: {
+            metadata: initialState,
+            user: {}
+          }
+        }),
         provideZonelessChangeDetection()
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(OverviewInlineBandChangeComponent);
     component = fixture.componentInstance;

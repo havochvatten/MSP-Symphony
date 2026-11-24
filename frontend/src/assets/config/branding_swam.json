@@ -1,15 +1,40 @@
 {
-    "flagAlt": "Sverige : Havs och Vattenmyndigheten",
-    "flagSrc": "assets/branding/swam/Sweden-SwAM-white-horizontal-no-borders.svg",
+    "flagAlt": {
+        "sv": "Sveriges logotyp och Havs- och vattenmyndighetens logotyp",
+        "en": "Sweden logo and Swedish Agency for Marine and Water Management logo",
+        "fr": "Logo de la Suède et logo de l'Office suédois de gestion des ressources marines et aquatiques"
+    },
+    "flagSrc": {
+        "sv": "assets/branding/swam/Sweden-SwAM-white-horizontal-no-borders.svg",
+        "en": "assets/branding/swam/Sweden-SwAM-white-horizontal-no-borders-en.svg"
+    },
     "footerTextTranslationKey": "branding.SwAM",
-    "loginLogoAlt": "Alfågel",
+    "loginLogoAlt": { "sv": "Alfågel", "en": "Long-tailed duck", "fr": "Harelde boréale" },
     "loginLogoSrc": "assets/long-tailed-duck.svg",
-    "logoAlt": "Havs och Vattenmyndigheten",
-    "logoSrc": "assets/branding/swam/hav-logo-blue.svg",
-    "reportCountryLogoAlt": "Sweden",
+    "logoAlt": {
+        "sv": "Havs- och vattenmyndighetens logotyp",
+        "en": "Swedish Agency for Marine and Water Management logo",
+        "fr": "Logo de l'Office suédois de gestion des ressources marines et aquatiques"
+    },
+    "logoSrc": {
+        "sv": "assets/branding/swam/hav-logo-blue.svg",
+        "en": "assets/branding/swam/hav-logo-en-blue.svg"
+    },
+    "reportCountryLogoAlt": {
+        "sv": "Sveriges logotyp",
+        "en": "Sweden logo",
+        "fr": "Logo de la Suède"
+    },
     "reportCountryLogoSrc": "assets/branding/swam/sweden-logotype-english-nomargin.svg",
-    "reportLogoAlt": "Havs och Vattenmyndigheten",
-    "reportLogoSrc": "assets/branding/swam/hav-logo-black.svg",
+    "reportLogoAlt": {
+        "sv": "Havs- och vattenmyndighetens logotyp",
+        "en": "Swedish Agency for Marine and Water Management logo",
+        "fr": "Logo de l'Office suédois de gestion des ressources marines et aquatiques"
+    },
+    "reportLogoSrc": {
+        "sv": "assets/branding/swam/hav-logo-black.svg",
+        "en": "assets/branding/swam/hav-logo-en-black.svg"
+    },
     "showLogos": true,
     "showReportClosingMatter": true
 }

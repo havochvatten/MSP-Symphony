@@ -31,6 +31,7 @@ import se.havochvatten.symphony.service.*;
 import se.havochvatten.symphony.service.normalizer.NormalizerService;
 import se.havochvatten.symphony.service.normalizer.RasterNormalizer;
 import se.havochvatten.symphony.service.normalizer.StatsNormalizer;
+import se.havochvatten.symphony.util.StyleFingerprint;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -256,11 +257,13 @@ public class CalculationREST {
         if (!hasAccess(calculationResult, req.getUserPrincipal()))
             return status(Response.Status.UNAUTHORIZED).build();
 
+        String styleFingerprint = StyleFingerprint.ofResource(props.getProperty("data.styles.result"));
         if(calculationResult.getImagePNG() != null) {
             byte[] savedImage = calculationResult.getImagePNG();
             String extent = readMetaData(savedImage, "extent");
 
-            if(extent != null) {
+            // An image drawn with an older result style is re-drawn below
+            if(extent != null && StyleFingerprint.isStampedWith(savedImage, styleFingerprint)) {
                 return ok(savedImage, IMAGE_PNG)
                     .header(CUSTOM_EXTENT_HEADER, extent)
                     .build();
@@ -320,8 +323,11 @@ public class CalculationREST {
         ByteArrayOutputStream baos = WebUtil.encode(cimage, "png");
         baos.flush();
 
+        Map<String, String> metadata = new LinkedHashMap<>();
+        metadata.put("extent", extent);
+        metadata.put(StyleFingerprint.METADATA_KEY, styleFingerprint);
         calculationResult.setImagePNG(
-            addMetaData(cimage, cimage.getColorModel(), cimage.getSampleModel(), "extent", extent)
+            addMetaData(cimage, cimage.getColorModel(), cimage.getSampleModel(), metadata)
         );
 
         calcService.updateCalculation(calculationResult);

@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, NgModuleRef, OnDestroy, ViewChild, inject } from '@angular/core';
-import { Store } from "@ngrx/store";
+import { Store } from '@ngrx/store';
 import { State } from '@src/app/app-reducer';
 import { Observable, Subscription } from 'rxjs';
 import { CalculationSlice } from '@data/calculation/calculation.interfaces';
@@ -10,14 +10,17 @@ import { DialogService } from '@shared/dialog/dialog.service';
 import { ComparisonReportModalComponent } from '@shared/report-modal/comparison-report-modal.component';
 import { CalculationService } from '@data/calculation/calculation.service';
 import { map, skip, tap } from 'rxjs/operators';
-import { TranslateService } from "@ngx-translate/core";
-import { MatSelect } from "@angular/material/select";
-import { MatOption } from "@angular/material/core";
-import { MatRadioChange } from "@angular/material/radio";
-import { MatCheckboxChange } from "@angular/material/checkbox";
-import { MapViewModule } from "@src/app/map-view/map-view.module";
+import { TranslateService } from '@ngx-translate/core';
+import { MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/core';
+import { MatRadioChange } from '@angular/material/radio';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MapViewModule } from '@src/app/map-view/map-view.module';
 
-enum ComparisonScaleOptions { CONSTANT, DYNAMIC }
+enum ComparisonScaleOptions {
+  CONSTANT,
+  DYNAMIC
+}
 
 @Component({
   selector: 'app-comparison',
@@ -31,7 +34,7 @@ export class ComparisonComponent implements AfterViewInit, OnDestroy {
   private readonly calcService = inject(CalculationService);
   private readonly translate = inject(TranslateService);
   private readonly builder = inject(FormBuilder);
-  private readonly moduleRef = inject(NgModuleRef<MapViewModule>)
+  private readonly moduleRef = inject(NgModuleRef<MapViewModule>);
 
   calculations$?: Observable<CalculationSlice[]>;
   candidates$?: Observable<CalculationSlice[]>;
@@ -54,7 +57,8 @@ export class ComparisonComponent implements AfterViewInit, OnDestroy {
     this.calculations$ = this.store.select(CalculationSelectors.selectCalculations);
     this.candidates$ = this.store.select(CalculationSelectors.selectChangedCalculations);
 
-    this.baselineSubscription = this.store.select(UserSelectors.selectBaseline)
+    this.baselineSubscription = this.store
+      .select(UserSelectors.selectBaseline)
       .pipe(skip(1))
       .subscribe(() => this.resetForBaselineSwitch());
   }
@@ -87,27 +91,34 @@ export class ComparisonComponent implements AfterViewInit, OnDestroy {
     const a = this.useImplicit ? null : this.aSelect.value;
     const that = this,
       b = this.compareForm.value.b as string,
-      aTitle = this.useImplicit ?
-        this.translate.instant('map.compare.implicit-baseline') :
-        (this.aSelect.selected as MatOption).viewValue,
+      aTitle = this.useImplicit
+        ? this.translate.instant('map.compare.implicit-baseline')
+        : (this.aSelect.selected as MatOption).viewValue,
       comparisonTitle = aTitle + ' ~ ' + (this.bSelect.selected as MatOption).viewValue,
       dynamic = this.selectedScale === ComparisonScaleOptions.DYNAMIC,
       constantVal = this.constant,
-      reverse = this.reverseComparison
-    this.calcService.addComparisonResult(a, b, dynamic, constantVal, reverse).then(
-      (dynamicMax: number | null) => {
+      reverse = this.reverseComparison;
+    this.calcService
+      .addComparisonResult(a, b, dynamic, constantVal, reverse)
+      .then((dynamicMax: number | null) => {
         const max = dynamicMax !== null ? Math.ceil(dynamicMax * 100) : this.constant;
         this.dialogService.open(ComparisonReportModalComponent, this.moduleRef, {
           data: { a, b, max, reverse }
         });
-        if(dynamic) {
-          that.store.dispatch(CalculationActions.fetchComparisonLegend({ maxValue: dynamicMax || 0, comparisonTitle }));
+        if (dynamic) {
+          that.store.dispatch(
+            CalculationActions.fetchComparisonLegend({ maxValue: dynamicMax || 0, comparisonTitle })
+          );
         } else {
-          that.store.dispatch(CalculationActions.fetchComparisonLegend({ maxValue: that.constant / 100, comparisonTitle }));
+          that.store.dispatch(
+            CalculationActions.fetchComparisonLegend({
+              maxValue: that.constant / 100,
+              comparisonTitle
+            })
+          );
         }
-      }
-    )
-      .catch(e => console.warn(e))
+      })
+      .catch((e) => console.warn(e))
       .finally(() => {
         that.computingComparisonResult = false;
       });
@@ -118,7 +129,7 @@ export class ComparisonComponent implements AfterViewInit, OnDestroy {
     this.loadingCandidates = true;
 
     this.candidates$ = this.calcService.getMatchingCalculations(id.toString()).pipe(
-      map((res) => res.filter(c => this.includeUnchanged || c.hasChanges)),
+      map((res) => res.filter((c) => this.includeUnchanged || c.hasChanges)),
       tap((candidates) => {
         this.bSelect.disabled = candidates.length === 0;
         this.loadingCandidates = false;
@@ -127,12 +138,12 @@ export class ComparisonComponent implements AfterViewInit, OnDestroy {
   }
 
   setComparisonScale(ev: MatRadioChange) {
-    if(ev.source.checked) {
+    if (ev.source.checked) {
       this.selectedScale = ev.source.value;
     }
   }
 
-  targetScenarioPlaceHolderKey(hasCandidates : boolean): string {
+  targetScenarioPlaceHolderKey(hasCandidates: boolean): string {
     if (this.useImplicit) {
       return 'map.compare.select-calculation';
     }
@@ -163,16 +174,16 @@ export class ComparisonComponent implements AfterViewInit, OnDestroy {
   async setIncludeUnchanged(includeUnchanged: boolean) {
     this.includeUnchanged = includeUnchanged;
 
-    if(!this.includeUnchanged) {
+    if (!this.includeUnchanged) {
       this.bSelect.value = null;
     }
 
-    if(this.useImplicit) {
-      this.candidates$ = this.includeUnchanged ?
-        this.store.select(CalculationSelectors.selectCalculations) :
-        this.store.select(CalculationSelectors.selectChangedCalculations);
+    if (this.useImplicit) {
+      this.candidates$ = this.includeUnchanged
+        ? this.store.select(CalculationSelectors.selectCalculations)
+        : this.store.select(CalculationSelectors.selectChangedCalculations);
     } else {
-      if(this.aSelect.value) {
+      if (this.aSelect.value) {
         await this.changeBase(this.aSelect.value as number);
       }
     }

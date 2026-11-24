@@ -1,7 +1,24 @@
 @use 'src/styles/hav-colors' as colors;
+@use 'src/styles/on-map';
 
 :host {
-  app-accordion-box-header {
+  .header-title {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+
+    app-on-map-names {
+      padding-left: on-map.$checkbox-label-inset;
+    }
+
+    &.with-checkbox app-on-map-names {
+      padding-left: on-map.$checkbox-label-inset-with-box;
+    }
+  }
+
+  app-accordion-box-header,
+  app-accordion-box-content .list-item {
     ::ng-deep mat-checkbox.mdc-checkbox--disabled {
       label.mdc-label {
         color: colors.$hav-black;
@@ -24,8 +41,13 @@
 
       li {
         display: grid;
-        border: 1px solid #707070;
+        border: 1px solid colors.$hav-border-grey;
         padding: 1.35rem 0.4rem;
+
+        &.on-map {
+          @include on-map.bar;
+          padding-left: on-map.inset(0.4rem);
+        }
       }
     }
   }

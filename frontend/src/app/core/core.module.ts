@@ -17,9 +17,7 @@ export class CoreModule {
     const coreModule = inject(CoreModule, { optional: true, skipSelf: true });
 
     if (coreModule) {
-      throw new Error(
-        'The CoreModule should only be imported in the AppModule.'
-      );
+      throw new Error('The CoreModule should only be imported in the AppModule.');
     }
   }
 }

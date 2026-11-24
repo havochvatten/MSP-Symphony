@@ -1,6 +1,6 @@
 
 # IDEs and editors
-/.idea
+**/.idea/
 /.run
 .project
 .classpath

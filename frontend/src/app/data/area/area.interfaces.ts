@@ -19,7 +19,7 @@ export interface SelectableArea {
 }
 
 export interface Area extends SelectableArea {
-  code: string;
+  code?: string | null;
   searchdata: string;
   areaKm2: number;
 }

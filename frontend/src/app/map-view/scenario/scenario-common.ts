@@ -1,30 +1,45 @@
-import { ConfirmationModalComponent } from "@shared/confirmation-modal/confirmation-modal.component";
-import { ScenarioActions } from "@data/scenario";
-import { DialogService } from "@shared/dialog/dialog.service";
-import { NgModule, NgModuleRef } from "@angular/core";
-import { TranslateService } from "@ngx-translate/core";
-import { Store } from "@ngrx/store";
-import { Scenario, ScenarioArea, ScenarioChangesSelection } from "@data/scenario/scenario.interfaces";
-import { State } from "@src/app/app-reducer";
-import { TransferChangesComponent } from "@src/app/map-view/scenario/transfer-changes/transfer-changes.component";
+import { ConfirmationModalComponent } from '@shared/confirmation-modal/confirmation-modal.component';
+import { ScenarioActions } from '@data/scenario';
+import { DialogService } from '@shared/dialog/dialog.service';
+import { NgModule, NgModuleRef } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Store } from '@ngrx/store';
+import {
+  Scenario,
+  ScenarioArea,
+  ScenarioChangesSelection
+} from '@data/scenario/scenario.interfaces';
+import { State } from '@src/app/app-reducer';
+import { TransferChangesComponent } from '@src/app/map-view/scenario/transfer-changes/transfer-changes.component';
 
 export async function deleteScenario(
-  dialogService:DialogService, translateService: TranslateService, store:Store<State>, moduleRef:NgModuleRef<NgModule>, scenario: Scenario):Promise<void> {
+  dialogService: DialogService,
+  translateService: TranslateService,
+  store: Store<State>,
+  moduleRef: NgModuleRef<NgModule>,
+  scenario: Scenario
+): Promise<void> {
   const confirmDelete = await dialogService.open<boolean, NgModule>(
-    ConfirmationModalComponent, moduleRef,
+    ConfirmationModalComponent,
+    moduleRef,
     {
       data: {
-        header:       translateService.instant('map.editor.delete.modal.title'),
-        message:      translateService.instant('map.editor.delete.modal.message', { scenario: scenario.name }),
-        confirmText:  translateService.instant('map.editor.delete.modal.delete'),
+        header: translateService.instant('map.editor.delete.modal.title'),
+        message: translateService.instant('map.editor.delete.modal.message', {
+          scenario: scenario.name
+        }),
+        confirmText: translateService.instant('map.editor.delete.modal.delete'),
         confirmColor: 'warn',
         dialogClass: 'center'
       }
-    });
+    }
+  );
   if (confirmDelete) {
-    store.dispatch(ScenarioActions.deleteScenario({
-      scenarioToBeDeleted: scenario
-    }));
+    store.dispatch(
+      ScenarioActions.deleteScenario({
+        scenarioToBeDeleted: scenario
+      })
+    );
   }
 }
 
@@ -33,19 +48,30 @@ function isScenario(target: Scenario | ScenarioArea): target is Scenario {
 }
 
 export async function transferChanges(
-  dialogService:DialogService, translateService: TranslateService, store: Store<State>, moduleRef:NgModuleRef<NgModule>, target: Scenario | ScenarioArea):Promise<boolean> {
+  dialogService: DialogService,
+  translateService: TranslateService,
+  store: Store<State>,
+  moduleRef: NgModuleRef<NgModule>,
+  target: Scenario | ScenarioArea
+): Promise<boolean> {
   const selectedChanges = await dialogService.open<ScenarioChangesSelection, NgModule>(
-    TransferChangesComponent, moduleRef,
+    TransferChangesComponent,
+    moduleRef,
     {
       data: {
-        target: target,
+        target: target
       }
-    });
+    }
+  );
   if (selectedChanges) {
-    if(isScenario(target)) {
-      store.dispatch(ScenarioActions.transferScenarioChanges({ changesSelection: selectedChanges }));
+    if (isScenario(target)) {
+      store.dispatch(
+        ScenarioActions.transferScenarioChanges({ changesSelection: selectedChanges })
+      );
     } else {
-      store.dispatch(ScenarioActions.transferScenarioAreaChanges({ changesSelection: selectedChanges }));
+      store.dispatch(
+        ScenarioActions.transferScenarioAreaChanges({ changesSelection: selectedChanges })
+      );
     }
     return true;
   }

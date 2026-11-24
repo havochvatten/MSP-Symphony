@@ -2,17 +2,14 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NoteComponent } from './note.component';
 import { IconComponent } from '../icon/icon.component';
-import { provideZonelessChangeDetection } from "@angular/core";
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('NoteComponent', () => {
-  let fixture: ComponentFixture<NoteComponent>,
-      component: NoteComponent;
+  let fixture: ComponentFixture<NoteComponent>, component: NoteComponent;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        provideZonelessChangeDetection()
-      ],
+      providers: [provideZonelessChangeDetection()],
       declarations: [NoteComponent, IconComponent]
     }).compileComponents();
     fixture = TestBed.createComponent(NoteComponent);

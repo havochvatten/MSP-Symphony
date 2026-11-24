@@ -8,6 +8,7 @@ import se.havochvatten.symphony.entity.Metadata;
 import se.havochvatten.symphony.entity.SymphonyBand;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 
 import java.util.ArrayList;
@@ -17,8 +18,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
 
 public class MetaDataServiceTest {
     MetaDataService metaDataService = new MetaDataService();
@@ -190,5 +192,109 @@ public class MetaDataServiceTest {
         assertThat(metadataComponentDtoSV.getSymphonyThemes().get(1).getSymphonyThemeName(), is("Fågel"));
         assertThat(metadataComponentDtoSV.getSymphonyThemes().get(1).getBands().size(), is(1));
         assertThat(metadataComponentDtoSV.getSymphonyThemes().get(1).getBands().get(0).getTitle(), is("Sjöfågel övervintringsområde kust"));
+    }
+
+    // ── getBandTitle tests ───────────────────────────────────────────────────
+
+    @SuppressWarnings("unchecked")
+    private TypedQuery<String> stubStringQuery(MetaDataService svc) {
+        TypedQuery<String> q = mock(TypedQuery.class);
+        when(svc.em.createQuery(anyString(), eq(String.class))).thenReturn(q);
+        when(q.setParameter(anyString(), any())).thenReturn(q);
+        return q;
+    }
+
+    @Test
+    public void getBandTitle_happyPath_sv() {
+        MetaDataService svc = new MetaDataService();
+        svc.em = mock(EntityManager.class);
+        TypedQuery<String> q = stubStringQuery(svc);
+        when(q.getSingleResult()).thenReturn("Torsk");
+
+        String result = svc.getBandTitle(1, "ECOSYSTEM", 3, "sv");
+
+        assertEquals("Torsk", result);
+        verify(q).setParameter("bverId", 1);
+        verify(q).setParameter("category", "Ecosystem"); // normalized
+        verify(q).setParameter("bandNumber", 3);
+        verify(q).setParameter("lang", "sv");
+    }
+
+    @Test
+    public void getBandTitle_happyPath_fr() {
+        MetaDataService svc = new MetaDataService();
+        svc.em = mock(EntityManager.class);
+        TypedQuery<String> q = stubStringQuery(svc);
+        when(q.getSingleResult()).thenReturn("Morue");
+
+        String result = svc.getBandTitle(2, "ECOSYSTEM", 5, "fr");
+
+        assertEquals("Morue", result);
+        verify(q).setParameter("lang", "fr");
+    }
+
+    @Test
+    public void getBandTitle_unknownLanguage_passedVerbatim() {
+        // The requested locale is forwarded to the query as-is; the query itself falls back
+        // to the baseline default locale when no title exists for that language.
+        MetaDataService svc = new MetaDataService();
+        svc.em = mock(EntityManager.class);
+        TypedQuery<String> q = stubStringQuery(svc);
+        when(q.getSingleResult()).thenReturn("Cod");
+
+        String result = svc.getBandTitle(1, "ECOSYSTEM", 3, "de");
+
+        assertEquals("Cod", result);
+        verify(q).setParameter("lang", "de");
+    }
+
+    @Test
+    public void getBandTitle_nullLanguage_passedVerbatim() {
+        // A null locale is forwarded as-is; the query's baseline-locale clause resolves the title.
+        MetaDataService svc = new MetaDataService();
+        svc.em = mock(EntityManager.class);
+        TypedQuery<String> q = stubStringQuery(svc);
+        when(q.getSingleResult()).thenReturn("Cod");
+
+        String result = svc.getBandTitle(1, "ECOSYSTEM", 3, null);
+
+        assertEquals("Cod", result);
+        verify(q).setParameter("lang", null);
+    }
+
+    @Test
+    public void getBandTitle_pressureCategory_normalizedCorrectly() {
+        MetaDataService svc = new MetaDataService();
+        svc.em = mock(EntityManager.class);
+        TypedQuery<String> q = stubStringQuery(svc);
+        when(q.getSingleResult()).thenReturn("Bottom trawling");
+
+        svc.getBandTitle(1, "PRESSURE", 7, "en");
+
+        verify(q).setParameter("category", "Pressure");
+    }
+
+    @Test
+    public void getBandTitle_noResult_returnsFallback() {
+        MetaDataService svc = new MetaDataService();
+        svc.em = mock(EntityManager.class);
+        TypedQuery<String> q = stubStringQuery(svc);
+        when(q.getSingleResult()).thenThrow(new NoResultException("no match"));
+
+        String result = svc.getBandTitle(1, "ECOSYSTEM", 42, "en");
+
+        assertEquals("Band 42", result);
+    }
+
+    @Test
+    public void getBandTitle_unexpectedException_returnsFallback() {
+        MetaDataService svc = new MetaDataService();
+        svc.em = mock(EntityManager.class);
+        TypedQuery<String> q = stubStringQuery(svc);
+        when(q.getSingleResult()).thenThrow(new RuntimeException("DB error"));
+
+        String result = svc.getBandTitle(1, "ECOSYSTEM", 99, "sv");
+
+        assertEquals("Band 99", result);
     }
 }

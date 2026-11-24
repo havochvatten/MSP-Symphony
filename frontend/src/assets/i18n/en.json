@@ -34,6 +34,17 @@
             "select-all": "Select all",
             "deselect-all": "Deselect all"
         },
+        "summary-model": {
+            "dependsOn": "Depends on",
+            "linearNormalization": "Linear normalization",
+            "operation": {
+                "mean": "MEAN",
+                "max": "MAX",
+                "sum": "SUM"
+            },
+            "output": "Output",
+            "overview": "Overview"
+        },
         "confirm-reset": {
             "modal": {
                 "header": "Confirm reset",
@@ -85,7 +96,7 @@
             "areas": {
                 "title": "Scenario areas",
                 "remove": {
-                    "button" : "Remove area",
+                    "button": "Remove area",
                     "label": "Remove this area from the current scenario",
                     "modal": {
                         "title": "Remove area from scenario",
@@ -202,13 +213,13 @@
                 "units": "u.",
                 "collapse": "Hide changes",
                 "collapsed-count": "Show {{ count }} changes",
-                "clear-change-modal" : {
+                "clear-change-modal": {
                     "header": "Clear change",
                     "message": "Confirm removal of change: <em>{{ changeDescription }}</em>",
                     "confirm": "Clear"
                 }
             },
-            "changes-overview" : {
+            "changes-overview": {
                 "title": "Scenario changes overview",
                 "show-overview": "Show an overview of all changes",
                 "global-changes": "Global changes",
@@ -223,7 +234,7 @@
             "area-changes": {
                 "title": "Scenario Area Changes"
             },
-            "transfer-changes" : {
+            "transfer-changes": {
                 "title": "Transfer changes",
                 "tooltip": "Transfer changes from an existing scenario or scenario area",
                 "use-scenario-wide": "Use scenario-wide changes",
@@ -241,6 +252,12 @@
                 "area-changes-to-include": "Select which area changes to be mirrored in the copied scenario",
                 "areas-without-changes": "The following areas of the scenario lack specific changes: {{ areas-list }}",
                 "create-copy": "Create copy",
+                "cancel": "Cancel"
+            },
+            "new-scenario": {
+                "title": "Create new scenario",
+                "name-label": "Scenario name",
+                "create": "Create",
                 "cancel": "Cancel"
             },
             "select-area-message": "Select an area to calculate. Start with selecting an area and then make any adjustments to nature values or pressures in the left panel.",
@@ -406,7 +423,7 @@
                 "label": "Rename",
                 "header": "Enter a new name for the calculation"
             },
-            "delete-modal" : {
+            "delete-modal": {
                 "header": "Delete calculation",
                 "message": "Confirm deletion of previously saved calculation result: <em>“{{ calculationName }}”</em>",
                 "header-multiple": "Delete calculations",
@@ -454,7 +471,7 @@
                     "save": "Save",
                     "close": "Close"
                 },
-                "invalid-area" : {
+                "invalid-area": {
                     "title": "Invalid area extent",
                     "message": "User defined areas must overlap at least one other area having a default matrix coupling"
                 }
@@ -521,7 +538,7 @@
             "emphasis": "Cut or merge area",
             "detail": "{{ altButton }} + click in the map view splits by intersection, {{ altButton }} + Shift + click merges."
         },
-        "merge-areas-hint" : {
+        "merge-areas-hint": {
             "emphasis": "Merge areas",
             "detail": "{{ altButton }} + Shift + click on final area in the map to merge selected."
         },
@@ -566,6 +583,9 @@
         },
         "area-options": {
             "get-shapefile": "Download shapefile bundle (.zip)"
+        },
+        "on-map": {
+            "more": "+{{count}} more"
         }
     },
     "controls": {
@@ -632,13 +652,15 @@
     },
     "report": {
         "calculation": {
-            "title": "Calculation Report"
+            "title": "Calculation Report",
+            "image-alt": "Map of the cumulative environmental impact for \"{{ name }}\""
         },
         "comparison": {
             "title": "Calculation Comparison Report",
-            "vs": "and"
+            "vs": "and",
+            "image-alt": "Map of the difference in cumulative environmental impact between \"{{ a }}\" and \"{{ b }}\""
         },
-        "common" : {
+        "common": {
             "not-measurable": "(not measurable)"
         },
         "cumulative-effect-etc": {
@@ -726,21 +748,28 @@
     "branding": {
         "SwAM": "Swedish Agency for Marine and Water Management"
     },
+    "funding-disclaimer": {
+        "heading": "Disclaimer and acknowledgment of funding",
+        "published": "This code was published by SwAM, the Swedish Agency for Marine and Water Management, under the license specified. Part of the work was funded by the Government Offices of Sweden or Sida, the Swedish International Development Cooperation Agency.",
+        "responsibility": "The content, outputs and uses are the sole responsibility of the user of the code. Neither SwAM, the Government Offices of Sweden nor Sida can under any circumstance be held responsible for any content, outputs or uses, including, but not limited to, decisions taken, positions taken, publications and views expressed.",
+        "views": "The content, outputs and uses do not necessarily reflect those of neither SwAM, the Government Offices of Sweden nor Sida.",
+        "logo-alt": "Sweden, Swedish Agency for Marine and Water Management"
+    },
     "api-messages": {
         "areas": {
-            "import-success" : {
+            "import-success": {
                 "title": "Import successful",
-                "message-single" : "Imported area: \"{{ topLayerName }}\"",
-                "message-multi" : "Imported {{ layersCount }} areas"
+                "message-single": "Imported area: \"{{ topLayerName }}\"",
+                "message-multi": "Imported {{ layersCount }} areas"
             }
         }
     },
-    "list-sorting-options" : {
-        "indicate-order" : "Indicate ordering as {{ orderHint }}",
-        "AlphaAsc" : "alphabetical, ascending (A-Z)",
-        "AlphaDesc" : "alphabetical, descending (Z-A)",
-        "DateAsc" : "ascending by date (oldest first)",
-        "DateDesc" : "descending by date (newest first)",
-        "None" : "unsorted"
+    "list-sorting-options": {
+        "indicate-order": "Indicate ordering as {{ orderHint }}",
+        "AlphaAsc": "alphabetical, ascending (A-Z)",
+        "AlphaDesc": "alphabetical, descending (Z-A)",
+        "DateAsc": "ascending by date (oldest first)",
+        "DateDesc": "descending by date (newest first)",
+        "None": "unsorted"
     }
 }

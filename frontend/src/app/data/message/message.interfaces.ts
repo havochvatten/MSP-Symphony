@@ -13,9 +13,9 @@ export interface ErrorMessage {
 }
 
 export interface ServerError {
- errorCode: string;
- errorMessage: string;
- requestId: string;
+  errorCode: string;
+  errorMessage: string;
+  requestId: string;
 }
 
 export interface State {

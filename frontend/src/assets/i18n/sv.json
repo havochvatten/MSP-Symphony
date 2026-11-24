@@ -34,6 +34,17 @@
             "select-all": "Markera samtliga",
             "deselect-all": "Avmarkera samtliga"
         },
+        "summary-model": {
+            "dependsOn": "Beroende av",
+            "linearNormalization": "Linjär normalisering",
+            "operation": {
+                "mean": "MEDEL",
+                "max": "MAX",
+                "sum": "SUMMA"
+            },
+            "output": "Utdata",
+            "overview": "Överblick"
+        },
         "confirm-reset": {
             "modal": {
                 "header": "Bekräfta återställning",
@@ -85,7 +96,7 @@
             "areas": {
                 "title": "Scenarioområden",
                 "remove": {
-                    "button" : "Avlägsna område",
+                    "button": "Avlägsna område",
                     "label": "Tag bort området från aktuellt scenario",
                     "modal": {
                         "title": "Ta bort område från scenario",
@@ -208,7 +219,7 @@
                     "confirm": "Rensa"
                 }
             },
-            "changes-overview" : {
+            "changes-overview": {
                 "title": "Översikt förekomständringar",
                 "show-overview": "Öppna översiktsvyn för ändringar",
                 "global-changes": "Generella ändringar",
@@ -223,7 +234,7 @@
             "area-changes": {
                 "title": "Områdesspecifika förekomständringar"
             },
-            "transfer-changes" : {
+            "transfer-changes": {
                 "title": "Överför ändringar",
                 "tooltip": "Hämta ändringar från ett befintligt scenario eller scenarioområde",
                 "use-scenario-wide": "Använd det valda scenariots generella ändringar",
@@ -241,6 +252,12 @@
                 "area-changes-to-include": "Välj vilka områdens ändringar som ska speglas i det kopierade scenariot",
                 "areas-without-changes": "Följande områden i scenariot saknar specifika ändringar: {{ areas-list }}",
                 "create-copy": "Kopiera",
+                "cancel": "Avbryt"
+            },
+            "new-scenario": {
+                "title": "Skapa nytt scenario",
+                "name-label": "Scenarionamn",
+                "create": "Skapa",
                 "cancel": "Avbryt"
             },
             "select-area-message": "För att beräkna krävs det att ett område har markerats. Börja med att välja område och eventuella naturvärden och belastningar i vänster panel.",
@@ -398,15 +415,15 @@
             "show-report": "Öppna rapport “{{ calculationName }}”",
             "delete": "Radera sparad beräkning “{{ calculationName }}”",
             "filter-hint": "Filtrera beräkningsrapport per namn",
-            "show-result" : "Rendera detta resultat i kartbilden",
-            "hide-result" :  "Tag bort detta resultat från kartbilden",
-            "visible-result" : "Resultatet är synligt i kartbilden",
+            "show-result": "Rendera detta resultat i kartbilden",
+            "hide-result": "Tag bort detta resultat från kartbilden",
+            "visible-result": "Resultatet är synligt i kartbilden",
             "purged-result": "Data för detta resultat har rensats bort.\nDå resultatet måste beräknas om tar det lite längre tid att ladda.",
             "edit-name": {
                 "label": "Ändra namn",
                 "header": "Ange ett nytt namn för beräkningen"
             },
-            "delete-modal" : {
+            "delete-modal": {
                 "header": "Radera sparad beräkning",
                 "message": "Bekräfta borttagning av tidigare sparad beräkning: <em>“{{ calculationName }}”</em>",
                 "header-multiple": "Radera markerade beräkningar",
@@ -454,7 +471,7 @@
                     "save": "Spara",
                     "close": "Avbryt"
                 },
-                "invalid-area" : {
+                "invalid-area": {
                     "title": "Felaktigt område",
                     "message": "Nya områden måste överlappa minst ett område med standardmatriskoppling"
                 }
@@ -521,7 +538,7 @@
             "emphasis": "Dela eller sammanfoga område",
             "detail": "{{ altButton }} + klick i kartbilden delar överlappande, {{ altButton }} + Shift + klick sammanfogar"
         },
-        "merge-areas-hint" : {
+        "merge-areas-hint": {
             "emphasis": "Sammanfoga områden",
             "detail": "{{ altButton }} + Shift + klick i kartbilden på 'sista' området för att sammanfoga."
         },
@@ -566,6 +583,9 @@
         },
         "area-options": {
             "get-shapefile": "Ladda ned shapefile-paket (.zip)"
+        },
+        "on-map": {
+            "more": "+{{count}} till"
         }
     },
     "controls": {
@@ -632,13 +652,15 @@
     },
     "report": {
         "calculation": {
-            "title": "Scenariorapport"
+            "title": "Scenariorapport",
+            "image-alt": "Karta över den kumulativa miljöpåverkan för \"{{ name }}\""
         },
         "comparison": {
             "title": "Scenariojämförelserapport",
-            "vs": "kontra"
+            "vs": "kontra",
+            "image-alt": "Karta över skillnaden i kumulativ miljöpåverkan mellan \"{{ a }}\" och \"{{ b }}\""
         },
-        "common" : {
+        "common": {
             "not-measurable": "(ej mätbar)"
         },
         "cumulative-effect-etc": {
@@ -726,21 +748,28 @@
     "branding": {
         "SwAM": "Havs och Vattenmyndigheten"
     },
+    "funding-disclaimer": {
+        "heading": "Ansvarsfriskrivning och erkännande av finansiering",
+        "published": "Denna kod har publicerats av Havs- och vattenmyndigheten (HaV), under angiven licens. Delar av arbetet har finansierats via svenska Regeringskansliet respektive Sida, Styrelsen för internationellt utvecklingssamarbete.",
+        "responsibility": "Innehåll, resultat och användningar är uteslutande användarens ansvar. Varken Havs- och vattenmyndigheten, Regeringskansliet eller Sida kan under några omständigheter hållas ansvariga för innehåll, resultat eller användningar – inklusive, men inte begränsat till – beslut, ställningstaganden, publiceringar och åsikter.",
+        "views": "Innehåll, resultat och användningar återspeglar inte nödvändigtvis varken Havs- och vattenmyndighetens, Regeringskansliets eller Sidas.",
+        "logo-alt": "Sverige, Havs- och vattenmyndigheten"
+    },
     "api-messages": {
         "areas": {
-            "import-success" : {
+            "import-success": {
                 "title": "Importen lyckades",
-                "message-single" : "Importerat område: \"{{ topLayerName }}\"",
-                "message-multi" : "Importerade {{ layersCount }} områden."
+                "message-single": "Importerat område: \"{{ topLayerName }}\"",
+                "message-multi": "Importerade {{ layersCount }} områden."
             }
         }
     },
-    "list-sorting-options" : {
-        "indicate-order" : "Ange sorteringsordning som {{ orderHint }}",
-        "AlphaAsc" : "alfabetisk, stigande (A-Ö)",
-        "AlphaDesc" : "alfabetisk, fallande (Ö-A)",
-        "DateAsc" : "datum, stigande (äldst först)",
-        "DateDesc" : "datum, fallande (nyast först)",
-        "None" : "ej ordnad"
+    "list-sorting-options": {
+        "indicate-order": "Ange sorteringsordning som {{ orderHint }}",
+        "AlphaAsc": "alfabetisk, stigande (A-Ö)",
+        "AlphaDesc": "alfabetisk, fallande (Ö-A)",
+        "DateAsc": "datum, stigande (äldst först)",
+        "DateDesc": "datum, fallande (nyast först)",
+        "None": "ej ordnad"
     }
 }

@@ -1,17 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SliderComponent } from './slider.component';
-import { provideZonelessChangeDetection } from "@angular/core";
+import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('SliderComponent', () => {
-  let fixture: ComponentFixture<SliderComponent>,
-      component: SliderComponent;
+  let fixture: ComponentFixture<SliderComponent>, component: SliderComponent;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        provideZonelessChangeDetection()
-      ],
+      providers: [provideZonelessChangeDetection()],
       declarations: [SliderComponent]
     }).compileComponents();
     fixture = TestBed.createComponent(SliderComponent);

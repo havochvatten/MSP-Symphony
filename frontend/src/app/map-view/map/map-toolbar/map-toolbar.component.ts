@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Output, Input, OnDestroy, inject } from '@angular/core';
-import { UserActions, UserSelectors } from "@data/user";
-import { Store } from "@ngrx/store";
-import { State } from "@src/app/app-reducer";
-import { Subscription } from "rxjs";
+import { UserActions, UserSelectors } from '@data/user';
+import { Store } from '@ngrx/store';
+import { State } from '@src/app/app-reducer';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-map-toolbar',
@@ -15,10 +15,11 @@ export class MapToolbarComponent implements OnDestroy {
 
   @Input() hasResults = false;
   @Input() drawIsActive = false;
+  @Input() editingControls = true;
   @Output() zoomIn: EventEmitter<void> = new EventEmitter<void>();
   @Output() zoomOut: EventEmitter<void> = new EventEmitter<void>();
-  @Output() clearResult: EventEmitter<void> = new EventEmitter<void>();
-  @Output() toggleDraw: EventEmitter<void> = new EventEmitter<void>();
+  @Output() clearResult?: EventEmitter<void> = new EventEmitter<void>();
+  @Output() toggleDraw?: EventEmitter<void> = new EventEmitter<void>();
 
   private readonly aliasingSubscription$: Subscription;
 
@@ -27,9 +28,11 @@ export class MapToolbarComponent implements OnDestroy {
   hasImageSmoothing = true;
 
   constructor() {
-    this.aliasingSubscription$ = this.store.select(UserSelectors.selectAliasing).subscribe((aliasing: boolean) => {
-      this.hasImageSmoothing = aliasing;
-    });
+    this.aliasingSubscription$ = this.store
+      .select(UserSelectors.selectAliasing)
+      .subscribe((aliasing: boolean) => {
+        this.hasImageSmoothing = aliasing;
+      });
   }
 
   onClickZoomIn() {
@@ -40,9 +43,9 @@ export class MapToolbarComponent implements OnDestroy {
     this.zoomOut.emit();
   }
 
-  onClearResult = () => this.clearResult.emit();
+  onClearResult = () => this.clearResult?.emit();
 
-  onToggleDraw = () => this.toggleDraw.emit();
+  onToggleDraw = () => this.toggleDraw?.emit();
 
   onToggleSmooth() {
     this.store.dispatch(UserActions.updateUserSettings({ aliasing: !this.hasImageSmoothing }));

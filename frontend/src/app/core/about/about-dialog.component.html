@@ -17,6 +17,12 @@
   </div>
 </div>
 
+<div id="funding-disclaimer">
+  <h3>{{ 'funding-disclaimer.heading' | translate }}</h3>
+  <app-funding-disclaimer></app-funding-disclaimer>
+  <img src="assets/funding/sweden-swam.png" [alt]="'funding-disclaimer.logo-alt' | translate">
+</div>
+
 <div class="toolbar">
   <button mat-flat-button (click)="close()">{{ 'about-dialog.close' | translate }}</button>
 </div>

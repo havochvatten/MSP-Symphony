@@ -34,6 +34,17 @@
             "select-all": "Tout sélectionner",
             "deselect-all": "Tout désélectionner"
         },
+        "summary-model": {
+            "dependsOn": "Dépend de",
+            "linearNormalization": "Normalisation linéaire",
+            "operation": {
+                "mean": "MOYENNE",
+                "max": "MAX",
+                "sum": "SOMME"
+            },
+            "output": "Sortie",
+            "overview": "Aperçu"
+        },
         "confirm-reset": {
             "modal": {
                 "header": "Confirmer la réinitialisation",
@@ -208,7 +219,7 @@
                     "confirm": "Effacer"
                 }
             },
-            "changes-overview" : {
+            "changes-overview": {
                 "title": "Vue d'ensemble des modifications de scénario",
                 "show-overview": "Afficher une vue d'ensemble de tous les changements",
                 "global-changes": "Modifications générales",
@@ -241,6 +252,12 @@
                 "area-changes-to-include": "Sélectionnez la zone qui change à refléter dans le scénario copié",
                 "areas-without-changes": "Ces zones du scénario manquent de changements spécifiques: {{ areas-list }}",
                 "create-copy": "Copier",
+                "cancel": "Annuler"
+            },
+            "new-scenario": {
+                "title": "Créer un nouveau scénario",
+                "name-label": "Nom du scénario",
+                "create": "Créer",
                 "cancel": "Annuler"
             },
             "select-area-message": "Sélectionnez une zone de calcul. Commencez par sélectionner une zone, puis modifiez les valeurs des composantes écosystèmes ou menaces dans le panel de gauche.",
@@ -454,7 +471,7 @@
                     "save": "Sauvegarder",
                     "close": "Fermer"
                 },
-                "invalid-area" : {
+                "invalid-area": {
                     "title": "Zone invalide",
                     "message": "Les zones définies par l'utilisateur doivent chevaucher au moins une autre zone ayant un couplage de matrice par défaut"
                 }
@@ -566,6 +583,9 @@
         },
         "area-options": {
             "get-shapefile": "Télécharger des fichiers de formes shapefile (.zip)"
+        },
+        "on-map": {
+            "more": "+{{count}} autres"
         }
     },
     "controls": {
@@ -632,13 +652,15 @@
     },
     "report": {
         "calculation": {
-            "title": "Rapport de calcul"
+            "title": "Rapport de calcul",
+            "image-alt": "Carte de l'impact cumulé sur l'environnement pour « {{ name }} »"
         },
         "comparison": {
             "title": "Rapport de comparaison",
-            "vs": "vs."
+            "vs": "vs.",
+            "image-alt": "Carte de la différence d'impact cumulé sur l'environnement entre « {{ a }} » et « {{ b }} »"
         },
-        "common" : {
+        "common": {
             "not-measurable": "(non mesurable)"
         },
         "cumulative-effect-etc": {
@@ -726,6 +748,13 @@
     "branding": {
         "SwAM": "Agence Suédoise pour la Gestion de l'Eau et des Zones Maritimes (Havs och Vattenmyndigheten)"
     },
+    "funding-disclaimer": {
+        "heading": "Disclaimer and acknowledgment of funding",
+        "published": "This code was published by SwAM, the Swedish Agency for Marine and Water Management, under the license specified. Part of the work was funded by the Government Offices of Sweden or Sida, the Swedish International Development Cooperation Agency.",
+        "responsibility": "The content, outputs and uses are the sole responsibility of the user of the code. Neither SwAM, the Government Offices of Sweden nor Sida can under any circumstance be held responsible for any content, outputs or uses, including, but not limited to, decisions taken, positions taken, publications and views expressed.",
+        "views": "The content, outputs and uses do not necessarily reflect those of neither SwAM, the Government Offices of Sweden nor Sida.",
+        "logo-alt": "Sweden, Swedish Agency for Marine and Water Management"
+    },
     "api-messages": {
         "areas": {
             "import-success": {
@@ -735,12 +764,12 @@
             }
         }
     },
-    "list-sorting-options" : {
-        "indicate-order" : "Indiquer la commande comme {{ orderHint }}",
-        "AlphaAsc" : "alphabétique croissant (A-Z)",
-        "AlphaDesc" : "alphabétique décroissant (Z-A)",
-        "DateAsc" : "croissant par date (les plus anciens en premier)",
-        "DateDesc" : "décroissant par date (les plus récents en premier)",
-        "None" : "non trié"
+    "list-sorting-options": {
+        "indicate-order": "Indiquer la commande comme {{ orderHint }}",
+        "AlphaAsc": "alphabétique croissant (A-Z)",
+        "AlphaDesc": "alphabétique décroissant (Z-A)",
+        "DateAsc": "croissant par date (les plus anciens en premier)",
+        "DateDesc": "décroissant par date (les plus récents en premier)",
+        "None": "non trié"
     }
 }

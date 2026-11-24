@@ -27,9 +27,9 @@ export class AppComponent implements OnDestroy {
           }
           return route;
         }),
-        mergeMap(route => route.data)
+        mergeMap((route) => route.data)
       )
-      .subscribe(data => {
+      .subscribe((data) => {
         this.headerTitle = data['headerTitle'] ? data['headerTitle'] : '';
       });
   }

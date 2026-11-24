@@ -1,6 +1,6 @@
 {
     "loginLogoSrc": "assets/long-tailed-duck.svg",
-    "logoAlt": "Symphony",
+    "logoAlt": { "en": "Symphony" },
     "showLogos": false,
     "showReportClosingMatter": false
 }

@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UserInterfaces } from './';
 import { environment as env } from '@src/environments/environment';
-import { UserSettings } from "@data/user/user.interfaces";
+import { UserSettings } from '@data/user/user.interfaces';
 
 const BASE_URL = env.apiBaseUrl;
 
@@ -24,10 +24,16 @@ export default class UserService {
     return this.http.get<UserInterfaces.User>(`${BASE_URL}/getuser`);
   }
 
+  fetchCurrentBaseline() {
+    return this.http.get<UserInterfaces.Baseline>(`${BASE_URL}/baselineversion/current`);
+  }
+
   fetchBaseline() {
-    return this.http.get<UserInterfaces.Baseline>(env.baseline
-      ? `${BASE_URL}/baselineversion/name/${env.baseline}`
-      : `${BASE_URL}/baselineversion/active`);
+    return this.http.get<UserInterfaces.Baseline>(
+      env.baseline
+        ? `${BASE_URL}/baselineversion/name/${env.baseline}`
+        : `${BASE_URL}/baselineversion/active`
+    );
   }
 
   fetchBaselines() {

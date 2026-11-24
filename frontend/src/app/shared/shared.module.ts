@@ -1,5 +1,5 @@
 import { RouterModule } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { DialogComponent } from './dialog/dialog.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgModule } from '@angular/core';
@@ -21,33 +21,39 @@ import { SearchInputComponent } from './search-input/search-input.component';
 import { IconComponent } from './icon/icon.component';
 import { LoaderComponent } from './loader/loader.component';
 import { ToggleComponent } from './toggle/toggle.component';
-import { AccordionBoxComponent, AccordionBoxHeaderComponent, AccordionBoxContentComponent } from './accordion-box/accordion-box.component';
+import {
+  AccordionBoxComponent,
+  AccordionBoxHeaderComponent,
+  AccordionBoxContentComponent
+} from './accordion-box/accordion-box.component';
 import { SelectComponent } from './select/select.component';
 import { DragDropDirective } from './drag-drop.directive';
 import { UploadFilesComponent } from './upload-files/upload-files.component';
 import { CalculationReportModalComponent } from './report-modal/calculation-report-modal.component';
 import { ResultColorScaleComponent } from './result-color-scale/result-color-scale.component';
-import { PressureColorScaleComponent } from './pressure-color-scale/pressure-color-scale.component';
 import { PopupMessageComponent } from './popup-message/popup-message.component';
 import { StatusIconComponent } from './status-icon/status-icon.component';
 import { ComparisonReportModalComponent } from '@shared/report-modal/comparison-report-modal.component';
 import { OrdinalPipe } from '@shared/ordinal.pipe';
 import { AnchorPipe } from '@shared/anchor.pipe';
+import { LocalizedTextPipe } from '@shared/localized-text.pipe';
+import { LocalizedSrcPipe } from '@shared/localized-src.pipe';
 import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal.component';
 import { InlineMapComponent } from './inline-map/inline-map.component';
-import { SelectIntersectionComponent} from "@shared/select-intersection/select-intersection.component";
+import { SelectIntersectionComponent } from '@shared/select-intersection/select-intersection.component';
 import { ComparisonColorScaleComponent } from './comparison-color-scale/comparison-color-scale.component';
-import { MatButtonModule } from "@angular/material/button";
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { MatRadioModule } from "@angular/material/radio";
-import { MatInputModule } from "@angular/material/input";
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ListFilterComponent } from './list-filter/list-filter.component';
 import { MultiToolsComponent } from './multi-tools/multi-tools.component';
 import { MultiActionButtonComponent } from '@shared/multi-action-button/multi-action-button.component';
-import { RenameItemModalComponent} from "@shared/rename-item-modal/rename-item-modal.component";
+import { RenameItemModalComponent } from '@shared/rename-item-modal/rename-item-modal.component';
 import { ChangeLanguageDialogComponent } from './change-language-dialog/change-language-dialog.component';
 import { ChangeBaselineDialogComponent } from './change-baseline-dialog/change-baseline-dialog.component';
+import { FundingDisclaimerComponent } from './funding-disclaimer/funding-disclaimer.component';
 
 @NgModule({
   declarations: [
@@ -78,11 +84,12 @@ import { ChangeBaselineDialogComponent } from './change-baseline-dialog/change-b
     CalculationReportModalComponent,
     ComparisonReportModalComponent,
     ResultColorScaleComponent,
-    PressureColorScaleComponent,
     PopupMessageComponent,
     StatusIconComponent,
     OrdinalPipe,
     AnchorPipe,
+    LocalizedTextPipe,
+    LocalizedSrcPipe,
     ConfirmationModalComponent,
     InlineMapComponent,
     SelectIntersectionComponent,
@@ -92,21 +99,22 @@ import { ChangeBaselineDialogComponent } from './change-baseline-dialog/change-b
     MultiActionButtonComponent,
     RenameItemModalComponent,
     ChangeLanguageDialogComponent,
-    ChangeBaselineDialogComponent
+    ChangeBaselineDialogComponent,
+    FundingDisclaimerComponent
   ],
-    imports: [
-        CommonModule,
-        FontAwesomeModule,
-        ReactiveFormsModule,
-        RouterModule,
-        TranslateModule,
-        MatButtonModule,
-        MatCheckboxModule,
-        MatRadioModule,
-        MatInputModule,
-        MatProgressSpinnerModule,
-        FormsModule
-    ],
+  imports: [
+    CommonModule,
+    FontAwesomeModule,
+    ReactiveFormsModule,
+    RouterModule,
+    TranslatePipe,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatRadioModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    FormsModule
+  ],
   exports: [
     CommonModule,
     IconButtonComponent,
@@ -136,16 +144,19 @@ import { ChangeBaselineDialogComponent } from './change-baseline-dialog/change-b
     PopupMessageComponent,
     StatusIconComponent,
     RouterModule,
-    TranslateModule,
+    TranslatePipe,
     OrdinalPipe,
     AnchorPipe,
+    LocalizedTextPipe,
+    LocalizedSrcPipe,
     InlineMapComponent,
     SelectIntersectionComponent,
     ComparisonColorScaleComponent,
     ListFilterComponent,
     MultiToolsComponent,
     MultiActionButtonComponent,
-    RenameItemModalComponent
+    RenameItemModalComponent,
+    FundingDisclaimerComponent
   ]
 })
 export class SharedModule {}

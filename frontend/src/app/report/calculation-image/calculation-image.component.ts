@@ -8,4 +8,5 @@ import { Component, Input } from '@angular/core';
 })
 export class CalculationImageComponent {
   @Input() imageURL?: string;
+  @Input() alt = '';
 }

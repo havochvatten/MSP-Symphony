@@ -5,12 +5,12 @@
 export const environment = {
   production: false,
   // Change this line to switch branding file
-  brandingFile: 'branding.json',          // ← generic by default
+  brandingFile: 'branding.json', // ← generic by default
   //brandingFile: 'branding_swam.json',  // ← uncomment for SwAM
   showBaseCalculations: false,
   showIncludeCoastCheckbox: true,
-  apiBaseUrl: "/symphony-ws/service",
-  socketBaseUrl: "/socket",
+  apiBaseUrl: '/symphony-ws/service',
+  socketBaseUrl: '/socket',
   baseline: false,
   externManual: null,
   peekPassword: false,
@@ -50,16 +50,18 @@ export const environment = {
     }
   },
   login: {
-    noAccountUrl: "https://your.server.com/no-account.html",
-    forgotPasswordUrl: "https://your.server.com/forgot-password.html"
+    noAccountUrl: 'https://your.server.com/no-account.html',
+    forgotPasswordUrl: 'https://your.server.com/forgot-password.html'
   },
   meta: {
-    visible_fields: ['methodsummary',
-                    'limitationsforsymphony',
-                    'valuerange',
-                    'dataprocessing',
-                    'datasources'],
-    list_fields:    ['datasources']
+    visible_fields: [
+      'methodsummary',
+      'limitationsforsymphony',
+      'valuerange',
+      'dataprocessing',
+      'datasources'
+    ],
+    list_fields: ['datasources']
   }
 };
 

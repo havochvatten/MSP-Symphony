@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { getNextSortType, ListItemsSort } from "@data/common/sorting.interfaces";
+import { getNextSortType, ListItemsSort } from '@data/common/sorting.interfaces';
 
 @Component({
   selector: 'app-list-filter',
@@ -8,10 +8,9 @@ import { getNextSortType, ListItemsSort } from "@data/common/sorting.interfaces"
   standalone: false
 })
 export class ListFilterComponent {
-
-  @Input()  filterPlaceholder = '';
-  @Output() filterChange    = new EventEmitter<string>();
-  @Output() sortChange      = new EventEmitter<ListItemsSort>();
+  @Input() filterPlaceholder = '';
+  @Output() filterChange = new EventEmitter<string>();
+  @Output() sortChange = new EventEmitter<ListItemsSort>();
 
   sortType: ListItemsSort = ListItemsSort.None;
   filterString = '';
@@ -28,10 +27,9 @@ export class ListFilterComponent {
   }
 
   isActive(isDate: boolean) {
-    return isDate ? this.sortType === ListItemsSort.DateAsc ||
-                    this.sortType === ListItemsSort.DateDesc :
-                    this.sortType === ListItemsSort.AlphaAsc ||
-                    this.sortType === ListItemsSort.AlphaDesc;
+    return isDate
+      ? this.sortType === ListItemsSort.DateAsc || this.sortType === ListItemsSort.DateDesc
+      : this.sortType === ListItemsSort.AlphaAsc || this.sortType === ListItemsSort.AlphaDesc;
   }
 
   i18n_key(isDate: boolean): string {

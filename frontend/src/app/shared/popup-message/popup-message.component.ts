@@ -21,7 +21,7 @@ export class PopupMessageComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.messageSubscription$ = this.store
       .select(MessageSelectors.selectPopups)
-      .subscribe(messages => {
+      .subscribe((messages) => {
         this.messages = messages;
       });
   }
