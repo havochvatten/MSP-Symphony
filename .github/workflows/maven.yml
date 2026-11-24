@@ -23,4 +23,4 @@ jobs:
         cache: maven
     - name: Build with Maven
       working-directory: ./symphony-ws
-      run: mvn -B package --file pom.xml -Pskip-apitests
+      run: mvn -B package --file pom.xml -Pskip-apitests --settings ../.github/maven-settings.xml
