@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Maven settings for GitHub Actions.
+
+     Some dependency POMs (e.g. jakarta.enterprise.cdi-api) declare the JBoss repository
+     (jboss-public-repository-group), so Maven asks it for every artifact that is not yet in the cache,
+     before Maven Central. When that repository is slow, a build without a Maven cache can take hours.
+     Everything the build needs is on Maven Central, so send those requests there instead. -->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd">
+  <mirrors>
+    <mirror>
+      <id>jboss-via-central</id>
+      <name>Maven Central in place of the JBoss repository</name>
+      <mirrorOf>jboss-public-repository-group</mirrorOf>
+      <url>https://repo.maven.apache.org/maven2</url>
+    </mirror>
+  </mirrors>
+</settings>
