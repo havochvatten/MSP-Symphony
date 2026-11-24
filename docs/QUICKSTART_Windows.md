@@ -71,8 +71,21 @@ wsl --install
 wsl --set-default-version 2
 Open Ubuntu (terminal) and run:
 sudo apt update && sudo apt upgrade -y
-sudo apt install openjdk-21-jdk maven postgresql postgresql-contrib postgis
+sudo apt install openjdk-21-jdk postgresql postgresql-contrib postgis
 gdal-bin unzip wget curl git -y
+```
+
+The backend build requires Maven 3.9.9 or later (`version.maven.min` in `symphony-ws/pom.xml`), and the `maven`
+package in Ubuntu is older (3.8.7 in 24.04, 3.6.3 in 22.04). Install Apache Maven from the Apache archive instead:
+
+```sh
+MAVEN_VERSION=3.9.11
+wget -P /tmp https://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz
+sudo tar -xzf /tmp/apache-maven-$MAVEN_VERSION-bin.tar.gz -C /opt
+sudo ln -sfn /opt/apache-maven-$MAVEN_VERSION /opt/maven
+echo 'export PATH=/opt/maven/bin:$PATH' | sudo tee /etc/profile.d/maven.sh
+source /etc/profile.d/maven.sh
+mvn -version   # should print Apache Maven 3.9.x and Java version: 21
 ```
 
 ### 3. Clone the MSP-Symphony Repository
