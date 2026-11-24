@@ -103,6 +103,15 @@ cd ~/repos
 git clone https://github.com/havochvatten/MSP-Symphony.git
 ```
 
+The backend unit tests read their test data from a git submodule
+(`symphony-ws/src/test/resources`). The build in step 11 skips the tests, but to run them, fetch the
+submodule once:
+
+```sh
+cd ~/repos/MSP-Symphony
+git submodule update --init
+```
+
 (Optional) if you are using a fork, clone it instead:
 
 ```sh
@@ -411,6 +420,12 @@ owner to modify them
 ```sh
 sudo chmod -R 755 /app/data/symphony
 ```
+
+(Optional) Summary models for the overview in the band selection: put the JSON configs in
+`/app/data/symphony/summary-models/<baseline name>/ecosystem/` and `.../pressure/`, where the folder name
+is the name of the baseline version in the database (case-insensitive). Without them the overview is
+hidden. They are read when WildFly deploys the WAR, so restart WildFly after adding them. See
+[SUMMARY_MODELS.md](SUMMARY_MODELS.md).
 
 ### 10. Optimize WildFly JVM Settings
 
