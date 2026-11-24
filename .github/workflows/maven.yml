@@ -21,6 +21,7 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
+        show-download-progress: true
     - name: Build with Maven
       working-directory: ./symphony-ws
       run: mvn -B package --file pom.xml -Pskip-apitests
