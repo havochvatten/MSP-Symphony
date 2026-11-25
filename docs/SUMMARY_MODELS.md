@@ -25,7 +25,19 @@ Configs must be organised per baseline:
 `<baselineName>` must match `BaselineVersion.name` (case-insensitive). A
 baseline with no directory, or a directory that exists but contains no JSON
 files for a given category, will cause the overview accordion to be hidden
-for that category in the UI.
+for that category in the UI. A directory whose name matches no baseline is
+ignored without an error.
+
+The configs are read once, when the application starts. After adding or
+changing them, deploy the WAR again or restart the application server. The
+server log shows which baselines got models, in lower case:
+
+```
+INFO  [se.havochvatten.symphony.service.SummaryModelConfigService] ... Summary models loaded for baselines: [baseline2019_cm]
+```
+
+If the directory is missing or empty, the log instead has a warning starting
+with `Summary models directory not found` or `No summary model configs loaded`.
 
 The runtime logic for loading and executing these configs is implemented in
 `SummaryModelConfigService` and `DataLayerService`.

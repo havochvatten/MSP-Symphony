@@ -179,6 +179,36 @@ an example virtual host file is included [here](example-config/apache/vhosts.d/e
 same-origin policy and avoid CORS issues the frontend server needs to proxy REST API calls. The above sample Apache 
 configuration file illustrates how to accommodate this.
 
+The production build gives the scripts, stylesheets and images in its root a content hash in the file name, but not 
+`index.html` or the files under `assets/` (translations, branding config, logos). The sample configuration therefore 
+makes browsers check those files with the server on every load. Without such a rule browsers can keep the previous 
+release's translations after an update, and show raw keys such as `funding-disclaimer.heading` for new texts until 
+the user empties the cache.
+
+If you add a `Content-Security-Policy` header, it has to allow the following, or parts of the application stop working 
+without any error on the server:
+
+- `frame-ancestors 'self'`: the report window shows the report in a same-origin frame, and Print depends on it.
+- `blob:` in `img-src`: the map draws results and data layers from in-memory images.
+- `https://fonts.googleapis.com` in `style-src` and `https://fonts.gstatic.com` in `font-src`: fonts and icons.
+- `'unsafe-hashes'` and the hash of `this.media='all'` in `script-src`: the inline `onload` handler that the build 
+  puts in `index.html` to load the stylesheet. For the 1.26.0 build that is 
+  `'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='`; the browser console names the expected hash if it changes.
+- `wss://<your host>` in `connect-src`, for the batch-status WebSocket.
+
+For example:
+
+```
+Header always set Content-Security-Policy \
+    "default-src 'self'; \
+     script-src 'self' 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='; \
+     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; \
+     img-src 'self' data: blob: https:; \
+     font-src 'self' data: https://fonts.gstatic.com; \
+     connect-src 'self' wss://myserver.domain.org; \
+     frame-ancestors 'self'"
+```
+
 
 ## Testing
 
